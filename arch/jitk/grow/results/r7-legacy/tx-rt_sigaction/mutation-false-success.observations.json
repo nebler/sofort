@@ -1,0 +1,48 @@
+{
+  "stdout_hex": "",
+  "stderr_hex": "",
+  "exit": 1,
+  "trace_complete": true,
+  "missing": [],
+  "registered_enosys": [],
+  "argument_errors": [],
+  "fatal_protocol": [],
+  "events": [
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 1,
+      "nr": 134,
+      "pc": 4194504,
+      "args": [
+        2,
+        4198400,
+        0,
+        8,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 2,
+      "nr": 94,
+      "pc": 4194632,
+      "args": [
+        1,
+        4198400,
+        0,
+        8,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": null
+    }
+  ]
+}

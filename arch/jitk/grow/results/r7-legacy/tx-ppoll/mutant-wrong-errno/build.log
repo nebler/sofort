@@ -1,0 +1,24 @@
+{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-legacy/tx-ppoll/mutant-wrong-errno/kernel-dd406c5fff7a619ae2ebc2a7d59eaaca3ff85d640b39bdc6413f4723f393ea60.bin", "sha256": "dd406c5fff7a619ae2ebc2a7d59eaaca3ff85d640b39bdc6413f4723f393ea60", "bytes": 532520}
+   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-e0aroc2s/kernel)
+warning: function `writable` is never used
+  --> src/syscalls.rs:19:8
+   |
+19 | pub fn writable(addr: usize, len: usize) -> bool {
+   |        ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `now_ns` is never used
+  --> src/syscalls.rs:22:8
+   |
+22 | pub fn now_ns() -> u64 { crate::wait::now_ns() }
+   |        ^^^^^^
+
+warning: function `poll_fd` is never used
+  --> src/syscalls.rs:23:8
+   |
+23 | pub fn poll_fd(fd: i32, events: i16) -> i16 {
+   |        ^^^^^^^
+
+warning: `jitk-02` (bin "jitk-02") generated 3 warnings
+    Finished `release` profile [optimized] target(s) in 1.41s

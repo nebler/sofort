@@ -1,0 +1,751 @@
+{
+  "stdout_hex": "73656d616e7469632e6f70656e3d330a73656d616e7469632e66737461743d300a73656d616e7469632e6d6f64653d33333036300a73656d616e7469632e73697a653d300a73656d616e7469632e626c6b73697a653d343039360a73656d616e7469632e696e6f64653d310a73656d616e7469632e626c6f636b733d310a73746174652e706174682d737461743d300a73746174652e73616d652d6d657461646174613d300a73746174652e737461742d6f66667365743d31370a73746174652e7265706561743d310a73746174652e72656f70656e3d310a6572726f722e6261642d66643d2d390a6572726f722e66642d6265666f72652d706f696e7465723d2d390a6572726f722e6e656761746976652d66643d2d390a6572726f722e6e756c6c3d2d31340a6572726f722e756e6d61707065643d2d31340a6572726f722e726561646f6e6c793d2d31340a6572726f722e6f766572666c6f773d2d31340a73656d616e7469632e6469726563746f72793d300a73656d616e7469632e6469726563746f72792d747970653d31363338340a73656d616e7469632e706970653d2d390a73656d616e7469632e706970652d747970653d31363338340a73656d616e7469632e706970653d2d390a73656d616e7469632e706970652d747970653d31363338340a73656d616e7469632e706970653d2d390a73656d616e7469632e706970652d747970653d31363338340a73656d616e7469632e756e7265616461626c652d6d657461646174613d300a73656d616e7469632e7472756e63617465642d66643d300a6572726f722e636c6f7365643d2d390a",
+  "stderr_hex": "",
+  "exit": 0,
+  "trace_complete": true,
+  "missing": [],
+  "registered_enosys": [],
+  "argument_errors": [
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 10,
+      "nr": 80,
+      "pc": 4196812,
+      "args": [
+        999,
+        4202496,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 11,
+      "nr": 80,
+      "pc": 4197048,
+      "args": [
+        999,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 12,
+      "nr": 80,
+      "pc": 4197276,
+      "args": [
+        18446744073709551615,
+        4202496,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 13,
+      "nr": 80,
+      "pc": 4197508,
+      "args": [
+        3,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 14,
+      "nr": 80,
+      "pc": 4197740,
+      "args": [
+        3,
+        1,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 15,
+      "nr": 80,
+      "pc": 4197964,
+      "args": [
+        3,
+        4200197,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 16,
+      "nr": 80,
+      "pc": 4198196,
+      "args": [
+        3,
+        18446744073709551552,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 20,
+      "nr": 80,
+      "pc": 4198976,
+      "args": [
+        0,
+        4202624,
+        0,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 21,
+      "nr": 80,
+      "pc": 4198976,
+      "args": [
+        1,
+        4202624,
+        0,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 22,
+      "nr": 80,
+      "pc": 4198976,
+      "args": [
+        2,
+        4202624,
+        0,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 28,
+      "nr": 80,
+      "pc": 4199852,
+      "args": [
+        3,
+        4202496,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    }
+  ],
+  "fatal_protocol": [],
+  "events": [
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 1,
+      "nr": 56,
+      "pc": 4194508,
+      "args": [
+        18446744073709551516,
+        4200197,
+        0,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 3
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 2,
+      "nr": 80,
+      "pc": 4194768,
+      "args": [
+        3,
+        4202496,
+        0,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 3,
+      "nr": 79,
+      "pc": 4195828,
+      "args": [
+        18446744073709551516,
+        4200197,
+        4202624,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 4,
+      "nr": 62,
+      "pc": 4196196,
+      "args": [
+        3,
+        17,
+        0,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 17
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 5,
+      "nr": 80,
+      "pc": 4196220,
+      "args": [
+        3,
+        4202624,
+        0,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 6,
+      "nr": 62,
+      "pc": 4196244,
+      "args": [
+        3,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 17
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 7,
+      "nr": 56,
+      "pc": 4196608,
+      "args": [
+        18446744073709551516,
+        4200197,
+        0,
+        0,
+        0,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 4
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 8,
+      "nr": 80,
+      "pc": 4196632,
+      "args": [
+        4,
+        4202624,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 9,
+      "nr": 57,
+      "pc": 4196784,
+      "args": [
+        4,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 10,
+      "nr": 80,
+      "pc": 4196812,
+      "args": [
+        999,
+        4202496,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 11,
+      "nr": 80,
+      "pc": 4197048,
+      "args": [
+        999,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 12,
+      "nr": 80,
+      "pc": 4197276,
+      "args": [
+        18446744073709551615,
+        4202496,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 13,
+      "nr": 80,
+      "pc": 4197508,
+      "args": [
+        3,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 14,
+      "nr": 80,
+      "pc": 4197740,
+      "args": [
+        3,
+        1,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 15,
+      "nr": 80,
+      "pc": 4197964,
+      "args": [
+        3,
+        4200197,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 16,
+      "nr": 80,
+      "pc": 4198196,
+      "args": [
+        3,
+        18446744073709551552,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -14
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 17,
+      "nr": 56,
+      "pc": 4198424,
+      "args": [
+        18446744073709551516,
+        4200207,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 4
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 18,
+      "nr": 80,
+      "pc": 4198452,
+      "args": [
+        4,
+        4202624,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 19,
+      "nr": 57,
+      "pc": 4198876,
+      "args": [
+        4,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 20,
+      "nr": 80,
+      "pc": 4198976,
+      "args": [
+        0,
+        4202624,
+        0,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 21,
+      "nr": 80,
+      "pc": 4198976,
+      "args": [
+        1,
+        4202624,
+        0,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 22,
+      "nr": 80,
+      "pc": 4198976,
+      "args": [
+        2,
+        4202624,
+        0,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 23,
+      "nr": 56,
+      "pc": 4199296,
+      "args": [
+        18446744073709551516,
+        4200197,
+        3,
+        0,
+        61,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 4
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 24,
+      "nr": 80,
+      "pc": 4199324,
+      "args": [
+        4,
+        4202624,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 25,
+      "nr": 57,
+      "pc": 4199560,
+      "args": [
+        4,
+        0,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 26,
+      "nr": 80,
+      "pc": 4199592,
+      "args": [
+        4294967299,
+        4202624,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 27,
+      "nr": 57,
+      "pc": 4199824,
+      "args": [
+        3,
+        0,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 0
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 28,
+      "nr": 80,
+      "pc": 4199852,
+      "args": [
+        3,
+        4202496,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": -9
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 29,
+      "nr": 64,
+      "pc": 4200064,
+      "args": [
+        1,
+        4202752,
+        601,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": 601
+    },
+    {
+      "v": 2,
+      "kind": "sys.enter",
+      "seq": 30,
+      "nr": 94,
+      "pc": 4200088,
+      "args": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        45
+      ],
+      "input": null,
+      "timeout": null,
+      "ret": null
+    }
+  ]
+}

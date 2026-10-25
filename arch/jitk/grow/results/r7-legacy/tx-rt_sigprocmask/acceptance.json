@@ -1,0 +1,32 @@
+{
+  "cases": {
+    "semantic": [
+      "explicit injected ENOSYS"
+    ],
+    "error": [
+      "inaccessible pointers still ENOSYS"
+    ],
+    "state": [
+      "query after attempted set",
+      "output canary unchanged"
+    ]
+  },
+  "mutations": [
+    {
+      "name": "false-success",
+      "rejected": true,
+      "reason": "{'linux': {'stdout_hex': '7369676e616c733a6f6b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+      "source_sha256": "da41f1e637d9c260251cc3aae0ab0c9be337ba7fd2eec2233604718b1a5726a3"
+    },
+    {
+      "name": "pointer-sensitive",
+      "rejected": true,
+      "reason": "{'linux': {'stdout_hex': '7369676e616c733a6f6b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+      "source_sha256": "1bb6237883d4c4edf939027edd42cb42ca7f61e598d2b8ec905ad7f78c60b9d1"
+    }
+  ],
+  "unchanged_integration": "PASS",
+  "n": 30,
+  "pass": 30,
+  "repeat_counts_are_not_acceptance": true
+}

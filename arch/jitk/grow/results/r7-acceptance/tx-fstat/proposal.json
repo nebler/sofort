@@ -1,0 +1,5 @@
+{
+  "path": "src/syscalls/fstat.rs",
+  "source": "// Descriptor metadata uses the same checked AArch64 layout as newfstatat.\nuse crate::{fs, syscalls::copyout};\npub fn call(a: &[usize]) -> isize {\n    let fd = a[0] as u32 as usize;\n    let n = if fd <= 2 { None } else {\n        let f = match fs::get(fd) { Ok(f) => f, Err(e) => return e };\n        match fs::node(f.node) { Ok(n) => Some(n), Err(e) => return e }\n    };\n    match copyout(a[1], &fs::stat(n)) { Ok(()) => 0, Err(e) => e }\n}\n",
+  "mode": "replay"
+}

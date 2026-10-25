@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "pread64"
+  ],
+  "expected_hex": null,
+  "stdin_hex": "70696e670a",
+  "samples": 1,
+  "injections": []
+}

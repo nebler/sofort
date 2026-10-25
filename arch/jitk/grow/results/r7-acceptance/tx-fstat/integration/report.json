@@ -1,0 +1,379 @@
+{
+  "status": "PASS",
+  "binary_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+  "database_sha256": "f3d4180cd07ad9eed5a674c7ff4e5f6d817eb517029c185f66af862a30eac059",
+  "method": "exact stdout bytes, reconstructed fd2 log bytes, guest done exit vs Linux pipes",
+  "transport": "developer grow-trace on libkrun, printable stdout corpus; production fd2 remains dropped",
+  "cases": [
+    {
+      "name": "aggregate",
+      "sql": "SELECT json_object('count',count(*),'sum',sum(v),'max',max(v)) FROM n;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "ordered",
+      "sql": "SELECT v FROM n ORDER BY v;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "310a330a350a350a390a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "grouped",
+      "sql": "SELECT v,count(*) FROM n GROUP BY v ORDER BY v;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "317c310a337c310a357c320a397c310a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "filtered",
+      "sql": "SELECT sum(v),min(v) FROM n WHERE v>=5;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "31397c350a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "join",
+      "sql": "SELECT count(*) FROM n a JOIN n b ON a.v=b.v;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "370a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "schema",
+      "sql": "SELECT name,type FROM sqlite_schema ORDER BY name;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "6e7c7461626c650a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "integrity",
+      "sql": "PRAGMA integrity_check;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "6f6b0a",
+      "stderr_hex": "",
+      "exit": 0,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "bad-query",
+      "sql": "SELEC v FROM n;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "",
+      "stderr_hex": "4572726f723a20696e20707265706172652c206e656172202253454c4543223a2073796e746178206572726f720a202053454c454320762046524f4d206e3b0a20205e2d2d2d206572726f7220686572650a",
+      "exit": 1,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "missing-table",
+      "sql": "SELECT * FROM missing_table;",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "",
+      "stderr_hex": "4572726f723a20696e20707265706172652c206e6f2073756368207461626c653a206d697373696e675f7461626c650a",
+      "exit": 1,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    },
+    {
+      "name": "readonly-write",
+      "sql": "INSERT INTO n VALUES(42);",
+      "status": "PASS",
+      "n": 1,
+      "stdout_hex": "",
+      "stderr_hex": "4572726f723a207374657070696e672c20617474656d707420746f207772697465206120726561646f6e6c79206461746162617365202838290a",
+      "exit": 8,
+      "missing": [
+        48,
+        172
+      ],
+      "registered_enosys": [
+        134,
+        135
+      ],
+      "syscalls": [
+        25,
+        29,
+        48,
+        56,
+        57,
+        63,
+        66,
+        67,
+        79,
+        80,
+        94,
+        96,
+        134,
+        135,
+        172,
+        214,
+        215,
+        222
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "platform": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.1\nBuildVersion:\t\t25G76\n",
+  "machine": "arm64",
+  "uptime": "21:43  up 1 day, 23:57, 1 user, load averages: 12.92 11.31 10.79",
+  "oracle_image": "sha256:458a19a1e97ca3687507732f8e11cc5054f97cf4989fd796f4cc9faddba08f67",
+  "vmm_sha256": "23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616",
+  "functional_runs": "unlocked under contention; no performance claim; initial lock wait cancelled while r7-suite ran nested suite",
+  "certification_and_parking": "serialized by /usr/bin/lockf -k /tmp/sofort-bench.lock"
+}

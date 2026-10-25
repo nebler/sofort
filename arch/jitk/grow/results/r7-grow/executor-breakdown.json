@@ -1,0 +1,2194 @@
+{
+  "artifacts": {
+    "selection": "integrated jitk / confined VMM / current kernel",
+    "integrated": true,
+    "host": {
+      "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+      "sha256": "23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616"
+    },
+    "image": {
+      "path": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/kernel/dist/kernel.bin",
+      "sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732"
+    },
+    "gate": {
+      "idleCorePercent": 0,
+      "evidence": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/kernel/.READY: 1000/1000; idle CPU below ps resolution (rerun on this image)"
+    },
+    "vmmReady": true,
+    "kernelReady": true
+  },
+  "selection": "integrated jitk / confined VMM / current kernel",
+  "integrated": true,
+  "loadBefore": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+  "loadAfter": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+  "warmups": 5,
+  "n": 50,
+  "unit": "ms",
+  "summary": {
+    "acquire": {
+      "n": 50,
+      "median": 0.24324999999998909,
+      "p90": 0.5529590000001008,
+      "p99": 2.0989580000004935
+    },
+    "sendRun": {
+      "n": 50,
+      "median": 0.2541670000000522,
+      "p90": 0.43108299999994415,
+      "p99": 1.2191660000007687
+    },
+    "firstCall": {
+      "n": 50,
+      "median": 1.4517919999998412,
+      "p90": 3.6159999999999854,
+      "p99": 10.897832999999991
+    },
+    "ret": {
+      "n": 50,
+      "median": 0.14674999999988358,
+      "p90": 0.2751250000001164,
+      "p99": 0.9405419999993683
+    },
+    "done": {
+      "n": 50,
+      "median": 0.1968750000005457,
+      "p90": 1.0848749999995562,
+      "p99": 16.512042000000292
+    },
+    "resolve": {
+      "n": 50,
+      "median": 0.025416999999833934,
+      "p90": 0.059791000000132044,
+      "p99": 0.12079100000005383
+    },
+    "execute": {
+      "n": 50,
+      "median": 2.420165999999881,
+      "p90": 6.042333000000326,
+      "p99": 31.105208000000857
+    },
+    "killAfterResolve": {
+      "n": 50,
+      "median": 0.06220899999971152,
+      "p90": 0.15470800000002782,
+      "p99": 0.4477500000002692
+    },
+    "reapAfterResolve": {
+      "n": 50,
+      "median": 1.1378750000003492,
+      "p90": 2.1395830000001297,
+      "p99": 9.770416999999725
+    }
+  },
+  "rows": [
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006583000000004446,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006583000000004446,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 10.810500000000047,
+      "marks": {
+        "start": 1112.146709,
+        "acquired": 1112.500875,
+        "runSent": 1112.811334,
+        "firstCall": 1114.628584,
+        "firstRet": 1114.850709,
+        "done": 1115.439584,
+        "resolve": 1115.506792,
+        "callerResolve": 1115.511
+      },
+      "kill": 1115.6285,
+      "reaped": 1116.948625,
+      "acquire": 0.3541659999998501,
+      "sendRun": 0.3104590000000371,
+      "firstCall": 1.8172500000000582,
+      "ret": 0.22212500000000546,
+      "done": 0.5888749999999163,
+      "resolve": 0.07141599999999926,
+      "execute": 3.3642909999998665,
+      "killAfterResolve": 0.11750000000006366,
+      "reapAfterResolve": 1.4376250000000255
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006999999999993123,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006999999999993123,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 11.050958000000037,
+      "marks": {
+        "start": 1264.190042,
+        "acquired": 1264.586125,
+        "runSent": 1264.937959,
+        "firstCall": 1266.963292,
+        "firstRet": 1267.192209,
+        "done": 1267.931709,
+        "resolve": 1267.987792,
+        "callerResolve": 1267.9915
+      },
+      "kill": 1268.054042,
+      "reaped": 1269.69375,
+      "acquire": 0.39608300000008967,
+      "sendRun": 0.3518340000000535,
+      "firstCall": 2.0253329999998186,
+      "ret": 0.2289170000001377,
+      "done": 0.7394999999999072,
+      "resolve": 0.059791000000132044,
+      "execute": 3.801458000000139,
+      "killAfterResolve": 0.06254199999989396,
+      "reapAfterResolve": 1.7022499999998217
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006333000000004196,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006333000000004196,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 16.248542000000043,
+      "marks": {
+        "start": 1414.986584,
+        "acquired": 1415.26825,
+        "runSent": 1415.6,
+        "firstCall": 1417.14575,
+        "firstRet": 1417.309375,
+        "done": 1417.463792,
+        "resolve": 1417.4875,
+        "callerResolve": 1417.490959
+      },
+      "kill": 1417.548667,
+      "reaped": 1418.596292,
+      "acquire": 0.28166600000008657,
+      "sendRun": 0.331749999999829,
+      "firstCall": 1.5457499999999982,
+      "ret": 0.16362500000013824,
+      "done": 0.15441699999996672,
+      "resolve": 0.027166999999963082,
+      "execute": 2.504374999999982,
+      "killAfterResolve": 0.05770800000004783,
+      "reapAfterResolve": 1.1053329999999733
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006375000000002906,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006375000000002906,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 7.997333000000026,
+      "marks": {
+        "start": 1613.641875,
+        "acquired": 1614.198084,
+        "runSent": 1614.505167,
+        "firstCall": 1622.370125,
+        "firstRet": 1622.692125,
+        "done": 1623.646792,
+        "resolve": 1623.677209,
+        "callerResolve": 1623.681209
+      },
+      "kill": 1623.835625,
+      "reaped": 1627.238959,
+      "acquire": 0.5562090000000808,
+      "sendRun": 0.3070829999999205,
+      "firstCall": 7.864957999999888,
+      "ret": 0.3220000000001164,
+      "done": 0.9546669999999722,
+      "resolve": 0.03441700000007586,
+      "execute": 10.039334000000053,
+      "killAfterResolve": 0.15441599999985556,
+      "reapAfterResolve": 3.557749999999942
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007208999999994137,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007208999999994137,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 13.24304200000006,
+      "marks": {
+        "start": 1802.292459,
+        "acquired": 1803.818542,
+        "runSent": 1804.18025,
+        "firstCall": 1807.96925,
+        "firstRet": 1808.197917,
+        "done": 1809.3425,
+        "resolve": 1809.398084,
+        "callerResolve": 1809.403709
+      },
+      "kill": 1809.556125,
+      "reaped": 1811.506917,
+      "acquire": 1.5260829999999714,
+      "sendRun": 0.36170799999990777,
+      "firstCall": 3.7890000000002146,
+      "ret": 0.2286669999998594,
+      "done": 1.1445830000000115,
+      "resolve": 0.06120899999996254,
+      "execute": 7.111249999999927,
+      "killAfterResolve": 0.15241600000013023,
+      "reapAfterResolve": 2.103207999999995
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007624999999997217,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007624999999997217,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 13.450249999999869,
+      "marks": {
+        "start": 1975.795584,
+        "acquired": 1976.152375,
+        "runSent": 1976.445084,
+        "firstCall": 1978.254334,
+        "firstRet": 1978.462584,
+        "done": 1979.001084,
+        "resolve": 1979.116542,
+        "callerResolve": 1979.121875
+      },
+      "kill": 1979.286334,
+      "reaped": 1981.764125,
+      "acquire": 0.35679099999993014,
+      "sendRun": 0.29270900000005895,
+      "firstCall": 1.80925000000002,
+      "ret": 0.2082500000001346,
+      "done": 0.5384999999998854,
+      "resolve": 0.12079100000005383,
+      "execute": 3.326291000000083,
+      "killAfterResolve": 0.16445899999985159,
+      "reapAfterResolve": 2.6422499999998763
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006915999999995703,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006915999999995703,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 15.86200000000008,
+      "marks": {
+        "start": 2151.03275,
+        "acquired": 2151.585709,
+        "runSent": 2151.89975,
+        "firstCall": 2153.745292,
+        "firstRet": 2153.918917,
+        "done": 2154.264667,
+        "resolve": 2154.304584,
+        "callerResolve": 2154.316292
+      },
+      "kill": 2154.422,
+      "reaped": 2155.488667,
+      "acquire": 0.5529590000001008,
+      "sendRun": 0.3140410000000884,
+      "firstCall": 1.845542000000023,
+      "ret": 0.17362499999990177,
+      "done": 0.3457499999999527,
+      "resolve": 0.05162500000005821,
+      "execute": 3.283542000000125,
+      "killAfterResolve": 0.10570800000004965,
+      "reapAfterResolve": 1.1723750000001019
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006749999999999812,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006749999999999812,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.80074999999988,
+      "marks": {
+        "start": 2287.09025,
+        "acquired": 2287.293875,
+        "runSent": 2287.526417,
+        "firstCall": 2289.896292,
+        "firstRet": 2290.0805,
+        "done": 2291.651917,
+        "resolve": 2291.685042,
+        "callerResolve": 2291.690667
+      },
+      "kill": 2291.76475,
+      "reaped": 2293.315667,
+      "acquire": 0.20362499999964712,
+      "sendRun": 0.2325420000001941,
+      "firstCall": 2.3698749999998654,
+      "ret": 0.18420800000012605,
+      "done": 1.5714170000001104,
+      "resolve": 0.03874999999970896,
+      "execute": 4.600416999999652,
+      "killAfterResolve": 0.07408299999997325,
+      "reapAfterResolve": 1.625
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007416000000010081,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007416000000010081,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 11.590625000000273,
+      "marks": {
+        "start": 2566.394042,
+        "acquired": 2566.617042,
+        "runSent": 2566.892667,
+        "firstCall": 2568.86225,
+        "firstRet": 2569.082417,
+        "done": 2569.387959,
+        "resolve": 2569.416167,
+        "callerResolve": 2569.419584
+      },
+      "kill": 2569.510667,
+      "reaped": 2570.680417,
+      "acquire": 0.22299999999995634,
+      "sendRun": 0.2756250000002183,
+      "firstCall": 1.969583000000057,
+      "ret": 0.2201669999999467,
+      "done": 0.3055420000000595,
+      "resolve": 0.0316250000000764,
+      "execute": 3.025542000000314,
+      "killAfterResolve": 0.09108299999979863,
+      "reapAfterResolve": 1.2608329999998205
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000070419999999987715,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000070419999999987715,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 10.59395799999993,
+      "marks": {
+        "start": 2698.467375,
+        "acquired": 2698.716584,
+        "runSent": 2698.9455,
+        "firstCall": 2700.5285,
+        "firstRet": 2700.668917,
+        "done": 2700.772125,
+        "resolve": 2700.787084,
+        "callerResolve": 2700.789375
+      },
+      "kill": 2700.839375,
+      "reaped": 2701.732625,
+      "acquire": 0.24920899999960966,
+      "sendRun": 0.22891600000002654,
+      "firstCall": 1.5830000000000837,
+      "ret": 0.1404170000000704,
+      "done": 0.10320799999999508,
+      "resolve": 0.01724999999987631,
+      "execute": 2.3219999999996617,
+      "killAfterResolve": 0.0500000000001819,
+      "reapAfterResolve": 0.9432500000002619
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000052499999999983116,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000052499999999983116,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.712417000000187,
+      "marks": {
+        "start": 2801.264334,
+        "acquired": 2801.430542,
+        "runSent": 2801.604625,
+        "firstCall": 2802.91525,
+        "firstRet": 2803.040875,
+        "done": 2803.17175,
+        "resolve": 2803.1845,
+        "callerResolve": 2803.186417
+      },
+      "kill": 2803.226125,
+      "reaped": 2804.050875,
+      "acquire": 0.16620800000009694,
+      "sendRun": 0.1740829999998823,
+      "firstCall": 1.3106250000000728,
+      "ret": 0.12562500000012733,
+      "done": 0.13087499999983265,
+      "resolve": 0.014666999999917607,
+      "execute": 1.9220829999999296,
+      "killAfterResolve": 0.0397080000002461,
+      "reapAfterResolve": 0.8644580000000133
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006124999999995717,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006124999999995717,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 6.596749999999702,
+      "marks": {
+        "start": 2900.254459,
+        "acquired": 2900.403167,
+        "runSent": 2900.581167,
+        "firstCall": 2901.602375,
+        "firstRet": 2901.7225,
+        "done": 2901.8375,
+        "resolve": 2901.850292,
+        "callerResolve": 2901.851917
+      },
+      "kill": 2901.897334,
+      "reaped": 2902.633834,
+      "acquire": 0.14870799999971496,
+      "sendRun": 0.17799999999988358,
+      "firstCall": 1.0212080000001151,
+      "ret": 0.12012499999991633,
+      "done": 0.11500000000023647,
+      "resolve": 0.014416999999866675,
+      "execute": 1.5974579999997331,
+      "killAfterResolve": 0.045416999999815744,
+      "reapAfterResolve": 0.7819170000002487
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000004374999999993967,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000004374999999993967,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 6.580917000000227,
+      "marks": {
+        "start": 3001.337917,
+        "acquired": 3001.491834,
+        "runSent": 3001.6765,
+        "firstCall": 3002.633209,
+        "firstRet": 3002.757584,
+        "done": 3002.940084,
+        "resolve": 3002.958459,
+        "callerResolve": 3002.960709
+      },
+      "kill": 3003.032375,
+      "reaped": 3004.145584,
+      "acquire": 0.15391700000009223,
+      "sendRun": 0.18466600000010658,
+      "firstCall": 0.9567090000000462,
+      "ret": 0.12437499999987267,
+      "done": 0.18249999999989086,
+      "resolve": 0.02062500000010914,
+      "execute": 1.6227920000001177,
+      "killAfterResolve": 0.07166599999982282,
+      "reapAfterResolve": 1.18487499999992
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006333999999996731,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006333999999996731,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.614207999999962,
+      "marks": {
+        "start": 3119.93025,
+        "acquired": 3120.136,
+        "runSent": 3120.453417,
+        "firstCall": 3121.775625,
+        "firstRet": 3121.901125,
+        "done": 3122.008334,
+        "resolve": 3122.041625,
+        "callerResolve": 3122.043709
+      },
+      "kill": 3122.095084,
+      "reaped": 3123.290834,
+      "acquire": 0.20575000000008004,
+      "sendRun": 0.317417000000205,
+      "firstCall": 1.322208000000046,
+      "ret": 0.12549999999964712,
+      "done": 0.10720900000023903,
+      "resolve": 0.03537499999993088,
+      "execute": 2.113459000000148,
+      "killAfterResolve": 0.051375000000007276,
+      "reapAfterResolve": 1.247124999999869
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000050410000000111754,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000050410000000111754,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 14.378749999999854,
+      "marks": {
+        "start": 3242.1285,
+        "acquired": 3242.345709,
+        "runSent": 3242.52725,
+        "firstCall": 3243.701667,
+        "firstRet": 3243.863,
+        "done": 3244.089875,
+        "resolve": 3244.121125,
+        "callerResolve": 3244.123709
+      },
+      "kill": 3244.191709,
+      "reaped": 3245.205834,
+      "acquire": 0.21720900000036636,
+      "sendRun": 0.18154099999992468,
+      "firstCall": 1.1744169999997212,
+      "ret": 0.16133300000001327,
+      "done": 0.22687500000029104,
+      "resolve": 0.03383399999984249,
+      "execute": 1.995209000000159,
+      "killAfterResolve": 0.068000000000211,
+      "reapAfterResolve": 1.0821249999999054
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000071659999999890145,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000071659999999890145,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 7.392708000000312,
+      "marks": {
+        "start": 3395.935709,
+        "acquired": 3396.285084,
+        "runSent": 3396.716167,
+        "firstCall": 3400.332167,
+        "firstRet": 3400.511292,
+        "done": 3403.075,
+        "resolve": 3403.142625,
+        "callerResolve": 3403.147042
+      },
+      "kill": 3403.331917,
+      "reaped": 3404.75925,
+      "acquire": 0.34937500000023647,
+      "sendRun": 0.43108299999994415,
+      "firstCall": 3.6159999999999854,
+      "ret": 0.17912500000011278,
+      "done": 2.5637079999996786,
+      "resolve": 0.07204200000023775,
+      "execute": 7.211333000000195,
+      "killAfterResolve": 0.18487499999991996,
+      "reapAfterResolve": 1.6122080000000096
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006375000000002906,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006375000000002906,
+            "load": [
+              14.13623046875,
+              12.5458984375,
+              11.11767578125
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 12.14666699999998,
+      "marks": {
+        "start": 3581.762125,
+        "acquired": 3582.156542,
+        "runSent": 3582.443042,
+        "firstCall": 3584.1375,
+        "firstRet": 3584.412625,
+        "done": 3584.601875,
+        "resolve": 3584.617,
+        "callerResolve": 3584.619292
+      },
+      "kill": 3584.901542,
+      "reaped": 3586.758875,
+      "acquire": 0.3944169999999758,
+      "sendRun": 0.2864999999997053,
+      "firstCall": 1.6944579999999405,
+      "ret": 0.2751250000001164,
+      "done": 0.18924999999990177,
+      "resolve": 0.01741700000002311,
+      "execute": 2.857166999999663,
+      "killAfterResolve": 0.2822500000002037,
+      "reapAfterResolve": 2.1395830000001297
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 14.14 12.55 11.12",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.00000529200000000396,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.00000529200000000396,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 39.37308299999995,
+      "marks": {
+        "start": 3760.225917,
+        "acquired": 3760.882917,
+        "runSent": 3761.165542,
+        "firstCall": 3764.06275,
+        "firstRet": 3764.21125,
+        "done": 3764.551334,
+        "resolve": 3764.583875,
+        "callerResolve": 3764.587334
+      },
+      "kill": 3764.663709,
+      "reaped": 3773.283792,
+      "acquire": 0.656999999999698,
+      "sendRun": 0.2826250000002801,
+      "firstCall": 2.897207999999864,
+      "ret": 0.14849999999978536,
+      "done": 0.3400840000003882,
+      "resolve": 0.03599999999960346,
+      "execute": 4.361416999999619,
+      "killAfterResolve": 0.07637500000009823,
+      "reapAfterResolve": 8.696458000000348
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007665999999989515,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007665999999989515,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 37.593166999999994,
+      "marks": {
+        "start": 3975.53525,
+        "acquired": 3975.7785,
+        "runSent": 3976.017875,
+        "firstCall": 3977.360542,
+        "firstRet": 3977.491459,
+        "done": 3977.6385,
+        "resolve": 3977.653959,
+        "callerResolve": 3977.655917
+      },
+      "kill": 3977.703625,
+      "reaped": 3978.712459,
+      "acquire": 0.24324999999998909,
+      "sendRun": 0.23937500000010914,
+      "firstCall": 1.3426669999998921,
+      "ret": 0.130916999999954,
+      "done": 0.14704100000017206,
+      "resolve": 0.01741700000002311,
+      "execute": 2.1206670000001395,
+      "killAfterResolve": 0.04770800000005693,
+      "reapAfterResolve": 1.0565419999998085
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000063329999999972575,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000063329999999972575,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 12.266374999999698,
+      "marks": {
+        "start": 4117.389709,
+        "acquired": 4117.603625,
+        "runSent": 4117.820375,
+        "firstCall": 4119.004084,
+        "firstRet": 4119.14025,
+        "done": 4119.334667,
+        "resolve": 4119.357417,
+        "callerResolve": 4119.359625
+      },
+      "kill": 4119.412375,
+      "reaped": 4120.337875,
+      "acquire": 0.21391599999969912,
+      "sendRun": 0.21675000000050204,
+      "firstCall": 1.183708999999908,
+      "ret": 0.13616600000023027,
+      "done": 0.19441699999970297,
+      "resolve": 0.024957999999969616,
+      "execute": 1.969916000000012,
+      "killAfterResolve": 0.05274999999983265,
+      "reapAfterResolve": 0.9782500000001164
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000005166000000000892,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000005166000000000892,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.000374999999622,
+      "marks": {
+        "start": 4223.452917,
+        "acquired": 4223.609334,
+        "runSent": 4223.793667,
+        "firstCall": 4225.182334,
+        "firstRet": 4225.372917,
+        "done": 4225.532959,
+        "resolve": 4225.552709,
+        "callerResolve": 4225.55475
+      },
+      "kill": 4225.604042,
+      "reaped": 4226.475917,
+      "acquire": 0.1564170000001468,
+      "sendRun": 0.18433300000015151,
+      "firstCall": 1.3886670000001686,
+      "ret": 0.19058299999960582,
+      "done": 0.16004200000043056,
+      "resolve": 0.02179100000012113,
+      "execute": 2.1018330000006245,
+      "killAfterResolve": 0.04929199999969569,
+      "reapAfterResolve": 0.9211669999995138
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000063329999999972575,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000063329999999972575,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.347917000000052,
+      "marks": {
+        "start": 4337.427292,
+        "acquired": 4337.693209,
+        "runSent": 4338.060792,
+        "firstCall": 4339.41575,
+        "firstRet": 4339.549917,
+        "done": 4339.686875,
+        "resolve": 4339.706125,
+        "callerResolve": 4339.708209
+      },
+      "kill": 4339.767125,
+      "reaped": 4341.147417,
+      "acquire": 0.2659169999997175,
+      "sendRun": 0.36758300000019517,
+      "firstCall": 1.3549579999998969,
+      "ret": 0.13416700000016135,
+      "done": 0.13695800000004965,
+      "resolve": 0.02133400000002439,
+      "execute": 2.280917000000045,
+      "killAfterResolve": 0.05891599999995378,
+      "reapAfterResolve": 1.4392079999997804
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000070419999999987715,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000070419999999987715,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 12.961291999999958,
+      "marks": {
+        "start": 4484.956125,
+        "acquired": 4485.157125,
+        "runSent": 4485.411875,
+        "firstCall": 4486.833084,
+        "firstRet": 4486.960625,
+        "done": 4487.136,
+        "resolve": 4487.153167,
+        "callerResolve": 4487.155334
+      },
+      "kill": 4487.20675,
+      "reaped": 4488.211042,
+      "acquire": 0.20100000000002183,
+      "sendRun": 0.2547500000000582,
+      "firstCall": 1.4212090000000899,
+      "ret": 0.12754099999983737,
+      "done": 0.17537500000071304,
+      "resolve": 0.019333999999616935,
+      "execute": 2.1992090000003373,
+      "killAfterResolve": 0.05141600000024482,
+      "reapAfterResolve": 1.0557079999998678
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007375000000003906,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007375000000003906,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 10.686166000000412,
+      "marks": {
+        "start": 4632.557625,
+        "acquired": 4632.799625,
+        "runSent": 4633.019167,
+        "firstCall": 4634.68625,
+        "firstRet": 4634.846125,
+        "done": 4635.063209,
+        "resolve": 4635.084209,
+        "callerResolve": 4635.0865
+      },
+      "kill": 4635.145625,
+      "reaped": 4636.153875,
+      "acquire": 0.24199999999927968,
+      "sendRun": 0.21954200000072888,
+      "firstCall": 1.6670829999993657,
+      "ret": 0.15987500000028376,
+      "done": 0.21708399999988615,
+      "resolve": 0.02329100000042672,
+      "execute": 2.528874999999971,
+      "killAfterResolve": 0.05912499999976717,
+      "reapAfterResolve": 1.067374999999629
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006124999999995717,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006124999999995717,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 7.541500000000269,
+      "marks": {
+        "start": 4754.438584,
+        "acquired": 4754.605334,
+        "runSent": 4754.791125,
+        "firstCall": 4756.021709,
+        "firstRet": 4756.138167,
+        "done": 4756.270584,
+        "resolve": 4756.285584,
+        "callerResolve": 4756.287167
+      },
+      "kill": 4756.327417,
+      "reaped": 4757.231167,
+      "acquire": 0.16674999999941065,
+      "sendRun": 0.18579099999988102,
+      "firstCall": 1.230583999999908,
+      "ret": 0.11645800000042072,
+      "done": 0.13241699999980483,
+      "resolve": 0.01658300000053714,
+      "execute": 1.8485829999999623,
+      "killAfterResolve": 0.04025000000001455,
+      "reapAfterResolve": 0.9439999999995052
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000009707999999997163,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000009707999999997163,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 12.131999999999607,
+      "marks": {
+        "start": 5012.653084,
+        "acquired": 5014.752042,
+        "runSent": 5015.355542,
+        "firstCall": 5026.253375,
+        "firstRet": 5027.193917,
+        "done": 5043.705959,
+        "resolve": 5043.754,
+        "callerResolve": 5043.758292
+      },
+      "kill": 5043.865834,
+      "reaped": 5053.528709,
+      "acquire": 2.0989580000004935,
+      "sendRun": 0.6035000000001673,
+      "firstCall": 10.897832999999991,
+      "ret": 0.9405419999993683,
+      "done": 16.512042000000292,
+      "resolve": 0.052333000000544416,
+      "execute": 31.105208000000857,
+      "killAfterResolve": 0.10754199999973935,
+      "reapAfterResolve": 9.770416999999725
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006624999999996217,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006624999999996217,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 25.82299999999941,
+      "marks": {
+        "start": 5251.941875,
+        "acquired": 5252.234667,
+        "runSent": 5252.50325,
+        "firstCall": 5254.120167,
+        "firstRet": 5254.2805,
+        "done": 5254.740084,
+        "resolve": 5254.7685,
+        "callerResolve": 5254.771084
+      },
+      "kill": 5254.83225,
+      "reaped": 5256.0075,
+      "acquire": 0.29279199999928096,
+      "sendRun": 0.2685830000000351,
+      "firstCall": 1.616917000000285,
+      "ret": 0.16033299999980954,
+      "done": 0.4595840000001772,
+      "resolve": 0.03099999999994907,
+      "execute": 2.829208999999537,
+      "killAfterResolve": 0.06116600000041217,
+      "reapAfterResolve": 1.2364159999997355
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000008833999999999231,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000008833999999999231,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.930167000000438,
+      "marks": {
+        "start": 5416.646875,
+        "acquired": 5416.962334,
+        "runSent": 5417.3525,
+        "firstCall": 5419.904459,
+        "firstRet": 5420.157084,
+        "done": 5420.552292,
+        "resolve": 5420.588584,
+        "callerResolve": 5420.591792
+      },
+      "kill": 5420.668209,
+      "reaped": 5421.964667,
+      "acquire": 0.31545899999946414,
+      "sendRun": 0.3901660000001357,
+      "firstCall": 2.551959000000352,
+      "ret": 0.25262500000008004,
+      "done": 0.3952079999999114,
+      "resolve": 0.03949999999986176,
+      "execute": 3.944916999999805,
+      "killAfterResolve": 0.07641700000021956,
+      "reapAfterResolve": 1.3728750000000218
+    },
+    {
+      "load": "21:40  up 1 day, 23:53, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006708999999993637,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006708999999993637,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.916707999999744,
+      "marks": {
+        "start": 5583.7825,
+        "acquired": 5584.083459,
+        "runSent": 5584.780292,
+        "firstCall": 5586.232084,
+        "firstRet": 5586.37975,
+        "done": 5586.679875,
+        "resolve": 5586.755209,
+        "callerResolve": 5586.759417
+      },
+      "kill": 5586.824792,
+      "reaped": 5587.694917,
+      "acquire": 0.3009590000001481,
+      "sendRun": 0.6968329999999696,
+      "firstCall": 1.4517919999998412,
+      "ret": 0.14766599999984464,
+      "done": 0.3001249999997526,
+      "resolve": 0.07954200000040146,
+      "execute": 2.9769169999999576,
+      "killAfterResolve": 0.06537500000013097,
+      "reapAfterResolve": 0.9354999999995925
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.00000658400000000392,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.00000658400000000392,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 17.808834000000388,
+      "marks": {
+        "start": 5727.959875,
+        "acquired": 5728.129834,
+        "runSent": 5728.3265,
+        "firstCall": 5729.39025,
+        "firstRet": 5729.711334,
+        "done": 5729.761667,
+        "resolve": 5729.779667,
+        "callerResolve": 5729.7815
+      },
+      "kill": 5730.22925,
+      "reaped": 5730.753334,
+      "acquire": 0.1699590000007447,
+      "sendRun": 0.19666599999982282,
+      "firstCall": 1.0637500000002547,
+      "ret": 0.32108399999924586,
+      "done": 0.05033300000013696,
+      "resolve": 0.019833000000289758,
+      "execute": 1.8216250000004948,
+      "killAfterResolve": 0.4477500000002692,
+      "reapAfterResolve": 0.9718339999999444
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007124999999996717,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007124999999996717,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 11.62054099999932,
+      "marks": {
+        "start": 5902.900584,
+        "acquired": 5903.684584,
+        "runSent": 5904.90375,
+        "firstCall": 5907.521417,
+        "firstRet": 5907.822959,
+        "done": 5908.907834,
+        "resolve": 5908.939834,
+        "callerResolve": 5908.942917
+      },
+      "kill": 5909.014959,
+      "reaped": 5910.746042,
+      "acquire": 0.7839999999996508,
+      "sendRun": 1.2191660000007687,
+      "firstCall": 2.6176669999995283,
+      "ret": 0.3015420000001541,
+      "done": 1.0848749999995562,
+      "resolve": 0.03508300000066811,
+      "execute": 6.042333000000326,
+      "killAfterResolve": 0.072041999999783,
+      "reapAfterResolve": 1.8031249999994543
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007250000000000312,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007250000000000312,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 17.361124999999447,
+      "marks": {
+        "start": 6051.86875,
+        "acquired": 6052.068375,
+        "runSent": 6052.275167,
+        "firstCall": 6053.6725,
+        "firstRet": 6053.796167,
+        "done": 6053.982709,
+        "resolve": 6054.006584,
+        "callerResolve": 6054.009667
+      },
+      "kill": 6054.072042,
+      "reaped": 6055.106334,
+      "acquire": 0.19962500000019645,
+      "sendRun": 0.20679199999995035,
+      "firstCall": 1.3973329999998896,
+      "ret": 0.1236670000007507,
+      "done": 0.18654199999946286,
+      "resolve": 0.02695800000037707,
+      "execute": 2.140917000000627,
+      "killAfterResolve": 0.06237499999951979,
+      "reapAfterResolve": 1.0966669999997976
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000008208000000009541,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000008208000000009541,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 7.904665999999452,
+      "marks": {
+        "start": 6168.837459,
+        "acquired": 6169.000709,
+        "runSent": 6169.193542,
+        "firstCall": 6170.502417,
+        "firstRet": 6170.615209,
+        "done": 6170.819459,
+        "resolve": 6170.837959,
+        "callerResolve": 6170.839792
+      },
+      "kill": 6170.885709,
+      "reaped": 6171.76725,
+      "acquire": 0.1632499999996071,
+      "sendRun": 0.1928330000000642,
+      "firstCall": 1.3088749999997162,
+      "ret": 0.11279199999989942,
+      "done": 0.20425000000068394,
+      "resolve": 0.020332999999482126,
+      "execute": 2.002332999999453,
+      "killAfterResolve": 0.045917000000372354,
+      "reapAfterResolve": 0.9274580000001151
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007415999999996203,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007415999999996203,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.053666000000703,
+      "marks": {
+        "start": 6290.5705,
+        "acquired": 6290.878292,
+        "runSent": 6291.1945,
+        "firstCall": 6292.660625,
+        "firstRet": 6292.785959,
+        "done": 6292.978875,
+        "resolve": 6293.009292,
+        "callerResolve": 6293.011459
+      },
+      "kill": 6293.192959,
+      "reaped": 6294.20975,
+      "acquire": 0.3077920000005179,
+      "sendRun": 0.3162079999992784,
+      "firstCall": 1.4661250000008295,
+      "ret": 0.1253339999993841,
+      "done": 0.19291599999996834,
+      "resolve": 0.032584000000497326,
+      "execute": 2.4409590000004755,
+      "killAfterResolve": 0.18149999999968713,
+      "reapAfterResolve": 1.1982909999996991
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000005915999999994703,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000005915999999994703,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.081959000000097,
+      "marks": {
+        "start": 6404.87675,
+        "acquired": 6405.1025,
+        "runSent": 6405.301917,
+        "firstCall": 6406.418,
+        "firstRet": 6406.550625,
+        "done": 6406.703,
+        "resolve": 6406.720042,
+        "callerResolve": 6406.721834
+      },
+      "kill": 6406.774584,
+      "reaped": 6407.659334,
+      "acquire": 0.2257499999996071,
+      "sendRun": 0.1994169999998121,
+      "firstCall": 1.1160829999998896,
+      "ret": 0.13262500000018917,
+      "done": 0.1523750000005748,
+      "resolve": 0.018833999999515072,
+      "execute": 1.8450839999995878,
+      "killAfterResolve": 0.05274999999983265,
+      "reapAfterResolve": 0.9375
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006540999999998798,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006540999999998798,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.383082999999715,
+      "marks": {
+        "start": 6540.898959,
+        "acquired": 6541.318834,
+        "runSent": 6541.841667,
+        "firstCall": 6546.315417,
+        "firstRet": 6546.679334,
+        "done": 6548.701042,
+        "resolve": 6548.742667,
+        "callerResolve": 6548.746042
+      },
+      "kill": 6548.90075,
+      "reaped": 6551.191125,
+      "acquire": 0.41987499999959255,
+      "sendRun": 0.5228329999999914,
+      "firstCall": 4.473750000000109,
+      "ret": 0.36391700000058336,
+      "done": 2.0217079999993075,
+      "resolve": 0.04500000000007276,
+      "execute": 7.847082999999657,
+      "killAfterResolve": 0.15470800000002782,
+      "reapAfterResolve": 2.4450830000005226
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006583000000004446,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006583000000004446,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 13.132458000000042,
+      "marks": {
+        "start": 6696.509959,
+        "acquired": 6696.726542,
+        "runSent": 6696.963,
+        "firstCall": 6698.265542,
+        "firstRet": 6698.412292,
+        "done": 6699.225292,
+        "resolve": 6699.248167,
+        "callerResolve": 6699.250709
+      },
+      "kill": 6699.310125,
+      "reaped": 6700.65525,
+      "acquire": 0.21658300000035524,
+      "sendRun": 0.2364579999994021,
+      "firstCall": 1.3025420000003578,
+      "ret": 0.14674999999988358,
+      "done": 0.8130000000001019,
+      "resolve": 0.025416999999833934,
+      "execute": 2.7407499999999345,
+      "killAfterResolve": 0.059416000000055647,
+      "reapAfterResolve": 1.404540999999881
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006541999999998271,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006541999999998271,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.566541999999572,
+      "marks": {
+        "start": 6842.423167,
+        "acquired": 6842.598334,
+        "runSent": 6842.813709,
+        "firstCall": 6844.889167,
+        "firstRet": 6845.056834,
+        "done": 6845.450625,
+        "resolve": 6845.471542,
+        "callerResolve": 6845.473584
+      },
+      "kill": 6845.527875,
+      "reaped": 6846.503917,
+      "acquire": 0.1751670000003287,
+      "sendRun": 0.21537499999976717,
+      "firstCall": 2.0754580000002534,
+      "ret": 0.16766699999971024,
+      "done": 0.39379100000041944,
+      "resolve": 0.022958999999900698,
+      "execute": 3.0504170000003796,
+      "killAfterResolve": 0.054290999999466294,
+      "reapAfterResolve": 1.0303329999997004
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000010250000000003312,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000010250000000003312,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 11.421624999999949,
+      "marks": {
+        "start": 6996.895459,
+        "acquired": 6997.215167,
+        "runSent": 6997.455417,
+        "firstCall": 7001.616625,
+        "firstRet": 7001.781292,
+        "done": 7002.127459,
+        "resolve": 7002.149042,
+        "callerResolve": 7002.152125
+      },
+      "kill": 7002.210042,
+      "reaped": 7003.53225,
+      "acquire": 0.31970799999999144,
+      "sendRun": 0.24024999999983265,
+      "firstCall": 4.161207999999533,
+      "ret": 0.16466700000000856,
+      "done": 0.3461670000006052,
+      "resolve": 0.024665999999342603,
+      "execute": 5.2566659999993135,
+      "killAfterResolve": 0.05791700000008859,
+      "reapAfterResolve": 1.3801250000005894
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007624999999997217,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007624999999997217,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 11.535915999999816,
+      "marks": {
+        "start": 7134.953167,
+        "acquired": 7135.319625,
+        "runSent": 7135.573792,
+        "firstCall": 7136.95125,
+        "firstRet": 7137.075625,
+        "done": 7137.38175,
+        "resolve": 7137.402334,
+        "callerResolve": 7137.404417
+      },
+      "kill": 7137.457875,
+      "reaped": 7138.542292,
+      "acquire": 0.3664580000004207,
+      "sendRun": 0.2541670000000522,
+      "firstCall": 1.3774579999999332,
+      "ret": 0.12437500000032742,
+      "done": 0.306124999999156,
+      "resolve": 0.02266700000018318,
+      "execute": 2.4512500000000728,
+      "killAfterResolve": 0.05345800000031886,
+      "reapAfterResolve": 1.1378750000003492
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007290999999992609,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007290999999992609,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.404125000000022,
+      "marks": {
+        "start": 7254.110334,
+        "acquired": 7254.354209,
+        "runSent": 7254.635292,
+        "firstCall": 7256.173167,
+        "firstRet": 7256.319209,
+        "done": 7256.505917,
+        "resolve": 7256.528,
+        "callerResolve": 7256.5305
+      },
+      "kill": 7256.6125,
+      "reaped": 7257.588834,
+      "acquire": 0.24387500000011642,
+      "sendRun": 0.2810829999998532,
+      "firstCall": 1.5378749999999854,
+      "ret": 0.14604200000030687,
+      "done": 0.18670800000018062,
+      "resolve": 0.02458299999943847,
+      "execute": 2.420165999999881,
+      "killAfterResolve": 0.0820000000003347,
+      "reapAfterResolve": 1.0583340000002863
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000007000000000000062,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000007000000000000062,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 10.882458000000042,
+      "marks": {
+        "start": 7367.858917,
+        "acquired": 7368.049625,
+        "runSent": 7368.27275,
+        "firstCall": 7369.642709,
+        "firstRet": 7369.78025,
+        "done": 7369.908209,
+        "resolve": 7369.922292,
+        "callerResolve": 7369.924209
+      },
+      "kill": 7369.968625,
+      "reaped": 7370.854917,
+      "acquire": 0.19070800000008603,
+      "sendRun": 0.22312500000043656,
+      "firstCall": 1.3699589999996533,
+      "ret": 0.13754100000005565,
+      "done": 0.12795900000037363,
+      "resolve": 0.01599999999962165,
+      "execute": 2.065292000000227,
+      "killAfterResolve": 0.04441600000063772,
+      "reapAfterResolve": 0.9307079999998678
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000070419999999987715,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000070419999999987715,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.815333999999893,
+      "marks": {
+        "start": 7504.662667,
+        "acquired": 7504.848709,
+        "runSent": 7505.067834,
+        "firstCall": 7506.524875,
+        "firstRet": 7506.667084,
+        "done": 7506.831,
+        "resolve": 7506.851625,
+        "callerResolve": 7506.854
+      },
+      "kill": 7506.909042,
+      "reaped": 7507.808459,
+      "acquire": 0.1860420000002705,
+      "sendRun": 0.21912500000053114,
+      "firstCall": 1.4570409999996627,
+      "ret": 0.14220899999963876,
+      "done": 0.16391600000042672,
+      "resolve": 0.023000000000138243,
+      "execute": 2.191333000000668,
+      "killAfterResolve": 0.055041999999957625,
+      "reapAfterResolve": 0.9544589999995878
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000055000000000055005,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000055000000000055005,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.344708999999966,
+      "marks": {
+        "start": 7620.99225,
+        "acquired": 7621.52925,
+        "runSent": 7622.334959,
+        "firstCall": 7623.815084,
+        "firstRet": 7623.941209,
+        "done": 7624.213,
+        "resolve": 7624.253084,
+        "callerResolve": 7624.255875
+      },
+      "kill": 7624.378209,
+      "reaped": 7625.903459,
+      "acquire": 0.5369999999993524,
+      "sendRun": 0.8057090000002063,
+      "firstCall": 1.4801250000000437,
+      "ret": 0.12612499999977445,
+      "done": 0.27179100000012113,
+      "resolve": 0.04287500000009459,
+      "execute": 3.2636249999995925,
+      "killAfterResolve": 0.12233400000059191,
+      "reapAfterResolve": 1.647584000000279
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000052499999999983116,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000052499999999983116,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 11.64641599999959,
+      "marks": {
+        "start": 7734.926,
+        "acquired": 7735.215459,
+        "runSent": 7735.48125,
+        "firstCall": 7736.545584,
+        "firstRet": 7736.68425,
+        "done": 7736.875959,
+        "resolve": 7736.896959,
+        "callerResolve": 7736.898875
+      },
+      "kill": 7736.961084,
+      "reaped": 7737.791792,
+      "acquire": 0.2894589999996242,
+      "sendRun": 0.26579099999980826,
+      "firstCall": 1.0643340000005992,
+      "ret": 0.1386659999998301,
+      "done": 0.1917089999997188,
+      "resolve": 0.022915999999895575,
+      "execute": 1.9728749999994761,
+      "killAfterResolve": 0.06220899999971152,
+      "reapAfterResolve": 0.892917000000125
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006624999999996217,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006624999999996217,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 8.439875000000029,
+      "marks": {
+        "start": 7840.110167,
+        "acquired": 7840.321542,
+        "runSent": 7840.537209,
+        "firstCall": 7841.730875,
+        "firstRet": 7841.861792,
+        "done": 7842.058667,
+        "resolve": 7842.102417,
+        "callerResolve": 7842.104792
+      },
+      "kill": 7842.158792,
+      "reaped": 7843.318042,
+      "acquire": 0.21137499999986176,
+      "sendRun": 0.21566700000039418,
+      "firstCall": 1.1936660000001211,
+      "ret": 0.13091699999949924,
+      "done": 0.1968750000005457,
+      "resolve": 0.046124999999847205,
+      "execute": 1.9946250000002692,
+      "killAfterResolve": 0.05400000000008731,
+      "reapAfterResolve": 1.213249999999789
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000005999999999992123,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000005999999999992123,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.067541999999776,
+      "marks": {
+        "start": 7960.150459,
+        "acquired": 7960.444334,
+        "runSent": 7960.76775,
+        "firstCall": 7962.166042,
+        "firstRet": 7962.348125,
+        "done": 7962.531375,
+        "resolve": 7962.555125,
+        "callerResolve": 7962.557
+      },
+      "kill": 7962.619917,
+      "reaped": 7963.481,
+      "acquire": 0.2938749999993888,
+      "sendRun": 0.32341600000017934,
+      "firstCall": 1.3982919999998558,
+      "ret": 0.18208300000060262,
+      "done": 0.18324999999913416,
+      "resolve": 0.02562500000021828,
+      "execute": 2.406540999999379,
+      "killAfterResolve": 0.06291700000019773,
+      "reapAfterResolve": 0.9239999999999782
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006375000000002906,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006375000000002906,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 9.16058299999986,
+      "marks": {
+        "start": 8092.569667,
+        "acquired": 8092.710542,
+        "runSent": 8092.901875,
+        "firstCall": 8094.146584,
+        "firstRet": 8094.236,
+        "done": 8094.32075,
+        "resolve": 8094.33275,
+        "callerResolve": 8094.334167
+      },
+      "kill": 8094.372792,
+      "reaped": 8095.238667,
+      "acquire": 0.14087500000005093,
+      "sendRun": 0.1913329999997586,
+      "firstCall": 1.2447090000005119,
+      "ret": 0.08941599999980099,
+      "done": 0.08474999999998545,
+      "resolve": 0.013417000000117696,
+      "execute": 1.7645000000002256,
+      "killAfterResolve": 0.03862500000013824,
+      "reapAfterResolve": 0.9044999999996435
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.0000059589999999998255,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.0000059589999999998255,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 7.16516700000011,
+      "marks": {
+        "start": 8204.142417,
+        "acquired": 8204.295417,
+        "runSent": 8204.503667,
+        "firstCall": 8205.482209,
+        "firstRet": 8205.592875,
+        "done": 8205.743875,
+        "resolve": 8205.761084,
+        "callerResolve": 8205.762709
+      },
+      "kill": 8205.811584,
+      "reaped": 8206.599084,
+      "acquire": 0.15300000000024738,
+      "sendRun": 0.20825000000149885,
+      "firstCall": 0.9785419999989244,
+      "ret": 0.1106660000004922,
+      "done": 0.15099999999983993,
+      "resolve": 0.018834000000424567,
+      "execute": 1.6202920000014274,
+      "killAfterResolve": 0.048874999998588464,
+      "reapAfterResolve": 0.8363749999989523
+    },
+    {
+      "load": "21:40  up 1 day, 23:54, 1 user, load averages: 13.72 12.49 11.10",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0,
+        "wait_s": 0.000006916999999995177,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 0.000006916999999995177,
+            "load": [
+              13.724609375,
+              12.48681640625,
+              11.10498046875
+            ]
+          }
+        ]
+      },
+      "refillWaitMs": 7.732874999999694,
+      "marks": {
+        "start": 8320.959,
+        "acquired": 8321.189,
+        "runSent": 8321.428459,
+        "firstCall": 8322.61825,
+        "firstRet": 8322.727959,
+        "done": 8323.081125,
+        "resolve": 8323.123417,
+        "callerResolve": 8323.126209
+      },
+      "kill": 8323.192959,
+      "reaped": 8324.509875,
+      "acquire": 0.22999999999956344,
+      "sendRun": 0.2394590000003518,
+      "firstCall": 1.189790999998877,
+      "ret": 0.1097090000002936,
+      "done": 0.35316600000078324,
+      "resolve": 0.04508399999940593,
+      "execute": 2.167208999999275,
+      "killAfterResolve": 0.06674999999995634,
+      "reapAfterResolve": 1.383665999999721
+    }
+  ],
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 2,
+    "maxCreating": 2,
+    "closed": true
+  }
+}

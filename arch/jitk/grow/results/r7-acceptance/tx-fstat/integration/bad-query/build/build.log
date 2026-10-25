@@ -1,0 +1,3 @@
+{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-fstat/integration/bad-query/build/kernel-a0d62803e25febfc1d7bdb5250c559868de73c231382dad665c93834df9617d1.bin", "sha256": "a0d62803e25febfc1d7bdb5250c559868de73c231382dad665c93834df9617d1", "bytes": 1998974}
+   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
+    Finished `release` profile [optimized] target(s) in 1.46s

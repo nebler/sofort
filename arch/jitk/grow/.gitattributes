@@ -1,0 +1,2 @@
+# Preserve measured stdout/stderr and command logs byte for byte.
+results/** -whitespace

@@ -1,0 +1,44 @@
+{
+  "uptime": "21:39  up 1 day, 23:53, 1 user, load averages: 12.84 12.20 10.94",
+  "binary_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+  "database_sha256": "f3d4180cd07ad9eed5a674c7ff4e5f6d817eb517029c185f66af862a30eac059",
+  "without-both": {
+    "stdout_hex": "",
+    "stderr_hex": "4572726f723a20756e61626c6520746f206f70656e206461746162617365202266696c653a2f64656d6f2e64623f6d6f64653d726f26696d6d757461626c653d31223a206469736b20492f4f206572726f720a",
+    "exit": 1,
+    "missing": [
+      48,
+      80,
+      172
+    ]
+  },
+  "without-pread64": {
+    "stdout_hex": "",
+    "stderr_hex": "4572726f723a20756e61626c6520746f206f70656e206461746162617365202266696c653a2f64656d6f2e64623f6d6f64653d726f26696d6d757461626c653d31223a206469736b20492f4f206572726f720a",
+    "exit": 1,
+    "missing": [
+      48,
+      67,
+      172
+    ]
+  },
+  "injected-fstat": {
+    "stdout_hex": "",
+    "stderr_hex": "4572726f723a20756e61626c6520746f206f70656e206461746162617365202266696c653a2f64656d6f2e64623f6d6f64653d726f26696d6d757461626c653d31223a206469736b20492f4f206572726f720a",
+    "exit": 1
+  },
+  "injected-pread64": {
+    "stdout_hex": "",
+    "stderr_hex": "4572726f723a20756e61626c6520746f206f70656e206461746162617365202266696c653a2f64656d6f2e64623f6d6f64653d726f26696d6d757461626c653d31223a206469736b20492f4f206572726f720a",
+    "exit": 1
+  },
+  "combined-enosys": {
+    "status": "PASS",
+    "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+    "stderr_hex": "",
+    "exit": 0
+  },
+  "loader-rejection": "loader-or-build-failure",
+  "fatal-output": "recorded and rejected",
+  "status": "PASS"
+}

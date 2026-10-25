@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "sqlite3",
+    "-batch",
+    "-init",
+    "/dev/null",
+    "file:/demo.db?mode=ro&immutable=1",
+    "SELEC v FROM n;"
+  ],
+  "expected_hex": null,
+  "stdin_hex": "",
+  "samples": 1,
+  "injections": []
+}

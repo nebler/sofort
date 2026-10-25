@@ -1,0 +1,3 @@
+{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-legacy/tx-rt_sigaction/integration/kernel-eeadee0f735d7766d4a430e0f07e94faed500080cfd4f4f7b803236b02b31145.bin", "sha256": "eeadee0f735d7766d4a430e0f07e94faed500080cfd4f4f7b803236b02b31145", "bytes": 991272}
+   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-e0aroc2s/kernel)
+    Finished `release` profile [optimized] target(s) in 1.13s

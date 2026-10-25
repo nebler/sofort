@@ -1,0 +1,3 @@
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 0.83s
+{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-grow/original-image/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin", "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6", "bytes": 2924584}

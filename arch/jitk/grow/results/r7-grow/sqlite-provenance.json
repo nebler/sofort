@@ -1,0 +1,10 @@
+{
+  "environment": "Linux kvm-dev 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026 aarch64 GNU/Linux",
+  "uptime": "20:43:57 up 10:56,  4 users,  load average: 1.01, 1.13, 0.80",
+  "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "musl_cc": "/home/dev/r6-census/toolchain/musl-install/bin/musl-gcc",
+  "source_archive_sha256": "1d3049dd0f830a025a53105fc79fd2ab9431aea99e137809d064d8ee8356b032",
+  "sqlite3_c_sha3_256": "9145255e83da6529e70121ee4d7a4c88fe83ca4511da0c9ed13d10842df36782",
+  "built_binary_sha256": "9738d764d61c212592212d0c3f493ba179b8caec6f08810f1d6520c38757f539",
+  "census_binary_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff"
+}

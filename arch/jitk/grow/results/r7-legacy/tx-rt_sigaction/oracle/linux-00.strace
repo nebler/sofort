@@ -1,0 +1,6 @@
+10    execve("\x2f\x70\x61\x79\x6c\x6f\x61\x64", ["\x2f\x70\x61\x79\x6c\x6f\x61\x64"], ["\x50\x41\x54\x48\x3d\x2f\x62\x69\x6e\x3a\x2f\x75\x73\x72\x2f\x62\x69\x6e", "\x4c\x43\x5f\x41\x4c\x4c\x3d\x43", "\x4c\x41\x4e\x47\x3d\x43", "\x54\x5a\x3d\x55\x54\x43"]) = 0
+10    rt_sigaction(2, {sa_handler=0x41, sa_mask=[], sa_flags=0}, NULL, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+10    rt_sigaction(2, NULL, 0x401000, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+10    rt_sigaction(2, 0x1, 0x1, 8)      = -1 ENOSYS (Function not implemented) (INJECTED)
+10    write(1, "\x73\x69\x67\x6e\x61\x6c\x73\x3a\x6f\x6b\x0a", 11) = 11
+10    exit_group(0)                     = ?

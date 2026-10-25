@@ -1,0 +1,39 @@
+['sh', PosixPath('/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel/build.sh'), '--features', 'qjs,grow-trace']: rc=101
+   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel)
+error: failed to run custom build command for `jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel)`
+
+Caused by:
+  process didn't exit successfully: `/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/target/release/build/jitk-02-0e8a52b424714ed9/build-script-build` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-env-changed=JITK_ELF
+  cargo:rerun-if-env-changed=JITK_SCRIPT
+  cargo:rerun-if-env-changed=JITK_ARGV_JSON
+  cargo:rerun-if-env-changed=JITK_RESOURCES
+  cargo:rerun-if-changed=src/syscalls
+  cargo:rerun-if-changed=slots.json
+  cargo:rerun-if-changed=prepare.py
+  cargo:rerun-if-changed=../protocol/bootstrap.js
+  cargo:rerun-if-changed=ring-bootstrap.js
+  cargo:rerun-if-changed=link.ld
+  cargo:rerun-if-changed=/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-diagnostics/dynamic.elf
+  cargo:rerun-if-changed=/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-diagnostics/resources
+
+  --- stderr
+  Traceback (most recent call last):
+    File "/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel/prepare.py", line 82, in <module>
+      if __name__ == '__main__': main()
+                                 ~~~~^^
+    File "/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel/prepare.py", line 68, in main
+      flat, meta = pack(source.read_bytes())
+                   ~~~~^^^^^^^^^^^^^^^^^^^^^
+    File "/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel/prepare.py", line 39, in pack
+      require(struct.unpack_from('<HH', b, 16) == (2, 183), 'static ET_EXEC AArch64 required')
+      ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-6xukkgoo/kernel/prepare.py", line 37, in require
+      if not ok: raise ValueError(why)
+                 ^^^^^^^^^^^^^^^^^^^^^
+  ValueError: static ET_EXEC AArch64 required
+
+  thread 'main' (8255832) panicked at build.rs:14:5:
+  assertion failed: Command::new("python3").arg(base.join("prepare.py")).arg(&elf).arg(&out).status().unwrap().success()
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

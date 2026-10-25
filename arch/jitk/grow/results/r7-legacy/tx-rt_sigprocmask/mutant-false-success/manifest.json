@@ -1,0 +1,429 @@
+{
+  "version": 3,
+  "sha256": "cd6237caa91e3391e3dc295898f344c9efc707321c778ef984a78e34f42d24bd",
+  "image": "kernel-cd6237caa91e3391e3dc295898f344c9efc707321c778ef984a78e34f42d24bd.bin",
+  "bytes": 532520,
+  "ram_mib": 32,
+  "features": [
+    "default",
+    "grow-trace",
+    "qjs"
+  ],
+  "syscalls": [
+    {
+      "nr": 17,
+      "name": "getcwd",
+      "registered": true,
+      "sha256": "733dce273bd66cd3bf6f3e61d3c67474806ca143e09ac0a31294472af3794ea6"
+    },
+    {
+      "nr": 25,
+      "name": "fcntl",
+      "registered": true,
+      "sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c"
+    },
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "registered": true,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "nr": 56,
+      "name": "openat",
+      "registered": true,
+      "sha256": "3ea3343a63e7ea2dfb9efd93c1b14aae63e9f367394aabb9d5de804b91ecd411"
+    },
+    {
+      "nr": 57,
+      "name": "close",
+      "registered": true,
+      "sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc"
+    },
+    {
+      "nr": 61,
+      "name": "getdents64",
+      "registered": true,
+      "sha256": "b7efb95c2f37b06c990f8ce1fa59046afa2079009820e39e3d0f4b03da6e5812"
+    },
+    {
+      "nr": 62,
+      "name": "lseek",
+      "registered": true,
+      "sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59"
+    },
+    {
+      "nr": 63,
+      "name": "read",
+      "registered": true,
+      "sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759"
+    },
+    {
+      "nr": 64,
+      "name": "write",
+      "registered": true,
+      "sha256": "6fbe0b0047b2afcabc83761e4ed7dd2acb0661d586fe97486b68fb66cf5c17aa"
+    },
+    {
+      "nr": 65,
+      "name": "readv",
+      "registered": true,
+      "sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6"
+    },
+    {
+      "nr": 66,
+      "name": "writev",
+      "registered": true,
+      "sha256": "40ff0972f289eaca6ec4a5a026033049f6764485b98b87276ec2fef1fbe44cff"
+    },
+    {
+      "nr": 67,
+      "name": "pread64",
+      "registered": true,
+      "sha256": "29a5852a6b0bbaba11054bc0096f441b453727fa9d333d726f3cfc15ba8803f9"
+    },
+    {
+      "nr": 73,
+      "name": "ppoll",
+      "registered": true,
+      "sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33"
+    },
+    {
+      "nr": 78,
+      "name": "readlinkat",
+      "registered": true,
+      "sha256": "0e30f8b109d3d710b7cda90390b49478435ab67df2d0ca7af20fa08b7efc4ca2"
+    },
+    {
+      "nr": 79,
+      "name": "newfstatat",
+      "registered": true,
+      "sha256": "ef3788da2e5827026c4279389f26184efd39d77585d44aa6515abf75308d1fcc"
+    },
+    {
+      "nr": 80,
+      "name": "fstat",
+      "registered": true,
+      "sha256": "10c1ededa296b47f31d2c320b2487cfdc2eff23dc6dbe8d90212f5878022121b"
+    },
+    {
+      "nr": 93,
+      "name": "exit",
+      "registered": true,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "nr": 94,
+      "name": "exit",
+      "registered": true,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "nr": 96,
+      "name": "set_tid_address",
+      "registered": true,
+      "sha256": "8b1c109892ff62df0f67a507fcc5bd416e28428196da2251af443b3c4eb94662"
+    },
+    {
+      "nr": 113,
+      "name": "clock_gettime",
+      "registered": true,
+      "sha256": "00ccd2816f3094fba9c053a8946f6d2e991bf90a9aa42a9da81dedaf21ae176e"
+    },
+    {
+      "nr": 134,
+      "name": "rt_sigaction",
+      "registered": true,
+      "sha256": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36"
+    },
+    {
+      "nr": 135,
+      "name": "rt_sigprocmask",
+      "registered": true,
+      "sha256": "da41f1e637d9c260251cc3aae0ab0c9be337ba7fd2eec2233604718b1a5726a3"
+    },
+    {
+      "nr": 214,
+      "name": "brk",
+      "registered": true,
+      "sha256": "132875356ac2b4bdcf3adab5afaa813d4ed2a53646bd2b7ade1d9a5dc8bc2a04"
+    },
+    {
+      "nr": 215,
+      "name": "munmap",
+      "registered": true,
+      "sha256": "9b03d295b8f4aa5fb21067ee1fdc0975b64662953f0fd41f839ac4aa43183c25"
+    },
+    {
+      "nr": 216,
+      "name": "mremap",
+      "registered": true,
+      "sha256": "ba99bc5f99bce39810d5f6f15c6f553a90a1399b1438e01de99af8b78eece56f"
+    },
+    {
+      "nr": 222,
+      "name": "mmap",
+      "registered": true,
+      "sha256": "ee7d875e5bfdf77a4bcb8dd09d3de81dfe1130799976a4a924d43a71f05d0a68"
+    }
+  ],
+  "packed": {
+    "source_sha256": "8241ea67a3c6eeedac71748505070b66d35583e3cabba88ca3fecd734c63c048",
+    "flat_bytes": 8192,
+    "flat_sha256": "b4f6052c1e37864aa370103329e0db90939018c2031a3cda7d9091b679a02e0f",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        4194643,
+        5
+      ],
+      [
+        4198400,
+        4198432,
+        6
+      ]
+    ],
+    "entry": 4194480,
+    "phdr": 4194368,
+    "phnum": 2,
+    "resources": {
+      "dir": null,
+      "sha256": "07facbcca859b65e9bcbb97124e967965f276f1388450bbaa4b3de012fd61d6e",
+      "bytes": 40,
+      "entries": 1,
+      "va": "0x402000",
+      "heap": "0x680000"
+    }
+  },
+  "argv": [
+    "rt_sigprocmask"
+  ],
+  "verification": {
+    "schema": 3,
+    "version": 5,
+    "scope": "R3 verified contracts; inherited ABI unverified",
+    "contracts": [
+      {
+        "nr": 56,
+        "name": "openat",
+        "source_sha256": "3ea3343a63e7ea2dfb9efd93c1b14aae63e9f367394aabb9d5de804b91ecd411",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive paths; RO flag/error precedence of a ro bind mount; O_PATH EINVAL",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 57,
+        "name": "close",
+        "source_sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc",
+        "status": "restricted",
+        "domain": "read-only resource archive: fd 0-2 no-op; archive fds 3..63",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 62,
+        "name": "lseek",
+        "source_sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive fds SEEK_SET/CUR/END; console ESPIPE",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 63,
+        "name": "read",
+        "source_sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive fds; console fd0 unchanged",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 65,
+        "name": "readv",
+        "source_sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive fds fill iovecs in order; console fd0 unchanged",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 78,
+        "name": "readlinkat",
+        "source_sha256": "0e30f8b109d3d710b7cda90390b49478435ab67df2d0ca7af20fa08b7efc4ca2",
+        "status": "restricted",
+        "domain": "read-only resource archive: no symlinks: existing EINVAL, else walk errno",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 25,
+        "name": "fcntl",
+        "source_sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c",
+        "status": "restricted",
+        "domain": "read-only resource archive: F_GETFD/F_SETFD only, else EINVAL",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 61,
+        "name": "getdents64",
+        "source_sha256": "b7efb95c2f37b06c990f8ce1fa59046afa2079009820e39e3d0f4b03da6e5812",
+        "status": "restricted",
+        "domain": "read-only resource archive: . .. then byte-sorted children; d_off = next index",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 79,
+        "name": "newfstatat",
+        "source_sha256": "ef3788da2e5827026c4279389f26184efd39d77585d44aa6515abf75308d1fcc",
+        "status": "restricted",
+        "domain": "read-only resource archive: mode/size compared; flags 0x100|0x800|0x1000; console AT_EMPTY_PATH EBADF",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "source_sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33",
+        "status": "restricted",
+        "oracle": "native Linux",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "cases": {
+            "semantic": [
+              "stdin readiness",
+              "stdout POLLOUT"
+            ],
+            "error": [
+              "bad pointer",
+              "negative timeout",
+              "POLLNVAL"
+            ],
+            "state": [
+              "revents copyout",
+              "consume input after readiness"
+            ]
+          },
+          "mutations": [
+            {
+              "name": "false-success",
+              "rejected": true,
+              "reason": "{'linux': {'stdout_hex': '70696e670a2070706f6c6c204f4b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+              "source_sha256": "da41f1e637d9c260251cc3aae0ab0c9be337ba7fd2eec2233604718b1a5726a3"
+            },
+            {
+              "name": "wrong-errno",
+              "rejected": true,
+              "reason": "{'linux': {'stdout_hex': '70696e670a2070706f6c6c204f4b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+              "source_sha256": "5e439bde9434c34a10f71cbef54eb11c25bffe22c6f224f870785bdae2e7fb1b"
+            }
+          ],
+          "unchanged_integration": "PASS",
+          "n": 30,
+          "pass": 30,
+          "repeat_counts_are_not_acceptance": true
+        }
+      },
+      {
+        "nr": 134,
+        "name": "rt_sigaction",
+        "source_sha256": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36",
+        "status": "profile-enosys",
+        "oracle": "native Linux with explicit ENOSYS injection",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "cases": {
+            "semantic": [
+              "explicit injected ENOSYS"
+            ],
+            "error": [
+              "inaccessible pointers still ENOSYS"
+            ],
+            "state": [
+              "query after attempted set",
+              "output canary unchanged"
+            ]
+          },
+          "mutations": [
+            {
+              "name": "false-success",
+              "rejected": true,
+              "reason": "{'linux': {'stdout_hex': '7369676e616c733a6f6b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+              "source_sha256": "da41f1e637d9c260251cc3aae0ab0c9be337ba7fd2eec2233604718b1a5726a3"
+            },
+            {
+              "name": "pointer-sensitive",
+              "rejected": true,
+              "reason": "{'linux': {'stdout_hex': '7369676e616c733a6f6b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+              "source_sha256": "1bb6237883d4c4edf939027edd42cb42ca7f61e598d2b8ec905ad7f78c60b9d1"
+            }
+          ],
+          "unchanged_integration": "PASS",
+          "n": 30,
+          "pass": 30,
+          "repeat_counts_are_not_acceptance": true
+        }
+      }
+    ],
+    "kernel_delta_lines": 6
+  },
+  "verification_sha256": "58fe86e4024a3769c863a64d21102f743a93b6def79e05fa98f0ec1d5916ace7"
+}

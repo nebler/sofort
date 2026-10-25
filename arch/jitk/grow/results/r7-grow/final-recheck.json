@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "counts": {
+    "tx-fstat": {
+      "probe_runs": 30,
+      "mutations": 3
+    },
+    "tx-pread64": {
+      "probe_runs": 30,
+      "mutations": 4
+    },
+    "tx-ppoll": {
+      "probe_runs": 30,
+      "mutations": 2
+    },
+    "tx-rt_sigaction": {
+      "probe_runs": 30,
+      "mutations": 2
+    },
+    "tx-rt_sigprocmask": {
+      "probe_runs": 30,
+      "mutations": 2
+    }
+  },
+  "implementation_commit": "a90528626de8726e4d31f840f137db5b0319e22d",
+  "controller_sha256": {
+    "loop.py": "b6dea522c8837bdc56e9100a5f223cd7ef1b416d2d84be5c390bffb03775fd9c",
+    "observations.py": "697f551c1296f9ca8f77705c8b1a4ba51ae6c730f8a641ab1cfe4d19e96087c0",
+    "profiles.py": "b3d728d941fd54429e56a9c1c03939034d780cd94bfda6163593c85e2d44b60d"
+  },
+  "unchanged_sqlite_tuples": 20
+}
