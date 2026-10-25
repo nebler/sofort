@@ -1,0 +1,12 @@
+0000000000490ec4 T JS_SetSnapshotRandomSeed
+00000000004bb7e0 T __init_ssp
+00000000004b0060 T __jitk_check_libc
+00000000004aff80 T __jitk_reseed_libc
+00000000004ff7b0 B __malloc_context
+00000000004ff3d8 D __seed48
+00000000005005a0 B __stack_chk_guard
+00000000004b3140 T rand
+00000000004b3400 T random
+00000000004b34c0 T seed48
+00000000004b3120 T srand
+00000000004b3220 T srandom

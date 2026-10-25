@@ -1,0 +1,9 @@
+   Compiling jitk-shard v0.1.0 (/home/dev/r7-rng/arch/jitk/shard)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.98s
+     Running unittests src/bin/real.rs (arch/jitk/shard/target/debug/deps/real-9c73b479be233539)
+
+running 1 test
+test entropy::chacha_zero_key_counter_one ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

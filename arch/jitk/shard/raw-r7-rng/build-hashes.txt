@@ -1,0 +1,6 @@
+207ee7bb146012c481bc6c6c8f1b6709734f406d37204f66380df7c128e06ac8  qjs-ring
+6547c42705e1d378faad97fd2d31bf29695799c09cce79756a0f4082af29ba0a  qjs-ring.debug
+252f56b6c5f2dfd92a0328c686d6b39e7f6c5c2a0226073a1c96fca31a3f67a5  /home/dev/r7-rng/arch/jitk/kernel/payload/ring-rng/build.sh
+edf50a7d4070c3d14ff0ce9b3fcf02d7dbc6a56c6a3845b2d2ee89ec8d9f0c5e  /home/dev/r7-rng/arch/jitk/kernel/payload/ring-rng/chacha.h
+001e85c378400afbbab3884b391b493b337ee8acbf1fcdbf26a651dd36e133aa  /home/dev/r7-rng/arch/jitk/kernel/payload/ring-rng/checkpoint.h
+25ce135982ad2ede1c9fb8f97d1545985b9965c331259f6e118de177584643fa  /home/dev/r7-rng/arch/jitk/kernel/payload/ring-rng/musl-reseed.inc

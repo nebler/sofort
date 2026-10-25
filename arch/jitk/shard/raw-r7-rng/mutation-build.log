@@ -1,0 +1,7 @@
+make: Entering directory '/home/dev/r7-rng/mutations/libc-omitted'
+/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc -O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\" -O2 -c -o .obj/quickjs-libc.o quickjs-libc.c
+/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc -static -no-pie -Wl,-z,max-page-size=4096 -o qjsc .obj/qjsc.o .obj/quickjs.o .obj/dtoa.o .obj/libregexp.o .obj/libunicode.o .obj/cutils.o .obj/quickjs-libc.o -lm -lpthread -ldl 
+./qjsc -s -c -o repl.c -m repl.js
+/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc -O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\" -O2 -c -o .obj/repl.o repl.c
+/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc -static -no-pie -Wl,-z,max-page-size=4096  -o qjs .obj/qjs.o .obj/repl.o .obj/quickjs.o .obj/dtoa.o .obj/libregexp.o .obj/libunicode.o .obj/cutils.o .obj/quickjs-libc.o -lm -lpthread -ldl 
+make: Leaving directory '/home/dev/r7-rng/mutations/libc-omitted'

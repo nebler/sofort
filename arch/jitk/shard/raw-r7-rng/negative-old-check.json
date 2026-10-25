@@ -1,0 +1,77 @@
+{
+  "path": "raw/negative-old.jsonl",
+  "n": 32,
+  "distinct": 1,
+  "mean": 0.9012135044706118,
+  "variance": 0.0,
+  "ks": 0.9012135044706118,
+  "chi_square_19df": 607.9999999999999,
+  "bins": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    32,
+    0
+  ],
+  "serial_correlation": 1,
+  "checks": {
+    "complete": true,
+    "distinct": false,
+    "range": true,
+    "fresh_host_entropy": true,
+    "math_summary": true
+  },
+  "summary": {
+    "event": "summary",
+    "fixture": "rng_negative",
+    "n": 32,
+    "reset": {
+      "n": 32,
+      "p50_ns": 4374269,
+      "p99_ns": 16179653
+    },
+    "run_to_done": {
+      "n": 32,
+      "p50_ns": 82687479,
+      "p99_ns": 234667297
+    },
+    "reset_bind_run": {
+      "n": 32,
+      "p50_ns": 88216878,
+      "p99_ns": 241818410
+    },
+    "owner_reply": {
+      "n": 32,
+      "p50_ns": 0,
+      "p99_ns": 0
+    },
+    "wait_to_finish": {
+      "n": 32,
+      "p50_ns": 0,
+      "p99_ns": 0
+    },
+    "cpu_ns": 3031398366,
+    "wall_ns": 3158501690,
+    "vm_exits": 32,
+    "calls": 0,
+    "fresh_entropy_count": 32,
+    "math_random_distinct": 1,
+    "libc_random_distinct": 0
+  },
+  "passed": false
+}

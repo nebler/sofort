@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """R7 reduction of the unchanged R6 cgroup observer and canary reset method."""
-import json, math, pathlib, statistics, sys
+import gzip, json, math, pathlib, statistics, sys
 
 root=pathlib.Path(sys.argv[1])
 baselines=dict(return2=.484038,one_tool=.503431,promise10=.548644)
@@ -25,7 +25,10 @@ for name,baseline in baselines.items():
     mib=statistics.mean(slopes)/2**20
     ledger[name]=dict(mib_per_vm=mib,delta_r6_mib=mib-baseline,
                       slopes_bytes=slopes,curves=curves)
-rows=[json.loads(s) for s in (root/'canary-10000.jsonl').read_text().splitlines()]
+canary=root/'canary-10000.jsonl'
+data=canary.read_text() if canary.exists() else ''.join(
+    gzip.decompress(p.read_bytes()).decode() for p in sorted(root.glob('canary-10000.part-*.jsonl.gz')))
+rows=[json.loads(s) for s in data.splitlines()]
 samples=[r for r in rows if r['event']=='sample']
 resets=sorted(r['reset_ns'] for r in samples)
 reset=dict(n=len(resets),p50_ms=resets[math.ceil(.5*len(resets))-1]/1e6,
