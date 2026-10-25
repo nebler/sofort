@@ -1,0 +1,2451 @@
+==========================================================================================
+jitk-vmm [50554]: 64-bit    Footprint: 6128120 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1261568 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   311296 B      311296 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6078968 B     2883584 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9372152 B
+    phys_footprint_peak: 9372152 B
+
+==========================================================================================
+jitk-vmm [50520]: 64-bit    Footprint: 6128120 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1540096 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   344064 B      344064 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      262144 B           0 B           0 B           0 B          7    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6078968 B     3096576 B           0 B           0 B           0 B        162    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9372152 B
+    phys_footprint_peak: 9372152 B
+
+==========================================================================================
+jitk-vmm [50560]: 64-bit    Footprint: 6111736 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3866624 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6062584 B     5472256 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9355768 B
+    phys_footprint_peak: 9355768 B
+
+==========================================================================================
+jitk-vmm [50518]: 64-bit    Footprint: 6111736 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2899968 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      115741 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      107670 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16384 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6062584 B     4243456 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9355768 B
+    phys_footprint_peak: 9355768 B
+
+==========================================================================================
+jitk-vmm [50514]: 64-bit    Footprint: 6111736 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3702784 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      126572 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119443 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6062584 B     5242880 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9355768 B
+    phys_footprint_peak: 9355768 B
+
+==========================================================================================
+jitk-vmm [50512]: 64-bit    Footprint: 6111736 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3686400 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6062584 B     5226496 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9355768 B
+    phys_footprint_peak: 9355768 B
+
+==========================================================================================
+jitk-vmm [50562]: 64-bit    Footprint: 6111712 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3211264 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   344064 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          7    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6062560 B     4767744 B           0 B           0 B           0 B        162    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9355744 B
+    phys_footprint_peak: 9355744 B
+
+==========================================================================================
+jitk-vmm [50521]: 64-bit    Footprint: 6111712 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3653632 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   344064 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          7    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6062560 B     5193728 B           0 B           0 B           0 B        162    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9355744 B
+    phys_footprint_peak: 9355744 B
+
+==========================================================================================
+jitk-vmm [50555]: 64-bit    Footprint: 6095352 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      343485 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      126533 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119430 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046200 B     5521408 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339384 B
+    phys_footprint_peak: 9339384 B
+
+==========================================================================================
+jitk-vmm [50551]: 64-bit    Footprint: 6095352 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3538944 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046200 B     5013504 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339384 B
+    phys_footprint_peak: 9339384 B
+
+==========================================================================================
+jitk-vmm [50549]: 64-bit    Footprint: 6095352 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1556480 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      229376 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046200 B     3031040 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339384 B
+    phys_footprint_peak: 9339384 B
+
+==========================================================================================
+jitk-vmm [50546]: 64-bit    Footprint: 6095352 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1441792 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      201757 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      147456 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      229376 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B       82977 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B       91722 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       65536 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046200 B     2424832 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339384 B
+    phys_footprint_peak: 9339384 B
+
+==========================================================================================
+jitk-vmm [50538]: 64-bit    Footprint: 6095352 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1835008 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142477 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      103538 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046200 B     3342336 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339384 B
+    phys_footprint_peak: 9339384 B
+
+==========================================================================================
+jitk-vmm [50574]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B           0 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B           0 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B           0 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B           0 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B           0 B           0 B           0 B           0 B         21    __DATA
+   131072 B           0 B           0 B           0 B           0 B         12    stack
+   119526 B           0 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B           0 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B           0 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50563]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2359296 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   344064 B      344064 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          7    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119426 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16384 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     3948544 B           0 B           0 B           0 B        162    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50532]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119426 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32768 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     5586944 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50529]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      245760 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       99361 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      107722 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     5308416 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50528]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3670016 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       99357 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      107726 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16328 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     4980736 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50527]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1261568 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      262144 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     2768896 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50522]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3522560 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142253 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B       87810 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     5062656 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50516]: 64-bit    Footprint: 6095328 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3686400 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       82977 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      107722 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16328 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6046176 B     4964352 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9339360 B
+    phys_footprint_peak: 9339360 B
+
+==========================================================================================
+jitk-vmm [50573]: 64-bit    Footprint: 6078968 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B           0 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B           0 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B           0 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B           0 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B           0 B           0 B           0 B           0 B         21    __DATA
+   131072 B           0 B           0 B           0 B           0 B         12    stack
+   119526 B           0 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B           0 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029816 B           0 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9323000 B
+    phys_footprint_peak: 9323000 B
+
+==========================================================================================
+jitk-vmm [50570]: 64-bit    Footprint: 6078968 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B           0 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B           0 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B           0 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B           0 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B           0 B           0 B           0 B           0 B         21    __DATA
+   131072 B           0 B           0 B           0 B           0 B         12    stack
+   119526 B           0 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B           0 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029816 B           0 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9323000 B
+    phys_footprint_peak: 9323000 B
+
+==========================================================================================
+jitk-vmm [50540]: 64-bit    Footprint: 6078968 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029816 B     5554176 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9323000 B
+    phys_footprint_peak: 9323000 B
+
+==========================================================================================
+jitk-vmm [50531]: 64-bit    Footprint: 6078968 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3768320 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      158913 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      131072 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      147456 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B       82977 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B       85414 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16328 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029816 B     4554752 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9323000 B
+    phys_footprint_peak: 9323000 B
+
+==========================================================================================
+jitk-vmm [50565]: 64-bit    Footprint: 6078944 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2293760 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      234913 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      180224 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       65968 B           0 B           0 B           0 B         21    __DATA
+   131072 B       49152 B           0 B           0 B           0 B         12    stack
+   119526 B       75951 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029792 B     3244032 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9322976 B
+    phys_footprint_peak: 9322976 B
+
+==========================================================================================
+jitk-vmm [50559]: 64-bit    Footprint: 6078944 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3145728 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      335433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      294912 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      111098 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029792 B     4620288 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9322976 B
+    phys_footprint_peak: 9322976 B
+
+==========================================================================================
+jitk-vmm [50557]: 64-bit    Footprint: 6078944 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1327104 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      334665 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   344064 B      229376 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      245760 B           0 B           0 B           0 B          7    MALLOC_SMALL
+   142917 B      126537 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      111862 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029792 B     2654208 B           0 B           0 B           0 B        162    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9322976 B
+    phys_footprint_peak: 9322976 B
+
+==========================================================================================
+jitk-vmm [50552]: 64-bit    Footprint: 6078944 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3686400 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   344064 B      344064 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          7    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029792 B     5259264 B           0 B           0 B           0 B        162    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9322976 B
+    phys_footprint_peak: 9322976 B
+
+==========================================================================================
+jitk-vmm [50545]: 64-bit    Footprint: 6078944 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3850240 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029792 B     5406720 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9322976 B
+    phys_footprint_peak: 9322976 B
+
+==========================================================================================
+jitk-vmm [50533]: 64-bit    Footprint: 6078944 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1343488 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      229376 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      125429 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B       71866 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6029792 B     2736128 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9322976 B
+    phys_footprint_peak: 9322976 B
+
+==========================================================================================
+jitk-vmm [50568]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1425408 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      203201 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      229376 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      147456 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B       83012 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      106571 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16384 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     2392064 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50564]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2621440 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      301497 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      229376 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      229376 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B       93769 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      112262 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       65536 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       16384 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     3850240 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50558]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1638400 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      262144 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     3178496 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50553]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   294912 B      294912 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B      126533 B           0 B           0 B           0 B         21    __DATA
+   131072 B       81920 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     5472256 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50543]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      278528 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      212992 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     5423104 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50534]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   294912 B      294912 B           0 B           0 B           0 B          3    MALLOC_SMALL
+   278528 B      196608 B           0 B           0 B           0 B          8    MALLOC metadata
+   142917 B       82977 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      107666 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     5160960 B           0 B           0 B           0 B        158    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50526]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   294912 B      294912 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B      141813 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B       71866 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     5423104 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50524]: 64-bit    Footprint: 6062584 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2785280 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      262144 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013432 B     4325376 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306616 B
+    phys_footprint_peak: 9306616 B
+
+==========================================================================================
+jitk-vmm [50550]: 64-bit    Footprint: 6062560 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2998272 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   311296 B      294912 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013408 B     4472832 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306592 B
+    phys_footprint_peak: 9306592 B
+
+==========================================================================================
+jitk-vmm [50541]: 64-bit    Footprint: 6062560 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2621440 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      226141 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   311296 B      196608 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      229376 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B       99361 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      100106 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013408 B     3719168 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306592 B
+    phys_footprint_peak: 9306592 B
+
+==========================================================================================
+jitk-vmm [50535]: 64-bit    Footprint: 6062560 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2703360 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      201757 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   327680 B      147456 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      180224 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       99361 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B       91722 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013408 B     3670016 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306592 B
+    phys_footprint_peak: 9306592 B
+
+==========================================================================================
+jitk-vmm [50530]: 64-bit    Footprint: 6062560 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      327680 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B      114688 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013408 B     5554176 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306592 B
+    phys_footprint_peak: 9306592 B
+
+==========================================================================================
+jitk-vmm [50519]: 64-bit    Footprint: 6062560 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1261568 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      284009 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   294912 B      229376 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      180224 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B       99396 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      107683 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       49152 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16384 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       16384 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  6013408 B     2392064 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9306592 B
+    phys_footprint_peak: 9306592 B
+
+==========================================================================================
+jitk-vmm [50571]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B           0 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B           0 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   294912 B           0 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      131072 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B        1104 B           0 B           0 B           0 B         21    __DATA
+   131072 B           0 B           0 B           0 B           0 B         12    stack
+   119526 B       47616 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B           0 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B      180224 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50569]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1277952 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      248489 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   294912 B      245760 B           0 B           0 B           0 B          3    MALLOC_SMALL
+   278528 B      262144 B           0 B           0 B           0 B          8    MALLOC metadata
+   142917 B      115741 B           0 B           0 B           0 B         21    __DATA
+   131072 B       81920 B           0 B           0 B           0 B         12    stack
+   119526 B       94146 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16328 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     2457600 B           0 B           0 B           0 B        158    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50567]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B      737280 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   327680 B      278528 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      163840 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       92700 B           0 B           0 B           0 B         21    __DATA
+   131072 B       49152 B           0 B           0 B           0 B         12    stack
+   119526 B       71771 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       65536 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16384 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     1884160 B           0 B           0 B           0 B        161    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50566]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3981312 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      208908 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   311296 B      278528 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      163840 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B       92669 B           0 B           0 B           0 B         21    __DATA
+   131072 B       49152 B           0 B           0 B           0 B         12    stack
+   119526 B       42543 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       32768 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     4964352 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50561]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1638400 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      284009 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      245760 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      115741 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      107778 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       16384 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     2998272 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50544]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3063808 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      226141 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   294912 B      196608 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      262144 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B       66632 B           0 B           0 B           0 B         21    __DATA
+   131072 B       81920 B           0 B           0 B           0 B         12    stack
+   119526 B      100011 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     4112384 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50539]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1687552 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   294912 B      294912 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      262144 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B      126533 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     3112960 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50537]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3997696 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      283817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   294912 B      147456 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      262144 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B       97178 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     5226496 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50536]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2277376 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      278528 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      229376 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     3702784 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50525]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3014656 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      245760 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      132125 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      107670 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     4325376 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50517]: 64-bit    Footprint: 6046176 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3981312 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      158913 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   294912 B      131072 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      180224 B           0 B           0 B           0 B          4    MALLOC_SMALL
+   142917 B       82977 B           0 B           0 B           0 B         21    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B       85414 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       65536 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16328 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5997024 B     4816896 B           0 B           0 B           0 B        159    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9290208 B
+    phys_footprint_peak: 9290208 B
+
+==========================================================================================
+jitk-vmm [50548]: 64-bit    Footprint: 6029792 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1622016 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   376157 B      359817 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   278528 B      278528 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          3    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5980640 B     3080192 B           0 B           0 B           0 B        158    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9273824 B
+    phys_footprint_peak: 9273824 B
+
+==========================================================================================
+jitk-vmm [50547]: 64-bit    Footprint: 6029792 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1327104 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   311296 B      311296 B           0 B           0 B           0 B          8    MALLOC metadata
+   262144 B      245760 B           0 B           0 B           0 B          5    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       98304 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5980640 B     2818048 B           0 B           0 B           0 B        160    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9273824 B
+    phys_footprint_peak: 9273824 B
+
+==========================================================================================
+jitk-vmm [50572]: 64-bit    Footprint: 6013408 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     3325952 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B       16384 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   278528 B       98304 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B       98304 B           0 B           0 B           0 B          3    MALLOC_SMALL
+   142917 B       16384 B           0 B           0 B           0 B         21    __DATA
+   131072 B       16384 B           0 B           0 B           0 B         12    stack
+   119526 B           0 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B           0 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B           0 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5964256 B     3588096 B           0 B           0 B           0 B        158    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9257440 B
+    phys_footprint_peak: 9257440 B
+
+==========================================================================================
+jitk-vmm [50542]: 64-bit    Footprint: 6013408 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     2768896 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      251293 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   278528 B      180224 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      278528 B           0 B           0 B           0 B          3    MALLOC_SMALL
+   142917 B       66632 B           0 B           0 B           0 B         21    __DATA
+   131072 B       81920 B           0 B           0 B           0 B         12    stack
+   119526 B      107627 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B           0 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B           0 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5964256 B     3833856 B           0 B           0 B           0 B        158    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9257440 B
+    phys_footprint_peak: 9257440 B
+
+==========================================================================================
+jitk-vmm [50523]: 64-bit    Footprint: 6013408 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+  3997696 B     1261568 B           0 B           0 B           0 B         14    untagged (VM_ALLOCATE)
+   360928 B           0 B           0 B           0 B           0 B          1    page table
+   359773 B      343433 B           0 B           0 B           0 B         56    __DATA_DIRTY
+   278528 B      278528 B           0 B           0 B           0 B          8    MALLOC metadata
+   278528 B      245760 B           0 B           0 B           0 B          3    MALLOC_SMALL
+   142917 B      142917 B           0 B           0 B           0 B         21    __DATA
+   131072 B      114688 B           0 B           0 B           0 B         12    stack
+   119526 B      119482 B           0 B           0 B           0 B         30    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       32712 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B       32768 B           0 B           0 B           0 B          1    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+      432 B         432 B           0 B           0 B           0 B          1    __AUTH
+        ---           ---           ---           ---           ---        ---    ---
+  5964256 B     2703360 B           0 B           0 B           0 B        158    TOTAL
+
+Shared with 59 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B           0 B           0 B           0 B          2    untagged (VM_ALLOCATE)
+        0 B           0 B      557056 B           0 B           0 B         60    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B         60    __LINKEDIT
+        ---           ---           ---           ---           ---        ---    ---
+    49152 B           0 B      655360 B           0 B           0 B        124    TOTAL
+
+Auxiliary data:
+    phys_footprint: 9257440 B
+    phys_footprint_peak: 9257440 B
+
+==========================================================================================
+Shared Cache 6981B4B9-E090-34CE-862A-41516EFEF2AD
+==========================================================================================
+
+Shared with 60 processes:
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+        0 B           0 B           0 B           0 B           0 B       8940    __AUTH
+        0 B           0 B           0 B           0 B           0 B      13740    __DATA_DIRTY
+        0 B           0 B           0 B           0 B           0 B      21000    __TEXT
+        0 B           0 B           0 B           0 B           0 B      20460    __DATA_CONST
+        0 B           0 B           0 B           0 B           0 B      20580    __AUTH_CONST
+        0 B           0 B           0 B           0 B           0 B      16620    __DATA
+        0 B           0 B           0 B           0 B           0 B      49380    unused dyld shared cache area
+        0 B           0 B           0 B           0 B           0 B         60    __CTF
+        0 B           0 B           0 B           0 B           0 B        120    __LINKEDIT
+        0 B           0 B           0 B           0 B           0 B         60    __FONT_DATA
+        ---           ---           ---           ---           ---        ---    ---
+        0 B           0 B           0 B           0 B           0 B     150960    TOTAL
+
+==========================================================================================
+Summary Footprint: 361476776 B
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+239910912 B   156106752 B           0 B           0 B           0 B        960    untagged (VM_ALLOCATE)
+ 22340044 B    17001970 B           0 B           0 B           0 B      17100    __DATA_DIRTY
+ 22033064 B           0 B           0 B           0 B           0 B         60    page table
+ 18907136 B    15368192 B           0 B           0 B           0 B        480    MALLOC metadata
+ 16957440 B    14041088 B           0 B           0 B           0 B        314    MALLOC_SMALL
+  8575020 B     6727544 B           0 B           0 B           0 B      17880    __DATA
+  7864320 B     5799936 B           0 B           0 B           0 B        720    stack
+  7171560 B     5955542 B           0 B           0 B           0 B      51180    unused dyld shared cache area
+  6881280 B     4751360 B           0 B           0 B           0 B         60    MALLOC_TINY
+  2945760 B     1472096 B           0 B           0 B           0 B        120    __TPRO_CONST
+  1966080 B     1228800 B           0 B           0 B           0 B      20520    __DATA_CONST
+  1966080 B           0 B           0 B           0 B           0 B        120    tag 28
+   983040 B      606208 B           0 B           0 B           0 B         60    os_alloc_once
+   983040 B      819200 B           0 B           0 B           0 B         60    Activity Tracing
+   983040 B      770048 B           0 B           0 B           0 B         60    MALLOC_NANO
+   983040 B      278528 B           0 B           0 B           0 B         60    tag 22
+    25920 B       21600 B           0 B           0 B           0 B       9000    __AUTH
+        0 B           0 B      557056 B           0 B           0 B      21060    __TEXT
+        0 B           0 B       81920 B           0 B           0 B        120    mapped file
+        0 B           0 B       16384 B           0 B           0 B        180    __LINKEDIT
+        0 B           0 B           0 B           0 B           0 B         60    __CTF
+        0 B           0 B           0 B           0 B           0 B      20580    __AUTH_CONST
+        0 B           0 B           0 B           0 B           0 B         60    __FONT_DATA
+        ---           ---           ---           ---           ---        ---    ---
+361476776 B   230948864 B      655360 B           0 B           0 B     160934    TOTAL

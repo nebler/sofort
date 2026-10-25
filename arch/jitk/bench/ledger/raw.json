@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "report": "RESULTS.md",
+  "selection": "artifacts/selection.json",
+  "build": "artifacts/build.json",
+  "primary": [
+    "memory-raw.json",
+    "memory-n60-raw.json",
+    "cpu-raw.json"
+  ],
+  "controls": [
+    "controls-raw.json",
+    "inline-raw.json",
+    "hvf-control-raw.json"
+  ],
+  "combined": "memory-combined.json",
+  "derived": [
+    "summary.json",
+    "cpu-summary.json",
+    "TABLES.md"
+  ],
+  "verification": "verification.json",
+  "diagnostics": "raw/",
+  "limits": [
+    "N=64/256 failed after 61 additional READY VMs.",
+    "System-wide HVF/kernel attribution not closed.",
+    "39.1% production footprint lacks direct region-address resolution; guest-write control reproduces the mapping blind spot."
+  ],
+  "accounting": "tkm_private overlaps page_table/footprint; not additive."
+}

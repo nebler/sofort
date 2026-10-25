@@ -1,0 +1,103 @@
+{
+  "vmm": {
+    "source": "/private/tmp/jitk-fs-work/vmm/jitk-vmm",
+    "path": "/Users/noah/code/sofort/arch/jitk/bench/ledger/artifacts/jitk-vmm",
+    "bytes": 817296,
+    "sha256": "2e3cfb02b0ab7cba9fc460694863ca45d6c2b0800f37dcf44d642c5a560e4e77"
+  },
+  "image": {
+    "source": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
+    "path": "/Users/noah/code/sofort/arch/jitk/bench/ledger/artifacts/image.bin",
+    "bytes": 2924584,
+    "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
+  },
+  "image-0": {
+    "source": "/private/tmp/jitk-fs-work/fsb/img-0/kernel.bin",
+    "path": "/Users/noah/code/sofort/arch/jitk/bench/ledger/artifacts/image-0.bin",
+    "bytes": 2924613,
+    "sha256": "838468dd7d799cb3f2012f98d05444285b045fef6bc408d85f361afe596d83a8"
+  },
+  "image-1": {
+    "source": "/private/tmp/jitk-fs-work/fsb/img-1/kernel.bin",
+    "path": "/Users/noah/code/sofort/arch/jitk/bench/ledger/artifacts/image-1.bin",
+    "bytes": 3973313,
+    "sha256": "76d38bbcb0cc80951f9f79abed98cdd5f8d267c9039bbe214e72ebfaa7ef6f47"
+  },
+  "image-8": {
+    "source": "/private/tmp/jitk-fs-work/fsb/img-8/kernel.bin",
+    "path": "/Users/noah/code/sofort/arch/jitk/bench/ledger/artifacts/image-8.bin",
+    "bytes": 11314213,
+    "sha256": "48667a83649437f12be319c5ed610def9cb90a65f20e091ad5ea81858c5f3bdc"
+  },
+  "executor": {
+    "package.json": "45aefa1d8dbe925d39320961b84f73a1a9b1b933be9713ec8bdab013df018079",
+    "build/demo.js.map": "c4e3baf7ebf7dfc6c3fc21c09d847d6d053d643a36bd07c556b742bbb40fd2b6",
+    "build/resolve-check.js": "a1fbd553299fe7505e817b52b4273fc75912545df39d799d5b60d4d7a87a0cb1",
+    "build/select-backend.js.map": "3d99f0416988840009b56ec0c763181bcb7c372832e5c497db75f716af8fa65f",
+    "build/sandbox-check.js": "995ab3d8f19d5676fe779c44b58890b3a1a692f7ecccf34be4dcb6dfc09984b9",
+    "build/wrapper-conformance.js.map": "7fe1c1976691353c61603bb9588642f98c6752a6a561a2f865514803c67750b7",
+    "build/code.js": "8542ca147509d9bce0f330b857a2565377b488f3ae37b1e3db00bf2674b5d7c6",
+    "build/code.js.map": "23b78d6445a7955aecbea309e61ba38bfaa1738c1792d9d07061ae201d0d4212",
+    "build/sandbox-check.js.map": "a1869e83740aeb91400b9c5a77d12e5ba8e14b5fed9ece761521471b1e26e8e2",
+    "build/pool-check.js.map": "1d8496eb3570db08053910ec82c917b91eaa9ca24867a9c323978340a0a77921",
+    "build/policy-check.js.map": "399eb37396126db493758d978cd1abce9bb2848ea175e186a1a820a94951e044",
+    "build/watchdog-check.js.map": "86b1ca97dd61e046497e1bdcb584264e02fe89f4109fa314a420729699baaaa5",
+    "build/transport-check.js.map": "74c5a36eb2f600651c6a514ff4d18d6769a3015de50de55c922d99f7e3adf5c8",
+    "build/select-backend.js": "40f0c637640522b332eb2f04aa1e7c285e22ac288af914924af69ce0ed62f486",
+    "build/backend.js.map": "4299a9d873b561dad7453d15beca9c4e2c337aa9ea4470c12149aead6f8650c8",
+    "build/hyperlight-check.js.map": "5a2d8c378d36532b97cfed3454b8ebf105387d5717189e8f4ee35b8e0b448aaa",
+    "build/pool-check.js": "10952f0aee6c9ef419f45112569fd671308d5fc60c15890ae01c45bbbf51048b",
+    "build/breakdown.js": "587189d44936a8af6fc75d3dadcdcfefec1604cc27892252851c3de76de44aa4",
+    "build/backend.js": "804fd52ed049eb0c4c6afbd69d07a706b0e83953ea61dd862b51895c598e14a4",
+    "build/transport-check.js": "4cea401fc4c772e47f8896698f61e084fad5b84a68db2c0b9019d143d4b6400e",
+    "build/api-check.js.map": "f3946f02b631109ab0acbdff259880df8d6dc139b17a5be59f0949dec7c36c07",
+    "build/policy-check.js": "1aa38dd53b02ff81642153536bee47bd1f6718ea9deef43923a9c9172133d322",
+    "build/executor.js.map": "541e776a902d0b8994d4f1a37d9b394034e24d9ddb91ac8825e4e816cf20e37e",
+    "build/pool.js": "dfc0cd7974e0b3aa5ca6a0637dbed561d15ea5dea6699b5556ecf1ab2f7fdfce",
+    "build/demo.js": "6c32d26196096d241f9591f3e9e1380239c087cd626086b5299fa0777643c0f8",
+    "build/providers.js.map": "9025d4fa2329b0b9a0a40fc28b86b2461ec9592685f879e6639684bfaf2682c4",
+    "build/verify.js": "7c07ff1370404637f8110b38fcf95157b210c7bcb25c4e42c66b9def4a1ea639",
+    "build/pool.js.map": "b3d3654a1a34461bec8e127bda22976ff9527bcc73cc976ee9099885f9b39ce6",
+    "build/codec.mjs": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e",
+    "build/api-check.js": "c741ae3c9631b6d2e362a76cbce2def9ed5bdad0ed5a143312e79994eb49ca2d",
+    "build/inputs.json": "1a8b044752900c07dc2ace5fd1bee7b618150697ba3d684117330e82fd14b2c2",
+    "build/upstream.js.map": "3cd8447838d4ba7b093e886d0cdc65a8e9a4ca761f23bc97241b9f2a72998faf",
+    "build/policy-adapter.js": "6a0c8660cf3fcb545db264db27560b671c1fede91a705b81e78e15c47b2834a8",
+    "build/executor.js": "66a1f4f5f1d058aa835549ebc4ba7b9b8eb060d2a5568836accfb5c08bce3c81",
+    "build/breakdown.js.map": "c5a48c181aabb94f9b158394293f369074b815a858ba3c2eeb1ad28a779b4d4f",
+    "build/providers.js": "689f0ecb60589b2fb2ca6ab68a874a839a7dfc3fbfb19ee55afd242608366a28",
+    "build/policy-adapter.js.map": "114f91c23c8fd5a9f8ff0ea7fde2528ace3aae1dc42377ceed0fee5fab2273cb",
+    "build/upstream.js": "2e1b114d980f334ff9d0aeb97fa26f3fa91e36004294c21ad87634970e9302fc",
+    "build/verify.js.map": "e233549ab0faf466f81d35221577fce1d8fed45cba756635cf80dd3feb5989e5",
+    "build/watchdog-check.js": "674147fb6df0ae3c979e77304a2d99a3f96dab6bc875d16169285dfed41569e9",
+    "build/hyperlight-check.js": "e6d07f75acd43e15e0fc6fee4bf0fd96df82e891f4e16f9d108f87fcfeda22df",
+    "build/resolve-check.js.map": "25e785a0647c90cfb707c3c76f77226c97f4a1a51c43fbe33b0324f452cc7e74",
+    "build/wrapper-conformance.js": "a8bd64c8c2e7c0095c839a22b75db9d0b29ef5c212d4cdc97352e3bd3f726012",
+    "policy/policy.d.ts": "3aebdee012a3c37d34e69ae5ab2195ebbc259789ed62b72347f77a6aba5468dc",
+    "policy/README.md": "e643b7c35db51e7900835226c57ba6f5fa68e7af50d911368079f6191943b601",
+    "policy/policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+    "policy/.READY": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "policy/policy-test.mjs": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c",
+    "policy/policy-hostile.mjs": "da3bda12a752d21073b01cdec53c94accbb8d8b9135c35b9cc9528c58ab88f99"
+  },
+  "source_context": {
+    "arch/jitk/vmm/src/main.rs": {
+      "sha256": "673932b7917892dea784668d8a9382b9da9d51c023cdf2352f76b5c5a0d07af8"
+    },
+    "arch/jitk/vmm/src/watchdog.rs": {
+      "sha256": "8367e6bf2120cb11bd114883c0b8919b68f3339ca3547d3587f0b23725fc73d5"
+    },
+    "arch/jitk/vmm/patches/raw-direct-load.diff": {
+      "sha256": "187e748dc6e5324dfe34f4c57959068ad3e30266888e3778165068906e8e9163"
+    },
+    "arch/jitk/kernel/src/main.rs": {
+      "sha256": "985a41d9754119d53d305acbb9c7f7d0f18e9206400808280e8833a8ddf1dabb"
+    },
+    "arch/jitk/kernel/dist/manifest.json": {
+      "sha256": "7a33d0bcfa8ad330637472e413691453a033c572379d04bf3e0065ab4b6a024c"
+    },
+    "arch/jitk/bench/cases.json": {
+      "sha256": "c00e3f14ac67000f7645a930c487a02123ea63c697dd05cd71e4186fc0034b46"
+    }
+  }
+}

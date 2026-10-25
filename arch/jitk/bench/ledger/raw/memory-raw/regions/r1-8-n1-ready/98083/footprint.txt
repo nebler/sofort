@@ -1,0 +1,36 @@
+==========================================================================================
+jitk-vmm [98083]: 64-bit    Footprint: 13451768 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+ 11386880 B     9207808 B           0 B           0 B           0 B         16    untagged (VM_ALLOCATE)
+   377336 B           0 B           0 B           0 B           0 B          1    page table
+   376157 B      226141 B           0 B           0 B           0 B        285    __DATA_DIRTY
+   327680 B      212992 B           0 B           0 B           0 B          8    MALLOC metadata
+   294912 B      294912 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   142917 B       82977 B           0 B           0 B           0 B        298    __DATA
+   131072 B       98304 B           0 B           0 B           0 B         12    stack
+   119526 B      100106 B           0 B           0 B           0 B        853    unused dyld shared cache area
+   114688 B       81920 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49096 B       16328 B           0 B           0 B           0 B          2    __TPRO_CONST
+    32768 B           0 B           0 B           0 B           0 B        342    __DATA_CONST
+    32768 B           0 B           0 B           0 B           0 B          2    tag 28
+    16384 B           0 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+    16384 B           0 B           0 B           0 B           0 B          1    MALLOC_NANO
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+      432 B         432 B           0 B           0 B           0 B        150    __AUTH
+        0 B           0 B      557056 B           0 B           0 B        351    __TEXT
+        0 B           0 B       81920 B           0 B           0 B          2    mapped file
+        0 B           0 B       16384 B           0 B           0 B          3    __LINKEDIT
+        0 B           0 B           0 B           0 B           0 B          1    __CTF
+        0 B           0 B           0 B           0 B           0 B        343    __AUTH_CONST
+        0 B           0 B           0 B           0 B           0 B          1    __FONT_DATA
+        ---           ---           ---           ---           ---        ---    ---
+ 13451768 B    10338304 B      655360 B           0 B           0 B       2683    TOTAL
+
+Auxiliary data:
+    phys_footprint: 16695800 B
+    phys_footprint_peak: 16695800 B
+

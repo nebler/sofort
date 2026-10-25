@@ -1,0 +1,35 @@
+==========================================================================================
+hvf-control [53964]: 64-bit    Footprint: 1556816 B (16384 bytes per page)
+==========================================================================================
+
+      Dirty     (Swapped)         Clean   Reclaimable       (Wired)    Regions    Category
+        ---           ---           ---           ---           ---        ---    ---
+   359717 B      301893 B           0 B           0 B           0 B        284    __DATA_DIRTY
+   327680 B      147456 B           0 B           0 B           0 B          8    MALLOC metadata
+   246096 B           0 B           0 B           0 B           0 B          1    page table
+   163840 B      147456 B           0 B           0 B           0 B          6    MALLOC_SMALL
+   109045 B      109045 B           0 B           0 B           0 B        296    __DATA
+    71966 B       64198 B           0 B           0 B           0 B        851    unused dyld shared cache area
+    65536 B       32768 B           0 B           0 B           0 B          1    MALLOC_TINY
+    49152 B           0 B           0 B           0 B           0 B          4    untagged (VM_ALLOCATE)
+    49152 B       32768 B           0 B           0 B           0 B          2    stack
+    49096 B       16384 B           0 B           0 B           0 B          2    __TPRO_CONST
+    16384 B           0 B           0 B           0 B           0 B          1    tag 22
+    16384 B       16384 B           0 B           0 B           0 B          1    os_alloc_once
+    16384 B       16384 B           0 B           0 B           0 B          1    Activity Tracing
+    16384 B       16384 B           0 B           0 B           0 B          1    MALLOC_NANO
+        0 B           0 B       16384 B           0 B           0 B        349    __TEXT
+        0 B           0 B       16384 B           0 B           0 B        340    __DATA_CONST
+        0 B           0 B       16384 B           0 B           0 B          3    __LINKEDIT
+        0 B           0 B           0 B           0 B           0 B          1    __CTF
+        0 B           0 B           0 B           0 B           0 B        341    __AUTH_CONST
+        0 B           0 B           0 B           0 B           0 B          1    __FONT_DATA
+        0 B           0 B           0 B           0 B           0 B        150    __AUTH
+        0 B           0 B           0 B           0 B           0 B          1    mapped file
+        ---           ---           ---           ---           ---        ---    ---
+  1556816 B      901120 B       49152 B           0 B           0 B       2647    TOTAL
+
+Auxiliary data:
+    phys_footprint: 1589584 B
+    phys_footprint_peak: 1605968 B
+

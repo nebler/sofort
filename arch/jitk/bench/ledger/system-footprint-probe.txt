@@ -1,0 +1,16 @@
+======================================================================
+jitk-vmm [95260]: 64-bit    Footprint: 4928 KB (16384 bytes per page)
+======================================================================
+
+Auxiliary data:
+    phys_footprint: 8080 KB
+    phys_footprint_peak: 8080 KB
+
+
+System auxiliary data:
+    boot_carveout:              643 MB
+    sys_wired:                 3152 MB
+    sys_unwired:              80998 MB
+    ---------------------------------------
+    sys_footprint:            84793 MB
+

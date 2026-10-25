@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "memory_cells_success": 48,
+  "expected_capacity_failures": 24,
+  "failure_ready_vms": 61,
+  "per_process_counter_snapshots": 1848,
+  "max_footprint_ledger_formula_error_bytes": 0,
+  "validated_cpu_samples": 240,
+  "hvf_control_repeats": 3,
+  "owned_workers_remaining": [],
+  "scope_bytes": 144262166
+}

@@ -1,0 +1,1176 @@
+{
+  "schema": 1,
+  "start": "2026-10-25T06:58:21.568Z",
+  "load_start": [
+    43.06884765625,
+    32.7080078125,
+    18.701171875
+  ],
+  "samples": [
+    {
+      "kind": "raw",
+      "mode": "cold",
+      "case": "return2",
+      "utc": "2026-10-25T06:58:21.627Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "node_start": {
+        "at": 652.123208,
+        "node": {
+          "user_ms": 58.376,
+          "system_ms": 19.213
+        }
+      },
+      "children_before": {
+        "user_ms": 0,
+        "system_ms": 0
+      },
+      "watchdog_before": {
+        "user_ms": 3.531875,
+        "system_ms": 2.9652499999999997,
+        "footprint": 1524048,
+        "rss": 6078464,
+        "footprint_peak": 1556816,
+        "user_ticks": 84765,
+        "system_ticks": 71166
+      },
+      "pid": 54096,
+      "ready": {
+        "at": 668.852542,
+        "node": {
+          "user_ms": 60.875,
+          "system_ms": 19.995
+        }
+      },
+      "vmm_ready": {
+        "user_ms": 5.538208333333333,
+        "system_ms": 4.893666666666666,
+        "footprint": 8159712,
+        "rss": 13008896,
+        "footprint_peak": 8159712,
+        "user_ticks": 132917,
+        "system_ticks": 117448
+      },
+      "before_run": {
+        "at": 668.889458,
+        "node": {
+          "user_ms": 60.896,
+          "system_ms": 20.007
+        }
+      },
+      "vmm_before_run": {
+        "user_ms": 5.538208333333333,
+        "system_ms": 4.893666666666666,
+        "footprint": 8159712,
+        "rss": 13008896,
+        "footprint_peak": 8159712,
+        "user_ticks": 132917,
+        "system_ticks": 117448
+      },
+      "done": {
+        "at": 670.460875,
+        "node": {
+          "user_ms": 61.307,
+          "system_ms": 20.276
+        }
+      },
+      "vmm_done": {
+        "user_ms": 5.932125,
+        "system_ms": 5.0417499999999995,
+        "footprint": 8192480,
+        "rss": 13041664,
+        "footprint_peak": 8192480,
+        "user_ticks": 142371,
+        "system_ticks": 121002
+      },
+      "exit": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "reaped": {
+        "at": 673.60925,
+        "node": {
+          "user_ms": 62.939,
+          "system_ms": 20.435
+        }
+      },
+      "vmm_total": {
+        "user_ms": 6.601,
+        "system_ms": 5.087
+      },
+      "watchdog_after": {
+        "user_ms": 3.5540833333333333,
+        "system_ms": 3.0134583333333333,
+        "footprint": 1524048,
+        "rss": 6111232,
+        "footprint_peak": 1556816,
+        "user_ticks": 85298,
+        "system_ticks": 72323
+      },
+      "block": 0
+    },
+    {
+      "kind": "raw",
+      "mode": "cold",
+      "case": "one_tool",
+      "utc": "2026-10-25T06:58:21.648Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "node_start": {
+        "at": 673.691042,
+        "node": {
+          "user_ms": 63.005,
+          "system_ms": 20.449
+        }
+      },
+      "children_before": {
+        "user_ms": 6.601,
+        "system_ms": 5.087
+      },
+      "watchdog_before": {
+        "user_ms": 3.5540833333333333,
+        "system_ms": 3.0134583333333333,
+        "footprint": 1524048,
+        "rss": 6111232,
+        "footprint_peak": 1556816,
+        "user_ticks": 85298,
+        "system_ticks": 72323
+      },
+      "pid": 54105,
+      "ready": {
+        "at": 683.724875,
+        "node": {
+          "user_ms": 64.421,
+          "system_ms": 20.993
+        }
+      },
+      "vmm_ready": {
+        "user_ms": 5.366291666666666,
+        "system_ms": 3.280708333333333,
+        "footprint": 8208888,
+        "rss": 13041664,
+        "footprint_peak": 8208888,
+        "user_ticks": 128791,
+        "system_ticks": 78737
+      },
+      "before_run": {
+        "at": 683.746625,
+        "node": {
+          "user_ms": 64.431,
+          "system_ms": 21.001
+        }
+      },
+      "vmm_before_run": {
+        "user_ms": 5.366291666666666,
+        "system_ms": 3.280708333333333,
+        "footprint": 8208888,
+        "rss": 13041664,
+        "footprint_peak": 8208888,
+        "user_ticks": 128791,
+        "system_ticks": 78737
+      },
+      "call": {
+        "at": 685.486958,
+        "node": {
+          "user_ms": 65.052,
+          "system_ms": 21.066
+        }
+      },
+      "vmm_call": {
+        "user_ms": 6.091625,
+        "system_ms": 3.3900416666666664,
+        "footprint": 8241656,
+        "rss": 13074432,
+        "footprint_peak": 8241656,
+        "user_ticks": 146199,
+        "system_ticks": 81361
+      },
+      "done": {
+        "at": 686.929375,
+        "node": {
+          "user_ms": 65.255,
+          "system_ms": 21.118
+        }
+      },
+      "vmm_done": {
+        "user_ms": 6.960333333333333,
+        "system_ms": 3.4695416666666667,
+        "footprint": 8241656,
+        "rss": 13074432,
+        "footprint_peak": 8241656,
+        "user_ticks": 167048,
+        "system_ticks": 83269
+      },
+      "exit": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "reaped": {
+        "at": 688.806083,
+        "node": {
+          "user_ms": 65.706,
+          "system_ms": 21.204
+        }
+      },
+      "vmm_total": {
+        "user_ms": 7.478000000000001,
+        "system_ms": 4.447000000000001
+      },
+      "watchdog_after": {
+        "user_ms": 3.5731249999999997,
+        "system_ms": 3.044583333333333,
+        "footprint": 1524048,
+        "rss": 6111232,
+        "footprint_peak": 1556816,
+        "user_ticks": 85755,
+        "system_ticks": 73070
+      },
+      "block": 0
+    },
+    {
+      "kind": "raw",
+      "mode": "parked",
+      "case": "return2",
+      "utc": "2026-10-25T06:58:21.663Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "node_start": {
+        "at": 688.852708,
+        "node": {
+          "user_ms": 65.742,
+          "system_ms": 21.214
+        }
+      },
+      "children_before": {
+        "user_ms": 14.079,
+        "system_ms": 9.534
+      },
+      "watchdog_before": {
+        "user_ms": 3.5755416666666666,
+        "system_ms": 3.0497083333333332,
+        "footprint": 1524048,
+        "rss": 6111232,
+        "footprint_peak": 1556816,
+        "user_ticks": 85813,
+        "system_ticks": 73193
+      },
+      "pid": 54106,
+      "ready": {
+        "at": 711.994792,
+        "node": {
+          "user_ms": 66.957,
+          "system_ms": 21.85
+        }
+      },
+      "vmm_ready": {
+        "user_ms": 15.387541666666666,
+        "system_ms": 4.156125,
+        "footprint": 8159712,
+        "rss": 13008896,
+        "footprint_peak": 8159712,
+        "user_ticks": 369301,
+        "system_ticks": 99747
+      },
+      "before_run": {
+        "at": 722.40925,
+        "node": {
+          "user_ms": 67.294,
+          "system_ms": 21.897
+        }
+      },
+      "vmm_before_run": {
+        "user_ms": 15.389624999999999,
+        "system_ms": 4.160041666666666,
+        "footprint": 8159712,
+        "rss": 13008896,
+        "footprint_peak": 8159712,
+        "user_ticks": 369351,
+        "system_ticks": 99841
+      },
+      "done": {
+        "at": 746.556542,
+        "node": {
+          "user_ms": 67.772,
+          "system_ms": 21.988
+        }
+      },
+      "vmm_done": {
+        "user_ms": 21.98795833333333,
+        "system_ms": 4.775041666666667,
+        "footprint": 0,
+        "rss": 12959744,
+        "footprint_peak": 8225248,
+        "user_ticks": 527711,
+        "system_ticks": 114601
+      },
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "reaped": {
+        "at": 757.59975,
+        "node": {
+          "user_ms": 68.962,
+          "system_ms": 22.261
+        }
+      },
+      "vmm_total": {
+        "user_ms": 21.987000000000002,
+        "system_ms": 5.401999999999999
+      },
+      "watchdog_after": {
+        "user_ms": 3.6035,
+        "system_ms": 3.0951666666666666,
+        "footprint": 1524048,
+        "rss": 6111232,
+        "footprint_peak": 1556816,
+        "user_ticks": 86484,
+        "system_ticks": 74284
+      },
+      "block": 0
+    },
+    {
+      "kind": "raw",
+      "mode": "parked",
+      "case": "one_tool",
+      "utc": "2026-10-25T06:58:21.733Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "node_start": {
+        "at": 758.187667,
+        "node": {
+          "user_ms": 69.059,
+          "system_ms": 22.309
+        }
+      },
+      "children_before": {
+        "user_ms": 36.066,
+        "system_ms": 14.936
+      },
+      "watchdog_before": {
+        "user_ms": 3.6092916666666666,
+        "system_ms": 3.1034166666666665,
+        "footprint": 1524048,
+        "rss": 6111232,
+        "footprint_peak": 1556816,
+        "user_ticks": 86623,
+        "system_ticks": 74482
+      },
+      "pid": 54110,
+      "ready": {
+        "at": 779.151792,
+        "node": {
+          "user_ms": 70.343,
+          "system_ms": 22.944
+        }
+      },
+      "vmm_ready": {
+        "user_ms": 5.989958333333333,
+        "system_ms": 4.670458333333333,
+        "footprint": 8176096,
+        "rss": 13025280,
+        "footprint_peak": 8176096,
+        "user_ticks": 143759,
+        "system_ticks": 112091
+      },
+      "before_run": {
+        "at": 784.97325,
+        "node": {
+          "user_ms": 70.47,
+          "system_ms": 22.975
+        }
+      },
+      "vmm_before_run": {
+        "user_ms": 5.989958333333333,
+        "system_ms": 4.670458333333333,
+        "footprint": 8176096,
+        "rss": 13025280,
+        "footprint_peak": 8176096,
+        "user_ticks": 143759,
+        "system_ticks": 112091
+      },
+      "call": {
+        "at": 786.1935,
+        "node": {
+          "user_ms": 70.669,
+          "system_ms": 23.029
+        }
+      },
+      "vmm_call": {
+        "user_ms": 6.615374999999999,
+        "system_ms": 4.782791666666666,
+        "footprint": 8208864,
+        "rss": 13058048,
+        "footprint_peak": 8208864,
+        "user_ticks": 158769,
+        "system_ticks": 114787
+      },
+      "done": {
+        "at": 786.832333,
+        "node": {
+          "user_ms": 70.767,
+          "system_ms": 23.083
+        }
+      },
+      "vmm_done": {
+        "user_ms": 6.876625,
+        "system_ms": 4.894125,
+        "footprint": 8208864,
+        "rss": 13058048,
+        "footprint_peak": 8208864,
+        "user_ticks": 165039,
+        "system_ticks": 117459
+      },
+      "exit": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "reaped": {
+        "at": 788.37425,
+        "node": {
+          "user_ms": 71.192,
+          "system_ms": 23.153
+        }
+      },
+      "vmm_total": {
+        "user_ms": 6.917999999999999,
+        "system_ms": 5.913
+      },
+      "watchdog_after": {
+        "user_ms": 3.6261666666666668,
+        "system_ms": 3.1401666666666666,
+        "footprint": 1556816,
+        "rss": 6144000,
+        "footprint_peak": 1556816,
+        "user_ticks": 87028,
+        "system_ticks": 75364
+      },
+      "block": 0
+    },
+    {
+      "kind": "executor",
+      "mode": "cold",
+      "case": "return2",
+      "utc": "2026-10-25T06:58:21.763Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "marks": {
+        "start": {
+          "at": 789.0915,
+          "node": {
+            "user_ms": 71.892,
+            "system_ms": 23.182
+          }
+        },
+        "acquired": {
+          "at": 806.8285,
+          "node": {
+            "user_ms": 76.123,
+            "system_ms": 24.73
+          }
+        },
+        "runSent": {
+          "at": 810.589,
+          "node": {
+            "user_ms": 78.978,
+            "system_ms": 25.16
+          }
+        },
+        "done": {
+          "at": 812.241,
+          "node": {
+            "user_ms": 79.206,
+            "system_ms": 25.203
+          }
+        },
+        "resolve": {
+          "at": 812.438458,
+          "node": {
+            "user_ms": 79.389,
+            "system_ms": 25.208
+          }
+        }
+      },
+      "children_before": {
+        "user_ms": 42.984,
+        "system_ms": 20.849
+      },
+      "prepare_start": {
+        "at": 788.72175,
+        "node": {
+          "user_ms": 71.513,
+          "system_ms": 23.179
+        }
+      },
+      "watchdog_before": {},
+      "before_run": {
+        "at": 788.727208,
+        "node": {
+          "user_ms": 71.517,
+          "system_ms": 23.18
+        }
+      },
+      "vmm_before_run": {},
+      "boot_start": {
+        "at": 791.695583,
+        "node": {
+          "user_ms": 73.206,
+          "system_ms": 23.576
+        }
+      },
+      "ready": {
+        "at": 806.785792,
+        "node": {
+          "user_ms": 76.095,
+          "system_ms": 24.72
+        }
+      },
+      "pid": 54113,
+      "vmm_ready": {
+        "user_ms": 4.96825,
+        "system_ms": 4.045416666666666,
+        "footprint": 8241656,
+        "rss": 13139968,
+        "footprint_peak": 8241656,
+        "user_ticks": 119238,
+        "system_ticks": 97090
+      },
+      "watchdog_pid": 54114,
+      "vmm_done": {
+        "user_ms": 6.109958333333333,
+        "system_ms": 4.3058749999999995,
+        "footprint": 8290808,
+        "rss": 13189120,
+        "footprint_peak": 8290808,
+        "user_ticks": 146639,
+        "system_ticks": 103341
+      },
+      "done_read": {
+        "at": 812.224167,
+        "node": {
+          "user_ms": 79.189,
+          "system_ms": 25.201
+        }
+      },
+      "resolved": {
+        "at": 812.459875,
+        "node": {
+          "user_ms": 79.395,
+          "system_ms": 25.213
+        }
+      },
+      "kill": {
+        "at": 812.962583,
+        "node": {
+          "user_ms": 79.757,
+          "system_ms": 25.257
+        }
+      },
+      "vmm_kill": {
+        "user_ms": 6.5951249999999995,
+        "system_ms": 4.405875,
+        "footprint": 0,
+        "rss": 13139968,
+        "footprint_peak": 8307192,
+        "user_ticks": 158283,
+        "system_ticks": 105741
+      },
+      "reaped": {
+        "at": 814.212,
+        "node": {
+          "user_ms": 80.565,
+          "system_ms": 25.362
+        }
+      },
+      "vmm_reaped": {},
+      "after_close": {
+        "at": 814.258625,
+        "node": {
+          "user_ms": 80.607,
+          "system_ms": 25.365
+        }
+      },
+      "vmm_total": {
+        "user_ms": 6.594999999999999,
+        "system_ms": 4.434000000000001
+      },
+      "watchdog_after": {
+        "user_ms": 3.0414583333333334,
+        "system_ms": 2.6616666666666666,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 72995,
+        "system_ticks": 63880
+      },
+      "block": 0
+    },
+    {
+      "kind": "executor",
+      "mode": "cold",
+      "case": "one_tool",
+      "utc": "2026-10-25T06:58:21.789Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "marks": {
+        "start": {
+          "at": 814.371125,
+          "node": {
+            "user_ms": 80.703,
+            "system_ms": 25.383
+          }
+        },
+        "acquired": {
+          "at": 837.531667,
+          "node": {
+            "user_ms": 81.974,
+            "system_ms": 26.009
+          }
+        },
+        "runSent": {
+          "at": 841.554625,
+          "node": {
+            "user_ms": 84.876,
+            "system_ms": 26.672
+          }
+        },
+        "firstCall": {
+          "at": 843.403208,
+          "node": {
+            "user_ms": 85.152,
+            "system_ms": 26.776
+          }
+        },
+        "firstRet": {
+          "at": 845.267875,
+          "node": {
+            "user_ms": 86.503,
+            "system_ms": 27.064
+          }
+        },
+        "done": {
+          "at": 845.85575,
+          "node": {
+            "user_ms": 86.674,
+            "system_ms": 27.103
+          }
+        },
+        "resolve": {
+          "at": 845.951625,
+          "node": {
+            "user_ms": 86.731,
+            "system_ms": 27.112
+          }
+        }
+      },
+      "children_before": {
+        "user_ms": 49.579,
+        "system_ms": 25.283
+      },
+      "prepare_start": {
+        "at": 814.354458,
+        "node": {
+          "user_ms": 80.688,
+          "system_ms": 25.38
+        }
+      },
+      "watchdog_before": {
+        "user_ms": 3.0414583333333334,
+        "system_ms": 2.6616666666666666,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 72995,
+        "system_ticks": 63880
+      },
+      "before_run": {
+        "at": 814.361458,
+        "node": {
+          "user_ms": 80.692,
+          "system_ms": 25.382
+        }
+      },
+      "vmm_before_run": {},
+      "boot_start": {
+        "at": 814.584208,
+        "node": {
+          "user_ms": 80.912,
+          "system_ms": 25.389
+        }
+      },
+      "ready": {
+        "at": 837.495292,
+        "node": {
+          "user_ms": 81.948,
+          "system_ms": 25.999
+        }
+      },
+      "pid": 54115,
+      "vmm_ready": {
+        "user_ms": 12.835958333333332,
+        "system_ms": 4.24925,
+        "footprint": 8225248,
+        "rss": 13156352,
+        "footprint_peak": 8225248,
+        "user_ticks": 308063,
+        "system_ticks": 101982
+      },
+      "watchdog_pid": 54114,
+      "vmm_done": {
+        "user_ms": 14.305083333333332,
+        "system_ms": 4.613291666666666,
+        "footprint": 8274400,
+        "rss": 13205504,
+        "footprint_peak": 8274400,
+        "user_ticks": 343322,
+        "system_ticks": 110719
+      },
+      "done_read": {
+        "at": 845.765,
+        "node": {
+          "user_ms": 86.655,
+          "system_ms": 27.095
+        }
+      },
+      "resolved": {
+        "at": 845.958917,
+        "node": {
+          "user_ms": 86.737,
+          "system_ms": 27.113
+        }
+      },
+      "kill": {
+        "at": 846.25625,
+        "node": {
+          "user_ms": 87.061,
+          "system_ms": 27.165
+        }
+      },
+      "vmm_kill": {
+        "user_ms": 14.794458333333333,
+        "system_ms": 4.664083333333333,
+        "footprint": 0,
+        "rss": 13205504,
+        "footprint_peak": 8274400,
+        "user_ticks": 355067,
+        "system_ticks": 111938
+      },
+      "reaped": {
+        "at": 848.12325,
+        "node": {
+          "user_ms": 87.698,
+          "system_ms": 27.262
+        }
+      },
+      "vmm_reaped": {},
+      "after_close": {
+        "at": 848.155,
+        "node": {
+          "user_ms": 87.72,
+          "system_ms": 27.27
+        }
+      },
+      "vmm_total": {
+        "user_ms": 14.794000000000004,
+        "system_ms": 5.686
+      },
+      "watchdog_after": {
+        "user_ms": 3.062375,
+        "system_ms": 2.6868333333333334,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 73497,
+        "system_ticks": 64484
+      },
+      "block": 0
+    },
+    {
+      "kind": "executor",
+      "mode": "parked",
+      "case": "return2",
+      "utc": "2026-10-25T06:58:21.823Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "marks": {
+        "start": {
+          "at": 871.453667,
+          "node": {
+            "user_ms": 89.485,
+            "system_ms": 28.148
+          }
+        },
+        "acquired": {
+          "at": 871.87175,
+          "node": {
+            "user_ms": 89.741,
+            "system_ms": 28.173
+          }
+        },
+        "runSent": {
+          "at": 872.183208,
+          "node": {
+            "user_ms": 89.984,
+            "system_ms": 28.187
+          }
+        },
+        "done": {
+          "at": 873.404,
+          "node": {
+            "user_ms": 90.059,
+            "system_ms": 28.207
+          }
+        },
+        "resolve": {
+          "at": 873.442917,
+          "node": {
+            "user_ms": 90.093,
+            "system_ms": 28.211
+          }
+        }
+      },
+      "children_before": {
+        "user_ms": 64.373,
+        "system_ms": 30.969
+      },
+      "prepare_start": {
+        "at": 848.293042,
+        "node": {
+          "user_ms": 87.805,
+          "system_ms": 27.295
+        }
+      },
+      "boot_start": {
+        "at": 848.432417,
+        "node": {
+          "user_ms": 87.942,
+          "system_ms": 27.296
+        }
+      },
+      "ready": {
+        "at": 865.938917,
+        "node": {
+          "user_ms": 89.156,
+          "system_ms": 28.038
+        }
+      },
+      "pid": 54116,
+      "vmm_ready": {
+        "user_ms": 7.045958333333333,
+        "system_ms": 4.6062916666666665,
+        "footprint": 8274424,
+        "rss": 13172736,
+        "footprint_peak": 8274424,
+        "user_ticks": 169103,
+        "system_ticks": 110551
+      },
+      "watchdog_pid": 54114,
+      "watchdog_before": {
+        "user_ms": 3.0742083333333334,
+        "system_ms": 2.70675,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 73781,
+        "system_ticks": 64962
+      },
+      "before_run": {
+        "at": 871.424375,
+        "node": {
+          "user_ms": 89.457,
+          "system_ms": 28.143
+        }
+      },
+      "vmm_before_run": {
+        "user_ms": 7.045958333333333,
+        "system_ms": 4.6062916666666665,
+        "footprint": 8274424,
+        "rss": 13172736,
+        "footprint_peak": 8274424,
+        "user_ticks": 169103,
+        "system_ticks": 110551
+      },
+      "vmm_done": {
+        "user_ms": 8.053541666666666,
+        "system_ms": 4.751708333333333,
+        "footprint": 8323576,
+        "rss": 13221888,
+        "footprint_peak": 8323576,
+        "user_ticks": 193285,
+        "system_ticks": 114041
+      },
+      "done_read": {
+        "at": 873.39725,
+        "node": {
+          "user_ms": 90.052,
+          "system_ms": 28.207
+        }
+      },
+      "resolved": {
+        "at": 873.446542,
+        "node": {
+          "user_ms": 90.096,
+          "system_ms": 28.212
+        }
+      },
+      "kill": {
+        "at": 873.546542,
+        "node": {
+          "user_ms": 90.163,
+          "system_ms": 28.234
+        }
+      },
+      "vmm_kill": {
+        "user_ms": 8.249791666666667,
+        "system_ms": 4.7604999999999995,
+        "footprint": 7750136,
+        "rss": 11976704,
+        "footprint_peak": 8323576,
+        "user_ticks": 197995,
+        "system_ticks": 114252
+      },
+      "reaped": {
+        "at": 874.575167,
+        "node": {
+          "user_ms": 90.48,
+          "system_ms": 28.281
+        }
+      },
+      "vmm_reaped": {},
+      "after_close": {
+        "at": 874.58825,
+        "node": {
+          "user_ms": 90.491,
+          "system_ms": 28.282
+        }
+      },
+      "vmm_total": {
+        "user_ms": 8.248999999999995,
+        "system_ms": 4.790999999999997
+      },
+      "watchdog_after": {
+        "user_ms": 3.0897083333333333,
+        "system_ms": 2.727958333333333,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 74153,
+        "system_ticks": 65471
+      },
+      "block": 0
+    },
+    {
+      "kind": "executor",
+      "mode": "parked",
+      "case": "one_tool",
+      "utc": "2026-10-25T06:58:21.849Z",
+      "load": [
+        43.06884765625,
+        32.7080078125,
+        18.701171875
+      ],
+      "marks": {
+        "start": {
+          "at": 894.081958,
+          "node": {
+            "user_ms": 91.597,
+            "system_ms": 28.799
+          }
+        },
+        "acquired": {
+          "at": 894.51525,
+          "node": {
+            "user_ms": 91.857,
+            "system_ms": 28.819
+          }
+        },
+        "runSent": {
+          "at": 899.232875,
+          "node": {
+            "user_ms": 92.524,
+            "system_ms": 29.936
+          }
+        },
+        "firstCall": {
+          "at": 953.87825,
+          "node": {
+            "user_ms": 93.271,
+            "system_ms": 33.059
+          }
+        },
+        "firstRet": {
+          "at": 954.136958,
+          "node": {
+            "user_ms": 93.514,
+            "system_ms": 33.147
+          }
+        },
+        "done": {
+          "at": 979.059125,
+          "node": {
+            "user_ms": 94.141,
+            "system_ms": 34.448
+          }
+        },
+        "resolve": {
+          "at": 979.153,
+          "node": {
+            "user_ms": 94.228,
+            "system_ms": 34.453
+          }
+        }
+      },
+      "children_before": {
+        "user_ms": 72.622,
+        "system_ms": 35.76
+      },
+      "prepare_start": {
+        "at": 874.664125,
+        "node": {
+          "user_ms": 90.558,
+          "system_ms": 28.291
+        }
+      },
+      "boot_start": {
+        "at": 874.6875,
+        "node": {
+          "user_ms": 90.581,
+          "system_ms": 28.292
+        }
+      },
+      "ready": {
+        "at": 888.167583,
+        "node": {
+          "user_ms": 91.394,
+          "system_ms": 28.746
+        }
+      },
+      "pid": 54117,
+      "vmm_ready": {
+        "user_ms": 4.9995,
+        "system_ms": 3.9937916666666666,
+        "footprint": 8241632,
+        "rss": 13156352,
+        "footprint_peak": 8241632,
+        "user_ticks": 119988,
+        "system_ticks": 95851
+      },
+      "watchdog_pid": 54114,
+      "watchdog_before": {
+        "user_ms": 3.0937916666666667,
+        "system_ms": 2.7345416666666664,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 74251,
+        "system_ticks": 65629
+      },
+      "before_run": {
+        "at": 894.043375,
+        "node": {
+          "user_ms": 91.574,
+          "system_ms": 28.784
+        }
+      },
+      "vmm_before_run": {
+        "user_ms": 4.9995,
+        "system_ms": 3.9937916666666666,
+        "footprint": 8241632,
+        "rss": 13156352,
+        "footprint_peak": 8241632,
+        "user_ticks": 119988,
+        "system_ticks": 95851
+      },
+      "vmm_done": {
+        "user_ms": 12.126666666666667,
+        "system_ms": 4.648833333333333,
+        "footprint": 8290784,
+        "rss": 13205504,
+        "footprint_peak": 8290784,
+        "user_ticks": 291040,
+        "system_ticks": 111572
+      },
+      "done_read": {
+        "at": 978.723792,
+        "node": {
+          "user_ms": 94.11,
+          "system_ms": 34.328
+        }
+      },
+      "resolved": {
+        "at": 979.159042,
+        "node": {
+          "user_ms": 94.233,
+          "system_ms": 34.454
+        }
+      },
+      "kill": {
+        "at": 983.0875,
+        "node": {
+          "user_ms": 94.917,
+          "system_ms": 35.208
+        }
+      },
+      "vmm_kill": {
+        "user_ms": 14.891166666666667,
+        "system_ms": 4.733583333333333,
+        "footprint": 8290784,
+        "rss": 13205504,
+        "footprint_peak": 8290784,
+        "user_ticks": 357388,
+        "system_ticks": 113606
+      },
+      "reaped": {
+        "at": 995.774083,
+        "node": {
+          "user_ms": 95.562,
+          "system_ms": 35.544
+        }
+      },
+      "vmm_reaped": {},
+      "after_close": {
+        "at": 995.808292,
+        "node": {
+          "user_ms": 95.589,
+          "system_ms": 35.549
+        }
+      },
+      "vmm_total": {
+        "user_ms": 15.332999999999998,
+        "system_ms": 5.447000000000003
+      },
+      "watchdog_after": {
+        "user_ms": 3.1111666666666666,
+        "system_ms": 2.75225,
+        "footprint": 1589584,
+        "rss": 6193152,
+        "footprint_peak": 1605968,
+        "user_ticks": 74668,
+        "system_ticks": 66054
+      },
+      "block": 0
+    }
+  ],
+  "method": "read-only libproc at READY/DONE, getrusage(CHILDREN) through reap, Node getrusage(SELF); refill disabled after warming; native watchdog shared across samples"
+}

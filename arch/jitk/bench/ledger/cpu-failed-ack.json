@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "start": "2026-10-25T07:00:59.311Z",
+  "load_start": [
+    41.40234375,
+    35.7099609375,
+    22.3037109375
+  ],
+  "samples": [],
+  "method": "read-only libproc at READY/DONE, getrusage(CHILDREN) through reap, Node getrusage(SELF); refill disabled after warming; native watchdog shared across samples",
+  "watchdogs": {
+    "raw": {
+      "pid": 68344,
+      "start": {
+        "user_ms": 3.499833333333333,
+        "system_ms": 2.743208333333333,
+        "footprint": 1524048,
+        "rss": 6029312,
+        "footprint_peak": 1556816,
+        "user_ticks": 83996,
+        "system_ticks": 65837
+      },
+      "end": {
+        "user_ms": 3.5160416666666667,
+        "system_ms": 2.7992916666666665,
+        "footprint": 1524048,
+        "rss": 6078464,
+        "footprint_peak": 1556816,
+        "user_ticks": 84385,
+        "system_ticks": 67183
+      }
+    },
+    "production": null
+  },
+  "end": "2026-10-25T07:00:59.431Z",
+  "load_end": [
+    41.40234375,
+    35.7099609375,
+    22.3037109375
+  ],
+  "status": "failed",
+  "failure": "Collector asserted stderr sandbox ack synchronously at stdout READY; separate pipes can deliver READY first. Fixed to await both. This failed collection is excluded."
+}
