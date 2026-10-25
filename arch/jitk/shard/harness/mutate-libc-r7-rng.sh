@@ -1,0 +1,40 @@
+#!/bin/sh
+# Run under flock /home/dev/bench.lock after the main measurements.
+# Mutates a task-owned copy, never the measured payload or source.
+set -eu
+ulimit -c 0
+cd /home/dev/r7-rng
+. /home/dev/.cargo/env
+mutation_dir=${1:-$PWD/mutations}
+mkdir "$mutation_dir"
+cp -a payload-final/quickjs/quickjs-2026-06-04 "$mutation_dir/libc-omitted"
+python3 - "$mutation_dir" <<'PY'
+from pathlib import Path
+import sys
+p=Path(sys.argv[1])/'libc-omitted/checkpoint.h';s=p.read_text()
+needle='__jitk_reseed_libc(keys+8);'
+assert s.count(needle)==1
+p.write_text(s.replace(needle,'(void)0; /* negative mutation: omit libc repair */'))
+PY
+rm -f "$mutation_dir/libc-omitted/.obj/quickjs-libc.o" "$mutation_dir/libc-omitted/qjs"
+make -C "$mutation_dir/libc-omitted" qjs CC=/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc \
+ CFLAGS='-O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\"' \
+ LDFLAGS='-static -no-pie -Wl,-z,max-page-size=4096' LDEXPORT= >raw/mutation-build.log 2>&1
+strip -o "$mutation_dir/qjs-libc-omitted" "$mutation_dir/libc-omitted/qjs"
+(
+ cd arch/jitk/kernel
+ CARGO_TARGET_DIR="$mutation_dir/target" \
+ JITK_ELF="$mutation_dir/qjs-libc-omitted" \
+ cargo +stable build --locked --offline --release --target aarch64-unknown-none --features transport-ring
+ llvm-objcopy -O binary "$mutation_dir/target/aarch64-unknown-none/release/jitk-02" \
+ "$mutation_dir/kernel-libc-omitted.bin"
+) >raw/mutation-kernel-build.log 2>&1
+bin=arch/jitk/shard/target/release/real
+"$bin" prepare "$mutation_dir/kernel-libc-omitted.bin" "$mutation_dir/prepared" >raw/mutation-prepare.jsonl 2>raw/mutation-prepare.stderr
+set +e
+"$bin" bench "$mutation_dir/prepared" rng_negative 1 >raw/mutation-libc.jsonl 2>raw/mutation-libc.stderr
+status=$?
+set -e
+test "$status" -ne 0
+grep -q 'FINISH without completion' raw/mutation-libc.stderr
+printf '{"omitted":"__jitk_reseed_libc","exit_status":%s,"rejected_before_tenant_result":true}\n' "$status" >raw/mutation-libc-result.json
