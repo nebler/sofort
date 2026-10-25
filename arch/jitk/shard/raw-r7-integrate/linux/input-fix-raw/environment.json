@@ -1,0 +1,16 @@
+{
+  "uname": [
+    "Linux",
+    "kvm-dev",
+    "7.0.0-38-generic",
+    "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026",
+    "aarch64"
+  ],
+  "load": [
+    0.259765625,
+    0.4609375,
+    1.2490234375
+  ],
+  "uptime": "44494.06 258107.76\n",
+  "nested": true
+}

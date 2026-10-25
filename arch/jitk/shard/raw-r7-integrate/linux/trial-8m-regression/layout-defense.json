@@ -1,0 +1,1 @@
+{"rejected": true, "returncode": -6, "stderr": "\nthread 'main' (134750) panicked at src/bin/../real_kvm.rs:134:9:\nsnapshot/layout mismatch\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"}

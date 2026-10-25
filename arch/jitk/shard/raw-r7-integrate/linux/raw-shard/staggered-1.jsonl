@@ -1,0 +1,10 @@
+{"event":"environment","pid":140038,"threads":5,"owners":4,"watchdog_processes":1,"nested":true,"loadavg":"3.53 2.73 1.69 1/184 140038","uptime":"45872.81 264669.02","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026"}
+{"event":"staggered_deadline","slot":1,"reset_error_latency_ns":2444818}
+{"event":"staggered_deadline","slot":0,"reset_error_latency_ns":2445152}
+{"event":"staggered_deadline","slot":3,"reset_error_latency_ns":2448402}
+{"event":"staggered_deadline","slot":2,"reset_error_latency_ns":2501610}
+{"event":"staggered_deadline","slot":4,"reset_error_latency_ns":4693430}
+{"event":"staggered_deadline","slot":5,"reset_error_latency_ns":4732222}
+{"event":"staggered_deadline","slot":6,"reset_error_latency_ns":4758847}
+{"event":"staggered_deadline","slot":7,"reset_error_latency_ns":4800722}
+{"event":"staggered_summary","runs":8,"unrelated_spins_survived_early_expiry":true}

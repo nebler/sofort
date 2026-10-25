@@ -1,0 +1,150 @@
+{
+  "arch/jitk/shard/target/release/real": {
+    "bytes": 660496,
+    "sha256": "d04500d46b09d39b05a1d9a4b2d9d001e1d14812606756137e20102bff412807"
+  },
+  "arch/jitk/shard/target/release/jitk-shard": {
+    "bytes": 529368,
+    "sha256": "c1f01dd12430fc72ac19b031698392cf7773dfed5e198b65c7ce1be04d89e511"
+  },
+  "images/busybox-r7.regs": {
+    "bytes": 6368,
+    "sha256": "325d25a0070c163d27f6972cedc9f038f8dbd8b95a5a40500c3e9bd0d1c8bd4c"
+  },
+  "images/lua-r7.mem": {
+    "bytes": 33554432,
+    "sha256": "65a6b943ee070f131f93bdd4923ab873b39c517d231b5a3ca4475a53d681875d"
+  },
+  "images/micropython-r7.regs": {
+    "bytes": 6368,
+    "sha256": "5171b1ab1b355c9762734d16a739a2f732d901db5cb2b1905c64ca4c2460e905"
+  },
+  "images/lua-r7.layout": {
+    "bytes": 72,
+    "sha256": "8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af"
+  },
+  "images/zstd-r7.regs": {
+    "bytes": 6368,
+    "sha256": "f35dd77a62ea733cb9c1986d0f3612398c3086a9666320d0e91d7eb8e65888af"
+  },
+  "images/busybox-r7.mem": {
+    "bytes": 33554432,
+    "sha256": "e2a2df93f116021952dae9de895f0e3540cc8813c4e2fb8f3e77013b08ee7e2d"
+  },
+  "images/micropython-r7.layout": {
+    "bytes": 72,
+    "sha256": "46e56d01d53ce757979bbde0b156e28b2bb596f50172a21a4ee0ba88dbffc7a1"
+  },
+  "images/zstd-r7.bin": {
+    "bytes": 25168400,
+    "sha256": "d5efbdac40e41d4f654f5a71837d95fe872cd995e91e2985022d15fc5eb7c889"
+  },
+  "images/busybox-r7.bin": {
+    "bytes": 25168400,
+    "sha256": "70729ffaa383cbe6487f339522fd53d216746c7693cf15616edbee8fb7ce0176"
+  },
+  "images/lua-r7.regs": {
+    "bytes": 6368,
+    "sha256": "289c93b2d88f0b915da4eba19433002bb8ae32d6649a58cec714a1b6fc73df03"
+  },
+  "images/sqlite3-r7.layout": {
+    "bytes": 72,
+    "sha256": "8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af"
+  },
+  "images/micropython-r7.mem": {
+    "bytes": 33554432,
+    "sha256": "ae933efe0e8073cf1e46db3dbc488650f9fa18bc1b03014f9d865d49f8fbb79e"
+  },
+  "images/sqlite3-r7.mem": {
+    "bytes": 33554432,
+    "sha256": "c567adad88506cb8002874189c1e1974eb7cce2be28703b3c60d41183db35b64"
+  },
+  "images/busybox-r7.layout": {
+    "bytes": 72,
+    "sha256": "8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af"
+  },
+  "images/jq-musl-r7.mem": {
+    "bytes": 33554432,
+    "sha256": "e1ffc800ab8a3181f0c376c89a2e346f99681fd1cf9a10480ac1235623c157c4"
+  },
+  "images/sqlite3-r7.bin": {
+    "bytes": 25168400,
+    "sha256": "4ac7588e697d46be69b6e9359ede190367f2e29c69ed08abb96d28df436a9ed3"
+  },
+  "images/zstd-r7.layout": {
+    "bytes": 72,
+    "sha256": "46e56d01d53ce757979bbde0b156e28b2bb596f50172a21a4ee0ba88dbffc7a1"
+  },
+  "images/sqlite3-r7.regs": {
+    "bytes": 6368,
+    "sha256": "7aca47f66d0e942190e4f7df5845daaf5ae532ad7dc42be888f8ae0ae78bbb7d"
+  },
+  "images/jq-musl-r7.regs": {
+    "bytes": 6368,
+    "sha256": "4fd44f8f3e6809481416f12ea4ed27ba8b85bbfd362bbea2b32f56776ee7007c"
+  },
+  "images/zstd-r7.mem": {
+    "bytes": 33554432,
+    "sha256": "39052c358715d5da80147b0145530830b0bd0817cb79b1c1f731b81fe0892b77"
+  },
+  "images/jq-musl-r7.layout": {
+    "bytes": 72,
+    "sha256": "8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af"
+  },
+  "images/jq-musl-r7.bin": {
+    "bytes": 25168400,
+    "sha256": "764b428ad911b835c82439408cd3c6b7612dc84f8b7aef95e7722559e3527a73"
+  },
+  "images/lua-r7.bin": {
+    "bytes": 25168400,
+    "sha256": "9bd65106a4bdb0c4d30b23acd6a867a23b74a7cc4851a30711c7ac85b079ce7a"
+  },
+  "images/micropython-r7.bin": {
+    "bytes": 25168400,
+    "sha256": "44d19bde552689f2581c95b6757453e210e906a2c1a9ed49574a1ccfc82d7f0a"
+  },
+  "qjs-glue-2m.layout": {
+    "bytes": 72,
+    "sha256": "8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af"
+  },
+  "qjs-glue-2m.regs": {
+    "bytes": 6368,
+    "sha256": "8eec07cb7ae05ce9932bdb34995d54b6c32fa355d2c54b1f021025748369a12f"
+  },
+  "qjs-glue-4m.bin": {
+    "bytes": 25168400,
+    "sha256": "06caf881fba683ccf95ff46692da24868b00283b92a2f2f5ab1bde125a7e9edc"
+  },
+  "qjs-glue-2m.bin": {
+    "bytes": 25168400,
+    "sha256": "e2166da8f5f654652e746efd4661d99bada7e8c7c983b9317706ff7319f246b3"
+  },
+  "qjs-glue-4m.regs": {
+    "bytes": 6368,
+    "sha256": "29eda3720ce279b7a3bf42ee715e2af48f163b4ef0fa82567baa087f8f8a3b88"
+  },
+  "qjs-glue-4m.mem": {
+    "bytes": 33554432,
+    "sha256": "7da34c96f0af7dc909303069884bd7d7764892fd2b6386e8fcbeef4b583217e8"
+  },
+  "qjs-glue-2m.mem": {
+    "bytes": 33554432,
+    "sha256": "3c45ea9ddbd3368877c23c5e48f53d6ff117bf42b57460e07c0dea555b700279"
+  },
+  "qjs-glue-4m.layout": {
+    "bytes": 72,
+    "sha256": "46e56d01d53ce757979bbde0b156e28b2bb596f50172a21a4ee0ba88dbffc7a1"
+  },
+  "trace-zstd-4m.bin": {
+    "bytes": 25168400,
+    "sha256": "4213253f61f1f3b0bf3a3121c9069f153e614ef87b6f41d32bbad871607b2a16"
+  },
+  "trace-zstd-8m.bin": {
+    "bytes": 23071248,
+    "sha256": "5d0a26ea5cd3588cd57f46f3d4e4a5837ae4316e57a42deeb556f4300b068438"
+  },
+  "trace-micropython-2m.bin": {
+    "bytes": 25168400,
+    "sha256": "da1ed127b0158c25e4c2818da85495b870752983487c2219b50d328b4da11942"
+  }
+}

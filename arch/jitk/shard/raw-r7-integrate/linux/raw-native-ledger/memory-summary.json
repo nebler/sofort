@@ -1,0 +1,970 @@
+{
+  "tools": {
+    "busybox": {
+      "marginal_mib": 0.7453655773870845,
+      "components_bytes": {
+        "current": 781572.4556742396,
+        "anon": 359278.8088705742,
+        "file": 180224.0,
+        "kernel": 239739.88902745396,
+        "pagetables": 12783.334020134107,
+        "kernel_stack": 0.0,
+        "slab": 46730.88998536029,
+        "Pss": 539119.0841692421,
+        "Private_Dirty": 539119.9262592853
+      },
+      "curves": [
+        {
+          "current": {
+            "bytes_per_vm": 781231.3999530084,
+            "fixed_bytes": 1443718.5539590418,
+            "r2": 0.9999974026770831
+          },
+          "anon": {
+            "bytes_per_vm": 359015.3734931049,
+            "fixed_bytes": 943994.7832059152,
+            "r2": 0.9999893177612229
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239726.04543729327,
+            "fixed_bytes": 79304.67190804332,
+            "r2": 0.999999987796478
+          },
+          "pagetables": {
+            "bytes_per_vm": 12773.858193713966,
+            "fixed_bytes": 56346.44717959827,
+            "r2": 0.9999978098694574
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46743.94606806557,
+            "fixed_bytes": 5234.5437654759735,
+            "r2": 0.9999996424320156
+          },
+          "Pss": {
+            "bytes_per_vm": 538823.8436986029,
+            "fixed_bytes": 3841083.1683927104,
+            "r2": 0.9999947244658548
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 538823.8436986029,
+            "fixed_bytes": 941115.1683927104,
+            "r2": 0.9999947244658548
+          }
+        },
+        {
+          "current": {
+            "bytes_per_vm": 781913.5113954707,
+            "fixed_bytes": 1068810.6649315953,
+            "r2": 0.9999952604263903
+          },
+          "anon": {
+            "bytes_per_vm": 359542.2442480435,
+            "fixed_bytes": 904725.9221023358,
+            "r2": 0.9999823996731875
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239753.73261761465,
+            "fixed_bytes": 74924.02696596459,
+            "r2": 0.999999998125961
+          },
+          "pagetables": {
+            "bytes_per_vm": 12792.809846554248,
+            "fixed_bytes": 54749.77042780467,
+            "r2": 0.9999988973257343
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46717.833902655024,
+            "fixed_bytes": 7588.493701314088,
+            "r2": 0.9999996136635267
+          },
+          "Pss": {
+            "bytes_per_vm": 539414.3246398814,
+            "fixed_bytes": 3806951.149089992,
+            "r2": 0.9999913121741478
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 539416.0088199679,
+            "fixed_bytes": 906585.2569177076,
+            "r2": 0.9999912696074088
+          }
+        }
+      ],
+      "cells": [
+        {
+          "n": 1,
+          "rep": 0,
+          "bytes": 2088960,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 0,
+          "bytes": 14147584,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 0,
+          "bytes": 51367936,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 0,
+          "bytes": 201445376,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 1,
+          "rep": 1,
+          "bytes": 1863680,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 1,
+          "bytes": 13357056,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 1,
+          "bytes": 51372032,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 1,
+          "bytes": 201187328,
+          "idle_cpu_usec": 0
+        }
+      ],
+      "max_abs_residual_percent": 10.588235294117647
+    },
+    "jq-musl": {
+      "marginal_mib": 1.2779002930199352,
+      "components_bytes": {
+        "current": 1339975.5776536716,
+        "anon": 918715.3511540061,
+        "file": 180224.0,
+        "kernel": 239778.16248260404,
+        "pagetables": 12813.87135137089,
+        "kernel_stack": 0.0,
+        "slab": 46737.51038334327,
+        "Pss": 1028538.5877207251,
+        "Private_Dirty": 1028536.9960780061
+      },
+      "curves": [
+        {
+          "current": {
+            "bytes_per_vm": 1340183.083446294,
+            "fixed_bytes": 1176487.219649732,
+            "r2": 0.9999979868994218
+          },
+          "anon": {
+            "bytes_per_vm": 918562.5534529813,
+            "fixed_bytes": 790432.8715863228,
+            "r2": 0.9999954703350435
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239784.15890401055,
+            "fixed_bytes": 71336.61233711243,
+            "r2": 0.9999999842054862
+          },
+          "pagetables": {
+            "bytes_per_vm": 12826.715537963817,
+            "fixed_bytes": 49845.215926548466,
+            "r2": 0.999997705033562
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46719.273147897125,
+            "fixed_bytes": 8983.23728966713,
+            "r2": 0.9999999541174869
+          },
+          "Pss": {
+            "bytes_per_vm": 1028530.4999548157,
+            "fixed_bytes": 3687937.37880677,
+            "r2": 0.999995775808072
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 1028533.7387626742,
+            "fixed_bytes": 791536.5092446953,
+            "r2": 0.9999957620893811
+          }
+        },
+        {
+          "current": {
+            "bytes_per_vm": 1339768.0718610494,
+            "fixed_bytes": 1168443.945706591,
+            "r2": 0.9999995026269963
+          },
+          "anon": {
+            "bytes_per_vm": 918868.1488550308,
+            "fixed_bytes": 596750.4589636624,
+            "r2": 0.9999917897083979
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239772.16606119755,
+            "fixed_bytes": 70299.00934410468,
+            "r2": 0.9999999833566382
+          },
+          "pagetables": {
+            "bytes_per_vm": 12801.027164777965,
+            "fixed_bytes": 48937.461367456475,
+            "r2": 0.9999999775253012
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46755.74761878942,
+            "fixed_bytes": 6258.263116991147,
+            "r2": 0.9999995198915351
+          },
+          "Pss": {
+            "bytes_per_vm": 1028546.6754866345,
+            "fixed_bytes": 3526318.5902510434,
+            "r2": 0.9999936817284775
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 1028540.2533933381,
+            "fixed_bytes": 631243.6516112685,
+            "r2": 0.999993706903998
+          }
+        }
+      ],
+      "cells": [
+        {
+          "n": 1,
+          "rep": 0,
+          "bytes": 2347008,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 0,
+          "bytes": 22536192,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 0,
+          "bytes": 87277568,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 0,
+          "bytes": 344186880,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 1,
+          "rep": 1,
+          "bytes": 2613248,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 1,
+          "bytes": 22618112,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 1,
+          "bytes": 86757376,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 1,
+          "bytes": 344186880,
+          "idle_cpu_usec": 0
+        }
+      ],
+      "max_abs_residual_percent": 19.022687609075042
+    },
+    "lua": {
+      "marginal_mib": 0.5205733826293626,
+      "components_bytes": {
+        "current": 545860.7552639665,
+        "anon": 124088.53801803755,
+        "file": 180224.0,
+        "kernel": 239754.10276708417,
+        "pagetables": 12774.857597281714,
+        "kernel_stack": 0.0,
+        "slab": 46718.796508160274,
+        "Pss": 233897.76442733468,
+        "Private_Dirty": 233898.85636826983
+      },
+      "curves": [
+        {
+          "current": {
+            "bytes_per_vm": 545457.6624916409,
+            "fixed_bytes": 1105159.9350792542,
+            "r2": 0.999997682331304
+          },
+          "anon": {
+            "bytes_per_vm": 123144.06463156753,
+            "fixed_bytes": 857368.5547904354,
+            "r2": 0.9996787756111173
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239805.33145366807,
+            "fixed_bytes": 71600.8250284642,
+            "r2": 0.9999999717017599
+          },
+          "pagetables": {
+            "bytes_per_vm": 12805.765077988035,
+            "fixed_bytes": 52634.292179508135,
+            "r2": 0.9999952429217758
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46707.7392325905,
+            "fixed_bytes": 8126.969654250424,
+            "r2": 0.9999999854926271
+          },
+          "Pss": {
+            "bytes_per_vm": 232940.18774964305,
+            "fixed_bytes": 3775493.1820925735,
+            "r2": 0.9998984274066791
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 232941.87192972944,
+            "fixed_bytes": 875127.2899202928,
+            "r2": 0.9998985759879605
+          }
+        },
+        {
+          "current": {
+            "bytes_per_vm": 546263.848036292,
+            "fixed_bytes": 781238.8029423952,
+            "r2": 0.9999970374035008
+          },
+          "anon": {
+            "bytes_per_vm": 125033.01140450758,
+            "fixed_bytes": 436080.78917023726,
+            "r2": 0.9999836708939107
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239702.87408050027,
+            "fixed_bytes": 80232.85871785134,
+            "r2": 0.9999999998557819
+          },
+          "pagetables": {
+            "bytes_per_vm": 12743.950116575394,
+            "fixed_bytes": 58866.20267852303,
+            "r2": 0.99999862132667
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46729.853783730054,
+            "fixed_bytes": 8285.81872074306,
+            "r2": 0.9999999391083652
+          },
+          "Pss": {
+            "bytes_per_vm": 234855.3411050263,
+            "fixed_bytes": 3329469.511901535,
+            "r2": 0.9999913616887476
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 234855.84080681019,
+            "fixed_bytes": 429203.4120262414,
+            "r2": 0.9999912616143597
+          }
+        }
+      ],
+      "cells": [
+        {
+          "n": 1,
+          "rep": 0,
+          "bytes": 1622016,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 0,
+          "bytes": 9953280,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 0,
+          "bytes": 35901440,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 0,
+          "bytes": 140763136,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 1,
+          "rep": 1,
+          "bytes": 1298432,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 1,
+          "bytes": 9424896,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 1,
+          "bytes": 35901440,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 1,
+          "bytes": 140591104,
+          "idle_cpu_usec": 0
+        }
+      ],
+      "max_abs_residual_percent": 14.511041009463725
+    },
+    "micropython": {
+      "marginal_mib": 2.4879993778692007,
+      "components_bytes": {
+        "current": 2608856.435648575,
+        "anon": 2183731.441522529,
+        "file": 180224.0,
+        "kernel": 243853.84127672648,
+        "pagetables": 16885.441486381464,
+        "kernel_stack": 0.0,
+        "slab": 46735.41383361348,
+        "Pss": 2293500.099549965,
+        "Private_Dirty": 2293498.822534295
+      },
+      "curves": [
+        {
+          "current": {
+            "bytes_per_vm": 2607289.8520486546,
+            "fixed_bytes": 1510613.9649008512,
+            "r2": 0.9999995570227108
+          },
+          "anon": {
+            "bytes_per_vm": 2183169.9988071355,
+            "fixed_bytes": 1010519.6004988253,
+            "r2": 0.9999999999372184
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 243824.04424442878,
+            "fixed_bytes": 78112.27240687609,
+            "r2": 0.9999999956702457
+          },
+          "pagetables": {
+            "bytes_per_vm": 16871.857000849464,
+            "fixed_bytes": 55154.04767843266,
+            "r2": 0.9999995454857735
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46729.64687596016,
+            "fixed_bytes": 8681.250700356439,
+            "r2": 0.9999996573590442
+          },
+          "Pss": {
+            "bytes_per_vm": 2293096.4700609082,
+            "fixed_bytes": 3849822.3973684907,
+            "r2": 0.9999999935581537
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 2293096.4700609082,
+            "fixed_bytes": 1019486.3973684907,
+            "r2": 0.9999999935581537
+          }
+        },
+        {
+          "current": {
+            "bytes_per_vm": 2610423.0192484953,
+            "fixed_bytes": 876980.6283142567,
+            "r2": 0.9999987491193616
+          },
+          "anon": {
+            "bytes_per_vm": 2184292.8842379223,
+            "fixed_bytes": 653772.5029550493,
+            "r2": 0.9999988659374538
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 243883.6383090242,
+            "fixed_bytes": 70019.47246471047,
+            "r2": 0.9999999944133583
+          },
+          "pagetables": {
+            "bytes_per_vm": 16899.025971913463,
+            "fixed_bytes": 51841.06186629087,
+            "r2": 0.9999990421544989
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46741.18079126679,
+            "fixed_bytes": 6201.518335773144,
+            "r2": 0.9999994656210247
+          },
+          "Pss": {
+            "bytes_per_vm": 2293903.7290390213,
+            "fixed_bytes": 3518130.8284624517,
+            "r2": 0.9999990257054808
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 2293901.1750076814,
+            "fixed_bytes": 687498.0056028366,
+            "r2": 0.9999990245517731
+          }
+        }
+      ],
+      "cells": [
+        {
+          "n": 1,
+          "rep": 0,
+          "bytes": 3923968,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 0,
+          "bytes": 43507712,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 0,
+          "bytes": 168284160,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 0,
+          "bytes": 668983296,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 1,
+          "rep": 1,
+          "bytes": 3923968,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 1,
+          "bytes": 42455040,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 1,
+          "bytes": 167600128,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 1,
+          "bytes": 669241344,
+          "idle_cpu_usec": 0
+        }
+      ],
+      "max_abs_residual_percent": 5.949895615866389
+    },
+    "sqlite3": {
+      "marginal_mib": 0.6679348618039365,
+      "components_bytes": {
+        "current": 700380.4656509245,
+        "anon": 278224.7735545555,
+        "file": 180224.0,
+        "kernel": 239764.8000867538,
+        "pagetables": 12793.03193623597,
+        "kernel_stack": 0.0,
+        "slab": 46746.62538632544,
+        "Pss": 405989.0346111442,
+        "Private_Dirty": 405988.00744636625
+      },
+      "curves": [
+        {
+          "current": {
+            "bytes_per_vm": 697784.3113014875,
+            "fixed_bytes": 1453591.772849679,
+            "r2": 0.9999996292311867
+          },
+          "anon": {
+            "bytes_per_vm": 276613.8830631315,
+            "fixed_bytes": 910832.3519311734,
+            "r2": 0.9999613132678601
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239752.69619909994,
+            "fixed_bytes": 77059.34522582963,
+            "r2": 0.9999999333920983
+          },
+          "pagetables": {
+            "bytes_per_vm": 12776.81938947026,
+            "fixed_bytes": 56096.9664371307,
+            "r2": 0.9999857715921115
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46751.18784001157,
+            "fixed_bytes": 4938.424479025416,
+            "r2": 0.9999996285710571
+          },
+          "Pss": {
+            "bytes_per_vm": 404420.49847277196,
+            "fixed_bytes": 3802261.003668964,
+            "r2": 0.9999861664484441
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 404420.49847277196,
+            "fixed_bytes": 918677.0036689639,
+            "r2": 0.9999861664484441
+          }
+        },
+        {
+          "current": {
+            "bytes_per_vm": 702976.6200003615,
+            "fixed_bytes": 866635.7649695501,
+            "r2": 0.9999812886365362
+          },
+          "anon": {
+            "bytes_per_vm": 279835.6640459795,
+            "fixed_bytes": 639397.3041262254,
+            "r2": 0.999937250482293
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 239776.90397440764,
+            "fixed_bytes": 69899.84015615657,
+            "r2": 0.9999999954221888
+          },
+          "pagetables": {
+            "bytes_per_vm": 12809.244483001681,
+            "fixed_bytes": 51317.15230710828,
+            "r2": 0.9999981818876094
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46742.0629326393,
+            "fixed_bytes": 7377.197925138753,
+            "r2": 0.999999965190206
+          },
+          "Pss": {
+            "bytes_per_vm": 407557.57074951654,
+            "fixed_bytes": 3534634.664353229,
+            "r2": 0.9999732424637192
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 407555.5164199606,
+            "fixed_bytes": 650455.7416183203,
+            "r2": 0.9999732888968188
+          }
+        }
+      ],
+      "cells": [
+        {
+          "n": 1,
+          "rep": 0,
+          "bytes": 2088960,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 0,
+          "bytes": 12677120,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 0,
+          "bytes": 46120960,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 0,
+          "bytes": 180080640,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 1,
+          "rep": 1,
+          "bytes": 1298432,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 1,
+          "bytes": 12607488,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 1,
+          "bytes": 45600768,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 1,
+          "bytes": 180862976,
+          "idle_cpu_usec": 0
+        }
+      ],
+      "max_abs_residual_percent": 14.901960784313726
+    },
+    "zstd": {
+      "marginal_mib": 2.6958386848442952,
+      "components_bytes": {
+        "current": 2826791.7447992917,
+        "anon": 2400702.4002602613,
+        "file": 180224.0,
+        "kernel": 243835.51887798443,
+        "pagetables": 16870.857597281713,
+        "kernel_stack": 0.0,
+        "slab": 46733.78163350142,
+        "Pss": 2580661.937718014,
+        "Private_Dirty": 2580662.1875689058
+      },
+      "curves": [
+        {
+          "current": {
+            "bytes_per_vm": 2826834.7561676516,
+            "fixed_bytes": 1172547.7928753495,
+            "r2": 0.9999999578003625
+          },
+          "anon": {
+            "bytes_per_vm": 2400423.6777097,
+            "fixed_bytes": 904401.1529577672,
+            "r2": 0.9999995942124934
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 243848.4741094182,
+            "fixed_bytes": 74006.05628151819,
+            "r2": 0.9999999243915835
+          },
+          "pagetables": {
+            "bytes_per_vm": 16884.81223228325,
+            "fixed_bytes": 53038.56943013612,
+            "r2": 0.9999966112224439
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46732.064559272716,
+            "fixed_bytes": 3471.560881273821,
+            "r2": 0.9999995191190577
+          },
+          "Pss": {
+            "bytes_per_vm": 2580418.1110086935,
+            "fixed_bytes": 3728478.147517562,
+            "r2": 0.9999996059009485
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 2580418.1110086935,
+            "fixed_bytes": 902238.1475175619,
+            "r2": 0.9999996059009485
+          }
+        },
+        {
+          "current": {
+            "bytes_per_vm": 2826748.7334309313,
+            "fixed_bytes": 1239187.208444029,
+            "r2": 0.9999996532100539
+          },
+          "anon": {
+            "bytes_per_vm": 2400981.1228108224,
+            "fixed_bytes": 859484.4031881988,
+            "r2": 0.9999996869060597
+          },
+          "file": {
+            "bytes_per_vm": 180224.0,
+            "fixed_bytes": 0.0,
+            "r2": 1.0
+          },
+          "kernel": {
+            "bytes_per_vm": 243822.56364655064,
+            "fixed_bytes": 74141.01277810708,
+            "r2": 0.9999999969268769
+          },
+          "pagetables": {
+            "bytes_per_vm": 16856.90296228018,
+            "fixed_bytes": 54365.92542789481,
+            "r2": 0.9999987821599805
+          },
+          "kernel_stack": {
+            "bytes_per_vm": 0.0,
+            "fixed_bytes": 0.0,
+            "r2": 1
+          },
+          "slab": {
+            "bytes_per_vm": 46735.49870773013,
+            "fixed_bytes": 7404.233873737045,
+            "r2": 0.9999992866590476
+          },
+          "Pss": {
+            "bytes_per_vm": 2580905.7644273345,
+            "fixed_bytes": 3681505.3469970524,
+            "r2": 0.9999997503607956
+          },
+          "Private_Dirty": {
+            "bytes_per_vm": 2580906.2641291185,
+            "fixed_bytes": 854967.2471217513,
+            "r2": 0.9999997511711828
+          }
+        }
+      ],
+      "cells": [
+        {
+          "n": 1,
+          "rep": 0,
+          "bytes": 3923968,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 0,
+          "bytes": 46411776,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 0,
+          "bytes": 182177792,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 0,
+          "bytes": 724819968,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 1,
+          "rep": 1,
+          "bytes": 3919872,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 16,
+          "rep": 1,
+          "bytes": 46391296,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 64,
+          "rep": 1,
+          "bytes": 182439936,
+          "idle_cpu_usec": 0
+        },
+        {
+          "n": 256,
+          "rep": 1,
+          "bytes": 724819968,
+          "idle_cpu_usec": 0
+        }
+      ],
+      "max_abs_residual_percent": 9.404388714733543
+    }
+  }
+}

@@ -1,0 +1,8 @@
+watchdog escalation: shard=140419 slot=0 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=1 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=2 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=3 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=4 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=5 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=6 generation=2 grace_ns=100000000
+watchdog escalation: shard=140419 slot=7 generation=2 grace_ns=100000000

@@ -1,0 +1,3 @@
+{'profile': 'zstd-4m', 'worker_status': 0, 'exit_code': 11, 'stdout_bytes': 0, 'stderr_bytes': 55, 'limited': 0}
+{'profile': 'micropython-2m', 'worker_status': 1, 'exit_code': 0, 'stdout_bytes': 0, 'stderr_bytes': 0, 'limited': 0}
+{'profile': 'zstd-8m', 'worker_status': 0, 'exit_code': 0, 'stdout_bytes': 160019, 'stderr_bytes': 0, 'limited': 0}

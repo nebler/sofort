@@ -1,0 +1,42 @@
+MEM enter seq=1 n=214 a0=0 a1=4096
+MEM exit seq=1 ret=6815744
+MEM enter seq=2 n=214 a0=6823936 a1=4095
+MEM exit seq=2 ret=6823936
+MEM enter seq=3 n=222 a0=6815744 a1=4096
+MEM exit seq=3 ret=-22
+MEM enter seq=4 n=222 a0=0 a1=4096
+MEM exit seq=4 ret=8388608
+MEM enter seq=5 n=222 a0=0 a1=16384
+MEM exit seq=5 ret=8392704
+MEM enter seq=6 n=222 a0=0 a1=131611
+MEM exit seq=6 ret=8409088
+MEM enter seq=7 n=222 a0=0 a1=131611
+MEM exit seq=7 ret=8544256
+MEM enter seq=8 n=222 a0=0 a1=131092
+MEM exit seq=8 ret=8679424
+MEM enter seq=9 n=222 a0=0 a1=131092
+MEM exit seq=9 ret=8814592
+MEM enter seq=10 n=222 a0=0 a1=262164
+MEM exit seq=10 ret=8949760
+MEM enter seq=11 n=222 a0=0 a1=4096
+MEM exit seq=11 ret=9216000
+MEM enter seq=12 n=222 a0=0 a1=1458829
+MEM exit seq=12 ret=9220096
+MEM enter seq=13 n=215 a0=9216000 a1=4096
+MEM exit seq=13 ret=0
+MEM enter seq=14 n=215 a0=8409088 a1=135168
+MEM exit seq=14 ret=0
+MEM enter seq=15 n=215 a0=8544256 a1=135168
+MEM exit seq=15 ret=0
+MEM enter seq=16 n=215 a0=8814592 a1=135168
+MEM exit seq=16 ret=0
+MEM enter seq=17 n=215 a0=8679424 a1=135168
+MEM exit seq=17 ret=0
+MEM enter seq=18 n=215 a0=8949760 a1=266240
+MEM exit seq=18 ret=0
+MEM enter seq=19 n=215 a0=9220096 a1=1462272
+MEM exit seq=19 ret=0
+MEM enter seq=20 n=215 a0=8392704 a1=16384
+MEM exit seq=20 ret=0
+MEM enter seq=21 n=215 a0=8388608 a1=4096
+MEM exit seq=21 ret=0

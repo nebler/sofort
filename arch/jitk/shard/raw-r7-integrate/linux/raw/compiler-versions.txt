@@ -1,0 +1,13 @@
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+binary: rustc
+commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67
+commit-date: 2026-10-13
+host: aarch64-unknown-linux-gnu
+release: 1.99.1
+LLVM version: 23.1.1
+Ubuntu clang version 21.1.8 (6ubuntu1)
+Target: aarch64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-21/bin
+Linux kvm-dev 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026 aarch64 GNU/Linux
+ 23:20:58 up 13:33,  1 user,  load average: 0.08, 0.23, 0.81

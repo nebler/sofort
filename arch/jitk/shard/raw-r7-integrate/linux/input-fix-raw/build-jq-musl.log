@@ -1,0 +1,19 @@
+   Compiling jitk-02 v0.3.0 (/home/dev/r7-integrate/arch/jitk/kernel)
+warning: unused import: `asm`
+ --> src/main.rs:5:12
+  |
+5 |     arch::{asm, global_asm},
+  |            ^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `park` is never used
+ --> src/arch/aarch64/wait.rs:6:15
+  |
+6 | pub unsafe fn park(deadline: u64) {
+  |               ^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `jitk-02` (bin "jitk-02") generated 2 warnings (run `cargo fix --bin "jitk-02" -p jitk-02` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 0.66s

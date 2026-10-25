@@ -1,0 +1,121 @@
+make: Entering directory '/home/dev/r7-integrate/arch/jitk/shard'
+cargo +stable test --locked --offline
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/main.rs (target/debug/deps/jitk_shard-5e2338d043a25c73)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/real.rs (target/debug/deps/real-9c73b479be233539)
+
+running 15 tests
+test kvm::native::inputs::tests::bounded_tree_and_binary_data ... ok
+test kvm::native::inputs::tests::hostile_inputs ... ok
+test arena::tests::only_the_class_arena_and_rings_are_writable ... ok
+test arena::tests::layouts_reject_legacy_unknown_and_modified_bounds ... ok
+test entropy::chacha_zero_key_counter_one ... ok
+test kvm::native::streams::tests::completion_and_log_contracts ... ok
+test kvm::native::streams::tests::hostile_headers_and_cursors ... ok
+test kvm::native::streams::tests::stream_budgets_duplicates_and_terminal_order ... ok
+test kvm::native::streams::tests::arbitrary_bytes_streams_and_status ... ok
+test lease::tests::kick_between_entries_yields_before_running_another_slot ... ok
+test lease::tests::expiry_requires_reset_acknowledgement_before_reuse ... ok
+test lease::tests::escalation_claim_loses_to_reset_and_new_generation ... ok
+test lease::tests::stale_generation_cannot_expire_or_disarm_reused_slot ... ok
+test kvm::native::streams::tests::wraps_and_repeated_credit ... ok
+test kvm::native::streams::tests::header_fuzz_never_reads_past_a_committed_record ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+python3 harness/check-native-r7.py
+jq-musl prepared
+sqlite3 prepared
+lua prepared
+micropython prepared
+busybox prepared
+zstd prepared
+jq-musl aggregate PASS 2 0 0
+jq-musl binary PASS 3 0 0
+jq-musl bad-json PASS 0 61 5
+jq-musl partial-error PASS 2 61 5
+jq-musl missing PASS 0 71 2
+sqlite3 aggregate PASS 3 0 0
+sqlite3 ordered PASS 10 0 0
+sqlite3 integrity PASS 3 0 0
+sqlite3 bad-query PASS 0 82 1
+sqlite3 missing-table PASS 0 48 1
+sqlite3 readonly PASS 0 58 8
+busybox sed PASS 23 0 0
+busybox awk PASS 3 0 0
+busybox grep PASS 16 0 0
+busybox sort PASS 23 0 0
+busybox wc PASS 17 0 0
+busybox tar PASS 10 0 0
+busybox sed-error PASS 0 27 1
+busybox awk-error PASS 0 35 1
+busybox grep-error PASS 0 33 2
+busybox sort-error PASS 0 46 2
+busybox wc-error PASS 0 44 1
+busybox tar-error PASS 0 16 1
+busybox grep-nomatch PASS 0 0 1
+busybox gzip-text PASS 39 0 0
+busybox gzip-binary PASS 160118 0 0
+busybox gzip-invalid-option PASS 0 29 1
+zstd compress-text PASS 36 0 0
+zstd compress-binary PASS 160019 0 0
+zstd corrupt PASS 0 42 1
+lua sum PASS 3 0 0
+lua file-binary PASS 160000 0 0
+lua binary-status PASS 3 4 42
+lua error PASS 0 114 1
+lua exit255 PASS 0 0 255
+lua stdin-eof PASS 1 0 0
+lua late-bind-a PASS 7 0 0
+lua late-bind-b PASS 7 0 0
+micropython sum PASS 3 0 0
+micropython binary-status PASS 3 4 7
+micropython error PASS 89 0 1
+jq-musl aggregate PASS 2 0 0
+jq-musl binary PASS 3 0 0
+jq-musl bad-json PASS 0 61 5
+jq-musl partial-error PASS 2 61 5
+jq-musl missing PASS 0 71 2
+sqlite3 aggregate PASS 3 0 0
+sqlite3 ordered PASS 10 0 0
+sqlite3 integrity PASS 3 0 0
+sqlite3 bad-query PASS 0 82 1
+sqlite3 missing-table PASS 0 48 1
+sqlite3 readonly PASS 0 58 8
+busybox sed PASS 23 0 0
+busybox awk PASS 3 0 0
+busybox grep PASS 16 0 0
+busybox sort PASS 23 0 0
+busybox wc PASS 17 0 0
+busybox tar PASS 10 0 0
+busybox sed-error PASS 0 27 1
+busybox awk-error PASS 0 35 1
+busybox grep-error PASS 0 33 2
+busybox sort-error PASS 0 46 2
+busybox wc-error PASS 0 44 1
+busybox tar-error PASS 0 16 1
+busybox grep-nomatch PASS 0 0 1
+busybox gzip-text PASS 39 0 0
+busybox gzip-binary PASS 160118 0 0
+busybox gzip-invalid-option PASS 0 29 1
+zstd compress-text PASS 36 0 0
+zstd compress-binary PASS 160019 0 0
+zstd corrupt PASS 0 42 1
+lua sum PASS 3 0 0
+lua file-binary PASS 160000 0 0
+lua binary-status PASS 3 4 42
+lua error PASS 0 114 1
+lua exit255 PASS 0 0 255
+lua stdin-eof PASS 1 0 0
+lua late-bind-a PASS 7 0 0
+lua late-bind-b PASS 7 0 0
+micropython sum PASS 3 0 0
+micropython binary-status PASS 3 4 7
+micropython error PASS 89 0 1
+native regression: 41/41 exact twice; fd and region probes PASS
+make: Leaving directory '/home/dev/r7-integrate/arch/jitk/shard'

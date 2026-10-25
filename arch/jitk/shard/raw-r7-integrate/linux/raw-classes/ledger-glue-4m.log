@@ -1,0 +1,8 @@
+{"event": "cell", "fixture": "attack_hold", "n": 1, "rep": 0, "memory_current": 5226496, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 16, "rep": 0, "memory_current": 53850112, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 64, "rep": 0, "memory_current": 210325504, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 256, "rep": 0, "memory_current": 835469312, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 1, "rep": 1, "memory_current": 5222400, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 16, "rep": 1, "memory_current": 53825536, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 64, "rep": 1, "memory_current": 210731008, "idle_cpu_usec": 0}
+{"event": "cell", "fixture": "attack_hold", "n": 256, "rep": 1, "memory_current": 835330048, "idle_cpu_usec": 0}
