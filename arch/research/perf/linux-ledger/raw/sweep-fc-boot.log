@@ -1,0 +1,10 @@
+P 87374
+{"kind": "fc-boot", "rep": 0, "n": 1, "cgroup_MiB": 9.1953125, "pss_MiB": 9.89453125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 0, "n": 16, "cgroup_MiB": 141.6328125, "pss_MiB": 127.7734375, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 0, "n": 64, "cgroup_MiB": 563.60546875, "pss_MiB": 504.6328125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 0, "n": 256, "cgroup_MiB": 2252.90625, "pss_MiB": 2012.5703125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 1, "n": 1, "cgroup_MiB": 9.1953125, "pss_MiB": 9.89453125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 1, "n": 16, "cgroup_MiB": 140.79296875, "pss_MiB": 127.75, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 1, "n": 64, "cgroup_MiB": 563.6171875, "pss_MiB": 504.62890625, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-boot", "rep": 1, "n": 256, "cgroup_MiB": 2252.69140625, "pss_MiB": 2012.9453125, "parent_peak_MiB": 2744.66015625}
+R {"user_ms_including_guest":4062.048000,"system_ms":14205.342000,"guest_ticks":0,"tick_hz":100}

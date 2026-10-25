@@ -1,0 +1,3 @@
+P 87364
+snapshot saved RAM=10
+R {"user_ms_including_guest":81.246000,"system_ms":37.714000,"guest_ticks":0,"tick_hz":100}

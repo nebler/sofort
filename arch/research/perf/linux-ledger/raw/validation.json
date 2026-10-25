@@ -1,0 +1,18 @@
+{
+  "families": 9,
+  "completed_memory_curves": 18,
+  "population_points_per_curve": [
+    1,
+    16,
+    64,
+    256
+  ],
+  "samples_per_point": 3,
+  "interleaved_boot_samples": 270,
+  "jitk_return2_exit0": 90,
+  "no_final_curve_errors": true,
+  "no_oom_or_limit_hits": true,
+  "no_measurement_processes_left": true,
+  "peak_enclosing_cgroup_bytes": 2877984768,
+  "snapshot_hashes_unchanged": true
+}

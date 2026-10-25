@@ -1,0 +1,10 @@
+P 81178
+{"kind": "jitk-malloc-no-thp", "rep": 0, "n": 1, "cgroup_MiB": 4.484375, "pss_MiB": 4.0673828125, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 0, "n": 16, "cgroup_MiB": 62.43359375, "pss_MiB": 55.4921875, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 0, "n": 64, "cgroup_MiB": 249.22265625, "pss_MiB": 219.45703125, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 0, "n": 256, "cgroup_MiB": 993.265625, "pss_MiB": 874.359375, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 1, "n": 1, "cgroup_MiB": 4.48046875, "pss_MiB": 4.0751953125, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 1, "n": 16, "cgroup_MiB": 62.5546875, "pss_MiB": 55.5234375, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 1, "n": 64, "cgroup_MiB": 249.11328125, "pss_MiB": 219.48046875, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-malloc-no-thp", "rep": 1, "n": 256, "cgroup_MiB": 993.53125, "pss_MiB": 874.40234375, "parent_peak_MiB": 2744.66015625}
+R {"user_ms_including_guest":1702.249000,"system_ms":4452.176000,"guest_ticks":0,"tick_hz":100}

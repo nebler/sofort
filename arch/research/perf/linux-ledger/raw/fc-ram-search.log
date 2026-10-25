@@ -1,0 +1,12 @@
+P 87310
+{"ram_mib": 16, "passed": true, "error": null}
+{"ram_mib": 8, "passed": false, "error": "RuntimeError('fc-boot guest panic; out=b\"Booting Linux on physical CPU 0x0000000000 [0x610f0000]\\\\r\\\\nLinux version 6.1.128-ledger (root@kvm-dev) (Ubuntu clang version 21.1.8 (6ubuntu1), Ubuntu LLD 21.1.8) #2 SMP Sun Oct 25 07:34:45 UTC 2026\\\\r\\\\nMachine model: linux,dummy-virt\\\\r\\\\nearlycon: uart8250 at MMIO 0x0000000040002000 (options \\'\\')\\\\r\\\\nprintk: bootconsole [uart8250] enabled\\\\r\\\\nKernel panic \"')"}
+{"ram_mib": 12, "passed": true, "error": null}
+{"ram_mib": 10, "passed": true, "error": null}
+{"ram_mib": 9, "passed": false, "error": "RuntimeError('fc-boot guest panic; out=b\"Booting Linux on physical CPU 0x0000000000 [0x610f0000]\\\\r\\\\nLinux version 6.1.128-ledger (root@kvm-dev) (Ubuntu clang version 21.1.8 (6ubuntu1), Ubuntu LLD 21.1.8) #2 SMP Sun Oct 25 07:34:45 UTC 2026\\\\r\\\\nMachine model: linux,dummy-virt\\\\r\\\\nearlycon: uart8250 at MMIO 0x0000000040002000 (options \\'\\')\\\\r\\\\nprintk: bootconsole [uart8250] enabled\\\\r\\\\nKernel panic\"')"}
+{"ram_mib": 10, "passed": true, "error": null}
+{"ram_mib": 10, "passed": true, "error": null}
+{"ram_mib": 9, "passed": false, "error": "RuntimeError('fc-boot guest panic; out=b\"Booting Linux on physical CPU 0x0000000000 [0x610f0000]\\\\r\\\\nLinux version 6.1.128-ledger (root@kvm-dev) (Ubuntu clang version 21.1.8 (6ubuntu1), Ubuntu LLD 21.1.8) #2 SMP Sun Oct 25 07:34:45 UTC 2026\\\\r\\\\nMachine model: linux,dummy-virt\\\\r\\\\nearlycon: uart8250 at MMIO 0x0000000040002000 (options \\'\\')\\\\r\\\\nprintk: bootconsole [uart8250] enabled\\\\r\\\\nKernel panic\"')"}
+{"ram_mib": 9, "passed": false, "error": "RuntimeError('fc-boot guest panic; out=b\"Booting Linux on physical CPU 0x0000000000 [0x610f0000]\\\\r\\\\nLinux version 6.1.128-ledger (root@kvm-dev) (Ubuntu clang version 21.1.8 (6ubuntu1), Ubuntu LLD 21.1.8) #2 SMP Sun Oct 25 07:34:45 UTC 2026\\\\r\\\\nMachine model: linux,dummy-virt\\\\r\\\\nearlycon: uart8250 at MMIO 0x0000000040002000 (options \\'\\')\\\\r\\\\nprintk: bootconsole [uart8250] enabled\\\\r\\\\nKernel panic\"')"}
+MINIMUM_RAM_MIB=10
+R {"user_ms_including_guest":183.702000,"system_ms":337.489000,"guest_ticks":0,"tick_hz":100}

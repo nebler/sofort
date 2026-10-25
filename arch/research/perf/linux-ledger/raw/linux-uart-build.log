@@ -1,0 +1,72 @@
+P 81056
+  SYNC    include/config/auto.conf
+*
+* Restart config...
+*
+*
+* Serial drivers
+*
+8250/16550 and compatible serial support (SERIAL_8250) [Y/n/?] y
+  Support 8250_core.* kernel options (DEPRECATED) (SERIAL_8250_DEPRECATED_OPTIONS) [Y/n/?] (NEW) 
+Error in reading or end of file.
+
+  Support for variants of the 16550A serial port (SERIAL_8250_16550A_VARIANTS) [Y/n/?] (NEW) 
+Error in reading or end of file.
+
+  Support for Fintek F81216A LPC to 4 UART RS485 API (SERIAL_8250_FINTEK) [N/y/?] (NEW) 
+Error in reading or end of file.
+
+  Console on 8250/16550 and compatible serial port (SERIAL_8250_CONSOLE) [Y/n/?] y
+  Maximum number of 8250/16550 serial ports (SERIAL_8250_NR_UARTS) [1] 1
+  Number of 8250/16550 serial ports to register at runtime (SERIAL_8250_RUNTIME_UARTS) [1] 1
+  Extended 8250/16550 serial driver options (SERIAL_8250_EXTENDED) [N/y/?] (NEW) 
+Error in reading or end of file.
+
+Support for Synopsys DesignWare 8250 quirks (SERIAL_8250_DW) [N/y/?] (NEW) 
+Error in reading or end of file.
+
+Ralink RT288x/RT305x/RT3662/RT3883 serial port support (SERIAL_8250_RT288X) [N/y/?] (NEW) 
+Error in reading or end of file.
+
+Devicetree based probing for 8250 ports (SERIAL_OF_PLATFORM) [Y/n/?] y
+*
+* Non-8250 serial port support
+*
+ARM AMBA PL010 serial port support (SERIAL_AMBA_PL010) [N/y/?] n
+ARM AMBA PL011 serial port support (SERIAL_AMBA_PL011) [N/y/?] n
+Early console using ARM semihosting (SERIAL_EARLYCON_ARM_SEMIHOST) [N/y/?] n
+Xilinx uartlite serial port support (SERIAL_UARTLITE) [N/y/?] n
+SiFive UART support (SERIAL_SIFIVE) [N/y/?] n
+SCCNXP serial port support (SERIAL_SCCNXP) [N/y/?] n
+Altera JTAG UART support (SERIAL_ALTERA_JTAGUART) [N/y/?] n
+Altera UART support (SERIAL_ALTERA_UART) [N/y/?] n
+Cadence (Xilinx Zynq) UART support (SERIAL_XILINX_PS_UART) [N/y/?] n
+ARC UART driver support (SERIAL_ARC) [N/y/?] n
+Freescale lpuart serial port support (SERIAL_FSL_LPUART) [N/y/?] n
+Freescale LINFlexD UART serial port support (SERIAL_FSL_LINFLEXUART) [N/y/?] n
+Conexant Digicolor CX92xxx USART serial port support (SERIAL_CONEXANT_DIGICOLOR) [N/y/?] n
+Support for Spreadtrum serial (SERIAL_SPRD) [N/y/?] n
+  CALL    scripts/checksyscalls.sh
+grep: scripts/../arch/x86/entry/syscalls/syscall_32.tbl: No such file or directory
+  CC      drivers/tty/serial/8250/8250_core.o
+  CC      drivers/tty/serial/8250/8250_port.o
+  CC      drivers/tty/serial/8250/8250_early.o
+  CC      drivers/tty/serial/8250/8250_fsl.o
+  CC      drivers/tty/serial/8250/8250_of.o
+  AR      drivers/tty/serial/8250/built-in.a
+  AR      drivers/tty/serial/built-in.a
+  AR      drivers/tty/built-in.a
+  AR      drivers/built-in.a
+  AR      built-in.a
+  AR      vmlinux.a
+  LD      vmlinux.o
+  OBJCOPY modules.builtin.modinfo
+  GEN     modules.builtin
+  MODPOST vmlinux.symvers
+  UPD     include/generated/utsversion.h
+  CC      init/version-timestamp.o
+  LD      vmlinux
+  NM      System.map
+  SORTTAB vmlinux
+  OBJCOPY arch/arm64/boot/Image
+R {"user_ms_including_guest":17593.488000,"system_ms":9890.378000,"guest_ticks":0,"tick_hz":100}

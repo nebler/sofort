@@ -1,0 +1,96 @@
+{
+  "unix": 1792915396.7526271,
+  "label": "NESTED HVF -> KVM",
+  "uname": [
+    "Linux",
+    "kvm-dev",
+    "7.0.0-38-generic",
+    "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026",
+    "aarch64",
+    ""
+  ],
+  "cpu_count": 6,
+  "page_size": 4096,
+  "tick_hz": 100,
+  "uptime": "08:03:16 up  1:16,  1 user,  load average: 0.08, 0.06, 0.80",
+  "files": {
+    "/proc/version": "Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026\n",
+    "/proc/cpuinfo": "processor\t: 0\nBogoMIPS\t: 48.00\nFeatures\t: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint i8mm bf16 bti afp\nCPU implementer\t: 0x61\nCPU architecture: 8\nCPU variant\t: 0x0\nCPU part\t: 0x000\nCPU revision\t: 0\n\nprocessor\t: 1\nBogoMIPS\t: 48.00\nFeatures\t: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint i8mm bf16 bti afp\nCPU implementer\t: 0x61\nCPU architecture: 8\nCPU variant\t: 0x0\nCPU part\t: 0x000\nCPU revision\t: 0\n\nprocessor\t: 2\nBogoMIPS\t: 48.00\nFeatures\t: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint i8mm bf16 bti afp\nCPU implementer\t: 0x61\nCPU architecture: 8\nCPU variant\t: 0x0\nCPU part\t: 0x000\nCPU revision\t: 0\n\nprocessor\t: 3\nBogoMIPS\t: 48.00\nFeatures\t: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint i8mm bf16 bti afp\nCPU implementer\t: 0x61\nCPU architecture: 8\nCPU variant\t: 0x0\nCPU part\t: 0x000\nCPU revision\t: 0\n\nprocessor\t: 4\nBogoMIPS\t: 48.00\nFeatures\t: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint i8mm bf16 bti afp\nCPU implementer\t: 0x61\nCPU architecture: 8\nCPU variant\t: 0x0\nCPU part\t: 0x000\nCPU revision\t: 0\n\nprocessor\t: 5\nBogoMIPS\t: 48.00\nFeatures\t: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint i8mm bf16 bti afp\nCPU implementer\t: 0x61\nCPU architecture: 8\nCPU variant\t: 0x0\nCPU part\t: 0x000\nCPU revision\t: 0\n\n",
+    "/proc/meminfo": "MemTotal:        9122092 kB\nMemFree:         6531096 kB\nMemAvailable:    8600976 kB\nBuffers:           72676 kB\nCached:          2099580 kB\nSwapCached:            0 kB\nActive:          1075112 kB\nInactive:        1211104 kB\nActive(anon):     121452 kB\nInactive(anon):        0 kB\nActive(file):     953660 kB\nInactive(file):  1211104 kB\nUnevictable:       17288 kB\nMlocked:           17288 kB\nSwapTotal:             0 kB\nSwapFree:              0 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:              1248 kB\nWriteback:             0 kB\nAnonPages:        131396 kB\nMapped:            61756 kB\nShmem:               972 kB\nKReclaimable:     105892 kB\nSlab:             204328 kB\nSReclaimable:     105892 kB\nSUnreclaim:        98436 kB\nKernelStack:        2744 kB\nShadowCallStack:     716 kB\nPageTables:         3140 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:     4561044 kB\nCommitted_AS:     352436 kB\nVmallocTotal:   135288315904 kB\nVmallocUsed:       16716 kB\nVmallocChunk:          0 kB\nPercpu:             6144 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:     71680 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:    114688 kB\nFilePmdMapped:         0 kB\nCmaTotal:          32768 kB\nCmaFree:          878068 kB\nBalloon:               0 kB\nGPUActive:             0 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\n",
+    "/proc/cmdline": "root=LABEL=cloudimg-rootfs rw console=ttyAMA0\n",
+    "/proc/loadavg": "0.08 0.06 0.80 1/166 143742\n",
+    "/sys/kernel/mm/transparent_hugepage/enabled": "always [madvise] never\n",
+    "/sys/kernel/mm/transparent_hugepage/defrag": "always defer defer+madvise [madvise] never\n",
+    "/sys/fs/cgroup/cgroup.controllers": "cpuset cpu io memory hugetlb pids rdma misc dmem\n",
+    "/sys/fs/cgroup/cgroup.subtree_control": "cpu memory pids\n",
+    "/sys/fs/cgroup/a5-linux-ledger/memory.max": "3758096384\n",
+    "/sys/fs/cgroup/a5-linux-ledger/memory.swap.max": "0\n"
+  },
+  "binary_hashes": {
+    "bin/fc-memory": {
+      "sha256": "d68d9b97f2e32ebcfbae223afad1a485d2d7eb75bb342209665eb110007fda29",
+      "bytes": 10485760
+    },
+    "bin/tiny-init": {
+      "sha256": "54253006959fb2e9d71bc14c4389db710bc35e7a65efbd3cbd13622850fea4e2",
+      "bytes": 1392
+    },
+    "bin/no-thp": {
+      "sha256": "cc03a8f45b411f2f8a0196bebf14a2c1bf9134e601167ac67e7d1f535bd7ecf7",
+      "bytes": 70536
+    },
+    "bin/hl-ledger": {
+      "sha256": "f6405624739fe9943562183e20910331ddfbbdb6b5d38912695b2e97be3fa57e",
+      "bytes": 1189080
+    },
+    "bin/fc-ram-mib": {
+      "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+      "bytes": 3
+    },
+    "bin/linux-6.1.128-Image": {
+      "sha256": "2f5519868767544af3a3f3e481326cedb57f7b8a4fb77dfb00b6b28605a2bbd7",
+      "bytes": 2789384
+    },
+    "bin/jitk-vmm": {
+      "sha256": "e8d7bc8dc294b522926ad2ff6c6b43d967bdd52a618470311b50310a854a0125",
+      "bytes": 791448
+    },
+    "bin/hl-qjs-guest": {
+      "sha256": "47ed8c6b11c201f70bb74ca0413aee6428d9d6a9b35ec38dd29a3b5c26850117",
+      "bytes": 2406704
+    },
+    "bin/bare-kvm": {
+      "sha256": "b43c831700577ba7fccea714ee37a735593aed0d1493d811f41a064af2a0143e",
+      "bytes": 71104
+    },
+    "bin/kernel.bin": {
+      "sha256": "1069385910d00d47cb83de04785713719c60d9b74d97183a0b36a5b74aca72f1",
+      "bytes": 2924544
+    },
+    "bin/jitk-vmm-prior": {
+      "sha256": "d066a3a9815773e0800b1a2c041da7d25c0cb23798ada6a0316d3862aab38079",
+      "bytes": 791448
+    },
+    "bin/fc-state": {
+      "sha256": "64a1ccc136fdffb2101fd16bd06647e7a61c53f403745493b3bb5c8cb46048e6",
+      "bytes": 6024
+    },
+    "bin/spawn-cg": {
+      "sha256": "3af4918ea53de941f12c4714dcd084a2a1f1a31f45497ef1e69b39beff1e12fe",
+      "bytes": 71304
+    },
+    "bin/linux-final.ready": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "firecracker/release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64": {
+      "sha256": "fe726e0b43c04363ac07e358be4dee982c3947c65ed3ae10c770fef5e1cd756c",
+      "bytes": 3377624
+    }
+  },
+  "tools": {
+    "glibc": "ldd (Ubuntu GLIBC 2.43-2ubuntu2.4) 2.43\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nWritten by Roland McGrath and Ulrich Drepper.",
+    "clang": "Ubuntu clang version 21.1.8 (6ubuntu1)\nTarget: aarch64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /usr/lib/llvm-21/bin",
+    "cc": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0\nCopyright (C) 2025 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+  }
+}

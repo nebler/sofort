@@ -1,0 +1,3 @@
+P 138804
+{"kind": "bare-shared", "boot_n": 30, "ready_ms": {"n": 30, "min": 1.679966, "p50": 2.1780515, "p99": 5.87586, "max": 5.87586, "mean": 2.7010388333333335}, "cpu_ms": {"n": 30, "min": 0.862, "p50": 1.18, "p99": 2.64, "max": 2.64, "mean": 1.3352333333333333}}
+R {"user_ms_including_guest":104.914000,"system_ms":89.403000,"guest_ticks":0,"tick_hz":100}

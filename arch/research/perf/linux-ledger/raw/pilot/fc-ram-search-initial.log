@@ -1,0 +1,8 @@
+P 79082
+{"ram_mib": 16, "passed": false, "error": "TimeoutError(\"fc-boot deadline; out=b''; err=b'P 79086\\\\n'\")"}
+Traceback (most recent call last):
+  File "/home/dev/a5-linux-ledger/harness/ram-search.py", line 19, in <module>
+    assert test(16),'small Linux guest did not boot at 16 MiB'
+           ~~~~^^^^
+AssertionError: small Linux guest did not boot at 16 MiB
+R {"user_ms_including_guest":354.440000,"system_ms":290.932000,"guest_ticks":0,"tick_hz":100}

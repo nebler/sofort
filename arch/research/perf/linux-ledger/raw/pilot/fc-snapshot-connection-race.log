@@ -1,0 +1,24 @@
+P 136581
+{"kind": "fc-snapshot", "rep": 0, "n": 1, "cgroup_MiB": 1.91796875, "pss_MiB": 7.0078125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 0, "n": 16, "cgroup_MiB": 23.53125, "pss_MiB": 14.3388671875, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 0, "n": 64, "cgroup_MiB": 91.96875, "pss_MiB": 37.703125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 0, "n": 256, "cgroup_MiB": 366.8125, "pss_MiB": 132.21484375, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 1, "n": 1, "cgroup_MiB": 1.9140625, "pss_MiB": 7.0078125, "parent_peak_MiB": 2744.66015625}
+Traceback (most recent call last):
+  File "/home/dev/a5-linux-ledger/harness/ledger.py", line 234, in <module>
+    try:main()
+        ~~~~^^
+  File "/home/dev/a5-linux-ledger/harness/ledger.py", line 224, in main
+    for rep in range(a.reps):sweep(kind,rep,[int(x) for x in a.targets.split(',')],a.ram)
+                             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dev/a5-linux-ledger/harness/ledger.py", line 160, in sweep
+    vms.append(VM(kind,cg,ram))
+               ~~^^^^^^^^^^^^^
+  File "/home/dev/a5-linux-ledger/harness/ledger.py", line 90, in __init__
+    api(self.sock,'/snapshot/load',{'snapshot_path':str(D/'bin/fc-state'),'mem_backend':{'backend_type':'File','backend_path':str(D/'bin/fc-memory')},'enable_diff_snapshots':False,'resume_vm':True})
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dev/a5-linux-ledger/harness/ledger.py", line 54, in api
+    s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);s.settimeout(15);s.connect(str(path));c.sock=s
+                                                                        ~~~~~~~~~^^^^^^^^^^^
+ConnectionRefusedError: [Errno 111] Connection refused
+R {"user_ms_including_guest":1308.891000,"system_ms":3069.958000,"guest_ticks":0,"tick_hz":100}

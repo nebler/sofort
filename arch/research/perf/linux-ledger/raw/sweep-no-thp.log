@@ -1,0 +1,10 @@
+P 61304
+{"kind": "jitk-no-thp", "rep": 0, "n": 1, "cgroup_MiB": 3.875, "pss_MiB": 4.0625, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 0, "n": 16, "cgroup_MiB": 62.5078125, "pss_MiB": 55.46484375, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 0, "n": 64, "cgroup_MiB": 248.64453125, "pss_MiB": 219.40625, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 0, "n": 256, "cgroup_MiB": 993.57421875, "pss_MiB": 874.390625, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 1, "n": 1, "cgroup_MiB": 3.87890625, "pss_MiB": 4.0673828125, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 1, "n": 16, "cgroup_MiB": 62.7265625, "pss_MiB": 55.5, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 1, "n": 64, "cgroup_MiB": 248.9296875, "pss_MiB": 219.41796875, "parent_peak_MiB": 2744.66015625}
+{"kind": "jitk-no-thp", "rep": 1, "n": 256, "cgroup_MiB": 993.34765625, "pss_MiB": 874.390625, "parent_peak_MiB": 2744.66015625}
+R {"user_ms_including_guest":3181.074000,"system_ms":6693.511000,"guest_ticks":0,"tick_hz":100}

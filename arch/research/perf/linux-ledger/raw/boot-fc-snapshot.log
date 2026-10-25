@@ -1,0 +1,3 @@
+P 138476
+{"kind": "fc-snapshot", "boot_n": 30, "ready_ms": {"n": 30, "min": 30.705139, "p50": 38.3929245, "p99": 92.088584, "max": 92.088584, "mean": 41.3966473}, "cpu_ms": {"n": 30, "min": 26.053, "p50": 33.178, "p99": 91.318, "max": 91.318, "mean": 36.7231}}
+R {"user_ms_including_guest":163.288000,"system_ms":184.767000,"guest_ticks":0,"tick_hz":100}

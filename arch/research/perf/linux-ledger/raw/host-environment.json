@@ -1,0 +1,18 @@
+{
+  "date_utc": "Sun Oct 25 07:03:35 UTC 2026",
+  "uptime": "8:03  up 1 day, 10:17, 2 users, load averages: 42.03 37.55 25.26",
+  "uname": [
+    "Darwin",
+    "Mac",
+    "25.6.0",
+    "Darwin Kernel Version 25.6.0: Sat Jul 11 15:27:27 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6041",
+    "arm64",
+    "arm"
+  ],
+  "hw": "machdep.cpu.brand_string: Apple M4 Pro\nhw.memsize: 25769803776\nhw.ncpu: 12",
+  "git_head": "70f6d8cf19942e7317d7958233ea18d58b245cc5",
+  "hyperlight_head": "8a7e6b8794fea050ce287eed614088f0beb6b973",
+  "hyperlight_dirty": "",
+  "hyperlight_js_head": "8d208af8ac3ca53f2069c9ef0ca6a45d89e032d7",
+  "hyperlight_js_dirty": ""
+}

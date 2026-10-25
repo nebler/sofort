@@ -1,0 +1,13 @@
+[package]
+name = "hl-ledger"
+version = "0.1.0"
+edition = "2024"
+[dependencies]
+hyperlight-host = {path = "../hyperlight/src/hyperlight_host", default-features = false, features = ["kvm"]}
+[profile.release]
+debug = false
+strip = true
+codegen-units = 4
+[[bin]]
+name = "hl-ledger"
+path = "main.rs"

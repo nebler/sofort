@@ -1,0 +1,10 @@
+P 139032
+{"kind": "fc-snapshot", "rep": 0, "n": 1, "cgroup_MiB": 1.65625, "pss_MiB": 7.0078125, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 0, "n": 16, "cgroup_MiB": 23.60546875, "pss_MiB": 14.2802734375, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 0, "n": 64, "cgroup_MiB": 92.2109375, "pss_MiB": 37.69140625, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 0, "n": 256, "cgroup_MiB": 367.14453125, "pss_MiB": 132.296875, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 1, "n": 1, "cgroup_MiB": 1.9140625, "pss_MiB": 7.01171875, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 1, "n": 16, "cgroup_MiB": 23.375, "pss_MiB": 14.3056640625, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 1, "n": 64, "cgroup_MiB": 92.234375, "pss_MiB": 37.7734375, "parent_peak_MiB": 2744.66015625}
+{"kind": "fc-snapshot", "rep": 1, "n": 256, "cgroup_MiB": 367.390625, "pss_MiB": 132.703125, "parent_peak_MiB": 2744.66015625}
+R {"user_ms_including_guest":1298.553000,"system_ms":4070.585000,"guest_ticks":0,"tick_hz":100}

@@ -1,0 +1,10 @@
+P 66698
+{"kind": "hl-process", "rep": 0, "n": 1, "cgroup_MiB": 7.6484375, "pss_MiB": 7.8349609375, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 0, "n": 16, "cgroup_MiB": 116.875, "pss_MiB": 112.640625, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 0, "n": 64, "cgroup_MiB": 479.65625, "pss_MiB": 461.8662109375, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 0, "n": 256, "cgroup_MiB": 1888.33203125, "pss_MiB": 1814.57421875, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 1, "n": 1, "cgroup_MiB": 7.390625, "pss_MiB": 7.828125, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 1, "n": 16, "cgroup_MiB": 116.22265625, "pss_MiB": 112.1015625, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 1, "n": 64, "cgroup_MiB": 464.8203125, "pss_MiB": 446.94140625, "parent_peak_MiB": 2744.66015625}
+{"kind": "hl-process", "rep": 1, "n": 256, "cgroup_MiB": 1873.75390625, "pss_MiB": 1800.171875, "parent_peak_MiB": 2744.66015625}
+R {"user_ms_including_guest":1967.584000,"system_ms":4770.102000,"guest_ticks":0,"tick_hz":100}
