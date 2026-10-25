@@ -78,7 +78,8 @@ def main():
             env=dict(PATH='/usr/bin:/bin',HOME='/nonexistent',LC_ALL='C',LANG='C',TZ='UTC')
             native=subprocess.run(c['args'],executable=profiles[c['tool']]['binary'],cwd=oracle,stdin=subprocess.DEVNULL,capture_output=True,env=env,timeout=10)
             wire=request(c['tool'],c['args'],c['files'])
-            if c['tool']=='lua' and c['case']=='sum':(ROOT/'ledger.request').write_bytes(wire[4:])
+            if c['tool']=='lua' and c['case']=='sum':
+                (ROOT/'ledger.request').write_bytes(request(c['tool'],c['args'],{'data/input.txt':c['files']['data/input.txt']})[4:])
             start=time.monotonic_ns();worker.stdin.write(wire);worker.stdin.flush()
             header=worker.stdout.read(4);assert len(header)==4,(c,worker.poll())
             n=struct.unpack('<I',header)[0];out=worker.stdout.read(n);assert len(out)==n

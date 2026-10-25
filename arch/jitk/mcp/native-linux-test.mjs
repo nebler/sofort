@@ -30,10 +30,12 @@ try {
   }
   r=await call('lua',['-e','io.write(io.open("data/input"):read("*a"))'],{'data/input':Buffer.alloc(160000,255).toString('base64')});
   assert.equal(bytes(r.stdout).length,160000);
+  r=await call('lua',['-e','for i=1,17 do io.write(string.rep("x",65536)); io.flush() end']);
+  assert.equal(bytes(r.stdout).length,1048576);assert.equal(r.outputLimited,true);
   r=await call('lua',['-e','print(2)'],{'../escape':'AA=='});assert.equal(r.error.code,'LIMIT');
   r=await call('lua',['-e','print(2)'],{'input':'AB=='});assert.equal(r.error.code,'LIMIT');
   r=await call('absent');assert.equal(r.error.code,'UNSUPPORTED');
   r=await call('lua',['-e','while true do end']);assert.equal(r.error.code,'TIMEOUT');
   r=await call('lua',['-e','print(2)']);assert.equal(r.error.code,'SANDBOX');
-  console.log(JSON.stringify({status:'PASS',nativeCalls:count,checks:['byte-output','exit42','two-file-generations','160k-output','path/base64-rejection','unknown-profile','deadline-kill','stopped-worker']}));
+  console.log(JSON.stringify({status:'PASS',nativeCalls:count,checks:['byte-output','exit42','two-file-generations','160k-output','output-cap','path/base64-rejection','unknown-profile','deadline-kill','stopped-worker']}));
 } finally {await client.close();rmSync(dir,{recursive:true,force:true});}

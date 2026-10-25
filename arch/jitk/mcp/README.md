@@ -97,6 +97,6 @@ JITK_NATIVE_BINARY=/absolute/path/to/shard/target/release/real \
 JITK_NATIVE_PROFILES='{"lua":"/absolute/prepared/lua"}' \
 node native-linux-test.mjs
 ```
-The integration test runs nine native calls, including binary output, status,
+The integration test runs ten native calls, including binary output, status,
 late-bound files, rejection cases and deadline kill. [RESULTS-R7-bytes](../shard/RESULTS-R7-bytes.md)
 records the complete per-case native corpus and the memory ledger.

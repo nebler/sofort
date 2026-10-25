@@ -73,7 +73,7 @@ queue, UTF-8 decoding of output, or per-run helper process exists.
 argv marker `["@ring-native"]`, no packed resource directory and one static
 ET_EXEC. It does not change the default image. Each tool has one immutable
 shared prepared `.mem`/`.regs` pair. CHECKPOINT=4 happens in trusted EL1 after
-mapping ELF/stack pages, **before argv construction, AT_RANDOM installation,
+mapping ELF/stack pages and offline code-cache maintenance, **before argv construction, AT_RANDOM installation,
 libc initialization or entry into the native ELF**. Thus libc starts normally
 with fresh AT_RANDOM; there are no initialized native libc guards to rotate.
 This is intentionally less prepared than QuickJS's post-initialization snapshot.

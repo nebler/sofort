@@ -279,4 +279,45 @@ mod tests {
         assert_eq!(r.stdout.len(), 33000);
         assert_eq!(r.consumed, prod);
     }
+    #[test]
+    fn header_fuzz_never_reads_past_a_committed_record() {
+        let mut rng = 0x765432109abcdefu64;
+        for _ in 0..10000 {
+            let mut b = record(6, 0, b"some bytes");
+            for byte in &mut b[..32] {
+                rng ^= rng << 13;
+                rng ^= rng >> 7;
+                rng ^= rng << 17;
+                if rng & 3 == 0 {
+                    *byte = (rng >> 8) as u8;
+                }
+            }
+            let mut r = Receiver::new(9, 99).unwrap();
+            let _ = r.drain(b.len() as u64, |at, dst| {
+                assert!(dst.len() <= MAX_RECORD);
+                let at = at as usize;
+                assert!(at <= b.len() && dst.len() <= b.len() - at);
+                dst.copy_from_slice(&b[at..at + dst.len()]);
+            });
+        }
+    }
+    #[test]
+    fn completion_and_log_contracts() {
+        for (at, value) in [(1, 1), (4, 2), (8, 1), (16, 1)] {
+            let mut bytes = [0; 24];
+            bytes[at] = value;
+            assert!(drain(&mut Receiver::new(9, 99).unwrap(), &record(8, 0, &bytes)).is_err());
+        }
+        for payload in [
+            b"binary\0\xff".as_slice(),
+            b"{\"level\":\"debug\",\"msg\":\"raw\"}",
+        ] {
+            let mut b = record(4, 0, payload);
+            b[6] = 1;
+            assert!(drain(&mut Receiver::new(9, 99).unwrap(), &b).is_err());
+        }
+        let mut b = record(4, 0, br#"{"level":"debug","msg":"\u0000\u00ff"}"#);
+        b[6] = 1;
+        drain(&mut Receiver::new(9, 99).unwrap(), &b).unwrap();
+    }
 }

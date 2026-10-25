@@ -294,6 +294,14 @@ pub unsafe fn native() -> bool {
 }
 pub unsafe fn native_checkpoint() {
     unsafe {
+        // Cache maintenance can take stage-2 write faults even for clean code.
+        // Do it offline so restore does not CoW the entire 2.3 MiB loader range.
+        crate::mmu::protect_aliases();
+        crate::mmu::flush();
+        for va in (0x400000..0x650000).step_by(64) {
+            core::arch::asm!("dc cvau,{a}", a=in(reg) crate::mmu::physical(va));
+        }
+        core::arch::asm!("dsb ish", "ic iallu", "dsb ish", "isb");
         crate::arch::doorbell(4);
         crate::arch::boot_info();
         assert!(native());

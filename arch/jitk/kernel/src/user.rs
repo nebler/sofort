@@ -71,7 +71,11 @@ pub unsafe fn run() -> ! {
         }
         m::flush();
         // Publish data written through the kernel alias before executing user code.
-        for va in (0x400000..0x650000).step_by(64) {
+        #[cfg(feature = "transport-ring")]
+        let cache_end = if c::native() { 0x400000 } else { 0x650000 };
+        #[cfg(not(feature = "transport-ring"))]
+        let cache_end = 0x650000;
+        for va in (0x400000..cache_end).step_by(64) {
             asm!("dc cvau,{a}",a=in(reg) m::physical(va));
         }
         asm!("dsb ish", "ic iallu", "dsb ish", "isb");
