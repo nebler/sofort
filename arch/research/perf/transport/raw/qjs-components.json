@@ -1,0 +1,3978 @@
+{
+  "loadBefore": "8:01  up 1 day, 10:15, 2 users, load averages: 42.74 36.69 23.20",
+  "loadAfter": "8:02  up 1 day, 10:16, 2 users, load averages: 36.78 36.16 23.92",
+  "vmm": "/tmp/sofort-a4/bin/jitk-vmm",
+  "image": "/tmp/sofort-a4/baseline-images/kernel.bin",
+  "clock": "os.now",
+  "rows": [
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 0,
+      "n": 20000,
+      "us": 2.594504150003195,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 1,
+      "n": 20000,
+      "us": 4.894702100008726,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 2,
+      "n": 20000,
+      "us": 4.7850937500596045,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 3,
+      "n": 20000,
+      "us": 2.8828687503933907,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 4,
+      "n": 20000,
+      "us": 1.914241650700569,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 5,
+      "n": 20000,
+      "us": 2.281706249713898,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 6,
+      "n": 20000,
+      "us": 3.1892312496900557,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 7,
+      "n": 20000,
+      "us": 7.563847900182009,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 8,
+      "n": 20000,
+      "us": 4.478312499821186,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 9,
+      "n": 20000,
+      "us": 1.9465541496872902,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 10,
+      "n": 20000,
+      "us": 3.0594291500747204,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 11,
+      "n": 20000,
+      "us": 4.515558350086212,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 12,
+      "n": 20000,
+      "us": 3.171137499809265,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 13,
+      "n": 20000,
+      "us": 5.3942396000027655,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 14,
+      "n": 20000,
+      "us": 2.1808375000953673,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 15,
+      "n": 20000,
+      "us": 3.519302050024271,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 16,
+      "n": 20000,
+      "us": 3.110818749666214,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 17,
+      "n": 20000,
+      "us": 4.336493750661612,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 18,
+      "n": 20000,
+      "us": 5.243491650372744,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 19,
+      "n": 20000,
+      "us": 3.229541650414467,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 20,
+      "n": 20000,
+      "us": 2.5979812502861024,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 21,
+      "n": 20000,
+      "us": 2.6934770993888377,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 22,
+      "n": 20000,
+      "us": 4.511362500488758,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 23,
+      "n": 20000,
+      "us": 2.2002166502177714,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 24,
+      "n": 20000,
+      "us": 6.072012499719858,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 25,
+      "n": 20000,
+      "us": 1.9725728996098042,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 26,
+      "n": 20000,
+      "us": 4.387897949665785,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 27,
+      "n": 20000,
+      "us": 3.5994687505066394,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 28,
+      "n": 20000,
+      "us": 1.5229249998927117,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 29,
+      "n": 20000,
+      "us": 1.8903562501072884,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_encode",
+      "sample": 30,
+      "n": 20000,
+      "us": 1.3973458498716353,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 0,
+      "n": 20000,
+      "us": 2.0429875001311304,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 1,
+      "n": 20000,
+      "us": 1.870787499845028,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 2,
+      "n": 20000,
+      "us": 2.1088437497615815,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 3,
+      "n": 20000,
+      "us": 1.1544708497822285,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 4,
+      "n": 20000,
+      "us": 2.492256250232458,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 5,
+      "n": 20000,
+      "us": 4.948137500137091,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 6,
+      "n": 20000,
+      "us": 2.827089600265026,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 7,
+      "n": 20000,
+      "us": 3.270568750053644,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 8,
+      "n": 20000,
+      "us": 2.0826604001224043,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 9,
+      "n": 20000,
+      "us": 1.4327708505094052,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 10,
+      "n": 20000,
+      "us": 2.3005249999463557,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 11,
+      "n": 20000,
+      "us": 1.208883350342512,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 12,
+      "n": 20000,
+      "us": 2.439747950434685,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 13,
+      "n": 20000,
+      "us": 3.4217937506735323,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 14,
+      "n": 20000,
+      "us": 2.436293749511242,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 15,
+      "n": 20000,
+      "us": 2.420675000548363,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 16,
+      "n": 20000,
+      "us": 0.9924854002892971,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 17,
+      "n": 20000,
+      "us": 1.1400250002741814,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 18,
+      "n": 20000,
+      "us": 2.4029958501458166,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 19,
+      "n": 20000,
+      "us": 4.281954199820757,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 20,
+      "n": 20000,
+      "us": 3.367874999344349,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 21,
+      "n": 20000,
+      "us": 2.1256750002503395,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 22,
+      "n": 20000,
+      "us": 2.9889021001756193,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 23,
+      "n": 20000,
+      "us": 3.0886853992938996,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 24,
+      "n": 20000,
+      "us": 3.824889550358057,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 25,
+      "n": 20000,
+      "us": 5.584360449761152,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 26,
+      "n": 20000,
+      "us": 2.393658350408077,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 27,
+      "n": 20000,
+      "us": 2.4111187502741815,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 28,
+      "n": 20000,
+      "us": 2.4944645993411543,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 29,
+      "n": 20000,
+      "us": 1.0105667002499104,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "json_decode",
+      "sample": 30,
+      "n": 20000,
+      "us": 1.7838937506079673,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 0,
+      "n": 20000,
+      "us": 1.8425250001251698,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 1,
+      "n": 20000,
+      "us": 3.692383350431919,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 2,
+      "n": 20000,
+      "us": 2.7820416502654552,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 3,
+      "n": 20000,
+      "us": 2.1521000005304813,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 4,
+      "n": 20000,
+      "us": 2.155866699665785,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 5,
+      "n": 20000,
+      "us": 1.144031249731779,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 6,
+      "n": 20000,
+      "us": 1.0744125001132487,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 7,
+      "n": 20000,
+      "us": 6.684525000303983,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 8,
+      "n": 20000,
+      "us": 2.124941650032997,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 9,
+      "n": 20000,
+      "us": 2.6398229002952576,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 10,
+      "n": 20000,
+      "us": 1.5404750004410743,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 11,
+      "n": 20000,
+      "us": 3.851383300125599,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 12,
+      "n": 20000,
+      "us": 3.3176500000059606,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 13,
+      "n": 20000,
+      "us": 4.303733349591494,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 14,
+      "n": 20000,
+      "us": 3.417806249856949,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 15,
+      "n": 20000,
+      "us": 1.7294521003961563,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 16,
+      "n": 20000,
+      "us": 2.6580020993947984,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 17,
+      "n": 20000,
+      "us": 1.4728958502411842,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 18,
+      "n": 20000,
+      "us": 1.794616650044918,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 19,
+      "n": 20000,
+      "us": 5.526833350211382,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 20,
+      "n": 20000,
+      "us": 1.7103729002177714,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 21,
+      "n": 20000,
+      "us": 3.543860399723053,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 22,
+      "n": 20000,
+      "us": 2.5367666497826575,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 23,
+      "n": 20000,
+      "us": 1.361914550513029,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 24,
+      "n": 20000,
+      "us": 4.78125,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 25,
+      "n": 20000,
+      "us": 3.3870541997253896,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 26,
+      "n": 20000,
+      "us": 2.5351167000830173,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 27,
+      "n": 20000,
+      "us": 0.8956832997500896,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 28,
+      "n": 20000,
+      "us": 1.274922899901867,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 29,
+      "n": 20000,
+      "us": 5.291227100044489,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_replace",
+      "sample": 30,
+      "n": 20000,
+      "us": 3.50815205052495,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 0,
+      "n": 20000,
+      "us": 4.045729149878025,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 1,
+      "n": 20000,
+      "us": 6.979229199886322,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 2,
+      "n": 20000,
+      "us": 3.9944625005125998,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 3,
+      "n": 20000,
+      "us": 4.396939550340176,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 4,
+      "n": 20000,
+      "us": 6.023193749785423,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 5,
+      "n": 20000,
+      "us": 8.416116699576378,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 6,
+      "n": 20000,
+      "us": 5.999214550107718,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 7,
+      "n": 20000,
+      "us": 9.116339600086212,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 8,
+      "n": 20000,
+      "us": 3.8869291499257086,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 9,
+      "n": 20000,
+      "us": 5.806056249886751,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 10,
+      "n": 20000,
+      "us": 15.682122899591922,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 11,
+      "n": 20000,
+      "us": 9.240433299541474,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 12,
+      "n": 20000,
+      "us": 15.080347899347544,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 13,
+      "n": 20000,
+      "us": 2.9968520499765874,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 14,
+      "n": 20000,
+      "us": 6.157089599967003,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 15,
+      "n": 20000,
+      "us": 5.322845850139856,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 16,
+      "n": 20000,
+      "us": 3.9731187500059604,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 17,
+      "n": 20000,
+      "us": 8.099014549702407,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 18,
+      "n": 20000,
+      "us": 7.132693749666214,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 19,
+      "n": 20000,
+      "us": 5.270335400104523,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 20,
+      "n": 20000,
+      "us": 7.020529150217771,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 21,
+      "n": 20000,
+      "us": 4.092604199796915,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 22,
+      "n": 20000,
+      "us": 5.041149999946356,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 23,
+      "n": 20000,
+      "us": 3.138810449838638,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 24,
+      "n": 20000,
+      "us": 4.063141649961471,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 25,
+      "n": 20000,
+      "us": 8.4666729003191,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 26,
+      "n": 20000,
+      "us": 10.673072899878026,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 27,
+      "n": 20000,
+      "us": 4.1030291497707365,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 28,
+      "n": 20000,
+      "us": 9.092999999970198,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 29,
+      "n": 20000,
+      "us": 4.349510449916124,
+      "chars": 55
+    },
+    {
+      "shape": "call",
+      "op": "ascii_encode",
+      "sample": 30,
+      "n": 20000,
+      "us": 3.0849832996726034,
+      "chars": 55
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 0,
+      "n": 20000,
+      "us": 3.127189600467682,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 1,
+      "n": 20000,
+      "us": 3.9725478999316692,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 2,
+      "n": 20000,
+      "us": 1.099685449898243,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 3,
+      "n": 20000,
+      "us": 1.773089599609375,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 4,
+      "n": 20000,
+      "us": 0.8551916502416134,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 5,
+      "n": 20000,
+      "us": 1.735870849341154,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 6,
+      "n": 20000,
+      "us": 3.6925833500921725,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 7,
+      "n": 20000,
+      "us": 2.9798417001962663,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 8,
+      "n": 20000,
+      "us": 0.9690375000238418,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 9,
+      "n": 20000,
+      "us": 1.1202500000596047,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 10,
+      "n": 20000,
+      "us": 1.0787916496396064,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 11,
+      "n": 20000,
+      "us": 1.0694333501160145,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 12,
+      "n": 20000,
+      "us": 1.5025437496602536,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 13,
+      "n": 20000,
+      "us": 1.3659437499940394,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 14,
+      "n": 20000,
+      "us": 3.158870850503445,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 15,
+      "n": 20000,
+      "us": 0.7225499995052814,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 16,
+      "n": 20000,
+      "us": 0.6517916493117809,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 17,
+      "n": 20000,
+      "us": 3.777054199576378,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 18,
+      "n": 20000,
+      "us": 3.2685416497290136,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 19,
+      "n": 20000,
+      "us": 1.8923687495291233,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 20,
+      "n": 20000,
+      "us": 0.8794124998152256,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 21,
+      "n": 20000,
+      "us": 2.064443749934435,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 22,
+      "n": 20000,
+      "us": 1.4075145997107028,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 23,
+      "n": 20000,
+      "us": 1.4549437500536442,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 24,
+      "n": 20000,
+      "us": 1.9376145504415034,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 25,
+      "n": 20000,
+      "us": 1.1501479499042033,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 26,
+      "n": 20000,
+      "us": 1.0653645999729633,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 27,
+      "n": 20000,
+      "us": 2.173089550435543,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 28,
+      "n": 20000,
+      "us": 1.0060666501522064,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 29,
+      "n": 20000,
+      "us": 0.7340416498482227,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_encode",
+      "sample": 30,
+      "n": 20000,
+      "us": 0.7418874993920326,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 0,
+      "n": 20000,
+      "us": 1.0290666498243808,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 1,
+      "n": 20000,
+      "us": 1.040718749910593,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 2,
+      "n": 20000,
+      "us": 0.9640895999968052,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 3,
+      "n": 20000,
+      "us": 0.8057645998895169,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 4,
+      "n": 20000,
+      "us": 0.7412332996726037,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 5,
+      "n": 20000,
+      "us": 0.9746249996125698,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 6,
+      "n": 20000,
+      "us": 5.254164549708366,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 7,
+      "n": 20000,
+      "us": 2.852879149466753,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 8,
+      "n": 20000,
+      "us": 3.2781749993562697,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 9,
+      "n": 20000,
+      "us": 3.3745562501251696,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 10,
+      "n": 20000,
+      "us": 11.588264549523592,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 11,
+      "n": 20000,
+      "us": 1.334316650032997,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 12,
+      "n": 20000,
+      "us": 0.7991249993443489,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 13,
+      "n": 20000,
+      "us": 0.8718374997377396,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 14,
+      "n": 20000,
+      "us": 0.8564667001366615,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 15,
+      "n": 20000,
+      "us": 1.2318166501820087,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 16,
+      "n": 20000,
+      "us": 2.269856249541044,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 17,
+      "n": 20000,
+      "us": 0.6351895995438099,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 18,
+      "n": 20000,
+      "us": 6.7248582996428015,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 19,
+      "n": 20000,
+      "us": 1.6576728999614716,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 20,
+      "n": 20000,
+      "us": 1.723674999922514,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 21,
+      "n": 20000,
+      "us": 1.0154666498303413,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 22,
+      "n": 20000,
+      "us": 0.9369853995740414,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 23,
+      "n": 20000,
+      "us": 0.949881249666214,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 24,
+      "n": 20000,
+      "us": 2.397364550083876,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 25,
+      "n": 20000,
+      "us": 0.8903853997588158,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 26,
+      "n": 20000,
+      "us": 2.2054521001875402,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 27,
+      "n": 20000,
+      "us": 4.540468750149012,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 28,
+      "n": 20000,
+      "us": 0.7891187503933906,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 29,
+      "n": 20000,
+      "us": 2.828081250190735,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "json_decode",
+      "sample": 30,
+      "n": 20000,
+      "us": 0.8084250003099441,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 0,
+      "n": 20000,
+      "us": 1.9626791507005692,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 1,
+      "n": 20000,
+      "us": 1.9009562499821187,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 2,
+      "n": 20000,
+      "us": 1.726264600455761,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 3,
+      "n": 20000,
+      "us": 2.371170850098133,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 4,
+      "n": 20000,
+      "us": 1.7135145999491215,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 5,
+      "n": 20000,
+      "us": 4.5341895498335365,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 6,
+      "n": 20000,
+      "us": 1.429135400056839,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 7,
+      "n": 20000,
+      "us": 1.1037833504378796,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 8,
+      "n": 20000,
+      "us": 1.2544520996510982,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 9,
+      "n": 20000,
+      "us": 1.8495103999972344,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 10,
+      "n": 20000,
+      "us": 1.5194520503282547,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 11,
+      "n": 20000,
+      "us": 4.047206249833107,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 12,
+      "n": 20000,
+      "us": 4.342122900485992,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 13,
+      "n": 20000,
+      "us": 1.9035645499825478,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 14,
+      "n": 20000,
+      "us": 1.311047899723053,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 15,
+      "n": 20000,
+      "us": 1.406989549845457,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 16,
+      "n": 20000,
+      "us": 4.242920800298452,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 17,
+      "n": 20000,
+      "us": 2.351775000244379,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 18,
+      "n": 20000,
+      "us": 1.853964599967003,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 19,
+      "n": 20000,
+      "us": 1.384774999320507,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 20,
+      "n": 20000,
+      "us": 1.2624791495501995,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 21,
+      "n": 20000,
+      "us": 1.056835449486971,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 22,
+      "n": 20000,
+      "us": 4.218027099967003,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 23,
+      "n": 20000,
+      "us": 2.6455520994961264,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 24,
+      "n": 20000,
+      "us": 0.8265146002173424,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 25,
+      "n": 20000,
+      "us": 1.1982729494571687,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 26,
+      "n": 20000,
+      "us": 1.199525000154972,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 27,
+      "n": 20000,
+      "us": 0.6792062506079674,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 28,
+      "n": 20000,
+      "us": 0.9949124999344349,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 29,
+      "n": 20000,
+      "us": 1.8317666500806808,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_replace",
+      "sample": 30,
+      "n": 20000,
+      "us": 5.662131249904633,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 0,
+      "n": 20000,
+      "us": 3.242043749988079,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 1,
+      "n": 20000,
+      "us": 4.460706250369549,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 2,
+      "n": 20000,
+      "us": 2.2854042001068593,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 3,
+      "n": 20000,
+      "us": 3.1218104004859923,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 4,
+      "n": 20000,
+      "us": 7.390564600378275,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 5,
+      "n": 20000,
+      "us": 1.780495849996805,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 6,
+      "n": 20000,
+      "us": 2.492808299511671,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 7,
+      "n": 20000,
+      "us": 6.577447900176049,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 8,
+      "n": 20000,
+      "us": 5.4110417000949385,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 9,
+      "n": 20000,
+      "us": 6.929039599746465,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 10,
+      "n": 20000,
+      "us": 9.042377049475908,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 11,
+      "n": 20000,
+      "us": 5.531520850211382,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 12,
+      "n": 20000,
+      "us": 7.798927100002766,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 13,
+      "n": 20000,
+      "us": 7.276968750357628,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 14,
+      "n": 20000,
+      "us": 8.990881249308586,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 15,
+      "n": 20000,
+      "us": 3.592368749529123,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 16,
+      "n": 20000,
+      "us": 2.264683300256729,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 17,
+      "n": 20000,
+      "us": 2.568239549547434,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 18,
+      "n": 20000,
+      "us": 3.581172950565815,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 19,
+      "n": 20000,
+      "us": 2.9842958003282547,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 20,
+      "n": 20000,
+      "us": 2.412381250411272,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 21,
+      "n": 20000,
+      "us": 10.250366699695586,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 22,
+      "n": 20000,
+      "us": 4.835881250351667,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 23,
+      "n": 20000,
+      "us": 2.4722666501998902,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 24,
+      "n": 20000,
+      "us": 2.8417520999908445,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 25,
+      "n": 20000,
+      "us": 2.636916700005531,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 26,
+      "n": 20000,
+      "us": 2.466558349877596,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 27,
+      "n": 20000,
+      "us": 13.244279149919748,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 28,
+      "n": 20000,
+      "us": 7.296077049523592,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 29,
+      "n": 20000,
+      "us": 7.727541700005531,
+      "chars": 27
+    },
+    {
+      "shape": "reply",
+      "op": "ascii_encode",
+      "sample": 30,
+      "n": 20000,
+      "us": 7.4998458497226235,
+      "chars": 27
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 0,
+      "n": 50,
+      "us": 351.7849999666214,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 1,
+      "n": 50,
+      "us": 303.8058400154114,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 2,
+      "n": 50,
+      "us": 258.10083985328674,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 3,
+      "n": 50,
+      "us": 317.7224999666214,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 4,
+      "n": 50,
+      "us": 310.2766600251198,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 5,
+      "n": 50,
+      "us": 310.78000009059906,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 6,
+      "n": 50,
+      "us": 1571.0475000739098,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 7,
+      "n": 50,
+      "us": 2866.7966800928116,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 8,
+      "n": 50,
+      "us": 1093.894160091877,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 9,
+      "n": 50,
+      "us": 480.1691597700119,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 10,
+      "n": 50,
+      "us": 303.4249997138977,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 11,
+      "n": 50,
+      "us": 603.2025000452995,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 12,
+      "n": 50,
+      "us": 376.5533399581909,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 13,
+      "n": 50,
+      "us": 646.8208402395248,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 14,
+      "n": 50,
+      "us": 1751.7408201098442,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 15,
+      "n": 50,
+      "us": 748.1975001096725,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 16,
+      "n": 50,
+      "us": 1024.510000050068,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 17,
+      "n": 50,
+      "us": 1616.870000064373,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 18,
+      "n": 50,
+      "us": 618.5541799664497,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 19,
+      "n": 50,
+      "us": 996.8858399987221,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 20,
+      "n": 50,
+      "us": 874.3258401751518,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 21,
+      "n": 50,
+      "us": 1276.570839881897,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 22,
+      "n": 50,
+      "us": 506.22667998075485,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 23,
+      "n": 50,
+      "us": 2071.884160041809,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 24,
+      "n": 50,
+      "us": 924.4491600990295,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 25,
+      "n": 50,
+      "us": 330.4958200454712,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 26,
+      "n": 50,
+      "us": 412.2374999523163,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 27,
+      "n": 50,
+      "us": 357.21581995487213,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 28,
+      "n": 50,
+      "us": 267.9066598415375,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 29,
+      "n": 50,
+      "us": 355.68415999412537,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_encode",
+      "sample": 30,
+      "n": 50,
+      "us": 344.7258198261261,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 0,
+      "n": 50,
+      "us": 1336.9791799783707,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 1,
+      "n": 50,
+      "us": 650.484179854393,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 2,
+      "n": 50,
+      "us": 312.2008401155472,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 3,
+      "n": 50,
+      "us": 1202.7474999427795,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 4,
+      "n": 50,
+      "us": 1185.0600001215935,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 5,
+      "n": 50,
+      "us": 641.270839869976,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 6,
+      "n": 50,
+      "us": 586.0166600346565,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 7,
+      "n": 50,
+      "us": 333.82584005594254,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 8,
+      "n": 50,
+      "us": 523.4449997544289,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 9,
+      "n": 50,
+      "us": 581.6324999928474,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 10,
+      "n": 50,
+      "us": 1019.2866599559784,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 11,
+      "n": 50,
+      "us": 407.78418004512787,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 12,
+      "n": 50,
+      "us": 332.48333990573883,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 13,
+      "n": 50,
+      "us": 245.8091601729393,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 14,
+      "n": 50,
+      "us": 391.1300000548363,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 15,
+      "n": 50,
+      "us": 189.7316598892212,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 16,
+      "n": 50,
+      "us": 337.1091800928116,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 17,
+      "n": 50,
+      "us": 416.8291601538658,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 18,
+      "n": 50,
+      "us": 288.8874998688698,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 19,
+      "n": 50,
+      "us": 322.2258397936821,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 20,
+      "n": 50,
+      "us": 256.26581996679306,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 21,
+      "n": 50,
+      "us": 722.7591601014137,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 22,
+      "n": 50,
+      "us": 857.5808399915695,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 23,
+      "n": 50,
+      "us": 3032.0891800522804,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 24,
+      "n": 50,
+      "us": 522.8158402442932,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 25,
+      "n": 50,
+      "us": 411.90165996551514,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 26,
+      "n": 50,
+      "us": 544.4366598129272,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 27,
+      "n": 50,
+      "us": 207.4508398771286,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 28,
+      "n": 50,
+      "us": 389.7366598248482,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 29,
+      "n": 50,
+      "us": 579.3316799402237,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "json_decode",
+      "sample": 30,
+      "n": 50,
+      "us": 347.87416011095047,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 0,
+      "n": 50,
+      "us": 2319.82499986887,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 1,
+      "n": 50,
+      "us": 1879.2575001716614,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 2,
+      "n": 50,
+      "us": 2940.7083198428154,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 3,
+      "n": 50,
+      "us": 1349.505000114441,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 4,
+      "n": 50,
+      "us": 843.3574998378754,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 5,
+      "n": 50,
+      "us": 1544.5875000953674,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 6,
+      "n": 50,
+      "us": 1804.1824999451637,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 7,
+      "n": 50,
+      "us": 869.3450000882149,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 8,
+      "n": 50,
+      "us": 904.982500076294,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 9,
+      "n": 50,
+      "us": 1470.624159872532,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 10,
+      "n": 50,
+      "us": 2175.0900000333786,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 11,
+      "n": 50,
+      "us": 915.8250001072884,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 12,
+      "n": 50,
+      "us": 1662.1949997544289,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 13,
+      "n": 50,
+      "us": 687.5633201003075,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 14,
+      "n": 50,
+      "us": 2261.119160056114,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 15,
+      "n": 50,
+      "us": 1038.9758402109146,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 16,
+      "n": 50,
+      "us": 1210.1291599869728,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 17,
+      "n": 50,
+      "us": 2078.258340060711,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 18,
+      "n": 50,
+      "us": 1889.5974999666214,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 19,
+      "n": 50,
+      "us": 1221.4575001597404,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 20,
+      "n": 50,
+      "us": 1597.325000166893,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 21,
+      "n": 50,
+      "us": 918.6216601729393,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 22,
+      "n": 50,
+      "us": 1240.4074999690056,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 23,
+      "n": 50,
+      "us": 1116.405000090599,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 24,
+      "n": 50,
+      "us": 734.505840241909,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 25,
+      "n": 50,
+      "us": 1954.7683399915695,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 26,
+      "n": 50,
+      "us": 1804.7633197903633,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 27,
+      "n": 50,
+      "us": 841.3308399915695,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 28,
+      "n": 50,
+      "us": 1039.4158399105072,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 29,
+      "n": 50,
+      "us": 901.1541599035263,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_replace",
+      "sample": 30,
+      "n": 50,
+      "us": 1436.429999768734,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 0,
+      "n": 50,
+      "us": 3117.991679906845,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 1,
+      "n": 50,
+      "us": 1420.9133398532867,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 2,
+      "n": 50,
+      "us": 1552.0591601729393,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 3,
+      "n": 50,
+      "us": 2447.2566598653793,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 4,
+      "n": 50,
+      "us": 1073.4516602754593,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 5,
+      "n": 50,
+      "us": 4130.057500004768,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 6,
+      "n": 50,
+      "us": 2168.0625000596046,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 7,
+      "n": 50,
+      "us": 3899.3258398771286,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 8,
+      "n": 50,
+      "us": 2121.429159939289,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 9,
+      "n": 50,
+      "us": 2372.9308399558067,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 10,
+      "n": 50,
+      "us": 3308.9741599559784,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 11,
+      "n": 50,
+      "us": 1140.6516602635384,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 12,
+      "n": 50,
+      "us": 926.7266598343849,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 13,
+      "n": 50,
+      "us": 2552.510000169277,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 14,
+      "n": 50,
+      "us": 2936.3216599822044,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 15,
+      "n": 50,
+      "us": 3007.9275000095367,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 16,
+      "n": 50,
+      "us": 2913.1866601109505,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 17,
+      "n": 50,
+      "us": 1611.564179956913,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 18,
+      "n": 50,
+      "us": 3386.8366599082947,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 19,
+      "n": 50,
+      "us": 4813.88916015625,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 20,
+      "n": 50,
+      "us": 5189.129180014133,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 21,
+      "n": 50,
+      "us": 4479.25832003355,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 22,
+      "n": 50,
+      "us": 3460.654999911785,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 23,
+      "n": 50,
+      "us": 7173.112500011921,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 24,
+      "n": 50,
+      "us": 5257.578319907188,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 25,
+      "n": 50,
+      "us": 6035.478339791298,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 26,
+      "n": 50,
+      "us": 4269.300000071526,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 27,
+      "n": 50,
+      "us": 4217.605000138283,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 28,
+      "n": 50,
+      "us": 4690.859179794788,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 29,
+      "n": 50,
+      "us": 2790.154999792576,
+      "chars": 65562
+    },
+    {
+      "shape": "reply64k",
+      "op": "ascii_encode",
+      "sample": 30,
+      "n": 50,
+      "us": 1408.905839920044,
+      "chars": 65562
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 0,
+      "n": 1000,
+      "us": 6.165582999587059,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 1,
+      "n": 1000,
+      "us": 2.8065000027418137,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 2,
+      "n": 1000,
+      "us": 9.17237500846386,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 3,
+      "n": 1000,
+      "us": 100.68979100883007,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 4,
+      "n": 1000,
+      "us": 4.613708987832069,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 5,
+      "n": 1000,
+      "us": 34.02004198729992,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 6,
+      "n": 1000,
+      "us": 45.973709002137184,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 7,
+      "n": 1000,
+      "us": 6.387207999825478,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 8,
+      "n": 1000,
+      "us": 6.522917002439499,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 9,
+      "n": 1000,
+      "us": 6.25483401119709,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 10,
+      "n": 1000,
+      "us": 2.3065830022096634,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 11,
+      "n": 1000,
+      "us": 3.1799169927835464,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 12,
+      "n": 1000,
+      "us": 3.1688750088214874,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 13,
+      "n": 1000,
+      "us": 2.700416997075081,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 14,
+      "n": 1000,
+      "us": 34.02574999630451,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 15,
+      "n": 1000,
+      "us": 7.02887499332428,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 16,
+      "n": 1000,
+      "us": 1.9966669976711273,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 17,
+      "n": 1000,
+      "us": 3.3805409967899323,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 18,
+      "n": 1000,
+      "us": 56.29816600680351,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 19,
+      "n": 1000,
+      "us": 3.7782500088214874,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 20,
+      "n": 1000,
+      "us": 4.015292003750801,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 21,
+      "n": 1000,
+      "us": 9.26833400130272,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 22,
+      "n": 1000,
+      "us": 24.40616600215435,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 23,
+      "n": 1000,
+      "us": 3.4262910038232803,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 24,
+      "n": 1000,
+      "us": 2.2109580039978027,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 25,
+      "n": 1000,
+      "us": 2.036082997918129,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 26,
+      "n": 1000,
+      "us": 43.006667003035545,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 27,
+      "n": 1000,
+      "us": 11.415582999587059,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 28,
+      "n": 1000,
+      "us": 3.252582997083664,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 29,
+      "n": 1000,
+      "us": 3.360499992966652,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_encode",
+      "sample": 30,
+      "n": 1000,
+      "us": 15.143709003925323,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 0,
+      "n": 1000,
+      "us": 14.133208006620407,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 1,
+      "n": 1000,
+      "us": 7.120832994580269,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 2,
+      "n": 1000,
+      "us": 22.82516700029373,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 3,
+      "n": 1000,
+      "us": 8.041124999523163,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 4,
+      "n": 1000,
+      "us": 3.2007910013198853,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 5,
+      "n": 1000,
+      "us": 3.1997919976711273,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 6,
+      "n": 1000,
+      "us": 3.980124995112419,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 7,
+      "n": 1000,
+      "us": 5.853332996368408,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 8,
+      "n": 1000,
+      "us": 2.977292001247406,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 9,
+      "n": 1000,
+      "us": 138.18600000441074,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 10,
+      "n": 1000,
+      "us": 24.535540997982025,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 11,
+      "n": 1000,
+      "us": 9.876332998275757,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 12,
+      "n": 1000,
+      "us": 37.84049999713898,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 13,
+      "n": 1000,
+      "us": 5.838916003704071,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 14,
+      "n": 1000,
+      "us": 43.288249999284744,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 15,
+      "n": 1000,
+      "us": 10.744415998458862,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 16,
+      "n": 1000,
+      "us": 2.932417005300522,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 17,
+      "n": 1000,
+      "us": 33.182374998927116,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 18,
+      "n": 1000,
+      "us": 40.982625007629395,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 19,
+      "n": 1000,
+      "us": 13.539792001247406,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 20,
+      "n": 1000,
+      "us": 10.104166999459267,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 21,
+      "n": 1000,
+      "us": 4.811499997973442,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 22,
+      "n": 1000,
+      "us": 119.1545000076294,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 23,
+      "n": 1000,
+      "us": 15.756083995103836,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 24,
+      "n": 1000,
+      "us": 10.795166999101639,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 25,
+      "n": 1000,
+      "us": 17.705458998680115,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 26,
+      "n": 1000,
+      "us": 3.725832998752594,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 27,
+      "n": 1000,
+      "us": 35.53725001215935,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 28,
+      "n": 1000,
+      "us": 14.101959004998207,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 29,
+      "n": 1000,
+      "us": 7.540040999650955,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "json_decode",
+      "sample": 30,
+      "n": 1000,
+      "us": 8.055834010243416,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 0,
+      "n": 1000,
+      "us": 530.7364590018988,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 1,
+      "n": 1000,
+      "us": 375.7691670060158,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 2,
+      "n": 1000,
+      "us": 457.188540995121,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 3,
+      "n": 1000,
+      "us": 419.84187500178814,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 4,
+      "n": 1000,
+      "us": 454.88891699910164,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 5,
+      "n": 1000,
+      "us": 588.8894999921322,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 6,
+      "n": 1000,
+      "us": 390.6453749984503,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 7,
+      "n": 1000,
+      "us": 796.0394580066204,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 8,
+      "n": 1000,
+      "us": 1692.901959002018,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 9,
+      "n": 1000,
+      "us": 1170.8217920064926,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 10,
+      "n": 1000,
+      "us": 688.2933750003576,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 11,
+      "n": 1000,
+      "us": 486.51200000941753,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 12,
+      "n": 1000,
+      "us": 782.3894580006599,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 13,
+      "n": 1000,
+      "us": 684.9906660020351,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 14,
+      "n": 1000,
+      "us": 413.91520799696445,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 15,
+      "n": 1000,
+      "us": 957.6389579921961,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 16,
+      "n": 1000,
+      "us": 448.9378750026226,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 17,
+      "n": 1000,
+      "us": 448.9969169944525,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 18,
+      "n": 1000,
+      "us": 275.9228749871254,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 19,
+      "n": 1000,
+      "us": 242.39562499523163,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 20,
+      "n": 1000,
+      "us": 286.1526249945164,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 21,
+      "n": 1000,
+      "us": 432.80670799314976,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 22,
+      "n": 1000,
+      "us": 476.8440829962492,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 23,
+      "n": 1000,
+      "us": 444.6072500050068,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 24,
+      "n": 1000,
+      "us": 750.9306249916553,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 25,
+      "n": 1000,
+      "us": 929.9067079871893,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 26,
+      "n": 1000,
+      "us": 347.6827079951763,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 27,
+      "n": 1000,
+      "us": 428.2870829999447,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 28,
+      "n": 1000,
+      "us": 507.456375002861,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 29,
+      "n": 1000,
+      "us": 389.04999999701977,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_replace",
+      "sample": 30,
+      "n": 1000,
+      "us": 386.12550000846386,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 0,
+      "n": 1000,
+      "us": 465.8522920012474,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 1,
+      "n": 1000,
+      "us": 301.7567500025034,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 2,
+      "n": 1000,
+      "us": 254.56366600096226,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 3,
+      "n": 1000,
+      "us": 556.4887080043554,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 4,
+      "n": 1000,
+      "us": 503.92533299326897,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 5,
+      "n": 1000,
+      "us": 255.9235000014305,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 6,
+      "n": 1000,
+      "us": 313.5332089960575,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 7,
+      "n": 1000,
+      "us": 353.8860420137644,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 8,
+      "n": 1000,
+      "us": 204.8412920087576,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 9,
+      "n": 1000,
+      "us": 242.22050000727177,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 10,
+      "n": 1000,
+      "us": 196.83245800435543,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 11,
+      "n": 1000,
+      "us": 177.5878749936819,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 12,
+      "n": 1000,
+      "us": 182.64249999821186,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 13,
+      "n": 1000,
+      "us": 179.73762500286102,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 14,
+      "n": 1000,
+      "us": 159.34508299827576,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 15,
+      "n": 1000,
+      "us": 151.51866699755192,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 16,
+      "n": 1000,
+      "us": 149.73445899784565,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 17,
+      "n": 1000,
+      "us": 149.89362500607967,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 18,
+      "n": 1000,
+      "us": 149.00258299708366,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 19,
+      "n": 1000,
+      "us": 141.3439580053091,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 20,
+      "n": 1000,
+      "us": 141.36533400416374,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 21,
+      "n": 1000,
+      "us": 140.53137500584126,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 22,
+      "n": 1000,
+      "us": 140.52595899999142,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 23,
+      "n": 1000,
+      "us": 138.42054100334644,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 24,
+      "n": 1000,
+      "us": 138.94141599535942,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 25,
+      "n": 1000,
+      "us": 138.54950000345707,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 26,
+      "n": 1000,
+      "us": 138.44224999845028,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 27,
+      "n": 1000,
+      "us": 139.5228749960661,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 28,
+      "n": 1000,
+      "us": 140.7989579886198,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 29,
+      "n": 1000,
+      "us": 141.34929199516773,
+      "chars": 326
+    },
+    {
+      "shape": "replyUnicode",
+      "op": "ascii_encode",
+      "sample": 30,
+      "n": 1000,
+      "us": 161.21345800161362,
+      "chars": 326
+    }
+  ],
+  "sink": 642445300
+}

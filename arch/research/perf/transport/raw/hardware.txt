@@ -1,0 +1,6 @@
+hw.model: Mac16,8
+hw.memsize: 25769803776
+hw.ncpu: 12
+hw.physicalcpu: 12
+hw.logicalcpu: 12
+machdep.cpu.brand_string: Apple M4 Pro

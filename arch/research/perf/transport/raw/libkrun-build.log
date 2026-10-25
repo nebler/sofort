@@ -1,0 +1,6 @@
+cargo build --locked --release -p libkrun 
+   Compiling krun-hvf v0.1.0-2.0.0-dev (/private/tmp/sofort-a4/libkrun/src/hvf)
+   Compiling krun-devices v0.1.0-2.0.0-dev (/private/tmp/sofort-a4/libkrun/src/devices)
+   Compiling libkrun v2.0.0-dev (/private/tmp/sofort-a4/libkrun/src/libkrun)
+    Finished `release` profile [optimized] target(s) in 36.40s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib

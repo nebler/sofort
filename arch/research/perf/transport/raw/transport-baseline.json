@@ -1,0 +1,4196 @@
+{
+  "date": "2026-10-25T07:24:57.399Z",
+  "node": "v24.22.1",
+  "loadBefore": "8:24  up 1 day, 10:38, 2 users, load averages: 26.57 26.68 30.15",
+  "loadAfter": "8:24  up 1 day, 10:38, 2 users, load averages: 26.57 26.68 30.15",
+  "vmm": "/tmp/sofort-a4/bin/jitk-vmm-base",
+  "image": "/tmp/sofort-a4/baseline-images/kernel.bin",
+  "n": 31,
+  "rows": [
+    {
+      "name": "one",
+      "sample": 0,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3346.760792
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3346.846917
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3347.900875
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3351.336292
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3351.737834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3352.419375
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3352.463459
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5726.666,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 1349.5410084724426
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 0,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3373.494584
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3373.567792
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3376.115084
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3390.444792
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3390.602042
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3404.8255
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3404.880875
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 31414.25,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 24219.125002622604
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 0,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3424.900875
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3424.966417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3425.637042
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3427.415959
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3429.648417
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3445.791625
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3445.837875
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 20960.292,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 18405.58299422264
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 1,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3473.969584
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3474.069167
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3474.497417
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3476.194417
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3476.347792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3476.588875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3476.820459
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2898,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 562.7499967813492
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 1,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3490.965375
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3491.032542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3491.64875
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3493.149917
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3493.371584
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3494.45975
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3494.48975
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3539.583,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1363.3340001106262
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 1,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3507.993542
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3508.06025
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3508.883625
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3510.895459
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3514.804
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3536.953709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3536.994542
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 29014.625,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 26305.334001779556
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 2,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3549.3665
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3549.432667
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3550.063834
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3551.373792
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3551.517875
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3551.724417
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3551.762584
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2409.583,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 372.08399176597595
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 2,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3568.029834
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3568.095584
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3568.883917
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3570.499375
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3570.725834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3572.714125
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3572.75325
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4756.25,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2170.292004942894
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 2,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3601.18325
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3601.258417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3602.08825
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3607.208459
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3609.042625
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3619.438667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3619.483584
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 18319.458,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 12633.625000715256
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 3,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3635.548042
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3635.6325
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3636.365167
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3639.276959
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3639.448084
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3639.87025
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3639.903584
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4366.792,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 1142.1660035848618
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 3,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3654.4775
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3654.547209
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3655.071125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3656.299042
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3656.467042
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3657.438792
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3657.493709
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3030.792,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1190.2080029249191
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 3,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3670.031334
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3670.186459
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3670.738417
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3672.049542
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3673.726625
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3686.849625
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3686.894375
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 16876.334,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 14792.583003640175
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 4,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3697.773125
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3697.851542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3698.336084
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3699.937959
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3700.101625
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3700.407792
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3700.497375
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2740.417,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 453.95898818969727
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 4,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3716.431
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3716.485334
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3717.068709
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3718.283167
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3718.431375
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3719.487292
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3719.543709
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3126.625,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1246.0419982671738
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 4,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3732.877875
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3732.934
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3733.387125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3734.69375
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3736.35575
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3746.538875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3746.590792
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 13725.5,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 11736.58400774002
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 5,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3758.398375
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3758.516084
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3759.20925
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3761.393417
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3761.583417
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3762.096834
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3762.132917
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3746.333,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 756.292000412941
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 5,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3776.938292
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3777.052375
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3777.968334
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3779.238709
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3779.552834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3783.835417
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3783.875417
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 6990.042,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 4449.833005666733
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 5,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3797.722209
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3797.7955
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3798.297
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3800.642
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3802.515042
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3817.256417
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3817.346667
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 19643.042,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 16184.833005070686
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 6,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3837.306542
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3837.370167
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3838.104875
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3843.742917
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3844.008959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3844.395709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3844.432834
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 7140.083,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 2549.791991710663
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 6,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3858.698709
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3858.770042
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3859.592667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3861.498042
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3861.761792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3863.657375
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3863.69075
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5007.5,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2236.999988555908
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 6,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3877.391334
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3877.482542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3877.988875
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3879.310625
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3880.621667
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3896.932167
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3896.99925
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 19626.292,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 17415.16599059105
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 7,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3918.576875
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3919.119792
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3920.169292
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3925.016542
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3925.176292
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3925.756917
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3925.783584
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 7219.5,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 2075.7090002298355
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 7,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3956.751584
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3956.823167
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3957.669667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3960.534209
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3960.693084
+        },
+        {
+          "event": "execute.done",
+          "atMs": 3967.758042
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 3967.809834
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 11091.334,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1609.2090010643005
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 7,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 3985.331125
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 3985.385417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 3985.988667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 3987.244084
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 3988.473917
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4001.037667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4001.097417
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 15779.625,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 13000
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 8,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4020.370167
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4020.4545
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4021.453125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4023.570084
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4023.752084
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4024.200542
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4024.234834
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3877.667,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 566.4999932050705
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 8,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4039.540625
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4039.595292
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4040.348917
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4042.761875
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4042.924709
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4044.903042
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4044.928792
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5401.042,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2234.3330085277557
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 8,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4059.324334
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4059.421125
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4059.791917
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4061.322417
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4062.439459
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4073.125292
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4073.177125
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 13868.167,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 11723.25000166893
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 9,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4086.570709
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4086.640542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4087.156292
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4088.579792
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4088.732125
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4089.202542
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4089.22725
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2670.584,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 509.4580054283142
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 9,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4106.310042
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4106.369417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4107.02075
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4108.588
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4108.696125
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4110.291
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4110.323917
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4030.666,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1713.458999991417
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 9,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4126.503709
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4126.572625
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4127.123667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4128.882459
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4130.675417
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4145.854625
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4145.915334
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 19428.292,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 16602.25000977516
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 10,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4164.358084
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4164.424875
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4164.875834
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4166.224834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4166.345959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4166.597459
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4166.633167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2289,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 346.7499911785126
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 10,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4180.16325
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4180.22775
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4180.900584
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4183.041125
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4183.186375
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4188.831209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4188.862459
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 8711.375,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 6070.66598534584
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 10,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4202.620167
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4202.682459
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4203.251334
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4205.441084
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4206.69725
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4216.789875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4216.833459
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 14225.542,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 11379.708006978035
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 11,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4230.668375
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4230.732542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4231.238792
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4232.633125
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4232.750917
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4232.924417
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4232.941834
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2284.917,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 329.6249955892563
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 11,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4250.443042
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4250.499084
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4251.343667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4254.611334
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4254.993042
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4259.236459
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4259.275792
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 8845.75,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 4816.834002733231
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 11,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4275.26975
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4275.45175
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4276.277417
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4278.80825
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4280.23425
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4297.921584
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4297.965792
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 22711.041,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 19089.24999833107
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 12,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4319.482625
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4319.561459
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4320.191667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4322.855709
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4323.097042
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4324.674209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4324.730167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5266.875,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 1645.458996295929
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 12,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4340.474417
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4340.546667
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4341.35775
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4342.554042
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4342.752959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4345.298584
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4345.367625
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4919.375,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2464.0829861164093
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 12,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4360.234667
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4360.29275
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4360.941417
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4362.488417
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4363.647625
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4377.632542
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4377.688334
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 17467.541,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 15122.70900607109
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 13,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4402.30425
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4402.365792
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4402.695125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4404.30575
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4404.6095
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4405.024417
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4405.12425
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2832.166,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 624.2500096559525
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 13,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4426.452334
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4426.518334
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4427.651459
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4430.102125
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4430.274459
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4432.79925
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4432.934542
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 6495.625,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2925.249993801117
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 13,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4452.613959
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4452.680834
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4453.20825
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4455.918167
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4457.63825
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4476.542584
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4476.596875
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 23997.208,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 21118.95799636841
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 14,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4490.782209
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4490.873584
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4491.447167
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4492.946875
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4493.07275
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4493.425
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4493.461625
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2695.542,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 494.5420026779175
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 14,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4509.658459
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4509.730834
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4510.44525
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4512.158292
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4512.321917
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4513.853667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4513.887417
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4246.625,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1621.5000003576279
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 14,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4526.598584
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4526.741334
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4527.857209
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4530.168834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4531.6345
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4542.441875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4542.488167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 15904.959,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 12358.457997441292
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 15,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4555.466125
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4555.541875
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4556.439375
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4559.1495
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4559.409292
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4559.681042
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4559.711167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4261.708,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 852.5419980287552
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 15,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4583.074167
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4583.151834
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4584.214667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4586.495959
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4586.738709
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4589.363125
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4589.395709
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 6338.709,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2881.3330084085464
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 15,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4606.640959
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4606.744792
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4607.38525
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4609.358375
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4611.214667
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4632.828667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4632.92725
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 26323.416,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 22293.624997138977
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 16,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4657.571917
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4658.001042
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4663.391042
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4666.4035
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4666.620459
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4667.121709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4667.156167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 9697,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 785.8330011367798
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 16,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4682.994834
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4683.066584
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4683.565542
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4686.949209
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4687.164709
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4693.7965
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4693.834167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 10855.416,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 7044.500008225441
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 16,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4709.341417
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4709.505209
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4710.144334
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4711.842209
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4714.022209
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4731.946792
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4732.00425
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 22676.917,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 19913.791999220848
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 17,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4750.07525
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4750.149084
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4750.758917
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4752.611792
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4752.875834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4753.265209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4753.31575
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3256.5,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 611.3329976797104
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 17,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4766.651
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4766.732417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4767.62775
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4769.774334
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4769.9085
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4771.153709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4771.182417
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4544.875,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1854.0410101413727
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 17,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4786.709125
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4786.7665
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4787.404167
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4789.121125
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4790.33025
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4806.138959
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4806.19475
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 19497.625,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 16505.374997854233
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 18,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4826.703542
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4826.768667
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4827.134209
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4828.815
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4828.977375
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4829.297417
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4829.326459
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2633.666,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 496.7909902334213
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 18,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4844.627417
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4844.738834
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4845.468625
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4848.261917
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4848.4365
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4850.849209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4850.880584
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 6268.209,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 3194.0840035676956
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 18,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4866.156417
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4866.232292
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4866.756042
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4868.541084
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4870.202959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4884.604917
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4884.676917
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 18542,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 16031.0830026865
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 19,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4897.474959
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4897.542834
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4898.428584
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4900.388417
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4900.583875
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4900.821
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4900.843875
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3383.292,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 636.583000421524
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 19,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4921.171709
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4921.48275
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4922.186625
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4936.199334
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4936.365167
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4950.474292
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4950.53325
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 29376.292,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 19574.290990829468
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 19,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 4971.081042
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 4971.199417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 4971.8165
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 4975.222292
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 4977.088792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 4997.121209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 4997.189417
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 26122.75,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 21798.374995589256
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 20,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5015.538959
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5015.615709
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5016.265084
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5018.241084
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5018.397834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5018.73925
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5018.77325
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 3249.792,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 714.4999951124191
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 20,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5036.7685
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5036.854042
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5037.783709
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5041.931334
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5042.208875
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5052.283334
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5052.332
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 15600.291,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 10751.042008399963
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 20,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5066.427625
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5066.522875
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5067.080792
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5068.866
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5070.372792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5081.903709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5081.959792
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 15548.25,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 13030.499994754791
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 21,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5096.57075
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5096.701334
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5097.115834
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5098.513834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5098.670417
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5098.944084
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5099.064709
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2510.75,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 482.2919964790344
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 21,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5112.98275
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5113.052459
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5113.636709
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5115.938625
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5116.110084
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5117.774667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5117.8005
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4832.542,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 1840.4169976711273
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 21,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5130.1675
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5130.234459
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5130.708292
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5132.250334
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5133.876292
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5147.486084
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5147.543209
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 17390.167,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 15242.041006684303
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 22,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5160.337667
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5160.410209
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5160.813584
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5162.137667
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5162.255
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5162.645209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5162.755709
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2430,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 336.16699278354645
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 22,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5177.583959
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5177.66125
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5178.146625
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5180.135042
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5180.277917
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5182.458292
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5182.527959
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4955.625,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2440.2500092983246
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 22,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5198.810792
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5198.868584
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5199.363125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5200.897459
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5202.142625
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5213.556
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5213.610042
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 14812.292,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 12630.250006914139
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 23,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5225.81025
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5225.867417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5226.332209
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5227.915792
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5228.083792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5228.413042
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5228.441042
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2640.417,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 484.499990940094
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 23,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5248.540042
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5248.602042
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5249.973959
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5253.443709
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5253.610084
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5258.481709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5258.504709
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 9978.125,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 5550.667002797127
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 23,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5274.174125
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5274.236084
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5274.989292
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5276.826667
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5280.684375
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5298.306875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5298.3995
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 24241.5,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 21871.041998267174
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 24,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5312.716709
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5312.790209
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5313.244459
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5314.858292
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5315.022125
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5315.506875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5315.539209
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2837.208,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 688.1249994039536
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 24,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5330.209417
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5330.273667
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5330.830584
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5332.805375
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5333.064
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5335.811667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5335.854
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5658.625,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2957.041010260582
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 24,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5355.8285
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5356.445917
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5357.535125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5362.28775
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5363.756709
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5388.404917
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5388.552667
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 32737.75,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 26061.124995350838
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 25,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5425.207167
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5425.2855
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5425.826459
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5427.916125
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5428.463125
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5429.384875
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5429.418084
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4226.958,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 1277.4999886751175
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 25,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5448.756084
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5448.886417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5449.646792
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5451.206834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5451.516792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5454.160167
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5454.207
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5482.875,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2941.6249990463257
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 25,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5476.002875
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5476.47025
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5477.249
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5483.602584
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5486.642709
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5512.864667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5512.956459
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 36973,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 32706.207990646362
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 26,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5527.64975
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5527.714292
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5528.266584
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5530.009709
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5530.157834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5532.10425
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5532.14025
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4502.625,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 624.1670101881027
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 26,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5545.387917
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5545.447125
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5545.924709
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5547.106042
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5547.341667
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5550.182542
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5550.199834
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 4826.167,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 3079.916998744011
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 26,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5561.78725
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5561.845875
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5562.168417
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5563.274792
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5564.713959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5577.973167
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5578.102375
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 16330.083,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 14497.999995946884
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 27,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5592.960167
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5593.063084
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5593.517334
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5594.810125
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5594.939542
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5595.194209
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5595.217334
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2270,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 451.83299481868744
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 27,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5612.902375
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5613.261709
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5614.059209
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5616.006834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5616.160667
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5619.381959
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5619.414167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 6527.375,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 3315.416008234024
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 27,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5636.574875
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5636.634792
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5637.062875
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5638.995667
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5640.301417
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5652.830459
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5652.883125
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 16320.833,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 13681.708008050919
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 28,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5666.771584
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5666.828959
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5667.375959
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5668.986834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5669.279959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5669.565084
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5669.587959
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2828.25,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 593.7079936265945
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 28,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5686.111834
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5686.167542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5686.755292
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5688.061209
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5688.196292
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5688.851667
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5688.881209
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2780.125,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 841.5419906377792
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 28,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5703.357334
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5703.415375
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5703.873584
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5705.021
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5706.456875
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5716.532709
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5716.573792
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 13228.834,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 10976.125001907349
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 29,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5731.614
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5731.683417
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5732.538792
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5735.772875
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5735.941459
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5736.4885
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5736.620667
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5058.792,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 749.9579936265945
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 29,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5760.379792
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5760.448375
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5763.519625
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5770.298375
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5771.701834
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5779.073834
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5779.102334
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 18738.5,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 8051.125004887581
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 29,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5798.439834
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5798.544125
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5799.0265
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5801.245917
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5803.861792
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5821.082792
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5821.128375
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 22703.917,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 20252.167001366615
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "one",
+      "sample": 30,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5840.004
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5840.062125
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5840.790667
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5842.443584
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5842.588959
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5842.828917
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5842.850834
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 2857.458,
+      "result": {
+        "result": {
+          "length": 1,
+          "json": null,
+          "guestRoundUs": 467.3749953508377
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "parallel10",
+      "sample": 30,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5856.501125
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5856.56575
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5857.266125
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5858.910084
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5859.05625
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5861.509792
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5861.571167
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 5086.292,
+      "result": {
+        "result": {
+          "length": 10,
+          "json": null,
+          "guestRoundUs": 2600.1249998807907
+        },
+        "logs": []
+      }
+    },
+    {
+      "name": "result64k",
+      "sample": 30,
+      "events": [
+        {
+          "event": "execute.start",
+          "atMs": 5874.514542
+        },
+        {
+          "event": "execute.acquired",
+          "atMs": 5874.721542
+        },
+        {
+          "event": "execute.runSent",
+          "atMs": 5875.297834
+        },
+        {
+          "event": "execute.firstCall",
+          "atMs": 5877.274834
+        },
+        {
+          "event": "execute.firstRet",
+          "atMs": 5878.957709
+        },
+        {
+          "event": "execute.done",
+          "atMs": 5895.259917
+        },
+        {
+          "event": "execute.resolve",
+          "atMs": 5895.309292
+        }
+      ],
+      "kernel": [],
+      "stderr": "",
+      "executeUs": 20811.5,
+      "result": {
+        "result": {
+          "length": 65536,
+          "json": null,
+          "guestRoundUs": 17930.87500333786
+        },
+        "logs": []
+      }
+    }
+  ]
+}

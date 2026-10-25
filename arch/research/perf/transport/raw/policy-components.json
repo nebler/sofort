@@ -1,0 +1,567 @@
+{
+  "loadBefore": "8:01  up 1 day, 10:15, 2 users, load averages: 42.74 36.69 23.20",
+  "loadAfter": "8:01  up 1 day, 10:15, 2 users, load averages: 42.74 36.69 23.20",
+  "node": "v24.22.1",
+  "rows": [
+    {
+      "mode": "decide",
+      "sample": 0,
+      "n": 2000,
+      "us": 1.3835985000000022
+    },
+    {
+      "mode": "decide",
+      "sample": 1,
+      "n": 2000,
+      "us": 7.102966000000006
+    },
+    {
+      "mode": "decide",
+      "sample": 2,
+      "n": 2000,
+      "us": 4.311725500000003
+    },
+    {
+      "mode": "decide",
+      "sample": 3,
+      "n": 2000,
+      "us": 2.7344879999999927
+    },
+    {
+      "mode": "decide",
+      "sample": 4,
+      "n": 2000,
+      "us": 4.0059915000000075
+    },
+    {
+      "mode": "decide",
+      "sample": 5,
+      "n": 2000,
+      "us": 3.200208000000004
+    },
+    {
+      "mode": "decide",
+      "sample": 6,
+      "n": 2000,
+      "us": 1.90994
+    },
+    {
+      "mode": "decide",
+      "sample": 7,
+      "n": 2000,
+      "us": 2.0067514999999965
+    },
+    {
+      "mode": "decide",
+      "sample": 8,
+      "n": 2000,
+      "us": 10.426169499999997
+    },
+    {
+      "mode": "decide",
+      "sample": 9,
+      "n": 2000,
+      "us": 3.0122184999999946
+    },
+    {
+      "mode": "decide",
+      "sample": 10,
+      "n": 2000,
+      "us": 3.8484915000000006
+    },
+    {
+      "mode": "decide",
+      "sample": 11,
+      "n": 2000,
+      "us": 1.302232499999999
+    },
+    {
+      "mode": "decide",
+      "sample": 12,
+      "n": 2000,
+      "us": 8.441817000000006
+    },
+    {
+      "mode": "decide",
+      "sample": 13,
+      "n": 2000,
+      "us": 2.8857980000000008
+    },
+    {
+      "mode": "decide",
+      "sample": 14,
+      "n": 2000,
+      "us": 10.804635500000007
+    },
+    {
+      "mode": "decide",
+      "sample": 15,
+      "n": 2000,
+      "us": 5.519235499999987
+    },
+    {
+      "mode": "decide",
+      "sample": 16,
+      "n": 2000,
+      "us": 2.5199799999999994
+    },
+    {
+      "mode": "decide",
+      "sample": 17,
+      "n": 2000,
+      "us": 3.8051390000000054
+    },
+    {
+      "mode": "decide",
+      "sample": 18,
+      "n": 2000,
+      "us": 1.7618280000000013
+    },
+    {
+      "mode": "decide",
+      "sample": 19,
+      "n": 2000,
+      "us": 1.342270499999999
+    },
+    {
+      "mode": "decide",
+      "sample": 20,
+      "n": 2000,
+      "us": 1.3276519999999974
+    },
+    {
+      "mode": "decide",
+      "sample": 21,
+      "n": 2000,
+      "us": 1.2949830000000009
+    },
+    {
+      "mode": "decide",
+      "sample": 22,
+      "n": 2000,
+      "us": 1.4412134999999977
+    },
+    {
+      "mode": "decide",
+      "sample": 23,
+      "n": 2000,
+      "us": 6.1149325000000045
+    },
+    {
+      "mode": "decide",
+      "sample": 24,
+      "n": 2000,
+      "us": 1.4713854999999953
+    },
+    {
+      "mode": "decide",
+      "sample": 25,
+      "n": 2000,
+      "us": 1.4384765000000006
+    },
+    {
+      "mode": "decide",
+      "sample": 26,
+      "n": 2000,
+      "us": 6.905618999999986
+    },
+    {
+      "mode": "decide",
+      "sample": 27,
+      "n": 2000,
+      "us": 1.4627805
+    },
+    {
+      "mode": "decide",
+      "sample": 28,
+      "n": 2000,
+      "us": 2.4456155
+    },
+    {
+      "mode": "decide",
+      "sample": 29,
+      "n": 2000,
+      "us": 4.264958499999999
+    },
+    {
+      "mode": "decide",
+      "sample": 30,
+      "n": 2000,
+      "us": 1.663948499999998
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 0,
+      "n": 2000,
+      "us": 6.205140999999995
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 1,
+      "n": 2000,
+      "us": 11.0579295
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 2,
+      "n": 2000,
+      "us": 16.645610499999993
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 3,
+      "n": 2000,
+      "us": 5.590726999999999
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 4,
+      "n": 2000,
+      "us": 8.285989000000002
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 5,
+      "n": 2000,
+      "us": 5.567741999999997
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 6,
+      "n": 2000,
+      "us": 6.493229000000006
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 7,
+      "n": 2000,
+      "us": 9.970038999999975
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 8,
+      "n": 2000,
+      "us": 11.107341500000016
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 9,
+      "n": 2000,
+      "us": 9.439490000000003
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 10,
+      "n": 2000,
+      "us": 7.841369000000018
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 11,
+      "n": 2000,
+      "us": 7.382334000000008
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 12,
+      "n": 2000,
+      "us": 22.473246499999988
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 13,
+      "n": 2000,
+      "us": 8.568421
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 14,
+      "n": 2000,
+      "us": 6.335688499999995
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 15,
+      "n": 2000,
+      "us": 18.481856999999998
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 16,
+      "n": 2000,
+      "us": 41.40424199999999
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 17,
+      "n": 2000,
+      "us": 29.589995999999992
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 18,
+      "n": 2000,
+      "us": 23.275797000000008
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 19,
+      "n": 2000,
+      "us": 12.577353500000005
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 20,
+      "n": 2000,
+      "us": 3.880401000000002
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 21,
+      "n": 2000,
+      "us": 3.369105499999996
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 22,
+      "n": 2000,
+      "us": 6.160380499999985
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 23,
+      "n": 2000,
+      "us": 5.383827999999996
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 24,
+      "n": 2000,
+      "us": 4.367825000000003
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 25,
+      "n": 2000,
+      "us": 3.5373639999999975
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 26,
+      "n": 2000,
+      "us": 4.842819999999999
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 27,
+      "n": 2000,
+      "us": 5.128648999999997
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 28,
+      "n": 2000,
+      "us": 6.0114665
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 29,
+      "n": 2000,
+      "us": 6.147685999999998
+    },
+    {
+      "mode": "decide_dispatch",
+      "sample": 30,
+      "n": 2000,
+      "us": 7.623393999999998
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 0,
+      "n": 2000,
+      "us": 6.162109500000001
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 1,
+      "n": 2000,
+      "us": 8.091153999999994
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 2,
+      "n": 2000,
+      "us": 16.448784500000013
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 3,
+      "n": 2000,
+      "us": 12.072795500000005
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 4,
+      "n": 2000,
+      "us": 29.200746499999987
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 5,
+      "n": 2000,
+      "us": 19.771146000000005
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 6,
+      "n": 2000,
+      "us": 11.979409500000017
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 7,
+      "n": 2000,
+      "us": 19.88732849999997
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 8,
+      "n": 2000,
+      "us": 16.334744999999973
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 9,
+      "n": 2000,
+      "us": 11.050223999999984
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 10,
+      "n": 2000,
+      "us": 21.011448999999995
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 11,
+      "n": 2000,
+      "us": 23.79073049999998
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 12,
+      "n": 2000,
+      "us": 27.4559125
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 13,
+      "n": 2000,
+      "us": 5.5696415
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 14,
+      "n": 2000,
+      "us": 17.57078049999997
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 15,
+      "n": 2000,
+      "us": 19.9185455
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 16,
+      "n": 2000,
+      "us": 26.76496149999998
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 17,
+      "n": 2000,
+      "us": 11.486707500000007
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 18,
+      "n": 2000,
+      "us": 18.5514065
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 19,
+      "n": 2000,
+      "us": 47.4056885
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 20,
+      "n": 2000,
+      "us": 12.583026999999996
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 21,
+      "n": 2000,
+      "us": 22.245555999999997
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 22,
+      "n": 2000,
+      "us": 10.921304500000023
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 23,
+      "n": 2000,
+      "us": 22.37006499999999
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 24,
+      "n": 2000,
+      "us": 6.202161499999999
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 25,
+      "n": 2000,
+      "us": 10.736326000000004
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 26,
+      "n": 2000,
+      "us": 25.218450999999995
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 27,
+      "n": 2000,
+      "us": 9.112718999999974
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 28,
+      "n": 2000,
+      "us": 12.678593499999986
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 29,
+      "n": 2000,
+      "us": 20.49435450000004
+    },
+    {
+      "mode": "executor_policy_path",
+      "sample": 30,
+      "n": 2000,
+      "us": 21.71905449999999
+    }
+  ],
+  "sink": 68000,
+  "signalNote": "signal omitted to avoid creating 2000 persistent abort listeners; separate actual-call probes pass live signal"
+}

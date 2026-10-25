@@ -1,0 +1,229 @@
+--- a/src/devices/src/legacy/hvfgicv3.rs
++++ b/src/devices/src/legacy/hvfgicv3.rs
+@@ -133,6 +133,7 @@
+         _interrupt_evt: Option<&EventFd>,
+     ) -> Result<(), DeviceError> {
+         if let Some(irq_line) = irq_line {
++            hvf::a4::add(29,1);
+             let ret = unsafe { (self.bindings.hv_gic_set_spi)(irq_line, true) };
+             if ret != HV_SUCCESS {
+                 Err(DeviceError::FailedSignalingUsedQueue(
+--- a/src/devices/src/virtio/console/event_handler.rs
++++ b/src/devices/src/virtio/console/event_handler.rs
+@@ -21,6 +21,7 @@
+             return false;
+         }
+ 
++        hvf::a4::add(23,1);
+         if let Err(e) = self.queue_events[queue_index].read() {
+             error!("Failed to read event from queue index {queue_index}: {e:?}");
+             return false;
+@@ -113,6 +114,7 @@
+ 
+ impl Subscriber for Console {
+     fn process(&mut self, event: &EpollEvent, event_manager: &mut EventManager) {
++        hvf::a4::add(22,1);
+         let source = event.fd();
+ 
+         let activate_evt = self.activate_evt.as_raw_fd();
+--- a/src/devices/src/virtio/console/port_io/unix.rs
++++ b/src/devices/src/virtio/console/port_io/unix.rs
+@@ -80,7 +80,9 @@
+         // SAFETY: We got a valid file descriptor from `AsRawFd`. The memory pointed to by `dst` is
+         // valid for writes of length `buf.len() by the invariants upheld by the constructor
+         // of `VolatileSlice`.
++        hvf::a4::add(10,1);
+         let bytes_read = unsafe { libc::read(fd, dst, buf.len()) };
++        if bytes_read>0 {hvf::a4::add(11,1);hvf::a4::add(12,bytes_read as u64);}else if bytes_read<0{hvf::a4::add(13,1);}
+ 
+         if bytes_read < 0 {
+             let err = std::io::Error::last_os_error();
+@@ -105,7 +107,9 @@
+             let borrowed_fd = unsafe { BorrowedFd::borrow_raw(stopfd.as_raw_fd()) };
+             poll_fds.push(PollFd::new(borrowed_fd, PollFlags::POLLIN));
+         }
+-        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(16,1);
++        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(17,1);
+     }
+ }
+ 
+@@ -119,7 +123,9 @@
+             // SAFETY: we trust stopfd won't go away to avoid a dup call here.
+             let borrowed_fd = unsafe { BorrowedFd::borrow_raw(stopfd.as_raw_fd()) };
+             let mut poll_fds = [PollFd::new(borrowed_fd, PollFlags::POLLIN)];
+-            poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++            hvf::a4::add(16,1);
++        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(17,1);
+         } else {
+             std::thread::sleep(std::time::Duration::MAX);
+         }
+@@ -136,6 +142,7 @@
+ 
+ impl PortOutput for PortOutputFd {
+     fn write_volatile(&mut self, buf: &VolatileSlice) -> Result<usize, io::Error> {
++        hvf::a4::add(14,1);hvf::a4::add(15,buf.len() as u64);
+         self.0.write_volatile(buf).map_err(|e| match e {
+             VolatileMemoryError::IOError(e) => e,
+             e => {
+@@ -147,7 +154,9 @@
+ 
+     fn wait_until_writable(&self) {
+         let mut poll_fds = [PollFd::new(self.0.as_fd(), PollFlags::POLLOUT)];
+-        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(16,1);
++        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(17,1);
+     }
+ }
+ 
+@@ -229,7 +238,9 @@
+             poll_fds.push(PollFd::new(stop_bfd, PollFlags::POLLIN));
+         }
+ 
+-        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(16,1);
++        poll(&mut poll_fds, PollTimeout::NONE).expect("Failed to poll");
++        hvf::a4::add(17,1);
+     }
+ }
+ 
+--- a/src/devices/src/virtio/console/process_rx.rs
++++ b/src/devices/src/virtio/console/process_rx.rs
+@@ -112,7 +112,9 @@
+                 if stop.load(Ordering::Acquire) {
+                     break None;
+                 }
++                hvf::a4::add(20,1);
+                 thread::park();
++                hvf::a4::add(21,1);
+                 log::trace!("rx unparked, queue len {}", queue.len(mem))
+             }
+         }
+--- a/src/devices/src/virtio/console/process_tx.rs
++++ b/src/devices/src/virtio/console/process_tx.rs
+@@ -71,7 +71,9 @@
+                 if stop.load(Ordering::Acquire) {
+                     break None;
+                 }
++                hvf::a4::add(18,1);
+                 thread::park();
++                hvf::a4::add(19,1);
+                 log::trace!("tx unparked, queue len {}", queue.len(mem))
+             }
+         }
+--- a/src/devices/src/virtio/device.rs
++++ b/src/devices/src/virtio/device.rs
+@@ -70,6 +70,7 @@
+     }
+ 
+     pub fn signal_used_queue(&self) {
++        hvf::a4::add(24,1);
+         if let Err(e) = self.try_signal_used_queue() {
+             warn!("Failed to signal used queue: {e:?}");
+         }
+@@ -290,6 +291,7 @@
+ 
+ impl DeviceState {
+     pub fn signal_used_queue(&self) {
++        hvf::a4::add(24,1);
+         match self {
+             Self::Inactive => {
+                 warn!("DeviceState::signal_used_queue() called, but device is not activated")
+--- a/src/hvf/src/lib.rs
++++ b/src/hvf/src/lib.rs
+@@ -691,6 +691,7 @@
+             vcpu_set_pending_irq(self.vcpuid, InterruptType::Irq, true)?;
+         }
+ 
++        a4::add(0,1);
+         let ret = unsafe { hv_vcpu_run(self.vcpuid) };
+         if ret != HV_SUCCESS {
+             return Err(Error::VcpuRun);
+@@ -699,10 +700,11 @@
+         match self.vcpu_exit.reason {
+             HV_EXIT_REASON_EXCEPTION => { /* This is the main one, handle below. */ }
+             HV_EXIT_REASON_VTIMER_ACTIVATED => {
++                a4::add(27,1);
+                 self.vtimer_masked = true;
+                 return Ok(VcpuExit::VtimerActivated);
+             }
+-            HV_EXIT_REASON_CANCELED => return Ok(VcpuExit::Canceled),
++            HV_EXIT_REASON_CANCELED => {a4::add(4,1);return Ok(VcpuExit::Canceled)},
+             _ => {
+                 let pc = self.read_reg(hv_reg_t_HV_REG_PC)?;
+                 error!(
+@@ -766,14 +768,18 @@
+                         _ => return Err(Error::GuestFault),
+                     };
+ 
++                    if pa & 0xfff == 0xfc && val as u32 & 0xfffffffc == 0xa4000000 { a4::marker(val as u32 & 3); }
++                    else { a4::add(1,1);if pa&0xfff==0x50{a4::add(5+(val as usize).min(3),1);} }
+                     Ok(VcpuExit::MmioWrite(pa, &self.mmio_buf[0..len]))
+                 } else {
++                    a4::add(2,1);
+                     self.pending_mmio_read = Some(MmioRead { addr: pa, srt, len });
+                     Ok(VcpuExit::MmioRead(pa, &mut self.mmio_buf[0..len]))
+                 }
+             }
+             #[cfg(all(target_arch = "aarch64", target_os = "macos"))]
+             EC_SYSTEMREGISTERTRAP => {
++                a4::add(28,1);
+                 let isread: bool = (syndrome & 1) != 0;
+                 let rt: u32 = ((syndrome >> 5) & 0x1f) as u32;
+                 let reg: u32 = syndrome as u32 & SYSREG_MASK;
+@@ -830,6 +836,7 @@
+                 }
+             }
+             EC_WFX_TRAP => {
++                a4::add(3,1);
+                 let ctl = self.read_sys_reg(hv_sys_reg_t_HV_SYS_REG_CNTV_CTL_EL0)?;
+ 
+                 self.pending_advance_pc = true;
+@@ -871,3 +878,15 @@
+         }
+     }
+ }
++
++pub mod a4 {
++ use std::sync::atomic::{AtomicBool,AtomicU64,Ordering};
++ static ACTIVE:AtomicBool=AtomicBool::new(false);
++ static C:[AtomicU64;48]=[const{AtomicU64::new(0)};48];
++ static START:AtomicU64=AtomicU64::new(0);static END:AtomicU64=AtomicU64::new(0);
++ unsafe extern "C" {fn clock_gettime_nsec_np(n:i32)->u64;fn write(fd:i32,p:*const u8,n:usize)->isize; fn dlsym(h:*mut std::ffi::c_void,n:*const std::ffi::c_char)->*mut std::ffi::c_void;}
++ pub fn now()->u64 {unsafe{clock_gettime_nsec_np(4)}}
++ pub fn add(i:usize,n:u64) {if ACTIVE.load(Ordering::Relaxed){C[i].fetch_add(n,Ordering::Relaxed);}}
++ pub fn marker(n:u32){unsafe{let p=dlsym(-2isize as *mut _,c"a4_sys_mark".as_ptr());if !p.is_null(){let f:unsafe extern "C" fn(i32)=std::mem::transmute(p);f(n as i32);}}if n==1 {for c in &C{c.store(0,Ordering::Relaxed);}START.store(now(),Ordering::Relaxed);ACTIVE.store(true,Ordering::Relaxed);}else if n==2{ACTIVE.store(false,Ordering::Relaxed);END.store(now(),Ordering::Relaxed);}}
++ pub fn dump(){unsafe{let p=dlsym(-2isize as *mut _,c"a4_sys_dump".as_ptr());if !p.is_null(){let f:unsafe extern "C" fn()=std::mem::transmute(p);f();}}let c:Vec<u64>=C.iter().map(|c|c.load(Ordering::Relaxed)).collect();let s=format!("A4HOST {{\"start_ns\":{},\"end_ns\":{},\"c\":{:?}}}\n",START.load(Ordering::Relaxed),END.load(Ordering::Relaxed),c);unsafe{write(2,s.as_ptr(),s.len());}}
++}
+--- a/src/libkrun/src/vmm/macos/vstate.rs
++++ b/src/libkrun/src/vmm/macos/vstate.rs
+@@ -477,6 +477,7 @@
+                     Ok(VcpuEmulation::Handled)
+                 }
+                 VcpuExit::WaitForEvent => {
++                    hvf::a4::add(25,1);
+                     debug!("vCPU {vcpuid} WaitForEvent");
+                     Ok(VcpuEmulation::WaitForEvent)
+                 }
+@@ -536,7 +537,7 @@
+                 Ok(VcpuEmulation::Interrupted) => self.wait_for_resume(),
+                 // Wait for an external event.
+                 Ok(VcpuEmulation::WaitForEvent) => {
+-                    self.wait_for_event(hvf_vcpuid, &wfe_receiver, None, &hvf_vcpu)
++                    self.wait_for_event(hvf_vcpuid, &wfe_receiver, None, &hvf_vcpu);hvf::a4::add(26,1);
+                 }
+                 Ok(VcpuEmulation::WaitForEventExpired) => (),
+                 Ok(VcpuEmulation::WaitForEventTimeout(timeout)) => {
+--- a/src/libkrun/src/vmm/mod.rs
++++ b/src/libkrun/src/vmm/mod.rs
+@@ -428,6 +428,7 @@
+         // Exit from Firecracker using the provided exit code. Safe because we're terminating
+         // the process anyway.
+         unsafe {
++            hvf::a4::dump();
+             libc::_exit(exit_code);
+         }
+     }

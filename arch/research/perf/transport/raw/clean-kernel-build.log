@@ -1,0 +1,3 @@
+   Compiling jitk-02 v0.3.0 (/private/tmp/sofort-a4/clean/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 5.56s
+{"image": "/tmp/sofort-a4/baseline-images/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin", "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6", "bytes": 2924584}

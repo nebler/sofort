@@ -1,0 +1,56 @@
+{
+  "frozenGitCommit": "58ab4435ebd450db9754b2b1ece39789805b94b5",
+  "libkrunCommit": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "binaries": [
+    {
+      "path": "/tmp/sofort-a4/bin/jitk-vmm",
+      "bytes": 1070800,
+      "sha256": "bfdf415cc4ee08ff9425bfc7a843436701adf81e7a12b628bbc1d28ce16f8fde"
+    },
+    {
+      "path": "/tmp/sofort-a4/bin/jitk-vmm-base",
+      "bytes": 1053824,
+      "sha256": "2a51b2fa4223abfd8c510d1ccc93e4b5667838f7897bf6292a2330e8863ac5f4"
+    },
+    {
+      "path": "/tmp/sofort-a4/bin/bench-pipe",
+      "bytes": 34040,
+      "sha256": "5f43b31c6cec77ff2ca4b3292cd35f81164c865b42046e02b1abe065736554b6"
+    },
+    {
+      "path": "/tmp/sofort-a4/bin/syscalls.dylib",
+      "bytes": 34400,
+      "sha256": "d54f1fb97916633c60f468c9133048548b8eb1d46b2c399dfd2178385b145372"
+    },
+    {
+      "path": "/tmp/sofort-a4/bin/loopticks.node",
+      "bytes": 51056,
+      "sha256": "6517b2254cd3c38820329930b171f0d4a42850ae38cc7e49b8c5eb5fa46c2b7a"
+    },
+    {
+      "path": "/tmp/sofort-a4/census-images/kernel.bin",
+      "bytes": 2924584,
+      "sha256": "4f4c0430663b9a7a09ed6f3bc4055d30f1cfbd84a3d9deac953420a06dc3c7e5"
+    },
+    {
+      "path": "/tmp/sofort-a4/baseline-images/kernel.bin",
+      "bytes": 2924584,
+      "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
+    },
+    {
+      "path": "/tmp/sofort-a4/head/arch/jitk/kernel/dist/kernel.bin",
+      "bytes": 2924584,
+      "sha256": "81eef0fe11e28aacb663bf3075142252d8cf76bbdbdbb379828fd3e1f1acc550"
+    },
+    {
+      "path": "/private/tmp/sofort-a4/bin/jitk-kernel-clean.elf",
+      "bytes": 2541440,
+      "sha256": "03106aff6051ab3b913b7b21176ffd028aaf00a92149c0b8ef7048fec867158e"
+    },
+    {
+      "path": "/private/tmp/sofort-a4/bin/jitk-kernel-census.elf",
+      "bytes": 2541944,
+      "sha256": "aa88fca7d20d838454690e8f71b10c07a5791d72109b3d94f3959a72a5ca1253"
+    }
+  ]
+}

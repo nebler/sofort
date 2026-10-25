@@ -1,0 +1,12 @@
+   Compiling jitk-02 v0.3.0 (/private/tmp/sofort-a4/head/arch/jitk/kernel)
+warning: unused import: `core::arch::asm`
+ --> src/a4.rs:1:5
+  |
+1 | use core::arch::asm;
+  |     ^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `jitk-02` (bin "jitk-02") generated 1 warning (run `cargo fix --bin "jitk-02" -p jitk-02` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 7.70s
+{"image": "/private/tmp/sofort-a4/head/arch/jitk/kernel/dist/kernel-81eef0fe11e28aacb663bf3075142252d8cf76bbdbdbb379828fd3e1f1acc550.bin", "sha256": "81eef0fe11e28aacb663bf3075142252d8cf76bbdbdbb379828fd3e1f1acc550", "bytes": 2924584}

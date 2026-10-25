@@ -1,0 +1,192 @@
+--- a/arch/jitk/kernel/src/wait.rs
++++ b/arch/jitk/kernel/src/wait.rs
+@@ -73,6 +73,7 @@
+ pub unsafe fn park(deadline: u64) { unsafe { park_for(deadline, true); } }
+ pub unsafe fn park_for(deadline: u64, input: bool) {
+     unsafe {
++        crate::a4::add(12,1);
+         // DAIF stays masked: pending interrupts wake WFI but cannot enter vectors.
+         ack();
+         // Recheck DMA rings after consuming IRQs: an IRQ may have raced the caller.
+@@ -81,6 +82,7 @@
+             return;
+         }
+         if TICK == 0 && deadline == u64::MAX {
++            crate::a4::add(13,1);
+             asm!("msr cntv_ctl_el0,xzr", "dsb sy", "wfi", "isb");
+         } else {
+             let span = deadline.saturating_sub(now_ns()).min(if TICK == 0 {
+@@ -94,6 +96,7 @@
+             let hz: u64;
+             asm!("mrs {h},cntfrq_el0",h=out(reg)hz);
+             let end = ticks() + (span * hz / 1_000_000_000).max(1);
++            crate::a4::add(13,1);
+             asm!("msr cntv_cval_el0,{end}","msr cntv_ctl_el0,{one}","isb","dsb sy","wfi","msr cntv_ctl_el0,xzr","isb",end=in(reg)end,one=in(reg)1u64);
+         }
+     }
+--- /dev/null
++++ b/arch/jitk/kernel/src/a4.rs
+@@ -0,0 +1,12 @@
++use core::arch::asm;
++static mut ACTIVE: bool=false;
++static mut C: [u64; 32]=[0;32];
++pub unsafe fn add(i:usize,n:u64) { unsafe { if ACTIVE { C[i]+=n; } } }
++pub unsafe fn marker(va:usize,len:usize)->bool { unsafe {
++ let Some(pa)=crate::user::access(va,len,false) else {return false};
++ let b=core::slice::from_raw_parts(pa as *const u8,len);
++ if b==b"A4-BEGIN\n" { C=[0;32];crate::console::marker(1);ACTIVE=true;return true; }
++ if b==b"A4-END\n" { ACTIVE=false;crate::console::marker(2);
++ crate::console::print("\x1eA4 ");for x in C {crate::console::hex(x as usize);crate::console::print(" ");}crate::console::print("\n");return true; }
++ false
++} }
+--- a/arch/jitk/kernel/src/user.rs
++++ b/arch/jitk/kernel/src/user.rs
+@@ -140,6 +140,11 @@
+             c::print("\n");
+         }
+         let n = f[8];
++        if !((n==64 || n==66) && f[0]==2) {
++          crate::a4::add(0,1);
++          crate::a4::add(match n {63=>1,64=>2,73=>3,113=>4, _=>5},1);
++          crate::a4::add(match n {65=>14,66=>15,134=>16,135=>17,214=>18,222=>19,215=>20,216=>21,25=>22,29=>23,57=>24,_=>25},1);
++        }
+         let args: [usize; 6] = f[..6].try_into().unwrap();
+         crate::trace::enter(n, &args, f[31]);
+         #[cfg(feature = "probe")]
+--- a/arch/jitk/kernel/src/console.rs
++++ b/arch/jitk/kernel/src/console.rs
+@@ -22,12 +22,14 @@
+ static mut CONTROL: [[u8; 256]; N] = [[0; 256]; N];
+ unsafe fn wr(off: usize, val: u32) {
+     unsafe {
++        crate::a4::add(6,1);
+         asm!("str {v:w}, [{a}]",v=in(reg) val,a=in(reg) BASE+off,options(nostack));
+     }
+ }
+ unsafe fn read32(addr: usize) -> u32 {
+     let v: u32;
+     unsafe {
++        crate::a4::add(7,1);
+         asm!("ldr {v:w}, [{a}]",v=out(reg) v,a=in(reg) addr,options(nostack));
+     }
+     v
+@@ -107,6 +109,7 @@
+ unsafe fn send(i: usize, bytes: &[u8]) {
+     unsafe {
+         for chunk in bytes.chunks(1024) {
++            crate::a4::add(8,1);crate::a4::add(9,chunk.len() as u64);
+             QS[i].buf[..chunk.len()].copy_from_slice(chunk);
+             let used = (QS[i].used.as_ptr() as *const u16).add(1);
+             let expected = rv(used).wrapping_add(1);
+@@ -242,6 +245,7 @@
+             crate::wait::park(u64::MAX);
+         }
+         let n = dst.len().min(RX_LEN - RX_POS);
++        crate::a4::add(10,1);crate::a4::add(11,n as u64);
+         dst[..n].copy_from_slice(&QS[0].buf[RX_POS..RX_POS + n]);
+         RX_POS += n;
+         if RX_POS == RX_LEN {
+@@ -252,3 +256,5 @@
+         n
+     }
+ }
++
++pub unsafe fn marker(n:u32) { unsafe { wr(0xfc,0xa4000000+n); } }
+--- a/arch/jitk/kernel/src/main.rs
++++ b/arch/jitk/kernel/src/main.rs
+@@ -6,6 +6,7 @@
+     panic::PanicInfo,
+ };
+ mod console;
++mod a4;
+ mod syscalls;
+ mod trace;
+ mod wait;
+--- a/arch/jitk/kernel/src/syscalls.rs
++++ b/arch/jitk/kernel/src/syscalls.rs
+@@ -54,6 +54,7 @@
+             crate::console::record(b"\"}\n");
+         }
+     }
++    if unsafe { crate::a4::marker(va,len) } { return len as isize; }
+     let _ = va;
+     len as isize
+ }
+--- a/arch/jitk/protocol/bootstrap.js
++++ b/arch/jitk/protocol/bootstrap.js
+@@ -1,3 +1,9 @@
++globalThis.__a4json=null;
++const a4str=JSON.stringify.bind(JSON),a4parse=JSON.parse.bind(JSON),a4chars=String.fromCharCode.bind(String),a4replace=String.prototype.replace;
++JSON.stringify=function(...a){if(globalThis.__a4json)__a4json[0]++;return a4str(...a)};
++JSON.parse=function(...a){if(globalThis.__a4json)__a4json[1]++;return a4parse(...a)};
++String.fromCharCode=function(...a){if(globalThis.__a4json){__a4json[2]++;__a4json[3]+=a.length;}return a4chars(...a)};
++String.prototype.replace=function(...a){if(globalThis.__a4json){__a4json[4]++;__a4json[5]+=String(this).length;}return a4replace.apply(this,a)};
+ // Stock QuickJS source: qjs --std --memory-limit 16M bootstrap.js
+ // Convenience API only: the trusted TS dispatcher validates every guest byte.
+ // --std supplies std/os; the kernel embeds this exact source with -e.
+--- a/arch/jitk/executor/executor.ts
++++ b/arch/jitk/executor/executor.ts
+@@ -82,11 +82,14 @@
+       let nextId=1;const pending=new Set<Promise<void>>();
+       const dispatch=async(call:Call)=>{
+         try {
++          (globalThis as any).__a4probe?.("policy.before",call);
+           const decision=rules.decide(run,{t:'call',id:call.id,ns:call.ns,fn:call.fn,args:parse(JSON.stringify(call.args))});
+           if(decision.kind==='deny')throw Error('policy denied: '+decision.reason);
++          (globalThis as any).__a4probe?.("policy.decided",call);
+           const frozen=deepFreeze({...call,args:structuredClone(decision.call.args)}) as Call;
+           const callContext=getContext();
+           const d=await this.policy(frozen,callContext);
++          (globalThis as any).__a4probe?.("policy.callback",call);
+           if(d!=='allow'&&d!=='requireApproval')throw new Error('policy denied');
+           if(decision.kind==='approve'||d==='requireApproval'){
+             if(!(await options.approve?.(frozen,callContext)))throw Error('approval required');
+@@ -94,7 +97,9 @@
+           }
+           if(expired())abort();
+           if(!live||ctx.signal.aborted)throw new Error('execution ended');
++          (globalThis as any).__a4probe?.("provider.before",call);
+           const ok=await rules.dispatch(run,decision.call,{issuer:this.security.issuer??noCredentials,signal:ctx.signal});
++          (globalThis as any).__a4probe?.("provider.after",call);
+           // Compatibility provenance is observational; only 07's effects decide admission.
+           if(run.tainted.untrusted)labels.add('tool-untrusted');
+           if(expired())abort();
+--- a/arch/jitk/executor/backend.ts
++++ b/arch/jitk/executor/backend.ts
+@@ -159,7 +159,9 @@
+     let acknowledge=()=>{};
+     this.confined=requireSandboxAck?new Promise<void>((resolve,reject)=>{acknowledge=resolve;this.rejectConfined=reject;}):Promise.resolve();
+     this.dispatcher=new Dispatcher({kill:f=>{this.fail(Error('protocol '+f.code));this.kill();},
++      kernel:r=>(globalThis as any).__a4probe?.("kernel",r),
+       message:m=>{
++        (globalThis as any).__a4probe?.("message",m);
+         const w=this.waiters.shift();
+         if(w)w.resolve(m);
+         else {
+@@ -170,12 +172,13 @@
+       }});
+     const closed=new Promise<void>(resolve=>child.once('close',()=>{this.fail(Error('sandbox exited'),true);resolve();}));
+     child.once('error',e=>{this.fail(e);this.kill();});
+-    child.stdout.on('data',(b:Buffer)=>{try{this.dispatcher.feed(b);}catch{/* dispatcher kills */}});
++    child.stdout.on('data',(b:Buffer)=>{(globalThis as any).__a4probe?.('stdout.before',b);try{this.dispatcher.feed(b);(globalThis as any).__a4probe?.('stdout.after',b);}catch{/* dispatcher kills */}});
+     child.stdout.once('end',()=>{try{this.dispatcher.eof();}catch{/* dispatcher kills */}});
+     child.stdin.on('error',()=>{});
+     let stderr=0;
+     let hostLines='';
+     child.stderr.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536){this.fail(Error('stderr limit'));this.kill();return;}
++      (globalThis as any).__a4probe?.('stderr',b.toString('utf8'));
+       hostLines+=b.toString('utf8');let pos;
+       while((pos=hostLines.indexOf('\n'))!==-1){const line=hostLines.slice(0,pos);hostLines=hostLines.slice(pos+1);if(line==='{"sandbox":"ok"}')acknowledge();}
+     });
+@@ -226,8 +229,10 @@
+       if(frame&&typeof frame==='object'&&(frame as any).t==='ret'&&this.dispatcher.snapshot().state==='done')return;
+       if(this.error)throw this.error;
+       let wire:Uint8Array|undefined;
++      (globalThis as any).__a4probe?.("send.before",frame);
+       this.dispatcher.send(frame,bytes=>{wire=bytes;return true;});
+-      await new Promise<void>((resolve,reject)=>this.child.stdin.write(wire!,e=>e?reject(e):resolve()));
++      (globalThis as any).__a4probe?.("send.encoded",wire);
++      await new Promise<void>((resolve,reject)=>this.child.stdin.write(wire!,e=>{(globalThis as any).__a4probe?.("stdin.callback",frame);e?reject(e):resolve();}));
+     });
+     this.output=p.catch(e=>{this.fail(e);this.kill();});
+     return p.finally(()=>{this.writes--;});
