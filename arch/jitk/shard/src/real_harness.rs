@@ -193,14 +193,22 @@ pub fn run(
                 ),
             );
             let c = done(&mut pool, 0, 2 * i as u64 + 2);
+            let run_ns = c.metrics.run_ns;
             match c.result {
-                Err(e) => println!(
-                    "{{\"event\":\"contained\",\"i\":{i},\"error\":{:?}}}",
+                Err(e @ RunError::MemoryBound { .. }) if name == "arena_attack" => println!(
+                    "{{\"event\":\"contained\",\"i\":{i},\"run_ns\":{run_ns},\"error\":{:?}}}",
                     e.to_string()
                 ),
+                Err(e) => panic!("unexpected hostile outcome: {e}"),
                 Ok(r) => {
-                    assert!(r.contains("\"err\""), "{r}");
-                    println!("{{\"event\":\"contained\",\"i\":{i},\"result\":{r}}}");
+                    assert!(name == "bomb" || name == "json64k");
+                    assert_eq!(
+                        r,
+                        "{\"err\":{\"name\":\"InternalError\",\"message\":\"out of memory\"}}"
+                    );
+                    println!(
+                        "{{\"event\":\"contained\",\"i\":{i},\"run_ns\":{run_ns},\"result\":{r}}}"
+                    );
                 }
             }
             verify_reset(&mut pool, 0);
@@ -306,6 +314,7 @@ fn stress(
     let mut completed = 0;
     let mut entropy = HashSet::new();
     for first in (0..n).step_by(slots) {
+        let batch_start = Instant::now();
         let count = (n - first).min(slots);
         for slot in 0..count {
             let generation = (first + slot + 2) as u64;
@@ -320,12 +329,15 @@ fn stress(
                     generation,
                     &source,
                     Mode::Run,
-                    kvm::monotonic_ns() + 5_000_000_000,
+                    // Queueing behind other real guests is part of this stress
+                    // deadline. Tight stop-latency budgets are tested separately.
+                    kvm::monotonic_ns() + 30_000_000_000,
                     true,
                 ),
             );
         }
         let mut seen = HashSet::new();
+        let mut max_run_ns = 0;
         for _ in 0..count {
             match pool.recv() {
                 Event::Done {
@@ -336,8 +348,11 @@ fn stress(
                     assert!(seen.insert(slot));
                     assert_eq!(generation, (first + slot + 2) as u64);
                     assert!(entropy.insert(completion.seed));
+                    max_run_ns = max_run_ns.max(completion.metrics.run_ns);
                     assert_eq!(
-                        completion.result.unwrap(),
+                        completion.result.as_ref().unwrap_or_else(|error| panic!(
+                            "stress completed={completed} slot={slot} generation={generation} batch_ns={} run_ns={} error={error}",
+                            batch_start.elapsed().as_nanos(), completion.metrics.run_ns)),
                         expected(names[(first + slot) % names.len()])
                     );
                     completed += 1;
@@ -345,6 +360,10 @@ fn stress(
                 _ => panic!("expected stress completion"),
             }
         }
+        println!(
+            "{{\"event\":\"stress_batch\",\"completed\":{completed},\"batch_ns\":{},\"max_run_ns\":{max_run_ns}}}",
+            batch_start.elapsed().as_nanos()
+        );
     }
     for slot in 0..slots {
         verify_reset(pool, slot);
