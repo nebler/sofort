@@ -38,3 +38,65 @@ Measured overhead (RESULTS.md, n=30 parked, load1 ~4.8): MCP stdio adds 0.36–0
 p50 over the same in-process core. The full path is 1.9 / 2.1 ms p50 for return2 / one_tool.
 That overhead is about 0.25 ms of pipe wake-ups plus about 0.1 ms of SDK zod validation.
 The VM path costs the same inside the server. At load1 ~12.5 the overhead rose to 0.7–0.8 ms.
+
+R7 adds **`run` `{tool, args?, files?}`**. It accepts a configured native profile,
+up to 31 arguments (argv[0] is the profile name; 8192 bytes including NULs), and
+up to 64 read-only files. `files` maps relative guest paths to canonical base64
+strings. The total archive, including directories/index/names, is bounded to
+4 MiB. Files are bound after snapshot preparation and exposed through the
+existing kernel filesystem. No host path or shell command is accepted.
+
+Successful structuredContent is:
+```json
+{"stdout":{"encoding":"base64","data":"AP+A"},"stderr":{"encoding":"base64","data":""},"exitCode":0,"outputLimited":false}
+```
+stdout/stderr preserve arbitrary bytes. A nonzero guest exitCode is a successful
+completed MCP call (`isError:false`), including partial output. Combined capture
+is bounded to 1 MiB; outputLimited reports short writes/capture exhaustion.
+Operational errors use `{error:{code,message}}`, with UNSUPPORTED, LIMIT,
+SANDBOX, TIMEOUT or CANCELLED and `isError:true`.
+
+Backend selection is explicit:
+
+| Host | execute | run |
+|---|---|---|
+| macOS v1 | existing libkrun/HVF executor | UNSUPPORTED |
+| Linux arm64 | existing libkrun executor until policy cutover | persistent shard `real native-worker`, KVM ring ABI R7 |
+| Other hosts / missing native config | existing execute selection rules | UNSUPPORTED |
+
+A Linux native-only configuration avoids requiring libkrun artifacts:
+```json
+{
+  "execute": false,
+  "warm": 0,
+  "timeoutMs": 10000,
+  "providers": [],
+  "resources": "./resources",
+  "native": {
+    "binary": "../shard/target/release/real",
+    "profiles": {"lua": "./prepared/lua", "busybox": "./prepared/busybox"}
+  }
+}
+```
+Paths resolve relative to the config. Profiles name immutable prepared snapshot
+bases (each has `.mem` and `.regs`); see [ABI-R7](../shard/ABI-R7.md) for build,
+prepare, framing and bounds. `execute:false` still lists execute but returns
+UNSUPPORTED. With execute enabled, its warm pool and policy behavior stay the
+same. Native tools are separate whole-program runs and have no JS tool grants.
+
+The native worker persists across calls, with one reusable VM per profile and
+one owner thread; concurrent calls return LIMIT while busy. A Node deadline or
+client cancellation kills the entire worker. Subsequent native calls return
+SANDBOX until the MCP server restarts. This is intentionally explicit, pending
+integration with the separately owned shard watchdog leases and multi-owner
+scheduler. It does not add per-call helper processes or claim lease parity.
+
+Portable validation: `$JITK_NODE native-test.mjs`. Real Linux SDK validation:
+```sh
+JITK_NATIVE_BINARY=/absolute/path/to/shard/target/release/real \
+JITK_NATIVE_PROFILES='{"lua":"/absolute/prepared/lua"}' \
+node native-linux-test.mjs
+```
+The integration test runs nine native calls, including binary output, status,
+late-bound files, rejection cases and deadline kill. [RESULTS-R7-bytes](../shard/RESULTS-R7-bytes.md)
+records the complete per-case native corpus and the memory ledger.
