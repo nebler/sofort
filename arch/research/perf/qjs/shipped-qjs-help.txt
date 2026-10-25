@@ -1,0 +1,19 @@
+QuickJS version 2026-06-04
+usage: qjs [options] [file [args]]
+-h  --help         list options
+-e  --eval EXPR    evaluate EXPR
+-i  --interactive  go to interactive mode
+-m  --module       load as ES6 module (default=autodetect)
+    --script       load as ES6 script (default=autodetect)
+    --strict       force strict mode
+-I  --include file include an additional file
+    --std          make 'std' and 'os' available to the loaded script
+-T  --trace        trace memory allocation
+-d  --dump         dump the memory usage stats
+    --memory-limit n  limit the memory usage to 'n' bytes (SI suffixes allowed)
+    --stack-size n    limit the stack size to 'n' bytes (SI suffixes allowed)
+    --no-unhandled-rejection  ignore unhandled promise rejections
+-s                    strip all the debug info
+    --strip-source    strip the source code
+    --experimental    enable experimental Temporal and Intl support
+-q  --quit         just instantiate the interpreter and quit

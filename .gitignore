@@ -17,3 +17,4 @@ kvm-dev/seed.iso
 kvm-dev/serial.log
 kvm-dev/id_ed25519
 kvm-dev/id_ed25519.pub
+arch/research/perf/**/raw-evidence.tar.gz

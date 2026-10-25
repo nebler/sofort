@@ -1,0 +1,4 @@
+   text	   data	    bss	    dec	    hex	filename
+1009372	  29312	   4992	1043676	  fecdc	bin/O2
+ 739116	  29344	   4992	 773452	  bcd4c	bin/Os
+ 944532	  24624	   2064	 971220	  ed1d4	bin/minimal

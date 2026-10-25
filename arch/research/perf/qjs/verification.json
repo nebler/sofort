@@ -1,0 +1,47 @@
+{
+  "raw_cells": 253,
+  "summary_cells": 253,
+  "sampled_point_reconciliations": 6200,
+  "mismatches": 0,
+  "baseline_children": {
+    "empty": 30,
+    "return2": 30,
+    "one_tool": 30,
+    "promise10": 30,
+    "source8k": 30,
+    "json64k": 30,
+    "json1m": 30
+  },
+  "interleaved_cpu_children": {
+    "O2-bump-detach-json1m-cpu": 60,
+    "O2-bump-detach-json64k-cpu": 60,
+    "O2-bump-detach-one_tool-cpu": 60,
+    "O2-bump-json1m-cpu": 60,
+    "O2-bump-json64k-cpu": 60,
+    "O2-bump-one_tool-cpu": 60,
+    "O2-bytecode-json1m-cpu": 60,
+    "O2-bytecode-json64k-cpu": 60,
+    "O2-bytecode-one_tool-cpu": 60,
+    "O2-default-json1m-cpu": 60,
+    "O2-default-json64k-cpu": 60,
+    "O2-default-one_tool-cpu": 60,
+    "O2-gc-before-json1m-cpu": 60,
+    "O2-gc-before-json64k-cpu": 60,
+    "O2-gc-before-no-gc-json1m-cpu": 60,
+    "O2-gc-before-no-gc-json64k-cpu": 60,
+    "O2-gc-before-no-gc-one_tool-cpu": 60,
+    "O2-gc-before-one_tool-cpu": 60,
+    "O2-no-gc-json1m-cpu": 60,
+    "O2-no-gc-json64k-cpu": 60,
+    "O2-no-gc-one_tool-cpu": 60,
+    "Os-default-json1m-cpu": 60,
+    "Os-default-json64k-cpu": 60,
+    "Os-default-one_tool-cpu": 60,
+    "minimal-minimal-json1m-cpu": 60,
+    "minimal-minimal-json64k-cpu": 60,
+    "minimal-minimal-one_tool-cpu": 60
+  },
+  "archive_sha256": {
+    "raw-evidence.tar.gz": "24d71afeefbe3840ebee7fd995ffd8e0b586d8e4f2443072520f1a977ab23f51"
+  }
+}

@@ -1,0 +1,681 @@
+{
+  "environment": {
+    "time": "2026-10-25T07:16:20+0000",
+    "uname": [
+      "Linux",
+      "kvm-dev",
+      "7.0.0-38-generic",
+      "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026",
+      "aarch64"
+    ],
+    "page_size": 4096,
+    "load": [
+      2.70751953125,
+      4.18994140625,
+      4.0703125
+    ],
+    "uptime": "1769.50 5364.50"
+  },
+  "ready": {
+    "t": "ready",
+    "v": 1
+  },
+  "snapshot": {
+    "stat": {
+      "minflt": 120,
+      "majflt": 0,
+      "utime_ticks": 1,
+      "stime_ticks": 4
+    },
+    "smaps": {
+      "Rss": 1769472,
+      "Pss": 1761280,
+      "Pss_Dirty": 356352,
+      "Pss_Anon": 356352,
+      "Pss_File": 1404928,
+      "Pss_Shmem": 0,
+      "Shared_Clean": 8192,
+      "Shared_Dirty": 0,
+      "Private_Clean": 1404928,
+      "Private_Dirty": 356352,
+      "Referenced": 1769472,
+      "Anonymous": 356352,
+      "KSM": 0,
+      "LazyFree": 0,
+      "AnonHugePages": 0,
+      "ShmemPmdMapped": 0,
+      "FilePmdMapped": 0,
+      "Shared_Hugetlb": 0,
+      "Private_Hugetlb": 0,
+      "Swap": 0,
+      "SwapPss": 0,
+      "Locked": 0
+    },
+    "maps": "00400000-005fa000 r-xp 00000000 fd:01 794272                             /home/dev/w3-qjs-mem/qjs\n00607000-00649000 rw-p 00207000 fd:01 794272                             /home/dev/w3-qjs-mem/qjs\n00649000-0064a000 rw-p 00000000 00:00 0 \n3cba4000-3cba5000 ---p 00000000 00:00 0                                  [heap]\n3cba5000-3cba6000 rw-p 00000000 00:00 0                                  [heap]\nf813b2b23000-f813b2b48000 rw-p 00000000 00:00 0 \nf813b2b49000-f813b2b7b000 rw-p 00000000 00:00 0 \nf813b2b7b000-f813b2b7f000 r--p 00000000 00:00 0                          [vvar]\nf813b2b7f000-f813b2b81000 r-xp 00000000 00:00 0                          [vdso]\nffffce0e5000-ffffce107000 rw-p 00000000 00:00 0                          [stack]\n",
+    "pages": [
+      {
+        "addr": 6553600,
+        "soft_dirty": false,
+        "category": "other",
+        "tags": [],
+        "mapping": "/home/dev/w3-qjs-mem/qjs"
+      },
+      {
+        "addr": 6586368,
+        "soft_dirty": false,
+        "category": "other",
+        "tags": [],
+        "mapping": "/home/dev/w3-qjs-mem/qjs"
+      },
+      {
+        "addr": 6590464,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 1018843136,
+        "soft_dirty": false,
+        "category": "heap_other",
+        "tags": [],
+        "mapping": "[heap]"
+      },
+      {
+        "addr": 272763486089216,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486093312,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486097408,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486101504,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486105600,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486109696,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486113792,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486126080,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486130176,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486134272,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486154752,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486158848,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486162944,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486167040,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486171136,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486175232,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486179328,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486183424,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486187520,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486199808,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486203904,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486208000,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486212096,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486216192,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486220288,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486224384,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486244864,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486248960,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486253056,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486257152,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486261248,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486265344,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486269440,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486273536,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486277632,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486281728,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486285824,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486289920,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486294016,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486298112,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486302208,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486306304,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486310400,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486314496,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486318592,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486322688,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486326784,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486330880,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486334976,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486339072,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486343168,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486347264,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486351360,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486355456,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486359552,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486363648,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486367744,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486371840,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486375936,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486380032,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486384128,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486388224,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486392320,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486396416,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486400512,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486404608,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486408704,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486412800,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486416896,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486420992,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486425088,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486429184,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486433280,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486437376,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486441472,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 272763486445568,
+        "soft_dirty": false,
+        "category": "anonymous_other",
+        "tags": [],
+        "mapping": ""
+      },
+      {
+        "addr": 281474138898432,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      },
+      {
+        "addr": 281474138902528,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      },
+      {
+        "addr": 281474138906624,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      },
+      {
+        "addr": 281474138910720,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      },
+      {
+        "addr": 281474138914816,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      },
+      {
+        "addr": 281474138918912,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      },
+      {
+        "addr": 281474138923008,
+        "soft_dirty": false,
+        "category": "stack",
+        "tags": [],
+        "mapping": "[stack]"
+      }
+    ],
+    "private4": 356352,
+    "private16": 458752,
+    "by_category": {
+      "anonymous_other": 315392,
+      "heap_other": 4096,
+      "other": 8192,
+      "stack": 28672
+    },
+    "by_tag_overlap": {}
+  },
+  "done": {
+    "t": "done",
+    "ok": 2
+  },
+  "returncode": 0
+}
