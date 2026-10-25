@@ -1,0 +1,6 @@
+jq-musl prepared
+sqlite3 prepared
+lua prepared
+micropython prepared
+busybox prepared
+zstd prepared

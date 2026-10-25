@@ -25,11 +25,21 @@ pub unsafe fn run() -> ! {
             pages(start, end, w, x);
         }
         pages(0x1fe0000, 0x2000000, true, false);
+        #[cfg(feature = "transport-ring")]
+        let mut native_args = [""; 32];
+        #[cfg(feature = "transport-ring")]
+        let args = if packed::ARGV == ["@ring-native"] {
+            c::native_checkpoint();
+            let n = c::native_args(&mut native_args);
+            &native_args[..n]
+        } else { packed::ARGV };
+        #[cfg(not(feature = "transport-ring"))]
+        let args = packed::ARGV;
         let strings = 0x1ff8000usize;
         let mut cursor = strings;
         let mut initial = [0usize; 96];
-        initial[0] = packed::ARGV.len();
-        for (i, arg) in packed::ARGV.iter().enumerate() {
+        initial[0] = args.len();
+        for (i, arg) in args.iter().enumerate() {
             initial[1 + i] = cursor;
             copy_nonoverlapping(arg.as_ptr(), m::physical(cursor) as *mut u8, arg.len());
             cursor += arg.len() + 1;
@@ -41,7 +51,7 @@ pub unsafe fn run() -> ! {
         copy_nonoverlapping(crate::SEED.as_ptr(), m::physical(random) as *mut u8, 16);
         let aux = [0, env, 0, 3, packed::PHDR, 4, 56, 5, packed::PHNUM, 6, 4096,
             9, packed::ENTRY, 11, 0, 12, 0, 13, 0, 14, 0, 23, 0, 25, random, 0, 0];
-        let n = 1 + packed::ARGV.len();
+        let n = 1 + args.len();
         initial[n..n + aux.len()].copy_from_slice(&aux);
         let initial = &initial[..n + aux.len()];
         let sp = (strings - initial.len() * 8) & !15;
@@ -61,7 +71,11 @@ pub unsafe fn run() -> ! {
         }
         m::flush();
         // Publish data written through the kernel alias before executing user code.
-        for va in (0x400000..0x650000).step_by(64) {
+        #[cfg(feature = "transport-ring")]
+        let cache_end = if c::native() { 0x400000 } else { 0x650000 };
+        #[cfg(not(feature = "transport-ring"))]
+        let cache_end = 0x650000;
+        for va in (0x400000..cache_end).step_by(64) {
             asm!("dc cvau,{a}",a=in(reg) m::physical(va));
         }
         asm!("dsb ish", "ic iallu", "dsb ish", "isb");

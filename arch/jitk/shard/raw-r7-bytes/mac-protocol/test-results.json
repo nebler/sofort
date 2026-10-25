@@ -1,0 +1,21 @@
+{
+  "node": "/private/tmp/jitk-09/node-real",
+  "version": "v24.22.1",
+  "uptime": "22:24  up 2 days, 38 mins, 1 user, load averages: 7.64 8.13 8.43",
+  "corpus": {
+    "cases": 71,
+    "runs": 142
+  },
+  "boundaries": {
+    "checks": 14,
+    "consecutiveCalls": 4096,
+    "maxFrameBytes": 1048576
+  },
+  "fuzz": {
+    "mutations": 25000,
+    "chunkDifferentialRuns": 50000,
+    "accepted": 622,
+    "rejected": 24378,
+    "seed": "0x3c0ffee"
+  }
+}

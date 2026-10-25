@@ -3,10 +3,9 @@
 import {readFileSync} from 'node:fs';
 import {dirname, resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {createNativeRunner} from './native.mjs';
 
 const build = new URL('../executor/build/', import.meta.url);
-const {MicroVMExecutor, SandboxPool} = await import(new URL('executor.js', build).href);
-const {selectBackend} = await import(new URL('select-backend.js', build).href);
 
 export const defaultConfig = new URL('./jitk-mcp.json', import.meta.url).pathname;
 
@@ -23,6 +22,10 @@ export async function loadConfig(path = process.env.JITK_MCP_CONFIG || defaultCo
       tools[ns] = fns;
     }
   }
+  if (cfg.native) {
+    cfg.native = {...cfg.native, binary: resolve(base, cfg.native.binary),
+      profiles: Object.fromEntries(Object.entries(cfg.native.profiles ?? {}).map(([name, path]) => [name, resolve(base, path)]))};
+  }
   return {...cfg, tools, resources: resolve(base, cfg.resources)};
 }
 
@@ -38,8 +41,19 @@ export function classify(error, cancelled) {
 }
 
 export async function createJitk(cfg) {
+  if (cfg.execute === false) {
+    const native = createNativeRunner(cfg.native, cfg.timeoutMs);
+    return {
+    selection: 'execute disabled; native Linux KVM ring profiles', warmed: Promise.resolve(),
+    run: async () => ({error: {code: 'UNSUPPORTED', message: 'execute backend disabled by server configuration'}, logs: []}),
+    runNative: (input, signal) => native.run(input, signal), close: () => native.close(),
+    };
+  }
+  const {MicroVMExecutor, SandboxPool} = await import(new URL('executor.js', build).href);
+  const {selectBackend} = await import(new URL('select-backend.js', build).href);
   const selected = selectBackend();
   if (cfg.warm && !selected.gate) throw Error('warm pool needs G1 parking evidence (see executor/README.md) or "warm": 0');
+  const native = createNativeRunner(cfg.native, cfg.timeoutMs);
   const inner = selected.backend;
   // Refill on every VM exit, not only after a run: the watchdog's lifetime bound
   // (60 s) also reaps idle parked VMs, and the next execute must still find one parked.
@@ -68,7 +82,8 @@ export async function createJitk(cfg) {
       if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
       return {error: {code: classify(r.error, signal?.aborted === true), message: r.error}, logs: r.logs};
     },
-    close: () => { closing = true; return pool.close(); },
+    runNative: (input, signal) => native.run(input, signal),
+    close: () => { closing = true; return Promise.all([pool.close(), native.close()]); },
   };
 }
 

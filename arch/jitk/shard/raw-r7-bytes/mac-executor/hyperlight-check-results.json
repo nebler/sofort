@@ -1,0 +1,34 @@
+{
+  "artifacts": {
+    "/tmp/jitk-09/adapter-target/release/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "/tmp/jitk-09/r3-snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09"
+  },
+  "loadBefore": "22:24  up 2 days, 38 mins, 1 user, load averages: 7.52 8.08 8.41",
+  "loadAfter": "22:24  up 2 days, 38 mins, 1 user, load averages: 7.52 8.08 8.41",
+  "rows": [
+    {
+      "name": "result",
+      "ok": true
+    },
+    {
+      "name": "tool",
+      "ok": true
+    },
+    {
+      "name": "unicode",
+      "ok": true
+    },
+    {
+      "name": "Promise.all",
+      "ok": true
+    },
+    {
+      "name": "fresh state",
+      "ok": true
+    },
+    {
+      "name": "deny",
+      "ok": true
+    }
+  ]
+}

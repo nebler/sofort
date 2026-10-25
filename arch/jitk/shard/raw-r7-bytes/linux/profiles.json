@@ -1,0 +1,32 @@
+{
+  "jq-musl": {
+    "binary": "/home/dev/r6-census/artifacts/jq-musl/jq-1.8.2/jq",
+    "sha256": "8d689ba1c53a9aed4311a2f4406a33e8c7bbb4d7a54f50a7c8e1d393807e3ff7",
+    "bytes": 1131552
+  },
+  "sqlite3": {
+    "binary": "/home/dev/r6-census/sqlite3-static",
+    "sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+    "bytes": 1392336
+  },
+  "lua": {
+    "binary": "/home/dev/r6-census/lua-static",
+    "sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "bytes": 395104
+  },
+  "micropython": {
+    "binary": "/home/dev/r6-census/artifacts/micropython/micropython-1.27.0/ports/unix/build-standard/micropython",
+    "sha256": "4626bf11458cb18785515ddc8a26246a12aafa602fa197346327602489c4ca62",
+    "bytes": 591376
+  },
+  "busybox": {
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "sha256": "e6e0d9874eef980f1bf6ce107494bbaed97f37449815acb991f4dd0ed4eb5ec8",
+    "bytes": 329480
+  },
+  "zstd": {
+    "binary": "/home/dev/r6-census/artifacts/zstd/zstd-1.5.7/programs/zstd",
+    "sha256": "5a52c331442b8939469c1337d2526167f4f17bf16fe976b37d8b8c1246b3002c",
+    "bytes": 1127240
+  }
+}

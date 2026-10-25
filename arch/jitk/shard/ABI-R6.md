@@ -1,5 +1,8 @@
 # R6 real-guest transport: bounded ABI-v2 subset
 
+R7 native/byte/file support is specified in [ABI-R7.md](ABI-R7.md); native binds
+use minor 1 and negotiated feature bundle 7. The QuickJS profile remains below.
+
 R7 entropy amendment: the control layout is unchanged; the ring-only payload and
 run-entry repair now follow items 1 and 9 below. R6 measurements remain historical.
 

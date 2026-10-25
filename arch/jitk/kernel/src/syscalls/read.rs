@@ -2,6 +2,8 @@ use crate::{console as c, user::*};
 pub unsafe fn call(a: &[usize]) -> isize {
     unsafe {
         let fd = a[0] as u32 as usize;
+        #[cfg(feature = "transport-ring")]
+        if fd == 0 && crate::fs::get(0).is_ok() { return crate::fs::read(0, a[1], a[2]); }
         if fd != 0 {
             return if fd <= 2 { -9 } else { crate::fs::read(fd, a[1], a[2]) };
         }

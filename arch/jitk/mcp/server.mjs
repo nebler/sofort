@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// jitk MCP server: tool `execute` runs code-mode JS in a fresh parked microVM;
+// jitk MCP server: execute runs code-mode JS; run uses native Linux ring VMs.
 // resources expose a markdown directory. stdio by default; `--http PORT` serves
 // Streamable HTTP (stateless, JSON responses) on 127.0.0.1.
 import {readdirSync, readFileSync, realpathSync, statSync} from 'node:fs';
@@ -54,8 +54,24 @@ function mcpServer(jitk, cfg) {
     inputSchema: {type: 'object', properties: {code: {type: 'string', description: 'JavaScript async function body'}},
       required: ['code'], additionalProperties: false},
   };
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({tools: [execute]}));
+  const run = {
+    name: 'run',
+    description: 'Run a prepared static native tool in a fresh Linux arm64 KVM microVM. args excludes argv[0]. ' +
+      'files maps relative read-only guest paths to canonical base64 bytes (64 files, 4 MiB archive). ' +
+      'Returns stdout/stderr as {encoding:"base64",data}, exitCode, outputLimited (1 MiB combined cap). ' +
+      'macOS v1 returns UNSUPPORTED. Configured profiles: ' + Object.keys(cfg.native?.profiles ?? {}).join(', '),
+    inputSchema: {type: 'object', properties: {tool: {type: 'string'}, args: {type: 'array', maxItems: 31, items: {type: 'string'}},
+      files: {type: 'object', maxProperties: 64, additionalProperties: {type: 'string'}}}, required: ['tool'], additionalProperties: false},
+  };
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({tools: [execute, run]}));
   server.setRequestHandler(CallToolRequestSchema, async (req, extra) => {
+    if (req.params.name === 'run') {
+      const input = req.params.arguments;
+      if (!input || typeof input.tool !== 'string' || Object.keys(input).some(k => !['tool', 'args', 'files'].includes(k)))
+        throw new McpError(ErrorCode.InvalidParams, 'run: tool, args, files required');
+      const out = await jitk.runNative(input, extra.signal);
+      return {content: [{type: 'text', text: JSON.stringify(out)}], structuredContent: out, isError: 'error' in out};
+    }
     if (req.params.name !== 'execute') throw new McpError(ErrorCode.InvalidParams, 'unknown tool: ' + req.params.name);
     const code = req.params.arguments?.code;
     if (typeof code !== 'string') throw new McpError(ErrorCode.InvalidParams, 'execute: `code` must be a string');

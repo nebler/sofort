@@ -7,9 +7,18 @@ pub struct Node { pub ino: usize, pub name: &'static [u8], pub parent: usize, pu
 #[derive(Clone, Copy)]
 pub struct Open { pub node: usize, pub pos: usize, pub cloexec: bool, pub read: bool }
 pub const MAX_FDS: usize = 64;
+#[cfg(not(feature = "transport-ring"))]
 static mut FDS: [Option<Open>; MAX_FDS] = [None; MAX_FDS];
 
 fn archive() -> &'static [u8] {
+    #[cfg(feature = "transport-ring")]
+    unsafe {
+        if crate::console::native() {
+            let len = crate::console::load(0x250) as usize;
+            assert!((16..=4 * 1024 * 1024).contains(&len));
+            return core::slice::from_raw_parts(0x82000000 as *const u8, len);
+        }
+    }
     unsafe { core::slice::from_raw_parts(crate::mmu::physical(crate::user::FS) as *const u8, crate::user::FS_LEN) }
 }
 fn word(at: usize) -> Option<usize> {
@@ -46,9 +55,11 @@ pub fn stat(n: Option<Node>) -> [u8; 128] {
     st
 }
 
+#[cfg(not(feature = "transport-ring"))]
 pub fn get(fd: usize) -> Result<&'static mut Open, isize> {
     unsafe { FDS.get_mut(fd).and_then(|f| f.as_mut()).ok_or(-9) }
 }
+#[cfg(not(feature = "transport-ring"))]
 pub fn alloc(node: usize, cloexec: bool, read: bool) -> isize {
     unsafe {
         match (3..MAX_FDS).find(|&fd| FDS[fd].is_none()) {
@@ -57,6 +68,7 @@ pub fn alloc(node: usize, cloexec: bool, read: bool) -> isize {
         }
     }
 }
+#[cfg(not(feature = "transport-ring"))]
 pub fn close(fd: usize) -> isize {
     unsafe { match FDS.get_mut(fd).and_then(|f| f.take()) { Some(_) => 0, None => -9 } }
 }
@@ -124,3 +136,53 @@ pub fn read(fd: usize, buf: usize, len: usize) -> isize {
     f.pos += count;
     count as isize
 }
+
+// Ring-only open-description table. dup3(file, stdin) keeps the offset shared
+// even after the original descriptor closes; flags belong to descriptors.
+#[cfg(feature = "transport-ring")]
+mod ring_fds {
+    use super::{MAX_FDS, Open};
+    #[derive(Clone, Copy)]
+    struct Fd { open: usize, cloexec: bool }
+    static mut DESCRIPTIONS: [Option<Open>; MAX_FDS] = [None; MAX_FDS];
+    static mut FDS: [Option<Fd>; MAX_FDS] = [None; MAX_FDS];
+    pub fn get(fd: usize) -> Result<&'static mut Open, isize> {
+        unsafe {
+            let f = FDS.get(fd).and_then(|f| *f).ok_or(-9isize)?;
+            DESCRIPTIONS[f.open].as_mut().ok_or(-9)
+        }
+    }
+    pub fn alloc(node: usize, cloexec: bool, read: bool) -> isize {
+        unsafe {
+            let Some(fd) = (3..MAX_FDS).find(|&fd| FDS[fd].is_none()) else { return -24; };
+            let Some(open) = DESCRIPTIONS.iter().position(Option::is_none) else { return -24; };
+            DESCRIPTIONS[open] = Some(Open { node, pos: 0, cloexec, read });
+            FDS[fd] = Some(Fd { open, cloexec });
+            fd as isize
+        }
+    }
+    pub fn close(fd: usize) -> isize {
+        unsafe {
+            let Some(f) = FDS.get_mut(fd).and_then(Option::take) else { return -9; };
+            if !FDS.iter().flatten().any(|other| other.open == f.open) { DESCRIPTIONS[f.open] = None; }
+            0
+        }
+    }
+    pub fn dup_stdin(old: usize, flags: usize) -> isize {
+        if old == 0 || flags & !0x80000 != 0 { return -22; }
+        unsafe {
+            let Some(f) = FDS.get(old).and_then(|f| *f) else { return -9; };
+            let _ = close(0);
+            FDS[0] = Some(Fd { open: f.open, cloexec: flags != 0 });
+        }
+        0
+    }
+    pub fn fd_flags(fd: usize, set: Option<usize>) -> isize {
+        unsafe {
+            let Some(f) = FDS.get_mut(fd).and_then(Option::as_mut) else { return -9; };
+            match set { Some(value) => { f.cloexec = value & 1 != 0; 0 }, None => f.cloexec as isize }
+        }
+    }
+}
+#[cfg(feature = "transport-ring")]
+pub use ring_fds::{alloc, close, dup_stdin, fd_flags, get};

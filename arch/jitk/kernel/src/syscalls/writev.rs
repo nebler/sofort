@@ -13,6 +13,25 @@ pub unsafe fn call(a: &[usize]) -> isize {
                 if a[0] != 1 && a[0] != 2 {
                     return -9;
                 }
+                #[cfg(feature = "transport-ring")]
+                if crate::console::native() {
+                    for i in 0..a[2] {
+                        let io = (pa + i * 16) as *const usize;
+                        let len = io.add(1).read_unaligned();
+                        if len == 0 { continue; }
+                        if len > 1024 * 1024 { return -22; }
+                        if access(io.read_unaligned(), len, false).is_none() { return -14; }
+                    }
+                    for i in 0..a[2] {
+                        let io = (pa + i * 16) as *const usize;
+                        let len = io.add(1).read_unaligned();
+                        let r = crate::console::native_output(a[0], io.read_unaligned(), len);
+                        if r < 0 { return if total > 0 { total } else { r }; }
+                        total += r;
+                        if r as usize != len { break; }
+                    }
+                    return total;
+                }
                 // Validate the complete writev before emitting any prefix.
                 if a[0] == 1 {
                     for i in 0..a[2] {
