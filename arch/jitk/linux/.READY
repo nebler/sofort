@@ -1,21 +1,21 @@
 {
-  "created_utc": "2026-10-25T20:58:45.259752+00:00",
+  "created_utc": "2026-10-25T21:12:20.973759+00:00",
   "label": "NESTED",
   "performance": false,
   "backend": "ssh",
   "outer_linux_vcpus": 6,
-  "parking_image_sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
+  "parking_image_sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732",
   "limitations": [
     "nested non-performance only",
     "second QEMU/HVF assertion spin remains; SSH replacement used by default",
     "shared VM guest CPU attribution unverified; see out/cpu-analysis.json"
   ],
   "report": "out/report.json",
-  "report_sha256": "68aef8560bbfc54f21db664354ca9f124886229656bcb0bb9e626c31ab0ff0e1",
+  "report_sha256": "ae03c493348464e95637c1b6d93dbc0b00c1968a02759c4784bcceb2b18cdba2",
   "artifacts": {
     "jitk-vmm": "f0483380bd55f75e5d57fda379d1e447501f3ae55fcda580c711a968dbeb204d",
-    "spawn-cg": "2d279ac06f6d2fc444974dea407d9350d1ab8043bd2b68aba120f2297b2b2b5c",
-    "kernel.bin": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
+    "spawn-cg": "b7a39ae6beb3cb8ca20f26c87d1593ca41d37bc736a550ceac6d8cd3434aeef5",
+    "kernel.bin": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732"
   },
   "canonical_build": {
     "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",

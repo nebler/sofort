@@ -2,27 +2,27 @@
 
 **NESTED — non-performance data. Status: PASS.**
 
-Outer host: `21:54  up 2 days, 8 mins, 1 user, load averages: 12.71 12.94 11.82`
+Outer host: `22:08  up 2 days, 22 mins, 1 user, load averages: 7.86 7.49 9.20`
 
 | Gate | Result | Count | Wall s | p50 / p90 / p99 ms | Load |
 |---|---|---:|---:|---|---|
-| parking | PASS | 1000 exchanges | 10.923 | — | inner: 20:54:53 up 11:07,  1 user,  load average: 0.91, 1.23, 0.99; outer: [12.71044921875, 12.9404296875, 11.81982421875] |
-| smoke | PASS | 1/1 | 0.162 | 142.813 / 142.813 / 142.813 | inner: 20:55:04 up 11:07,  1 user,  load average: 0.77, 1.19, 0.98; outer: [12.01513671875, 12.77880859375, 11.78173828125] |
-| tool_smoke | PASS | 1/1 | 0.126 | 122.125 / 122.125 / 122.125 | inner: 20:55:05 up 11:07,  1 user,  load average: 0.77, 1.19, 0.98; outer: [12.01513671875, 12.77880859375, 11.78173828125] |
-| boot | PASS | 100/100 | 11.754 | 112.874 / 127.985 / 174.596 | inner: 20:55:05 up 11:07,  1 user,  load average: 0.77, 1.19, 0.98; outer: [12.01513671875, 12.77880859375, 11.78173828125] |
-| one_tool | PASS | 30/30 | 3.711 | 119.213 / 132.376 / 161.416 | inner: 20:55:16 up 11:08,  1 user,  load average: 0.82, 1.18, 0.99; outer: [10.5615234375, 12.4404296875, 11.6728515625] |
-| concurrency_1 | PASS | 100/100 | 11.557 | 112.306 / 122.735 / 151.159 | inner: 20:55:20 up 11:08,  1 user,  load average: 0.82, 1.18, 0.99; outer: [10.35595703125, 12.36669921875, 11.65087890625] |
-| concurrency_2 | PASS | 100/100 | 8.002 | 153.783 / 176.822 / 258.394 | inner: 20:55:32 up 11:08,  1 user,  load average: 0.86, 1.17, 0.99; outer: [9.365234375, 12.09033203125, 11.56103515625] |
-| concurrency_3 | PASS | 100/100 | 7.163 | 210.851 / 239.565 / 355.575 | inner: 20:55:40 up 11:08,  1 user,  load average: 1.03, 1.20, 1.00; outer: [8.98828125, 11.92138671875, 11.50732421875] |
-| concurrency_4 | PASS | 100/100 | 7.268 | 287.837 / 323.572 / 385.378 | inner: 20:55:47 up 11:08,  1 user,  load average: 1.33, 1.26, 1.02; outer: [9.06884765625, 11.88916015625, 11.498046875] |
-| concurrency_5 | PASS | 100/100 | 7.033 | 337.936 / 391.738 / 418.393 | inner: 20:55:54 up 11:08,  1 user,  load average: 1.55, 1.31, 1.04; outer: [9.28515625, 11.8427734375, 11.486328125] |
-| concurrency_6 | PASS | 100/100 | 7.218 | 429.279 / 477.952 / 520.878 | inner: 20:56:01 up 11:08,  1 user,  load average: 2.08, 1.43, 1.08; outer: [9.18212890625, 11.77880859375, 11.4658203125] |
-| concurrency_7 | PASS | 100/100 | 7.334 | 495.865 / 588.367 / 685.051 | inner: 20:56:08 up 11:09,  1 user,  load average: 2.39, 1.51, 1.11; outer: [8.92724609375, 11.6826171875, 11.43359375] |
-| concurrency_8 | PASS | 100/100 | 8.393 | 627.343 / 934.102 / 1215.206 | inner: 20:56:16 up 11:09,  1 user,  load average: 3.10, 1.69, 1.17; outer: [8.716796875, 11.544921875, 11.38720703125] |
-| density | PASS | 256 | 45.925 | — | inner: 20:56:24 up 11:09,  1 user,  load average: 3.65, 1.83, 1.22; outer: [10.0205078125, 11.76806640625, 11.466796875] |
-| cpu_controls | PASS | — | 0.744 | — | inner: 20:57:10 up 11:10,  1 user,  load average: 2.12, 1.68, 1.19; outer: [8.15625, 11.04736328125, 11.21875] |
-| seccomp_kill | PASS | 720/720 | 0.951 | — | inner: 20:57:11 up 11:10,  1 user,  load average: 2.03, 1.67, 1.19; outer: [8.15625, 11.04736328125, 11.21875] |
-| fault_guests | PASS | 180/180 | 92.603 | — | inner: 20:57:12 up 11:10,  1 user,  load average: 2.03, 1.67, 1.19; outer: [8.15625, 11.04736328125, 11.21875] |
+| parking | PASS | 1000 exchanges | 10.854 | — | inner: 21:08:32 up 11:21,  1 user,  load average: 0.13, 0.27, 0.64; outer: [7.85595703125, 7.486328125, 9.2001953125] |
+| smoke | PASS | 1/1 | 0.145 | 138.239 / 138.239 / 138.239 | inner: 21:08:43 up 11:21,  1 user,  load average: 0.40, 0.32, 0.66; outer: [7.35546875, 7.38818359375, 9.14501953125] |
+| tool_smoke | PASS | 1/1 | 0.123 | 119.113 / 119.113 / 119.113 | inner: 21:08:43 up 11:21,  1 user,  load average: 0.40, 0.32, 0.66; outer: [7.35546875, 7.38818359375, 9.14501953125] |
+| boot | PASS | 100/100 | 11.153 | 108.999 / 124.375 / 132.484 | inner: 21:08:43 up 11:21,  1 user,  load average: 0.40, 0.32, 0.66; outer: [7.35546875, 7.38818359375, 9.14501953125] |
+| one_tool | PASS | 30/30 | 3.800 | 119.571 / 138.247 / 256.819 | inner: 21:08:54 up 11:21,  1 user,  load average: 0.50, 0.35, 0.66; outer: [7.08544921875, 7.326171875, 9.10205078125] |
+| concurrency_1 | PASS | 100/100 | 11.707 | 110.507 / 129.914 / 175.090 | inner: 21:08:58 up 11:21,  1 user,  load average: 0.54, 0.36, 0.66; outer: [6.7578125, 7.25390625, 9.06591796875] |
+| concurrency_2 | PASS | 100/100 | 7.143 | 138.461 / 158.209 / 170.997 | inner: 21:09:10 up 11:22,  2 users,  load average: 0.61, 0.38, 0.67; outer: [6.35546875, 7.142578125, 8.994140625] |
+| concurrency_3 | PASS | 100/100 | 6.513 | 190.712 / 217.941 / 274.856 | inner: 21:09:17 up 11:22,  2 users,  load average: 0.75, 0.42, 0.68; outer: [6.08642578125, 7.07373046875, 8.958984375] |
+| concurrency_4 | PASS | 100/100 | 6.323 | 251.888 / 274.463 / 288.276 | inner: 21:09:23 up 11:22,  2 users,  load average: 1.01, 0.48, 0.70; outer: [6.1591796875, 7.072265625, 8.947265625] |
+| concurrency_5 | PASS | 100/100 | 6.478 | 321.639 / 352.012 / 380.075 | inner: 21:09:30 up 11:22,  1 user,  load average: 1.25, 0.53, 0.71; outer: [6.54736328125, 7.1201171875, 8.94140625] |
+| concurrency_6 | PASS | 100/100 | 6.487 | 384.595 / 422.410 / 465.030 | inner: 21:09:36 up 11:22,  3 users,  load average: 1.91, 0.70, 0.77; outer: [6.42333984375, 7.08447265625, 8.91796875] |
+| concurrency_7 | PASS | 100/100 | 7.399 | 473.572 / 692.936 / 927.324 | inner: 21:09:43 up 11:22,  3 users,  load average: 2.15, 0.77, 0.79; outer: [6.62939453125, 7.1162109375, 8.91796875] |
+| concurrency_8 | PASS | 100/100 | 9.566 | 730.144 / 1089.339 / 1336.786 | inner: 21:09:50 up 11:22,  3 users,  load average: 2.54, 0.87, 0.82; outer: [8.38330078125, 7.474609375, 9.0234375] |
+| density | PASS | 256 | 45.674 | — | inner: 21:10:00 up 11:22,  3 users,  load average: 3.38, 1.11, 0.90; outer: [9.55419921875, 7.7548828125, 9.1044921875] |
+| cpu_controls | PASS | — | 0.756 | — | inner: 21:10:45 up 11:23,  3 users,  load average: 2.00, 1.06, 0.90; outer: [8.30126953125, 7.70263671875, 9.01611328125] |
+| seccomp_kill | PASS | 720/720 | 1.123 | — | inner: 21:10:46 up 11:23,  3 users,  load average: 1.92, 1.06, 0.90; outer: [8.30126953125, 7.70263671875, 9.01611328125] |
+| fault_guests | PASS | 180/180 | 92.781 | — | inner: 21:10:47 up 11:23,  3 users,  load average: 1.92, 1.06, 0.90; outer: [8.30126953125, 7.70263671875, 9.01611328125] |
 
 Each gate’s inner uptime/load, samples, hashes and CPU accounting: `report.json`.
 Owned children remaining: 0.
@@ -31,22 +31,22 @@ Owned children remaining: 0.
 
 | Case | VMM user including guest | VMM system | Guest estimate† | Total | Load |
 |---|---:|---:|---:|---:|---|
-| smoke | 69.483 | 73.511 | 70.000 | 142.994 | inner: 20:55:04 up 11:07,  1 user,  load average: 0.77, 1.19, 0.98; outer: [12.01513671875, 12.77880859375, 11.78173828125] |
-| tool_smoke | 61.848 | 60.834 | 60.000 | 122.682 | inner: 20:55:05 up 11:07,  1 user,  load average: 0.77, 1.19, 0.98; outer: [12.01513671875, 12.77880859375, 11.78173828125] |
-| boot | 65.654 | 51.240 | 64.500 | 116.894 | inner: 20:55:05 up 11:07,  1 user,  load average: 0.77, 1.19, 0.98; outer: [12.01513671875, 12.77880859375, 11.78173828125] |
-| one_tool | 70.078 | 53.187 | 69.333 | 123.266 | inner: 20:55:16 up 11:08,  1 user,  load average: 0.82, 1.18, 0.99; outer: [10.5615234375, 12.4404296875, 11.6728515625] |
-| concurrency_1 | 65.266 | 49.987 | 64.400 | 115.253 | inner: 20:55:20 up 11:08,  1 user,  load average: 0.82, 1.18, 0.99; outer: [10.35595703125, 12.36669921875, 11.65087890625] |
-| concurrency_2 | 97.385 | 61.107 | 96.200 | 158.492 | inner: 20:55:32 up 11:08,  1 user,  load average: 0.86, 1.17, 0.99; outer: [9.365234375, 12.09033203125, 11.56103515625] |
-| concurrency_3 | 132.225 | 73.748 | 131.200 | 205.973 | inner: 20:55:40 up 11:08,  1 user,  load average: 1.03, 1.20, 1.00; outer: [8.98828125, 11.92138671875, 11.50732421875] |
-| concurrency_4 | 193.197 | 83.536 | 189.500 | 276.733 | inner: 20:55:47 up 11:08,  1 user,  load average: 1.33, 1.26, 1.02; outer: [9.06884765625, 11.88916015625, 11.498046875] |
-| concurrency_5 | 239.313 | 91.366 | 237.500 | 330.680 | inner: 20:55:54 up 11:08,  1 user,  load average: 1.55, 1.31, 1.04; outer: [9.28515625, 11.8427734375, 11.486328125] |
-| concurrency_6 | 298.698 | 104.743 | 296.500 | 403.442 | inner: 20:56:01 up 11:08,  1 user,  load average: 2.08, 1.43, 1.08; outer: [9.18212890625, 11.77880859375, 11.4658203125] |
-| concurrency_7 | 307.977 | 112.109 | 302.500 | 420.086 | inner: 20:56:08 up 11:09,  1 user,  load average: 2.39, 1.51, 1.11; outer: [8.92724609375, 11.6826171875, 11.43359375] |
-| concurrency_8 | 361.468 | 123.424 | 354.600 | 484.892 | inner: 20:56:16 up 11:09,  1 user,  load average: 3.10, 1.69, 1.17; outer: [8.716796875, 11.544921875, 11.38720703125] |
-| setup_only | 0.267 | 0.301 | 0.000 | 0.568 | inner: 20:57:10 up 11:10,  1 user,  load average: 2.12, 1.68, 1.19; outer: UNVERIFIED |
-| bare_vm | 0.191 | 1.936 | 0.100 | 2.127 | inner: 20:57:10 up 11:10,  1 user,  load average: 2.12, 1.68, 1.19; outer: UNVERIFIED |
+| smoke | 64.257 | 54.371 | 60.000 | 118.628 | inner: 21:08:43 up 11:21,  1 user,  load average: 0.40, 0.32, 0.66; outer: [7.35546875, 7.38818359375, 9.14501953125] |
+| tool_smoke | 69.949 | 49.964 | 70.000 | 119.913 | inner: 21:08:43 up 11:21,  1 user,  load average: 0.40, 0.32, 0.66; outer: [7.35546875, 7.38818359375, 9.14501953125] |
+| boot | 62.122 | 46.059 | 61.800 | 108.180 | inner: 21:08:43 up 11:21,  1 user,  load average: 0.40, 0.32, 0.66; outer: [7.35546875, 7.38818359375, 9.14501953125] |
+| one_tool | 71.660 | 49.668 | 70.000 | 121.328 | inner: 21:08:54 up 11:21,  1 user,  load average: 0.50, 0.35, 0.66; outer: [7.08544921875, 7.326171875, 9.10205078125] |
+| concurrency_1 | 65.219 | 47.894 | 64.300 | 113.113 | inner: 21:08:58 up 11:21,  1 user,  load average: 0.54, 0.36, 0.66; outer: [6.7578125, 7.25390625, 9.06591796875] |
+| concurrency_2 | 84.108 | 54.415 | 83.300 | 138.523 | inner: 21:09:10 up 11:22,  2 users,  load average: 0.61, 0.38, 0.67; outer: [6.35546875, 7.142578125, 8.994140625] |
+| concurrency_3 | 121.963 | 62.604 | 120.000 | 184.567 | inner: 21:09:17 up 11:22,  2 users,  load average: 0.75, 0.42, 0.68; outer: [6.08642578125, 7.07373046875, 8.958984375] |
+| concurrency_4 | 163.762 | 72.862 | 162.500 | 236.624 | inner: 21:09:23 up 11:22,  2 users,  load average: 1.01, 0.48, 0.70; outer: [6.1591796875, 7.072265625, 8.947265625] |
+| concurrency_5 | 216.239 | 83.842 | 215.100 | 300.081 | inner: 21:09:30 up 11:22,  1 user,  load average: 1.25, 0.53, 0.71; outer: [6.54736328125, 7.1201171875, 8.94140625] |
+| concurrency_6 | 268.435 | 90.468 | 267.400 | 358.902 | inner: 21:09:36 up 11:22,  3 users,  load average: 1.91, 0.70, 0.77; outer: [6.42333984375, 7.08447265625, 8.91796875] |
+| concurrency_7 | 307.659 | 115.365 | 298.600 | 423.024 | inner: 21:09:43 up 11:22,  3 users,  load average: 2.15, 0.77, 0.79; outer: [6.62939453125, 7.1162109375, 8.91796875] |
+| concurrency_8 | 400.430 | 148.610 | 382.700 | 549.040 | inner: 21:09:50 up 11:22,  3 users,  load average: 2.54, 0.87, 0.82; outer: [8.38330078125, 7.474609375, 9.0234375] |
+| setup_only | 0.289 | 0.182 | 0.000 | 0.470 | inner: 21:10:45 up 11:23,  3 users,  load average: 2.00, 1.06, 0.90; outer: UNVERIFIED |
+| bare_vm | 0.221 | 1.792 | 0.100 | 2.012 | inner: 21:10:45 up 11:23,  3 users,  load average: 1.92, 1.06, 0.90; outer: UNVERIFIED |
 
 † Guest delta is Linux /proc/stat, tick-quantized and potentially includes foreign KVM workloads in the shared VM. Some guest/host-user residuals are negative: the counters do not close exactly. Precise host-user/guest attribution is UNVERIFIED; see cpu-analysis.json. The guest estimate is already included in user, not added again.
 CPU excludes supervisor, spawn wrapper, and L0 QEMU/HVF; this cannot decide the metal 5 CPU-ms kill line.
 
-Parking image: `6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6`. Idle 10.003630 s, VMM process CPU 0.000000% core; high-resolution VMM cgroup CPU 0.015174% core. 1000/1000 exchanges, 10 delayed replies, 0 stalls. vCPU wait state: kvm_vcpu_block.
+Parking image: `75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732`. Idle 10.004826 s, VMM process CPU 0.000000% core; high-resolution VMM cgroup CPU 0.015902% core. 1000/1000 exchanges, 10 delayed replies, 0 stalls. vCPU wait state: kvm_vcpu_block.

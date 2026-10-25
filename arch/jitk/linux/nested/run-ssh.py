@@ -28,7 +28,7 @@ if not ssh.is_file():
 
 # One private run per invocation/worktree. Never rsync --delete into shared code.
 identity = hashlib.sha256(str(root).encode()).hexdigest()[:12]
-remote = f'/home/dev/r7-suite/{identity}-{os.getpid()}'
+remote = f'/home/dev/jitk-suite/{identity}-{os.getpid()}'
 subprocess.run([str(ssh), f'mkdir -p {remote}'], check=True, timeout=20)
 files = [(root / 'suite.py', 'suite.py'), (root / 'nested/watch.py', 'watch.py')]
 files += [(work / name, name) for name in ['jitk-vmm', 'spawn-cg', 'kernel.bin', 'seccomp-probe']]

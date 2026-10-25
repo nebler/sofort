@@ -26,7 +26,7 @@ Rust 1.95.0 + aarch64-unknown-none, clang, ld.lld, llvm-objcopy and Python on
 the Mac. The runner finds `kvm-dev/ssh.sh` in the main Git checkout, including
 from worktrees. `JITK_NESTED_SSH=/absolute/path/to/ssh-wrapper` selects another
 existing equivalent VM; the wrapper accepts one remote shell command.
-It only creates a unique directory under `/home/dev/r7-suite/`, runs under
+It only creates a unique directory under `/home/dev/jitk-suite/`, runs under
 `flock -w 600 /home/dev/bench.lock`, and removes that run directory after success.
 It never starts, stops, restarts or configures a VM. Failed-run scratch is retained
 for diagnosis. No files are copied into another agent's checkout.

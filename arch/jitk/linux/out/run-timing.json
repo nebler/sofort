@@ -1,5 +1,5 @@
 {
-  "wall_s": 231.26428945799125,
+  "wall_s": 228.3944451250136,
   "limits": {
     "startup_s": 690.0,
     "progress_s": 75.0,
@@ -12,2738 +12,2738 @@
     {
       "gate": "suite_startup",
       "event": "start",
-      "observer_elapsed_s": 0.1798616669839248
+      "observer_elapsed_s": 0.17292733400245197
     },
     {
       "gate": "parking",
       "event": "start",
-      "unix": 1792961693.9432364,
-      "observer_elapsed_s": 0.23502016699058004
+      "unix": 1792962512.4500668,
+      "observer_elapsed_s": 0.22403804201167077
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 100,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.446730791998561
+      "observer_elapsed_s": 10.432324709021486
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 200,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.514551624975866
+      "observer_elapsed_s": 10.502323084016098
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 300,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.583817166974768
+      "observer_elapsed_s": 10.572862583998358
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 400,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.655598457989981
+      "observer_elapsed_s": 10.643913042003987
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 500,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.729320082988124
+      "observer_elapsed_s": 10.715397624997422
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 600,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.808624749974115
+      "observer_elapsed_s": 10.78489375000936
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 700,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.885134166979697
+      "observer_elapsed_s": 10.855028874997515
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 800,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 10.979636416974245
+      "observer_elapsed_s": 10.926072709000437
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 900,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 11.050759624980856
+      "observer_elapsed_s": 10.996001499996055
     },
     {
       "gate": "parking",
       "event": "progress",
       "completed": 1000,
       "detail": "tool exchanges",
-      "observer_elapsed_s": 11.119787124975119
+      "observer_elapsed_s": 11.066113625012804
     },
     {
       "gate": "parking",
       "event": "end",
-      "elapsed_s": 10.92541284699837,
-      "observer_elapsed_s": 11.161447541991947
+      "elapsed_s": 10.854611099995964,
+      "observer_elapsed_s": 11.078607542003738
     },
     {
       "gate": "smoke",
       "event": "start",
-      "unix": 1792961704.8699977,
-      "observer_elapsed_s": 11.161656999989646
+      "unix": 1792962523.3047047,
+      "observer_elapsed_s": 11.078621292021126
     },
     {
       "gate": "smoke",
       "event": "progress",
       "completed": 1,
       "detail": null,
-      "observer_elapsed_s": 11.321254624985158
+      "observer_elapsed_s": 11.221919625008013
     },
     {
       "gate": "smoke",
       "event": "end",
-      "elapsed_s": 0.16271118599979673,
-      "observer_elapsed_s": 11.329376291978406
+      "elapsed_s": 0.14531227800034685,
+      "observer_elapsed_s": 11.228096875012852
     },
     {
       "gate": "tool_smoke",
       "event": "start",
-      "unix": 1792961705.032719,
-      "observer_elapsed_s": 11.32939516697661
+      "unix": 1792962523.4500256,
+      "observer_elapsed_s": 11.22810533401207
     },
     {
       "gate": "tool_smoke",
       "event": "progress",
       "completed": 1,
       "detail": null,
-      "observer_elapsed_s": 11.449216249980964
+      "observer_elapsed_s": 11.345116792013869
     },
     {
       "gate": "tool_smoke",
       "event": "end",
-      "elapsed_s": 0.12682307700015372,
-      "observer_elapsed_s": 11.45091520799906
+      "elapsed_s": 0.12298705199646065,
+      "observer_elapsed_s": 11.346716084022773
     },
     {
       "gate": "boot",
       "event": "start",
-      "unix": 1792961705.1595511,
-      "observer_elapsed_s": 11.450921624986222
+      "unix": 1792962523.5730214,
+      "observer_elapsed_s": 11.346722625021357
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 12.67684858298162
+      "observer_elapsed_s": 12.452131334022852
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 13.85902991698822
+      "observer_elapsed_s": 13.592357792018447
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 15.116299707995495
+      "observer_elapsed_s": 14.7187441670103
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 16.239320957974996
+      "observer_elapsed_s": 15.845843500021147
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 17.348366124992026
+      "observer_elapsed_s": 16.958056917006616
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 18.489110249996884
+      "observer_elapsed_s": 18.05043487501098
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 19.626709541975288
+      "observer_elapsed_s": 19.140509000018938
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 20.779165707994252
+      "observer_elapsed_s": 20.188644959009252
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 21.95504966698354
+      "observer_elapsed_s": 21.322375459014438
     },
     {
       "gate": "boot",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 23.192962916975375
+      "observer_elapsed_s": 22.49780783400638
     },
     {
       "gate": "boot",
       "event": "end",
-      "elapsed_s": 11.756790727005864,
-      "observer_elapsed_s": 23.208377582981484
+      "elapsed_s": 11.15389527699881,
+      "observer_elapsed_s": 22.50055620900821
     },
     {
       "gate": "one_tool",
       "event": "start",
-      "unix": 1792961716.9163783,
-      "observer_elapsed_s": 23.20838762499625
+      "unix": 1792962534.726932,
+      "observer_elapsed_s": 22.500562417000765
     },
     {
       "gate": "one_tool",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 24.383819166978355
+      "observer_elapsed_s": 23.690801375021692
     },
     {
       "gate": "one_tool",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 25.610457874980057
+      "observer_elapsed_s": 24.930331625015242
     },
     {
       "gate": "one_tool",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 26.9159474579792
+      "observer_elapsed_s": 26.299074334005127
     },
     {
       "gate": "one_tool",
       "event": "end",
-      "elapsed_s": 3.7126353589992505,
-      "observer_elapsed_s": 26.920474291982828
+      "elapsed_s": 3.8013585370063083,
+      "observer_elapsed_s": 26.301979375013616
     },
     {
       "gate": "concurrency_1",
       "event": "start",
-      "unix": 1792961720.6290514,
-      "observer_elapsed_s": 26.920480624976335
+      "unix": 1792962538.528324,
+      "observer_elapsed_s": 26.301993041997775
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 28.06448945798911
+      "observer_elapsed_s": 27.560777500009863
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 29.219039957999485
+      "observer_elapsed_s": 28.633113042014884
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 30.37827995797852
+      "observer_elapsed_s": 29.75977887501358
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 31.492726832977496
+      "observer_elapsed_s": 30.89159149999614
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 32.731873124983395
+      "observer_elapsed_s": 32.06293095901492
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 33.86178599999403
+      "observer_elapsed_s": 33.18896850000601
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 35.020076332992176
+      "observer_elapsed_s": 34.3470630000229
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 36.203211374988314
+      "observer_elapsed_s": 35.60790320902015
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 37.351287416997366
+      "observer_elapsed_s": 36.89020379201975
     },
     {
       "gate": "concurrency_1",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 38.472231249994365
+      "observer_elapsed_s": 38.00707137500285
     },
     {
       "gate": "concurrency_1",
       "event": "end",
-      "elapsed_s": 11.560780983003497,
-      "observer_elapsed_s": 38.481503541988786
+      "elapsed_s": 11.708311100999708,
+      "observer_elapsed_s": 38.0103990000207
     },
     {
       "gate": "concurrency_2",
       "event": "start",
-      "unix": 1792961732.189898,
-      "observer_elapsed_s": 38.48151083299308
+      "unix": 1792962550.2366712,
+      "observer_elapsed_s": 38.01042816700647
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 39.29263974999776
+      "observer_elapsed_s": 38.741234959015856
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 40.0461212079972
+      "observer_elapsed_s": 39.4664166670118
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 40.78410783299478
+      "observer_elapsed_s": 40.219356959016295
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 41.55107808299363
+      "observer_elapsed_s": 40.88207979200524
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 42.418627666978864
+      "observer_elapsed_s": 41.58175716700498
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 43.31318016699515
+      "observer_elapsed_s": 42.312564959021984
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 44.087913957977435
+      "observer_elapsed_s": 43.03341966701555
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 44.8654368329735
+      "observer_elapsed_s": 43.75122762500541
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 45.737533249979606
+      "observer_elapsed_s": 44.47636958400835
     },
     {
       "gate": "concurrency_2",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 46.479780499998014
+      "observer_elapsed_s": 45.1509986250021
     },
     {
       "gate": "concurrency_2",
       "event": "end",
-      "elapsed_s": 8.00409061499522,
-      "observer_elapsed_s": 46.48543979198439
+      "elapsed_s": 7.144491721999657,
+      "observer_elapsed_s": 45.15560595900752
     },
     {
       "gate": "concurrency_3",
       "event": "start",
-      "unix": 1792961740.1940134,
-      "observer_elapsed_s": 46.48544791698805
+      "unix": 1792962557.381174,
+      "observer_elapsed_s": 45.15561116702156
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 47.33845124999061
+      "observer_elapsed_s": 45.93679108400829
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 47.989452874986455
+      "observer_elapsed_s": 46.64764683399699
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 48.721615374990506
+      "observer_elapsed_s": 47.24905104201753
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 49.407582499989076
+      "observer_elapsed_s": 47.99347862502327
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 50.08722829198814
+      "observer_elapsed_s": 48.58817033399828
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 50.69777574998443
+      "observer_elapsed_s": 49.12516591700842
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 51.37127608299488
+      "observer_elapsed_s": 49.78889520899975
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 52.06494808298885
+      "observer_elapsed_s": 50.452457667008275
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 52.78325574999326
+      "observer_elapsed_s": 51.0845401250117
     },
     {
       "gate": "concurrency_3",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 53.64486970799044
+      "observer_elapsed_s": 51.66478179200203
     },
     {
       "gate": "concurrency_3",
       "event": "end",
-      "elapsed_s": 7.164723285997752,
-      "observer_elapsed_s": 53.650205749989254
+      "elapsed_s": 6.514735059994564,
+      "observer_elapsed_s": 51.66950437502237
     },
     {
       "gate": "concurrency_4",
       "event": "start",
-      "unix": 1792961747.3587604,
-      "observer_elapsed_s": 53.650213249988155
+      "unix": 1792962563.8959272,
+      "observer_elapsed_s": 51.66951125001651
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 54.463497832999565
+      "observer_elapsed_s": 52.50925225001993
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 55.09522883297177
+      "observer_elapsed_s": 53.03004687500652
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 56.032160124974325
+      "observer_elapsed_s": 53.775328667019494
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 56.59262754197698
+      "observer_elapsed_s": 54.31316491699545
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 57.434859332977794
+      "observer_elapsed_s": 55.019844374997774
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 58.109040499984985
+      "observer_elapsed_s": 55.584108542010654
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 58.889113374985754
+      "observer_elapsed_s": 56.26608191701234
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 59.570522166992305
+      "observer_elapsed_s": 56.856256541999755
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 60.25909049998154
+      "observer_elapsed_s": 57.47372000000905
     },
     {
       "gate": "concurrency_4",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 60.91358058297192
+      "observer_elapsed_s": 57.99085612501949
     },
     {
       "gate": "concurrency_4",
       "event": "end",
-      "elapsed_s": 7.270748815994011,
-      "observer_elapsed_s": 60.92086320798262
+      "elapsed_s": 6.324948207002308,
+      "observer_elapsed_s": 57.994430042017484
     },
     {
       "gate": "concurrency_5",
       "event": "start",
-      "unix": 1792961754.6295319,
-      "observer_elapsed_s": 60.92086966699571
+      "unix": 1792962570.220887,
+      "observer_elapsed_s": 57.994436625012895
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 61.58674999998766
+      "observer_elapsed_s": 58.61568087499472
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 62.26479470799677
+      "observer_elapsed_s": 59.29459666702314
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 63.06700608297251
+      "observer_elapsed_s": 60.03819437499624
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 63.83545954199508
+      "observer_elapsed_s": 60.702975834021345
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 64.5270562079968
+      "observer_elapsed_s": 61.337483875016915
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 65.2902840419847
+      "observer_elapsed_s": 62.00394083399442
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 65.90159204197698
+      "observer_elapsed_s": 62.65469329201733
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 66.57388424998499
+      "observer_elapsed_s": 63.31849216701812
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 67.24468649999471
+      "observer_elapsed_s": 63.98822529200697
     },
     {
       "gate": "concurrency_5",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 67.94920637499308
+      "observer_elapsed_s": 64.46968487501726
     },
     {
       "gate": "concurrency_5",
       "event": "end",
-      "elapsed_s": 7.035824533995765,
-      "observer_elapsed_s": 67.95686820798437
+      "elapsed_s": 6.47988940399955,
+      "observer_elapsed_s": 64.47432220901828
     },
     {
       "gate": "concurrency_6",
       "event": "start",
-      "unix": 1792961761.6653905,
-      "observer_elapsed_s": 67.9568777079985
+      "unix": 1792962576.7007954,
+      "observer_elapsed_s": 64.47432875001687
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 68.90848287497647
+      "observer_elapsed_s": 65.30481220901129
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 69.72398724997765
+      "observer_elapsed_s": 66.03458770900033
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 70.17301783297444
+      "observer_elapsed_s": 66.49277379200794
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 71.00879504199838
+      "observer_elapsed_s": 67.30811454201466
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 71.70240112498868
+      "observer_elapsed_s": 68.0044730840018
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 72.28542216698406
+      "observer_elapsed_s": 68.5011184590112
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 73.16079841699684
+      "observer_elapsed_s": 69.26555879201624
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 73.82746124998084
+      "observer_elapsed_s": 69.74660020900774
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 74.59108058299171
+      "observer_elapsed_s": 70.46595587499905
     },
     {
       "gate": "concurrency_6",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 75.17042179199052
+      "observer_elapsed_s": 70.9592179589963
     },
     {
       "gate": "concurrency_6",
       "event": "end",
-      "elapsed_s": 7.221280273995944,
-      "observer_elapsed_s": 75.17803608297254
+      "elapsed_s": 6.48906736200297,
+      "observer_elapsed_s": 70.96339845901821
     },
     {
       "gate": "concurrency_7",
       "event": "start",
-      "unix": 1792961768.8866928,
-      "observer_elapsed_s": 75.17804324999452
+      "unix": 1792962583.1898732,
+      "observer_elapsed_s": 70.96340670902282
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 76.0796503329766
+      "observer_elapsed_s": 71.77724583400413
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 76.77220737497555
+      "observer_elapsed_s": 72.37779695901554
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 77.50172274999204
+      "observer_elapsed_s": 73.13011716702022
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 78.23217099998146
+      "observer_elapsed_s": 73.84421949999523
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 79.07078512498992
+      "observer_elapsed_s": 74.57318900001701
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 79.70958766699187
+      "observer_elapsed_s": 75.21414087500307
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 80.56381762499223
+      "observer_elapsed_s": 76.0035357500019
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 81.13533399999142
+      "observer_elapsed_s": 76.55550108401803
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 81.9378910829837
+      "observer_elapsed_s": 77.7974802920071
     },
     {
       "gate": "concurrency_7",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 82.50603691698052
+      "observer_elapsed_s": 78.35742754201056
     },
     {
       "gate": "concurrency_7",
       "event": "end",
-      "elapsed_s": 7.337219472006836,
-      "observer_elapsed_s": 82.51526408299105
+      "elapsed_s": 7.406641566994949,
+      "observer_elapsed_s": 78.37095691700233
     },
     {
       "gate": "concurrency_8",
       "event": "start",
-      "unix": 1792961776.2239342,
-      "observer_elapsed_s": 82.51527079197695
+      "unix": 1792962590.596555,
+      "observer_elapsed_s": 78.37096629201551
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 10,
       "detail": null,
-      "observer_elapsed_s": 83.78887537497212
+      "observer_elapsed_s": 79.45523020901601
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 20,
       "detail": null,
-      "observer_elapsed_s": 84.45993704197463
+      "observer_elapsed_s": 80.54985287500313
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 30,
       "detail": null,
-      "observer_elapsed_s": 85.16041737498017
+      "observer_elapsed_s": 81.48013158401591
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 40,
       "detail": null,
-      "observer_elapsed_s": 86.39891958297812
+      "observer_elapsed_s": 82.28646370899514
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 50,
       "detail": null,
-      "observer_elapsed_s": 87.17220387497218
+      "observer_elapsed_s": 83.6735385840002
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 60,
       "detail": null,
-      "observer_elapsed_s": 88.099192707974
+      "observer_elapsed_s": 84.81038033400546
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 70,
       "detail": null,
-      "observer_elapsed_s": 88.84708995799883
+      "observer_elapsed_s": 85.78507716700551
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 80,
       "detail": null,
-      "observer_elapsed_s": 89.60330804198748
+      "observer_elapsed_s": 86.78387808401021
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 90,
       "detail": null,
-      "observer_elapsed_s": 90.28465916699497
+      "observer_elapsed_s": 87.54761083400808
     },
     {
       "gate": "concurrency_8",
       "event": "progress",
       "completed": 100,
       "detail": null,
-      "observer_elapsed_s": 90.89886395799113
+      "observer_elapsed_s": 87.93143541700556
     },
     {
       "gate": "concurrency_8",
       "event": "end",
-      "elapsed_s": 8.397396314998332,
-      "observer_elapsed_s": 90.9162359169859
+      "elapsed_s": 9.569726285000797,
+      "observer_elapsed_s": 87.93970008401084
     },
     {
       "gate": "density",
       "event": "start",
-      "unix": 1792961784.6213675,
-      "observer_elapsed_s": 90.9162436669867
+      "unix": 1792962600.1663167,
+      "observer_elapsed_s": 87.93978883401724
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 16,
       "detail": "parked READY",
-      "observer_elapsed_s": 95.75205358298263
+      "observer_elapsed_s": 92.59170383401215
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 32,
       "detail": "parked READY",
-      "observer_elapsed_s": 97.47146962498664
+      "observer_elapsed_s": 94.35448525001993
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 48,
       "detail": "parked READY",
-      "observer_elapsed_s": 102.24530508299358
+      "observer_elapsed_s": 99.0627370000002
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 64,
       "detail": "parked READY",
-      "observer_elapsed_s": 104.10358179197647
+      "observer_elapsed_s": 100.68538816701039
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 80,
       "detail": "parked READY",
-      "observer_elapsed_s": 108.8146032919758
+      "observer_elapsed_s": 105.35135100001935
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 96,
       "detail": "parked READY",
-      "observer_elapsed_s": 110.50195308297407
+      "observer_elapsed_s": 106.97646020899992
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 112,
       "detail": "parked READY",
-      "observer_elapsed_s": 112.11694124998758
+      "observer_elapsed_s": 108.77328608400421
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 128,
       "detail": "parked READY",
-      "observer_elapsed_s": 113.84374629199738
+      "observer_elapsed_s": 110.3133744590159
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 144,
       "detail": "parked READY",
-      "observer_elapsed_s": 118.55314358297619
+      "observer_elapsed_s": 115.06575908401283
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 160,
       "detail": "parked READY",
-      "observer_elapsed_s": 120.21837570797652
+      "observer_elapsed_s": 116.6001286249957
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 176,
       "detail": "parked READY",
-      "observer_elapsed_s": 121.83624099998269
+      "observer_elapsed_s": 118.17368187502143
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 192,
       "detail": "parked READY",
-      "observer_elapsed_s": 123.46898224999313
+      "observer_elapsed_s": 119.75365320901619
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 208,
       "detail": "parked READY",
-      "observer_elapsed_s": 125.27376766697853
+      "observer_elapsed_s": 121.30053204201977
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 224,
       "detail": "parked READY",
-      "observer_elapsed_s": 127.09506499997224
+      "observer_elapsed_s": 122.89574229202117
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 240,
       "detail": "parked READY",
-      "observer_elapsed_s": 128.76451791697764
+      "observer_elapsed_s": 124.57969691700418
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 256,
       "detail": "parked READY",
-      "observer_elapsed_s": 130.41673054199782
+      "observer_elapsed_s": 126.21963491701172
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 272,
       "detail": "validated after park",
-      "observer_elapsed_s": 133.83137599998736
+      "observer_elapsed_s": 129.67742474999977
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 288,
       "detail": "validated after park",
-      "observer_elapsed_s": 134.06778395798756
+      "observer_elapsed_s": 129.94558004199644
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 304,
       "detail": "validated after park",
-      "observer_elapsed_s": 134.27658058298402
+      "observer_elapsed_s": 130.1421116249985
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 320,
       "detail": "validated after park",
-      "observer_elapsed_s": 134.4433615829912
+      "observer_elapsed_s": 130.42439541700878
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 336,
       "detail": "validated after park",
-      "observer_elapsed_s": 134.63809520797804
+      "observer_elapsed_s": 130.66890958399745
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 352,
       "detail": "validated after park",
-      "observer_elapsed_s": 134.83693904199754
+      "observer_elapsed_s": 131.01284562499495
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 368,
       "detail": "validated after park",
-      "observer_elapsed_s": 135.02099133297452
+      "observer_elapsed_s": 131.33165883400943
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 384,
       "detail": "validated after park",
-      "observer_elapsed_s": 135.20460874997661
+      "observer_elapsed_s": 131.59356599999592
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 400,
       "detail": "validated after park",
-      "observer_elapsed_s": 135.372840624972
+      "observer_elapsed_s": 131.8631385420158
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 416,
       "detail": "validated after park",
-      "observer_elapsed_s": 135.57294791698223
+      "observer_elapsed_s": 132.11052308400394
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 432,
       "detail": "validated after park",
-      "observer_elapsed_s": 135.7642984999984
+      "observer_elapsed_s": 132.36173320902162
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 448,
       "detail": "validated after park",
-      "observer_elapsed_s": 135.97225295798853
+      "observer_elapsed_s": 132.57475216701278
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 464,
       "detail": "validated after park",
-      "observer_elapsed_s": 136.1658349999925
+      "observer_elapsed_s": 132.85759875000804
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 480,
       "detail": "validated after park",
-      "observer_elapsed_s": 136.35361899997224
+      "observer_elapsed_s": 133.13976541699958
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 496,
       "detail": "validated after park",
-      "observer_elapsed_s": 136.56286033298238
+      "observer_elapsed_s": 133.36243825001293
     },
     {
       "gate": "density",
       "event": "progress",
       "completed": 512,
       "detail": "validated after park",
-      "observer_elapsed_s": 136.78221320797456
+      "observer_elapsed_s": 133.57938804200967
     },
     {
       "gate": "density",
       "event": "end",
-      "elapsed_s": 45.93098011699476,
-      "observer_elapsed_s": 136.84352879200014
+      "elapsed_s": 45.67764650499885,
+      "observer_elapsed_s": 133.61725191702135
     },
     {
       "gate": "cpu_controls",
       "event": "start",
-      "unix": 1792961830.5523815,
-      "observer_elapsed_s": 136.8435361669981
+      "unix": 1792962645.8439925,
+      "observer_elapsed_s": 133.61725870901137
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 10,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.86860895797145
+      "observer_elapsed_s": 133.635785667022
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 20,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.88174999997136
+      "observer_elapsed_s": 133.64793379200273
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 30,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.89655679199495
+      "observer_elapsed_s": 133.66061795901624
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 40,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.90904729199247
+      "observer_elapsed_s": 133.67446333399857
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 50,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.92153462499846
+      "observer_elapsed_s": 133.68766191700706
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 60,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.93393708299845
+      "observer_elapsed_s": 133.70130733400583
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 70,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.94427612499567
+      "observer_elapsed_s": 133.71165445900988
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 80,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.95628333298373
+      "observer_elapsed_s": 133.72218837501714
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 90,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.96684249999817
+      "observer_elapsed_s": 133.73495229199762
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 100,
       "detail": "setup_only",
-      "observer_elapsed_s": 136.9762345419731
+      "observer_elapsed_s": 133.74592133401893
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 110,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.0465775829798
+      "observer_elapsed_s": 133.80588929200894
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 120,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.1108162079763
+      "observer_elapsed_s": 133.87076987500768
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 130,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.1775788749801
+      "observer_elapsed_s": 133.92799441699754
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 140,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.23651979197166
+      "observer_elapsed_s": 133.99289216700708
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 150,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.29653833297198
+      "observer_elapsed_s": 134.05285616702167
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 160,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.35250437498325
+      "observer_elapsed_s": 134.11491566701443
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 170,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.41148629199597
+      "observer_elapsed_s": 134.18588220901438
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 180,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.46558429198922
+      "observer_elapsed_s": 134.24289158399915
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 190,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.52546179198544
+      "observer_elapsed_s": 134.30790850002086
     },
     {
       "gate": "cpu_controls",
       "event": "progress",
       "completed": 200,
       "detail": "bare_vm",
-      "observer_elapsed_s": 137.58652670797892
+      "observer_elapsed_s": 134.3720973750169
     },
     {
       "gate": "cpu_controls",
       "event": "end",
-      "elapsed_s": 0.7474203589954413,
-      "observer_elapsed_s": 137.59328849997837
+      "elapsed_s": 0.7594727039977442,
+      "observer_elapsed_s": 134.3766749589995
     },
     {
       "gate": "seccomp_kill",
       "event": "start",
-      "unix": 1792961831.2998173,
-      "observer_elapsed_s": 137.5932982499944
+      "unix": 1792962646.6035326,
+      "observer_elapsed_s": 134.37668287500856
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 30,
       "detail": "main/exit",
-      "observer_elapsed_s": 137.63524799997685
+      "observer_elapsed_s": 134.41990891701425
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 60,
       "detail": "main/openat",
-      "observer_elapsed_s": 137.67971383297117
+      "observer_elapsed_s": 134.46485566699994
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 90,
       "detail": "main/socket",
-      "observer_elapsed_s": 137.72238837499754
+      "observer_elapsed_s": 134.51079783399473
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 120,
       "detail": "main/execve",
-      "observer_elapsed_s": 137.76682229197468
+      "observer_elapsed_s": 134.55499395899824
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 150,
       "detail": "main/kvm-create-vm",
-      "observer_elapsed_s": 137.8051806249714
+      "observer_elapsed_s": 134.59987125001498
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 180,
       "detail": "main/kvm-run",
-      "observer_elapsed_s": 137.8412699169712
+      "observer_elapsed_s": 134.6536024590023
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 210,
       "detail": "main/mmap-exec",
-      "observer_elapsed_s": 137.8768257079937
+      "observer_elapsed_s": 134.6926217500004
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 240,
       "detail": "main/kill",
-      "observer_elapsed_s": 137.9156758749741
+      "observer_elapsed_s": 134.7393845000188
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 270,
       "detail": "vcpu/exit",
-      "observer_elapsed_s": 137.96347591697122
+      "observer_elapsed_s": 134.78359820900369
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 300,
       "detail": "vcpu/openat",
-      "observer_elapsed_s": 138.0022215829813
+      "observer_elapsed_s": 134.8285697500105
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 330,
       "detail": "vcpu/socket",
-      "observer_elapsed_s": 138.0422584579792
+      "observer_elapsed_s": 134.87090004200581
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 360,
       "detail": "vcpu/execve",
-      "observer_elapsed_s": 138.0824036669801
+      "observer_elapsed_s": 134.91483408401837
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 390,
       "detail": "vcpu/kvm-create-vm",
-      "observer_elapsed_s": 138.12492191698402
+      "observer_elapsed_s": 134.9793743750197
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 420,
       "detail": "vcpu/kvm-run",
-      "observer_elapsed_s": 138.16122608297155
+      "observer_elapsed_s": 135.01883716700831
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 450,
       "detail": "vcpu/mmap-exec",
-      "observer_elapsed_s": 138.19486154199694
+      "observer_elapsed_s": 135.0642671250098
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 480,
       "detail": "vcpu/kill",
-      "observer_elapsed_s": 138.23598224998568
+      "observer_elapsed_s": 135.10813995901844
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 510,
       "detail": "console/exit",
-      "observer_elapsed_s": 138.2769204999786
+      "observer_elapsed_s": 135.15810850000707
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 540,
       "detail": "console/openat",
-      "observer_elapsed_s": 138.3119447499921
+      "observer_elapsed_s": 135.20706733400584
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 570,
       "detail": "console/socket",
-      "observer_elapsed_s": 138.3501377919747
+      "observer_elapsed_s": 135.2564448750054
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 600,
       "detail": "console/execve",
-      "observer_elapsed_s": 138.39036024999223
+      "observer_elapsed_s": 135.30718541701208
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 630,
       "detail": "console/kvm-create-vm",
-      "observer_elapsed_s": 138.43253458297113
+      "observer_elapsed_s": 135.36090616701404
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 660,
       "detail": "console/kvm-run",
-      "observer_elapsed_s": 138.46940766699845
+      "observer_elapsed_s": 135.41347929200856
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 690,
       "detail": "console/mmap-exec",
-      "observer_elapsed_s": 138.5057877919753
+      "observer_elapsed_s": 135.4567678339954
     },
     {
       "gate": "seccomp_kill",
       "event": "progress",
       "completed": 720,
       "detail": "console/kill",
-      "observer_elapsed_s": 138.5415126249718
+      "observer_elapsed_s": 135.4997339170077
     },
     {
       "gate": "seccomp_kill",
       "event": "end",
-      "elapsed_s": 0.9548075249986141,
-      "observer_elapsed_s": 138.5455441249942
+      "elapsed_s": 1.1267896040008054,
+      "observer_elapsed_s": 135.503469999996
     },
     {
       "gate": "fault_guests",
       "event": "start",
-      "unix": 1792961832.2546523,
-      "observer_elapsed_s": 138.5455494169728
+      "unix": 1792962647.7303343,
+      "observer_elapsed_s": 135.50347516700276
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 1,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.55680616697646
+      "observer_elapsed_s": 135.51088837502175
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 2,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.56468949999544
+      "observer_elapsed_s": 135.51798404200235
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 3,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.5717156669998
+      "observer_elapsed_s": 135.52375466699596
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 4,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.57883074998972
+      "observer_elapsed_s": 135.53087375001633
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 5,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.5860804579861
+      "observer_elapsed_s": 135.5378806250228
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 6,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.59366091698757
+      "observer_elapsed_s": 135.54376525001135
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 7,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.60049391697976
+      "observer_elapsed_s": 135.55100495900842
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 8,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.6066856669786
+      "observer_elapsed_s": 135.5579806670139
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 9,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.61255541699938
+      "observer_elapsed_s": 135.56585650000488
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 10,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.62048291697283
+      "observer_elapsed_s": 135.5718769590021
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 11,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.62682433298323
+      "observer_elapsed_s": 135.57807729201159
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 12,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.63364899999578
+      "observer_elapsed_s": 135.58410633401945
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 13,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.64072070797556
+      "observer_elapsed_s": 135.59085108400905
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 14,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.6485804579861
+      "observer_elapsed_s": 135.59683525000582
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 15,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.654580041999
+      "observer_elapsed_s": 135.6027673339995
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 16,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.66267783299554
+      "observer_elapsed_s": 135.61066041700542
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 17,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.67084349997458
+      "observer_elapsed_s": 135.6168597920041
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 18,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.67688049998833
+      "observer_elapsed_s": 135.62482554200687
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 19,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.68253499999992
+      "observer_elapsed_s": 135.63209287502104
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 20,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.68960679197335
+      "observer_elapsed_s": 135.6388638339995
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 21,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.6954324169783
+      "observer_elapsed_s": 135.6449051249947
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 22,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.70062016698648
+      "observer_elapsed_s": 135.6529207090207
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 23,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.7077858329867
+      "observer_elapsed_s": 135.66084604201023
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 24,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.71358679197147
+      "observer_elapsed_s": 135.6667539170012
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 25,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.7214507079916
+      "observer_elapsed_s": 135.67379958400852
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 26,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.73058599999058
+      "observer_elapsed_s": 135.67987716701464
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 27,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.73867329198401
+      "observer_elapsed_s": 135.68593537501874
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 28,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.7447698749893
+      "observer_elapsed_s": 135.692474209005
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 29,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.75057949998882
+      "observer_elapsed_s": 135.7000156250142
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 30,
       "detail": "unknown-hvc",
-      "observer_elapsed_s": 138.75666454198654
+      "observer_elapsed_s": 135.70683854201343
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 31,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.7655926249863
+      "observer_elapsed_s": 135.7138129590021
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 32,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.77359549998073
+      "observer_elapsed_s": 135.7197625420231
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 33,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.7795604999992
+      "observer_elapsed_s": 135.72681266700965
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 34,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.78668733299128
+      "observer_elapsed_s": 135.73267395902076
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 35,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.79573733298457
+      "observer_elapsed_s": 135.73978808399988
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 36,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.802620707982
+      "observer_elapsed_s": 135.74561383400578
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 37,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.80959020799492
+      "observer_elapsed_s": 135.75081733401748
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 38,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.81689495799947
+      "observer_elapsed_s": 135.75774250001996
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 39,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.82479424998746
+      "observer_elapsed_s": 135.764039917005
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 40,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.83166741699097
+      "observer_elapsed_s": 135.7913887090108
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 41,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.8375256669824
+      "observer_elapsed_s": 135.79797620899626
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 42,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.84246441698633
+      "observer_elapsed_s": 135.80500250001205
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 43,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.85071695799707
+      "observer_elapsed_s": 135.8108199170092
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 44,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.85884308299865
+      "observer_elapsed_s": 135.8190527090046
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 45,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.86470249999547
+      "observer_elapsed_s": 135.82551875000354
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 46,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.8704504169873
+      "observer_elapsed_s": 135.83077887500986
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 47,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.87765587499598
+      "observer_elapsed_s": 135.83791037500487
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 48,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.8836695419741
+      "observer_elapsed_s": 135.84552041700226
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 49,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.89189283299493
+      "observer_elapsed_s": 135.8518395840074
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 50,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.89753679197747
+      "observer_elapsed_s": 135.85980429200572
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 51,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.9055181669828
+      "observer_elapsed_s": 135.86570154200308
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 52,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.91262379198452
+      "observer_elapsed_s": 135.871931458998
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 53,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.91974591699545
+      "observer_elapsed_s": 135.8783238340111
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 54,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.9266407499963
+      "observer_elapsed_s": 135.8848807500035
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 55,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.93252566698357
+      "observer_elapsed_s": 135.89285029200255
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 56,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.93917149998015
+      "observer_elapsed_s": 135.8989818750124
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 57,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.9467775419762
+      "observer_elapsed_s": 135.90584791701986
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 58,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.9561506669852
+      "observer_elapsed_s": 135.91182770900195
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 59,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.9647794579796
+      "observer_elapsed_s": 135.91790041700006
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 60,
       "detail": "unknown-smc",
-      "observer_elapsed_s": 138.97282537497813
+      "observer_elapsed_s": 135.9452991670114
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 61,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 138.98178066697437
+      "observer_elapsed_s": 135.95191912501468
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 62,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 138.98852295798133
+      "observer_elapsed_s": 135.9577432500082
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 63,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 138.99665695798467
+      "observer_elapsed_s": 135.9647801250103
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 64,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.00348845799454
+      "observer_elapsed_s": 135.9718525840144
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 65,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.0115741249756
+      "observer_elapsed_s": 135.9777371250093
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 66,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.01956274997792
+      "observer_elapsed_s": 135.98774054201203
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 67,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.02545137499692
+      "observer_elapsed_s": 135.99486329199863
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 68,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.03701199998613
+      "observer_elapsed_s": 136.0027772920148
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 69,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.05181170799187
+      "observer_elapsed_s": 136.0097573749954
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 70,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.05963608299498
+      "observer_elapsed_s": 136.01665483400575
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 71,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.06551108299755
+      "observer_elapsed_s": 136.02383979200386
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 72,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.07367449998856
+      "observer_elapsed_s": 136.02978137502214
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 73,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.07951166699058
+      "observer_elapsed_s": 136.03680750000058
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 74,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.08786633299314
+      "observer_elapsed_s": 136.0641795420088
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 75,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.09429945799639
+      "observer_elapsed_s": 136.07077695900807
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 76,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.10146104198066
+      "observer_elapsed_s": 136.07782812500955
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 77,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.1076020419714
+      "observer_elapsed_s": 136.08596433402272
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 78,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.11339674997726
+      "observer_elapsed_s": 136.0929905840021
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 79,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.1183542079816
+      "observer_elapsed_s": 136.10008037500666
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 80,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.1260457499884
+      "observer_elapsed_s": 136.1068607920024
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 81,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.13357062498108
+      "observer_elapsed_s": 136.114863625
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 82,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.1405954999791
+      "observer_elapsed_s": 136.12106266702176
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 83,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.1465414579725
+      "observer_elapsed_s": 136.12776583401137
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 84,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.15242004199536
+      "observer_elapsed_s": 136.1337801250047
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 85,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.159419374977
+      "observer_elapsed_s": 136.13970295901527
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 86,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.16432595797232
+      "observer_elapsed_s": 136.14790416700998
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 87,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.1733424999984
+      "observer_elapsed_s": 136.15370295901084
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 88,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.17935033299727
+      "observer_elapsed_s": 136.15971395900124
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 89,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.18444929199177
+      "observer_elapsed_s": 136.16593375001685
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 90,
       "detail": "mmio-halfword",
-      "observer_elapsed_s": 139.18923108297167
+      "observer_elapsed_s": 136.17295729200123
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 91,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 142.198108416982
+      "observer_elapsed_s": 139.19179191702278
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 92,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 145.22088070798782
+      "observer_elapsed_s": 142.20962670899462
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 93,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 148.24666054197587
+      "observer_elapsed_s": 145.2264993750141
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 94,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 151.2675691669865
+      "observer_elapsed_s": 148.24687345902203
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 95,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 154.2851877079811
+      "observer_elapsed_s": 151.26971912500449
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 96,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 157.31028320797486
+      "observer_elapsed_s": 154.29048154200427
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 97,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 160.33383062499342
+      "observer_elapsed_s": 157.30955125001492
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 98,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 163.34564812498866
+      "observer_elapsed_s": 160.32854908402078
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 99,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 166.35716808299185
+      "observer_elapsed_s": 163.33335004199762
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 100,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 169.38780637498712
+      "observer_elapsed_s": 166.35641004200443
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 101,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 172.40966333297547
+      "observer_elapsed_s": 169.37436862499453
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 102,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 175.41731633298332
+      "observer_elapsed_s": 172.3904847500089
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 103,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 178.43453483298072
+      "observer_elapsed_s": 175.3989032920217
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 104,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 181.4454411669867
+      "observer_elapsed_s": 178.41184137499658
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 105,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 184.4544009169913
+      "observer_elapsed_s": 181.4309730840032
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 106,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 187.48256874998333
+      "observer_elapsed_s": 184.45489804202225
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 107,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 190.51596520797466
+      "observer_elapsed_s": 187.46261499999673
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 108,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 193.5448870829714
+      "observer_elapsed_s": 190.48446354200132
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 109,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 196.56685687499703
+      "observer_elapsed_s": 193.50553954200586
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 110,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 199.60972333297832
+      "observer_elapsed_s": 196.52241895900806
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 111,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 202.64170154198655
+      "observer_elapsed_s": 199.53913491699495
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 112,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 205.67202316698967
+      "observer_elapsed_s": 202.55326937499922
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 113,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 208.69583529199008
+      "observer_elapsed_s": 205.56964441700256
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 114,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 211.71283899998525
+      "observer_elapsed_s": 208.5863384999975
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 115,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 214.72738462497364
+      "observer_elapsed_s": 211.60704254201846
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 116,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 217.76148516699322
+      "observer_elapsed_s": 214.61969866699656
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 117,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 220.77530854198267
+      "observer_elapsed_s": 217.69027712501702
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 118,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 223.7888380419754
+      "observer_elapsed_s": 220.7035578340001
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 119,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 226.8115870419715
+      "observer_elapsed_s": 223.72985862501082
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 120,
       "detail": "bad-sysreg",
-      "observer_elapsed_s": 229.83104233298218
+      "observer_elapsed_s": 226.75052170900744
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 121,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 229.87777074999758
+      "observer_elapsed_s": 226.79131687499466
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 122,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 229.9147529169859
+      "observer_elapsed_s": 226.828648292023
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 123,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 229.95169312498183
+      "observer_elapsed_s": 226.86607737501618
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 124,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 229.98773658298887
+      "observer_elapsed_s": 226.90167870902224
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 125,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.02381995797623
+      "observer_elapsed_s": 226.9379662499996
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 126,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.05962941699545
+      "observer_elapsed_s": 226.97287608400802
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 127,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.09696295799222
+      "observer_elapsed_s": 227.00797895900905
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 128,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.13349987499532
+      "observer_elapsed_s": 227.04217704202165
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 129,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.1687939579715
+      "observer_elapsed_s": 227.07636329199886
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 130,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.20463954197476
+      "observer_elapsed_s": 227.1100402919983
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 131,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.24027958299848
+      "observer_elapsed_s": 227.1439519590058
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 132,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.27588166698115
+      "observer_elapsed_s": 227.1793544170214
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 133,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.3114015419851
+      "observer_elapsed_s": 227.21341458399547
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 134,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.35083154198946
+      "observer_elapsed_s": 227.24817412500852
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 135,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.38754879197222
+      "observer_elapsed_s": 227.28579895899747
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 136,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.4251725829963
+      "observer_elapsed_s": 227.32166625000536
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 137,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.46154758299235
+      "observer_elapsed_s": 227.35601887499797
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 138,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.49802179198014
+      "observer_elapsed_s": 227.39302737501566
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 139,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.53262712497963
+      "observer_elapsed_s": 227.43205383399618
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 140,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.567382291978
+      "observer_elapsed_s": 227.47505741700297
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 141,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.60247291697306
+      "observer_elapsed_s": 227.522637209011
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 142,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.6384007499728
+      "observer_elapsed_s": 227.5650339999993
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 143,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.67378087498946
+      "observer_elapsed_s": 227.60744679201161
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 144,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.70967383298557
+      "observer_elapsed_s": 227.64703154200106
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 145,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.7437937919749
+      "observer_elapsed_s": 227.68843624999863
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 146,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.77814554198994
+      "observer_elapsed_s": 227.7348224169982
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 147,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.81298458299716
+      "observer_elapsed_s": 227.7704182919988
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 148,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.8488453749742
+      "observer_elapsed_s": 227.8132095420151
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 149,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.88318766697193
+      "observer_elapsed_s": 227.86202575001516
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 150,
       "detail": "console_avail_oob",
-      "observer_elapsed_s": 230.91819583298638
+      "observer_elapsed_s": 227.98164704200462
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 151,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.92637529197964
+      "observer_elapsed_s": 228.0112654590048
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 152,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.93247783297556
+      "observer_elapsed_s": 228.02146120902034
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 153,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.93840699997963
+      "observer_elapsed_s": 228.02957291700295
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 154,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.94535837500007
+      "observer_elapsed_s": 228.03710079201846
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 155,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.95113983299234
+      "observer_elapsed_s": 228.0465344999975
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 156,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.95966162497643
+      "observer_elapsed_s": 228.05345350000425
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 157,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.97028604199295
+      "observer_elapsed_s": 228.06201958400197
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 158,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.97743204198196
+      "observer_elapsed_s": 228.07075458401232
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 159,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.9855793749739
+      "observer_elapsed_s": 228.07758487501997
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 160,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.99132566698245
+      "observer_elapsed_s": 228.08599758401397
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 161,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 230.99820587498834
+      "observer_elapsed_s": 228.09562537501915
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 162,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.00809495797148
+      "observer_elapsed_s": 228.1062200840097
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 163,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.01577995799016
+      "observer_elapsed_s": 228.11395020902273
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 164,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.0231226249889
+      "observer_elapsed_s": 228.12299133400666
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 165,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.03186145797372
+      "observer_elapsed_s": 228.12904820899712
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 166,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.043956916983
+      "observer_elapsed_s": 228.13628916701418
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 167,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.05654070799937
+      "observer_elapsed_s": 228.14407687500352
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 168,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.06341766699916
+      "observer_elapsed_s": 228.15228016700712
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 169,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.07170112497988
+      "observer_elapsed_s": 228.17944483400788
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 170,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.0782340829901
+      "observer_elapsed_s": 228.1922850420233
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 171,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.0858557499887
+      "observer_elapsed_s": 228.20004783401964
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 172,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.09438450000016
+      "observer_elapsed_s": 228.21333641701494
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 173,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.1011163329822
+      "observer_elapsed_s": 228.22287195900572
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 174,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.1083577919926
+      "observer_elapsed_s": 228.23096854201867
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 175,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.11643570798333
+      "observer_elapsed_s": 228.2386333339964
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 176,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.1224139999831
+      "observer_elapsed_s": 228.24716862500645
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 177,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.1292334579921
+      "observer_elapsed_s": 228.26056395901833
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 178,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.13516824998078
+      "observer_elapsed_s": 228.26767029199982
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 179,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.1410787079949
+      "observer_elapsed_s": 228.27579504202004
     },
     {
       "gate": "fault_guests",
       "event": "progress",
       "completed": 180,
       "detail": "rtc_oob_read",
-      "observer_elapsed_s": 231.14738091698382
+      "observer_elapsed_s": 228.28406137501588
     },
     {
       "gate": "fault_guests",
       "event": "end",
-      "elapsed_s": 92.61611483199522,
-      "observer_elapsed_s": 231.16148141698795
+      "elapsed_s": 92.78962316300021,
+      "observer_elapsed_s": 228.2932166249957
     }
   ]
 }
