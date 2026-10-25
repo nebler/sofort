@@ -229,6 +229,65 @@ impl Drop for Endpoint {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn endpoint() -> Endpoint {
+        unsafe extern "C" {
+            fn eventfd(init: u32, flags: i32) -> i32;
+        }
+        let memory = unsafe { mmap(ptr::null_mut(), BYTES, 3, 0x21, -1, 0).cast::<u8>() };
+        assert_ne!(memory as isize, -1);
+        let incoming = Notify(std::sync::Arc::new(unsafe {
+            File::from_raw_fd(eventfd(0, 0x80000 | 0x800))
+        }));
+        let outgoing = Notify(std::sync::Arc::new(unsafe {
+            File::from_raw_fd(eventfd(0, 0x80000 | 0x800))
+        }));
+        Endpoint {
+            memory,
+            _file: File::open("/dev/null").unwrap(),
+            incoming,
+            outgoing,
+            tx: 0,
+            peer: 0,
+            rx: 0,
+        }
+    }
+    #[test]
+    fn private_cursor_shadows_and_wrapped_records() {
+        let mut e = endpoint();
+        assert!(e.receive().unwrap().is_none());
+        for cursor in [CAPACITY + 1, u64::MAX] {
+            e.cursor(64).store(cursor, Release);
+            assert!(e.receive().is_err());
+        }
+        e.cursor(64).store(0, Release);
+        let message = Message::new(REPLY, 0, 1, 1, vec![]);
+        e.cursor(256).store(1, Release);
+        assert!(e.send(&message).is_err());
+        e.cursor(256).store(0, Release);
+        e.tx = 2;
+        e.peer = 1;
+        assert!(e.send(&message).is_err());
+        e.tx = 0;
+        e.peer = 0;
+        for i in 0..128u64 {
+            let mut record = [0u8; RECORD];
+            record[0..4].copy_from_slice(&START.to_le_bytes());
+            record[8..16].copy_from_slice(&1u64.to_le_bytes());
+            record[16..20].copy_from_slice(&(i as u32).to_le_bytes());
+            unsafe {
+                ptr::copy_nonoverlapping(
+                    record.as_ptr(),
+                    e.memory.add(4096 + (i % CAPACITY) as usize * RECORD),
+                    RECORD,
+                );
+            }
+            e.cursor(64).store(i + 1, Release);
+            assert_eq!(e.receive().unwrap().unwrap().id, i as u32);
+            assert_eq!(e.cursor(128).load(Acquire), i + 1);
+        }
+        e.cursor(64).store(127, Release);
+        assert!(e.receive().is_err());
+    }
     #[test]
     fn hostile_lengths_and_reserved_fields() {
         let mut copy = [0u8; RECORD];

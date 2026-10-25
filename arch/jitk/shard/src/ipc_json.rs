@@ -35,7 +35,11 @@ impl Parser<'_> {
     }
     fn hex(&mut self) -> Result<u16, ()> {
         let end = self.at.checked_add(4).ok_or(())?;
-        let s = std::str::from_utf8(self.bytes.get(self.at..end).ok_or(())?).map_err(|_| ())?;
+        let digits = self.bytes.get(self.at..end).ok_or(())?;
+        if !digits.iter().all(u8::is_ascii_hexdigit) {
+            return Err(());
+        }
+        let s = std::str::from_utf8(digits).map_err(|_| ())?;
         let n = u16::from_str_radix(s, 16).map_err(|_| ())?;
         self.at = end;
         Ok(n)
@@ -249,6 +253,15 @@ pub fn reply(bytes: &[u8]) -> bool {
             .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_')
         && message.len() <= 4096
 }
+fn identifier(s: &str) -> bool {
+    let mut bytes = s.bytes();
+    !s.is_empty()
+        && s.len() <= 64
+        && bytes
+            .next()
+            .is_some_and(|b| b.is_ascii_alphabetic() || b == b'_' || b == b'$')
+        && bytes.all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'$')
+}
 pub fn request(bytes: &[u8]) -> bool {
     let Ok(Value::Array(a)) = parse(bytes) else {
         return false;
@@ -256,10 +269,10 @@ pub fn request(bytes: &[u8]) -> bool {
     match a.as_slice() {
         [
             Value::String(t),
-            Value::String(_),
-            Value::String(_),
+            Value::String(ns),
+            Value::String(function),
             Value::Array(_),
-        ] => t == "call",
+        ] => t == "call" && identifier(ns) && identifier(function),
         [Value::String(t), Value::String(level), Value::String(_)] => {
             t == "log" && ["log", "info", "warn", "error", "debug"].contains(&level.as_str())
         }
@@ -274,6 +287,7 @@ mod tests {
         for b in [
             r#"{"ok":0,"ok":1}"#,
             r#"{"ok":01}"#,
+            r#"{"ok":"\u+123"}"#,
             r#"{"ok":1e999}"#,
             r#"{"ok":"\ud800"}"#,
             r#"{"err":{"code":"bad","message":"x"}}"#,
@@ -286,6 +300,7 @@ mod tests {
         assert!(reply(br#"{"err":{"code":"DENIED","message":"denied"}}"#));
         assert!(request(br#"["call","ns","fn",[]]"#));
         assert!(!request(br#"["call","ns","fn",{}]"#));
+        assert!(!request(br#"["call","invalid-name","fn",[]]"#));
         assert!(!reply(
             format!("{{\"ok\":{}0{}}}", "[".repeat(33), "]".repeat(33)).as_bytes()
         ));

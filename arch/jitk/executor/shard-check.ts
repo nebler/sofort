@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {ProtocolError} from '../protocol/dispatcher.js';
 import {mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -14,9 +15,10 @@ import {sourceChecks} from './shard-source-check.js';
 const binary=process.env.JITK_SHARD_BINARY!,snapshot=process.env.JITK_SHARD_SNAPSHOT!;
 if(process.platform!=='linux'||!binary||!snapshot)throw Error('shard-check needs Linux, JITK_SHARD_BINARY and JITK_SHARD_SNAPSHOT');
 let assertions=transportChecks()+await sourceChecks();
-function check(value:unknown,message:string){assert.ok(value,message);assertions++;}
+function check(value:unknown,message:string){assert.ok(value,message);assertions++;console.log(JSON.stringify({event:'check',name:message}));}
 const metrics:ShardMetrics[]=[];
 const backend=new ShardBackend({binary,snapshot,slots:8,onMetrics:m=>metrics.push(m)});
+backend.child.stderr!.on('data',(b:Buffer)=>process.stderr.write(b));
 const pool=new SandboxPool(backend,0,8,{refillConcurrency:8});
 const executor=new MicroVMExecutor(pool,()=> 'allow',5000);
 const execute=async(code:string,fns:Record<string,(...a:any[])=>Promise<any>>={})=>{const result=await executor.execute(code,fns);await pool.drain();return result;};
@@ -38,7 +40,7 @@ try {
   r=await execute('console.log("hello",2);console.warn("warning");return 7');check(!r.error&&r.result===7&&JSON.stringify(r.logs)==='["hello 2","[warn] warning"]','console logs');
   r=await execute('return await codemode.large()',{large:async()=> 'x'.repeat(2000)});check(!!r.error&&r.error.includes('shard tool reply limit'),'bounded oversized reply is an explicit error');
   r=await execute('return await Promise.all(Array.from({length:33},()=>codemode.echo()))',{echo:async()=>0});check(!!r.error&&r.error.includes('call budget'),'32-call ring budget');
-  r=await execute(' '.repeat(8000)+'return 1');check(!!r.error&&r.error.includes('shard source limit'),'source admission bound');
+  r=await execute('const a='+JSON.stringify('x'.repeat(8000))+';return a.length');check(!!r.error&&r.error.includes('shard source limit'),'source admission bound');
   const randoms=new Set();
   for(let i=0;i<5;i++){r=await execute('if(globalThis.tenant)throw Error("leak");globalThis.tenant=1;return Math.random()');check(!r.error&&typeof r.result==='number','fresh restore');randoms.add(r.result);}
   check(randoms.size===5,'distinct restored Math.random');
@@ -60,6 +62,15 @@ try {
   r=await execute('return 42');check(!r.error&&r.result===42,'clean reuse after expiry');
 } finally {await pool.close();}
 
+// Exercise environment selection through the same MCP core used by execute.
+{
+  const previous=process.env.JITK_BACKEND;process.env.JITK_BACKEND='shard';
+  const {createJitk}=await import(new URL('../../mcp/jitk.mjs',import.meta.url).href);
+  const core=await createJitk({warm:0,maxLive:2,timeoutMs:5000,tools:{tools:{echo:{args:(a:unknown[])=>a,reads:'public',egress:false,writes:false,timeoutMs:1000,invoke:async(a:number[])=>a[0]+1,output:(v:unknown)=>v}}}});
+  try{await core.warmed;const r=await core.run('return await tools.echo(41)');check(r.result===42&&!r.error,'JITK_BACKEND=shard through MCP core');}
+  finally{await core.close();if(previous===undefined)delete process.env.JITK_BACKEND;else process.env.JITK_BACKEND=previous;}
+}
+
 // Node treats the shard as hostile: private-copy validation, cursor bounds,
 // generations, schemas, direction and duplicate identity must all fail closed.
 const scratch=mkdtempSync(join(tmpdir(),'jitk-ipc-test-'));
@@ -73,7 +84,7 @@ try {
       const started=performance.now();
       const s=await hostile.park();await s.armDeadline!(Date.now()+3000);await s.send({t:'run',code:'return 1',ns:{tools:['echo']}});
       // The duplicate case may deliver its first valid call before poisoning the batch.
-      await assert.rejects((async()=>{for(let i=0;i<3;i++)await s.read();})(),/shard|protocol/);assertions++;
+      await assert.rejects((async()=>{for(let i=0;i<3;i++)await s.read();})(),e=>e instanceof ProtocolError||(e instanceof Error&&((e as any).code==='SHARD_IPC'||/^(shard IPC|protocol )/.test(e.message))));assertions++;
       check(performance.now()-started<2000,`Node promptly rejects hostile ${mode}`);
     } finally {await hostile.close();}
   }

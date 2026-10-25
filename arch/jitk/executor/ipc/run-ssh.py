@@ -28,7 +28,7 @@ snapshot = os.environ.get('JITK_SHARD_REMOTE_SNAPSHOT', '/home/dev/r7-ipc/prepar
 if not node.startswith('/home/dev/r7-ipc/') or not snapshot.startswith('/home/dev/r7-ipc/'):
     raise SystemExit('remote Node and prepared base must be inside /home/dev/r7-ipc/')
 files = []
-for part in ['arch/jitk/shard', 'arch/jitk/executor', 'arch/jitk/protocol', 'arch/jitk/bench/hyperlight']:
+for part in ['arch/jitk/shard', 'arch/jitk/executor', 'arch/jitk/protocol', 'arch/jitk/bench/hyperlight', 'arch/jitk/mcp']:
     directory = root / part
     for source in sorted(directory.rglob('*')):
         relative = source.relative_to(directory)

@@ -22,8 +22,6 @@ struct State {
     phase: Phase,
     next: u64,
     pending: u32,
-    sent: [u64; 32],
-    rounds: Vec<u64>,
 }
 impl Default for State {
     fn default() -> Self {
@@ -32,8 +30,6 @@ impl Default for State {
             phase: Phase::Idle,
             next: 1,
             pending: 0,
-            sent: [0; 32],
-            rounds: Vec::new(),
         }
     }
 }
@@ -151,9 +147,6 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
                         }
                         s.pending &= !bit;
                         if s.phase == Phase::Running {
-                            s.rounds.push(
-                                kvm::monotonic_ns().saturating_sub(s.sent[m.id as usize - 1]),
-                            );
                             pool.reply(
                                 id,
                                 m.generation,
@@ -214,7 +207,6 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
                             }
                             s.next += 1;
                             s.pending |= 1u32 << (request.id - 1);
-                            s.sent[request.id as usize - 1] = kvm::monotonic_ns();
                             enqueue(
                                 &mut outbound,
                                 Message::new(
@@ -243,16 +235,18 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
                             return Err(invalid("IPC duplicate completion"));
                         }
                         s.phase = Phase::Done;
-                        let mut metrics = Vec::with_capacity(32 + 8 * s.rounds.len());
+                        let mut metrics = Vec::with_capacity(
+                            32 + 8 * completion.metrics.policy_round_trips.len(),
+                        );
                         for n in [
                             completion.metrics.cpu_ns,
                             completion.stopped_ns,
                             completion.reset_done_ns,
-                            s.rounds.len() as u64,
+                            completion.metrics.policy_round_trips.len() as u64,
                         ] {
                             metrics.extend_from_slice(&n.to_le_bytes());
                         }
-                        for n in &s.rounds {
+                        for n in &completion.metrics.policy_round_trips {
                             metrics.extend_from_slice(&n.to_le_bytes());
                         }
                         enqueue(

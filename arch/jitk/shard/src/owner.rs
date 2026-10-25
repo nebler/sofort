@@ -37,6 +37,7 @@ pub struct Metrics {
     pub cpu_ns: u64,
     pub calls: u64,
     pub tool_ns: u64,
+    pub policy_round_trips: Vec<u64>,
     pub wait_to_finish_ns: u64,
     pub exits: u64,
 }
@@ -114,7 +115,12 @@ impl Pool {
         let mut mailboxes = Vec::new();
         let mut joins = Vec::new();
         for (owner, wake) in wakes.into_iter().enumerate() {
-            let (cmd, rx) = mpsc::sync_channel(slots * 34 + 1);
+            let capacity = if notify.is_some() {
+                (slots - owner).div_ceil(owners) * 34 + 1
+            } else {
+                32
+            };
+            let (cmd, rx) = mpsc::sync_channel(capacity);
             let notify = notify.clone();
             let leases = (owner..slots)
                 .step_by(owners)
@@ -199,6 +205,7 @@ struct Managed {
     waited: Option<Instant>,
     canary: bool,
     policy: bool,
+    policy_sent: [u64; 32],
 }
 impl Managed {
     fn reset(&mut self) -> u64 {
@@ -252,6 +259,10 @@ impl Managed {
                 self.waited = Some(Instant::now());
             }
             if self.policy && (!e.requests.is_empty() || e.op == 2) {
+                let sent = kvm::monotonic_ns();
+                for r in &e.requests {
+                    self.policy_sent[r.id as usize - 1] = sent;
+                }
                 let calls = e
                     .requests
                     .iter()
@@ -364,6 +375,7 @@ fn worker(
                     waited: None,
                     canary: false,
                     policy: false,
+                    policy_sent: [0; 32],
                 });
             }
             let s = slots[i].as_mut().unwrap();
@@ -390,6 +402,9 @@ fn worker(
                     s.pending.swap_remove(at);
                     let t = kvm::clock_ns(3);
                     s.cpu.reply(&request);
+                    s.metrics.policy_round_trips.push(
+                        kvm::monotonic_ns().saturating_sub(s.policy_sent[request.id as usize - 1]),
+                    );
                     s.metrics.cpu_ns += kvm::clock_ns(3) - t;
                 }
                 Command::Resume(_, generation) => {
