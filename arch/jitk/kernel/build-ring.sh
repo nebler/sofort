@@ -14,6 +14,7 @@ if [ "${JITK_RING_NATIVE:-0}" = 1 ]; then
 else
   export JITK_SCRIPT="$(cat ring-bootstrap.js)"
 fi
+export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=--defsym=__ring_arena=0x81800000"
 mkdir -p dist/ring
 cargo build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}

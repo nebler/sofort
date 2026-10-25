@@ -21,6 +21,7 @@ use std::{
 mod abi {
     include!(concat!(env!("OUT_DIR"), "/abi.rs"));
 }
+use crate::{arena, lease};
 use abi::*;
 pub const RAM: usize = 32 << 20;
 pub const CTRL: usize = 0x1d00000;
@@ -38,6 +39,7 @@ unsafe extern "C" {
         off: i64,
     ) -> *mut c_void;
     fn munmap(addr: *mut c_void, len: usize) -> c_int;
+    fn mprotect(addr: *mut c_void, len: usize, prot: c_int) -> c_int;
     fn madvise(addr: *mut c_void, len: usize, advice: c_int) -> c_int;
     fn setrlimit(resource: c_int, value: *const [u64; 2]) -> c_int;
 }
@@ -121,6 +123,10 @@ impl Snapshot {
     pub fn load(base: &str) -> Arc<Self> {
         let memory = File::open(format!("{base}.mem")).unwrap();
         assert_eq!(memory.metadata().unwrap().len(), RAM as u64);
+        assert_eq!(
+            std::fs::read(format!("{base}.layout")).expect("prepare a glue-2m snapshot"),
+            arena::layout_bytes()
+        );
         let b = std::fs::read(format!("{base}.regs")).unwrap();
         assert_eq!(&b[..8], b"JTKREGS2");
         let mut at = 8;
@@ -144,6 +150,24 @@ pub struct Request {
     pub id: u64,
     pub bytes: Vec<u8>,
 }
+#[derive(Debug)]
+pub enum RunError {
+    MemoryBound { address: u64 },
+    GuestFatal,
+    Deadline { deadline_ns: u64 },
+}
+impl std::fmt::Display for RunError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::MemoryBound { address } => write!(
+                f,
+                "memory_bound: write outside glue-2m arena at {address:#x}"
+            ),
+            Self::Deadline { .. } => write!(f, "deadline_exceeded"),
+            Self::GuestFatal => write!(f, "guest_fatal: guest stopped without a completion"),
+        }
+    }
+}
 pub struct Exit {
     pub op: u32,
     pub requests: Vec<Request>,
@@ -164,19 +188,33 @@ pub struct Slot {
     pub exits: u64,
     pub drains: u64,
     pending_mmio: bool,
+    pub lease: Option<lease::Lease>,
 }
 impl Slot {
-    fn create(kvm: &Kvm, file: &File) -> Self {
+    fn create(kvm: &Kvm, file: &File, bounded: bool) -> Self {
         let vm = unsafe { File::from_raw_fd(call(&kvm.fd, KVM_CREATE_VM, 0)) };
         let ram = Mapping::new(file, RAM, 2);
-        let region = Region {
-            slot: 0,
-            flags: 0,
-            gpa: 0x80000000,
-            size: RAM as u64,
-            addr: ram.ptr as u64,
+        let regions = if bounded {
+            arena::regions(RAM, CTRL).to_vec()
+        } else {
+            vec![(0, RAM, true)]
         };
-        call(&vm, KVM_SET_USER_MEMORY_REGION, &region as *const _ as u64);
+        for (slot, (start, end, writable)) in regions.into_iter().enumerate() {
+            let region = Region {
+                slot: slot as u32,
+                flags: if writable { 0 } else { KVM_MEM_READONLY as u32 },
+                gpa: 0x80000000 + start as u64,
+                size: (end - start) as u64,
+                addr: ram.ptr as u64 + start as u64,
+            };
+            call(&vm, KVM_SET_USER_MEMORY_REGION, &region as *const _ as u64);
+            if !writable {
+                check(
+                    unsafe { mprotect(ram.ptr.add(start).cast(), end - start, 1) },
+                    "mprotect immutable RAM",
+                );
+            }
+        }
         let cpu = unsafe { File::from_raw_fd(call(&vm, KVM_CREATE_VCPU, 0)) };
         let mut init = [0u32; 8];
         call(&vm, KVM_ARM_PREFERRED_TARGET, init.as_mut_ptr() as u64);
@@ -198,10 +236,11 @@ impl Slot {
             exits: 0,
             drains: 0,
             pending_mmio: false,
+            lease: None,
         }
     }
     pub fn new(kvm: &Kvm, snapshot: Arc<Snapshot>) -> Self {
-        let mut s = Self::create(kvm, &snapshot.memory);
+        let mut s = Self::create(kvm, &snapshot.memory, true);
         s.restore_regs(&snapshot.regs);
         s.snapshot = Some(snapshot);
         s
@@ -260,6 +299,15 @@ impl Slot {
             unsafe { madvise(self.ram.ptr.cast(), RAM, 4) },
             "MADV_DONTNEED",
         );
+        unsafe {
+            self.run
+                .ptr
+                .add(IMMEDIATE_EXIT)
+                .cast::<std::sync::atomic::AtomicU8>()
+                .as_ref()
+                .unwrap()
+                .store(0, Release);
+        }
         self.restore_regs(&self.snapshot.as_ref().unwrap().regs);
         self.tx = 0;
         self.rx = 0;
@@ -287,10 +335,10 @@ impl Slot {
         true
     }
     pub fn corrupt_canary(&self, v: u64) {
-        self.ram.put(0x1c90000, v);
+        self.ram.put(arena::CANARY, v);
     }
     pub fn canary(&self) -> u64 {
-        self.ram.word(0x1c90000)
+        self.ram.word(arena::CANARY)
     }
     fn atomic(&self, off: usize) -> &AtomicU64 {
         unsafe { &*self.ram.ptr.add(CTRL + off).cast() }
@@ -338,20 +386,62 @@ impl Slot {
             .map(|i| self.bytes(base + (cursor + i) % 32768, 1)[0])
             .collect()
     }
+    pub fn attack_arena(&mut self) {
+        self.copy(
+            arena::CANARY,
+            include_bytes!(concat!(env!("OUT_DIR"), "/arena-attack.bin")),
+        );
+        self.set(REG_SCTLR, 0);
+        self.set(REG_PSTATE, 0x3c5);
+        self.set(REG_PC, 0x80000000 + arena::CANARY as u64);
+    }
     pub fn exit(&mut self) -> Exit {
-        self.store(0x220, monotonic_ns());
         loop {
+            if let Some(e) = self.try_exit().unwrap_or_else(|e| panic!("{e}")) {
+                return e;
+            }
+        }
+    }
+    pub fn try_exit(&mut self) -> Result<Option<Exit>, RunError> {
+        self.store(0x220, monotonic_ns());
+        // Clear before publishing the active pointer. Kicks received before
+        // publication remain pending in TLS, including another slot's expiry.
+        unsafe {
+            &*self
+                .run
+                .ptr
+                .add(IMMEDIATE_EXIT)
+                .cast::<std::sync::atomic::AtomicU8>()
+        }
+        .store(0, Release);
+        let (_running, kicked) =
+            unsafe { lease::Running::enter(self.run.ptr.add(IMMEDIATE_EXIT).cast()) };
+        if kicked {
+            return Ok(None);
+        }
+        {
+            if let Some(l) = &self.lease {
+                if l.expired() {
+                    return Err(RunError::Deadline {
+                        deadline_ns: l.deadline(),
+                    });
+                }
+            }
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
             if r < 0 && io::Error::last_os_error().raw_os_error() == Some(4) {
-                continue;
+                return Ok(None); // yield to the owner to service another slot's expiry
             }
             check(r, "KVM_RUN");
-            break;
         }
         self.pending_mmio = false;
         let reason = unsafe { self.run.ptr.add(EXIT_REASON).cast::<u32>().read_volatile() };
         assert_eq!(reason as u64, KVM_EXIT_MMIO, "unexpected KVM exit {reason}");
-        assert_eq!(self.run.word(MMIO_ADDR), 0x10000000);
+        self.pending_mmio = true;
+        if self.run.word(MMIO_ADDR) != 0x10000000 {
+            return Err(RunError::MemoryBound {
+                address: self.run.word(MMIO_ADDR),
+            });
+        }
         assert_eq!(
             unsafe { self.run.ptr.add(MMIO_LEN).cast::<u32>().read_volatile() },
             4
@@ -409,14 +499,16 @@ impl Slot {
         }
         self.store(0x80, self.tx as u64);
         if op == 3 {
-            assert!(finish.is_some(), "FINISH without completion; guest fatal");
+            if finish.is_none() {
+                return Err(RunError::GuestFatal);
+            }
             assert_eq!(self.seen, self.replied);
         }
-        Exit {
+        Ok(Some(Exit {
             op,
             requests,
             finish,
-        }
+        }))
     }
     pub fn reply(&mut self, r: &Request) {
         let cons = self.load(0x100) as usize;
@@ -478,6 +570,10 @@ pub fn monotonic_ns() -> u64 {
 pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     let raw = std::fs::read(image).unwrap();
     assert!(raw.len() < CTRL);
+    assert!(
+        raw.windows(32).any(|b| b == arena::layout_bytes()),
+        "kernel lacks glue-2m layout"
+    );
     let initial = format!("{base}.boot");
     let mut f = File::options()
         .write(true)
@@ -488,7 +584,7 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     f.set_len(RAM as u64).unwrap();
     f.write_all(&raw).unwrap();
     f.sync_all().unwrap();
-    let mut s = Slot::create(kvm, &f);
+    let mut s = Slot::create(kvm, &f, false);
     s.set(REG_PC, 0x80000000);
     s.set(REG_PSTATE, 0x3c5);
     let mut entropy = File::open("/dev/urandom").unwrap();
@@ -520,7 +616,14 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     }
     out.sync_all().unwrap();
     use std::os::unix::fs::PermissionsExt;
-    for ext in ["mem", "regs"] {
+    let mut layout = File::options()
+        .write(true)
+        .create_new(true)
+        .open(format!("{base}.layout"))
+        .unwrap();
+    layout.write_all(&arena::layout_bytes()).unwrap();
+    layout.sync_all().unwrap();
+    for ext in ["mem", "regs", "layout"] {
         std::fs::set_permissions(
             format!("{base}.{ext}"),
             std::fs::Permissions::from_mode(0o444),

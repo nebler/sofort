@@ -1,0 +1,97 @@
+22:12  up 2 days, 25 mins, 1 user, load averages: 6.45 7.12 8.66
+jitk: delegating executor/test (see /Users/noah/.t3/worktrees/sofort/t3-5d99119a/arch/jitk/executor/README.md)
+./run.sh test
+{
+  "loadBefore": "22:12  up 2 days, 25 mins, 1 user, load averages: 6.45 7.12 8.66",
+  "loadAfter": "22:12  up 2 days, 25 mins, 1 user, load averages: 6.45 7.12 8.66",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+PASS resolve before kill/reap; VMM AND watchdog hold token
+PASS host-only ack AND ready, fragmented ack, missing/guest-forged ack rejected
+{
+  loadBefore: '22:12  up 2 days, 26 mins, 1 user, load averages: 7.85 7.40 8.75',
+  loadAfter: '22:12  up 2 days, 26 mins, 1 user, load averages: 7.85 7.40 8.75',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+{
+  receipt: {
+    pid: 98018,
+    timeout: true,
+    deadline: 1792962739042,
+    firedAt: 1792962739042.722,
+    killAt: 1792962739042.741
+  },
+  killOvershootMs: 0.740966796875,
+  loadBefore: '22:12  up 2 days, 26 mins, 1 user, load averages: 7.85 7.40 8.75',
+  loadAfter: '22:12  up 2 days, 26 mins, 1 user, load averages: 8.27 7.49 8.77',
+  watchdogDeadlineMs: 250,
+  hostEventLoopBlockedMs: 1500,
+  observedReapAfterHostUnblockMs: 1516.681875,
+  reaped: true
+}
+file:///Users/noah/.t3/worktrees/sofort/t3-5d99119a/arch/jitk/executor/build/verify.js:1524
+  if (!process.env.JITK_KERNEL_IMAGE && km.sha256 && km.sha256 !== image.sha256) throw Error("kernel READY hash mismatch");
+                                                                                       ^
+
+Error: kernel READY hash mismatch
+    at selectBackend (file:///Users/noah/.t3/worktrees/sofort/t3-5d99119a/arch/jitk/executor/build/verify.js:1524:88)
+    at file:///Users/noah/.t3/worktrees/sofort/t3-5d99119a/arch/jitk/executor/build/verify.js:1566:16
+
+Node.js v24.22.1
+make: *** [test] Error 1

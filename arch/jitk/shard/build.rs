@@ -23,6 +23,20 @@ fn main() {
         .arg(out.join("stub.o"))
         .arg("-o")
         .arg(out.join("stub.bin")));
+    run(Command::new("clang")
+        .args([
+            "--target=aarch64-unknown-none",
+            "-c",
+            "guest/arena-attack.S",
+            "-o",
+        ])
+        .arg(out.join("arena-attack.o")));
+    run(Command::new("ld.lld")
+        .args(["-Ttext=0x8193f000", "--oformat=binary"])
+        .arg(out.join("arena-attack.o"))
+        .arg("-o")
+        .arg(out.join("arena-attack.bin")));
+    println!("cargo:rerun-if-changed=guest/arena-attack.S");
     println!("cargo:rerun-if-changed=abi.c");
     println!("cargo:rerun-if-changed=guest/stub.S");
 }

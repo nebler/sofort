@@ -40,7 +40,7 @@ def cell(name,n,rep):
             e=json.loads(line);events.append(e)
             if e['event']=='environment':pid=e['pid']
             if e['event']=='held':break
-        assert f'Threads:\t1\n' in read(f'/proc/{pid}/status')
+        assert f'Threads:\t{int(events[0]["threads"])}\n' in read(f'/proc/{pid}/status')
         time.sleep(3)
         samples=[]
         for i in range(3):
@@ -48,7 +48,7 @@ def cell(name,n,rep):
         before=numbers(cg/'cpu.stat')['usage_usec'];time.sleep(1)
         idle=numbers(cg/'cpu.stat')['usage_usec']-before
         result=dict(fixture=name,n=n,rep=rep,events=events,samples=samples,idle_cpu_usec=idle,
-          elapsed_s=time.monotonic()-start,cgroup=str(cg),enclosing_memory_current=int(read(CG/'memory.current')))
+          memory_peak=int(read(cg/'memory.peak')),elapsed_s=time.monotonic()-start,cgroup=str(cg),enclosing_memory_current=int(read(CG/'memory.current')))
         stem.with_suffix('.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(dict(event='cell',fixture=name,n=n,rep=rep,memory_current=statistics.median(x['memory_current'] for x in samples),idle_cpu_usec=idle)),flush=True)
     finally:
