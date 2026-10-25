@@ -1,8 +1,8 @@
 {
-  "policySource": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/policy/policy.mjs",
+  "policySource": "/Users/noah/code/sofort/arch/jitk/executor/policy/policy.mjs",
   "selection": "integrated jitk / confined VMM / current kernel",
-  "loadBefore": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
-  "loadAfter": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
+  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
   "rows": [
     {
       "name": "clean run may send",

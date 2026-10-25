@@ -1,10 +1,10 @@
 {
   "artifacts": {
-    "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/external-inputs/HYPERLIGHT_WORKER/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
-    "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/external-inputs/HYPERLIGHT_SNAPSHOT/r3-snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09"
+    "/Users/noah/code/sofort/.inputs/hyperlight/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "/Users/noah/code/sofort/.inputs/hyperlight/snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09"
   },
-  "loadBefore": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
-  "loadAfter": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
+  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
   "rows": [
     {
       "name": "result",

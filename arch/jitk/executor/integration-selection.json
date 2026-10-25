@@ -2,16 +2,16 @@
   "selection": "integrated jitk / confined VMM / current kernel",
   "integrated": true,
   "host": {
-    "path": "/tmp/jitk-lead/r5/tree-21991-work/vmm/jitk-vmm",
-    "sha256": "b9795b6a8d00285a52d28719342fe750a6f372a4e163a518c4cca1b427509a80"
+    "path": "/Users/noah/code/sofort/.inputs/jitk-vmm-darwin",
+    "sha256": "6b4b9d6a80cb972a7c8e2f4ebda27950435d3dbc2c55ac2252ffe76d3e7038f8"
   },
   "image": {
-    "path": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel.bin",
+    "path": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
     "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
   },
   "gate": {
     "idleCorePercent": 0,
-    "evidence": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/.READY: 1000/1000; idle CPU below ps resolution (rerun on this image)"
+    "evidence": "/Users/noah/code/sofort/arch/jitk/kernel/.READY: 1000/1000; idle CPU below ps resolution (rerun on this image)"
   },
   "vmmReady": true,
   "kernelReady": true

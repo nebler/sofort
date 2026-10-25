@@ -1,19 +1,19 @@
 {
   "status": "PASS",
-  "at": "2026-10-24T03:06:52.265Z",
+  "at": "2026-10-25T08:53:38.099Z",
   "selection": "integrated jitk / confined VMM / current kernel",
   "integrated": true,
   "host": {
-    "path": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/.cache/inputs/jitk-vmm",
-    "sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e"
+    "path": "/Users/noah/code/sofort/.inputs/jitk-vmm-darwin",
+    "sha256": "6b4b9d6a80cb972a7c8e2f4ebda27950435d3dbc2c55ac2252ffe76d3e7038f8"
   },
   "image": {
-    "path": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel.bin",
-    "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+    "path": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
+    "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
   },
   "gate": {
     "idleCorePercent": 0,
-    "evidence": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/fixtures/parking-gate.json"
+    "evidence": "/Users/noah/code/sofort/arch/jitk/kernel/.READY: 1000/1000; idle CPU below ps resolution (rerun on this image)"
   },
   "vmmReady": true,
   "kernelReady": true,
@@ -24,11 +24,11 @@
     "code.ts": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760",
     "policy-adapter.ts": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
     "../protocol/dispatcher.ts": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f",
-    "backend.ts": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+    "backend.ts": "6c839ee199f8233ec0ec5a6384f4b00f67bb0d1331761ed5465724f5dc97143a",
     "pool.ts": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb",
     "../bench/hyperlight/backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
     "executor.ts": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968",
-    "select-backend.ts": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0",
+    "select-backend.ts": "6e9144b04f6c148dd41a6935b7bd129c13908dd24ba74a185bd1ff594f5fd2da",
     "api-check.ts": "d4c3f0140ee90c877be3343a0fb3091d451c4f1ddea034a7b725d4365f5d8088",
     "breakdown.ts": "b706534560d1b766875ebcf0903993a29f266fc82c4b055b1c7f5c5d0eb0516e",
     "hyperlight-check.ts": "767c57c9797e8fb6a1bf0239b498c0da666dc23be9211222ff9d430ee27ca718",
@@ -41,11 +41,11 @@
     "verify.ts": "3d419ed3970a4316e4a30b3f190fa02b106370204bc54730055b2e0d3829729d",
     "watchdog-check.ts": "8594e037329c962eea26c0469140af4f95e0330ef6ea919e548ea625da12a863",
     "wrapper-conformance.ts": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5",
-    "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/.cache/inputs/jitk-vmm": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
-    "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel.bin": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "/Users/noah/code/sofort/.inputs/jitk-vmm-darwin": "6b4b9d6a80cb972a7c8e2f4ebda27950435d3dbc2c55ac2252ffe76d3e7038f8",
+    "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
     "../protocol/bootstrap.js": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280",
     "policy/policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
-    "watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "../vmm/src/watchdog.rs": "8367e6bf2120cb11bd114883c0b8919b68f3339ca3547d3587f0b23725fc73d5",
     "policy/policy-test.mjs": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c",
     "fixtures/parking-gate.json": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717"
   },

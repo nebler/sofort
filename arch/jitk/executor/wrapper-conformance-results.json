@@ -1,7 +1,7 @@
 {
   "selection": "integrated jitk / confined VMM / current kernel",
-  "loadBefore": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
-  "loadAfter": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
+  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
   "results": [
     {
       "name": "github",

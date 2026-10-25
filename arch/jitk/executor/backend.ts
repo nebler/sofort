@@ -82,6 +82,8 @@ class Watchdog {
     this.write(`del ${pid}\n`,()=>{});
   }
 }
+// glibc's malloc THP backs the VMM heap with huge pages: -5.99 MiB/VM on Linux (research/perf/linux-ledger).
+const LINUX_MALLOC_ENV:Record<string,string>=process.platform==='linux'?{GLIBC_TUNABLES:'glibc.malloc.hugetlb=0'}:{};
 function watchdogBinary(options:ProcessOptions):string {
   const bin=options.watchdog??process.env.JITK_WATCHDOG??process.env.JITK_VMM_BINARY;
   if(!bin)throw Error('watchdog: set ProcessOptions.watchdog, JITK_WATCHDOG or JITK_VMM_BINARY to a jitk-vmm binary');
@@ -93,7 +95,7 @@ export class ProcessBackend implements Backend {
   async park(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
     if(signal?.aborted)throw Error('aborted');
     const child=spawn(this.command,this.argv,{stdio:'pipe',detached:true,cwd:this.options.cwd,
-      env:{PATH:'/usr/bin:/bin',...this.options.env}});
+      env:{PATH:'/usr/bin:/bin',...LINUX_MALLOC_ENV,...this.options.env}});
     const s=new ProcessSandbox(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
     const abort=()=>s.kill();signal?.addEventListener('abort',abort,{once:true});
     const timer=setTimeout(abort,this.options.startupMs??5000);
