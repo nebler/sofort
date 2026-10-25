@@ -21,6 +21,7 @@ pub enum Mode {
     Ready,
     Attack,
     RetainAttack,
+    Policy,
 }
 pub struct Job {
     pub generation: u64,
@@ -47,6 +48,11 @@ pub struct Completion {
     pub reset_done_ns: u64,
 }
 pub enum Event {
+    Calls {
+        slot: usize,
+        generation: u64,
+        requests: Vec<Request>,
+    },
     Parked {
         slot: usize,
         generation: u64,
@@ -63,7 +69,9 @@ pub enum Event {
 enum Command {
     Start(usize, Job),
     Resume(usize, u64),
+    Reply(usize, u64, Request),
     Reset(usize),
+    Cancel(usize),
     Stop,
 }
 struct Mailbox {
@@ -85,6 +93,15 @@ pub struct Pool {
 }
 impl Pool {
     pub fn new(kvm: Arc<Kvm>, snapshot: Arc<Snapshot>, slots: usize, owners: usize) -> Self {
+        Self::notified(kvm, snapshot, slots, owners, None)
+    }
+    pub fn notified(
+        kvm: Arc<Kvm>,
+        snapshot: Arc<Snapshot>,
+        slots: usize,
+        owners: usize,
+        notify: Option<Arc<dyn Fn() + Send + Sync>>,
+    ) -> Self {
         assert!(
             owners > 0
                 && owners <= thread::available_parallelism().unwrap().get()
@@ -97,7 +114,8 @@ impl Pool {
         let mut mailboxes = Vec::new();
         let mut joins = Vec::new();
         for (owner, wake) in wakes.into_iter().enumerate() {
-            let (cmd, rx) = mpsc::sync_channel(32);
+            let (cmd, rx) = mpsc::sync_channel(slots * 34 + 1);
+            let notify = notify.clone();
             let leases = (owner..slots)
                 .step_by(owners)
                 .map(|id| watchdog.slot(id))
@@ -106,7 +124,7 @@ impl Pool {
             joins.push(
                 thread::Builder::new()
                     .name(format!("jitk-owner-{owner}"))
-                    .spawn(move || worker(owner, owners, kvm, snapshot, leases, rx, tx, w))
+                    .spawn(move || worker(owner, owners, kvm, snapshot, leases, rx, tx, w, notify))
                     .unwrap(),
             );
             mailboxes.push(Mailbox { tx: cmd, wake });
@@ -128,6 +146,17 @@ impl Pool {
     }
     pub fn resume(&self, slot: usize, generation: u64) {
         self.owner(slot).send(Command::Resume(slot, generation));
+    }
+    pub fn reply(&self, slot: usize, generation: u64, request: Request) {
+        self.owner(slot)
+            .send(Command::Reply(slot, generation, request));
+    }
+    pub fn try_recv(&mut self) -> Option<Event> {
+        self.watchdog.check();
+        self.events.try_recv().ok()
+    }
+    pub fn cancel(&self, slot: usize) {
+        self.owner(slot).send(Command::Cancel(slot));
     }
     pub fn reset(&self, slot: usize) {
         self.owner(slot).send(Command::Reset(slot));
@@ -155,6 +184,7 @@ impl Drop for Pool {
 }
 enum Progress {
     Parked,
+    Calls(Vec<Request>),
     Finished(String),
     Interrupted,
 }
@@ -168,6 +198,7 @@ struct Managed {
     started: Instant,
     waited: Option<Instant>,
     canary: bool,
+    policy: bool,
 }
 impl Managed {
     fn reset(&mut self) -> u64 {
@@ -190,6 +221,7 @@ impl Managed {
         self.started = Instant::now();
         self.waited = None;
         self.canary = job.canary;
+        self.policy = job.mode == Mode::Policy;
         self.metrics = Metrics {
             reset_ns,
             cpu_ns: kvm::clock_ns(3) - cpu_start,
@@ -218,6 +250,19 @@ impl Managed {
             assert!(e.op == 1 || e.op == 2 || e.op == 5);
             if e.op == 2 && self.waited.is_none() {
                 self.waited = Some(Instant::now());
+            }
+            if self.policy && (!e.requests.is_empty() || e.op == 2) {
+                let calls = e
+                    .requests
+                    .iter()
+                    .map(|r| Request {
+                        id: r.id,
+                        bytes: r.bytes.clone(),
+                    })
+                    .collect();
+                self.pending.extend(e.requests);
+                self.cpu.drain();
+                return Ok(Progress::Calls(calls));
             }
             if hold && (e.op == 2 || e.op == 5) {
                 self.pending = e.requests;
@@ -281,7 +326,9 @@ fn worker(
     commands: Receiver<Command>,
     events: SyncSender<Event>,
     wake: Wake,
+    notify: Option<Arc<dyn Fn() + Send + Sync>>,
 ) {
+    let events = Events { tx: events, notify };
     let mut slots: Vec<Option<Managed>> = (0..leases.len()).map(|_| None).collect();
     let mut entropy = File::open("/dev/urandom").unwrap();
     loop {
@@ -291,7 +338,10 @@ fn worker(
             expire(&mut slots, owner, owners, &events);
             let (id, mode) = match &cmd {
                 Command::Start(id, job) => (*id, Some(job.mode)),
-                Command::Resume(id, _) | Command::Reset(id) => (*id, None),
+                Command::Resume(id, _)
+                | Command::Reply(id, _, _)
+                | Command::Reset(id)
+                | Command::Cancel(id) => (*id, None),
                 Command::Stop => {
                     for s in slots.iter_mut().flatten() {
                         s.reset();
@@ -313,12 +363,15 @@ fn worker(
                     started: Instant::now(),
                     waited: None,
                     canary: false,
+                    policy: false,
                 });
             }
             let s = slots[i].as_mut().unwrap();
-            if let Command::Reset(_) = cmd {
+            if matches!(cmd, Command::Reset(_) | Command::Cancel(_)) {
                 s.reset();
-                assert!(s.cpu.pristine());
+                if matches!(cmd, Command::Reset(_)) {
+                    assert!(s.cpu.pristine());
+                }
                 events.send(Event::Reset { slot: id }).unwrap();
                 continue;
             }
@@ -326,6 +379,18 @@ fn worker(
                 Command::Start(_, job) => {
                     assert!(!s.active);
                     s.begin(job, &mut entropy);
+                }
+                Command::Reply(_, generation, request) => {
+                    if !s.active || generation != s.cpu.generation {
+                        continue;
+                    }
+                    let Some(at) = s.pending.iter().position(|r| r.id == request.id) else {
+                        continue;
+                    };
+                    s.pending.swap_remove(at);
+                    let t = kvm::clock_ns(3);
+                    s.cpu.reply(&request);
+                    s.metrics.cpu_ns += kvm::clock_ns(3) - t;
                 }
                 Command::Resume(_, generation) => {
                     if !s.active || generation != s.cpu.generation {
@@ -348,6 +413,16 @@ fn worker(
                 s.metrics.cpu_ns += kvm::clock_ns(3) - t;
                 match result {
                     Ok(Progress::Interrupted) => expire(&mut slots, owner, owners, &events),
+                    Ok(Progress::Calls(requests)) => {
+                        events
+                            .send(Event::Calls {
+                                slot: id,
+                                generation: s.cpu.generation,
+                                requests,
+                            })
+                            .unwrap();
+                        break;
+                    }
                     Ok(Progress::Parked) => {
                         events
                             .send(Event::Parked {
@@ -378,7 +453,7 @@ fn worker(
     }
 }
 
-fn expire(slots: &mut [Option<Managed>], owner: usize, owners: usize, events: &SyncSender<Event>) {
+fn expire(slots: &mut [Option<Managed>], owner: usize, owners: usize, events: &Events) {
     for (i, s) in slots.iter_mut().enumerate() {
         if let Some(s) = s {
             if s.active && s.lease.expired() {
@@ -397,5 +472,19 @@ fn expire(slots: &mut [Option<Managed>], owner: usize, owners: usize, events: &S
                     .unwrap();
             }
         }
+    }
+}
+
+struct Events {
+    tx: SyncSender<Event>,
+    notify: Option<Arc<dyn Fn() + Send + Sync>>,
+}
+impl Events {
+    fn send(&self, event: Event) -> Result<(), mpsc::SendError<Event>> {
+        self.tx.send(event)?;
+        if let Some(notify) = &self.notify {
+            notify();
+        }
+        Ok(())
     }
 }
