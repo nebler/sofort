@@ -5,6 +5,7 @@ Linux arm64 KVM plus the checksum-pinned census artifacts are required; missing
 prerequisites fail the gate. Prepared files are temporary, receipts are retained.
 """
 import json, os, pathlib, shutil, signal, subprocess, tempfile
+from native_r7_lock import locked
 
 ROOT = pathlib.Path(os.environ.get('JITK_NATIVE_ROOT', str(pathlib.Path(__file__).resolve().parents[4]))).resolve()
 HARNESS = ROOT/'arch/jitk/shard/harness'
@@ -27,9 +28,11 @@ def main():
     with tempfile.TemporaryDirectory(prefix='.native-check-', dir=ROOT) as tmp:
         run = pathlib.Path(tmp)
         env = dict(os.environ, JITK_NATIVE_ROOT=str(ROOT), JITK_NATIVE_RUN_DIR=tmp)
+        for key in ('JITK_NATIVE_CLASSES', 'JITK_NATIVE_TOOLS'):
+            env.pop(key, None)  # The gate always tests the shipped six profiles.
         checked(['python3', str(HARNESS/'prepare-native-r7.py')], env)
         for rep in (1, 2):
-            checked(['flock', '/home/dev/bench.lock', 'python3', str(HARNESS/'native-corpus-r7.py')], env)
+            checked(locked(['python3', str(HARNESS/'native-corpus-r7.py')]), env)
             rows = json.loads((run/'raw/corpus.json').read_text())
             assert len(rows) == 41 and all(r['pass_exact'] for r in rows)
             shutil.copyfile(run/'raw/corpus.json', OUT/f'corpus-{rep}.json')

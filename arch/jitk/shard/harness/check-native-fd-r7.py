@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline exact Linux/ring differential for the owned native fd probe."""
 import importlib.util,json,os,pathlib,struct,subprocess
+from native_r7_lock import locked
 ROOT=pathlib.Path(os.environ.get('JITK_NATIVE_ROOT',str(pathlib.Path(__file__).resolve().parents[4]))).resolve()
 RUN=pathlib.Path(os.environ.get('JITK_NATIVE_RUN_DIR',str(ROOT))).resolve()
 def main():
@@ -13,12 +14,12 @@ def main():
         subprocess.run(['sh','build-ring.sh'],cwd=ROOT/'arch/jitk/kernel',env=dict(env,JITK_RING_NATIVE='1',JITK_ELF=str(elf),JITK_RING_OUT=str(base.with_suffix('.bin'))),stdout=log,stderr=log,check=True)
     real=ROOT/'arch/jitk/shard/target/release/real'
     with (RUN/'raw/prepare-native-fd.jsonl').open('wb') as log:
-        subprocess.run(['flock','/home/dev/bench.lock',str(real),'prepare',str(base.with_suffix('.bin')),str(base)],stdout=log,check=True)
+        subprocess.run(locked([str(real),'prepare',str(base.with_suffix('.bin')),str(base)]),stdout=log,check=True)
     spec=importlib.util.spec_from_file_location('corpus',source.parent/'native-corpus-r7.py');corpus=importlib.util.module_from_spec(spec);spec.loader.exec_module(corpus)
     data=bytes([0,255,128,65,90]);oracle=RUN/'fd-oracle';(oracle/'data').mkdir(parents=True,exist_ok=True)
     (oracle/'data/input').write_bytes(data)
     linux=subprocess.run([str(elf)],cwd=oracle,capture_output=True,timeout=10)
-    worker=subprocess.run(['flock','/home/dev/bench.lock',str(real),'native-worker',f'fd={base}'],input=corpus.request('fd',['fd'],{'data/input':data}),capture_output=True,timeout=60)
+    worker=subprocess.run(locked([str(real),'native-worker',f'fd={base}']),input=corpus.request('fd',['fd'],{'data/input':data}),capture_output=True,timeout=60)
     n=struct.unpack_from('<I',worker.stdout)[0];assert n+4==len(worker.stdout)
     status,code,olen,elen,limited=struct.unpack_from('<5I',worker.stdout,4)
     out=worker.stdout[24:24+olen];err=worker.stdout[24+olen:]

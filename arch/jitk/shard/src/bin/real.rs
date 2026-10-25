@@ -46,9 +46,13 @@ fn main() {
         a.len() >= 3,
         "prepare IMAGE BASE | bench/hold/hostile BASE FIXTURE N [SECONDS] | stress/deadlines BASE FIXTURE N | native-worker ARGS | native-hold ..."
     );
-    if a[1] == "native-worker" { kvm::native::worker(&a[2..]).unwrap(); return; }
+    if a[1] == "native-worker" {
+        kvm::native::worker(&a[2..]).unwrap();
+        return;
+    }
     if a[1] == "native-hold" {
-        kvm::native::hold(&a[2], &a[3], a[4].parse().unwrap(), a[5].parse().unwrap()).unwrap(); return;
+        kvm::native::hold(&a[2], &a[3], a[4].parse().unwrap(), a[5].parse().unwrap()).unwrap();
+        return;
     }
     raise_fds();
     let kvm = Kvm::new();

@@ -45,9 +45,10 @@ own read-only stage-1 mapping and reserved read-only KVM memslot 63.
 native profiles, checks the exact 41-case Linux differential twice, verifies
 fd and relocation-boundary probes, and rejects a mismatched class sidecar.
 It requires Linux arm64 KVM and the pinned census artifacts under
-`/home/dev/r6-census`; missing prerequisites fail the check. Run this gate before
-`flock /home/dev/bench.lock sh harness/run-r7-shard.sh`; the gate takes its own
-measurement locks, so invoke it outside a surrounding `flock`.
+`/home/dev/r6-census`; missing prerequisites fail the check. The full
+`harness/run-r7-shard.sh` gate invokes it too, sharing the runner's outer
+benchmark lock. Standalone `make test` takes its own measurement locks; when
+already holding the lock, explicitly set `JITK_BENCH_LOCK_HELD=1`.
 Set `JITK_NATIVE_ROOT` to the source tree (otherwise inferred from the harness),
 and optionally `JITK_NATIVE_CHECK_OUTPUT` for retained regression receipts.
 Preparation uses temporary snapshot files and never replaces an existing image.

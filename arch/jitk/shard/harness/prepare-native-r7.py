@@ -4,6 +4,7 @@ Run in an agent-owned source checkout under /home/dev/r7-bytes. Existing immutab
 snapshot files are never replaced. No third-party binary is run by this script.
 """
 import hashlib, json, os, pathlib, subprocess
+from native_r7_lock import locked
 ROOT = pathlib.Path(os.environ.get('JITK_NATIVE_ROOT', str(pathlib.Path(__file__).resolve().parents[4]))).resolve()
 RUN = pathlib.Path(os.environ.get('JITK_NATIVE_RUN_DIR', str(ROOT))).resolve()
 CENSUS = pathlib.Path('/home/dev/r6-census/raw')
@@ -43,8 +44,8 @@ def main():
         with (raw/f'build-{name}.log').open('wb') as log:
             subprocess.run(['sh','build-ring.sh'],cwd=ROOT/'arch/jitk/kernel',env=buildenv,stdout=log,stderr=log,check=True)
         with (raw/f'prepare-{name}.jsonl').open('wb') as out, (raw/f'prepare-{name}.stderr').open('wb') as err:
-            subprocess.run(['flock','-w','600','/home/dev/bench.lock',str(ROOT/'arch/jitk/shard/target/release/real'),
-                            'prepare',str(base.with_suffix('.bin')),str(base)],stdout=out,stderr=err,check=True)
+            subprocess.run(locked([str(ROOT/'arch/jitk/shard/target/release/real'),
+                            'prepare',str(base.with_suffix('.bin')),str(base)],wait=600),stdout=out,stderr=err,check=True)
         prepared[name]={ext:dict(sha256=sha(base.with_suffix('.'+ext)),bytes=base.with_suffix('.'+ext).stat().st_size) for ext in ['bin','mem','regs','layout']}
         print(name,'prepared',flush=True)
     (RUN/'profiles.json').write_text(json.dumps(profiles,indent=2)+'\n')

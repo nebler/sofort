@@ -96,7 +96,7 @@ for name in ['bomb', 'arena_attack', 'json64k']:
     for i, row in enumerate(samples):
         assert row['i'] == i
         if name == 'arena_attack':
-            assert row['error'] == 'memory_bound: write outside glue-2m arena at 0x80000000'
+            assert row['error'] == 'memory_bound: write outside class arena at 0x80000000'
         else:
             assert row['result'] == {'err': {'name': 'InternalError', 'message': 'out of memory'}}
     hostile[name] = dict(n=len(samples), outcome=samples[0], environment=rows[0])

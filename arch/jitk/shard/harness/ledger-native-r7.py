@@ -26,11 +26,16 @@ def observe(cg,pid):
       snapshot_smaps='\n'.join(l for l in read(f'/proc/{pid}/smaps').splitlines() if '.mem' in l),
       fds=len(list(pathlib.Path(f'/proc/{pid}/fd').iterdir())))
 def cell(name,n,rep):
+    snapshot=ROOT/f'images/{name}-r7' if TOOLS else SNAPSHOT
+    request=ROOT/f'ledger-{name}.request' if TOOLS else ROOT/'ledger.request'
+    # Charge shared prepared files outside the measurement cgroup at every
+    # point. Preparation alone is insufficient after file-cache reclamation.
+    for ext in ('mem','regs','layout'):
+        with pathlib.Path(str(snapshot)+'.'+ext).open('rb') as shared:
+            while shared.read(65536):pass
     cg=CG/f'batch-{rep}-{name}-{n}';cg.mkdir()
     stem=OUT/f'ledger-{rep}-{name}-{n}'
     err=open(str(stem)+'.stderr','w')
-    snapshot=ROOT/f'images/{name}-r7' if TOOLS else SNAPSHOT
-    request=ROOT/f'ledger-{name}.request' if TOOLS else ROOT/'ledger.request'
     p=subprocess.Popen([str(SPAWN),str(cg),str(BIN),'native-hold',str(snapshot),str(request),str(n),'3600'],
       cwd=ROOT,stdout=subprocess.PIPE,stderr=err,bufsize=0,
       env=dict(os.environ,GLIBC_TUNABLES='glibc.malloc.hugetlb=0'))
