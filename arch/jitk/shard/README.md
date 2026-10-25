@@ -33,6 +33,24 @@ ENOMEM. This narrow class does **not** fit the structured `json64k` fixture; it
 returns the guest's out-of-memory error. It does not silently select a larger
 class. Larger/native profiles need an explicit class/layout contract.
 
+R7 integration adds versioned `glue-4m` (2,621,440 writable arena bytes) and
+`glue-8m` (5,242,880 bytes) layouts. The native preparer selects glue-2m for
+jq/SQLite/BusyBox/Lua, glue-4m for MicroPython, and glue-8m for zstd; each prepared
+snapshot identifies its class and restore verifies the embedded kernel marker.
+See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
+The default QuickJS class remains glue-2m. Late-bound native archives have their
+own read-only stage-1 mapping and reserved read-only KVM memslot 63.
+
+`make -C arch/jitk/shard test` runs the Rust tests **and** rebuilds six fresh
+native profiles, checks the exact 41-case Linux differential twice, verifies
+fd and relocation-boundary probes, and rejects a mismatched class sidecar.
+It requires Linux arm64 KVM and the pinned census artifacts under
+`/home/dev/r6-census`; missing prerequisites fail the check. The documented
+`harness/run-r7-shard.sh` also invokes this gate before its measurements.
+Set `JITK_NATIVE_ROOT` to the source tree (otherwise inferred from the harness),
+and optionally `JITK_NATIVE_CHECK_OUTPUT` for retained regression receipts.
+Preparation uses temporary snapshot files and never replaces an existing image.
+
 Each started run has a monotonic `(shard pidfd, slot, generation, deadline)`
 lease. The watchdog sleeps on lease-change eventfd/deadlines and the shard pidfd.
 Expiry atomically fences the generation, signals the owner, and wakes its eventfd.

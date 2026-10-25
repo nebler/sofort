@@ -4,7 +4,8 @@ import json,os,pathlib,select,signal,statistics,subprocess,time
 ROOT=pathlib.Path(os.environ.get('JITK_LEDGER_ROOT','/home/dev/r7-bytes'))
 CG=pathlib.Path(os.environ.get('JITK_LEDGER_CGROUP','/sys/fs/cgroup/r7-bytes'))
 SNAPSHOT=ROOT/os.environ.get('JITK_LEDGER_SNAPSHOT','images/lua-r7')
-FIXTURES=os.environ.get('JITK_LEDGER_FIXTURES','native_lua').split()
+TOOLS=os.environ.get('JITK_LEDGER_NATIVE_TOOLS','').split()
+FIXTURES=TOOLS or os.environ.get('JITK_LEDGER_FIXTURES','native_lua').split()
 BIN=ROOT/'arch/jitk/shard/target/release/real'
 SPAWN=ROOT/'spawn-cg'
 OUT=pathlib.Path(os.environ.get('JITK_LEDGER_OUTPUT',str(ROOT/'raw')));OUT.mkdir(exist_ok=True)
@@ -28,7 +29,9 @@ def cell(name,n,rep):
     cg=CG/f'batch-{rep}-{name}-{n}';cg.mkdir()
     stem=OUT/f'ledger-{rep}-{name}-{n}'
     err=open(str(stem)+'.stderr','w')
-    p=subprocess.Popen([str(SPAWN),str(cg),str(BIN),'native-hold',str(SNAPSHOT),str(ROOT/'ledger.request'),str(n),'3600'],
+    snapshot=ROOT/f'images/{name}-r7' if TOOLS else SNAPSHOT
+    request=ROOT/f'ledger-{name}.request' if TOOLS else ROOT/'ledger.request'
+    p=subprocess.Popen([str(SPAWN),str(cg),str(BIN),'native-hold',str(snapshot),str(request),str(n),'3600'],
       cwd=ROOT,stdout=subprocess.PIPE,stderr=err,bufsize=0,
       env=dict(os.environ,GLIBC_TUNABLES='glibc.malloc.hugetlb=0'))
     events=[];pid=None;start=time.monotonic()
@@ -48,7 +51,7 @@ def cell(name,n,rep):
         before=numbers(cg/'cpu.stat')['usage_usec'];time.sleep(1)
         idle=numbers(cg/'cpu.stat')['usage_usec']-before
         result=dict(fixture=name,n=n,rep=rep,events=events,samples=samples,idle_cpu_usec=idle,
-          elapsed_s=time.monotonic()-start,cgroup=str(cg),enclosing_memory_current=int(read(CG/'memory.current')))
+          memory_peak=int(read(cg/'memory.peak')),elapsed_s=time.monotonic()-start,cgroup=str(cg),enclosing_memory_current=int(read(CG/'memory.current')))
         stem.with_suffix('.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(dict(event='cell',fixture=name,n=n,rep=rep,memory_current=statistics.median(x['memory_current'] for x in samples),idle_cpu_usec=idle)),flush=True)
     finally:
