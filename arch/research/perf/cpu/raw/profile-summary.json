@@ -1,0 +1,752 @@
+{
+  "CPU.20261025.080059.68347.0.001.cpuprofile": {
+    "pid": 68347,
+    "request_windows_recorded_but_not_clock_aligned": 420,
+    "whole_process_samples": 34530,
+    "nonidle_nonprogram_samples": 6011,
+    "startTime": 119860210876,
+    "window_first": [
+      123260196231,
+      123260223852
+    ],
+    "self": [
+      [
+        "(idle) @ ",
+        28057
+      ],
+      [
+        "spawn @ node:internal/child_process",
+        576
+      ],
+      [
+        "(program) @ ",
+        462
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        277
+      ],
+      [
+        "parseFrame @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        240
+      ],
+      [
+        "nextTick @ node:internal/process/task_queues",
+        235
+      ],
+      [
+        "(garbage collector) @ ",
+        170
+      ],
+      [
+        "runMicrotasks @ ",
+        153
+      ],
+      [
+        "execute @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        151
+      ],
+      [
+        "cpuUsage @ ",
+        117
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/host-driver.mjs",
+        107
+      ],
+      [
+        "feed @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        100
+      ],
+      [
+        "sample @ file:///private/tmp/sofort-a2/host-driver.mjs",
+        94
+      ],
+      [
+        "writeUtf8String @ ",
+        92
+      ],
+      [
+        "DOMException @ node:internal/per_context/domexception",
+        88
+      ],
+      [
+        "onStreamRead @ node:internal/stream_base_commons",
+        81
+      ],
+      [
+        "walk @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        74
+      ],
+      [
+        "io @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        71
+      ],
+      [
+        "park @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        62
+      ],
+      [
+        "close @ ",
+        62
+      ],
+      [
+        "encode @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        59
+      ],
+      [
+        "pp$4.raise @ file:///Users/noah/code/sofort/arch/jitk/executor/node_modules/acorn/dist/acorn.mjs",
+        59
+      ],
+      [
+        "writeBuffer @ ",
+        51
+      ],
+      [
+        "normalizeSpawnArguments @ node:child_process",
+        49
+      ],
+      [
+        "compileForInternalLoader @ node:internal/bootstrap/realm",
+        48
+      ],
+      [
+        "emit @ node:events",
+        48
+      ],
+      [
+        "spawn @ node:child_process",
+        47
+      ],
+      [
+        "wrappedFn @ node:internal/errors",
+        43
+      ],
+      [
+        "insert @ node:internal/timers",
+        41
+      ],
+      [
+        "parse @ file:///Users/noah/code/sofort/arch/jitk/executor/node_modules/acorn/dist/acorn.mjs",
+        40
+      ],
+      [
+        "processTicksAndRejections @ node:internal/process/task_queues",
+        40
+      ],
+      [
+        "send @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        39
+      ],
+      [
+        "Socket @ node:net",
+        36
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        36
+      ],
+      [
+        "addChunk @ node:internal/streams/readable",
+        34
+      ],
+      [
+        "FastBuffer @ node:internal/buffer",
+        31
+      ],
+      [
+        "setTimeout @ node:timers",
+        31
+      ],
+      [
+        "(anonymous) @ node:internal/validators",
+        31
+      ],
+      [
+        "decide1 @ file:///private/tmp/sofort-a2/arch/jitk/executor/policy/policy.mjs",
+        30
+      ],
+      [
+        "parse2 @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        30
+      ],
+      [
+        "_kill @ ",
+        28
+      ],
+      [
+        "dispatch @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        27
+      ],
+      [
+        "decodeUTF8 @ ",
+        26
+      ],
+      [
+        "compileSourceTextModule @ node:internal/modules/esm/utils",
+        25
+      ],
+      [
+        "structuredClone @ node:internal/worker/js_transferable",
+        25
+      ]
+    ],
+    "inclusive": [
+      [
+        "(root) @ ",
+        34530
+      ],
+      [
+        "(idle) @ ",
+        28057
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        2857
+      ],
+      [
+        "processTicksAndRejections @ node:internal/process/task_queues",
+        2378
+      ],
+      [
+        "runMicrotasks @ ",
+        1999
+      ],
+      [
+        "park @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        1234
+      ],
+      [
+        "execute @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        1030
+      ],
+      [
+        "cp.spawn @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        977
+      ],
+      [
+        "onStreamRead @ node:internal/stream_base_commons",
+        962
+      ],
+      [
+        "spawn @ node:child_process",
+        938
+      ],
+      [
+        "Readable.push @ node:internal/streams/readable",
+        841
+      ],
+      [
+        "readableAddChunkPushByteMode @ node:internal/streams/readable",
+        821
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/host-driver.mjs",
+        787
+      ],
+      [
+        "spawn @ node:internal/child_process",
+        786
+      ],
+      [
+        "emit @ node:events",
+        753
+      ],
+      [
+        "addChunk @ node:internal/streams/readable",
+        748
+      ],
+      [
+        "(program) @ ",
+        462
+      ],
+      [
+        "send @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        367
+      ],
+      [
+        "feed @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        335
+      ],
+      [
+        "parseFrame @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        335
+      ],
+      [
+        "child.stdin.write @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        326
+      ],
+      [
+        "executionBody @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        308
+      ],
+      [
+        "Writable.write @ node:internal/streams/writable",
+        278
+      ],
+      [
+        "_write @ node:internal/streams/writable",
+        273
+      ],
+      [
+        "normalizeCode @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        262
+      ],
+      [
+        "nextTick @ node:internal/process/task_queues",
+        259
+      ],
+      [
+        "writeOrBuffer @ node:internal/streams/writable",
+        254
+      ],
+      [
+        "parse @ file:///Users/noah/code/sofort/arch/jitk/executor/node_modules/acorn/dist/acorn.mjs",
+        247
+      ],
+      [
+        "Socket._write @ node:net",
+        236
+      ],
+      [
+        "Socket._writeGeneric @ node:net",
+        232
+      ],
+      [
+        "processImmediate @ node:internal/timers",
+        229
+      ],
+      [
+        "writeGeneric @ node:internal/stream_base_commons",
+        222
+      ],
+      [
+        "write @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        209
+      ],
+      [
+        "encode @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        208
+      ],
+      [
+        "dispatch @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        192
+      ],
+      [
+        "(garbage collector) @ ",
+        170
+      ],
+      [
+        "sample @ file:///private/tmp/sofort-a2/host-driver.mjs",
+        168
+      ],
+      [
+        "abort @ node:internal/abort_controller",
+        152
+      ],
+      [
+        "wrapper @ node:events",
+        151
+      ],
+      [
+        "createSocket @ node:internal/child_process",
+        144
+      ],
+      [
+        "maybeReadMore @ node:internal/streams/readable",
+        144
+      ],
+      [
+        "Socket @ node:net",
+        136
+      ],
+      [
+        "getOrCreateModuleJob @ node:internal/modules/esm/loader",
+        135
+      ],
+      [
+        "(anonymous) @ node:internal/modules/esm/loader",
+        135
+      ],
+      [
+        "tracePromise @ node:diagnostics_channel",
+        135
+      ]
+    ]
+  },
+  "CPU.20261025.080120.69511.0.001.cpuprofile": {
+    "pid": 69511,
+    "request_windows_recorded_but_not_clock_aligned": 210,
+    "whole_process_samples": 19492,
+    "nonidle_nonprogram_samples": 3619,
+    "startTime": 119880844876,
+    "window_first": [
+      123281449674,
+      123281479841
+    ],
+    "self": [
+      [
+        "(idle) @ ",
+        15693
+      ],
+      [
+        "spawn @ node:internal/child_process",
+        264
+      ],
+      [
+        "(program) @ ",
+        180
+      ],
+      [
+        "nextTick @ node:internal/process/task_queues",
+        128
+      ],
+      [
+        "inst._zod.parse @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/zod/v4/core/schemas.js",
+        107
+      ],
+      [
+        "parseFrame @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        105
+      ],
+      [
+        "(garbage collector) @ ",
+        98
+      ],
+      [
+        "onStreamRead @ node:internal/stream_base_commons",
+        87
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        75
+      ],
+      [
+        "spawnSync @ node:internal/child_process",
+        74
+      ],
+      [
+        "runMicrotasks @ ",
+        70
+      ],
+      [
+        "compileSourceTextModule @ node:internal/modules/esm/utils",
+        65
+      ],
+      [
+        "execute @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        56
+      ],
+      [
+        "feed @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        46
+      ],
+      [
+        "encode @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        44
+      ],
+      [
+        "(anonymous) @ ",
+        41
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        39
+      ],
+      [
+        "wrapSafe @ node:internal/modules/cjs/loader",
+        39
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        39
+      ],
+      [
+        "writeUtf8String @ ",
+        36
+      ],
+      [
+        "normalizeSpawnArguments @ node:child_process",
+        33
+      ],
+      [
+        "compileForInternalLoader @ node:internal/bootstrap/realm",
+        31
+      ],
+      [
+        "close @ ",
+        28
+      ],
+      [
+        "readFileUtf8 @ ",
+        28
+      ],
+      [
+        "cpuUsage @ ",
+        28
+      ],
+      [
+        "DOMException @ node:internal/per_context/domexception",
+        28
+      ],
+      [
+        "park @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        27
+      ],
+      [
+        "io @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        26
+      ],
+      [
+        "emit @ node:events",
+        26
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/mcp/server.mjs",
+        24
+      ],
+      [
+        "addChunk @ node:internal/streams/readable",
+        24
+      ],
+      [
+        "wrappedFn @ node:internal/errors",
+        22
+      ],
+      [
+        "addEventListener @ node:internal/event_target",
+        22
+      ],
+      [
+        "Socket @ node:net",
+        21
+      ],
+      [
+        "deserializeMessage @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js",
+        21
+      ],
+      [
+        "read @ ",
+        20
+      ],
+      [
+        "decode @ node:internal/encoding",
+        20
+      ],
+      [
+        "cp.spawn @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        20
+      ],
+      [
+        "parse @ file:///Users/noah/code/sofort/arch/jitk/executor/node_modules/acorn/dist/acorn.mjs",
+        20
+      ],
+      [
+        "send @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        20
+      ],
+      [
+        "parse2 @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        20
+      ],
+      [
+        "pp$4.raise @ file:///Users/noah/code/sofort/arch/jitk/executor/node_modules/acorn/dist/acorn.mjs",
+        20
+      ],
+      [
+        "compile @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/zod/v4/core/doc.js",
+        19
+      ],
+      [
+        "internalModuleStat @ ",
+        17
+      ],
+      [
+        "spawn @ node:child_process",
+        17
+      ]
+    ],
+    "inclusive": [
+      [
+        "(root) @ ",
+        19492
+      ],
+      [
+        "(idle) @ ",
+        15693
+      ],
+      [
+        "processTicksAndRejections @ node:internal/process/task_queues",
+        1596
+      ],
+      [
+        "runMicrotasks @ ",
+        1396
+      ],
+      [
+        "onStreamRead @ node:internal/stream_base_commons",
+        792
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        690
+      ],
+      [
+        "Readable.push @ node:internal/streams/readable",
+        679
+      ],
+      [
+        "readableAddChunkPushByteMode @ node:internal/streams/readable",
+        672
+      ],
+      [
+        "emit @ node:events",
+        644
+      ],
+      [
+        "addChunk @ node:internal/streams/readable",
+        629
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        620
+      ],
+      [
+        "park @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        595
+      ],
+      [
+        "park @ file:///private/tmp/sofort-a2/arch/jitk/mcp/jitk.mjs",
+        568
+      ],
+      [
+        "cp.spawn @ file:///private/tmp/sofort-a2/host-hooks.mjs",
+        487
+      ],
+      [
+        "spawn @ node:child_process",
+        453
+      ],
+      [
+        "execute @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/executor.js",
+        419
+      ],
+      [
+        "spawn @ node:internal/child_process",
+        378
+      ],
+      [
+        "import @ node:internal/modules/esm/loader",
+        263
+      ],
+      [
+        "(anonymous) @ node:internal/modules/esm/loader",
+        262
+      ],
+      [
+        "getOrCreateModuleJob @ node:internal/modules/esm/loader",
+        262
+      ],
+      [
+        "tracePromise @ node:diagnostics_channel",
+        262
+      ],
+      [
+        "afterResolve @ node:internal/modules/esm/loader",
+        252
+      ],
+      [
+        "#getOrCreateModuleJobAfterResolve @ node:internal/modules/esm/loader",
+        252
+      ],
+      [
+        "StdioServerTransport._ondata @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js",
+        251
+      ],
+      [
+        "(anonymous) @ file:///private/tmp/sofort-a2/arch/jitk/mcp/server.mjs",
+        239
+      ],
+      [
+        "processReadBuffer @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js",
+        230
+      ],
+      [
+        "link @ node:internal/modules/esm/module_job",
+        222
+      ],
+      [
+        "syncLink @ node:internal/modules/esm/module_job",
+        222
+      ],
+      [
+        "ModuleJob @ node:internal/modules/esm/module_job",
+        222
+      ],
+      [
+        "inst._zod.parse @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/zod/v4/core/schemas.js",
+        222
+      ],
+      [
+        "evaluate @ ",
+        218
+      ],
+      [
+        "(anonymous) @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js",
+        212
+      ],
+      [
+        "run @ node:internal/modules/esm/module_job",
+        204
+      ],
+      [
+        "send @ file:///private/tmp/sofort-a2/arch/jitk/executor/build/select-backend.js",
+        200
+      ],
+      [
+        "wrappedHandler @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js",
+        197
+      ],
+      [
+        "loadAndTranslate @ node:internal/modules/esm/loader",
+        192
+      ],
+      [
+        "main @ file:///private/tmp/sofort-a2/arch/jitk/mcp/server.mjs",
+        190
+      ],
+      [
+        "asyncRunEntryPointWithESMLoader @ node:internal/modules/run_main",
+        186
+      ],
+      [
+        "(program) @ ",
+        180
+      ],
+      [
+        "(anonymous) @ file:///Users/noah/code/sofort/arch/jitk/mcp/node_modules/zod/v4/core/parse.js",
+        178
+      ],
+      [
+        "(anonymous) @ ",
+        164
+      ],
+      [
+        "afterLoad @ node:internal/modules/esm/loader",
+        149
+      ],
+      [
+        "#translate @ node:internal/modules/esm/loader",
+        146
+      ],
+      [
+        "nextTick @ node:internal/process/task_queues",
+        145
+      ],
+      [
+        "(anonymous) @ node:internal/modules/run_main",
+        142
+      ]
+    ]
+  }
+}

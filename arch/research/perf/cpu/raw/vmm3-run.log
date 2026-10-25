@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/sofort-a2/measure-vmm3.py", line 6, in <module>
+    x=one('vmm-trace3',k,c,True,True);x.update(iteration=i,warmup=i<3);data['samples'].append(x)
+  File "<string>", line 18, in one
+TimeoutError: {'out': [], 'err': []}

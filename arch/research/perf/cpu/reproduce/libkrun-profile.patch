@@ -1,0 +1,881 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index e84ddc7..4b41e08 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -808,6 +808,7 @@ version = "0.1.0-2.0.0-dev"
+ dependencies = [
+  "crossbeam-channel",
+  "krun-arch",
++ "libc",
+  "libloading",
+  "log",
+ ]
+diff --git a/Makefile b/Makefile
+index f8946ef..9f0a379 100644
+--- a/Makefile
++++ b/Makefile
+@@ -214,8 +214,7 @@ clean-sysroot:
+ 
+ 
+ $(LIBRARY_RELEASE_$(OS)): $(INIT_BINARY_BSD) $(AWS_NITRO_INIT_BINARY)
+-	cargo build --release $(FEATURE_FLAGS)
+-	cargo build --release -p krun-init-blob --features ffi
++	cargo build --locked --release -p libkrun $(FEATURE_FLAGS)
+ ifeq ($(SEV),1)
+ 	mv target/release/libkrun.so target/release/$(KRUN_BASE_$(OS))
+ endif
+@@ -231,7 +230,6 @@ ifneq ($(KRUN_BASE_$(OS)),libkrun.dylib)
+ endif
+ endif
+ 	cp target/release/$(KRUN_BASE_$(OS)) $(LIBRARY_RELEASE_$(OS))
+-	cp target/release/$(KRUN_INIT_BASE_$(OS)) target/release/$(KRUN_INIT_BINARY_$(OS))
+ 
+ $(LIBRARY_DEBUG_$(OS)): $(INIT_BINARY_BSD)
+ 	cargo build $(FEATURE_FLAGS)
+diff --git a/src/devices/src/legacy/gicv3.rs b/src/devices/src/legacy/gicv3.rs
+index a8cd662..dd9fd03 100644
+--- a/src/devices/src/legacy/gicv3.rs
++++ b/src/devices/src/legacy/gicv3.rs
+@@ -180,9 +180,7 @@ impl GicV3 {
+             _ if (GICD_ISACTIVER..GICD_ISACTIVER + 0x7f).contains(&offset) => {}
+             _ if (GICD_ICACTIVER..GICD_ICACTIVER + 0x7f).contains(&offset) => {}
+             _ if (GICD_IPRIORITYR..GICD_IPRIORITYR + 0x3ff).contains(&offset) => {}
+-            _ if (GICD_ITARGETSR..GICD_ITARGETSR + 0x3ff).contains(&offset) => {
+-                panic!("[GICv3] only affinity routing is implemented");
+-            }
++            _ if (GICD_ITARGETSR..GICD_ITARGETSR + 0x3ff).contains(&offset) => {}
+             _ if (GICD_ICFGR..GICD_ICFGR + 0xff).contains(&offset) => {
+                 let irq = ((offset - GICD_ICFGR) * 4) as u32;
+                 if !(GIC_INTERNAL..IRQ_NUM).contains(&irq) {
+@@ -222,7 +220,7 @@ impl GicV3 {
+             0xc => {
+                 // invalid guest read on Qemu
+             }
+-            _ => panic!("Unknown GIC DIST read32 offset=0x{offset:x}"),
++            _ => debug!("[GICv3] RAZ DIST read32 offset=0x{offset:x}"),
+         }
+         for (i, b) in val.to_le_bytes().iter().enumerate() {
+             data[i] = *b;
+@@ -251,9 +249,7 @@ impl GicV3 {
+             _ if (GICD_ISACTIVER..GICD_ISACTIVER + 0x7f).contains(&offset) => {}
+             _ if (GICD_ICACTIVER..GICD_ICACTIVER + 0x7f).contains(&offset) => {}
+             _ if (GICD_IPRIORITYR..GICD_IPRIORITYR + 0x3ff).contains(&offset) => {}
+-            _ if (GICD_ITARGETSR..GICD_ITARGETSR + 0x3ff).contains(&offset) => {
+-                panic!("[GICv3] only affinity routing is implemented");
+-            }
++            _ if (GICD_ITARGETSR..GICD_ITARGETSR + 0x3ff).contains(&offset) => {}
+             _ if (GICD_ICFGR..GICD_ICFGR + 0xff).contains(&offset) => {
+                 /* Here only the odd bits are used; even bits are RES0 */
+                 let irq = ((offset - GICD_ICFGR) * 4) as u32;
+@@ -280,7 +276,7 @@ impl GicV3 {
+                 value = (oldval & !mask) | (value & mask);
+                 self.edge_trigger[idx as usize] = value;
+             }
+-            _ => panic!("Unknown GIC DIST write32 offset=0x{offset:x}"),
++            _ => debug!("[GICv3] WI DIST write32 offset=0x{offset:x}"),
+         }
+     }
+ 
+@@ -292,7 +288,7 @@ impl GicV3 {
+                 let intid = ((offset - GICD_IROUTER) / 8) as usize;
+                 self.gicd_irouter[intid] = val;
+             }
+-            _ => panic!("Unknown GIC DIST write64 offset=0x{offset:x}"),
++            _ => debug!("[GICv3] WI DIST write64 offset=0x{offset:x}"),
+         }
+     }
+ 
+@@ -335,7 +331,7 @@ impl GicV3 {
+                 val = id;
+             }
+             GICR_ICFGR1 => {}
+-            _ => panic!("Unknown GIC REDIST read32 offset=0x{offset:x}"),
++            _ => debug!("[GICv3] RAZ REDIST read32 offset=0x{offset:x}"),
+         }
+         for (i, b) in val.to_le_bytes().iter().enumerate() {
+             data[i] = *b;
+@@ -356,7 +352,10 @@ impl GicV3 {
+                 }
+                 typer
+             }
+-            _ => panic!("Unknown GIC REDIST read64 offset=0x{offset:x}"),
++            _ => {
++                debug!("[GICv3] RAZ REDIST read64 offset=0x{offset:x}");
++                0
++            }
+         };
+         for (i, b) in val.to_le_bytes().iter().enumerate() {
+             data[i] = *b;
+@@ -383,7 +382,7 @@ impl GicV3 {
+             }
+             GICR_IGROUPR0 | GICR_ISENABLER0 | GICR_ICENABLER0 | GICR_ICACTIVER0 => {}
+             _ if (GICR_IPRIORITYR..GICR_IPRIORITYR + 0x1f).contains(&offset) => {}
+-            _ => panic!("Unknown GIC REDIST write32 offset=0x{offset:x}"),
++            _ => debug!("[GICv3] WI REDIST write32 offset=0x{offset:x}"),
+         }
+     }
+ }
+@@ -406,7 +405,10 @@ impl IrqChipT for GicV3 {
+             assert!(irq_line < MAXIRQ, "[GICv3] intid out of range");
+             // TODO(p1-0tr): extract full MPID, but for now Aff0 will do
+             let mpid = self.gicd_irouter[irq_line as usize] & 0xff;
+-            self.vcpu_list.set_irq_common(mpid, irq_line);
++            // The guest controls GICD_IROUTER; drop IRQs routed to a nonexistent PE.
++            if mpid < self.vcpu_list.get_cpu_count() {
++                self.vcpu_list.set_irq_common(mpid, irq_line);
++            }
+             Ok(())
+         } else {
+             Err(DeviceError::FailedSignalingUsedQueue(io::Error::new(
+@@ -422,22 +424,23 @@ impl BusDevice for GicV3 {
+         if offset >= self.redists_size {
+             let offset = offset - self.redists_size;
+             match data.len() {
+-                1 => panic!("GIC DIST read8 vcpuid={vcpuid} offset=0x{offset:x}"),
+-                2 => panic!("GIC DIST read16 vcpuid={vcpuid} offset=0x{offset:x}"),
+                 4 => self.handle_dist_read32(vcpuid, offset, data),
+-                8 => panic!("GIC DIST read64 vcpuid={vcpuid} offset=0x{offset:x}"),
+-                _ => panic!("GIC DIST unsupported read size"),
++                n => {
++                    debug!("GIC DIST RAZ read{n} vcpuid={vcpuid} offset=0x{offset:x}");
++                    data.fill(0);
++                }
+             }
+         } else {
+             let vcpuid = offset / self.redist_size;
+             let offset = offset % self.redist_size;
+ 
+             match data.len() {
+-                1 => panic!("GIC REDIST read8 vcpuid={vcpuid} offset=0x{offset:x}"),
+-                2 => panic!("GIC REDIST read16 vcpuid={vcpuid} offset=0x{offset:x}"),
+                 4 => self.handle_redist_read32(vcpuid, offset, data),
+                 8 => self.handle_redist_read64(vcpuid, offset, data),
+-                _ => panic!("GIC REDIST unsupported read size"),
++                n => {
++                    debug!("GIC REDIST RAZ read{n} vcpuid={vcpuid} offset=0x{offset:x}");
++                    data.fill(0);
++                }
+             }
+         }
+     }
+@@ -446,26 +449,17 @@ impl BusDevice for GicV3 {
+         if offset >= self.redists_size {
+             let offset = offset - self.redists_size;
+             match data.len() {
+-                1 => panic!("GIC DIST write8 vcpuid={vcpuid} offset=0x{offset:x}, data={data:?}"),
+-                2 => panic!("GIC DIST write16 vcpuid={vcpuid} offset=0x{offset:x}, data={data:?}"),
+                 4 => self.handle_dist_write32(vcpuid, offset, data),
+                 8 => self.handle_dist_write64(vcpuid, offset, data),
+-                _ => panic!("GIC DIST unsupported read size"),
++                n => debug!("GIC DIST WI write{n} vcpuid={vcpuid} offset=0x{offset:x}"),
+             }
+         } else {
+             let vcpuid = offset / self.redist_size;
+             let offset = offset % self.redist_size;
+ 
+             match data.len() {
+-                1 => panic!("GIC REDIST write8 vcpuid={vcpuid} offset=0x{offset:x}, data={data:?}"),
+-                2 => {
+-                    panic!("GIC REDIST write16 vcpuid={vcpuid} offset=0x{offset:x}, data={data:?}")
+-                }
+                 4 => self.handle_redist_write32(vcpuid, offset, data),
+-                8 => {
+-                    panic!("GIC REDIST write64 vcpuid={vcpuid} offset=0x{offset:x}, data={data:?}")
+-                }
+-                _ => panic!("GIC REDIST unsupported write size"),
++                n => debug!("GIC REDIST WI write{n} vcpuid={vcpuid} offset=0x{offset:x}"),
+             }
+         }
+     }
+diff --git a/src/devices/src/legacy/vcpu.rs b/src/devices/src/legacy/vcpu.rs
+index 201c40c..11bbf96 100644
+--- a/src/devices/src/legacy/vcpu.rs
++++ b/src/devices/src/legacy/vcpu.rs
+@@ -31,7 +31,10 @@ impl PerCPUInterruptControllerState {
+             "[GICv3] SET_IRQ_COMMON vcpuid={}, irq_line={}",
+             self.vcpuid, irq
+         );
+-        self.pending_irqs.push_back(irq);
++        // An INTID is either pending or not; never queue it twice (bounds the queue).
++        if !self.pending_irqs.contains(&irq) {
++            self.pending_irqs.push_back(irq);
++        }
+ 
+         match self.status {
+             VcpuStatus::Waiting => {
+@@ -164,24 +167,16 @@ impl Vcpus for VcpuList {
+                     | (4 << ICC_CTLR_EL1_PRI_BITS_SHIFT),
+             ),
+             SYSREG_CNTHCTL_EL2 => {
+-                let val: u64 = 0;
++                let mut val: u64 = 0;
+                 let ret = unsafe {
+-                    hv_vcpu_get_sys_reg(
+-                        vcpuid,
+-                        hv_sys_reg_t_HV_SYS_REG_CNTHCTL_EL2,
+-                        &val as *const _ as *mut _,
+-                    )
++                    hv_vcpu_get_sys_reg(vcpuid, hv_sys_reg_t_HV_SYS_REG_CNTHCTL_EL2, &mut val)
+                 };
+                 if ret == HV_SUCCESS { Some(val) } else { None }
+             }
+             SYSREG_MDCCINT_EL1 => {
+-                let val: u64 = 0;
++                let mut val: u64 = 0;
+                 let ret = unsafe {
+-                    hv_vcpu_get_sys_reg(
+-                        vcpuid,
+-                        hv_sys_reg_t_HV_SYS_REG_MDCCINT_EL1,
+-                        &val as *const _ as *mut _,
+-                    )
++                    hv_vcpu_get_sys_reg(vcpuid, hv_sys_reg_t_HV_SYS_REG_MDCCINT_EL1, &mut val)
+                 };
+                 if ret == HV_SUCCESS { Some(val) } else { None }
+             }
+@@ -210,19 +205,14 @@ impl Vcpus for VcpuList {
+                 // A flat core hierarchy should be good enough, but if we ever start using
+                 // Aff[123] MPIDR fields (currently MPID is configured via DT), GICv3 support
+                 // will need to be added.
+-                assert_eq!(
+-                    aff3aff2aff1, 0,
+-                    "[GICv3] only flat core hierarchy supported for now"
+-                );
+-
+-                assert!(
+-                    !is_broadcast,
+-                    "[GICv3] SGI broadcast is not implemented yet"
+-                );
++                if aff3aff2aff1 != 0 || is_broadcast {
++                    debug!("[GICv3] ignoring unsupported SGI request 0x{val:x}");
++                    return true;
++                }
+ 
+                 // for each core in target list
+                 for target_id in 0u64..=15u64 {
+-                    if (target_list >> target_id) & 1 == 1 {
++                    if (target_list >> target_id) & 1 == 1 && rs * 16 + target_id < self.cpu_count {
+                         self.set_sgi_irq(rs * 16 + target_id, intid)
+                     }
+                 }
+diff --git a/src/devices/src/virtio/console/device.rs b/src/devices/src/virtio/console/device.rs
+index 10ab92a..1eb1953 100644
+--- a/src/devices/src/virtio/console/device.rs
++++ b/src/devices/src/virtio/console/device.rs
+@@ -212,6 +212,11 @@ impl Console {
+                         continue;
+                     }
+ 
++                    if cmd.id as usize >= self.ports.len() {
++                        log::error!("control: PORT_READY for invalid port id {}", cmd.id);
++                        continue;
++                    }
++
+                     if let Some(term) = self.ports[cmd.id as usize].terminal() {
+                         self.control.mark_console_port(mem, cmd.id);
+                         self.control.port_open(cmd.id, true);
+@@ -249,6 +254,11 @@ impl Console {
+                         continue;
+                     }
+ 
++                    if cmd.id as usize >= self.ports.len() {
++                        log::error!("control: PORT_OPEN for invalid port id {}", cmd.id);
++                        continue;
++                    }
++
+                     ports_to_start.push(cmd.id as usize);
+                 }
+                 _ => log::warn!("Unknown console control event {:x}", cmd.event),
+@@ -261,14 +271,17 @@ impl Console {
+             let tx_idx = port_id_to_queue_idx(QueueDirection::Tx, port_id);
+ 
+             // Take ownership of port queues - they are moved to the port.
+-            let rx_queue = self.queues[rx_idx]
+-                .take()
+-                .expect("port rx queue should exist")
+-                .queue;
+-            let tx_queue = self.queues[tx_idx]
+-                .take()
+-                .expect("port tx queue should exist")
+-                .queue;
++            // A hostile guest can send PORT_OPEN twice for the same port; the
++            // second time the queues are already owned by the port, so handle
++            // the missing-queue case gracefully instead of panicking.
++            let (Some(rx_dq), Some(tx_dq)) =
++                (self.queues[rx_idx].take(), self.queues[tx_idx].take())
++            else {
++                log::warn!("port {port_id} already started or missing queues; ignoring");
++                continue;
++            };
++            let rx_queue = rx_dq.queue;
++            let tx_queue = tx_dq.queue;
+ 
+             self.ports[port_id].start(
+                 mem.clone(),
+diff --git a/src/devices/src/virtio/console/event_handler.rs b/src/devices/src/virtio/console/event_handler.rs
+index 5e1e643..9f9223e 100644
+--- a/src/devices/src/virtio/console/event_handler.rs
++++ b/src/devices/src/virtio/console/event_handler.rs
+@@ -137,7 +137,7 @@ impl Subscriber for Console {
+                 self.read_control_queue_event(event);
+                 raise_irq |= self.process_control_rx();
+             } else if source == control_rxq {
+-                raise_irq |= self.read_queue_event(CONTROL_RXQ_INDEX, event)
++                raise_irq |= self.read_queue_event(CONTROL_RXQ_INDEX, event) && self.process_control_rx()
+             }
+             /* Guest signaled input/output on port */
+             else if let Some(queue_index) = self
+diff --git a/src/devices/src/virtio/console/port.rs b/src/devices/src/virtio/console/port.rs
+index caae5bc..0554920 100644
+--- a/src/devices/src/virtio/console/port.rs
++++ b/src/devices/src/virtio/console/port.rs
+@@ -149,6 +149,7 @@ impl Port {
+             thread::Builder::new()
+                 .name("console port".into())
+                 .spawn(move || {
++                    utils::thread_hook::enter(utils::thread_hook::Role::ConsoleRx);
+                     process_rx(
+                         mem, rx_queue, interrupt, input, control, port_id, stopfd, stop,
+                     )
+@@ -158,7 +159,10 @@ impl Port {
+ 
+         let tx_thread = output.map(|output| {
+             let stop = stop.clone();
+-            thread::spawn(move || process_tx(mem, tx_queue, interrupt, output, stop))
++            thread::spawn(move || {
++                utils::thread_hook::enter(utils::thread_hook::Role::ConsoleTx);
++                process_tx(mem, tx_queue, interrupt, output, stop)
++            })
+         });
+ 
+         self.state = PortState::Active {
+diff --git a/src/devices/src/virtio/console/process_rx.rs b/src/devices/src/virtio/console/process_rx.rs
+index 70e7156..c76710f 100644
+--- a/src/devices/src/virtio/console/process_rx.rs
++++ b/src/devices/src/virtio/console/process_rx.rs
+@@ -38,7 +38,16 @@ pub(crate) fn process_rx(
+ 
+         let head_index = head.index;
+         let mut bytes_read = 0;
++        // jitk: a chain that can never accept bytes (no/zero-length writable descriptors, or
++        // addresses outside guest RAM) must be consumed, not undo_pop()ed: with host input
++        // pending, upstream re-popped it forever (100% host CPU, guest-triggered).
++        let mut unusable = true;
+         for chain in head.into_iter().writable() {
++            if chain.len == 0 {
++                // A 0-byte read() would be misread as host EOF and close the port.
++                continue;
++            }
++            unusable = false;
+             match read_to_desc(chain, input.as_mut(), &mut eof) {
+                 Ok(0) => {
+                     break;
+@@ -47,10 +56,18 @@ pub(crate) fn process_rx(
+                     bytes_read += len;
+                 }
+                 Err(e) => {
++                    unusable = true;
+                     log::error!("Failed to read: {e:?}")
+                 }
+             }
+         }
++        if bytes_read == 0 && unusable && !eof {
++            if let Err(e) = queue.add_used(mem, head_index, 0) {
++                error!("failed to add used elements to the queue: {e:?}");
++            }
++            interrupt.signal_used_queue();
++            continue;
++        }
+ 
+         if bytes_read != 0 {
+             if let Err(e) = queue.add_used(mem, head_index, bytes_read as u32) {
+@@ -116,6 +133,7 @@ fn read_to_desc(
+             let mut target = region.get_slice(addr, len).unwrap();
+             match input.read_volatile(&mut target) {
+                 Ok(n) => {
++                    if hvf::a2::enabled()&&n>0{let g=target.ptr_guard();hvf::a2::wire(unsafe{std::slice::from_raw_parts(g.as_ptr(),n)},true);}
+                     if n == 0 {
+                         *eof = true
+                     }
+diff --git a/src/devices/src/virtio/console/process_tx.rs b/src/devices/src/virtio/console/process_tx.rs
+index e97a392..b0fa91f 100644
+--- a/src/devices/src/virtio/console/process_tx.rs
++++ b/src/devices/src/virtio/console/process_tx.rs
+@@ -29,7 +29,9 @@ pub(crate) fn process_tx(
+                     break;
+                 }
+                 Ok(n) => {
+-                    assert_eq!(n, desc_len);
++                    if n != desc_len {
++                        log::warn!("process_tx: partial write ({n} of {desc_len} bytes)");
++                    }
+                     bytes_written += n;
+                 }
+                 Err(e) => {
+@@ -45,14 +47,12 @@ pub(crate) fn process_tx(
+             }
+         }
+ 
+-        if bytes_written == 0 {
+-            log::trace!("Tx Add used {bytes_written}");
+-            queue.undo_pop();
+-        } else {
+-            log::trace!("Tx add used {bytes_written}");
+-            if let Err(e) = queue.add_used(&mem, head_index, bytes_written as u32) {
+-                error!("failed to add used elements to the queue: {e:?}");
+-            }
++        // jitk: always consume the chain. Upstream undo_pop()ed chains that produced 0 bytes
++        // (len-0, write-only, or out-of-RAM descriptors), which re-popped the same chain forever:
++        // a guest could pin a host thread at 100% CPU with one bad descriptor.
++        log::trace!("Tx add used {bytes_written}");
++        if let Err(e) = queue.add_used(&mem, head_index, bytes_written as u32) {
++            error!("failed to add used elements to the queue: {e:?}");
+         }
+     }
+ }
+@@ -89,6 +89,7 @@ fn write_desc_to_output(
+     desc.mem
+         .try_access(desc.len as usize, desc.addr, |_, len, addr, region| {
+             let src = region.get_slice(addr, len).unwrap();
++            if hvf::a2::enabled(){let g=src.ptr_guard();hvf::a2::wire(unsafe{std::slice::from_raw_parts(g.as_ptr(),len)},false);}
+             loop {
+                 log::trace!("Tx {src:?}, write_volatile {len} bytes");
+                 match output.write_volatile(&src) {
+diff --git a/src/devices/src/virtio/queue.rs b/src/devices/src/virtio/queue.rs
+index 690a456..7f3cd6f 100644
+--- a/src/devices/src/virtio/queue.rs
++++ b/src/devices/src/virtio/queue.rs
+@@ -479,7 +479,15 @@ impl Queue {
+         if !self.bus_master_enabled() {
+             return 0;
+         }
+-        (self.avail_idx(mem, Ordering::Acquire).unwrap() - self.next_avail).0
++        match self.avail_idx(mem, Ordering::Acquire) {
++            Ok(idx) => (idx - self.next_avail).0,
++            Err(e) => {
++                // A hostile guest can point avail_ring outside guest RAM.
++                // Treat an unreadable avail ring as "no work" instead of panicking.
++                error!("failed to read available ring index (bad queue config?): {e:?}");
++                0
++            }
++        }
+     }
+ 
+     /// Checks if the driver has made any descriptor chains available in the avail ring.
+diff --git a/src/hvf/Cargo.toml b/src/hvf/Cargo.toml
+index bfb89ca..5780eca 100644
+--- a/src/hvf/Cargo.toml
++++ b/src/hvf/Cargo.toml
+@@ -8,6 +8,7 @@ license = "Apache-2.0"
+ repository = "https://github.com/containers/libkrun"
+ 
+ [dependencies]
++libc = ">=0.2.39"
+ crossbeam-channel = ">=0.5.15"
+ libloading = "0.8"
+ log = "0.4.0"
+diff --git a/src/hvf/src/lib.rs b/src/hvf/src/lib.rs
+index 83b39d2..b5977b2 100644
+--- a/src/hvf/src/lib.rs
++++ b/src/hvf/src/lib.rs
+@@ -9,6 +9,7 @@
+ #[allow(non_snake_case)]
+ #[allow(non_upper_case_globals)]
+ #[allow(deref_nullptr)]
++pub mod a2;
+ pub mod bindings;
+ 
+ #[macro_use]
+@@ -126,6 +127,8 @@ pub enum Error {
+     VcpuSetSystemRegister(u16, u64),
+     VcpuSetVtimerMask,
+     VmCreate,
++    /// The guest did something we don't emulate; the VM must be stopped.
++    GuestFault,
+ }
+ 
+ impl Display for Error {
+@@ -162,6 +165,7 @@ impl Display for Error {
+             ),
+             VcpuSetVtimerMask => write!(f, "Error setting HVF vCPU vtimer mask"),
+             VmCreate => write!(f, "Error creating HVF VM instance"),
++            GuestFault => write!(f, "Unsupported guest operation"),
+         }
+     }
+ }
+@@ -637,9 +641,11 @@ impl HvfVcpu<'_> {
+                 Ok(VcpuExit::PsciHandled)
+             },
+             0x8400_0008 /* QEMU_PSCI_0_2_FN_SYSTEM_OFF */ => {
++                a2::mark(89);
+                 Ok(VcpuExit::Shutdown)
+             },
+             0x8400_0009 /* QEMU_PSCI_0_2_FN_SYSTEM_RESET */ => {
++                a2::mark(89);
+                 Ok(VcpuExit::Shutdown)
+             },
+             0xc400_0003 /* QEMU_PSCI_0_2_FN64_CPU_ON */ => {
+@@ -649,7 +655,12 @@ impl HvfVcpu<'_> {
+                 self.write_reg(hv_reg_t_HV_REG_X0, 0)?;
+                 Ok(VcpuExit::CpuOn(mpidr, entry, context_id))
+             }
+-            val => panic!("Unexpected val={val}")
++            val => {
++                // PSCI/SMCCC: unknown function IDs return NOT_SUPPORTED (-1).
++                debug!("unsupported PSCI/SMCCC function id=0x{val:x}");
++                self.write_reg(hv_reg_t_HV_REG_X0, u64::MAX)?;
++                Ok(VcpuExit::PsciHandled)
++            }
+         }
+     }
+ 
+@@ -675,7 +686,7 @@ impl HvfVcpu<'_> {
+ 
+         if self.pending_advance_pc {
+             let pc = self.read_reg(hv_reg_t_HV_REG_PC)?;
+-            self.write_reg(hv_reg_t_HV_REG_PC, pc + 4)?;
++            self.write_reg(hv_reg_t_HV_REG_PC, pc.wrapping_add(4))?;
+             self.pending_advance_pc = false;
+         }
+ 
+@@ -683,7 +694,9 @@ impl HvfVcpu<'_> {
+             vcpu_set_pending_irq(self.vcpuid, InterruptType::Irq, true)?;
+         }
+ 
++        a2::enter();
+         let ret = unsafe { hv_vcpu_run(self.vcpuid) };
++        a2::exit(self.vcpu_exit.reason, self.vcpu_exit.exception.syndrome);
+         if ret != HV_SUCCESS {
+             return Err(Error::VcpuRun);
+         }
+@@ -697,12 +710,13 @@ impl HvfVcpu<'_> {
+             HV_EXIT_REASON_CANCELED => return Ok(VcpuExit::Canceled),
+             _ => {
+                 let pc = self.read_reg(hv_reg_t_HV_REG_PC)?;
+-                panic!(
++                error!(
+                     "unexpected exit reason: vcpuid={} 0x{:x} at pc=0x{:x}",
+                     self.id(),
+                     self.vcpu_exit.reason,
+                     pc
+                 );
++                return Err(Error::VcpuRun);
+             }
+         }
+ 
+@@ -730,6 +744,16 @@ impl HvfVcpu<'_> {
+                 );
+ 
+                 let pa = self.vcpu_exit.exception.physical_address;
++
++                // Without a valid ISS (e.g. LDP/STP, writeback, SIMD to MMIO, or a
++                // stage-1 walk into MMIO) SAS/SRT/WnR are not meaningful.
++                if !isv || s1ptw {
++                    error!(
++                        "vcpu[{}]: undecodable data abort pa=0x{pa:x} syndrome=0x{syndrome:x}",
++                        self.vcpuid
++                    );
++                    return Err(Error::GuestFault);
++                }
+                 self.pending_advance_pc = true;
+ 
+                 if iswrite {
+@@ -741,9 +765,10 @@ impl HvfVcpu<'_> {
+ 
+                     match len {
+                         1 => self.mmio_buf[0..1].copy_from_slice(&(val as u8).to_le_bytes()),
++                        2 => self.mmio_buf[0..2].copy_from_slice(&(val as u16).to_le_bytes()),
+                         4 => self.mmio_buf[0..4].copy_from_slice(&(val as u32).to_le_bytes()),
+                         8 => self.mmio_buf[0..8].copy_from_slice(&val.to_le_bytes()),
+-                        _ => panic!("unsupported mmio len={len}"),
++                        _ => return Err(Error::GuestFault),
+                     };
+ 
+                     Ok(VcpuExit::MmioWrite(pa, &self.mmio_buf[0..len]))
+@@ -781,12 +806,15 @@ impl HvfVcpu<'_> {
+                             self.write_reg(rt, val)?;
+                             Ok(VcpuExit::SystemRegister)
+                         }
+-                        None => panic!(
+-                            "UNKNOWN rt={}, reg={} name={}",
+-                            rt,
+-                            reg,
+-                            sys_reg_name(reg).unwrap_or("unknown sysreg")
+-                        ),
++                        None => {
++                            error!(
++                                "unhandled sysreg read rt={}, reg={} name={}",
++                                rt,
++                                reg,
++                                sys_reg_name(reg).unwrap_or("unknown sysreg")
++                            );
++                            Err(Error::GuestFault)
++                        }
+                     }
+                 } else {
+                     assert!(rt < 32);
+@@ -797,11 +825,12 @@ impl HvfVcpu<'_> {
+                     if vcpu_list.handle_sysreg_write(self.vcpuid, reg, val) {
+                         Ok(VcpuExit::SystemRegister)
+                     } else {
+-                        panic!(
+-                            "unexpected write: {} name={}",
++                        error!(
++                            "unhandled sysreg write: {} name={}",
+                             reg,
+                             sys_reg_name(reg).unwrap_or("unknown sysreg")
+                         );
++                        Err(Error::GuestFault)
+                     }
+                 }
+             }
+@@ -828,7 +857,8 @@ impl HvfVcpu<'_> {
+                     return Ok(VcpuExit::WaitForEventExpired);
+                 }
+ 
+-                let timeout = Duration::from_nanos((cval - now) * (1_000_000_000 / self.cntfrq));
++                let timeout =
++                    Duration::from_nanos((cval - now).saturating_mul(1_000_000_000 / self.cntfrq));
+                 Ok(VcpuExit::WaitForEventTimeout(timeout))
+             }
+             EC_AA64_HVC => self.handle_psci_request(),
+@@ -836,7 +866,13 @@ impl HvfVcpu<'_> {
+                 self.pending_advance_pc = true;
+                 self.handle_psci_request()
+             }
+-            _ => panic!("unexpected exception: 0x{ec:x}"),
++            _ => {
++                error!(
++                    "vcpu[{}]: unhandled exception ec=0x{ec:x} syndrome=0x{syndrome:x}",
++                    self.vcpuid
++                );
++                Err(Error::GuestFault)
++            }
+         }
+     }
+ }
+diff --git a/src/libkrun/src/vmm/builder.rs b/src/libkrun/src/vmm/builder.rs
+index 7141beb..96ff138 100644
+--- a/src/libkrun/src/vmm/builder.rs
++++ b/src/libkrun/src/vmm/builder.rs
+@@ -763,6 +763,7 @@ pub fn build_microvm(
+     _sender: Sender<WorkerMessage>,
+     device_manager: Box<dyn crate::api::device_builders::DeviceManager<'_> + '_>,
+ ) -> std::result::Result<Arc<Mutex<Vmm>>, StartMicrovmError> {
++    hvf::a2::mark(20);
+     let payload = choose_payload(vm_resources)?;
+ 
+     #[cfg(all(
+@@ -827,6 +828,7 @@ pub fn build_microvm(
+     #[cfg(all(feature = "tee", not(feature = "tdx")))]
+     let fw_range_for_mem: Option<(u64, usize)> = None;
+ 
++    hvf::a2::mark(21);
+     #[allow(unused_mut)]
+     let (guest_memory, mut arch_memory_info, _shm_manager, payload_config) = create_guest_memory(
+         vm_resources
+@@ -847,6 +849,7 @@ pub fn build_microvm(
+         fw_range_for_mem,
+     )?;
+ 
++    hvf::a2::mark(26);
+     let vcpu_config = vm_resources.vcpu_config();
+ 
+     // Clone the command-line so that a failed boot doesn't pollute the original.
+@@ -1488,6 +1491,7 @@ pub fn build_microvm(
+         println!("Starting TEE/microVM.");
+     }
+ 
++    hvf::a2::mark(32);
+     vmm.start_vcpus(vcpus)
+         .map_err(StartMicrovmError::Internal)?;
+ 
+@@ -1499,6 +1503,7 @@ pub fn build_microvm(
+         .add_subscriber(vmm.clone())
+         .map_err(StartMicrovmError::RegisterEvent)?;
+ 
++    hvf::a2::mark(35);
+     Ok(vmm)
+ }
+ 
+@@ -1519,9 +1524,14 @@ fn load_external_kernel(
+         KernelFormat::Raw => unreachable!(),
+         #[cfg(any(target_arch = "aarch64", target_arch = "riscv64"))]
+         KernelFormat::Raw => {
+-            let data: Vec<u8> = std::fs::read(external_kernel.path.clone())
+-                .map_err(StartMicrovmError::RawOpenKernel)?;
+-            guest_mem.write(&data, GuestAddress(0x8000_0000)).unwrap();
++            // Read straight into guest RAM: no heap copy stays resident per VM.
++            hvf::a2::mark(23);
++            let mut file = File::open(&external_kernel.path).map_err(StartMicrovmError::RawOpenKernel)?;
++            let len = file.metadata().map_err(StartMicrovmError::RawOpenKernel)?.len() as usize;
++            guest_mem
++                .read_exact_volatile_from(GuestAddress(0x8000_0000), &mut file, len)
++                .unwrap();
++            hvf::a2::mark(24);
+             GuestAddress(0x8000_0000)
+         }
+         #[cfg(target_arch = "x86_64")]
+diff --git a/src/libkrun/src/vmm/linux/vstate.rs b/src/libkrun/src/vmm/linux/vstate.rs
+index 3350ef7..6887da1 100644
+--- a/src/libkrun/src/vmm/linux/vstate.rs
++++ b/src/libkrun/src/vmm/linux/vstate.rs
+@@ -1318,6 +1318,7 @@ impl Vcpu {
+         let vcpu_thread = thread::Builder::new()
+             .name(format!("fc_vcpu {}", self.cpu_index()))
+             .spawn(move || {
++                utils::thread_hook::enter(utils::thread_hook::Role::Vcpu);
+                 self.init_thread_local_data()
+                     .expect("Cannot cleanly initialize vcpu TLS.");
+ 
+diff --git a/src/libkrun/src/vmm/macos/vstate.rs b/src/libkrun/src/vmm/macos/vstate.rs
+index 5f5ee21..3b34bd4 100644
+--- a/src/libkrun/src/vmm/macos/vstate.rs
++++ b/src/libkrun/src/vmm/macos/vstate.rs
+@@ -14,7 +14,7 @@ use std::sync::Arc;
+ use std::thread;
+ use std::time::Duration;
+ 
+-use super::super::{FC_EXIT_CODE_GENERIC_ERROR, FC_EXIT_CODE_OK};
++use super::super::{FC_EXIT_CODE_GENERIC_ERROR, FC_EXIT_CODE_GUEST_FAULT, FC_EXIT_CODE_OK};
+ use crate::vmm::vmm_config::machine_config::CpuFeaturesTemplate;
+ 
+ use arch::ArchMemoryInfo;
+@@ -60,6 +60,8 @@ pub enum Error {
+     VcpuUnhandledKvmExit,
+     /// Cannot configure the microvm.
+     VmSetup(hvf::Error),
++    /// The guest performed an operation we don't emulate.
++    GuestFault,
+ }
+ 
+ impl Display for Error {
+@@ -88,6 +90,7 @@ impl Display for Error {
+             VcpuArmPreferredTarget => write!(f, "Error getting the Vcpu preferred target on Arm"),
+             VcpuArmInit => write!(f, "Error doing Vcpu Init on Arm"),
+             VcpuChannelClosed => write!(f, "vCPU event channel closed"),
++            GuestFault => write!(f, "Unsupported guest operation"),
+         }
+     }
+ }
+@@ -102,13 +105,16 @@ pub struct Vm {
+ impl Vm {
+     /// Constructs a new `Vm` using the given `Kvm` instance.
+     pub fn new(arch_mem_info: &mut ArchMemoryInfo, nested_enabled: bool) -> Result<Self> {
++        hvf::a2::mark(27);
+         let hvf_vm = HvfVm::new(arch_mem_info, nested_enabled).map_err(Error::VmSetup)?;
+ 
++        hvf::a2::mark(28);
+         Ok(Vm { hvf_vm })
+     }
+ 
+     /// Initializes the guest memory.
+     pub fn memory_init(&mut self, guest_mem: &GuestMemoryMmap) -> Result<()> {
++        hvf::a2::mark(29);
+         for region in guest_mem.iter() {
+             // It's safe to unwrap because the guest address is valid.
+             let host_addr = guest_mem.get_host_address(region.start_addr()).unwrap();
+@@ -127,6 +133,7 @@ impl Vm {
+                 .map_err(Error::SetUserMemoryRegion)?;
+         }
+ 
++        hvf::a2::mark(30);
+         Ok(())
+     }
+ 
+@@ -486,14 +493,20 @@ impl Vcpu {
+                     Ok(VcpuEmulation::WaitForEventTimeout(duration))
+                 }
+             },
+-            Err(e) => panic!("Error running HVF vCPU: {e:?}"),
++            Err(hvf::Error::GuestFault) => Err(Error::GuestFault),
++            Err(e) => {
++                error!("Error running HVF vCPU: {e:?}");
++                Err(Error::VcpuRun)
++            }
+         }
+     }
+ 
+     /// Main loop of the vCPU thread.
+     pub fn run(&mut self, init_tls_sender: Sender<u64>) {
++        hvf::a2::mark(33);
+         let mut hvf_vcpu =
+             HvfVcpu::new(self.mpidr, self.nested_enabled).expect("Can't create HVF vCPU");
++        hvf::a2::mark(34);
+         let hvf_vcpuid = hvf_vcpu.id();
+ 
+         // Report the HVF-assigned vCPU id (creation order is not deterministic)
+@@ -540,6 +553,11 @@ impl Vcpu {
+                     self.exit(FC_EXIT_CODE_OK);
+                     break;
+                 }
++                // Unsupported guest behaviour: stop the VM with a distinct code.
++                Err(Error::GuestFault) => {
++                    self.exit(FC_EXIT_CODE_GUEST_FAULT);
++                    break;
++                }
+                 // Emulation errors lead to vCPU exit.
+                 Err(_) => {
+                     self.exit(FC_EXIT_CODE_GENERIC_ERROR);
+diff --git a/src/libkrun/src/vmm/mod.rs b/src/libkrun/src/vmm/mod.rs
+index 784a144..ac4242c 100644
+--- a/src/libkrun/src/vmm/mod.rs
++++ b/src/libkrun/src/vmm/mod.rs
+@@ -80,6 +80,9 @@ use vm_memory::GuestMemoryMmap;
+ pub const FC_EXIT_CODE_OK: u8 = 0;
+ /// Generic error exit code.
+ pub const FC_EXIT_CODE_GENERIC_ERROR: u8 = 1;
++/// The guest performed an operation the VMM does not emulate (EX_TEMPFAIL).
++#[cfg(target_os = "macos")]
++pub const FC_EXIT_CODE_GUEST_FAULT: u8 = 75;
+ /// Generic exit code for an error considered not possible to occur if the program logic is sound.
+ #[cfg(target_os = "linux")]
+ pub const FC_EXIT_CODE_UNEXPECTED_ERROR: u8 = 2;
+@@ -413,6 +416,7 @@ impl Vmm {
+ 
+     /// Waits for all vCPUs to exit and terminates the Firecracker process.
+     pub fn stop(&mut self, exit_code: i32) {
++        hvf::a2::mark(90);
+         info!("Vmm is stopping.");
+ 
+         for observer in &self.exit_observers {
+@@ -425,6 +429,7 @@ impl Vmm {
+         // Exit from Firecracker using the provided exit code. Safe because we're terminating
+         // the process anyway.
+         unsafe {
++            hvf::a2::dump();
+             libc::_exit(exit_code);
+         }
+     }
+diff --git a/src/utils/src/lib.rs b/src/utils/src/lib.rs
+index 64749b4..771d17d 100644
+--- a/src/utils/src/lib.rs
++++ b/src/utils/src/lib.rs
+@@ -28,6 +28,7 @@ pub mod pollable_channel;
+ pub mod rand;
+ #[cfg(target_os = "linux")]
+ pub mod signal;
++pub mod thread_hook;
+ pub mod sized_vec;
+ pub mod sm;
+ pub mod syscall;
+--- /dev/null
++++ b/src/hvf/src/a2.rs
+@@ -0,0 +1,18 @@
++use std::sync::{Mutex,atomic::{AtomicBool,AtomicU64,Ordering}};
++use std::time::Instant;
++static ORIGIN: AtomicU64=AtomicU64::new(0);
++static START: std::sync::OnceLock<Instant> = std::sync::OnceLock::new();
++static DATA: Mutex<Vec<(u32,u128,i64,i64,i64,i64)>> = Mutex::new(Vec::new());
++static EXITS: [AtomicU64;80] = [const {AtomicU64::new(0)};80];
++static SNAP:Mutex<Vec<(u32,Vec<u64>)>>=Mutex::new(Vec::new());
++static FIRST: AtomicBool = AtomicBool::new(true);
++static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
++pub fn enabled()->bool{true}
++pub fn mark(id:u32){if !enabled(){return;}if id==0 {unsafe extern "C" {fn mach_absolute_time()->u64;}ORIGIN.store(unsafe{mach_absolute_time()}*125/3,Ordering::Relaxed);} let ns=START.get_or_init(Instant::now).elapsed().as_nanos();
++ let mut u:libc::rusage=unsafe{std::mem::zeroed()};unsafe{libc::getrusage(libc::RUSAGE_SELF,&mut u);}
++ DATA.lock().unwrap().push((id,ns,u.ru_utime.tv_sec*1000000+u.ru_utime.tv_usec as i64,u.ru_stime.tv_sec*1000000+u.ru_stime.tv_usec as i64,u.ru_nvcsw as i64,u.ru_nivcsw as i64));}
++pub fn enter(){if enabled()&&FIRST.swap(false,Ordering::Relaxed){mark(40);}}
++pub fn exit(reason:u32,syndrome:u64){if !enabled(){return;} let i=if reason==1{(syndrome>>26) as usize}else{64+reason as usize};if i<80{EXITS[i].fetch_add(1,Ordering::Relaxed);}}
++pub fn dump(){if !enabled(){return;}mark(99);eprintln!("A2_ORIGIN {}",ORIGIN.load(Ordering::Relaxed));for (id,ns,u,s,v,iv) in DATA.lock().unwrap().iter(){eprintln!("A2 {{\"id\":{id},\"ns\":{ns},\"user_us\":{u},\"sys_us\":{s},\"nvcsw\":{v},\"nivcsw\":{iv}}}");}let a:Vec<_>=EXITS.iter().map(|x|x.load(Ordering::Relaxed)).collect();eprintln!("A2_EXITS {:?}",a);for (id,c) in SNAP.lock().unwrap().iter(){eprintln!("A2_AT {id} {:?}",c);}}
++
++pub fn wire(b:&[u8],input:bool){if !enabled(){return;}let id=if input {if b.starts_with(b"{\"t\":\"run\""){51}else if b.starts_with(b"{\"t\":\"ret\""){54}else{0}}else{if b.starts_with(b"{\"t\":\"ready\""){50}else if b.starts_with(b"{\"t\":\"done\""){52}else if b.starts_with(b"{\"t\":\"call\""){53}else{0}};if id!=0{mark(id);SNAP.lock().unwrap().push((id,EXITS.iter().map(|x|x.load(Ordering::Relaxed)).collect()));}}

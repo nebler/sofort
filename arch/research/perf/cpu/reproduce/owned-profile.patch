@@ -1,0 +1,212 @@
+--- a/arch/jitk/vmm/src/main.rs
++++ b/arch/jitk/vmm/src/main.rs
+@@ -81,6 +81,7 @@
+         }
+     };
+     let cmdline = format!("jitk.seed={seed} jitk.epoch_ns={epoch} jitk.counter={ticks}");
++    hvf::a2::mark(1);
+     let (stdin, stdout) = (io::stdin(), io::stdout());
+     let mut console = ConsoleDevice::builder();
+     if console.add_inout_port("jitk", Some(stdin.as_fd()), Some(stdout.as_fd()))? != 0 {
+@@ -88,14 +89,18 @@
+     }
+     let mut devices = MmioDeviceManager::new();
+     devices.add(console.build()?);
++    hvf::a2::mark(2);
+     let payload = Payload::load_external(image.to_str().ok_or("image path must be UTF-8")?, KernelFormat::Raw, None, &cmdline)?;
+     let builder = VmmBuilder::new().vcpus(1)?.ram_mib(mem)?.payload(payload)
+         .devices(devices).nested_virt(false).shutdown_support(false);
++    hvf::a2::mark(3);
+     let timing = std::env::var_os("JITK_VMM_TIMING").is_some();
+     let started = std::time::Instant::now();
+     let mut sandbox = Sandbox::prepare(&image, profile.as_deref(), netns)?;
+     let prepared = std::time::Instant::now();
++    hvf::a2::mark(4);
+     sandbox.before_build()?;
++    hvf::a2::mark(5);
+     #[cfg(target_os = "macos")]
+     if timing {
+         eprintln!("SANDBOX_NS {} PREPARE_AND_APPLY_NS {}", prepared.elapsed().as_nanos(), started.elapsed().as_nanos());
+@@ -105,16 +110,21 @@
+     #[cfg(target_os = "macos")]
+     io::stderr().write_all(b"{\"sandbox\":\"ok\"}\n")?;
+     if wait { wait_go()?; }
++    hvf::a2::mark(6);
+     let vm = builder.build()?;
++    hvf::a2::mark(36);
+     sandbox.after_build()?;
+     #[cfg(target_os = "linux")]
+     io::stderr().write_all(b"{\"sandbox\":\"ok\"}\n")?;
++    hvf::a2::mark(37);
+     vm.run();
+     Err("libkrun event loop returned".into())
+ }
+ fn main() {
++    hvf::a2::mark(0);
+     if std::env::args().nth(1).as_deref() == Some("--watchdog") { watchdog::run() }
+     if let Err(e) = launch() {
++        hvf::a2::dump();
+         eprintln!("jitk-vmm: {e}");
+         std::process::exit(70);
+     }
+--- a/arch/jitk/kernel/src/main.rs
++++ b/arch/jitk/kernel/src/main.rs
+@@ -6,6 +6,7 @@
+     panic::PanicInfo,
+ };
+ mod console;
++mod a2;
+ mod syscalls;
+ mod trace;
+ mod wait;
+@@ -21,8 +22,10 @@
+ #[unsafe(no_mangle)]
+ unsafe extern "C" fn kernel_main(fdt: usize) -> ! {
+     unsafe {
++        a2::mark(1);
+         let entry_counter = wait::ticks();
+         mmu::init();
++        a2::mark(2);
+         let config = fdt::read(fdt);
+         SEED = config.seed;
+         EPOCH_OFFSET = config
+@@ -32,8 +35,11 @@
+             } else {
+                 config.counter
+             }));
++        a2::mark(3);
+         console::init(config.console);
++        a2::mark(4);
+         wait::init(config.dist, config.redist, config.irq, config.tick);
++        a2::mark(5);
+         #[cfg(feature = "trace")]
+         {
+             console::print("\x1eirq ");
+@@ -61,6 +67,7 @@
+     }
+ }
+ pub unsafe fn off() -> ! {
++    a2::dump();
+     unsafe {
+         asm!("hvc #0", in("x0") 0x84000008u64);
+     }
+--- a/arch/jitk/kernel/src/user.rs
++++ b/arch/jitk/kernel/src/user.rs
+@@ -21,6 +21,8 @@
+ }
+ pub unsafe fn run() -> ! {
+     unsafe {
++        crate::a2::mark(6);
++        crate::a2::patch();
+         for &(start, end, w, x) in packed::SEGMENTS {
+             pages(start, end, w, x);
+         }
+@@ -55,6 +57,7 @@
+             let code = include_bytes!(env!("JITK_PROBE"));
+             copy_nonoverlapping(code.as_ptr(), m::physical(0x400000) as *mut u8, code.len());
+         }
++        crate::a2::mark(7);
+         m::protect_aliases();
+         for va in (FS..FS + FS_LEN).step_by(4096) {
+             m::readonly(m::physical(va));
+@@ -73,6 +76,7 @@
+         } else {
+             packed::ENTRY
+         };
++        crate::a2::mark(8);
+         asm!("msr vbar_el1,{v}","msr sp_el0,{sp}","msr elr_el1,{entry}","msr spsr_el1,{mask}",".inst 0xd500419f","isb","eret",
+          mask=in(reg) 0x3c0u64,v=in(reg) &raw const vectors,sp=in(reg) sp,entry=in(reg) entry,options(noreturn));
+     }
+@@ -108,6 +112,8 @@
+                     c::print("\x1efatal control byte\n");
+                     crate::off();
+                 }
++                if bytes.starts_with(b"{\"t\":\"ready\"") {crate::a2::mark(16);}
++                if bytes.starts_with(b"{\"t\":\"done\"") {crate::a2::mark(19);}
+                 c::user_write(bytes);
+                 len as isize
+             }
+@@ -139,6 +145,7 @@
+             c::hex(f[8]);
+             c::print("\n");
+         }
++        if crate::a2::probe(esr,f){return;}
+         let n = f[8];
+         let args: [usize; 6] = f[..6].try_into().unwrap();
+         crate::trace::enter(n, &args, f[31]);
+--- a/arch/jitk/kernel/src/boot.S
++++ b/arch/jitk/kernel/src/boot.S
+@@ -1,6 +1,7 @@
+ .section .text.boot
+ .global _start
+ _start:
++    mrs x21, cntvct_el0
+     msr daifset, #15
+     mov x20, x0
+     mrs x1, CurrentEL
+@@ -29,7 +30,9 @@
+     b.hs 2f
+     str xzr, [x1], #8
+     b 1b
+-2:  mov x0, x20
++2:  ldr x1, =A2_BOOT
++    str x21, [x1]
++    mov x0, x20
+     bl kernel_main
+ 3:  wfi
+     b 3b
+--- a/arch/jitk/executor/executor.ts
++++ b/arch/jitk/executor/executor.ts
+@@ -27,7 +27,7 @@
+   constructor(readonly pool:SandboxPool, readonly policy:Policy,
+     readonly timeout=30000, readonly security:PolicyConfig={}) {}
+   async execute(code:string, providersOrFns:ResolvedProvider[]|Record<string,(...a:unknown[])=>Promise<unknown>>, options:RunOptions={}):Promise<ExecuteResult> {
+-    const mark=(event:TimingEvent)=>{try{options.onTiming?.(event,performance.now());}catch{}};mark('start');
++    const mark=(event:TimingEvent)=>{(globalThis as any).__a2?.mark(event);try{options.onTiming?.(event,performance.now());}catch{}};mark('start');
+     // Bound normalization, acquisition, tool round-trips and guest execution.
+     const controller=new AbortController(), logs:string[]=[];
+     const abort=()=>controller.abort();options.signal?.addEventListener('abort',abort,{once:true});
+@@ -75,7 +75,9 @@
+       if(expired())abort();
+       if(ctx.signal.aborted)throw new Error('aborted');
+       await s.armDeadline?.(deadline);
++      (globalThis as any).__a2?.mark('bodyBegin');
+       const body=executionBody(code,providers);
++      (globalThis as any).__a2?.mark('bodyEnd',{bodyBytes:body.length});
+       if(body.length>LIMIT.code)throw Error('code limit including trusted adapters');
+       await s.send({t:'run',code:body,ns:Object.fromEntries(providers.map(p=>[p.name,Object.keys(p.fns)]))});
+       mark('runSent');
+--- a/arch/jitk/mcp/server.mjs
++++ b/arch/jitk/mcp/server.mjs
+@@ -59,7 +59,9 @@
+     if (req.params.name !== 'execute') throw new McpError(ErrorCode.InvalidParams, 'unknown tool: ' + req.params.name);
+     const code = req.params.arguments?.code;
+     if (typeof code !== 'string') throw new McpError(ErrorCode.InvalidParams, 'execute: `code` must be a string');
++    globalThis.__a2?.mark('handlerBegin');
+     const out = await jitk.run(code, extra.signal);
++    globalThis.__a2?.mark('handlerEnd');
+     // Spec: structured content plus its serialized form for text-only clients.
+     return {content: [{type: 'text', text: JSON.stringify(out)}], structuredContent: out, isError: 'error' in out};
+   });
+@@ -71,6 +73,9 @@
+ 
+ async function main() {
+   const cfg = await loadConfig();
++  process.stdin.on('data', b => {if(b.toString().includes('tools/call')){globalThis.__a2?.begin('mcp');globalThis.__a2?.mark('stdinChunk');}});
++  const originalWrite=process.stdout.write;
++  process.stdout.write=function(b,...args){const ret=originalWrite.call(this,b,...args);if(globalThis.__a2?.rows && b.toString().includes('structuredContent')){globalThis.__a2?.mark('stdoutWrite');globalThis.__a2?.end();}return ret;};
+   const jitk = await createJitk(cfg);
+   let closing;
+   const shutdown = () => closing ??= jitk.close().catch(() => {}).finally(() => process.exit(0));
+--- /dev/null
++++ b/arch/jitk/kernel/src/a2.rs
+@@ -0,0 +1,9 @@
++use crate::{wait,console};
++#[unsafe(no_mangle)] pub static mut A2_BOOT:u64=1;
++static mut TIMES:[u64;32]=[0;32];
++pub fn mark(i:usize){unsafe{TIMES[i]=wait::ticks();}}
++pub fn dump(){unsafe{TIMES[0]=A2_BOOT;let mut b=[b' ';550];b[..5].copy_from_slice(b"\x1eA2G ");let mut n=5;for t in TIMES {for i in 0..16{b[n+i]=b"0123456789abcdef"[((t>>((15-i)*4))&15)as usize];}n+=17;}b[n]=10;console::record(&b[..n+1]);}}
++pub fn probe(esr:u64,f:&mut [usize])->bool{let i=(esr&65535) as usize;if !(0x100..0x110).contains(&i){return false;} mark(i-0x100+10);unsafe{match i {
++0x100|0x102=>{let sp:usize;core::arch::asm!("mrs {},sp_el0",out(reg)sp);f[29]=sp;},
++0x101=>f[3]=f[1],0x103=>f[19]=f[0],0x104=>f[20]=f[0],0x105=>f[2]=(f[2] as i32 as isize) as usize,_=>{}}}true}
++pub unsafe fn patch(){unsafe{for (addr,op,id) in [(0x4001e4,0x910003fd,0x100),(0x40eae4,0xaa0103e3,0x101),(0x4a7ee4,0x910003fd,0x102),(0x400668,0xaa0003f3,0x103),(0x400540,0xaa0003f4,0x104),(0x4011a4,0x93407c42,0x105)]{let p=crate::mmu::physical(addr) as *mut u32;assert_eq!(*p,op);*p=0xd4000001|(id<<5);}}}

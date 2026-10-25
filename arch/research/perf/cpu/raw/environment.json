@@ -1,0 +1,23 @@
+{
+  "commit": "70f6d8cf19942e7317d7958233ea18d58b245cc5",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.1\nBuildVersion:\t\t25G76\n",
+  "sysctl": "hw.model: Mac16,8\nhw.memsize: 25769803776\nhw.ncpu: 12\n",
+  "node": "v24.22.1\n",
+  "timebase": {
+    "numer": 125,
+    "denom": 3
+  },
+  "hashes": {
+    "vmm-base": "2a51b2fa4223abfd8c510d1ccc93e4b5667838f7897bf6292a2330e8863ac5f4",
+    "vmm-trace3": "de01fa220b1da0877cf171b0ec05e7e719a1694850bda3151b55a93df25eed81",
+    "images/base/kernel.bin": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
+    "images/trace/kernel.bin": "a89d7e4a8b1243131ed793932a1007adfe2f122020c732e262dd0f9df0b119be",
+    "arch/jitk/kernel/payload/qjs": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+    "arch/jitk/executor/build/executor-base.js": "66a1f4f5f1d058aa835549ebc4ba7b9b8eb060d2a5568836accfb5c08bce3c81",
+    "arch/jitk/executor/build/executor.js": "4563bb905ee5e8716aa2611cc1c6e5b5da7512fd881fb498547cccd100c1b254",
+    "rusage.node": "6272200760579e1ac83aafc2300bc17d6324850f3311ed65a1e73e42088d6cb7"
+  },
+  "artifact_note": "Hashes identify retained final artifacts. The first host control addon exported only children(); later versions added pid() and clock calibration now(), without changing children(). Old VMM vmm-trace/long-dump collection is superseded by vmm-trace3 for phase accounting.",
+  "final_load_uptime": " 8:27  up 1 day, 10:41, 2 users, load averages: 25.39 24.39 28.36\n"
+}

@@ -1,0 +1,23 @@
+# Reproduction notes
+
+Everything is pinned to commit `58ab4435ebd450db9754b2b1ece39789805b94b5` in `/Users/noah/code/sofort`. Copy committed code with `git archive`, never copy the live executor tree. Scripts use the fixed private path `/tmp/sofort-a2`; select a new private directory and replace that prefix to rerun without overwriting artifacts.
+
+1. `git archive 58ab443 arch/jitk | tar -x -C /tmp/sofort-a2`. Record the full commit in `/tmp/sofort-a2/COMMIT`.
+2. Reuse dependencies read-only: executor and MCP `node_modules` symlink to the installed dependencies in the source checkout. Build pristine executor by running `/tmp/jitk-09/node-real build.mjs` with cwd `arch/jitk/executor`; copy `build/executor.js` to `build/executor-base.js` before applying instrumentation. Entry bundle hash is recorded in `environment.json`.
+3. Copy `/tmp/jitk-01/r3/darwin/libkrun` to the private `libkrun` path, apply committed `arch/jitk/vmm/patches/raw-direct-load.diff`, then use `RUSTUP_TOOLCHAIN=1.95.0 CARGO_PROFILE_RELEASE_PANIC=abort make FFI=0 target/release/libkrun.2.0.0.dylib`. `python3 link.py vmm-base` links committed launcher against these rlibs, adds debug symbols for attempted sampling, and adhoc-signs the required Hypervisor entitlement. Do not run the owner build script against its original build directory.
+4. Build pristine guest with `CARGO_TARGET_DIR=/tmp/sofort-a2/kernel-target JITK_OUT_DIR=/tmp/sofort-a2/images/base sh arch/jitk/kernel/build.sh`. Assert SHA256 `6c00a278…`. Compile the profile once: `vmm-base --compile-profile /tmp/sofort-a2/profile.sbbin --images /tmp/sofort-a2/images`.
+5. The full upstream-to-instrumented libkrun delta is `libkrun-profile.patch`; it includes the committed jitk patches, so apply to an upstream `a1d8616765da03980f3be1bb8714bfdd3842f33c` source (or inspect/reverse existing patch state first). It adds buffered phase CPU/clock records, HVF exit snapshots, and frame observations. `owned-profile.patch` applies to the frozen Sofort archive, adding launcher, kernel and Node/MCP probes. Apply both only in the private copy. Build libkrun, `python3 link.py vmm-trace3 --trace`, and guest with output `images/trace`; rebuild copied executor with the same build command. Never run the instrumented binary as a production artifact: private SVC probes are measurement-only.
+6. Build the measurement addon: `cc -O2 -bundle -undefined dynamic_lookup -I/opt/homebrew/include/node rusage.c -lproc -o rusage.node`.
+7. Run each timing command with `/usr/bin/lockf -k /tmp/sofort-bench.lock` in front, recording `uptime`. Commands:
+   - `python3 measure_vmm.py 30` (control and initial instrumentation; initial long guest dump is superseded for lifecycle accounting).
+   - `python3 measure-vmm3.py` (final, three warmups + 30 observations per fixture).
+   - `env N=50 A2_VARIANT=base /tmp/jitk-09/node-real host-driver.mjs`.
+   - `env N=50 A2_VARIANT=trace A2_HOOKS=1 A2_SUFFIX=-livecpu A2_HOST_LOG=/tmp/sofort-a2/raw/host-livecpu-log.json /tmp/jitk-09/node-real host-driver.mjs`.
+   - `env N=50 A2_HOOKS=1 /tmp/jitk-09/node-real mcp-driver.mjs`.
+   - For Node CPU sampling, add `--cpu-prof --cpu-prof-interval=100 --cpu-prof-dir=/tmp/sofort-a2/raw` before `host-driver.mjs`, use `N=100`, and preserve separate filenames with `A2_SUFFIX=-profile`. For MCP, `A2_CPUPROF=1` adds these flags to the server. The existing profile driver writes unique PID-specific files.
+   - `python3 profile-vmm2.py sample` and `python3 profile-vmm2.py xctrace` are bounded attachment attempts; they keep a `--wait-go` VMM alive while the profiler attaches. Their heavy JS loop is for stack visibility only and is not a small-run latency fixture.
+8. Analyze with `python3 analyze.py`, `python3 analyze-vmm.py raw/vmm3.json`, and `python3 analyze-profile.py`. Full raw arrays remain under `/tmp/sofort-a2/raw`; compressed copies and numeric summaries accompany the report.
+
+For the MCP pristine control, `server-base.mjs` and `jitk-base.mjs` are the two committed source files with only imports redirected to the pristine `executor-base.js` bundle. `mcp-driver.mjs` selects them when `A2_HOOKS` is unset. This avoids profiling a concurrently edited source tree. For precise profile-window alignment, record paired `process.hrtime.bigint()/1000` bracketing `require('./rusage.node').now()`; the latter is Mach absolute microseconds, the V8 profile clock domain here. Keep the calibration with the run.
+
+No source/build artifacts outside the CPU report scope and the private directory were modified; no commits were made. Binaries and final images are retained under `/tmp/sofort-a2`; private build output is removed after collection to reclaim space.

@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{font-family:var(--font-sans,system-ui);color:var(--foreground);margin:0}
+.lead{font-size:25px;letter-spacing:-.6px;font-weight:650;margin:0 0 5px}
+.note{color:var(--muted-foreground);font-size:13px;line-height:1.5;margin:0 0 17px}
+.bar{display:flex;height:30px;overflow:hidden;border-radius:5px;margin-bottom:20px}
+.bar span{display:block}.a{background:#6186b9}.b{background:#59a894}.c{background:#ceaa67}.d{background:#ab87b8}.e{background:#81909d}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+td,th{padding:9px 0;border-bottom:1px solid var(--border);text-align:left}
+td:last-child,th:last-child{text-align:right}
+th{font-size:11px;letter-spacing:.7px;color:var(--muted-foreground);font-weight:500}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:9px}
+.end{font-size:13px;line-height:1.55;margin:15px 0 0;color:var(--muted-foreground)}
+strong{color:var(--foreground)}
+</style></head><body>
+<p class="lead">7.52 CPU-ms before READY</p>
+<p class="note">Measured macOS/HVF boot work · 30 runs · mean user + system CPU · load1 13.9<br>Committed code <code>58ab443</code>, isolated profiling copies.</p>
+<div class="bar" aria-label="CPU share by phase"><span class="a" style="width:58.94%" title="Before Rust main: 4,433 CPU-µs"></span><span class="b" style="width:23.07%" title="Guest boot through READY: 1,735 CPU-µs"></span><span class="c" style="width:6.02%" title="Image load: 453 CPU-µs"></span><span class="d" style="width:5.70%" title="Devices, GIC and FDT: 428 CPU-µs"></span><span class="e" style="width:6.27%" title="Other setup: 471 CPU-µs"></span></div>
+<table><thead><tr><th>Phase</th><th>CPU-µs</th></tr></thead><tbody>
+<tr><td><span class="swatch a"></span>Process work before Rust main</td><td>4,433</td></tr>
+<tr><td><span class="swatch b"></span>First HVF entry → guest READY</td><td>1,735</td></tr>
+<tr><td><span class="swatch c"></span>Image read into guest RAM</td><td>453</td></tr>
+<tr><td><span class="swatch d"></span>Devices, GIC and FDT</td><td>428</td></tr>
+<tr><td><span class="swatch e"></span>Other creation and configuration</td><td>471</td></tr>
+</tbody></table>
+<p class="end"><strong>Target repeated boot first.</strong> MMU setup was only 12 µs elapsed inside the guest. Parking hides boot latency while each single-use VM still incurs its CPU cost.</p>
+<p class="end">Contended measurements; historical 183/285 µs parked results are kept separately in the report. Restore and ring costs remain estimates. Native sampling yielded no usable stacks.</p>
+</body></html>
