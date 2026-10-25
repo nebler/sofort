@@ -7,6 +7,68 @@ results, build/reproduce commands, and remaining gates are in
 remain the assembly-fixture baseline. Build both with `cargo build --release` on
 Linux/arm64, or select `--bin real` / `--bin jitk-shard` explicitly.
 
+**R7 implements the bounded real-kernel runtime.** See [RESULTS-R7-shard.md](RESULTS-R7-shard.md)
+for measured limits, evidence and commands. The real executable uses four fixed
+owner threads plus the main fixture reactor, and one independent watchdog process.
+`JITK_SHARD_THREADS=1…available_cores` selects W. Every owner creates, runs, resets
+and drops its own slots; WAIT holds no thread stack. The mixed stress uses the
+architecture's initial 64-slot shard. `hold … N` explicitly permits larger
+experimental shards (maximum 16,384); this is not a production admission decision.
+
+The ring-only kernel packs mutable backing into a **1,310,720-byte physical
+arena at GPA 0x81800000**, plus the original **81,920-byte rings/control** at
+0x81d00000. Five stable KVM memslots cover the snapshot: both writable extents
+and three immutable `KVM_MEM_READONLY` extents. Host `mprotect` also makes those
+immutable extents read-only. No whole-RAM writable fallback is available on
+restore. The offline trusted preparer can write the whole boot mapping, verifies
+the layout marker, then creates a `.layout` sidecar alongside `.mem`/`.regs`.
+Old R6/R7-RNG snapshots need preparation again; their memory layout is incompatible.
+
+Only `transport-ring` moves kernel data, page tables and stack; user virtual
+addresses stay unchanged. Ring page tables relocate ELF writable data, brk,
+anonymous mmap and the 128-KiB user stack into the arena. The current profile
+reserves 64 KiB each for ELF writable data and brk, a canary page, and gives mmap
+the remaining space after the linked kernel. Anonymous mmap rejects excess with
+ENOMEM. This narrow class does **not** fit the structured `json64k` fixture; it
+returns the guest's out-of-memory error. It does not silently select a larger
+class. Larger/native profiles need an explicit class/layout contract.
+
+Each started run has a monotonic `(shard pidfd, slot, generation, deadline)`
+lease. The watchdog sleeps on lease-change eventfd/deadlines and the shard pidfd.
+Expiry atomically fences the generation, signals the owner, and wakes its eventfd.
+The signal handler sets only its current `kvm_run.immediate_exit` byte. An owner
+kick yields to expiry processing, including when a different slot was spinning.
+A deadline result is published after MMIO completion, RAM discard and register
+restore. If reset is not acknowledged within **100 ms of the watchdog firing**,
+a second generation-fenced CAS claims escalation and `pidfd_send_signal(SIGKILL)`
+kills the shard. A reset cannot reuse a slot after escalation has claimed it.
+The receiving reactor fails the shard closed on unexpected watchdog exit;
+production supervision must also cover a stalled reactor/watchdog. No per-VM/call helper or
+waiting thread is added. The reactor queues are bounded harness commands/events;
+**Node shared-memory policy IPC remains unimplemented**.
+
+Real-guest commands (all emit JSONL):
+
+```sh
+real prepare KERNEL_IMAGE SNAPSHOT_BASE
+real bench SNAPSHOT_BASE return2 200       # also one_tool, promise10, canary
+real hold SNAPSHOT_BASE wait 1024 3        # READY / completed / failed states too
+real hostile SNAPSHOT_BASE arena_attack 100
+real hostile SNAPSHOT_BASE bomb 100
+real stress SNAPSHOT_BASE mixed 10000      # 64 slots, three successful fixtures + tenant echoes
+real deadlines SNAPSHOT_BASE spin 64       # common expiry, reset/error latency, clean reuse
+real deadlines SNAPSHOT_BASE staggered 8   # 2W slots; parked expiry interrupts other spins
+```
+
+`attack_hold` is a measurement-only EL1 fixture: disable stage 1, read all 32 MiB (including immutable extents), dirty all 320
+arena pages and 20 ring pages, then write immutable RAM; retain its stopped
+private pages for cgroup accounting. Ordinary `arena_attack` errors reset first.
+The existing R6 ledger harness works with the configured thread count and also
+records cgroup `memory.peak`. `analyze-r7-shard.py`, `wait-r7.py` and
+`escalation-r7.py` are offline observers, never runtime helper processes.
+
+The assembly-only baseline below retains its separate ABI and implementation.
+
 Independent Linux/arm64 Rust crate for architecture gates 2, 4 (basic), and 5.
 This runs an assembly fixture, **not jitk, QuickJS, or tenant code**. It has no
 GIC, virtio, guest timer, guest interrupt delivery, WFI parking, or HVC transport.

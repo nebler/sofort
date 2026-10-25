@@ -1,0 +1,23 @@
+{
+  "before_kib": 338364,
+  "after_kib": 164140,
+  "removed": [
+    "arch/jitk/shard/target",
+    "arch/jitk/shard/target-final",
+    "arch/jitk/kernel/target-ring",
+    "pilot-kernel",
+    "pilot-brk128.mem",
+    "pilot-brk128.regs",
+    "pilot-brk128.layout",
+    "pilot-brk256.mem",
+    "pilot-brk256.regs",
+    "pilot-brk256.layout",
+    "source.tgz",
+    "runtime.tgz",
+    "update.tgz",
+    "final.tgz",
+    "fix.tgz"
+  ],
+  "retained_final_host": "/home/dev/r7-shard/bin/measured-final-real",
+  "retained_first_host": "/home/dev/r7-shard/measured-real-first"
+}

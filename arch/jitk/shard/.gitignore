@@ -1,2 +1,4 @@
 /target/
 /snapshot.bin
+# Oversized raw observation; the compressed evidence is checked in.
+/raw-r7-shard/review/ledger-2-ready-1024.json

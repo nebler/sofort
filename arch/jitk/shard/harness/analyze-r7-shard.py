@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reduce the R7 cgroup curves and validate conformance/stress receipts offline."""
 import json
+import gzip
 import math
 import pathlib
 import statistics
@@ -10,6 +11,8 @@ root = pathlib.Path(sys.argv[1])
 
 
 def read_json(path):
+    if not path.exists() and path.with_suffix(path.suffix + '.gz').exists():
+        return json.loads(gzip.decompress(path.with_suffix(path.suffix + '.gz').read_bytes()))
     return json.loads(path.read_text())
 
 
@@ -134,10 +137,13 @@ escalation = read_json(root / 'escalation.json')
 assert escalation['returncode'] == -9
 cleanup = read_json(root / 'ledger-cleanup.json')
 assert not cleanup['remaining_cgroups'] and not any(cleanup['memory_events'].values())
+ready_1024 = read_json(root / 'ledger-2-ready-1024.json')
+assert ready_1024['n'] == 1024 and ready_1024['idle_cpu_usec'] == 0
 
 out = dict(ledger=ledger, bench=bench, hostile=hostile, stress=stress, wait=wait,
            stress_batches=stress_batches,
            deadlines=deadlines, staggered=quantiles(staggered), escalation=escalation,
+           ready_1024_current_bytes=median(ready_1024, ['memory_current']),
            ledger_cleanup=cleanup)
 (root / 'summary-r7-shard.json').write_text(json.dumps(out, indent=2) + '\n')
 print(json.dumps({k: {field: v[field] for field in
