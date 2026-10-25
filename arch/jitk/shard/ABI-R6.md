@@ -1,5 +1,8 @@
 # R6 real-guest transport: bounded ABI-v2 subset
 
+R7 entropy amendment: the control layout is unchanged; the ring-only payload and
+run-entry repair now follow items 1 and 9 below. R6 measurements remain historical.
+
 `kernel --features transport-ring` and shard binary `real` are a separate pair.
 The original `jitk-shard` binary still runs fixture ABI v0. Neither format is
 interchangeable. The default kernel's virtio path is unchanged.
@@ -44,10 +47,11 @@ port boundary, not a completed architecture-neutral kernel or an x86 port.
 
 ## Explicit restrictions and deviations
 
-1. The runtime is the **existing stripped static Bellard QuickJS**, unmodified,
+1. The runtime is **Bellard QuickJS 2026-06-04 with a native checkpoint/reseed
+   hook**, statically linked to patched musl 1.2.5 as `payload/qjs-ring`,
    packed with the normal ELF packer. A separate prepared bootstrap uses its
    standard `os.read`/`os.write` API, with ring-only pseudo-fds intercepted in EL1:
-   fd100 CHECKPOINT; fd101 32 repair bytes; fd102 FINISH; fd129..160 CALL/RET for
+   fd100 CHECKPOINT; fd101 one-shot 32 native repair bytes; fd102 FINISH; fd129..160 CALL/RET for
    IDs 1..32. fd0 carries source and readiness. These are an experimental bridge,
    not Linux fds or the future `/cap/<slot>/call` interface.
 2. A run has at most 32 total calls, one capability slot (`cap_slot=1`), and
@@ -84,12 +88,26 @@ port boundary, not a completed architecture-neutral kernel or an x86 port.
    deadline u64 `0x230`, repaired generation u64 `0x238`, repaired-READY flag u64
    `0x240`, source bytes `0x400`. Generation is the ordinary v2 field at `0x8`.
    No pointers or credentials are stored. Host entropy comes from `/dev/urandom`.
+   R7 consumes seed[16] once and erases it from EL1/control after successful
+   copyout to the native hook; fd101 then returns EBADF, including to tenant code.
 9. Trusted repair updates kernel seed, generation and `epoch_offset=epoch−mono`
    before EL0 resumes. Host refreshes monotonic time at each KVM entry; guest time
    is frozen during uninterrupted CPU work. There is no timer/deadline scheduler.
-   Fresh host entropy **does not reseed QuickJS's existing RNG** or musl's startup
-   state. Repeated Math.random is measured and blocks a full gate-4 pass. An
-   embedder hook is required; this is not fixed by injecting seed data alone.
+   R7's native `os.snapshotCheckpoint()` spans fd100 and fd101, derives private
+   repair keys with ChaCha20 block 0 (128-bit host seed repeated as a 256-bit key,
+   zero nonce), and overwrites the existing context's xorshift state. Saved native
+   Math.random function references therefore use the repaired state too. Zero
+   xorshift state maps to 1. It replaces AT_RANDOM, global/thread stack canaries,
+   mallocng's secret and every existing metadata-area check, and seeds rand,
+   random and the global rand48 family. Repair precedes JS return/source read.
+   Every native frame across guard rotation is built without stack protection;
+   the runtime is single-threaded. This mechanism is specific to pinned musl 1.2.5.
+   The hook checks actual guards/allocator metadata, clears its seed buffers, then
+   returns a 48-byte ArrayBuffer: generation[8], public entropy receipt[16] from
+   block 1, epoch[8], and fingerprint[16] of actual AT_RANDOM from block 2 keyed
+   by AT_RANDOM itself. Neither output discloses the seed or private repair keys.
+   Math.random and libc PRNGs remain non-cryptographic; no cryptographic random
+   API, timer/deadline scheduler, ASLR, or other platform repair is added.
 10. There is one fixed owner thread in the real-guest experiment, also acting as
     the immediate echo reactor. A WAIT releases the vCPU; parked slots retain no
     threads. The earlier v0 binary still exercises four owners. Node notification

@@ -1,0 +1,23 @@
+mkdir -p .obj .obj/examples .obj/tests
+/home/dev/r7-rng/payload-build/musl-install/bin/musl-gcc -O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION="2026-06-04" -O2 -c -o .obj/qjs.o qjs.c
+/home/dev/r7-rng/payload-build/musl-install/bin/musl-gcc -O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION="2026-06-04" -O2 -c -o .obj/qjsc.o qjsc.c
+/home/dev/r7-rng/payload-build/musl-install/bin/musl-gcc -O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION="2026-06-04" -O2 -c -o .obj/quickjs.o quickjs.c
+qjs.c: In function ‘help’:
+qjs.c:293:30: error: expected ‘)’ before numeric constant
+  293 |     printf("QuickJS version " CONFIG_VERSION "\n"
+      |           ~                  ^
+      |                              )
+qjsc.c: In function ‘help’:
+qjsc.c:395:39: error: expected ‘)’ before numeric constant
+  395 |     printf("QuickJS Compiler version " CONFIG_VERSION "\n"
+      |           ~                           ^
+      |                                       )
+make: *** [Makefile:339: .obj/qjs.o] Error 1
+make: *** Waiting for unfinished jobs....
+make: *** [Makefile:339: .obj/qjsc.o] Error 1
+quickjs.c: In function ‘JS_DumpMemoryUsage’:
+quickjs.c:7226:43: error: expected ‘)’ before numeric constant
+ 7226 |     fprintf(fp, "QuickJS memory usage -- " CONFIG_VERSION " version, %d-bit, malloc limit: %"PRId64"\n\n",
+      |            ~                              ^
+      |                                           )
+make: *** [Makefile:339: .obj/quickjs.o] Error 1

@@ -2,11 +2,30 @@
 
 Experimental shard build: `make ring` (Linux/arm64 toolchain, `llvm-objcopy`) or
 `sh build-ring.sh` emits **`dist/kernel-ring.bin`** in a separate `target-ring/`
-cache. It enables `transport-ring`, packs the same static qjs payload and selects
+cache. It enables `transport-ring`, packs the separate `payload/qjs-ring` and selects
 `ring-bootstrap.js`. It never overwrites `dist/kernel.bin`. The default build,
 argv, virtio/FDT/GIC path and syscall contracts are unchanged. See
 [`../shard/ABI-R6.md`](../shard/ABI-R6.md) for its bounded ABI-v2 subset and explicit
-RNG, clocks, deadline and policy limitations; it is not a production cutover.
+clocks, deadline and policy limitations; it is not a production cutover.
+
+The R7 ring payload has a native `os.snapshotCheckpoint()` hook: after the EL1
+checkpoint resumes and installs fresh entropy, it repairs the existing context's
+Math.random state, musl AT_RANDOM/stack guards/mallocng metadata secret, and libc
+PRNGs before returning to the bootstrap or reading source. The seed is delivered
+once through fd101, erased in EL1, and never exposed as JS bytes. `run.entropy`
+is now a domain-separated public receipt. Math.random and libc PRNGs retain
+their upstream non-cryptographic semantics. Native code must use an independently
+designed entropy API for cryptographic randomness; getrandom is not implemented.
+
+Rebuild this payload **inside a Linux arm64 VM**, into a new directory:
+`sh payload/ring-rng/build.sh /absolute/NEW_WORK`, then copy `NEW_WORK/qjs-ring`
+to `payload/qjs-ring`. Sources, checksums, compiler flags and the mallocng repair
+are explicit in that recipe. It is QuickJS 2026-06-04 and musl 1.2.5; the original
+stripped `payload/qjs` cannot be reproduced from its recorded ELF digest alone.
+See [`../shard/RESULTS-R7-rng.md`](../shard/RESULTS-R7-rng.md) for measured
+provenance and restrictions. All frames spanning guard rotation are built without
+stack protection, including libc; do not enable it without redesigning checkpoint
+unwinding. The default `payload/qjs` and `dist/kernel.bin` remain unchanged.
 
 `make -C arch/jitk/kernel` builds the 32 MiB AArch64 RAW image. Requires Rust
 1.95.0 + aarch64-unknown-none, Python 3, LLVM objcopy (override `OBJCOPY`).

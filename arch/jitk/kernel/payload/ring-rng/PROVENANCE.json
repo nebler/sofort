@@ -1,0 +1,27 @@
+{
+  "scope": "ring-only static ET_EXEC aarch64 payload; default payload unchanged",
+  "quickjs": {
+    "version": "2026-06-04",
+    "url": "https://bellard.org/quickjs/quickjs-2026-06-04.tar.xz",
+    "archive_sha256": "b376e839b322978313d929fd20663b11ba58b75df5a46c126dd19ea2fa70ad2a",
+    "verification": "Matches arch/research/perf/qjs/all-hashes.txt; no independently authenticated upstream checksum/signature found",
+    "patches": ["JS_SetSnapshotRandomSeed overwrites existing JSContext.random_state", "quickjs-libc os.snapshotCheckpoint native entry; checkpoint.h and chacha.h"]
+  },
+  "musl": {
+    "version": "1.2.5",
+    "url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+    "archive_sha256": "a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4",
+    "archive_sha512": "7bb7f7833923cd69c7a1a9b8a5f1784bfd5289663eb6061dcd43d583e45987df8a68a1be05d75cc1c88a3f5b610653d1a70f4a9cff4d8f7fd41ae73ee058c17c",
+    "verification": "Matches independently published Alpine 3.21 APKBUILD source checksum, retained in shard/raw-r7-rng/alpine-musl-APKBUILD",
+    "patches": ["musl-reseed.inc appended to mallocng/malloc.c"],
+    "configure": "CFLAGS='-O2 -fno-stack-protector' ./configure --prefix=WORK/musl-install --disable-shared"
+  },
+  "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "quickjs_cflags": "-O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\"",
+  "quickjs_ldflags": "-static -no-pie -Wl,-z,max-page-size=4096; LDEXPORT empty",
+  "builder": "kvm-dev, Ubuntu 26.04 arm64, /home/dev/r7-rng/payload-final; sh payload/ring-rng/build.sh NEW_WORK",
+  "payload_sha256": "207ee7bb146012c481bc6c6c8f1b6709734f406d37204f66380df7c128e06ac8",
+  "payload_bytes": 1046624,
+  "baseline_elf_sha256": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+  "baseline_reproduction": "Not reproduced: manifest packed.source_sha256 hashes the ELF, not an upstream archive; stripped ELF embeds QuickJS version but records neither original compiler flags nor authenticated original musl version. This is a new provenance, not an exact rebuild."
+}

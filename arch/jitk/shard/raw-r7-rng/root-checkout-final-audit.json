@@ -1,0 +1,21 @@
+{
+  "time_utc": "2026-10-25T20:59:11.298740+00:00",
+  "root_head": "d4dafd184b4da9cb469e87ce1035fa8236f7c2fa",
+  "root_image": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732",
+  "root_payload": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+  "this_worktree_default_image": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
+  "root_fstat_pread": [
+    {
+      "nr": 67,
+      "name": "pread64",
+      "registered": true,
+      "sha256": "29a5852a6b0bbaba11054bc0096f441b453727fa9d333d726f3cfc15ba8803f9"
+    },
+    {
+      "nr": 80,
+      "name": "fstat",
+      "registered": true,
+      "sha256": "10c1ededa296b47f31d2c320b2487cfdc2eff23dc6dbe8d90212f5878022121b"
+    }
+  ]
+}

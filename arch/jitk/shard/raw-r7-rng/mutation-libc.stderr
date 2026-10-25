@@ -1,0 +1,13 @@
+guest: FAULT esr=
+guest: 0000000092000046
+guest:  far=
+guest: 0000000000000000
+guest:  pc=
+guest: 00000000004b00a8
+guest: 
+
+
+thread 'main' (83288) panicked at src/bin/../real_kvm.rs:410:13:
+FINISH without completion; guest fatal
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Aborted (core dumped)

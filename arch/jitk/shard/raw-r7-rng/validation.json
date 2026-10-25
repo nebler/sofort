@@ -1,0 +1,22 @@
+{
+  "canary_process_exit": 0,
+  "ledger_process_exit": 0,
+  "mutation_driver_exit": 0,
+  "negative_old_checker_exit": 1,
+  "negative_new_checker_exit": 0,
+  "canary_checker_exit": 0,
+  "mac_subtrees_passed": [
+    "kernel",
+    "vmm",
+    "vmm/sandbox",
+    "protocol",
+    "executor",
+    "executor/policy",
+    "mcp",
+    "grow",
+    "bench",
+    "bench/hyperlight"
+  ],
+  "hyperlight_adapter_checks": 13,
+  "final_full_memory_pristine_assertion_passed": true
+}
