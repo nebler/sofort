@@ -10,9 +10,13 @@ pub unsafe fn call(a: &[usize]) -> isize {
                     return -12;
                 };
                 let count = len / 4096;
+                #[cfg(feature = "transport-ring")]
+                let limit = m::mmap_limit();
+                #[cfg(not(feature = "transport-ring"))]
+                let limit = 0x1e00000;
                 let mut run = 0;
                 let mut base = 0;
-                for va in (MMAP..0x1e00000).step_by(4096) {
+                for va in (MMAP..limit).step_by(4096) {
                     run = if m::valid(va, false) { 0 } else { run + 1 };
                     if run == count {
                         base = va + 4096 - len;
@@ -25,7 +29,7 @@ pub unsafe fn call(a: &[usize]) -> isize {
                 let Some(end) = base.checked_add(len) else {
                     return -12;
                 };
-                if end > 0x1e00000 {
+                if end > limit {
                     return -12;
                 }
                 pages(base, end, true, false);

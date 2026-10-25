@@ -8,6 +8,7 @@ if [ ! -f "$JITK_ELF" ]; then
   exit 1
 fi
 export JITK_SCRIPT="$(cat ring-bootstrap.js)"
+export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=--defsym=__ring_arena=0x81800000"
 mkdir -p dist/ring
 cargo build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}

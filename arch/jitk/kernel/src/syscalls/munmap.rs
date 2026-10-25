@@ -6,7 +6,11 @@ pub unsafe fn call(a: &[usize]) -> isize {
                 if a[0] & 4095 != 0 || a[1] == 0 {
                     return -22;
                 }
-                let Some(end) = a[0].checked_add(a[1]).filter(|e| *e <= 0x1e00000) else {
+                #[cfg(feature = "transport-ring")]
+                let limit = m::mmap_limit();
+                #[cfg(not(feature = "transport-ring"))]
+                let limit = 0x1e00000;
+                let Some(end) = a[0].checked_add(a[1]).filter(|e| *e <= limit) else {
                     return -22;
                 };
                 if a[0] < MMAP {
