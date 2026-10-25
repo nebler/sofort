@@ -1,0 +1,225 @@
+--- a/link.ld
++++ b/link.ld
+@@ -7,6 +7,7 @@
+  . = ALIGN(4096); __rw_start = .;
+  .data : { *(.data*) }
+  .bss (NOLOAD) : { __bss_start = .; *(.bss*) *(COMMON) . = ALIGN(16); __bss_end = .; }
++ .audit (NOLOAD) : { . = ALIGN(16384); __audit_start = .; *(.audit*) . = ALIGN(16384); __audit_end = .; }
+  . = ALIGN(4096); __guard_start = .; . += 4096;
+  . += 65536; __stack_top = .;
+  __kernel_end = .;
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -5,6 +5,7 @@
+     arch::{asm, global_asm},
+     panic::PanicInfo,
+ };
++mod audit;
+ mod console;
+ mod syscalls;
+ mod trace;
+@@ -24,6 +25,7 @@
+         let entry_counter = wait::ticks();
+         mmu::init();
+         let config = fdt::read(fdt);
++        audit::FDT = fdt;
+         SEED = config.seed;
+         EPOCH_OFFSET = config
+             .epoch
+--- a/src/boot.S
++++ b/src/boot.S
+@@ -23,6 +23,14 @@
+     isb
+     ldr x1, =__stack_top
+     mov sp, x1
++    sub x2,x1,#16,lsl #12
++    mov x3,#0xa5a5
++    movk x3,#0xa5a5,lsl #16
++    movk x3,#0xa5a5,lsl #32
++    movk x3,#0xa5a5,lsl #48
++8:  str x3,[x2],#8
++    cmp x2,x1
++    b.lo 8b
+     ldr x1, =__bss_start
+     ldr x2, =__bss_end
+ 1:  cmp x1, x2
+--- a/src/mmu.rs
++++ b/src/mmu.rs
+@@ -55,6 +55,9 @@
+     unsafe {
+         assert!((0x400000..0x2400000).contains(&va));
+         let i = va / 0x200000 - 2;
++        crate::audit::mapped();
++        crate::audit::mark((&raw const LOW) as usize);
++        crate::audit::mark((&raw const USER[i]) as usize);
+         LOW.0[i + 2] = table(&raw const USER[i]);
+         let pa = physical(va);
+         USER[i].0[(va >> 12) & 511] = pa as u64
+@@ -65,6 +68,7 @@
+             | if write { 0 } else { 1 << 7 }
+             | PXN
+             | if exec { 0 } else { UXN };
++        if write && crate::audit::active() { USER[i].0[(va >> 12) & 511] |= (1<<55) | (1<<7); }
+     }
+ }
+ #[cfg(feature = "qjs")]
+@@ -82,12 +86,13 @@
+     unsafe {
+         let i = va / 0x200000 - 2;
+         let p = USER[i].0[(va >> 12) & 511];
+-        p & 3 == 3 && (!w || p & (1 << 7) == 0)
++        p & 3 == 3 && (!w || (p & (1 << 7) == 0 || p & (1<<55) != 0))
+     }
+ }
+ #[cfg(feature = "qjs")]
+ pub unsafe fn unmap(va: usize) {
+     unsafe {
++        crate::audit::mark((&raw const USER[va / 0x200000 - 2]) as usize);
+         USER[va / 0x200000 - 2].0[(va >> 12) & 511] = 0;
+     }
+ }
+@@ -112,3 +117,39 @@
+         }
+     }
+ }
++
++pub unsafe fn audit_exempt(pa:usize)->bool { unsafe {
++    let ranges = [((&raw const ROOT) as usize,4096),((&raw const LOW) as usize,4096),((&raw const RAM) as usize,4096),((&raw const PAGES) as usize,32*4096),((&raw const USER) as usize,16*4096)];
++    ranges.iter().any(|&(a,n)| (a..a+n).contains(&pa))
++}}
++pub unsafe fn audit_arm() { unsafe {
++    for i in 0..16 { for j in 0..512 {
++        let pa=0x80000000+(i*512+j)*4096;
++        let p=&mut PAGES[i].0[j];
++        if *p&3==3 && (*p&(1<<7)==0 || *p&(1<<55)!=0) && !audit_exempt(pa) && !crate::audit::exempt(pa) {
++            *p |= (1<<7)|(1<<55);
++        }
++    }}
++    for i in 0..16 { for j in 0..512 {
++        let p=&mut USER[i].0[j];
++        if *p&3==3 && (*p&(1<<7)==0 || *p&(1<<55)!=0) { *p |= (1<<7)|(1<<55); }
++    }}
++    flush();
++}}
++pub unsafe fn audit_unprotect(va:usize)->Option<usize> { unsafe {
++    let pa=if (0x80000000..0x82000000).contains(&va) {va} else if (0x400000..0x2400000).contains(&va) {physical(va)} else {return None;};
++    let idx=(pa-0x80000000)/4096;
++    let a=&mut PAGES[idx/512].0[idx%512];
++    let uva=pa.checked_sub(0x80080000).map(|x| x+0x400000);
++    let up=uva.filter(|&x| (0x400000..0x2400000).contains(&x)).map(|x| &raw mut USER[x/0x200000-2].0[(x>>12)&511]);
++    let orig=if va>=0x80000000 {*a} else {up?.read()};
++    if orig & (1<<55)==0 {return None;}
++    if *a & (1<<55)!=0 {*a &= !(1<<7);}
++    if let Some(u)=up {if u.read()&(1<<55)!=0 {u.write(u.read()&!(1<<7));}}
++    flush(); Some(pa & !4095)
++}}
++
++pub unsafe fn audit_disarm() { unsafe {
++    for t in PAGES.iter_mut().chain(USER.iter_mut()) {for p in &mut t.0 {if *p&(1<<55)!=0 {*p &= !(1<<7);}}}
++    flush();
++}}
+--- a/src/console.rs
++++ b/src/console.rs
+@@ -131,6 +131,7 @@
+         if let Some(&last) = b.last() {
+             USER_LINE_START = last == 10;
+             if USER_LINE_START { record(&[]); }
++            crate::audit::output(b);
+         }
+     }
+ }
+--- a/src/user.rs
++++ b/src/user.rs
+@@ -68,6 +68,7 @@
+         unsafe extern "C" {
+             static vectors: u8;
+         }
++        crate::audit::begin();
+         let entry = if cfg!(feature = "probe") {
+             0x400000
+         } else {
+@@ -121,6 +122,7 @@
+         let f = core::slice::from_raw_parts_mut(frame, 33);
+         let esr: u64;
+         asm!("mrs {v},esr_el1",v=out(reg) esr);
++        if crate::audit::fault(esr) { return; }
+         if esr >> 26 != 0x15 {
+             let far: u64;
+             asm!("mrs {v},far_el1",v=out(reg) far);
+@@ -140,6 +142,7 @@
+             c::print("\n");
+         }
+         let n = f[8];
++        crate::audit::syscall(n, &f[..6]);
+         let args: [usize; 6] = f[..6].try_into().unwrap();
+         crate::trace::enter(n, &args, f[31]);
+         #[cfg(feature = "probe")]
+@@ -151,6 +154,7 @@
+         };
+         #[cfg(not(feature = "probe"))]
+         let ret = crate::syscalls::dispatch(n, &args);
++        crate::audit::returned(n, &args, ret);
+         crate::trace::exit(n, &args, ret);
+         f[0] = ret as usize;
+ 
+--- /dev/null
++++ b/src/audit.rs
+@@ -0,0 +1,58 @@
++use core::arch::asm;
++#[repr(C)]
++struct State { active:bool, ready:bool, parked:bool, phase:usize, bits:[u64;128], mmap_bytes:usize, mmap_calls:usize, brk_calls:usize, maps:usize }
++#[unsafe(link_section=".audit")]
++static mut S:State=State{active:false,ready:false,parked:false,phase:0,bits:[0;128],mmap_bytes:0,mmap_calls:0,brk_calls:0,maps:0};
++#[unsafe(link_section=".audit")]
++pub static mut FDT:usize=0;
++unsafe extern "C" {static __audit_start:u8;static __audit_end:u8;static __guard_start:u8;static __stack_top:u8;static __bss_start:u8;static __bss_end:u8;}
++pub unsafe fn exempt(pa:usize)->bool {unsafe {
++    ((&raw const __audit_start as usize)..(&raw const __audit_end as usize)).contains(&pa) ||
++    ((&raw const __guard_start as usize)..(&raw const __stack_top as usize)).contains(&pa)
++}}
++pub unsafe fn active()->bool {unsafe{S.active}}
++pub unsafe fn mark(pa:usize) {unsafe{ if S.active && (0x80000000..0x82000000).contains(&pa) {let i=(pa-0x80000000)/4096;S.bits[i/64]|=1<<(i%64);} }}
++pub unsafe fn fault(esr:u64)->bool {unsafe {
++    if !S.active || ![0x24,0x25].contains(&(esr>>26)) || esr&(1<<6)==0 || esr&0x3c!=0x0c {return false;}
++    let far:usize;asm!("mrs {v},far_el1",v=out(reg)far);
++    if let Some(pa)=crate::mmu::audit_unprotect(far) {mark(pa);true} else {false}
++}}
++unsafe fn field(name:&str,x:usize) {unsafe{crate::console::print(name);crate::console::hex(x);}}
++pub unsafe fn begin() {unsafe {
++    S.active=false;
++    crate::console::print("\x1eaudit_meta");field(" fdt=",FDT);field(" fdt_bytes=",u32::from_be((FDT as *const u32).add(1).read()) as usize);
++    field(" bss_start=",&raw const __bss_start as usize);field(" bss_end=",&raw const __bss_end as usize);
++    field(" stack_top=",&raw const __stack_top as usize);field(" audit_start=",&raw const __audit_start as usize);field(" audit_end=",&raw const __audit_end as usize);crate::console::print("\n");
++    rearm();
++}}
++unsafe fn rearm() {unsafe {S.bits=[0;128];S.mmap_bytes=0;S.mmap_calls=0;S.brk_calls=0;S.maps=0;crate::mmu::audit_arm();S.active=true;}}
++pub unsafe fn checkpoint(name:&str,again:bool) {unsafe {
++    crate::mmu::audit_disarm();
++    S.active=false;
++    // Every checkpoint itself uses console TX; those pages are separately labeled.
++    crate::console::print("\x1eaudit ");crate::console::print(name);
++    field(" phase=",S.phase);field(" mmap_bytes=",S.mmap_bytes);field(" mmap_calls=",S.mmap_calls);field(" brk_calls=",S.brk_calls);field(" maps=",S.maps);
++    let live=(crate::user::MMAP..0x1e00000).step_by(4096).filter(|&va| crate::mmu::valid(va,false)).count()*4096;
++    field(" live_mmap=",live);field(" brk=",crate::user::BRK);
++    let top=&raw const __stack_top as usize;
++    let mut low=top;
++    for a in ((&raw const __guard_start as usize)+4096..top).step_by(8) {if (a as *const u64).read_volatile()!=0xa5a5a5a5a5a5a5a5 {low=a;break;}}
++    field(" stack_highwater=",top-low);
++    crate::console::print(" pages=");
++    for i in 0..8192 {if S.bits[i/64]&(1<<(i%64))!=0 {crate::console::hex(0x80000000+i*4096);crate::console::print(",");}}
++    crate::console::print("\n");S.phase+=1;
++    if again {rearm();}
++}}
++pub unsafe fn output(b:&[u8]) {unsafe {
++    if b.windows(11).any(|x| x==b"\"t\":\"ready\"") {S.ready=true;}
++    if b.windows(10).any(|x| x==b"\"t\":\"done\"") {checkpoint("done",true);}
++}}
++pub unsafe fn syscall(n:usize,a:&[usize]) {unsafe {
++    if n==73 && S.ready && !S.parked {S.parked=true;checkpoint("ready",true);}
++    if n==93 || n==94 {checkpoint("exit",false);}
++
++    if n==214 {S.brk_calls+=1;}
++}}
++
++pub unsafe fn returned(n:usize,a:&[usize],ret:isize) {unsafe {if n==222 && ret>0 {S.mmap_calls+=1;S.mmap_bytes+=(a[1]+4095)&!4095;}}}
++pub unsafe fn mapped() {unsafe {if S.active {S.maps+=1;}}}

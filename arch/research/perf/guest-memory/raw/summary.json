@@ -1,0 +1,1350 @@
+[
+  {
+    "variant": "final-census",
+    "case": "return2",
+    "phase": "ready",
+    "n": 10,
+    "bytes4k": {
+      "min": 417792,
+      "median": 417792.0,
+      "max": 417792
+    },
+    "bytes16k": {
+      "min": 540672,
+      "median": 540672.0,
+      "max": 540672
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          24576
+        ],
+        "bytes16k": [
+          98304
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          32768
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          360448
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          32768
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        0
+      ],
+      "mmap_bytes": [
+        413696
+      ],
+      "mmap_calls": [
+        47
+      ],
+      "brk_calls": [
+        2
+      ],
+      "maps": [
+        103
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "return2",
+    "phase": "done",
+    "n": 10,
+    "bytes4k": {
+      "min": 331776,
+      "median": 335872.0,
+      "max": 335872
+    },
+    "bytes16k": {
+      "min": 491520,
+      "median": 491520.0,
+      "max": 491520
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          28672,
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          278528
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "return2",
+    "phase": "exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 102400,
+      "median": 102400.0,
+      "max": 102400
+    },
+    "bytes16k": {
+      "min": 262144,
+      "median": 262144.0,
+      "max": 262144
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          0
+        ],
+        "bytes16k": [
+          0
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          86016
+        ],
+        "bytes16k": [
+          212992
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        2
+      ],
+      "mmap_bytes": [
+        0
+      ],
+      "mmap_calls": [
+        0
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        0
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "return2",
+    "phase": "ready_to_exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 331776,
+      "median": 335872.0,
+      "max": 335872
+    },
+    "bytes16k": {
+      "min": 491520,
+      "median": 491520.0,
+      "max": 491520
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          28672,
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          278528
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "one_tool",
+    "phase": "ready",
+    "n": 10,
+    "bytes4k": {
+      "min": 417792,
+      "median": 417792.0,
+      "max": 417792
+    },
+    "bytes16k": {
+      "min": 540672,
+      "median": 540672.0,
+      "max": 540672
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          24576
+        ],
+        "bytes16k": [
+          98304
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          32768
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          360448
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          32768
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        0
+      ],
+      "mmap_bytes": [
+        413696
+      ],
+      "mmap_calls": [
+        47
+      ],
+      "brk_calls": [
+        2
+      ],
+      "maps": [
+        103
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "one_tool",
+    "phase": "done",
+    "n": 10,
+    "bytes4k": {
+      "min": 339968,
+      "median": 344064.0,
+      "max": 344064
+    },
+    "bytes16k": {
+      "min": 491520,
+      "median": 491520.0,
+      "max": 491520
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          28672,
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          282624
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "one_tool",
+    "phase": "exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 102400,
+      "median": 102400.0,
+      "max": 102400
+    },
+    "bytes16k": {
+      "min": 262144,
+      "median": 262144.0,
+      "max": 262144
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          0
+        ],
+        "bytes16k": [
+          0
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          86016
+        ],
+        "bytes16k": [
+          212992
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        2
+      ],
+      "mmap_bytes": [
+        0
+      ],
+      "mmap_calls": [
+        0
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        0
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-census",
+    "case": "one_tool",
+    "phase": "ready_to_exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 339968,
+      "median": 344064.0,
+      "max": 344064
+    },
+    "bytes16k": {
+      "min": 491520,
+      "median": 491520.0,
+      "max": 491520
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          28672,
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          282624
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "return2",
+    "phase": "ready",
+    "n": 10,
+    "bytes4k": {
+      "min": 372736,
+      "median": 372736.0,
+      "max": 372736
+    },
+    "bytes16k": {
+      "min": 540672,
+      "median": 540672.0,
+      "max": 540672
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          24576
+        ],
+        "bytes16k": [
+          98304
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          32768
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          315392
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          32768
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        0
+      ],
+      "mmap_bytes": [
+        413696
+      ],
+      "mmap_calls": [
+        47
+      ],
+      "brk_calls": [
+        2
+      ],
+      "maps": [
+        103
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "return2",
+    "phase": "done",
+    "n": 10,
+    "bytes4k": {
+      "min": 307200,
+      "median": 307200.0,
+      "max": 307200
+    },
+    "bytes16k": {
+      "min": 475136,
+      "median": 475136.0,
+      "max": 475136
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          249856
+        ],
+        "bytes16k": [
+          344064
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "return2",
+    "phase": "exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 102400,
+      "median": 102400.0,
+      "max": 102400
+    },
+    "bytes16k": {
+      "min": 262144,
+      "median": 262144.0,
+      "max": 262144
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          0
+        ],
+        "bytes16k": [
+          0
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          86016
+        ],
+        "bytes16k": [
+          212992
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        2
+      ],
+      "mmap_bytes": [
+        0
+      ],
+      "mmap_calls": [
+        0
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        0
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "return2",
+    "phase": "ready_to_exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 307200,
+      "median": 307200.0,
+      "max": 307200
+    },
+    "bytes16k": {
+      "min": 475136,
+      "median": 475136.0,
+      "max": 475136
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          249856
+        ],
+        "bytes16k": [
+          344064
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "one_tool",
+    "phase": "ready",
+    "n": 10,
+    "bytes4k": {
+      "min": 372736,
+      "median": 372736.0,
+      "max": 372736
+    },
+    "bytes16k": {
+      "min": 540672,
+      "median": 540672.0,
+      "max": 540672
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          24576
+        ],
+        "bytes16k": [
+          98304
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          12288
+        ],
+        "bytes16k": [
+          32768
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          315392
+        ],
+        "bytes16k": [
+          360448
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          32768
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        0
+      ],
+      "mmap_bytes": [
+        413696
+      ],
+      "mmap_calls": [
+        47
+      ],
+      "brk_calls": [
+        2
+      ],
+      "maps": [
+        103
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "one_tool",
+    "phase": "done",
+    "n": 10,
+    "bytes4k": {
+      "min": 315392,
+      "median": 315392.0,
+      "max": 315392
+    },
+    "bytes16k": {
+      "min": 475136,
+      "median": 475136.0,
+      "max": 475136
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          253952
+        ],
+        "bytes16k": [
+          344064
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "one_tool",
+    "phase": "exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 102400,
+      "median": 102400.0,
+      "max": 102400
+    },
+    "bytes16k": {
+      "min": 262144,
+      "median": 262144.0,
+      "max": 262144
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          0
+        ],
+        "bytes16k": [
+          0
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          86016
+        ],
+        "bytes16k": [
+          212992
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        2
+      ],
+      "mmap_bytes": [
+        0
+      ],
+      "mmap_calls": [
+        0
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        0
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  },
+  {
+    "variant": "final-nozero",
+    "case": "one_tool",
+    "phase": "ready_to_exit",
+    "n": 10,
+    "bytes4k": {
+      "min": 315392,
+      "median": 315392.0,
+      "max": 315392
+    },
+    "bytes16k": {
+      "min": 475136,
+      "median": 475136.0,
+      "max": 475136
+    },
+    "category_values": {
+      "kernel": {
+        "bytes4k": [
+          32768
+        ],
+        "bytes16k": [
+          81920
+        ]
+      },
+      "payload_rw": {
+        "bytes4k": [
+          8192
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "brk": {
+        "bytes4k": [
+          4096
+        ],
+        "bytes16k": [
+          16384
+        ]
+      },
+      "mmap": {
+        "bytes4k": [
+          253952
+        ],
+        "bytes16k": [
+          344064
+        ]
+      },
+      "user_stack": {
+        "bytes4k": [
+          16384
+        ],
+        "bytes16k": [
+          16384
+        ]
+      }
+    },
+    "field_values": {
+      "phase": [
+        1
+      ],
+      "mmap_bytes": [
+        32768
+      ],
+      "mmap_calls": [
+        1
+      ],
+      "brk_calls": [
+        0
+      ],
+      "maps": [
+        8
+      ],
+      "live_mmap": [
+        356352
+      ],
+      "brk": [
+        6823936
+      ],
+      "stack_highwater": [
+        6800
+      ]
+    }
+  }
+]

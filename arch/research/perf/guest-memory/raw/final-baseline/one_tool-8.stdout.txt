@@ -1,0 +1,4 @@
+{"t":"ready","v":1}
+{"t":"call","id":1,"ns":"test","fn":"echo","args":[2]}
+{"t":"done","ok":2}
+exit=0000000000000000

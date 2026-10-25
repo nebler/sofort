@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-25 08:02:36 +0100",
+  "uname": {
+    "system": "Darwin",
+    "node": "Mac",
+    "release": "25.6.0",
+    "version": "Darwin Kernel Version 25.6.0: Sat Jul 11 15:27:27 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6041",
+    "machine": "arm64",
+    "processor": "arm"
+  },
+  "image": "/tmp/sofort-a1/instrumented-final/kernel.bin",
+  "image_sha256": "63e873458abf38d64475df75b60423a9dbb6a91b097058c65f360a05ecb4bbc1",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "n": 10,
+  "uptime_start": "8:02  up 1 day, 10:16, 2 users, load averages: 36.78 36.16 23.92",
+  "samples": [
+    {
+      "case": "return2",
+      "i": 0,
+      "pid": 71730,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.49380875000497326,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.78 36.16 23.92"
+    },
+    {
+      "case": "return2",
+      "i": 1,
+      "pid": 71781,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.22615804101224057,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.78 36.16 23.92"
+    },
+    {
+      "case": "return2",
+      "i": 2,
+      "pid": 71787,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.15718837500025984,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 3,
+      "pid": 71794,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.25957066599221434,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 4,
+      "pid": 71810,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.32101720799983013,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 5,
+      "pid": 71861,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.5381497080088593,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 6,
+      "pid": 72394,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.1261158749985043,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 7,
+      "pid": 72402,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.1525490830099443,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 8,
+      "pid": 72404,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.20615395899221767,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "return2",
+      "i": 9,
+      "pid": 72406,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.29248224999173544,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "one_tool",
+      "i": 0,
+      "pid": 72409,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.4857177500089165,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "one_tool",
+      "i": 1,
+      "pid": 72665,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.4944848750019446,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "one_tool",
+      "i": 2,
+      "pid": 72674,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.566310207999777,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "one_tool",
+      "i": 3,
+      "pid": 72848,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.5960411249980098,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "one_tool",
+      "i": 4,
+      "pid": 72867,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.2309347090049414,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 36.56 36.13 23.98"
+    },
+    {
+      "case": "one_tool",
+      "i": 5,
+      "pid": 72880,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.20977912499802187,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 37.95 36.42 24.16"
+    },
+    {
+      "case": "one_tool",
+      "i": 6,
+      "pid": 72883,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.6361107090051519,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 37.95 36.42 24.16"
+    },
+    {
+      "case": "one_tool",
+      "i": 7,
+      "pid": 72888,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.576854375001858,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 37.95 36.42 24.16"
+    },
+    {
+      "case": "one_tool",
+      "i": 8,
+      "pid": 72893,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.3676237920008134,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 37.95 36.42 24.16"
+    },
+    {
+      "case": "one_tool",
+      "i": 9,
+      "pid": 72895,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.2756787499965867,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 37.95 36.42 24.16"
+    }
+  ],
+  "uptime_end": "8:02  up 1 day, 10:16, 2 users, load averages: 37.95 36.42 24.16"
+}

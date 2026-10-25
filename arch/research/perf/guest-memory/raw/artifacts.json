@@ -1,0 +1,41 @@
+{
+  "artifacts": [
+    {
+      "path": "/tmp/sofort-a1/baseline/kernel.bin",
+      "bytes": 2924584,
+      "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
+    },
+    {
+      "path": "/tmp/sofort-a1/baseline/kernel.elf",
+      "bytes": 2541440,
+      "sha256": "03106aff6051ab3b913b7b21176ffd028aaf00a92149c0b8ef7048fec867158e"
+    },
+    {
+      "path": "/tmp/sofort-a1/instrumented-final/kernel.bin",
+      "bytes": 2924584,
+      "sha256": "63e873458abf38d64475df75b60423a9dbb6a91b097058c65f360a05ecb4bbc1"
+    },
+    {
+      "path": "/tmp/sofort-a1/instrumented-final/kernel.elf",
+      "bytes": 2542720,
+      "sha256": "7abaec87e42134c6c012e9eff05565a5a5d5ba767ac7e28c20ffb16f3a7cbc93"
+    },
+    {
+      "path": "/tmp/sofort-a1/nozero-final/kernel.bin",
+      "bytes": 2924584,
+      "sha256": "ed72f2bd5b8d0e8ac7e508fb24df2d00b865306e8d1ccdee6598b9d1a9bc46ef"
+    },
+    {
+      "path": "/tmp/sofort-a1/nozero-final/kernel.elf",
+      "bytes": 2542720,
+      "sha256": "5997e9a7be9c226371ef854f2314c99d34f6e6673252a8690b5b0aad44dbb56e"
+    },
+    {
+      "path": "/tmp/sofort-a1/bin/jitk-vmm",
+      "bytes": 784336,
+      "sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e"
+    }
+  ],
+  "build_caches_removed": true,
+  "new_disk_usage": "31896\t/tmp/sofort-a1"
+}

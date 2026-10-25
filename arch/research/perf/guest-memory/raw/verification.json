@@ -1,0 +1,20 @@
+{
+  "final-census": {
+    "completed_done_2_and_exit_0": 20,
+    "faults": 0,
+    "panics": 0,
+    "sandbox_acks": 20
+  },
+  "final-nozero": {
+    "completed_done_2_and_exit_0": 20,
+    "faults": 0,
+    "panics": 0,
+    "sandbox_acks": 20
+  },
+  "final-baseline": {
+    "completed_done_2_and_exit_0": 20,
+    "faults": 0,
+    "panics": 0,
+    "sandbox_acks": 20
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-25 08:02:49 +0100",
+  "uname": {
+    "system": "Darwin",
+    "node": "Mac",
+    "release": "25.6.0",
+    "version": "Darwin Kernel Version 25.6.0: Sat Jul 11 15:27:27 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6041",
+    "machine": "arm64",
+    "processor": "arm"
+  },
+  "image": "/tmp/sofort-a1/baseline/kernel.bin",
+  "image_sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "n": 10,
+  "uptime_start": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26",
+  "samples": [
+    {
+      "case": "return2",
+      "i": 0,
+      "pid": 73007,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.052285458994447254,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 1,
+      "pid": 73009,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.030535625002812594,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 2,
+      "pid": 73013,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.02804991599987261,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 3,
+      "pid": 73016,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.024197708000428975,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 4,
+      "pid": 73018,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.024464874994009733,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 5,
+      "pid": 73026,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.044577166001545265,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 6,
+      "pid": 73035,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.028108750004321337,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 7,
+      "pid": 73043,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.05707770900335163,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 8,
+      "pid": 73047,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.07163679199584294,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "return2",
+      "i": 9,
+      "pid": 73049,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.05629908300761599,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 0,
+      "pid": 73052,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.0899269999936223,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 1,
+      "pid": 73055,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.0647985000105109,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 2,
+      "pid": 73059,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.036914249998517334,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 3,
+      "pid": 73062,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.02614733300288208,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 4,
+      "pid": 73064,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.03665341700252611,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 5,
+      "pid": 73068,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.028574582989676856,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 6,
+      "pid": 73070,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.02725833299336955,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 7,
+      "pid": 73072,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.047127334008109756,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 8,
+      "pid": 73075,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.10398033300589304,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    },
+    {
+      "case": "one_tool",
+      "i": 9,
+      "pid": 73079,
+      "returncode": 0,
+      "elapsed_s_instrumented_not_latency": 0.032279416991514154,
+      "uptime": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+    }
+  ],
+  "uptime_end": "8:02  up 1 day, 10:16, 2 users, load averages: 38.20 36.50 24.26"
+}

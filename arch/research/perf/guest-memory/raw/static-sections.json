@@ -1,0 +1,50 @@
+[
+  {
+    "name": ".text",
+    "address": "0x80000000",
+    "size": 22120,
+    "align": 2048
+  },
+  {
+    "name": ".rodata",
+    "address": "0x80006000",
+    "size": 6792,
+    "align": 8
+  },
+  {
+    "name": ".data",
+    "address": "0x80008000",
+    "size": 1545,
+    "align": 8
+  },
+  {
+    "name": ".bss",
+    "address": "0x80009000",
+    "size": 251952,
+    "align": 4096
+  },
+  {
+    "name": ".packed",
+    "address": "0x80080000",
+    "size": 2400296,
+    "align": 1
+  },
+  {
+    "name": ".symtab",
+    "address": "0x0",
+    "size": 5400,
+    "align": 8
+  },
+  {
+    "name": ".shstrtab",
+    "address": "0x0",
+    "size": 60,
+    "align": 1
+  },
+  {
+    "name": ".strtab",
+    "address": "0x0",
+    "size": 4029,
+    "align": 1
+  }
+]
