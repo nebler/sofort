@@ -102,7 +102,8 @@ export class SandboxPool {
   }
   async close():Promise<void> {
     this.closed=true;this.lifecycle.abort();for(const s of this.live)s.kill();
+    await this.backend.close?.();
     await Promise.allSettled([...this.startups]);await this.warming?.catch(()=>{});
-    await Promise.all([...this.live].map(s=>s.exited));await this.drain();await this.backend.close?.();
+    await Promise.all([...this.live].map(s=>s.exited));await this.drain();
   }
 }

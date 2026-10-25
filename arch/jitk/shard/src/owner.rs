@@ -116,7 +116,7 @@ impl Pool {
         let mut joins = Vec::new();
         for (owner, wake) in wakes.into_iter().enumerate() {
             let capacity = if notify.is_some() {
-                (slots - owner).div_ceil(owners) * 34 + 1
+                slots.saturating_sub(owner).div_ceil(owners) * 34 + 1
             } else {
                 32
             };

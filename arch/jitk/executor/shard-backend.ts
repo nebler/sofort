@@ -75,7 +75,11 @@ export class ShardBackend implements Backend {
   }
   async park(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
     if(signal?.aborted)throw Error('aborted');
-    await this.ready;
+    if(signal){
+      let abort!:()=>void;
+      try{await Promise.race([this.ready,new Promise<never>((_,reject)=>{abort=()=>reject(Error('aborted'));signal.addEventListener('abort',abort,{once:true});if(signal.aborted)abort();})]);}
+      finally{signal.removeEventListener('abort',abort);}
+    }else await this.ready;
     if(this.dead)throw this.dead;
     if(signal?.aborted)throw Error('aborted');
     const slot=this.generations.findIndex((_,i)=>!this.sandboxes.has(i));
@@ -86,7 +90,7 @@ export class ShardBackend implements Backend {
     if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.kill();await s.exited;throw e;}
     return s;
   }
-  send(kind:number,s:ShardSandbox,id=0,bytes=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
+  send(kind:number,s:ShardSandbox,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
   released(s:ShardSandbox) {if(this.sandboxes.get(s.slot)!==s)throw Error('shard release identity');this.sandboxes.delete(s.slot);}
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}
@@ -112,8 +116,11 @@ class ShardSandbox implements Sandbox {
   private gotMetrics=false;
   private received=0;
   private admittedDeadlineNs=0n;
+  private stopped:Promise<never>;
+  private rejectStopped!:(e:Error)=>void;
   constructor(private backend:ShardBackend,readonly slot:number,readonly generation:bigint) {
     this.exited=new Promise(resolve=>{this.resolveExit=resolve;});
+    this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
     this.dispatcher=new Dispatcher({kill:f=>{this.backend.fatal(Error('protocol '+f.code));},message:m=>{
       if(m.t==='ready')return;
       if(this.waiter){const w=this.waiter;this.waiter=undefined;w.resolve(m);}
@@ -126,7 +133,7 @@ class ShardSandbox implements Sandbox {
     if(this.deadline!==undefined&&this.deadline!==deadline)throw Error('deadline already armed');
     this.deadline=deadline;
   }
-  failed(e:Error) {if(!this.error){this.error=e;this.frames=[];this.waiter?.reject(e);this.waiter=undefined;}this.state='released';this.resolveExit();}
+  failed(e:Error) {this.rejectStopped(e);if(!this.error){this.error=e;this.frames=[];this.waiter?.reject(e);this.waiter=undefined;}this.state='released';this.resolveExit();}
   private feed(frame:unknown) {this.dispatcher.feed(encode(frame));}
   receive(m:Message) {
     if(++this.received>35)throw Error('shard IPC per-run message bound');
@@ -179,6 +186,11 @@ class ShardSandbox implements Sandbox {
     return next.then(value=>{if(this.error)throw this.error;return value;});
   }
 
+  private async write(kind:number,id:number,bytes:Buffer):Promise<void> {
+    // A hostile peer may withhold TX credit forever. Abort must also escape a
+    // blocked admission/reply write, while channel staging remains bounded.
+    await Promise.race([this.backend.send(kind,this,id,bytes),this.stopped]);
+  }
   async send(value:unknown):Promise<void> {
     if(this.error)throw this.error;
     const frame=value as Frame;
@@ -194,19 +206,20 @@ class ShardSandbox implements Sandbox {
       this.admittedDeadlineNs=monotonicNs()+BigInt(Math.floor(remaining*1e6));
       payload.writeBigUInt64LE(this.admittedDeadlineNs,0);
       payload.writeUInt32LE(32,8);payload.writeUInt32LE(1024,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(2*1048576,20);source.copy(payload,24);
-      this.state='running';await this.backend.send(IPC.start,this,0,payload);
+      this.state='running';await this.write(IPC.start,0,payload);
     }else if(frame.t==='ret'){
       const wire=this.pending.get(frame.id as number);if(wire===undefined)throw Error('shard unknown reply');
       this.pending.delete(frame.id as number);this.wirePending.delete(wire);
       let payload=Buffer.from(ascii(JSON.stringify(Object.hasOwn(frame,'ok')?{ok:frame.ok}:{err:frame.err})));
       if(payload.length>1024)payload=Buffer.from('{"err":{"code":"LIMIT","message":"shard tool reply limit (1024 bytes)"}}');
-      await this.backend.send(IPC.reply,this,wire,payload);
+      await this.write(IPC.reply,wire,payload);
     }else throw Error('shard host frame');
   }
   kill() {
     if(this.state==='released'||this.state==='releasing')return;
     this.state='releasing';
-    this.waiter?.reject(Error('sandbox exited'));this.waiter=undefined;
+    this.error??=Error('sandbox exited');this.rejectStopped(this.error);
+    this.waiter?.reject(this.error);this.waiter=undefined;
     void this.backend.send(IPC.cancel,this).catch(e=>this.backend.fatal(e));
   }
 }

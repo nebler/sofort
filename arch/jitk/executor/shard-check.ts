@@ -78,6 +78,17 @@ const peer=join(scratch,'peer');
 const fixture=fileURLToPath(new URL('../fixtures/shard-peer.py',import.meta.url));
 writeFileSync(peer,`#!/bin/sh\nexec /usr/bin/python3 '${fixture.replaceAll("'","'\\''")}' "$@"\n`,{mode:0o755});
 try {
+  const startup=new ShardBackend({binary:peer,snapshot:'no-ready',slots:1,owners:1});
+  const startupPool=new SandboxPool(startup,0,1);
+  try{const r=await new MicroVMExecutor(startupPool,()=> 'allow',20).execute('return 1',{});check(r.error==='Execution aborted or timed out','abort escapes stalled shard startup');}
+  finally{await startupPool.close();}
+  const stalled=new ShardBackend({binary:peer,snapshot:'backpressure',slots:1,owners:1});
+  const stalledPool=new SandboxPool(stalled,0,1);
+  const stalledExecutor=new MicroVMExecutor(stalledPool,()=> 'allow',100);
+  try {
+    for(let i=0;i<32;i++){const r=await stalledExecutor.execute('return 1',{});check(!r.error&&r.result===1,'hostile peer fills TX credits');await stalledPool.drain();}
+    const r=await stalledExecutor.execute('return 1',{});check(r.error==='Execution aborted or timed out','abort escapes blocked admission write');
+  } finally {await stalledPool.close();}
   for(const mode of ['producer','consumer','length','reserved','slot','generation','kind','identity','duplicate','json','nonascii','completion','stats']) {
     const hostile=new ShardBackend({binary:peer,snapshot:mode,slots:1,owners:1});
     try {

@@ -25,7 +25,32 @@ def send(kind, slot=0, generation=0, identity=0, payload=b'', length=None, reser
     memory[192:200] = struct.pack('<Q', produced)
     notify()
 
+if mode == 'no-ready':
+    select.select([], [], [], 5)
+    sys.exit(0)
 send(20)
+if mode == 'backpressure':
+    consumed = 0
+    while True:
+        current = struct.unpack_from('<Q', memory, 64)[0]
+        while consumed < current:
+            at = 4096 + consumed % CAP * RECORD
+            kind, slot, generation, identity, length, reserved = struct.unpack_from('<IIQIIQ', memory, at)
+            consumed += 1
+            # Deliberately never publish peer-consumer credit. Valid-looking
+            # completions can otherwise make the host reuse logical slots.
+            if kind == 1:
+                send(22, slot, generation, 0, struct.pack('<QQQQ', 0, 0, 0, 0))
+                send(17, slot, generation, 0, b'{"ok":1}')
+            elif kind == 3:
+                send(19, slot, generation)
+            else:
+                raise ValueError(kind)
+        select.select([4], [], [], 1)
+        try:
+            os.read(4, 8)
+        except BlockingIOError:
+            pass
 # Wait for Node's first admission, then attack that exact run/generation.
 while struct.unpack_from('<Q', memory, 64)[0] == 0:
     select.select([4], [], [], 3)

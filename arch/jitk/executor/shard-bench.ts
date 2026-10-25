@@ -9,6 +9,7 @@ const n=Number(process.env.JITK_SHARD_BENCH_N??200);
 assert.ok(Number.isInteger(n)&&n>=20&&n<=10000);
 const rows:ShardMetrics[]=[];
 const backend=new ShardBackend({binary:process.env.JITK_SHARD_BINARY!,snapshot:process.env.JITK_SHARD_SNAPSHOT!,slots:1,onMetrics:m=>rows.push(m)});
+backend.child.stderr!.on('data',(b:Buffer)=>process.stderr.write(b));
 const pool=new SandboxPool(backend,0,1);
 const ex=new MicroVMExecutor(pool,()=> 'allow',5000);
 const providers={echo:async(x:unknown)=>x};

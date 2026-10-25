@@ -49,6 +49,11 @@ subprocess.run([str(ssh), f'mkdir -p {shlex.quote(remote)} && cd {shlex.quote(re
                input=archive.getvalue(), check=True, timeout=30)
 q = shlex.quote
 node_root = str(Path(node).parent.parent)
+benchmark = os.environ.get('JITK_SHARD_BENCH') == '1'
+lock_wait = 1800 if benchmark else 600
+run_suite = '"$JITK_NODE" build/shard-check.js'
+if benchmark:
+    run_suite += ' && "$JITK_NODE" build/shard-bench.js'
 commands = f'''set -eu
 cd {q(remote)}/arch/jitk/shard
 PATH=/home/dev/.cargo/bin:$PATH cargo +stable test --offline --bin real
@@ -59,16 +64,27 @@ export JITK_NODE={q(node)}
 export JITK_SHARD_BINARY={q(remote)}/arch/jitk/shard/target/release/real
 export JITK_SHARD_SNAPSHOT={q(snapshot)}
 sh run.sh build
-flock -w 600 /home/dev/bench.lock "$JITK_NODE" build/shard-check.js
+flock -w {lock_wait} /home/dev/bench.lock sh -c {q(run_suite)}
 '''
 receipt = {'backend': 'ssh', 'remote': remote, 'node': node, 'snapshot': snapshot,
            'source_sha256': {name: hashlib.sha256(source.read_bytes()).hexdigest() for source, name in files},
-           'command': commands, 'started_unix': time.time(), 'vm_lifecycle_changes': False}
+           'command': commands, 'started_unix': time.time(), 'benchmark': benchmark, 'vm_lifecycle_changes': False}
 output = executor / 'raw-r7-ipc'
 output.mkdir(exist_ok=True)
 (output / 'ssh-command.json').write_text(json.dumps(receipt, indent=2) + '\n')
-print(f'jitk: shard suite via {ssh}; scratch={remote}; lock wait <=600s', flush=True)
+print(f'jitk: shard suite via {ssh}; scratch={remote}; lock wait <={lock_wait}s', flush=True)
 with (output / 'ssh-test.log').open('w') as log:
-    result = subprocess.run([str(ssh), commands], stdout=log, stderr=subprocess.STDOUT, timeout=900)
-print((output / 'ssh-test.log').read_text()[-8000:], flush=True)
+    result = subprocess.run([str(ssh), commands], stdout=log, stderr=subprocess.STDOUT, timeout=lock_wait + 300)
+log_text = (output / 'ssh-test.log').read_text()
+if benchmark and result.returncode == 0:
+    measurements = []
+    for line in log_text.splitlines():
+        try:
+            value = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if value.get('event') in {'environment', 'summary', 'sample', 'deadlines'}:
+            measurements.append(line)
+    (output / 'bench-final.jsonl').write_text('\n'.join(measurements) + '\n')
+print(log_text[-8000:], flush=True)
 raise SystemExit(result.returncode)
