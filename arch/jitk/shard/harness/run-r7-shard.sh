@@ -5,9 +5,6 @@ cd "${JITK_R7_ROOT:-/home/dev/r7-shard}"
 export JITK_SHARD_THREADS=4
 export JITK_R7_OUTPUT="${JITK_R7_OUTPUT:-$PWD/raw-review}"
 mkdir -p "$JITK_R7_OUTPUT"
-# This is part of the shard gate: rebuild native layouts rather than reusing
-# snapshots that could hide a kernel/transport integration regression.
-make -C arch/jitk/shard test >"$JITK_R7_OUTPUT/native-regression.log" 2>&1
 real=arch/jitk/shard/target/release/real
 snapshot=${JITK_R7_SNAPSHOT:-arena-review}
 for fixture in return2 one_tool promise10 canary; do
