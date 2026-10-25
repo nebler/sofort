@@ -9,6 +9,7 @@ IMAGE=BIN/'kernel.bin'
 BASE=Path(os.getenv('JITK_CGROUP_ROOT','/sys/fs/cgroup'))/f'jitk-05-{os.getpid()}'
 TIMEOUT=float(os.getenv('JITK_TIMEOUT_S','30'))
 LIVE=set(); LOCK=threading.Lock(); SERIAL=0
+ACTIVE_GATE=None
 LABEL=os.getenv('JITK_LABEL','METAL')
 REPORT={'label':LABEL,'performance_claim':LABEL!='NESTED','status':'STARTED','gates':{},'host_uptime':os.getenv('JITK_HOST_UPTIME','UNVERIFIED')}
 OUT=Path(os.getenv('JITK_REPORT',str(ROOT/'out/report.json')))
@@ -18,8 +19,25 @@ def uptime():
 def quant(xs):
  s=sorted(xs);return {k:s[max(0,math.ceil(p*len(s))-1)] for k,p in [('p50',.5),('p90',.9),('p99',.99)]} if s else None
 def save():
- OUT.parent.mkdir(parents=True,exist_ok=True); OUT.write_text(json.dumps(REPORT,indent=2)+'\n')
+ OUT.parent.mkdir(parents=True,exist_ok=True); OUT.write_text(json.dumps(REPORT,separators=(',',':'))+'\n')
  print('JITK_PROGRESS '+json.dumps({'status':REPORT['status'],'gates':{k:v.get('completed',v.get('pass')) for k,v in REPORT['gates'].items()},'density':REPORT.get('density_progress',[])[-1:]},separators=(',',':')),flush=True)
+def progress(completed,detail=None):
+ if ACTIVE_GATE is None:return
+ print('JITK_GATE '+json.dumps({'gate':ACTIVE_GATE,'event':'progress','completed':completed,'detail':detail},separators=(',',':')),flush=True)
+def execute_gate(name,run,passed):
+ global ACTIVE_GATE
+ ACTIVE_GATE=name;started=time.monotonic();unix=time.time()
+ print('JITK_GATE '+json.dumps({'gate':name,'event':'start','unix':unix}),flush=True)
+ try:
+  data=run();data.setdefault('started_unix',unix)
+  data['elapsed_s']=time.monotonic()-started
+  gate(name,data,passed(data))
+ except BaseException as e:
+  REPORT['gates'].setdefault(name,{'pass':False,'started_unix':unix,'ended_unix':time.time(),'elapsed_s':time.monotonic()-started,'error':repr(e)})
+  raise
+ finally:
+  print('JITK_GATE '+json.dumps({'gate':name,'event':'end','elapsed_s':time.monotonic()-started}),flush=True)
+  ACTIVE_GATE=None
 def guest_ms():
  v=Path('/proc/stat').read_text().splitlines()[0].split();return int(v[9])*1000/os.sysconf('SC_CLK_TCK')
 def cgstat(cg):return {a:int(b) for a,b in (l.split() for l in (cg/'cpu.stat').read_text().splitlines())}
@@ -113,11 +131,19 @@ def one(i,tool=False):
   if v:v.close()
 def batch(n,c,tool=False):
  started_unix=time.time();up=uptime();g=guest_ms();t=time.monotonic();parent0=resource.getrusage(resource.RUSAGE_SELF);child0=resource.getrusage(resource.RUSAGE_CHILDREN)
- with cf.ThreadPoolExecutor(max_workers=c) as ex:rows=list(ex.map(lambda i:one(i,tool),range(n)))
+ rows=[]
+ with cf.ThreadPoolExecutor(max_workers=c) as ex:
+  pending=[ex.submit(one,i,tool) for i in range(n)]
+  for future in cf.as_completed(pending):
+   row=future.result();rows.append(row)
+   if len(rows)%10==0 or len(rows)==n:progress(len(rows))
+   if not row['ok']:
+    for job in pending:job.cancel()
+    raise RuntimeError(f'batch failed after {len(rows)}/{n}: {row}')
  parent1=resource.getrusage(resource.RUSAGE_SELF);child1=resource.getrusage(resource.RUSAGE_CHILDREN)
  elapsed=time.monotonic()-t;guest=guest_ms()-g;ok=[r for r in rows if r['ok']];count=len(ok)
  user=sum(r['usage']['user_ms_including_guest'] for r in ok if r['usage']);system=sum(r['usage']['system_ms'] for r in ok if r['usage'])
- return {'started_unix':started_unix,'ended_unix':time.time(),'label':LABEL,'n':n,'concurrency':c,'completed':count,'uptime_before':up,'uptime_after':uptime(),'elapsed_s':elapsed,'latency_ms':quant([r['ms'] for r in ok]),'ready_ms':quant([r['ready_ms'] for r in ok]),'cpu_ms_vm':{'vmm_user_excluding_guest':(user-guest)/count if count else None,'vmm_user_including_guest':user/count if count else None,'guest_attribution_status':'ESTIMATE; precise host-user/guest split UNVERIFIED; negative residuals possible','vmm_system':system/count if count else None,'guest':guest/count if count else None,'total':(user+system)/count if count else None,'supervisor':((parent1.ru_utime+parent1.ru_stime)-(parent0.ru_utime+parent0.ru_stime))*1000/count if count else None,'vmm_plus_clone_wrapper':((child1.ru_utime+child1.ru_stime)-(child0.ru_utime+child0.ru_stime))*1000/count if count else None,'guest_counter':'L1 /proc/stat guest delta; isolated nested Linux; nominal tick resolution is not a complete error bound','guest_resolution_ms_vm':os.cpu_count()*1000/os.sysconf('SC_CLK_TCK')/count if count else None},'samples':rows}
+ return {'started_unix':started_unix,'ended_unix':time.time(),'label':LABEL,'n':n,'concurrency':c,'completed':count,'uptime_before':up,'uptime_after':uptime(),'elapsed_s':elapsed,'latency_ms':quant([r['ms'] for r in ok]),'ready_ms':quant([r['ready_ms'] for r in ok]),'cpu_ms_vm':{'vmm_user_excluding_guest':(user-guest)/count if count else None,'vmm_user_including_guest':user/count if count else None,'guest_attribution_status':'ESTIMATE; precise host-user/guest split UNVERIFIED; negative residuals possible','vmm_system':system/count if count else None,'guest':guest/count if count else None,'total':(user+system)/count if count else None,'supervisor':((parent1.ru_utime+parent1.ru_stime)-(parent0.ru_utime+parent0.ru_stime))*1000/count if count else None,'vmm_plus_clone_wrapper':((child1.ru_utime+child1.ru_stime)-(child0.ru_utime+child0.ru_stime))*1000/count if count else None,'guest_counter':'L1 /proc/stat guest delta; may include foreign KVM workloads; nominal tick resolution is not a complete error bound','guest_resolution_ms_vm':os.cpu_count()*1000/os.sysconf('SC_CLK_TCK')/count if count else None},'samples':rows}
 def gate(name,data,passed):
  data.setdefault('ended_unix',time.time())
  REPORT['gates'][name]={'pass':bool(passed),**data};save()
@@ -133,6 +159,7 @@ def density(targets):
     floor=128*1024 if LABEL=='NESTED' else 8*1024**2
     if avail<floor:raise RuntimeError(f'density headroom: {avail} KiB')
     v=VM();vms.append(v);v.ready()
+    if len(vms)%16==0:progress(len(vms),'parked READY')
    before=cgstat(BASE);t=time.monotonic();time.sleep(3);dt=time.monotonic()-t;after=cgstat(BASE)
    pss=[]
    for v in vms:
@@ -141,7 +168,9 @@ def density(targets):
    row={'unix':time.time(),'parked':target,'label':LABEL,'uptime_before':up,'uptime_after':uptime(),'idle_seconds':dt,'idle_cpu_pct_core_vm':(after['usage_usec']-before['usage_usec'])/1e6/dt/target*100,'pss_bytes_vm':quant(pss),'memory_current_sum':sum(int((v.cg/'memory.current').read_text()) for v in vms)}
    rows.append(row);REPORT['density_progress']=rows;save()
    if row['idle_cpu_pct_core_vm']>=2:raise RuntimeError('idle CPU >=2%')
-  for v in vms:v.run()
+  for i,v in enumerate(vms,1):
+   v.run()
+   if i%16==0:progress(max(targets)+i,'validated after park')
   return {'rows':rows,'completed_after_park':len(vms)}
  finally:
   for v in vms:v.close()
@@ -154,6 +183,7 @@ def containment():
    for i in range(30):
     p=subprocess.run([str(BIN/'seccomp-probe'),str(BIN/(role+'.bpf')),action],capture_output=True,timeout=TIMEOUT)
     rows.append({'role':role,'action':action,'rc':p.returncode,'pass':p.returncode==expected,'uptime':up,'unix':time.time()})
+   progress(len(rows),role+'/'+action)
  return {'samples':rows,'completed':sum(r['pass'] for r in rows),'n':len(rows),'provenance':'Standalone syscall probe of exact canonical owner-07 sandbox module; canonical VMM tested separately for boot/tool/faults'}
 def faults():
  rows=[]
@@ -165,6 +195,7 @@ def faults():
    except TimeoutError as e:
     v.close();rows.append({'case':name,'pass':v.p.returncode==-signal.SIGKILL,'watchdog_killed':True,'rc':v.p.returncode,'deadline_s':3,'stderr':v.errors[-4:],'uptime':up,'unix':time.time()})
    finally:v.close()
+   progress(len(rows),name)
   print('JITK_FAULT_CASE '+json.dumps({'case':name,'n':30,'pass':sum(r['pass'] for r in rows if r['case']==name),'watchdog_kills':sum(r.get('watchdog_killed',False) for r in rows if r['case']==name)}),flush=True)
  return {'samples':rows,'completed':sum(r['pass'] for r in rows),'n':len(rows)}
 def parking():
@@ -191,6 +222,7 @@ def parking():
    rtt.append((time.perf_counter_ns()-start)/1e3)
    if (i+1)%100==0:time.sleep(.003);r['delayed_replies']+=1
    start=time.perf_counter_ns();v.send({'t':'ret','id':i+1,'ok':i});r['exchanges']=i+1
+   if (i+1)%100==0:progress(i+1,'tool exchanges')
   assert receive()=={'t':'done','ok':'ok'}
   v.finish();assert v.p.returncode==0,(v.p.returncode,v.errors[-8:])
   r['pass']=r['idle_cpu_pct_core']<2 and r['idle_cgroup_cpu_pct_core']<2
@@ -216,6 +248,7 @@ def cpu_controls():
    usage=next((json.loads(l[2:]) for l in p.stderr.decode(errors='replace').splitlines() if l.startswith('R ')),None)
    samples.append({'pass':p.returncode==expected,'rc':p.returncode,'usage':usage,'stderr':p.stderr.decode(errors='replace')[-500:] if p.returncode!=expected else ''})
    cg.rmdir()
+   if (i+1)%10==0:progress(len(rows)*100+i+1,mode)
   guest=guest_ms()-g;assert all(r['pass'] and r['usage'] for r in samples),samples[:3]
   user=sum(r['usage']['user_ms_including_guest'] for r in samples)/len(samples);system=sum(r['usage']['system_ms'] for r in samples)/len(samples)
   rows.append({'mode':mode,'n':len(samples),'unix':time.time(),'uptime_before':up,'uptime_after':uptime(),'cpu_ms_vm':{'vmm_user_excluding_guest':user-guest/len(samples),'vmm_system':system,'guest':guest/len(samples),'total':user+system},'samples':samples})
@@ -225,19 +258,21 @@ def main():
  try:
   for sig in [signal.SIGTERM,signal.SIGINT]:signal.signal(sig,stop)
   REPORT['uptime_start']=uptime(); REPORT['uname']=list(os.uname());REPORT['hashes']={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [BIN/'jitk-vmm',BIN/'spawn-cg',IMAGE]}
+  REPORT['online_cpus']=os.cpu_count()
+  REPORT['cpu_attribution']='Shared nested VM: global guest ticks may include foreign KVM workloads. VMM wait4 user+system totals remain measured; host-user/guest split is UNVERIFIED.'
   fd=os.open('/dev/kvm',os.O_RDWR);assert fcntl.ioctl(fd,0xae00,0)==12;vm=fcntl.ioctl(fd,0xae01,0);os.close(vm);os.close(fd)
   (BASE.parent/'cgroup.subtree_control').write_text('+memory +cpu');BASE.mkdir();(BASE/'cgroup.subtree_control').write_text('+memory +cpu')
-  r=parking();gate('parking',r,r['pass'])
-  r=batch(1,1);gate('smoke',r,r['completed']==1)
-  r=batch(1,1,True);gate('tool_smoke',r,r['completed']==1)
-  r=batch(int(os.getenv('JITK_BOOT_N','100')),1);gate('boot',r,r['completed']==r['n'])
-  r=batch(30,1,True);gate('one_tool',r,r['completed']==30)
+  execute_gate('parking',parking,lambda r:r['pass'])
+  execute_gate('smoke',lambda:batch(1,1),lambda r:r['completed']==1)
+  execute_gate('tool_smoke',lambda:batch(1,1,True),lambda r:r['completed']==1)
+  execute_gate('boot',lambda:batch(int(os.getenv('JITK_BOOT_N','100')),1),lambda r:r['completed']==r['n'])
+  execute_gate('one_tool',lambda:batch(30,1,True),lambda r:r['completed']==30)
   for c in range(1,int(os.getenv('JITK_MAX_CONCURRENCY','8'))+1):
-   r=batch(int(os.getenv('JITK_SWEEP_N','100')),c);gate(f'concurrency_{c}',r,r['completed']==r['n'])
-  r=density([int(x) for x in os.getenv('JITK_DENSITY','1,32,64,128,256').split(',')]);gate('density',r,r['completed_after_park']==max(x['parked'] for x in r['rows']))
-  r=cpu_controls();gate('cpu_controls',r,True)
-  r=containment();gate('seccomp_kill',r,r['completed']==r['n'])
-  r=faults();gate('fault_guests',r,r['completed']==r['n'])
+   execute_gate(f'concurrency_{c}',lambda:batch(int(os.getenv('JITK_SWEEP_N','100')),c),lambda r:r['completed']==r['n'])
+  execute_gate('density',lambda:density([int(x) for x in os.getenv('JITK_DENSITY','1,32,64,128,256').split(',')]),lambda r:r['completed_after_park']==max(x['parked'] for x in r['rows']))
+  execute_gate('cpu_controls',cpu_controls,lambda r:True)
+  execute_gate('seccomp_kill',containment,lambda r:r['completed']==r['n'])
+  execute_gate('fault_guests',faults,lambda r:r['completed']==r['n'])
   REPORT['status']='PASS'
  except BaseException as e:REPORT['status']='FAILED';REPORT['error']=repr(e);raise
  finally:

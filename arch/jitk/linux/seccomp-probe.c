@@ -17,6 +17,9 @@ int main(int argc,char **argv) {
   struct sock_filter insns[4096]; ssize_t n=read(f,insns,sizeof insns); close(f);
   if(n<=0 || n%sizeof(*insns)) return 4;
   struct sock_fprog prog={.len=n/sizeof(*insns),.filter=insns};
+  // Expected SIGSYS must not launch Ubuntu's piped crash reporter hundreds of
+  // times. RLIMIT_CORE=0 alone does not suppress a core_pattern pipe handler.
+  if(prctl(PR_SET_DUMPABLE,0,0,0,0)) return 8;
   if(prctl(PR_SET_NO_NEW_PRIVS,1,0,0,0)) return 5;
   if(syscall(SYS_seccomp,SECCOMP_SET_MODE_FILTER,0,&prog)) return 6;
   if(!strcmp(argv[2],"exit")) syscall(SYS_gettid);
