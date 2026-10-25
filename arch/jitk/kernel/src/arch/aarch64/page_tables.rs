@@ -1,16 +1,11 @@
 //! Ring-only stage 1. All mutable backing lives in the selected stage-2 arena.
 use core::arch::asm;
 
-#[cfg(not(ring_glue_8m))]
 pub const ARENA: usize = 0x81800000;
-#[cfg(ring_glue_8m)]
-pub const ARENA: usize = 0x81600000;
-#[cfg(not(any(ring_glue_4m, ring_glue_8m)))]
+#[cfg(not(ring_glue_4m))]
 pub const ARENA_BYTES: usize = 1_310_720;
 #[cfg(ring_glue_4m)]
-pub const ARENA_BYTES: usize = 2_621_440;
-#[cfg(ring_glue_8m)]
-pub const ARENA_BYTES: usize = 5_242_880;
+pub const ARENA_BYTES: usize = 2_883_584;
 const ARENA_TABLES: usize = ARENA_BYTES.div_ceil(0x200000);
 const END: usize = ARENA + ARENA_BYTES;
 const STACK: usize = END - 4096 - 0x20000;
@@ -29,13 +24,7 @@ const ADDRESS: u64 = 0x0000fffffffff000;
 static LAYOUT: [u64; 9] = [
     0x414e4552414b544a,
     2,
-    if cfg!(ring_glue_8m) {
-        8
-    } else if cfg!(ring_glue_4m) {
-        4
-    } else {
-        2
-    },
+    if cfg!(ring_glue_4m) { 4 } else { 2 },
     ARENA as u64,
     ARENA_BYTES as u64,
     81920,

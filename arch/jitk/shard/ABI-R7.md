@@ -72,7 +72,7 @@ queue, UTF-8 decoding of output, or per-run helper process exists.
 ### Bounded layout identity (R7 integration)
 
 Every prepared `.layout` is exactly nine little-endian u64 words: magic
-`0x414e4552414b544a`, layout version **2**, admission class MiB (2/4/8), arena
+`0x414e4552414b544a`, layout version **2**, admission class MiB (2/4), arena
 GPA, arena bytes, ring bytes (81,920), ELF writable-data reservation (65,536),
 brk reservation (65,536), and user stack bytes (131,072). The linked kernel
 contains the identical marker; restore checks the sidecar against that marker
@@ -82,8 +82,7 @@ sidecars are rejected. Class selection is offline, never guest-negotiated.
 | Class | Arena GPA | Writable arena bytes | Prepared native profiles |
 |---|---|---:|---|
 | glue-2m | `0x81800000` | 1,310,720 | jq-musl, sqlite3, busybox, lua |
-| glue-4m | `0x81800000` | 2,621,440 | micropython |
-| glue-8m | `0x81600000` | 5,242,880 | zstd |
+| glue-4m | `0x81800000` | 2,883,584 | micropython, zstd |
 
 `JITK_RING_CLASS` selects the linked layout; unset retains glue-2m for QuickJS.
 The native preparation harness selects the table above per pinned executable

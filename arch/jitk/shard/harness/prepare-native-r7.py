@@ -15,7 +15,7 @@ PINS = {
     'busybox': ('bb-gzip','e6e0d9874eef980f1bf6ce107494bbaed97f37449815acb991f4dd0ed4eb5ec8'),
     'zstd': ('zstd','5a52c331442b8939469c1337d2526167f4f17bf16fe976b37d8b8c1246b3002c'),
 }
-CLASSES = {name: ('glue-8m' if name == 'zstd' else 'glue-4m' if name == 'micropython' else 'glue-2m') for name in PINS}
+CLASSES = {name: ('glue-4m' if name in ('zstd','micropython') else 'glue-2m') for name in PINS}
 
 def sha(path):
     h=hashlib.sha256()

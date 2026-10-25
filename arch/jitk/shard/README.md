@@ -33,9 +33,9 @@ ENOMEM. This narrow class does **not** fit the structured `json64k` fixture; it
 returns the guest's out-of-memory error. It does not silently select a larger
 class. Larger/native profiles need an explicit class/layout contract.
 
-R7 integration adds versioned `glue-4m` (2,621,440 writable arena bytes) and
-`glue-8m` (5,242,880 bytes) layouts. The native preparer selects glue-2m for
-jq/SQLite/BusyBox/Lua, glue-4m for MicroPython, and glue-8m for zstd; each prepared
+R7 integration adds a versioned `glue-4m` layout (2,883,584 writable arena
+bytes). The native preparer selects glue-2m for
+jq/SQLite/BusyBox/Lua and glue-4m for MicroPython/zstd; each prepared
 snapshot identifies its class and restore verifies the embedded kernel marker.
 See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
 The default QuickJS class remains glue-2m. Late-bound native archives have their

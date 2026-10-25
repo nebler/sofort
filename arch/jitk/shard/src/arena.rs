@@ -4,30 +4,23 @@ pub const RING_BYTES: usize = 81_920;
 pub enum Class {
     Glue2m,
     Glue4m,
-    Glue8m,
 }
 impl Class {
-    pub const ALL: [Self; 3] = [Self::Glue2m, Self::Glue4m, Self::Glue8m];
+    pub const ALL: [Self; 2] = [Self::Glue2m, Self::Glue4m];
     pub fn name(self) -> &'static str {
         match self {
             Self::Glue2m => "glue-2m",
             Self::Glue4m => "glue-4m",
-            Self::Glue8m => "glue-8m",
         }
     }
     pub fn bytes(self) -> usize {
         match self {
             Self::Glue2m => 1_310_720,
-            Self::Glue4m => 2_621_440,
-            Self::Glue8m => 5_242_880,
+            Self::Glue4m => 2_883_584,
         }
     }
     pub fn start(self) -> usize {
-        if self == Self::Glue8m {
-            0x1600000
-        } else {
-            0x1800000
-        }
+        0x1800000
     }
     pub fn end(self) -> usize {
         self.start() + self.bytes()
@@ -39,7 +32,6 @@ impl Class {
         let mib = match self {
             Self::Glue2m => 2,
             Self::Glue4m => 4,
-            Self::Glue8m => 8,
         };
         [
             0x414e4552414b544au64,
