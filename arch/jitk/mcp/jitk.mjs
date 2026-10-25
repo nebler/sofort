@@ -58,7 +58,7 @@ export async function createJitk(cfg) {
   // Refill on every VM exit, not only after a run: the watchdog's lifetime bound
   // (60 s) also reaps idle parked VMs, and the next execute must still find one parked.
   // warm() is idempotent and bounded by warm/maxLive/refillConcurrency.
-  const backend = {kind: inner.kind, memoryLimitMB: inner.memoryLimitMB, async park(signal, deadline) {
+  const backend = {kind: inner.kind, memoryLimitMB: inner.memoryLimitMB, close: () => inner.close?.(), async park(signal, deadline) {
     const s = await inner.park(signal, deadline);
     void s.exited.then(() => refill());
     return s;

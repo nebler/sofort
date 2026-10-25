@@ -15,7 +15,8 @@ export interface Sandbox {
   kill():void;
 }
 export interface Backend {
-  readonly kind:'jitk'|'local-qjs'|'hyperlight-js';
+  readonly kind:'jitk'|'local-qjs'|'hyperlight-js'|'shard';
+  close?():Promise<void>;
   readonly memoryLimitMB:number;
   park(signal?:AbortSignal,deadline?:number):Promise<Sandbox>;
 }

@@ -2,6 +2,7 @@ import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {JitkBackend,LocalProcessQjsBackend,type Backend} from './backend.js';
+import {ShardBackend} from './shard-backend.js';
 import type {ParkingGate} from './pool.js';
 // Every emitted entry lives in executor/build; no checkout-name assumptions.
 const here=fileURLToPath(new URL('../',import.meta.url));
@@ -23,6 +24,13 @@ export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:str
   if(selected==='local-qjs'){
     if(!process.env.QJS)throw Error('UNSAFE local-qjs requires QJS=/absolute/path/to/qjs');
     return {backend:new LocalProcessQjsBackend(process.env.QJS),selection:'UNSAFE local-qjs',integrated:false};
+  }
+  if(selected==='shard'){
+    if(process.platform!=='linux')throw Error('shard backend requires Linux');
+    const binary=process.env.JITK_SHARD_BINARY??jitk+'shard/target/release/real';
+    const snapshot=process.env.JITK_SHARD_SNAPSHOT;
+    if(!snapshot)throw Error('shard backend requires JITK_SHARD_SNAPSHOT=/absolute/path/to/prepared-base');
+    return {backend:new ShardBackend({binary,snapshot}),selection:'experimental Linux KVM shard / shared-memory Node policy',integrated:false};
   }
   if(selected!=='jitk')throw Error('unsupported JITK_BACKEND: '+selected);
   const vmmReady=existsSync(jitk+'vmm/.READY'),kernelReady=existsSync(jitk+'kernel/.READY');

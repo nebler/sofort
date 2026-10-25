@@ -1,3 +1,7 @@
 .PHONY: build test demo bench
 build test demo bench:
 	./run.sh $@
+
+.PHONY: test-shard
+test-shard:
+	./run.sh shard-test

@@ -140,3 +140,60 @@ and recorded separately. Published performance comparisons belong only to
 `.READY` is written only after final tests and the demo pass with canonical
 VMM/kernel markers, shared protocol and 07 policy. Production Linux timing and
 sustained capacity are not established by macOS functional executor tests.
+
+## Experimental Linux shard backend (R7)
+
+`jitk` remains the default on every platform. On Linux arm64, select the new
+backend explicitly:
+
+```sh
+export JITK_NODE=/absolute/path/to/node
+export JITK_BACKEND=shard
+export JITK_SHARD_BINARY=/absolute/path/to/shard/target/release/real
+export JITK_SHARD_SNAPSHOT=/absolute/path/to/prepared-base
+./run.sh build
+```
+
+Build the Rust `real` executable with `cargo build --release --bin real` in
+`../shard`, build the ring image with `../kernel/build-ring.sh`, then run
+`real prepare KERNEL_IMAGE PREPARED_BASE` once, offline. The snapshot must be
+from the current QuickJS ring/glue-2m profile, including its `.layout` sidecar.
+No image or libkrun default changes. MCP reads the same `JITK_BACKEND` selection;
+use `"warm":0` for this experimental backend (a new parking receipt is not yet
+certified). Call `pool.close()` to reap the one shard and its independent watchdog.
+
+Node has no mmap API. `ipc/bridge.c` is a small Linux N-API addon, built only
+when the shard is selected or its tests are requested. It needs a C11 compiler
+and Node headers (`JITK_NODE_INCLUDE`, default `../include/node` beside Node).
+It uses Node's existing libuv loop to watch eventfd doorbells. There are no
+per-call helper processes, background polling threads, pipe payloads or external
+npm native dependencies. A sealed memfd carries two 64-record SPSC queues;
+records have a 32-byte header and <=16,384 payload bytes. The 2,105,344-byte
+mapping is fixed per shard, shared by at most 64 slots. The shard receives only
+those descriptors and `PATH=/usr/bin:/bin`; credentials stay in Node policy.
+See [ipc/ABI.md](ipc/ABI.md) for bounds, ordering and generation validation.
+
+```sh
+# Linux, after building/preparing the artifacts above:
+make test-shard
+# Mac -> existing kvm-dev, following linux/nested/run-ssh.py's SSH pattern:
+JITK_SHARD_TEST=ssh make test-shard
+# Include the focused SSH suite in the normal executor/top-level make test:
+JITK_SHARD_TEST=ssh make test
+```
+
+SSH uses `JITK_NESTED_SSH` or the project's `kvm-dev/ssh.sh`. Install a verified
+Node with headers under `/home/dev/r7-ipc/` and prepare the ring snapshot there
+first. Defaults are `/home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/bin/node`
+and `/home/dev/r7-ipc/prepared`; override `JITK_SHARD_REMOTE_NODE` and
+`JITK_SHARD_REMOTE_SNAPSHOT` within that private root. The runner stages sources,
+builds Rust, installs the exact JS lockfile with scripts disabled, builds the
+addon, then holds `/home/dev/bench.lock` for the Linux tests. It never manages
+the VM lifecycle. Mac `make test` without this opt-in stays unchanged.
+
+The ring profile has smaller source, call, reply and live-memory bounds than
+libkrun. Small codec values, Unicode, concurrent tools, structured tool errors
+and console logs are supported through adapters. Clocks during uninterrupted
+CPU work, timers, `/cap`, large values, cancellation of a busy vCPU and broad
+shadow parity remain cutover blockers. The exact test/parity table and nested
+measurements are in [RESULTS-R7-ipc.md](../shard/RESULTS-R7-ipc.md).
