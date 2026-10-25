@@ -60,3 +60,11 @@ arch/research/perf/**/raw-evidence.tar.gz
 /arch/research/perf/linux-ledger/raw/pilot/ledger-jitk-1.json
 /arch/research/perf/linux-ledger/raw/pilot/ledger-bare-process-0.json
 /.inputs/
+
+# Linux test-suite build scratch (rebuilt by make -C arch/jitk/linux)
+arch/jitk/linux/.work/
+kvm-dev/qemu.pid
+# raw >1 MiB kept local
+/arch/jitk/shard/raw-r6/canary-10000.jsonl
+/arch/research/native-census/raw/musl-build.log
+/arch/viz/explainer/SofortExplained.mp4
