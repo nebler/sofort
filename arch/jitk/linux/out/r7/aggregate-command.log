@@ -1,0 +1,717 @@
+jitk: delegating kernel/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 3.38s
+{"image": "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin", "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6", "bytes": 2924584}
+python3 tests/test_packer.py
+./Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/tests/test_packer.py:31: ResourceWarning: unclosed file <_io.BufferedWriter name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmp1eenlfvm/a.txt'>
+  os.makedirs(d+'/b/c'); open(d+'/a.txt','wb').write(b'hi'); open(d+'/b/c/z','wb').write(b'')
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/tests/test_packer.py:31: ResourceWarning: unclosed file <_io.BufferedWriter name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmp1eenlfvm/b/c/z'>
+  os.makedirs(d+'/b/c'); open(d+'/a.txt','wb').write(b'hi'); open(d+'/b/c/z','wb').write(b'')
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/prepare.py:31: ResourceWarning: unclosed file <_io.BufferedReader name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmp1eenlfvm/a.txt'>
+  content = open(path, 'rb').read(); a, b, d = data + len(body), len(content), 0; body += content
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/prepare.py:31: ResourceWarning: unclosed file <_io.BufferedReader name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmp1eenlfvm/b/c/z'>
+  content = open(path, 'rb').read(); a, b, d = data + len(body), len(content), 0; body += content
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+......
+----------------------------------------------------------------------
+Ran 7 tests in 0.017s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/test_fs.py
+
+running 1 test
+test walk_and_corrupt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+python3 tests/regression.py
+{
+  "load": "21:43  up 1 day, 23:57, 1 user, load averages: 11.16 10.92 10.64",
+  "churn": {
+    "cumulative_bytes": 134217728,
+    "ram_mib": 32,
+    "result": {
+      "t": "done",
+      "ok": 8128
+    }
+  },
+  "clock": {
+    "host_interval_plus_1ms": 30,
+    "n": 30,
+    "midpoint_delta_ms": {
+      "n": 30,
+      "p50": -0.51725,
+      "p90": 0.011,
+      "p99": 0.6085
+    }
+  },
+  "finite_timer_e2e_ms": {
+    "n": 30,
+    "p50": 29.1551455,
+    "p90": 47.631917,
+    "p99": 68.164208
+  },
+  "eof": "PASS: clean input EOF terminates without a success frame",
+  "partial_rx": "PASS: 1-byte run fragments + 32KiB ret",
+  "control_forgery": [
+    "\u001efatal control byte"
+  ],
+  "atomic_ascii": [
+    {
+      "byte": 0,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 30,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 127,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 128,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 255,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
+{
+  "load": "21:43  up 1 day, 23:57, 1 user, load averages: 10.83 10.85 10.62",
+  "status": "PASS",
+  "n": 30,
+  "method": "Realtime minus guest counter compared with host realtime minus same-domain mach counter; 64 bracketed guest samples, narrowest retained. Date.now is millisecond quantized.",
+  "origin_error_ms": {
+    "n": 30,
+    "p50": -0.5528564453125,
+    "p90": -0.066162109375,
+    "p99": -0.0009765625
+  },
+  "guest_bracket_width_ms": {
+    "n": 30,
+    "p50": 0.0002499818801879883,
+    "p90": 0.0003329813480377197,
+    "p99": 0.0003329813480377197
+  },
+  "worst_abs_error_bound_ms": 0.956179678440094,
+  "samples_ms": [
+    -0.33203125,
+    -0.9560546875,
+    -0.56005859375,
+    -0.54443359375,
+    -0.8583984375,
+    -0.066162109375,
+    -0.0009765625,
+    -0.1494140625,
+    -0.32373046875,
+    -0.5849609375,
+    -0.8603515625,
+    -0.72265625,
+    -0.926025390625,
+    -0.915283203125,
+    -0.463623046875,
+    -0.11328125,
+    -0.91796875,
+    -0.686279296875,
+    -0.545654296875,
+    -0.311767578125,
+    -0.8388671875,
+    -0.70458984375,
+    -0.517578125,
+    -0.638916015625,
+    -0.126708984375,
+    -0.303466796875,
+    -0.93505859375,
+    -0.055908203125,
+    -0.9296875,
+    -0.49365234375
+  ]
+}
+kernel-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'bfa301a5d6e567383f9bd0db8661ad8b72c2568d90a99093e6a8d9964b55d7e2', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.83 10.85 10.62', 'status': 'PASS'}
+text-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'c2e3c1bcc2b58fd9043c0637ba26c00e8e33f9393e7cc4fd678d997fd934f9bb', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.83 10.85 10.62', 'status': 'PASS'}
+heap-exec {'returncode': 0, 'output': '\x1eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'd58cb0f12b1b0e9f713c20c705ec5cb0cad013089504c52bc1aa3cd9c7a76c35', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.83 10.85 10.62', 'status': 'PASS'}
+privileged {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'e625e35f8dd2f55a63efffc055418060590ed4ba7c46f16efe7c7e38a1b03ac8', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+el0-hvc {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'ef6e354d5f35dc4317460b5e9e4eb89774a086d537637c87f5f16ddbae9e4dcf', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+bad-pointer {'returncode': 0, 'output': '\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'c1ef0af5bbed9d436ebe027a4a926340d4722467c31899cb37d4d23c5f9af9fa', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+pan {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12345,"pc":4194312,"args":[1,2147514744,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080004b10\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '008646623cf3ac9948ba7e6036c2e216b4bcd4c6180137d8c6e7904633c35f60', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+alias-write {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12346,"pc":4194312,"args":[1,2147514744,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600004f far=0000000080080000 pc=0000000080004b04\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '4e2ab3ea0eadc0b53bb13cd56f525840c244a79c6a5effdc0df1ae58843d6877', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+fs-alias-write {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12347,"pc":4194312,"args":[1,2147514744,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600004f far=00000000802ca000 pc=0000000080004b04\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '03211625b2cbb584f71f29ef34acc6514b26c64f7226a9005e21c37bc1ad1b3c', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+unknown-syscall {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":511,"pc":4194312,"args":[1,2147514752,0,58,0,0],"input":null,"timeout":null}\n\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'd8b9ef3dc54e27fe64c2fc47f4aecbf9003bc6858e3144e82bd6c61ef339e23d', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.84 10.85 10.62', 'status': 'PASS'}
+fs-user-read {'returncode': 0, 'output': '\x1eFAULT esr=0000000092000007 far=000000000064a000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '90860ae41cd209e0614777cf2f4bad545e1b9d3426d3f3ce8add7b15a5ab22a2', 'load': '21:43  up 1 day, 23:57, 1 user, load averages: 10.53 10.79 10.60', 'status': 'PASS'}
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 1.13s
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.79s
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.82s
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.83s
+{
+  "load": "21:43  up 1 day, 23:57, 1 user, load averages: 10.53 10.79 10.60",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK",
+    "exit_slot": 93
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK",
+    "exit_slot": 94
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ],
+    "registered_enosys": [
+      29,
+      134,
+      135,
+      216
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}
+python3 tests/fs_diff.py
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 1.57s
+probe {'status': 'PASS', 'identical': '30/30', 'linux_stdout_sha256': 'a8322cefb579a4d1c902c90f16a9b267ae79f73c729997f62619b501d1c252cd', 'lines': 148, 'fs_syscalls': ['close', 'fcntl', 'getdents64', 'lseek', 'newfstatat', 'openat', 'read', 'readlinkat', 'readv'], 'all_syscalls': [25, 56, 57, 61, 62, 63, 64, 65, 78, 79, 94]}
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 1.22s
+lua {'status': 'PASS', 'identical': '30/30', 'linux_stdout_sha256': 'e1cfb18e0ab759e64ec0e581ed3568e27eb14199af05cf8982e054f8a29836fd', 'lines': 13, 'fs_syscalls': ['close', 'lseek', 'openat', 'read', 'readv'], 'all_syscalls': [29, 56, 57, 62, 63, 65, 66, 94, 96, 113, 134, 135, 214, 215, 222]}
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 1.02s
+qjs {'status': 'PASS', 'identical': '30/30', 'linux_stdout_sha256': '3c454d9075b55a449eb155042a5b015e91d1ba8678470d038b4bd285259c1199', 'lines': 14, 'fs_syscalls': ['close', 'fcntl', 'getdents64', 'lseek', 'newfstatat', 'openat', 'read', 'readlinkat', 'readv'], 'all_syscalls': [17, 25, 29, 56, 57, 61, 62, 63, 65, 66, 78, 79, 94, 96, 113, 214, 215, 222]}
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 2.58s
+{
+  "load": "21:43  up 1 day, 23:57, 1 user, load averages: 11.13 10.91 10.64",
+  "samples": 30,
+  "tree_sha256": "1e54b51b2da23ae05ce9e2495938d0b718dbe2bfb150345d01cf16bfefb8c27a",
+  "probe": {
+    "status": "PASS",
+    "identical": "30/30",
+    "linux_stdout_sha256": "a8322cefb579a4d1c902c90f16a9b267ae79f73c729997f62619b501d1c252cd",
+    "lines": 148,
+    "fs_syscalls": [
+      "close",
+      "fcntl",
+      "getdents64",
+      "lseek",
+      "newfstatat",
+      "openat",
+      "read",
+      "readlinkat",
+      "readv"
+    ],
+    "all_syscalls": [
+      25,
+      56,
+      57,
+      61,
+      62,
+      63,
+      64,
+      65,
+      78,
+      79,
+      94
+    ]
+  },
+  "lua": {
+    "status": "PASS",
+    "identical": "30/30",
+    "linux_stdout_sha256": "e1cfb18e0ab759e64ec0e581ed3568e27eb14199af05cf8982e054f8a29836fd",
+    "lines": 13,
+    "fs_syscalls": [
+      "close",
+      "lseek",
+      "openat",
+      "read",
+      "readv"
+    ],
+    "all_syscalls": [
+      29,
+      56,
+      57,
+      62,
+      63,
+      65,
+      66,
+      94,
+      96,
+      113,
+      134,
+      135,
+      214,
+      215,
+      222
+    ]
+  },
+  "qjs": {
+    "status": "PASS",
+    "identical": "30/30",
+    "linux_stdout_sha256": "3c454d9075b55a449eb155042a5b015e91d1ba8678470d038b4bd285259c1199",
+    "lines": 14,
+    "fs_syscalls": [
+      "close",
+      "fcntl",
+      "getdents64",
+      "lseek",
+      "newfstatat",
+      "openat",
+      "read",
+      "readlinkat",
+      "readv"
+    ],
+    "all_syscalls": [
+      17,
+      25,
+      29,
+      56,
+      57,
+      61,
+      62,
+      63,
+      65,
+      66,
+      78,
+      79,
+      94,
+      96,
+      113,
+      214,
+      215,
+      222
+    ]
+  },
+  "bootstrap": {
+    "status": "PASS",
+    "checks": 3
+  },
+  "status": "PASS"
+}
+jitk: delegating vmm/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/vmm/README.md)
+JITK_TEST_IMAGES="/tmp/jitk-01/r3/images" python3 tests/build-guests.py
+/tmp/jitk-01/r3/images
+"/tmp/jitk-01/r3/darwin/jitk-vmm" --compile-profile "/tmp/jitk-01/r3/jitk.sbbin" --images "/tmp/jitk-01/r3/images"
+python3 tests/check.py --binary "/tmp/jitk-01/r3/darwin/jitk-vmm" --images "/tmp/jitk-01/r3/images" --profile "/tmp/jitk-01/r3/jitk.sbbin"
+PASS no-image
+PASS bad-mem
+PASS bad-seed
+PASS unknown
+PASS seed-epoch-counter-single-console
+PASS eof-before-go
+PASS real-qjs-ready-and-one-tool
+PASS wait-go-preserves-1000-following-bytes
+GUEST unknown-hvc
+GUEST unknown-smc
+GUEST mmio-halfword
+GUEST bad-sysreg
+GUEST console_avail_oob
+GUEST rtc_oob_read
+PASS invalid-hvc-clean-exit
+PASS one-console-native-cli
+PASS no-libkrun-dylib
+PASS signature
+{
+  "checks": {
+    "no-image": true,
+    "bad-mem": true,
+    "bad-seed": true,
+    "unknown": true,
+    "seed-epoch-counter-single-console": true,
+    "eof-before-go": true,
+    "real-qjs-ready-and-one-tool": true,
+    "wait-go-preserves-1000-following-bytes": true,
+    "invalid-hvc-clean-exit": true,
+    "one-console-native-cli": true,
+    "no-libkrun-dylib": true,
+    "signature": true
+  },
+  "fault_runs": 180
+}
+jitk: delegating vmm/sandbox/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/vmm/sandbox/README.md)
+
+running 9 tests
+test tests::profile_is_minimal ... ok
+test tests::fits_kernel_limit ... ok
+test tests::wrong_arch_killed ... ok
+test tests::vcpu_writes_only_8_bytes ... ok
+test tests::kvm_run_only_in_vcpu ... ok
+test tests::futex_ops_and_seccomp_narrowing ... ok
+test tests::clone_threads_only_and_clone3_enosys ... ok
+test tests::never_allowed_anywhere ... ok
+test tests::no_exec_memory ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+jitk: delegating protocol/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:62115) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+python3 make-vectors.py
+71 cases
+10 real-guest cases
+/tmp/jitk-09/node-real test.mjs
+{
+  "node": "/private/tmp/jitk-09/node-real",
+  "version": "v24.22.1",
+  "uptime": "21:44  up 1 day, 23:57, 1 user, load averages: 13.34 11.46 10.85",
+  "corpus": {
+    "cases": 71,
+    "runs": 142
+  },
+  "boundaries": {
+    "checks": 14,
+    "consecutiveCalls": 4096,
+    "maxFrameBytes": 1048576
+  },
+  "fuzz": {
+    "mutations": 25000,
+    "chunkDifferentialRuns": 50000,
+    "accepted": 622,
+    "rejected": 24378,
+    "seed": "0x3c0ffee"
+  }
+}
+/tmp/jitk-09/node-real import-check.mjs
+Canonical imports: executor, Hyperlight and kernel pass
+jitk: delegating executor/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/executor/README.md)
+./run.sh test
+{
+  "loadBefore": "21:44  up 1 day, 23:57, 1 user, load averages: 13.32 11.48 10.86",
+  "loadAfter": "21:44  up 1 day, 23:57, 1 user, load averages: 13.32 11.48 10.86",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+PASS resolve before kill/reap; VMM AND watchdog hold token
+PASS host-only ack AND ready, fragmented ack, missing/guest-forged ack rejected
+{
+  loadBefore: '21:44  up 1 day, 23:58, 1 user, load averages: 12.65 11.38 10.82',
+  loadAfter: '21:44  up 1 day, 23:58, 1 user, load averages: 12.65 11.38 10.82',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+{
+  receipt: {
+    pid: 62307,
+    timeout: true,
+    deadline: 1792961058944,
+    firedAt: 1792961058945.96,
+    killAt: 1792961058945.978
+  },
+  killOvershootMs: 1.97802734375,
+  loadBefore: '21:44  up 1 day, 23:58, 1 user, load averages: 12.65 11.38 10.82',
+  loadAfter: '21:44  up 1 day, 23:58, 1 user, load averages: 12.60 11.39 10.83',
+  watchdogDeadlineMs: 250,
+  hostEventLoopBlockedMs: 1500,
+  observedReapAfterHostUnblockMs: 1507.50225,
+  reaped: true
+}
+integrated jitk / confined VMM / current kernel
+PASS exact requested demo
+PASS binary codec roundtrip
+PASS async fanout and UTF8
+PASS capture console + provider prelude closure
+PASS deny has no side effect
+PASS approval is fail closed
+PASS approved call executes once
+PASS provenance accumulates across calls
+PASS CPU infinite loop SIGKILL
+PASS AbortSignal kills awaiting guest
+PASS tool that never settles cannot defeat deadline
+PASS fresh process per execute
+PASS unknown inherited method denied
+PASS sanitized names and collisions
+PASS generated types + host validation
+PASS TanStack driver on actual stripped body
+PASS TanStack memory mismatch fails explicitly
+PASS TanStack createCodeModeTool integration
+PASS bounded log capture (v1 truncates/drops)
+PASS warm pool capacity and single use
+20 checks passed
+PASS Cloudflare wrapper github
+PASS Cloudflare wrapper binary
+{
+  "selection": "integrated jitk / confined VMM / current kernel",
+  "loadBefore": "21:44  up 1 day, 23:58, 1 user, load averages: 12.60 11.39 10.83",
+  "loadAfter": "21:44  up 1 day, 23:58, 1 user, load averages: 12.60 11.39 10.83",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 2,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "n": 30,
+      "calls": 1920,
+      "maxOutstanding": 64,
+      "executeMs": {
+        "median": 25.743875000000003,
+        "p90": 44.72425000000001,
+        "p99": 71.341542
+      },
+      "samples": [
+        32.667125,
+        30.594167000000013,
+        31.892708,
+        33.832250000000016,
+        44.72425000000001,
+        25.892832999999996,
+        29.83858300000003,
+        22.752083999999968,
+        18.57733300000001,
+        24.150082999999995,
+        22.348041999999964,
+        30.150540999999976,
+        20.989458000000013,
+        71.341542,
+        53.955291999999986,
+        33.49320899999998,
+        21.41145800000004,
+        20.967832999999928,
+        19.058042,
+        38.29554200000007,
+        28.962709000000018,
+        25.743875000000003,
+        20.460874999999987,
+        16.518083000000047,
+        15.113208999999983,
+        14.988500000000045,
+        17.32737499999996,
+        31.272749999999974,
+        25.644999999999982,
+        44.96958299999994
+      ]
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}
+22 policy assertions passed
+22 executor policy assertions passed (plus 22 security owner assertions)
+6/6 Hyperlight through canonical executor; kind hyperlight-js
+jitk: delegating executor/policy/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/executor/policy/README.md)
+22 policy assertions passed
+PASS forged "__proto__"."x" expect=KILL got=KILL
+PASS forged "mail"."__proto__" expect=KILL got=KILL
+PASS forged "mail"."constructor" expect=KILL got=KILL
+PASS forged "mail"."toString" expect=KILL got=KILL
+PASS forged "mail"."hasOwnProperty" expect=KILL got=KILL
+PASS forged "constructor"."name" expect=KILL got=KILL
+PASS forged "mail"."reаd" expect=KILL got=KILL
+PASS forged "mail"."rrrrrrrrrrrrrrrrrrr expect=KILL got=KILL
+PASS forged ""."read" expect=KILL got=KILL
+PASS forged "mail"."read\n" expect=KILL got=KILL
+PASS extra field approved:true expect=KILL got=KILL
+PASS extra field label expect=KILL got=KILL
+PASS id replay expect=KILL got=KILL
+PASS id skip expect=KILL got=KILL
+PASS id as string expect=KILL got=KILL
+PASS t != call expect=KILL got=KILL
+PASS run dead after violation expect=KILL got=KILL
+PASS __proto__ pollution in args expect=deny got=deny
+PASS extra arg key (smuggled url) expect=deny got=deny
+PASS deep nesting expect=deny got=deny
+PASS denial budget exhaustion expect=KILL got=KILL
+PASS call budget expect=KILL got=KILL
+PASS deadline passed expect=KILL got=KILL
+PASS exfil via non-endorsable egress after private read expect=deny got=deny
+PASS endorsable egress after private read needs approval expect=approve got=approve
+PASS dispatch approval-required call without approval expect=KILL got=KILL
+PASS forged approval digest expect=null got=null
+PASS approval digest replay expect=KILL got=KILL
+PASS approval of tampered args expect=KILL got=KILL
+PASS dispatch of fabricated call object expect=KILL got=KILL
+PASS allow replayed twice (double side effect) expect=KILL got=KILL
+PASS no side effect from any rejected/forged call expect=handled got=handled
+32/32 hostile policy cases passed
+jitk: delegating mcp/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/mcp/README.md)
+"/tmp/jitk-09/node-real" test.mjs
+jitk-mcp: integrated jitk / confined VMM / current kernel; warm=2
+ok - execute return 1+1 == 2
+ok - guest->host tool round-trip
+ok - kv set/get round-trip
+ok - Promise.all over 10 tool calls
+ok - timeout -> TIMEOUT
+ok - schema denial -> POLICY
+ok - taint rule (private read then write, no approver) -> POLICY
+ok - guest throw -> GUEST_ERROR
+ok - text content mirrors structuredContent
+ok - resources/list
+ok - resources/read
+ok - resource path traversal rejected
+ok - invalid params rejected as JSON-RPC errors
+ok - server alive after rejected requests
+ok - tools/list describes guest tools
+ok - client close -> server exits
+ok - stdio close: no VMM/watchdog left (5 pids checked)
+jitk-mcp: integrated jitk / confined VMM / current kernel; warm=2
+jitk-mcp: Unexpected token 'h', "this is not json" is not valid JSON
+jitk-mcp: Unexpected end of JSON input
+jitk-mcp: Unexpected end of JSON input
+ok - initialize after garbage
+jitk-mcp: [ { "code": "invalid_union", "errors": [ [ { "expected": "object", "code": "invalid_type", "path": [], "message": "Invalid input: expected object, received array" } ], [ { "expected": "object", "code"
+ok - malformed requests answered with JSON-RPC errors
+ok - execute after malformed input
+ok - stdin EOF -> exit 0
+ok - stdin EOF: no VMM/watchdog left (3 pids checked)
+jitk-mcp: integrated jitk / confined VMM / current kernel; warm=2
+jitk-mcp: http://127.0.0.1:47462/mcp
+ok - streamable HTTP execute
+jitk-mcp: Invalid Host header: evil.example
+ok - HTTP rejects foreign Host (DNS rebinding)
+ok - SIGTERM -> exit 0
+ok - SIGTERM: no VMM/watchdog left (3 pids checked)
+mcp: 26 checks passed
+jitk: delegating grow/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/grow/README.md)
+python3 -B test.py
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 0.411s
+
+OK
+python3 -B -m unittest discover -s oracle -p 'test_*.py'
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK
+jitk: delegating bench/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/bench/README.md)
+python3 run.py --test
+PASS statistics, gate pass/timeout, watchdog deadline/EOF, malformed output, detached descendants
+jitk: delegating bench/hyperlight/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/bench/hyperlight/README.md)
+(node:62508) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+{"checks":13,"status":"SKIP","reason":"HYPERLIGHT_JS_SRC is unset; set it to the pinned Hyperlight JS checkout and run make build"}
+jitk: delegating linux/test (see /Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/linux/README.md)
+{"revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c", "patches_sha256": {"libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33", "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9", "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54", "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295", "raw-direct-load.diff": "187e748dc6e5324dfe34f4c57959068ad3e30266888e3778165068906e8e9163"}, "panic": "abort", "features": [], "sandbox_ready": true, "binary": "/work/vmm/jitk-vmm", "binary_sha256": "f0483380bd55f75e5d57fda379d1e447501f3ae55fcda580c711a968dbeb204d", "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"}
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/linux/.work/kernel)
+    Finished `release` profile [optimized] target(s) in 4.10s
+{"image": "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/linux/.work/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin", "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6", "bytes": 2924584}
+jitk: full NESTED suite over /Users/noah/code/sofort/kvm-dev/ssh.sh; scratch=/home/dev/r7-suite/411782fdc8bf-62713; bench.lock wait <= 600s
+real 672.98
+user 37.05
+sys 18.89

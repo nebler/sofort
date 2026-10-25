@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "active_task_processes": [],
+  "owned_cgroups_remaining": [],
+  "removed_directories": [
+    "8a7df12f9acb-55816",
+    "repro",
+    "watch-cleanup"
+  ],
+  "owned_scratch_before": "11737191\t/home/dev/r7-suite",
+  "owned_scratch_remaining_bytes": 0,
+  "uptime": "21:00:33 up 11:13,  1 user,  load average: 0.19, 1.03, 1.04"
+}

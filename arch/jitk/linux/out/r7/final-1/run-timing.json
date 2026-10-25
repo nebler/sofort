@@ -1,0 +1,2749 @@
+{
+  "wall_s": 593.1660511250084,
+  "limits": {
+    "startup_s": 690.0,
+    "progress_s": 75.0,
+    "gate_s": 300.0,
+    "suite_s": 1500.0
+  },
+  "error": null,
+  "returncode": 0,
+  "events": [
+    {
+      "gate": "suite_startup",
+      "event": "start",
+      "observer_elapsed_s": 348.7443674170063
+    },
+    {
+      "gate": "parking",
+      "event": "start",
+      "unix": 1792961430.510633,
+      "observer_elapsed_s": 348.7923706670117
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 100,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.0175314580265
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 200,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.08590329202707
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 300,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.1563484170183
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 400,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.22624479202204
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 500,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.2944773330237
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 600,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.3637840830197
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 700,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.43682150001405
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 800,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.50982041700627
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 900,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.5806640830124
+    },
+    {
+      "gate": "parking",
+      "event": "progress",
+      "completed": 1000,
+      "detail": "tool exchanges",
+      "observer_elapsed_s": 359.6526794170204
+    },
+    {
+      "gate": "parking",
+      "event": "end",
+      "elapsed_s": 10.888286993002112,
+      "observer_elapsed_s": 359.68067025000346
+    },
+    {
+      "gate": "smoke",
+      "event": "start",
+      "unix": 1792961441.398961,
+      "observer_elapsed_s": 359.6806832080183
+    },
+    {
+      "gate": "smoke",
+      "event": "progress",
+      "completed": 1,
+      "detail": null,
+      "observer_elapsed_s": 359.82932241700473
+    },
+    {
+      "gate": "smoke",
+      "event": "end",
+      "elapsed_s": 0.15141538200259674,
+      "observer_elapsed_s": 359.83177841702127
+    },
+    {
+      "gate": "tool_smoke",
+      "event": "start",
+      "unix": 1792961441.5503857,
+      "observer_elapsed_s": 359.83179075000226
+    },
+    {
+      "gate": "tool_smoke",
+      "event": "progress",
+      "completed": 1,
+      "detail": null,
+      "observer_elapsed_s": 359.957690042007
+    },
+    {
+      "gate": "tool_smoke",
+      "event": "end",
+      "elapsed_s": 0.12799804600217612,
+      "observer_elapsed_s": 359.95998620800674
+    },
+    {
+      "gate": "boot",
+      "event": "start",
+      "unix": 1792961441.6783931,
+      "observer_elapsed_s": 359.9599933330028
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 361.1096836250217
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 362.2778203750204
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 363.48066937501426
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 364.6462019580067
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 365.81317050001235
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 367.02494408300845
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 368.21756579200155
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 369.5823087080207
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 371.2005847080145
+    },
+    {
+      "gate": "boot",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 372.5850900420046
+    },
+    {
+      "gate": "boot",
+      "event": "end",
+      "elapsed_s": 12.631030528005795,
+      "observer_elapsed_s": 372.59112612501485
+    },
+    {
+      "gate": "one_tool",
+      "event": "start",
+      "unix": 1792961454.3094594,
+      "observer_elapsed_s": 372.59116070801974
+    },
+    {
+      "gate": "one_tool",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 374.1702041250246
+    },
+    {
+      "gate": "one_tool",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 375.82270250000875
+    },
+    {
+      "gate": "one_tool",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 377.3638300000166
+    },
+    {
+      "gate": "one_tool",
+      "event": "end",
+      "elapsed_s": 4.77588360500522,
+      "observer_elapsed_s": 377.36681208302616
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "start",
+      "unix": 1792961459.0853794,
+      "observer_elapsed_s": 377.3668218750099
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 378.88308391702594
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 380.3911387080152
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 381.90035083302064
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 384.09614729200257
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 385.67708216700703
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 386.7784779580252
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 387.9226483750099
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 389.0600725830009
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 390.18760220802506
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 391.36632933301735
+    },
+    {
+      "gate": "concurrency_1",
+      "event": "end",
+      "elapsed_s": 14.005690721001884,
+      "observer_elapsed_s": 391.3724621250003
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "start",
+      "unix": 1792961473.0911288,
+      "observer_elapsed_s": 391.37246895802673
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 392.2210220420093
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 393.0204617080162
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 393.77517187502235
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 394.59307970802183
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 395.4888580830011
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 396.401432750019
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 397.13051225000527
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 397.92128187502385
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 398.8383165000123
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 399.5628813750227
+    },
+    {
+      "gate": "concurrency_2",
+      "event": "end",
+      "elapsed_s": 8.196506309999677,
+      "observer_elapsed_s": 399.5694822500227
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "start",
+      "unix": 1792961481.2876554,
+      "observer_elapsed_s": 399.5694924170093
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 400.44533341701026
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 401.01088854201953
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 401.63956150002195
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 402.36342645800323
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 403.0794370000076
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 403.82427104201633
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 404.6414045000274
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 405.342940292001
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 405.99791129201185
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 406.674897000019
+    },
+    {
+      "gate": "concurrency_3",
+      "event": "end",
+      "elapsed_s": 7.110630729999684,
+      "observer_elapsed_s": 406.679256583011
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "start",
+      "unix": 1792961488.398305,
+      "observer_elapsed_s": 406.67926562501816
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 407.5654346670199
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 408.217802417028
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 408.9612920830259
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 409.5431436250219
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 410.3235106670181
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 410.9961634170031
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 411.6993244170153
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 412.4613610000233
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 413.2154560830095
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 413.85673658302403
+    },
+    {
+      "gate": "concurrency_4",
+      "event": "end",
+      "elapsed_s": 7.18142478599475,
+      "observer_elapsed_s": 413.86044362501707
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "start",
+      "unix": 1792961495.5797408,
+      "observer_elapsed_s": 413.86045108301914
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 414.54147670802195
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 415.28105108300224
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 415.9903716670233
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 416.62290254200343
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 417.3027161670034
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 417.94265650000307
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 418.5782021250052
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 419.2070575420221
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 419.85200495802565
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 420.3882207920251
+    },
+    {
+      "gate": "concurrency_5",
+      "event": "end",
+      "elapsed_s": 6.53411726700142,
+      "observer_elapsed_s": 420.3947330000228
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "start",
+      "unix": 1792961502.1138809,
+      "observer_elapsed_s": 420.3947445000231
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 421.17324375000317
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 421.8533542920195
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 422.35316658302327
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 423.11975591702503
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 423.78303958300967
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 424.29398924999987
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 425.1149355000234
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 425.7210603750136
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 426.4702387920115
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 427.0976550830237
+    },
+    {
+      "gate": "concurrency_6",
+      "event": "end",
+      "elapsed_s": 6.709747075998166,
+      "observer_elapsed_s": 427.1043523750268
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "start",
+      "unix": 1792961508.8236415,
+      "observer_elapsed_s": 427.10436166700674
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 428.00580000001355
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 428.7399015420233
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 429.4178882500273
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 430.0675206250162
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 430.711424292007
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 431.6435856670141
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 432.28155850002076
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 433.09580170802656
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 433.9907964580052
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 434.51505220800755
+    },
+    {
+      "gate": "concurrency_7",
+      "event": "end",
+      "elapsed_s": 7.416106897995633,
+      "observer_elapsed_s": 434.52034929202637
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "start",
+      "unix": 1792961516.2397583,
+      "observer_elapsed_s": 434.52035816700663
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 10,
+      "detail": null,
+      "observer_elapsed_s": 435.7791839580168
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 20,
+      "detail": null,
+      "observer_elapsed_s": 436.69413700001314
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 30,
+      "detail": null,
+      "observer_elapsed_s": 437.43930566700874
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 40,
+      "detail": null,
+      "observer_elapsed_s": 438.4114182500052
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 50,
+      "detail": null,
+      "observer_elapsed_s": 439.2234158330248
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 60,
+      "detail": null,
+      "observer_elapsed_s": 440.2146547080192
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 70,
+      "detail": null,
+      "observer_elapsed_s": 440.92822620802326
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 80,
+      "detail": null,
+      "observer_elapsed_s": 441.9311917920131
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 90,
+      "detail": null,
+      "observer_elapsed_s": 442.7592077500012
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "progress",
+      "completed": 100,
+      "detail": null,
+      "observer_elapsed_s": 443.32196266701794
+    },
+    {
+      "gate": "concurrency_8",
+      "event": "end",
+      "elapsed_s": 8.812228239999968,
+      "observer_elapsed_s": 443.3326981670107
+    },
+    {
+      "gate": "density",
+      "event": "start",
+      "unix": 1792961525.0520115,
+      "observer_elapsed_s": 443.33270779202576
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 16,
+      "detail": "parked READY",
+      "observer_elapsed_s": 448.1659639580175
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 32,
+      "detail": "parked READY",
+      "observer_elapsed_s": 449.8183656670153
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 48,
+      "detail": "parked READY",
+      "observer_elapsed_s": 454.4796791250119
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 64,
+      "detail": "parked READY",
+      "observer_elapsed_s": 456.16623654201976
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 80,
+      "detail": "parked READY",
+      "observer_elapsed_s": 461.08007900000666
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 96,
+      "detail": "parked READY",
+      "observer_elapsed_s": 462.85860141701414
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 112,
+      "detail": "parked READY",
+      "observer_elapsed_s": 464.6083373330184
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 128,
+      "detail": "parked READY",
+      "observer_elapsed_s": 466.49293495801976
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 144,
+      "detail": "parked READY",
+      "observer_elapsed_s": 471.3341025420232
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 160,
+      "detail": "parked READY",
+      "observer_elapsed_s": 473.14624066700344
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 176,
+      "detail": "parked READY",
+      "observer_elapsed_s": 474.75308791702264
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 192,
+      "detail": "parked READY",
+      "observer_elapsed_s": 476.46477779201814
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 208,
+      "detail": "parked READY",
+      "observer_elapsed_s": 478.1621922920167
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 224,
+      "detail": "parked READY",
+      "observer_elapsed_s": 479.7540658750222
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 240,
+      "detail": "parked READY",
+      "observer_elapsed_s": 482.3300948330143
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 256,
+      "detail": "parked READY",
+      "observer_elapsed_s": 485.4965996670071
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 272,
+      "detail": "validated after park",
+      "observer_elapsed_s": 489.0613246670109
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 288,
+      "detail": "validated after park",
+      "observer_elapsed_s": 489.40914712499944
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 304,
+      "detail": "validated after park",
+      "observer_elapsed_s": 489.76797033302137
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 320,
+      "detail": "validated after park",
+      "observer_elapsed_s": 490.17017779202433
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 336,
+      "detail": "validated after park",
+      "observer_elapsed_s": 490.61958429202787
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 352,
+      "detail": "validated after park",
+      "observer_elapsed_s": 490.97652783300146
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 368,
+      "detail": "validated after park",
+      "observer_elapsed_s": 491.4863917500188
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 384,
+      "detail": "validated after park",
+      "observer_elapsed_s": 492.3076993750001
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 400,
+      "detail": "validated after park",
+      "observer_elapsed_s": 493.1527573330095
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 416,
+      "detail": "validated after park",
+      "observer_elapsed_s": 493.91789058301947
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 432,
+      "detail": "validated after park",
+      "observer_elapsed_s": 494.4553932080162
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 448,
+      "detail": "validated after park",
+      "observer_elapsed_s": 495.0522773330158
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 464,
+      "detail": "validated after park",
+      "observer_elapsed_s": 495.4606569170137
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 480,
+      "detail": "validated after park",
+      "observer_elapsed_s": 495.812541375024
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 496,
+      "detail": "validated after park",
+      "observer_elapsed_s": 496.24433450002107
+    },
+    {
+      "gate": "density",
+      "event": "progress",
+      "completed": 512,
+      "detail": "validated after park",
+      "observer_elapsed_s": 496.6725660000229
+    },
+    {
+      "gate": "density",
+      "event": "end",
+      "elapsed_s": 53.488334898000176,
+      "observer_elapsed_s": 496.82145625000703
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "start",
+      "unix": 1792961578.5404034,
+      "observer_elapsed_s": 496.82147125000483
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 10,
+      "detail": "setup_only",
+      "observer_elapsed_s": 496.8853429580049
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 20,
+      "detail": "setup_only",
+      "observer_elapsed_s": 496.92168770800345
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 30,
+      "detail": "setup_only",
+      "observer_elapsed_s": 496.9683502080152
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 40,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.02369954201276
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 50,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.0567815420218
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 60,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.0949990830268
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 70,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.12697287500487
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 80,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.1736904999998
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 90,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.21842533300514
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 100,
+      "detail": "setup_only",
+      "observer_elapsed_s": 497.2539927920152
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 110,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 497.4084135420271
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 120,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 497.5205020830035
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 130,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 497.7888977500261
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 140,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 497.9233442500117
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 150,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 498.0330175830168
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 160,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 498.10832841700176
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 170,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 498.1892451670137
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 180,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 498.27575333300047
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 190,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 498.365154833009
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "progress",
+      "completed": 200,
+      "detail": "bare_vm",
+      "observer_elapsed_s": 498.45132345802267
+    },
+    {
+      "gate": "cpu_controls",
+      "event": "end",
+      "elapsed_s": 1.637367898998491,
+      "observer_elapsed_s": 498.4584888330137
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "start",
+      "unix": 1792961580.177796,
+      "observer_elapsed_s": 498.45850004200474
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 30,
+      "detail": "main/exit",
+      "observer_elapsed_s": 498.5351691250107
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 60,
+      "detail": "main/openat",
+      "observer_elapsed_s": 498.6309715420066
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 90,
+      "detail": "main/socket",
+      "observer_elapsed_s": 498.9331419580267
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 120,
+      "detail": "main/execve",
+      "observer_elapsed_s": 498.96116400000756
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 150,
+      "detail": "main/kvm-create-vm",
+      "observer_elapsed_s": 499.0584398750216
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 180,
+      "detail": "main/kvm-run",
+      "observer_elapsed_s": 499.14745287501137
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 210,
+      "detail": "main/mmap-exec",
+      "observer_elapsed_s": 499.2244396250171
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 240,
+      "detail": "main/kill",
+      "observer_elapsed_s": 499.2788905830239
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 270,
+      "detail": "vcpu/exit",
+      "observer_elapsed_s": 499.3305784170225
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 300,
+      "detail": "vcpu/openat",
+      "observer_elapsed_s": 499.3750537500018
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 330,
+      "detail": "vcpu/socket",
+      "observer_elapsed_s": 499.4284698750125
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 360,
+      "detail": "vcpu/execve",
+      "observer_elapsed_s": 499.4720952080097
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 390,
+      "detail": "vcpu/kvm-create-vm",
+      "observer_elapsed_s": 499.5143548330234
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 420,
+      "detail": "vcpu/kvm-run",
+      "observer_elapsed_s": 499.55985991700436
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 450,
+      "detail": "vcpu/mmap-exec",
+      "observer_elapsed_s": 499.6168118750211
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 480,
+      "detail": "vcpu/kill",
+      "observer_elapsed_s": 499.64608299999963
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 510,
+      "detail": "console/exit",
+      "observer_elapsed_s": 499.6961782920116
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 540,
+      "detail": "console/openat",
+      "observer_elapsed_s": 499.75270991702564
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 570,
+      "detail": "console/socket",
+      "observer_elapsed_s": 499.7895404170267
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 600,
+      "detail": "console/execve",
+      "observer_elapsed_s": 499.8291461250046
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 630,
+      "detail": "console/kvm-create-vm",
+      "observer_elapsed_s": 499.87313666701084
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 660,
+      "detail": "console/kvm-run",
+      "observer_elapsed_s": 499.9193755000015
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 690,
+      "detail": "console/mmap-exec",
+      "observer_elapsed_s": 499.96770245800144
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "progress",
+      "completed": 720,
+      "detail": "console/kill",
+      "observer_elapsed_s": 500.0168627500243
+    },
+    {
+      "gate": "seccomp_kill",
+      "event": "end",
+      "elapsed_s": 1.5629928889975417,
+      "observer_elapsed_s": 500.0220367500151
+    },
+    {
+      "gate": "fault_guests",
+      "event": "start",
+      "unix": 1792961581.740817,
+      "observer_elapsed_s": 500.0220474170055
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 1,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.0349446670152
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 2,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.04544170800364
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 3,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.05346195801394
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 4,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.06328925001435
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 5,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.0850470830046
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 6,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.0918660000025
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 7,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.09724450000795
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 8,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.10180837500957
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 9,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.11078750001616
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 10,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.12080058301217
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 11,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.14398895800696
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 12,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.1501432500081
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 13,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.1502130420122
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 14,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.1645432500227
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 15,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.16460825002287
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 16,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.16673595801694
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 17,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.1830151670147
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 18,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.1949601250235
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 19,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.2135247500264
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 20,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.2135762500111
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 21,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.2209792500071
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 22,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.22201429202687
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 23,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.24938825002755
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 24,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.2494420420262
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 25,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.24944679200416
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 26,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.2552437080012
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 27,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.26488075000816
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 28,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.27998820799985
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 29,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.28642075002426
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 30,
+      "detail": "unknown-hvc",
+      "observer_elapsed_s": 500.3056065830169
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 31,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.3151681670279
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 32,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.3284816670057
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 33,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.3392208330042
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 34,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.35383620799985
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 35,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.3539640830131
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 36,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.36176791702746
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 37,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.36914262501523
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 38,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.37639966700226
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 39,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.3880679580034
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 40,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.3974727500172
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 41,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.40707720801583
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 42,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.4153546670277
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 43,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.4250300830172
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 44,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.43534120800905
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 45,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.4482460830186
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 46,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.45692233301816
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 47,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.468539583002
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 48,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.48022337502334
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 49,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.48899220800376
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 50,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5002732920111
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 51,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5082923330192
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 52,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5204762080102
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 53,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.52822320800624
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 54,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5388344580133
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 55,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5490527920192
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 56,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5563200000033
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 57,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.566335792013
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 58,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5746804580267
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 59,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5950272080081
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 60,
+      "detail": "unknown-smc",
+      "observer_elapsed_s": 500.5950927080121
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 61,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.6098838330072
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 62,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.6156972919998
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 63,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.62352779202047
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 64,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.63134866702603
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 65,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.6395475419995
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 66,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.647765917005
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 67,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.65661337500205
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 68,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.6665544580028
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 69,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.673183292005
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 70,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.6814897080185
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 71,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.6913615000085
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 72,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.7039525420114
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 73,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.71600425001816
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 74,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.7293097920192
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 75,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.73774400001275
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 76,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.74803104202147
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 77,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.7576700420177
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 78,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.7690144580265
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 79,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.7813817500137
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 80,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.7893867500243
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 81,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.79954795801314
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 82,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.8090853750182
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 83,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.81949808300124
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 84,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.8352235830098
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 85,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.85116700001527
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 86,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.86247095800354
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 87,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.87324870802695
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 88,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.89404887502315
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 89,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.9034392920148
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 90,
+      "detail": "mmio-halfword",
+      "observer_elapsed_s": 500.9132335000031
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 91,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 503.9314115830057
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 92,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 506.93463262502337
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 93,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 509.96273737502634
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 94,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 512.9801132499997
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 95,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 515.9923685830145
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 96,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 519.01102825001
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 97,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 522.0382996250119
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 98,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 525.0524186670082
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 99,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 528.0715413330181
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 100,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 531.0918667080114
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 101,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 534.1067258330004
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 102,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 537.11682616701
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 103,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 540.1502257500251
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 104,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 543.1602270000149
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 105,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 546.1880408750148
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 106,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 549.1989450830151
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 107,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 552.2275308750104
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 108,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 555.2459680419997
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 109,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 558.2589388330234
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 110,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 561.2682710000081
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 111,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 564.2744980000134
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 112,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 567.3123858330073
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 113,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 570.3310095000197
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 114,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 573.3549252500234
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 115,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 576.376022625016
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 116,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 579.4002995830087
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 117,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 582.417220000003
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 118,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 585.4342494580196
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 119,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 588.4670586670109
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 120,
+      "detail": "bad-sysreg",
+      "observer_elapsed_s": 591.5072177500115
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 121,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.572494083026
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 122,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.6158678330248
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 123,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.6550303750264
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 124,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.7013350830239
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 125,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.7649157500127
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 126,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.8068820830085
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 127,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.8439747080265
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 128,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.8814608750108
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 129,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.9213098330074
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 130,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 591.9583115420246
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 131,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.0012911670201
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 132,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.037938375026
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 133,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.0834816250135
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 134,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.1261796670151
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 135,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.1644374580064
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 136,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.2054612080101
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 137,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.2397369579994
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 138,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.273789208004
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 139,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.3084022080002
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 140,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.342495333025
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 141,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.3766062500072
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 142,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.4105600420153
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 143,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.4456462500093
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 144,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.4902099580213
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 145,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.5234725000046
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 146,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.5578530420025
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 147,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.5929461670166
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 148,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.6282547500159
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 149,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.6670076670125
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 150,
+      "detail": "console_avail_oob",
+      "observer_elapsed_s": 592.8195889170165
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 151,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8272383330041
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 152,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8342205420195
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 153,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8503542920225
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 154,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.860343917011
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 155,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8669484580169
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 156,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8739630830241
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 157,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8835460000264
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 158,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8918669170234
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 159,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.8992162920185
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 160,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9068192500272
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 161,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9205946250004
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 162,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.928333125019
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 163,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9361790000112
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 164,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9439514580008
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 165,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9554895830224
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 166,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9669685420231
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 167,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9762084580143
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 168,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9841180000221
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 169,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9909638330282
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 170,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 592.9970042080095
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 171,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.003864792001
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 172,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0108627920272
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 173,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0178135000169
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 174,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0248964580242
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 175,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.031850542
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 176,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.040315375023
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 177,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0470773330017
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 178,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0548920000147
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 179,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0608649170026
+    },
+    {
+      "gate": "fault_guests",
+      "event": "progress",
+      "completed": 180,
+      "detail": "rtc_oob_read",
+      "observer_elapsed_s": 593.0668227080023
+    },
+    {
+      "gate": "fault_guests",
+      "event": "end",
+      "elapsed_s": 93.05465594099951,
+      "observer_elapsed_s": 593.0747107920179
+    }
+  ]
+}

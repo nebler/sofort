@@ -1,0 +1,12 @@
+{
+  "wall_s": 60.14476204200764,
+  "limits": {
+    "startup_s": 90.0,
+    "progress_s": 75.0,
+    "gate_s": 300.0,
+    "suite_s": 900.0
+  },
+  "error": null,
+  "returncode": 1,
+  "events": []
+}

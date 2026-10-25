@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "n_full_post_probe_fix_runs": 2,
+  "changed_staged_files": [
+    "watch.py",
+    "seccomp-probe"
+  ],
+  "aggregate_command_wall_s": 672.98,
+  "direct_command_wall_s": 240.18
+}
+| parking | 10.888 | 10.923 |
+| smoke | 0.151 | 0.162 |
+| tool_smoke | 0.128 | 0.126 |
+| boot | 12.629 | 11.754 |
+| one_tool | 4.774 | 3.711 |
+| concurrency_1 | 14.004 | 11.557 |
+| concurrency_2 | 8.194 | 8.002 |
+| concurrency_3 | 7.109 | 7.163 |
+| concurrency_4 | 7.180 | 7.268 |
+| concurrency_5 | 6.532 | 7.033 |
+| concurrency_6 | 6.707 | 7.218 |
+| concurrency_7 | 7.413 | 7.334 |
+| concurrency_8 | 8.809 | 8.393 |
+| density | 53.474 | 45.925 |
+| cpu_controls | 1.633 | 0.744 |
+| seccomp_kill | 1.553 | 0.951 |
+| fault_guests | 93.047 | 92.603 |

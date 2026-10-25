@@ -1,0 +1,16 @@
+ 20:45:22 up 10:58,  5 users,  load average: 1.03, 1.11, 0.82
+    PID    PPID %CPU STAT COMMAND
+  80839   80766 99.9 R    arch/jitk/shard/target/release/real bench final-r7 canary 10000
+  82306    1104 11.4 Ss   sshd-session: dev [priv]
+  80854       1  0.1 Ssl  /usr/libexec/fwupd/fwupd
+  81694       2  0.0 I    [kworker/u24:3-events_power_efficient]
+  73764       2  0.0 I    [kworker/1:0-events]
+  74207       2  0.0 I    [kworker/3:4-cgroup_free]
+  55219       2  0.0 I    [kworker/u24:4-ext4-rsv-conversion]
+  74208       2  0.0 I    [kworker/3:5-events]
+  75281       2  0.0 I    [kworker/0:2-cgroup_free]
+  55474       2  0.0 I    [kworker/2:2-kvm-irqfd-cleanup]
+      1       0  0.0 Ss   /usr/lib/systemd/systemd --switched-root --system --deserialize=43
+    677       1  0.0 SLsl /usr/sbin/multipathd -d -s
+  54859       2  0.0 I    [kworker/5:0-events]
+  54652       2  0.0 I    [kworker/0:1-cgroup_free]
