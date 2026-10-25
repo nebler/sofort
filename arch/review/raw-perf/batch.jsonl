@@ -1,0 +1,2 @@
+{"event":"batch","calls":1,"result":{"result":[0],"logs":[]}}
+{"event":"batch","calls":10,"result":{"result":[0,1,2,3,4,5,6,7,8,9],"logs":[]}}

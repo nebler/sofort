@@ -1,0 +1,23 @@
+Sun Oct 25 23:41:53 UTC 2026
+Linux kvm-dev 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026 aarch64 GNU/Linux
+4096
+100
+0.20 0.17 0.30 2/182 163941
+50085.55 285199.21
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+v24.13.0
+perf version 7.0.14
+strace -- version 6.19
+8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af  prepared.layout
+63f23567b4101f1233a1f38b2335fbb55399d5ba15ef2ccba3783c1fcc6866d8  prepared.mem
+f7a0621fcb7f8d06490edacf92c77c32e821cb214f834a4460c74d8f89d01325  prepared.regs
+5ecd4cc387cc8af218e7bcf38a5a3f5b09e0328bda8c99ff51b449c6343493cd  shard/target/release/real
+60eac3a65e5dcb8fff0fc484336cfaffceb82ecf76e012692534ff9f5a9ddc56  shard/target/release/perf_review
+04d7beee0015405f99725f506eab07dfd5f53a8352a4503404e0f5c6e105dc70  shard/target/release/perf_writable
+2e91ca849d8e2930c4bc1f33fedd8cac37d7d4fb06bf1bd70985d63c2aa736c4  shard/target/release/perf_parts
+d58ee2ab6f7a1c791be5a957d604e69c161caa26e71b4bee9e933b32fa16681f  shard/target/release/perf_memory
+233292123	.
+b7124aa7de99c3d8ca7be96ed6420edc66a16d7609080129746982be165fc9b9  shard/target/release/perf_drain
+Sun Oct 25 23:50:22 UTC 2026
+0.00 0.09 0.22 1/172 165139
+238324176	.

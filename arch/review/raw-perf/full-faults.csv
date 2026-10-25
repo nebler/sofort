@@ -1,0 +1,9 @@
+# started on Sun Oct 25 23:37:25 2026
+
+1972.53,msec,task-clock,1972527284,100.00,,
+357,,minor-faults,1972527284,100.00,,
+0,,major-faults,1972527284,100.00,,
+21519,,kvm:kvm_exit,1972527284,100.00,,
+20460,,kvm:kvm_guest_fault,1972527284,100.00,,
+55,,kvm:kvm_mmio,1972527284,100.00,,
+0,,kvm:kvm_access_fault,1972527284,100.00,,

@@ -1,0 +1,10 @@
+{"i":0,"source_bytes":9,"reset_ns":1127005,"bind_ns":8709,"run_ns":25749335,"cpu_ns":26889000,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":1,"source_bytes":9,"reset_ns":1147089,"bind_ns":6375,"run_ns":26032712,"cpu_ns":27195667,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":2,"source_bytes":9,"reset_ns":1141047,"bind_ns":7291,"run_ns":25381875,"cpu_ns":26533833,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":3,"source_bytes":9,"reset_ns":1098213,"bind_ns":6083,"run_ns":24841747,"cpu_ns":25926834,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":4,"source_bytes":9,"reset_ns":1137172,"bind_ns":5959,"run_ns":25448417,"cpu_ns":26596083,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":5,"source_bytes":9,"reset_ns":1060256,"bind_ns":6542,"run_ns":25750835,"cpu_ns":26821874,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":6,"source_bytes":9,"reset_ns":1135422,"bind_ns":8000,"run_ns":25212541,"cpu_ns":26362667,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":7,"source_bytes":9,"reset_ns":1110797,"bind_ns":8084,"run_ns":26149213,"cpu_ns":27272458,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":8,"source_bytes":9,"reset_ns":1167006,"bind_ns":7000,"run_ns":26519922,"cpu_ns":27697708,"exits":1,"calls":0,"result":{"ok":2}}
+{"i":9,"source_bytes":9,"reset_ns":1162089,"bind_ns":6083,"run_ns":25713251,"cpu_ns":26885792,"exits":1,"calls":0,"result":{"ok":2}}

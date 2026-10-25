@@ -1,0 +1,13 @@
+name: kvm_exit
+ID: 64
+format:
+	field:unsigned short common_type;	offset:0;	size:2;	signed:0;
+	field:unsigned char common_flags;	offset:2;	size:1;	signed:0;
+	field:unsigned char common_preempt_count;	offset:3;	size:1;	signed:0;
+	field:int common_pid;	offset:4;	size:4;	signed:1;
+
+	field:int ret;	offset:8;	size:4;	signed:1;
+	field:unsigned int esr_ec;	offset:12;	size:4;	signed:0;
+	field:unsigned long vcpu_pc;	offset:16;	size:8;	signed:0;
+
+print fmt: "%s: HSR_EC: 0x%04x (%s), PC: 0x%016lx", __print_symbolic(REC->ret, {0, "IRQ" }, {1, "SERROR" }, {2, "TRAP" }, {0xbadca11, "HYP_GONE" }), REC->esr_ec, __print_symbolic(REC->esr_ec, { (((0x00UL))), "UNKNOWN" }, { (((0x01UL))), "WFx" }, { (((0x03UL))), "CP15_32" }, { (((0x04UL))), "CP15_64" }, { (((0x05UL))), "CP14_MR" }, { (((0x06UL))), "CP14_LS" }, { (((0x07UL))), "FP_ASIMD" }, { (((0x08UL))), "CP10_ID" }, { (((0x09UL))), "PAC" }, { (((0x0CUL))), "CP14_64" }, { (((0x15UL))), "SVC64" }, { (((0x16UL))), "HVC64" }, { (((0x17UL))), "SMC64" }, { (((0x18UL))), "SYS64" }, { (((0x19UL))), "SVE" }, { (((0x1fUL))), "IMP_DEF" }, { (((0x20UL))), "IABT_LOW" }, { (((0x21UL))), "IABT_CUR" }, { (((0x22UL))), "PC_ALIGN" }, { (((0x24UL))), "DABT_LOW" }, { (((0x25UL))), "DABT_CUR" }, { (((0x26UL))), "SP_ALIGN" }, { (((0x28UL))), "FP_EXC32" }, { (((0x2CUL))), "FP_EXC64" }, { (((0x2FUL))), "SERROR" }, { (((0x30UL))), "BREAKPT_LOW" }, { (((0x31UL))), "BREAKPT_CUR" }, { (((0x32UL))), "SOFTSTP_LOW" }, { (((0x33UL))), "SOFTSTP_CUR" }, { (((0x34UL))), "WATCHPT_LOW" }, { (((0x35UL))), "WATCHPT_CUR" }, { (((0x38UL))), "BKPT32" }, { (((0x3AUL))), "VECTOR32" }, { (((0x3CUL))), "BRK64" }, { (((0x1aUL))), "ERET" }), REC->vcpu_pc

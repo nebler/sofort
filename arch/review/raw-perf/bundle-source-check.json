@@ -1,0 +1,82 @@
+[
+  {
+    "bundle": "executor",
+    "path": "executor/upstream.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/code.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/policy-adapter.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/executor.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "protocol/dispatcher.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/backend.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/pool.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/shard-backend.ts",
+    "matches": true
+  },
+  {
+    "bundle": "executor",
+    "path": "executor/shard-ipc.ts",
+    "matches": true
+  },
+  {
+    "bundle": "code",
+    "path": "executor/code.ts",
+    "matches": true
+  },
+  {
+    "bundle": "code",
+    "path": "executor/upstream.ts",
+    "matches": true
+  },
+  {
+    "bundle": "shard-backend",
+    "path": "executor/shard-backend.ts",
+    "matches": true
+  },
+  {
+    "bundle": "shard-backend",
+    "path": "protocol/dispatcher.ts",
+    "matches": true
+  },
+  {
+    "bundle": "shard-backend",
+    "path": "executor/shard-ipc.ts",
+    "matches": true
+  },
+  {
+    "bundle": "shard-ipc",
+    "path": "executor/shard-ipc.ts",
+    "matches": true
+  },
+  {
+    "bundle": "pool",
+    "path": "executor/pool.ts",
+    "matches": true
+  }
+]
