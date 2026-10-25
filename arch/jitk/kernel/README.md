@@ -154,8 +154,8 @@ O_CREAT of a missing name return EROFS. Errno precedence matches Linux on a
 read-only bind mount. O_ACCMODE 3 opens an fd that is neither readable nor
 writable (reads EBADF), as Linux does. Out of contract: O_PATH (EINVAL),
 fcntl other than F_GETFD/F_SETFD (EINVAL), AT_EMPTY_PATH on console fds (EBADF),
-no mmap of files, no pread64/statx/fstat/faccessat.
-Those last calls are unused by the targets; grow them if a workload needs them.
+no mmap of files, no statx/faccessat. Descriptor metadata and positional reads
+are available through fstat (80) and pread64 (67), described below.
 
 Syscalls (slot, file): openat 56, close 57, lseek 62, read 63, readv 65,
 readlinkat 78 (existing slots, now archive-aware; console fds unchanged), and
@@ -163,6 +163,26 @@ new fcntl 25, getdents64 61, newfstatat 79. They were found empirically by
 stracing Lua 5.4 and Bellard qjs on Linux (Lua: openat/read/readv/lseek/close;
 qjs adds newfstatat, fcntl F_SETFD, getdents64, readlinkat). Runtime delta:
 +253/-49 lines (`src/fs.rs` 108, handler files 4-28 each).
+
+R7 adds **fstat 80** and **pread64 67** for immutable read-only SQLite. fstat
+shares the checked 128-byte AArch64 stat layout with newfstatat: archive
+device/inode/mode/size/block accounting are deterministic; console fds describe
+synthetic pipes (FIFO 0600, size/blocks 0, 4096-byte block size). Invalid/closed
+archive fds return EBADF before pointer validation. pread64 returns exact
+positional bytes, short reads and EOF without changing the fd offset; negative
+offsets and signed offset+length overflow return EINVAL, bad destinations
+EFAULT, unreadable/closed fds EBADF, directories EISDIR and console fds ESPIPE.
+Zero-count and EOF reads do not dereference an unused destination. These calls
+do not add a write path. The shared stat helper replaces the old duplicate
+newfstatat byte-layout code without changing pathname metadata.
+
+The grow controller accepts both handlers only after independent Linux
+semantic/error/state cases, executable rejected mutations and an unchanged
+SQLite corpus. See [`../grow/RESULTS-R7-grow.md`](../grow/RESULTS-R7-grow.md)
+for per-case stdout/stderr/exit comparisons and artifact identities. This is a
+developer grow-trace/libkrun demonstration with printable stdout; production
+native streams and stderr are separate ring work. faccessat/getpid remain
+tolerated missing compatibility probes; the signal handlers remain ENOSYS.
 
 Gates: `tests/test_fs.py` (host-compiled real handlers + index corruption),
 `tests/fs_diff.py` (Docker `jitk-oracle:08` with the tree bind-mounted `:ro` and

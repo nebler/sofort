@@ -8,7 +8,6 @@ import argparse, difflib, json, os, pathlib, re, shutil, signal, subprocess, tim
 from runtime import *
 from adapters import guest, linux, compare
 from agent import proposal, validate_proposal
-from prepare import prepare
 
 LUA_ARGV=['lua','-e',(ROOT/'fixtures.lua').read_text()]
 QJS_ARGV=['qjs','--std','-e','os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print("reply:"+s)})']
@@ -51,6 +50,7 @@ def probe(name,out):
     run(['/opt/homebrew/bin/ld.lld','-T',ROOT/'probe.ld',obj,'-o',elf]); return elf
 
 def discover(image,dest):
+    from observations import observe
     # Stop/reap as soon as a COMPLETE missing record is visible; qjs can retry ENOSYS.
     started=time.perf_counter(); before=load(); found=None
     with open(str(dest)+'.stdout','wb') as so:
@@ -60,11 +60,10 @@ def discover(image,dest):
             p.stdin.write(b'ping\n');p.stdin.flush()
             while time.perf_counter()-started<10:
                 raw=pathlib.Path(str(dest)+'.stdout').read_bytes()
-                for line in raw.split(b'\n')[:-1]:
-                    if b'\x1e' in line:
-                        r=json.loads(line.split(b'\x1e',1)[1])
-                        if r.get('kind')=='missing': found=r;break
-                if found or p.poll() is not None: break
+                complete=raw[:raw.rfind(b'\n')+1]
+                observed=observe(complete)
+                if observed['missing']: found=observed['missing'][0]
+                if found or observed['fatal_protocol'] or p.poll() is not None: break
                 time.sleep(.001)
             if p.poll() is None: kill_reap(p)
             p.wait(timeout=3)
@@ -75,6 +74,7 @@ def discover(image,dest):
             pathlib.Path(str(dest)+'.stderr').write_bytes(err)
     dump(str(dest)+'.json',{'seconds':time.perf_counter()-started,'uptime_before':before,'uptime_after':load(),
                           'missing':found,'returncode':p.returncode,'discovery_kill_expected':True})
+    dump(str(dest)+'.observations.json',observe(pathlib.Path(str(dest)+'.stdout').read_bytes()))
     assert err==b'{"sandbox":"ok"}\n', ('host-only sandbox ack required',err)
     assert found, f'no missing record in {dest}'
     dump(str(dest)+'.missing.json',found);return found
@@ -105,6 +105,7 @@ def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=N
     source=validate_proposal(name,value);validate_source(name,source)
     handler=work/'src/syscalls'/f'{name}.rs';assert not handler.exists() and not handler.is_symlink()
     handler.write_text(source)
+    assert sum(len(p.read_text().splitlines()) for p in (work/'src/syscalls').glob('rt_sig*.rs'))<=350
     dump(out/'proposal.json',dict(value,mode='live' if live else 'replay'))
     if tree:
         checks=r.stage('independent_full_stat_and_state',lambda:run(['python3',work/'tests/test_fs.py']))

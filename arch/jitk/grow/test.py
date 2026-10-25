@@ -4,7 +4,7 @@ import copy, json, pathlib, shutil, stat, subprocess, sys, unittest
 from unittest.mock import patch
 from runtime import *
 from adapters import guest, linux, compare
-from loop import validate_source, installation_patch
+from loop import validate_source, installation_patch, discover
 from agent import proposal, validate_proposal
 from observations import observe, require_result
 from profiles import PROFILES, mutations
@@ -12,6 +12,16 @@ from profiles import PROFILES, mutations
 FIXTURES=ROOT/'tests/fixtures'
 
 class Verify(unittest.TestCase):
+    def test_discovery_records_fatal_instead_of_losing_json_parse_failure(self):
+        with scratch() as d:
+            dest=pathlib.Path(d)/'fatal'
+            cmd=[sys.executable,'-c','import sys; sys.stdin.readline(); sys.stdout.buffer.write(b"\\x1efatal control byte\\n"); sys.stderr.buffer.write(b\'{"sandbox":"ok"}\\n\')']
+            with patch('loop.host_command',return_value=cmd):
+                with self.assertRaisesRegex(AssertionError,'no missing record'): discover('/image',dest)
+            self.assertTrue(json.loads(pathlib.Path(str(dest)+'.observations.json').read_text())['fatal_protocol'])
+    def test_application_prefixes_are_not_discarded_as_host_diagnostics(self):
+        value=observe(b'exit=application-output\nhello jitk fdt=application-output\n')
+        self.assertEqual(bytes.fromhex(value['stdout_hex']),b'exit=application-output\nhello jitk fdt=application-output\n')
     def test_registered_enosys_and_argument_errors_are_retained(self):
         value=observe((FIXTURES/'rt_sigaction/guest.stdout').read_bytes())
         self.assertTrue(value['trace_complete'])

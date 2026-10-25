@@ -1,5 +1,5 @@
 """Keep causal failures even when a missing syscall is a tolerated probe."""
-import json
+import json, re
 
 
 def observe(raw):
@@ -10,7 +10,7 @@ def observe(raw):
     for line in raw.split(b'\n'):
         if not line:
             continue
-        if line.startswith((b'hello jitk fdt=', b'exit=')):
+        if re.fullmatch(b'hello jitk fdt=[0-9a-f]{16}|exit=[0-9a-f]{16}',line):
             continue
         if b'\x1e' not in line:
             stdout.extend(line + b'\n')
@@ -29,7 +29,7 @@ def observe(raw):
                     missing.append(r)
             elif kind == 'sys.exit':
                 assert pending and r['seq'] == pending['seq']
-                event = dict(pending, ret=r['ret'])
+                event = dict(pending, ret=r['ret'], output=r.get('output'))
                 events.append(event)
                 if r['ret'] < 0:
                     errors.append(event)
