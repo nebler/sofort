@@ -1,0 +1,18 @@
+{
+  "selection": "integrated jitk / confined VMM / current kernel",
+  "integrated": true,
+  "host": {
+    "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+    "sha256": "23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616"
+  },
+  "image": {
+    "path": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
+    "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
+  },
+  "gate": {
+    "idleCorePercent": 0,
+    "evidence": "/Users/noah/code/sofort/arch/jitk/kernel/.READY: 1000/1000; idle CPU below ps resolution (rerun on this image)"
+  },
+  "vmmReady": true,
+  "kernelReady": true
+}

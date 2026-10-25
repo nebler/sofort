@@ -1,5 +1,12 @@
 # jitk-shard: device-free nested-KVM spike
 
+**R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
+results, build/reproduce commands, and remaining gates are in
+[RESULTS-R6.md](RESULTS-R6.md); its versioned transport subset is specified in
+[ABI-R6.md](ABI-R6.md). The original `jitk-shard` binary and v0 description below
+remain the assembly-fixture baseline. Build both with `cargo build --release` on
+Linux/arm64, or select `--bin real` / `--bin jitk-shard` explicitly.
+
 Independent Linux/arm64 Rust crate for architecture gates 2, 4 (basic), and 5.
 This runs an assembly fixture, **not jitk, QuickJS, or tenant code**. It has no
 GIC, virtio, guest timer, guest interrupt delivery, WFI parking, or HVC transport.

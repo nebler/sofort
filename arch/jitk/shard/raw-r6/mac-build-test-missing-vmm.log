@@ -1,0 +1,101 @@
+11:00  up 1 day, 13:13, 1 user, load averages: 7.11 4.31 3.95
+jitk: delegating kernel/build (see /Users/noah/code/sofort/arch/jitk/kernel/README.md)
+sh build.sh
+    Finished `release` profile [optimized] target(s) in 0.06s
+{"image": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin", "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6", "bytes": 2924584}
+jitk: delegating vmm/build (see /Users/noah/code/sofort/arch/jitk/vmm/README.md)
+JITK_VMM_BUILD="/tmp/jitk-01/r3/darwin" python3 build.py
+cargo build --locked --release -p libkrun 
+    Finished `release` profile [optimized] target(s) in 0.24s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib
+/tmp/jitk-01/r3/darwin/jitk-vmm: replacing existing signature
+{
+  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "patches_sha256": {
+    "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295",
+    "raw-direct-load.diff": "187e748dc6e5324dfe34f4c57959068ad3e30266888e3778165068906e8e9163"
+  },
+  "panic": "abort",
+  "features": [],
+  "sandbox_ready": true,
+  "binary": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+  "binary_sha256": "23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+}
+jitk: delegating protocol/build (see /Users/noah/code/sofort/arch/jitk/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:59544) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+jitk: delegating executor/dependencies (see /Users/noah/code/sofort/arch/jitk/executor/README.md)
+
+added 49 packages in 1s
+jitk: delegating executor/build (see /Users/noah/code/sofort/arch/jitk/executor/README.md)
+./run.sh build
+jitk: delegating mcp/build (see /Users/noah/code/sofort/arch/jitk/mcp/README.md)
+"/tmp/jitk-09/node-real" "/opt/homebrew/lib/node_modules/npm/bin/npm-cli.js" ci --ignore-scripts --no-audit --no-fund --prefer-offline --cache "/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T//jitk-npm-cache"
+
+added 95 packages in 1s
+for f in jitk.mjs server.mjs test.mjs bench.mjs providers/*.mjs; do "/tmp/jitk-09/node-real" --check $f || exit 1; done
+jitk: delegating kernel/test (see /Users/noah/code/sofort/arch/jitk/kernel/README.md)
+sh build.sh
+    Finished `release` profile [optimized] target(s) in 0.03s
+{"image": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin", "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6", "bytes": 2924584}
+python3 tests/test_packer.py
+./Users/noah/code/sofort/arch/jitk/kernel/tests/test_packer.py:31: ResourceWarning: unclosed file <_io.BufferedWriter name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmpbrtum8dw/a.txt'>
+  os.makedirs(d+'/b/c'); open(d+'/a.txt','wb').write(b'hi'); open(d+'/b/c/z','wb').write(b'')
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/noah/code/sofort/arch/jitk/kernel/tests/test_packer.py:31: ResourceWarning: unclosed file <_io.BufferedWriter name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmpbrtum8dw/b/c/z'>
+  os.makedirs(d+'/b/c'); open(d+'/a.txt','wb').write(b'hi'); open(d+'/b/c/z','wb').write(b'')
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/noah/code/sofort/arch/jitk/kernel/prepare.py:31: ResourceWarning: unclosed file <_io.BufferedReader name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmpbrtum8dw/a.txt'>
+  content = open(path, 'rb').read(); a, b, d = data + len(body), len(content), 0; body += content
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/noah/code/sofort/arch/jitk/kernel/prepare.py:31: ResourceWarning: unclosed file <_io.BufferedReader name='/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/tmpbrtum8dw/b/c/z'>
+  content = open(path, 'rb').read(); a, b, d = data + len(body), len(content), 0; body += content
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+......
+----------------------------------------------------------------------
+Ran 7 tests in 0.024s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/test_fs.py
+
+running 1 test
+test walk_and_corrupt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+python3 tests/regression.py
+Traceback (most recent call last):
+  File "/Users/noah/code/sofort/arch/jitk/kernel/tests/checks.py", line 10, in <module>
+    m,_,_=one(churn);assert m=={'t':'done','ok':8128},m
+          ~~~^^^^^^^
+  File "/Users/noah/code/sofort/arch/jitk/kernel/tests/checks.py", line 7, in one
+    v.ready();lo=time.time_ns();v.run(code);m=v.recv();hi=time.time_ns();assert m['t']=='done',m;return m,lo,hi
+    ~~~~~~~^^
+  File "/Users/noah/code/sofort/arch/jitk/kernel/tests/measure.py", line 43, in ready
+    m=self.recv(timeout=10);assert m=={'t':'ready','v':1},m
+  File "/Users/noah/code/sofort/arch/jitk/kernel/tests/measure.py", line 34, in recv
+    if self.p.stdout not in self.streams:raise RuntimeError({'exit':self.p.poll(),'records':self.records,'stderr':self.stderr.decode(),'partial':self.buf.decode()})
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: {'exit': 70, 'records': [], 'stderr': 'Build ../vmm first, or set JITK_VMM_BINARY to the integrated launcher.\n', 'partial': ''}
+Traceback (most recent call last):
+  File "/Users/noah/code/sofort/arch/jitk/kernel/tests/regression.py", line 5, in <module>
+    subprocess.run([sys.executable,str(p/test)],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 692, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.15/bin/python3.15', '/Users/noah/code/sofort/arch/jitk/kernel/tests/checks.py']' returned non-zero exit status 1.
+make[1]: *** [test] Error 1
+make: *** [test] Error 2

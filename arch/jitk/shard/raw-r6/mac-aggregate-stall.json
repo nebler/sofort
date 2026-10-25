@@ -1,0 +1,9 @@
+{
+  "reason": "Aggregate nested Linux test made no gate progress after tool_smoke for over 12 minutes; stopped only this test-created QEMU",
+  "command": "qemu-system-aarch64 -M virt,virtualization=on,gic-version=3 -accel hvf -cpu host -smp 1 -m 6144 -kernel /Users/noah/code/sofort/arch/jitk/linux/.work/vmlinuz -initrd /Users/noah/code/sofort/arch/jitk/linux/.work/test.cpio.gz -append console=ttyAMA0 rdinit=/init quiet -nographic -no-reboot",
+  "process": "  PID ELAPSED      TIME  %CPU    RSS\n70923   13:39  13:22.87  98.7  12688\n",
+  "stopped_unix": 1792923759.161749,
+  "signal": "SIGKILL after SIGTERM did not stop it",
+  "kvm_dev_untouched": true,
+  "killed_unix": 1792923783.412097
+}
