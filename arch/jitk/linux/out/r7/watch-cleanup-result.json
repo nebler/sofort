@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "victims": {
+    "group": "/sys/fs/cgroup/jitk-05-91631",
+    "pids": [
+      91632,
+      91633
+    ]
+  },
+  "remaining_pids": [],
+  "cgroup_remaining": false,
+  "timing": {
+    "wall_s": 5.704581630001485,
+    "limits": {
+      "startup_s": 3.0,
+      "progress_s": 0.6,
+      "gate_s": 300.0,
+      "suite_s": 20.0
+    },
+    "error": "TimeoutError('gate injected_stall: no completed-work progress for 0.6s (last completed=-1)')",
+    "returncode": -9,
+    "events": [
+      {
+        "gate": "injected_stall",
+        "event": "start",
+        "observer_elapsed_s": 0.03191300899925409
+      }
+    ]
+  },
+  "inputs_sha256": {
+    "arch/jitk/linux/nested/watch.py": "2cdcc90f968747a163e14de6479c1558619c33d3f7da5fda92857f101505038b",
+    "arch/jitk/linux/out/r7/watch-cleanup-child.py": "b047e45b9f97badc977cc39f31a27c9310683728093608aea6e1ca2716bcf453"
+  }
+}

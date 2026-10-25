@@ -70,6 +70,8 @@ The SSH observer allows 15 s extra for remote timeout diagnostics. Heartbeats
 and duplicate counters do not reset deadlines. Timeout messages name the gate,
 last completion count, limit and log. Only suite-owned process groups are killed;
 the tested VMMs retain their separate 30 s I/O and 3 s hostile-guest watchdogs.
+The remote watchdog also empties/removes the suite-PID cgroup subtree after a
+forced supervisor kill, covering helpers that deliberately use separate sessions.
 `out/run-timing.json` records the limits, gate events and observed suite wall time.
 Run watchdog failure-injection checks with `python3 nested/test-watch.py`.
 

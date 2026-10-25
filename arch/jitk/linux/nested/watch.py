@@ -12,7 +12,7 @@ import time
 
 
 def run(command, log, *, relay=False, sample_load=True, progress_timeout=None,
-        startup_allowance=0, suite_allowance=0):
+        startup_allowance=0, suite_allowance=0, suite_cgroups=False):
     limits = {
         'startup_s': float(os.getenv('JITK_STARTUP_TIMEOUT_S', '90')),
         'progress_s': float(os.getenv('JITK_GATE_TIMEOUT_S', '60')),
@@ -99,6 +99,21 @@ def run(command, log, *, relay=False, sample_load=True, progress_timeout=None,
                     os.killpg(process.pid, signal.SIGKILL)
                     process.wait(timeout=5)
             process.stdout.close()
+            # VMM wrappers deliberately use separate sessions. A killed Python
+            # supervisor cannot reap/kill them itself: the external Linux
+            # watchdog must also empty this suite's cgroup subtree.
+            group = Path('/sys/fs/cgroup') / f'jitk-05-{process.pid}'
+            if suite_cgroups and group.exists():
+                (group / 'cgroup.kill').write_text('1')
+                until = time.monotonic() + 5
+                while 'populated 1' in (group / 'cgroup.events').read_text():
+                    if time.monotonic() >= until:
+                        raise RuntimeError(f'watchdog could not empty owned cgroup {group}')
+                    time.sleep(.05)
+                for child in sorted(group.rglob('*'), reverse=True):
+                    if child.is_dir():
+                        child.rmdir()
+                group.rmdir()
         receipt = {'wall_s': time.monotonic() - started, 'limits': limits,
                    'error': error, 'returncode': process.returncode if process else None,
                    'events': events}
@@ -113,10 +128,16 @@ if __name__ == '__main__':
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
+    # SSH disconnects must not bypass the Python finally/descendant cleanup.
+    signal.signal(signal.SIGHUP, signal.SIG_IGN)
+    def interrupted(signum, frame):
+        raise InterruptedError(f'watchdog interrupted by signal {signum}')
+    signal.signal(signal.SIGTERM, interrupted)
     try:
         # On SSH this is emitted only after acquiring the shared bench lock.
         # The Mac can now enforce progress independently of the queue allowance.
         print('JITK_GATE '+json.dumps({'gate':'suite_startup','event':'start'}), flush=True)
-        sys.exit(run(command, args.log, relay=True, sample_load=False))
-    except (TimeoutError, ValueError):
+        sys.exit(run(command, args.log, relay=True, sample_load=False,
+                     suite_cgroups=True))
+    except (TimeoutError, ValueError, InterruptedError):
         sys.exit(124)
