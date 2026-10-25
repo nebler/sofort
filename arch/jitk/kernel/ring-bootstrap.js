@@ -1,7 +1,9 @@
-// Shard-only prepared profile. Stock static Bellard QuickJS, std/os event loop.
+// Shard-only prepared profile. Native RNG repair, Bellard QuickJS std/os loop.
 // Small JSON-only echo capability; deliberately no timers or policy authority.
 const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
-const pending=new Map(), source=new ArrayBuffer(8192), repair=new ArrayBuffer(32);
+const pending=new Map(), source=new ArrayBuffer(8192);
+// Saved before CHECKPOINT: the native hook must repair this same context.
+const preparedRandom=Math.random;
 let next=1;
 function encode(v) {
   const s=JSON.stringify(v).replace(/[\u007f-\uffff]/g,
@@ -34,13 +36,14 @@ os.setReadHandler(0,()=>{
   }
 });
 // Dedicated checkpoint: QuickJS, helpers and bootstrap initialized; no run input.
-os.write(100,source,0,0);
+const repair=os.snapshotCheckpoint();
 if(globalThis.__tenantCanary!==undefined) throw Error('snapshot leak');
-if(os.read(101,repair,0,32)!==32) throw Error('repair failed');
+if(repair.byteLength!==48) throw Error('repair failed');
 const rb=new Uint8Array(repair), dv=new DataView(repair);
 const run=Object.freeze({generation:String(dv.getBigUint64(0,true)),
   entropy:Array.from(rb.subarray(8,24),b=>b.toString(16).padStart(2,'0')).join(''),
-  epoch:String(dv.getBigUint64(24,true))});
+  epoch:String(dv.getBigUint64(24,true)),
+  libcEntropy:Array.from(rb.subarray(32,48),b=>b.toString(16).padStart(2,'0')).join('')});
 const n=os.read(0,source,0,8192);
 try {
   const body=new AsyncFunction('tools','run','"use strict";\n'+decode(new Uint8Array(source),n));

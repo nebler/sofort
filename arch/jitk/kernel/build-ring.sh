@@ -2,6 +2,11 @@
 set -eu
 cd "$(dirname "$0")"
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$PWD/target-ring}
+export JITK_ELF=${JITK_ELF:-$PWD/payload/qjs-ring}
+if [ ! -f "$JITK_ELF" ]; then
+  echo 'Build the ring-only payload in a Linux VM: payload/ring-rng/build.sh NEW_EMPTY_WORK' >&2
+  exit 1
+fi
 export JITK_SCRIPT="$(cat ring-bootstrap.js)"
 mkdir -p dist/ring
 cargo build --locked --offline --release --target aarch64-unknown-none --features transport-ring

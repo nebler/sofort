@@ -25,6 +25,7 @@ static mut PENDING: [Pending; 32] = [Pending {
 static mut NEXT: usize = 1;
 static mut INPUT: usize = 0;
 static mut CANARY: u64 = 0;
+static mut REPAIR_READ: bool = false;
 
 pub unsafe fn load(off: usize) -> u64 {
     unsafe { (&*((CTRL + off) as *const AtomicU64)).load(Acquire) }
@@ -186,6 +187,9 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             return Some(0);
         }
         if fd == 101 && n == 63 {
+            if CANARY == 0 || REPAIR_READ {
+                return Some(-9);
+            }
             if len < 32 {
                 return Some(-22);
             }
@@ -193,10 +197,18 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             b[..8].copy_from_slice(&load(8).to_le_bytes());
             b[8..24].copy_from_slice(&crate::SEED);
             b[24..].copy_from_slice(&load(0x218).to_le_bytes());
-            return Some(match crate::syscalls::copyout(addr, &b) {
-                Ok(()) => 32,
-                Err(e) => e,
-            });
+            if let Err(e) = crate::syscalls::copyout(addr, &b) {
+                return Some(e);
+            }
+            REPAIR_READ = true;
+            // Seed delivery is one-shot. Keep raw entropy off the JS heap and
+            // remove its kernel/control copies before tenant source is read.
+            core::ptr::write_volatile(&raw mut crate::SEED, [0; 16]);
+            for i in 0..16 {
+                core::ptr::write_volatile((CTRL + 0x208 + i) as *mut u8, 0);
+                core::ptr::write_volatile(b.as_mut_ptr().add(8 + i), 0);
+            }
+            return Some(32);
         }
         if fd == 102 && n == 64 {
             if len > 16352 {

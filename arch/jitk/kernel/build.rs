@@ -8,7 +8,8 @@ fn main() {
     for file in ["src/syscalls", "slots.json", "prepare.py", "../protocol/bootstrap.js", "ring-bootstrap.js", "link.ld"] {
         println!("cargo:rerun-if-changed={file}");
     }
-    let elf = env::var("JITK_ELF").unwrap_or(base.join("payload/qjs").display().to_string());
+    let payload = if env::var_os("CARGO_FEATURE_TRANSPORT_RING").is_some() { "payload/qjs-ring" } else { "payload/qjs" };
+    let elf = env::var("JITK_ELF").unwrap_or(base.join(payload).display().to_string());
     println!("cargo:rerun-if-changed={elf}");
     if let Ok(dir) = env::var("JITK_RESOURCES") { println!("cargo:rerun-if-changed={dir}"); }
     assert!(Command::new("python3").arg(base.join("prepare.py")).arg(&elf).arg(&out).status().unwrap().success());
