@@ -1,3 +1,5 @@
+#[path = "native.rs"]
+pub mod native;
 use std::{
     fs::File,
     io::{self, Read, Write},

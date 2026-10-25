@@ -1,5 +1,4 @@
 //! Experimental v2 subset. See shard/ABI-R6.md; never linked into default.
-#![allow(dead_code)]
 use core::sync::atomic::{
     AtomicU64,
     Ordering::{Acquire, Release},
@@ -51,7 +50,7 @@ pub unsafe fn init(_: usize) {
         assert_eq!(((CTRL + 4) as *const u16).read(), 2);
     }
 }
-unsafe fn send(kind: u16, id: u64, payload: &[u8]) {
+unsafe fn send(kind: u16, flags: u16, id: u64, payload: &[u8]) {
     unsafe {
         let len = (32 + payload.len() + 7) & !7;
         assert!(len <= 16384);
@@ -68,7 +67,7 @@ unsafe fn send(kind: u16, id: u64, payload: &[u8]) {
         let mut h = [0u8; 32];
         h[..4].copy_from_slice(&(len as u32).to_le_bytes());
         h[4..6].copy_from_slice(&kind.to_le_bytes());
-        h[6..8].copy_from_slice(&1u16.to_le_bytes());
+        h[6..8].copy_from_slice(&flags.to_le_bytes());
         h[8..16].copy_from_slice(&load(8).to_le_bytes());
         h[16..24].copy_from_slice(&id.to_le_bytes());
         h[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
@@ -120,13 +119,14 @@ pub unsafe fn service() {
     }
 }
 pub unsafe fn available() -> bool {
-    unsafe { INPUT < load(0x228) as usize || PENDING.iter().any(|p| p.state == 2) }
+    unsafe { !native() && (INPUT < load(0x228) as usize || PENDING.iter().any(|p| p.state == 2)) }
 }
 pub unsafe fn eof() -> bool {
-    false
+    unsafe { native() }
 }
 pub unsafe fn read(dst: &mut [u8]) -> usize {
     unsafe {
+        if native() { return 0; }
         let len = load(0x228) as usize;
         assert!(len <= 8192);
         let n = dst.len().min(len - INPUT);
@@ -140,7 +140,21 @@ pub unsafe fn read(dst: &mut [u8]) -> usize {
 }
 pub unsafe fn write(b: &[u8]) {
     unsafe {
-        send(4, 0, b);
+        // Diagnostics retain JSON_UTF8 LOG semantics; never mix with native bytes.
+        for chunk in b.chunks(256) {
+            let mut json = [0u8; 1600];
+            let prefix = b"{\"level\":\"debug\",\"msg\":\"";
+            json[..prefix.len()].copy_from_slice(prefix);
+            let mut at = prefix.len();
+            for byte in chunk {
+                json[at..at + 4].copy_from_slice(b"\\u00");
+                json[at + 4] = b"0123456789abcdef"[(byte >> 4) as usize];
+                json[at + 5] = b"0123456789abcdef"[(byte & 15) as usize];
+                at += 6;
+            }
+            json[at..at + 2].copy_from_slice(b"\"}");
+            send(4, 1, 0, &json[..at + 2]);
+        }
     }
 }
 pub unsafe fn user_write(b: &[u8]) {
@@ -164,6 +178,12 @@ pub unsafe fn hex(n: usize) {
 // 100 checkpoint; 101 repair bytes; 102 finish; 129..160 bounded call ids.
 pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
     unsafe {
+        if native() {
+            if n == 24 { // Narrow dup3 profile: regular file -> stdin, no console aliasing.
+                return Some(if a[1] == 0 { crate::fs::dup_stdin(a[0], a[2]) } else { -38 });
+            }
+            return None;
+        }
         let (fd, addr, len) = (a[0], a[1], a[2]);
         if n != 63 && n != 64 {
             return None;
@@ -220,7 +240,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             if PENDING.iter().any(|p| p.state == 1 || p.state == 2) {
                 return Some(-16);
             }
-            send(5, 0, core::slice::from_raw_parts(pa as *const u8, len));
+            send(5, 1, 0, core::slice::from_raw_parts(pa as *const u8, len));
             crate::arch::doorbell(3);
             loop {
                 core::hint::spin_loop()
@@ -241,6 +261,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             NEXT += 1;
             send(
                 1,
+                1,
                 id as u64,
                 core::slice::from_raw_parts(pa as *const u8, len),
             );
@@ -260,5 +281,70 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             p.state = 3;
             Some(if p.kind == 2 { p.len as isize } else { -5 })
         }
+    }
+}
+
+// R7 native feature bundle: byte streams, native entry, late-bound RO archive.
+const NATIVE_FEATURES: u64 = 7;
+const OUTPUT_LIMIT: usize = 1024 * 1024;
+static mut OUTPUT: [usize; 2] = [0; 2];
+static mut OUTPUT_LIMITED: bool = false;
+pub unsafe fn native() -> bool {
+    unsafe { load(0x20) == NATIVE_FEATURES }
+}
+pub unsafe fn native_checkpoint() {
+    unsafe {
+        crate::arch::doorbell(4);
+        crate::arch::boot_info();
+        assert!(native());
+        assert!(load(0x260) <= OUTPUT_LIMIT as u64);
+        store(0x238, load(8));
+    }
+}
+pub unsafe fn native_args(args: &mut [&'static str; 32]) -> usize {
+    unsafe {
+        let count = load(0x248) as usize;
+        let len = load(0x228) as usize;
+        assert!((1..=32).contains(&count) && len <= 8192);
+        let bytes = core::slice::from_raw_parts((CTRL + 0x400) as *const u8, len);
+        let mut at = 0;
+        for arg in &mut args[..count] {
+            let n = bytes[at..].iter().position(|b| *b == 0).unwrap();
+            *arg = core::str::from_utf8(&bytes[at..at + n]).unwrap();
+            at += n + 1;
+        }
+        assert_eq!(at, len);
+        count
+    }
+}
+pub unsafe fn native_output(fd: usize, addr: usize, len: usize) -> isize {
+    unsafe {
+        if len == 0 { return 0; }
+        if len > 1024 * 1024 { return -22; }
+        let Some(pa) = crate::user::access(addr, len, false) else { return -14; };
+        let budget = load(0x260) as usize;
+        let count = len.min(budget.saturating_sub(OUTPUT[0] + OUTPUT[1]));
+        if count < len { OUTPUT_LIMITED = true; }
+        if count == 0 && len != 0 { return -27; }
+        let stream = fd - 1;
+        let bytes = core::slice::from_raw_parts(pa as *const u8, count);
+        for chunk in bytes.chunks(16344) {
+            // Offset occupies call_id for stream records; payload is pure bytes.
+            send(6 + stream as u16, 0, OUTPUT[stream] as u64, chunk);
+            OUTPUT[stream] += chunk.len();
+        }
+        count as isize
+    }
+}
+pub unsafe fn native_finish(status: usize) -> ! {
+    unsafe {
+        let mut b = [0u8; 24];
+        b[..4].copy_from_slice(&((status & 255) as u32).to_le_bytes());
+        b[4..8].copy_from_slice(&(OUTPUT_LIMITED as u32).to_le_bytes());
+        b[8..16].copy_from_slice(&(OUTPUT[0] as u64).to_le_bytes());
+        b[16..24].copy_from_slice(&(OUTPUT[1] as u64).to_le_bytes());
+        send(8, 0, 0, &b);
+        crate::arch::doorbell(3);
+        loop { core::hint::spin_loop(); }
     }
 }

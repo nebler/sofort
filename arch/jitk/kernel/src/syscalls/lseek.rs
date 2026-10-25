@@ -3,7 +3,11 @@
 use crate::fs;
 pub fn call(a: &[usize]) -> isize {
     let fd = a[0] as u32 as usize;
-    if fd <= 2 { return -29; }
+    #[cfg(feature = "transport-ring")]
+    let console = fd <= 2 && fs::get(fd).is_err();
+    #[cfg(not(feature = "transport-ring"))]
+    let console = fd <= 2;
+    if console { return -29; }
     let f = match fs::get(fd) { Ok(f) => f, Err(e) => return e };
     let n = match fs::node(f.node) { Ok(n) => n, Err(e) => return e };
     let base = match a[2] { 0 => 0, 1 => f.pos as i64, 2 => if n.dir { 0 } else { n.b as i64 }, _ => return -22 };

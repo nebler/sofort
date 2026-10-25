@@ -76,9 +76,13 @@ fn proc_read(path: &str) -> String {
 fn main() {
     let a: Vec<_> = std::env::args().collect();
     assert!(
-        a.len() >= 4,
+        a.len() >= 3,
         "prepare IMAGE BASE | bench BASE FIXTURE N | hold BASE FIXTURE N SECONDS"
     );
+    if a[1] == "native-worker" { kvm::native::worker(&a[2..]).unwrap(); return; }
+    if a[1] == "native-hold" {
+        kvm::native::hold(&a[2], &a[3], a[4].parse().unwrap(), a[5].parse().unwrap()).unwrap(); return;
+    }
     raise_fds();
     let kvm = Kvm::new();
     let mode = &a[1];

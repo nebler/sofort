@@ -7,8 +7,14 @@ if [ ! -f "$JITK_ELF" ]; then
   echo 'Build the ring-only payload in a Linux VM: payload/ring-rng/build.sh NEW_EMPTY_WORK' >&2
   exit 1
 fi
-export JITK_SCRIPT="$(cat ring-bootstrap.js)"
+# Native images contain only a tool profile. No argv or tenant files are packed.
+if [ "${JITK_RING_NATIVE:-0}" = 1 ]; then
+  export JITK_ARGV_JSON='["@ring-native"]'
+  unset JITK_RESOURCES
+else
+  export JITK_SCRIPT="$(cat ring-bootstrap.js)"
+fi
 mkdir -p dist/ring
 cargo build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}
-"$OBJCOPY" -O binary "$CARGO_TARGET_DIR/aarch64-unknown-none/release/jitk-02" dist/kernel-ring.bin
+"$OBJCOPY" -O binary "$CARGO_TARGET_DIR/aarch64-unknown-none/release/jitk-02" "${JITK_RING_OUT:-dist/kernel-ring.bin}"
