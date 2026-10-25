@@ -1,0 +1,79 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/bin/real.rs (target/debug/deps/real-9c73b479be233539)
+
+running 18 tests
+test arena::tests::only_the_class_arena_and_rings_are_writable ... ok
+test entropy::chacha_zero_key_counter_one ... ok
+test ipc::tests::hostile_lengths_and_reserved_fields ... ok
+test ipc_service::tests::malformed_admissions ... ok
+test ipc_json::tests::malformed_json_and_envelopes ... ok
+test kvm::native::streams::tests::arbitrary_bytes_streams_and_status ... ok
+test kvm::native::inputs::tests::bounded_tree_and_binary_data ... ok
+test kvm::native::streams::tests::completion_and_log_contracts ... ok
+test kvm::native::inputs::tests::hostile_inputs ... ok
+test ipc::tests::private_cursor_shadows_and_wrapped_records ... ok
+test kvm::native::streams::tests::hostile_headers_and_cursors ... ok
+test lease::tests::escalation_claim_loses_to_reset_and_new_generation ... ok
+test lease::tests::expiry_requires_reset_acknowledgement_before_reuse ... ok
+test lease::tests::kick_between_entries_yields_before_running_another_slot ... ok
+test kvm::native::streams::tests::stream_budgets_duplicates_and_terminal_order ... ok
+test lease::tests::stale_generation_cannot_expire_or_disarm_reused_slot ... ok
+test kvm::native::streams::tests::wraps_and_repeated_credit ... ok
+test kvm::native::streams::tests::header_fuzz_never_reads_past_a_committed_record ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+    Finished `release` profile [optimized] target(s) in 0.00s
+
+added 48 packages in 1s
+{"event":"check","name":"return2"}
+{"event":"check","name":"Node provider reply replaces synthetic echo"}
+{"event":"check","name":"provider namespace tools"}
+{"event":"check","name":"provider namespace run"}
+{"event":"check","name":"provider namespace __jitk_ring_custom"}
+{"event":"check","name":"primitive thrown values"}
+{"event":"check","name":"unawaited calls cannot return success"}
+{"event":"check","name":"out-of-order concurrent tool replies"}
+{"event":"check","name":"scalar Unicode"}
+{"event":"check","name":"raw Unicode source semantics"}
+{"event":"check","name":"codemode binary round trip"}
+{"event":"check","name":"structured tool errors"}
+{"event":"check","name":"policy denial delivered to guest"}
+{"event":"check","name":"console logs"}
+{"event":"check","name":"bounded oversized reply is an explicit error"}
+{"event":"check","name":"32-call ring budget"}
+{"event":"check","name":"source admission bound"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"distinct restored Math.random"}
+{"event":"check","name":"eight concurrent generations"}
+{"event":"check","name":"canonical policy owns issuance/revocation"}
+{"event":"check","name":"shard has no inherited credentials/environment"}
+{"event":"check","name":"watchdog reset receipt while Node was blocked"}
+{"event":"check","name":"responsive-owner deadline reset within 50 ms (nested)"}
+{"event":"check","name":"clean reuse after expiry"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /shard|protocol/. Input:
+
+'Error: invalid peer IPC producer'
+
+    at async file:///home/dev/r7-ipc/test-d457d3b7ac18/arch/jitk/executor/build/shard-check.js:1506:7 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: Error: invalid peer IPC producer
+      at SharedChannel.poll (file:///home/dev/r7-ipc/test-d457d3b7ac18/arch/jitk/executor/build/shard-check.js:416:33)
+      at file:///home/dev/r7-ipc/test-d457d3b7ac18/arch/jitk/executor/build/shard-check.js:377:14 {
+    code: 'SHARD_IPC'
+  },
+  expected: /shard|protocol/,
+  operator: 'rejects',
+  diff: 'simple'
+}
+
+Node.js v24.13.0

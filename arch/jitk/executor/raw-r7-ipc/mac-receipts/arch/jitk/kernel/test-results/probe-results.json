@@ -1,0 +1,91 @@
+{
+  "load": "23:23  up 2 days,  1:37, 1 user, load averages: 8.25 6.35 7.23",
+  "kernel-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "8348f7597113e09f4238c6aa8ef0de99af66822f672ff7c794d76154472d5dc4",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 8.25 6.35 7.23",
+    "status": "PASS"
+  },
+  "text-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "da47371b9fbd7a1e3d161e2a77778a4dd392076752c169e05567b3073f5e7922",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 8.25 6.35 7.23",
+    "status": "PASS"
+  },
+  "heap-exec": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "14cc30c309477fc381628bbb560374c9e3541e9fee6f96503c090030c715d14c",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 8.25 6.35 7.23",
+    "status": "PASS"
+  },
+  "privileged": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "a4c5eebe83f72a86233dc04bbe2e4725f14a4b1d81e63b85453c2267b242252e",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "el0-hvc": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "ae1de8be70db47eb1ebae42e3650f2ce061a4b3818bc452bb43332a4e277df9a",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "bad-pointer": {
+    "returncode": 0,
+    "output": "\u001eexit=0000000000000000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "2eceea01791fe1c12ec17e50b8ad8927ec8fabed8b63ba90b8b3b435d06b4425",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "pan": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12345,\"pc\":4194312,\"args\":[1,2147514752,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080004ebc\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "1a2f18a39f81dc483016093ea7c0749664bf9fb8b41a4ce394d4b61bf86e85b9",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "alias-write": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12346,\"pc\":4194312,\"args\":[1,2147514752,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600004f far=0000000080080000 pc=0000000080004eb0\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "ea77c2e46fdda98686b24a0d669fc2a6b473b1a80a229ec35173406ec6aed646",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "fs-alias-write": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12347,\"pc\":4194312,\"args\":[1,2147514752,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600004f far=00000000802ca000 pc=0000000080004eb0\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "393735577dd4bc2acbd7b7a2ba173a73c4ff465b56d9a08427b9302c01b56bfc",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "unknown-syscall": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":511,\"pc\":4194312,\"args\":[1,2147514760,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eexit=0000000000000000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "f59dd2c5ff307e9783560fa5e2f86bc2dade2e96d0d2de9970522f5cb78d6ebb",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  },
+  "fs-user-read": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000092000007 far=000000000064a000 pc=0000000000400004\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "b6b0aab0da90ea01a797a824abeb43826ad3bf3174c50915bf0a841e864b5722",
+    "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.90 6.31 7.22",
+    "status": "PASS"
+  }
+}

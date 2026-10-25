@@ -1,0 +1,9 @@
+70c9fcb61976a1bfe6ad40b10e57d4e7d1eacb95845807bf3539da15581cab57  target/release/real
+a844532e9037f7d380a70d400a103f3e886f511d41c2c58ea3ee9cf7d9a2bdbe  ../executor/build/shard-ipc.node
+f1aee3f4dbe5e5e26d12e7db00482e9808f1126a3db67163e9900cb6069e5fff  ../executor/build/shard-bench.js
+9a7ae17fe1d5136d9110a6638c508b3199c36f4d5413a5f6caa7215a0abce22a  ../executor/build/shard-check.js
+9fb63e8584a10ba25d7a612cd5d2929e6ce494120b8e66d185d58a58971ff3d0  /home/dev/r7-ipc/arch/jitk/kernel/dist/kernel-ring.bin
+6d745a010134f402f4ff11e9691d7155003c15ea079d9a44385a3490941093ab  /home/dev/r7-ipc/prepared.mem
+3f1a048ddd53dc764e489fa60774f470cf85bfddb48db5206c1b260b6a971307  /home/dev/r7-ipc/prepared.regs
+d36fa943713adfca80b94c9d04e256cb398dcc9a18699985b5a9b28594131ce8  /home/dev/r7-ipc/prepared.layout
+a2085465bf4a45b1599902cafe2db010a47cd3f17e6335c04d8dede3ceae3806  /home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/bin/node

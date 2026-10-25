@@ -178,6 +178,8 @@ See [ipc/ABI.md](ipc/ABI.md) for bounds, ordering and generation validation.
 make test-shard
 # Mac -> existing kvm-dev, following linux/nested/run-ssh.py's SSH pattern:
 JITK_SHARD_TEST=ssh make test-shard
+# Also collect 200 tiny runs + 20 blocked-Node deadline samples under the same lock:
+JITK_SHARD_TEST=ssh JITK_SHARD_BENCH=1 make test-shard
 # Include the focused SSH suite in the normal executor/top-level make test:
 JITK_SHARD_TEST=ssh make test
 ```

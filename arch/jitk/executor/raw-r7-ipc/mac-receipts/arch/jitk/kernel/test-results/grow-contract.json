@@ -1,0 +1,36 @@
+{
+  "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.91 6.34 7.22",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK",
+    "exit_slot": 93
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK",
+    "exit_slot": 94
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ],
+    "registered_enosys": [
+      29,
+      134,
+      135,
+      216
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}

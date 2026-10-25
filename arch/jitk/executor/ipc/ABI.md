@@ -67,4 +67,7 @@ No production seccomp/Landlock/cgroup confinement, cache identity/signature,
 process-restart supervision, larger memory class, timer or `/cap` parity is
 claimed. Existing shard assertions can terminate the shard on hostile guest
 ring violations. Busy-vCPU cancellation waits for its existing lease; the
-independent watchdog remains the deadline enforcement mechanism.
+independent watchdog remains the deadline enforcement mechanism. Per-run abort
+also rejects an admission/reply blocked on queue credit. Pool shutdown kills
+the persistent backend before waiting on logical slot exits, so an unresponsive
+peer cannot hold shutdown behind a missing RELEASED acknowledgement.

@@ -1,0 +1,107 @@
+{
+  "load": "23:23  up 2 days,  1:37, 1 user, load averages: 7.60 6.30 7.20",
+  "samples": 30,
+  "tree_sha256": "1e54b51b2da23ae05ce9e2495938d0b718dbe2bfb150345d01cf16bfefb8c27a",
+  "probe": {
+    "status": "PASS",
+    "identical": "30/30",
+    "linux_stdout_sha256": "a8322cefb579a4d1c902c90f16a9b267ae79f73c729997f62619b501d1c252cd",
+    "lines": 148,
+    "fs_syscalls": [
+      "close",
+      "fcntl",
+      "getdents64",
+      "lseek",
+      "newfstatat",
+      "openat",
+      "read",
+      "readlinkat",
+      "readv"
+    ],
+    "all_syscalls": [
+      25,
+      56,
+      57,
+      61,
+      62,
+      63,
+      64,
+      65,
+      78,
+      79,
+      94
+    ]
+  },
+  "lua": {
+    "status": "PASS",
+    "identical": "30/30",
+    "linux_stdout_sha256": "e1cfb18e0ab759e64ec0e581ed3568e27eb14199af05cf8982e054f8a29836fd",
+    "lines": 13,
+    "fs_syscalls": [
+      "close",
+      "lseek",
+      "openat",
+      "read",
+      "readv"
+    ],
+    "all_syscalls": [
+      29,
+      56,
+      57,
+      62,
+      63,
+      65,
+      66,
+      94,
+      96,
+      113,
+      134,
+      135,
+      214,
+      215,
+      222
+    ]
+  },
+  "qjs": {
+    "status": "PASS",
+    "identical": "30/30",
+    "linux_stdout_sha256": "3c454d9075b55a449eb155042a5b015e91d1ba8678470d038b4bd285259c1199",
+    "lines": 14,
+    "fs_syscalls": [
+      "close",
+      "fcntl",
+      "getdents64",
+      "lseek",
+      "newfstatat",
+      "openat",
+      "read",
+      "readlinkat",
+      "readv"
+    ],
+    "all_syscalls": [
+      17,
+      25,
+      29,
+      56,
+      57,
+      61,
+      62,
+      63,
+      65,
+      66,
+      78,
+      79,
+      94,
+      96,
+      113,
+      214,
+      215,
+      222
+    ]
+  },
+  "bootstrap": {
+    "status": "PASS",
+    "checks": 3
+  },
+  "status": "PASS"
+}

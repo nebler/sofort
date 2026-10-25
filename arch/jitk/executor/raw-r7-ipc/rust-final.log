@@ -1,0 +1,25 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/bin/real.rs (target/debug/deps/real-9c73b479be233539)
+
+running 18 tests
+test arena::tests::only_the_class_arena_and_rings_are_writable ... ok
+test entropy::chacha_zero_key_counter_one ... ok
+test ipc::tests::hostile_lengths_and_reserved_fields ... ok
+test ipc_service::tests::malformed_admissions ... ok
+test ipc_json::tests::malformed_json_and_envelopes ... ok
+test kvm::native::inputs::tests::bounded_tree_and_binary_data ... ok
+test kvm::native::inputs::tests::hostile_inputs ... ok
+test kvm::native::streams::tests::arbitrary_bytes_streams_and_status ... ok
+test kvm::native::streams::tests::completion_and_log_contracts ... ok
+test kvm::native::streams::tests::hostile_headers_and_cursors ... ok
+test kvm::native::streams::tests::stream_budgets_duplicates_and_terminal_order ... ok
+test lease::tests::kick_between_entries_yields_before_running_another_slot ... ok
+test ipc::tests::private_cursor_shadows_and_wrapped_records ... ok
+test lease::tests::expiry_requires_reset_acknowledgement_before_reuse ... ok
+test lease::tests::escalation_claim_loses_to_reset_and_new_generation ... ok
+test lease::tests::stale_generation_cannot_expire_or_disarm_reused_slot ... ok
+test kvm::native::streams::tests::wraps_and_repeated_credit ... ok
+test kvm::native::streams::tests::header_fuzz_never_reads_past_a_committed_record ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
