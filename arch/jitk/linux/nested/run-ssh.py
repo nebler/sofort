@@ -70,6 +70,12 @@ status = run([str(ssh), shlex.join(command)], log,
              startup_allowance=lock_timeout, suite_allowance=lock_timeout)
 if status == 75:
     sys.exit(f'jitk: bench.lock busy after {lock_timeout:g}s; no test gate ran (log={log})')
+if status:
+    messages = [line for line in log.read_text(errors='replace').splitlines()
+                if line.startswith('JITK_TIMEOUT ')]
+    if messages:
+        print(messages[-1][:1000], file=sys.stderr, flush=True)
+    print(f'jitk: nested suite failed (exit {status}); log={log}', file=sys.stderr, flush=True)
 if status == 0:
     subprocess.run([str(ssh), f'sudo rm -rf -- {remote}'], check=True, timeout=20)
 sys.exit(status)

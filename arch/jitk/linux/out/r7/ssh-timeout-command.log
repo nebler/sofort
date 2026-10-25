@@ -1,0 +1,3 @@
+jitk: full NESTED suite over /Users/noah/code/sofort/kvm-dev/ssh.sh; scratch=/home/dev/r7-suite/8a7df12f9acb-88410; bench.lock wait <= 600s
+JITK_TIMEOUT TimeoutError('gate parking: no completed-work progress for 0.2s (last completed=-1)'); log=/home/dev/r7-suite/8a7df12f9acb-88410/suite.log
+jitk: nested suite failed (exit 124); log=/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/out/r7/ssh-timeout/nested.log

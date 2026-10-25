@@ -1,0 +1,3 @@
+JITK_GATE {"gate": "suite_startup", "event": "start"}
+JITK_GATE {"gate": "parking", "event": "start", "unix": 1792962199.516049}
+JITK_TIMEOUT TimeoutError('gate parking: no completed-work progress for 0.2s (last completed=-1)'); log=/home/dev/r7-suite/8a7df12f9acb-88410/suite.log
