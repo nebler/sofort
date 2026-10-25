@@ -107,7 +107,13 @@ pub(crate) unsafe fn access(va: usize, len: usize, w: bool) -> Option<usize> {
                 }
             }
         }
-        Some(m::physical(va))
+        // Ring EL1 uses the validated user virtual mapping. Adjacent virtual
+        // pages can have unrelated physical backing after arena relocation.
+        // PAN is cleared only on the ring syscall path below.
+        #[cfg(feature = "transport-ring")]
+        { Some(va) }
+        #[cfg(not(feature = "transport-ring"))]
+        { Some(m::physical(va)) }
     }
 }
 pub(crate) unsafe fn output(va: usize, len: usize) -> isize {
@@ -153,6 +159,8 @@ unsafe extern "C" fn trap(frame: *mut usize) {
             c::print("\n");
             crate::off();
         }
+        #[cfg(feature = "transport-ring")]
+        asm!(".inst 0xd500409f", "isb", options(nostack)); // msr pan, #0
         #[cfg(feature = "trace")]
         {
             c::print("\x1esys ");

@@ -13,6 +13,11 @@ pub unsafe fn call(a: &[usize]) -> isize {
                     BRK = want;
                     m::flush();
                 }
+                #[cfg(feature = "transport-ring")]
+                if want > limit {
+                    c::print("arena brk denied want="); c::hex(want);
+                    c::print(" limit="); c::hex(limit); c::print("\n");
+                }
                 BRK as isize
             
     }

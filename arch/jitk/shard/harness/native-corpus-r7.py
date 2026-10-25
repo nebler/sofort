@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Offline kvm-dev corpus; never a runtime helper. Run under bench.lock."""
 import hashlib, io, json, os, pathlib, struct, subprocess, tarfile, time
-ROOT = pathlib.Path(os.environ.get('JITK_NATIVE_ROOT', '/home/dev/r7-bytes')).resolve()
+ROOT = pathlib.Path(os.environ.get('JITK_NATIVE_ROOT', str(pathlib.Path(__file__).resolve().parents[4]))).resolve()
 CENSUS = pathlib.Path('/home/dev/r6-census')
-RAW = ROOT / 'raw'
+RUN = pathlib.Path(os.environ.get('JITK_NATIVE_RUN_DIR', str(ROOT))).resolve()
+RAW = RUN / 'raw'
 REAL = ROOT / 'arch/jitk/shard/target/release/real'
 
 def dump(path, value):
@@ -19,7 +20,7 @@ def request(tool, args, files):
 def main():
     RAW.mkdir(exist_ok=True)
     dump(RAW/'environment.json', dict(uname=list(os.uname()),load=list(os.getloadavg()),uptime=pathlib.Path('/proc/uptime').read_text(),nested=True))
-    profiles=json.loads((ROOT/'profiles.json').read_text())
+    profiles=json.loads((RUN/'profiles.json').read_text())
     for name,profile in profiles.items():
         assert hashlib.sha256(pathlib.Path(profile['binary']).read_bytes()).hexdigest()==profile['sha256']
     fixture={'data/input.txt':b'alpha 2\nbeta 5\nalpha 3\n','data/input.json':b'{"items":[{"n":2},{"n":5}]}\n',
@@ -66,8 +67,8 @@ def main():
     case('micropython','sum',['-c','print(sum(int(x.split()[1]) for x in open("data/input.txt")))'])
     case('micropython','binary-status',['-c','import sys; sys.stdout.buffer.write(bytes([0,255,128])); sys.stderr.write("err\\n"); sys.exit(7)'])
     case('micropython','error',['-c','raise ValueError("bad")'])
-    worker=subprocess.Popen([str(REAL),'native-worker']+[f'{p}={ROOT}/images/{p}-r7' for p in profiles],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=(RAW/'worker.stderr').open('wb'))
-    oracle=ROOT/'oracle';oracle.mkdir(exist_ok=True)
+    worker=subprocess.Popen([str(REAL),'native-worker']+[f'{p}={RUN}/images/{p}-r7' for p in profiles],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=(RAW/'worker.stderr').open('wb'))
+    oracle=RUN/'oracle';oracle.mkdir(exist_ok=True)
     results=[]
     try:
         for i,c in enumerate(cases):
@@ -79,14 +80,16 @@ def main():
             native=subprocess.run(c['args'],executable=profiles[c['tool']]['binary'],cwd=oracle,stdin=subprocess.DEVNULL,capture_output=True,env=env,timeout=10)
             wire=request(c['tool'],c['args'],c['files'])
             if c['tool']=='lua' and c['case']=='sum':
-                (ROOT/'ledger.request').write_bytes(request(c['tool'],c['args'],{'data/input.txt':c['files']['data/input.txt']})[4:])
+                (RUN/'ledger.request').write_bytes(request(c['tool'],c['args'],{'data/input.txt':c['files']['data/input.txt']})[4:])
+            if (c['tool'], c['case']) in [('jq-musl','aggregate'),('sqlite3','aggregate'),('busybox','gzip-binary'),('zstd','compress-binary'),('lua','sum'),('micropython','sum')]:
+                (RUN/f"ledger-{c['tool']}.request").write_bytes(wire[4:])
             start=time.monotonic_ns();worker.stdin.write(wire);worker.stdin.flush()
             header=worker.stdout.read(4);assert len(header)==4,(c,worker.poll())
             n=struct.unpack('<I',header)[0];out=worker.stdout.read(n);assert len(out)==n
             status,exitcode,olen,elen,limited=struct.unpack_from('<5I',out)
             o,e=out[20:20+olen],out[20+olen:20+olen+elen]
             passed=status==0 and (o,e,exitcode)==(native.stdout,native.stderr,native.returncode)
-            r=dict(i=i,tool=c['tool'],case=c['case'],argv=c['args'],pass_exact=passed,worker_status=status,exit_code=exitcode,limited=limited,
+            r=dict(i=i,memory_class=profiles[c['tool']]['memory_class'],tool=c['tool'],case=c['case'],argv=c['args'],pass_exact=passed,worker_status=status,exit_code=exitcode,limited=limited,
                    stdout_hex=o.hex(),stderr_hex=e.hex(),linux_stdout_hex=native.stdout.hex(),linux_stderr_hex=native.stderr.hex(),linux_exit=native.returncode,
                    elapsed_ns=time.monotonic_ns()-start,load=list(os.getloadavg()),error=out[20:].decode(errors='replace') if status else None,
                    inputs={p:dict(bytes=len(d),sha256=hashlib.sha256(d).hexdigest()) for p,d in c['files'].items()})

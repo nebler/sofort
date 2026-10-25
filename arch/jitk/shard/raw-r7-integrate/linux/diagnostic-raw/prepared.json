@@ -1,0 +1,86 @@
+{
+  "jq-musl": {
+    "bin": {
+      "sha256": "80600437c6e5d8dbcef45a7bd80d318b8a35283127bbd4f6f7ce6c66f45a931a",
+      "bytes": 25168400
+    },
+    "mem": {
+      "sha256": "6837a8ce807fb29a0c67945fb23add3a5cc187f319eb139b16956f149b188959",
+      "bytes": 33554432
+    },
+    "regs": {
+      "sha256": "ac236a9ac495da5afe6d394c714ce8ea16c0be05aaba005eb25b5a4746b087fb",
+      "bytes": 6368
+    }
+  },
+  "sqlite3": {
+    "bin": {
+      "sha256": "21ca06129c38093aad0d4e1d26cfe317ff3ae24e22343db46eb3619b1e4b68c2",
+      "bytes": 25168400
+    },
+    "mem": {
+      "sha256": "86d3d68803718b1fe2df39cc99c9ac271d8eaf427388aa17a1f358b21ae7a4f8",
+      "bytes": 33554432
+    },
+    "regs": {
+      "sha256": "8f856dd52ebadd485ee750837a36ddc40989d32435b551e7b046a3bb2fa715e7",
+      "bytes": 6368
+    }
+  },
+  "lua": {
+    "bin": {
+      "sha256": "5b045c95f328f3824de904de2fb45dc0294bac1f57ba1eb2ce845aa85ea03b75",
+      "bytes": 25168400
+    },
+    "mem": {
+      "sha256": "be93369015ba4ae60e85b5160e67f5e62dc5429888912e49568a473ab7dd8ff2",
+      "bytes": 33554432
+    },
+    "regs": {
+      "sha256": "d29690d838d91331e163b02042bca7d607edbc2bf352396b557168b23168b0b4",
+      "bytes": 6368
+    }
+  },
+  "micropython": {
+    "bin": {
+      "sha256": "49adcdd95b7fb1f64aba7c14cecd24d9a791023eeac8f3fcb082746db3271c73",
+      "bytes": 25168400
+    },
+    "mem": {
+      "sha256": "e0544489559ce49f90c99a5c9e27f43fefa646d9db7ca2bd76af1ab83fe13532",
+      "bytes": 33554432
+    },
+    "regs": {
+      "sha256": "2619070eb5483a9ec41bead0735af6368853556bb389276e35ff06c19d738d89",
+      "bytes": 6368
+    }
+  },
+  "busybox": {
+    "bin": {
+      "sha256": "1b13238bee82f574d905d7be43a6860ca42bd433971684ce0a8d59a84b0c04bf",
+      "bytes": 25168400
+    },
+    "mem": {
+      "sha256": "0eb1493ceb47efb0379f4d6effc1dd10d45d93f234fa9642b1e05e6461a20e0d",
+      "bytes": 33554432
+    },
+    "regs": {
+      "sha256": "4d4d8e2bf80ba237a9826944aec2ecf1dd32fb4215a5ca5c07c3b71c600bbfc1",
+      "bytes": 6368
+    }
+  },
+  "zstd": {
+    "bin": {
+      "sha256": "c18049a5eac553698f9fe14b2612b2e1eff4a57be82df97664c4e875debf49eb",
+      "bytes": 25168400
+    },
+    "mem": {
+      "sha256": "0da4e26a704993e4904b87f39d82688f6a12cd75040ce24ce84ace88225aeb56",
+      "bytes": 33554432
+    },
+    "regs": {
+      "sha256": "6421cd08e6da5d535a6f6292a2ce875691bc118e66f9b403b177fa4930d62be9",
+      "bytes": 6368
+    }
+  }
+}

@@ -8,6 +8,9 @@ FIXTURES=os.environ.get('JITK_LEDGER_FIXTURES','ready return2 one_tool promise10
 BIN=ROOT/'arch/jitk/shard/target/release/real'
 SPAWN=ROOT/'spawn-cg'
 OUT=pathlib.Path(os.environ.get('JITK_LEDGER_OUTPUT',str(ROOT/'raw')));OUT.mkdir(exist_ok=True)
+# This bounds offline batch construction, not a guest lease/deadline. Reading
+# all RAM in 256 larger-class guests can exceed the old three-minute wait.
+PROGRESS_TIMEOUT=float(os.environ.get('JITK_LEDGER_PROGRESS_TIMEOUT','600'))
 def read(p): return pathlib.Path(p).read_text()
 def numbers(p): return {k:int(v) for k,v in (l.split()[:2] for l in read(p).splitlines())}
 def smaps(pid):
@@ -34,7 +37,7 @@ def cell(name,n,rep):
     events=[];pid=None;start=time.monotonic()
     try:
         while True:
-            if not select.select([p.stdout],[],[],180)[0]:raise TimeoutError('no holder progress')
+            if not select.select([p.stdout],[],[],PROGRESS_TIMEOUT)[0]:raise TimeoutError('no holder progress')
             line=p.stdout.readline()
             if not line:raise RuntimeError(f'holder died rc={p.poll()} {stem}')
             e=json.loads(line);events.append(e)

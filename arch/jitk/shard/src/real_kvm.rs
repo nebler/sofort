@@ -117,15 +117,23 @@ pub struct Register {
 }
 pub struct Snapshot {
     pub memory: File,
+    pub class: arena::Class,
     regs: Vec<Register>,
 }
 impl Snapshot {
     pub fn load(base: &str) -> Arc<Self> {
         let memory = File::open(format!("{base}.mem")).unwrap();
         assert_eq!(memory.metadata().unwrap().len(), RAM as u64);
-        assert_eq!(
-            std::fs::read(format!("{base}.layout")).expect("prepare a glue-2m snapshot"),
-            arena::layout_bytes()
+        let layout =
+            std::fs::read(format!("{base}.layout")).expect("prepare a versioned ring snapshot");
+        let class = arena::Class::from_layout(&layout).expect("unsupported ring snapshot layout");
+        // The sidecar cannot select a different class than the linked image.
+        use std::os::unix::fs::FileExt;
+        let mut kernel = vec![0; 0x80000];
+        memory.read_exact_at(&mut kernel, 0).unwrap();
+        assert!(
+            kernel.windows(layout.len()).any(|b| b == layout),
+            "snapshot/layout mismatch"
         );
         let b = std::fs::read(format!("{base}.regs")).unwrap();
         assert_eq!(&b[..8], b"JTKREGS2");
@@ -143,7 +151,11 @@ impl Snapshot {
             at += n;
         }
         assert!(regs.len() > 68);
-        Arc::new(Self { memory, regs })
+        Arc::new(Self {
+            memory,
+            regs,
+            class,
+        })
     }
 }
 pub struct Request {
@@ -159,10 +171,9 @@ pub enum RunError {
 impl std::fmt::Display for RunError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::MemoryBound { address } => write!(
-                f,
-                "memory_bound: write outside glue-2m arena at {address:#x}"
-            ),
+            Self::MemoryBound { address } => {
+                write!(f, "memory_bound: write outside class arena at {address:#x}")
+            }
             Self::Deadline { .. } => write!(f, "deadline_exceeded"),
             Self::GuestFatal => write!(f, "guest_fatal: guest stopped without a completion"),
         }
@@ -191,11 +202,11 @@ pub struct Slot {
     pub lease: Option<lease::Lease>,
 }
 impl Slot {
-    fn create(kvm: &Kvm, file: &File, bounded: bool) -> Self {
+    fn create(kvm: &Kvm, file: &File, class: Option<arena::Class>) -> Self {
         let vm = unsafe { File::from_raw_fd(call(&kvm.fd, KVM_CREATE_VM, 0)) };
         let ram = Mapping::new(file, RAM, 2);
-        let regions = if bounded {
-            arena::regions(RAM, CTRL).to_vec()
+        let regions = if let Some(class) = class {
+            class.regions(RAM, CTRL).to_vec()
         } else {
             vec![(0, RAM, true)]
         };
@@ -240,7 +251,7 @@ impl Slot {
         }
     }
     pub fn new(kvm: &Kvm, snapshot: Arc<Snapshot>) -> Self {
-        let mut s = Self::create(kvm, &snapshot.memory, true);
+        let mut s = Self::create(kvm, &snapshot.memory, Some(snapshot.class));
         s.restore_regs(&snapshot.regs);
         s.snapshot = Some(snapshot);
         s
@@ -335,10 +346,12 @@ impl Slot {
         true
     }
     pub fn corrupt_canary(&self, v: u64) {
-        self.ram.put(arena::CANARY, v);
+        self.ram
+            .put(self.snapshot.as_ref().unwrap().class.canary(), v);
     }
     pub fn canary(&self) -> u64 {
-        self.ram.word(arena::CANARY)
+        self.ram
+            .word(self.snapshot.as_ref().unwrap().class.canary())
     }
     fn atomic(&self, off: usize) -> &AtomicU64 {
         unsafe { &*self.ram.ptr.add(CTRL + off).cast() }
@@ -388,12 +401,18 @@ impl Slot {
     }
     pub fn attack_arena(&mut self) {
         self.copy(
-            arena::CANARY,
+            self.snapshot.as_ref().unwrap().class.canary(),
             include_bytes!(concat!(env!("OUT_DIR"), "/arena-attack.bin")),
         );
+        let class = self.snapshot.as_ref().unwrap().class;
+        self.set(REG_X0 + 4 * 2, 0x80000000 + class.start() as u64);
+        self.set(REG_X0 + 5 * 2, 0x80000000 + class.end() as u64);
         self.set(REG_SCTLR, 0);
         self.set(REG_PSTATE, 0x3c5);
-        self.set(REG_PC, 0x80000000 + arena::CANARY as u64);
+        self.set(
+            REG_PC,
+            0x80000000 + self.snapshot.as_ref().unwrap().class.canary() as u64,
+        );
     }
     pub fn exit(&mut self) -> Exit {
         loop {
@@ -570,10 +589,19 @@ pub fn monotonic_ns() -> u64 {
 pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     let raw = std::fs::read(image).unwrap();
     assert!(raw.len() < CTRL);
-    assert!(
-        raw.windows(32).any(|b| b == arena::layout_bytes()),
-        "kernel lacks glue-2m layout"
+    let classes: Vec<_> = arena::Class::ALL
+        .into_iter()
+        .filter(|c| {
+            let layout = c.layout_bytes();
+            raw.windows(layout.len()).any(|b| b == layout)
+        })
+        .collect();
+    assert_eq!(
+        classes.len(),
+        1,
+        "kernel must identify exactly one supported ring layout"
     );
+    let class = classes[0];
     let initial = format!("{base}.boot");
     let mut f = File::options()
         .write(true)
@@ -584,7 +612,7 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     f.set_len(RAM as u64).unwrap();
     f.write_all(&raw).unwrap();
     f.sync_all().unwrap();
-    let mut s = Slot::create(kvm, &f, false);
+    let mut s = Slot::create(kvm, &f, None);
     s.set(REG_PC, 0x80000000);
     s.set(REG_PSTATE, 0x3c5);
     let mut entropy = File::open("/dev/urandom").unwrap();
@@ -621,7 +649,7 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
         .create_new(true)
         .open(format!("{base}.layout"))
         .unwrap();
-    layout.write_all(&arena::layout_bytes()).unwrap();
+    layout.write_all(&class.layout_bytes()).unwrap();
     layout.sync_all().unwrap();
     for ext in ["mem", "regs", "layout"] {
         std::fs::set_permissions(
@@ -631,7 +659,9 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
         .unwrap();
     }
     println!(
-        "{{\"event\":\"prepared\",\"ram_bytes\":{RAM},\"registers\":{},\"boot_to_checkpoint_ns\":{}}}",
+        "{{\"event\":\"prepared\",\"class\":\"{}\",\"arena_bytes\":{},\"ram_bytes\":{RAM},\"registers\":{},\"boot_to_checkpoint_ns\":{}}}",
+        class.name(),
+        class.bytes(),
         regs.len(),
         t.elapsed().as_nanos()
     );

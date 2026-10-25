@@ -1,0 +1,19 @@
+{"event":"environment","pid":139990,"threads":5,"owners":4,"watchdog_processes":1,"nested":true,"loadavg":"3.29 2.62 1.63 3/184 139990","uptime":"45846.49 264616.13","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026"}
+{"event":"deadline_armed","n":16,"deadline_ns":45849498050065}
+{"event":"deadline","slot":0,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":3714148,"reset_error_latency_ns":7924251}
+{"event":"deadline","slot":3,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":3737231,"reset_error_latency_ns":8037585}
+{"event":"deadline","slot":1,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":3715939,"reset_error_latency_ns":8063168}
+{"event":"deadline","slot":2,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":4476860,"reset_error_latency_ns":8223002}
+{"event":"deadline","slot":4,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":7934834,"reset_error_latency_ns":8300961}
+{"event":"deadline","slot":7,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8038293,"reset_error_latency_ns":8323211}
+{"event":"deadline","slot":5,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8065543,"reset_error_latency_ns":8379753}
+{"event":"deadline","slot":6,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8232752,"reset_error_latency_ns":8519170}
+{"event":"deadline","slot":8,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8309252,"reset_error_latency_ns":8590629}
+{"event":"deadline","slot":11,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8323711,"reset_error_latency_ns":8603920}
+{"event":"deadline","slot":9,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8391544,"reset_error_latency_ns":8725129}
+{"event":"deadline","slot":10,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8528587,"reset_error_latency_ns":8806588}
+{"event":"deadline","slot":12,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8600629,"reset_error_latency_ns":8872255}
+{"event":"deadline","slot":15,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8604212,"reset_error_latency_ns":8880922}
+{"event":"deadline","slot":13,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8734213,"reset_error_latency_ns":9045964}
+{"event":"deadline","slot":14,"generation":2,"deadline_ns":45849498050065,"stop_latency_ns":8815546,"reset_error_latency_ns":9092923}
+{"event":"deadline_summary","n":16,"stop":{"n":16,"p50_ns":8232752,"p99_ns":8815546},"reset_error":{"n":16,"p50_ns":8519170,"p99_ns":9092923},"max_reset_error_ns":9092923,"reused_cleanly":16}

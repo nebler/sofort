@@ -1,4 +1,4 @@
-// EL1 fixture: MMU disabled; read all RAM, dirty all 340 writable pages, then RO write.
+// EL1 fixture: MMU disabled; read all RAM, dirty every class arena/ring page, then RO write.
 .text
 .global _start
 _start:
@@ -8,8 +8,8 @@ _start:
     add x0, x0, #4096
     cmp x0, x1
     b.lo 0b
-    mov x0, #0x81800000
-    mov x1, #0x81940000
+    mov x0, x4
+    mov x1, x5
     mov x2, #0x55
 1:  str x2, [x0, #2048]
     add x0, x0, #4096
