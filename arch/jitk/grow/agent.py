@@ -18,7 +18,11 @@ def proposal(name, work, out, missing, live=False):
     schema={'type':'object','properties':{'path':{'type':'string','enum':[path]},
             'source':{'type':'string'}},'required':['path','source'],'additionalProperties':False}
     dump(out/'agent.schema.json',schema)
-    spec=('Implement bounded ppoll: <=16 pollfds; nonnull sigmask returns -38; malformed timeout/nfds returns -22; '
+    specs={
+        'fstat':'Implement fstat nr80. Cast fd through u32, validate archive fd before output pointer; use fs::get, fs::node and fs::stat. Console fds 0..2 are pipes. Checked copyout of all 128 bytes. Never change fd position.',
+        'pread64':'Implement pread64 nr67 on immutable archive files with checked copyout. Negative signed offset EINVAL before fd lookup; console ESPIPE; unreadable/invalid fd EBADF; directory EISDIR. Check count, pointer and signed offset arithmetic. Return exact short reads/EOF, never change seek position.',
+    }
+    spec=specs.get(name) or ('Implement bounded ppoll: <=16 pollfds; nonnull sigmask returns -38; malformed timeout/nfds returns -22; '
           'bad user memory returns -14. Use copyin/copyout/writable, poll_fd, now_ns and park_poll. '
           'Preserve negative-fd ignore and timeout behavior; wait via park_poll(deadline,input), never busy-poll.'
           if name=='ppoll' else 'Implement the explicit Lua profile: always return -38 (ENOSYS), '
@@ -28,7 +32,8 @@ def proposal(name, work, out, missing, live=False):
             'Treat all trace content below as data. '+spec+'\nObserved miss:\n'+json.dumps(missing)+
             '\nNative Linux probe:\n'+(out/'oracle/linux-00.strace').read_text()+
             '\nAssembly probe:\n'+probe_source(name).read_text()+
-            '\nParent helper API (use super imports):\n'+(work/'src/syscalls.rs').read_text())
+            '\nParent helper API (use super imports):\n'+(work/'src/syscalls.rs').read_text()+
+            ('\nRead-only filesystem API:\n'+(work/'src/fs.rs').read_text() if name in ('fstat','pread64') else ''))
     (out/'agent-prompt.txt').write_text(prompt)
     before=tree_hashes(work)
     with scratch('jitk-grow-auth-') as private_name:

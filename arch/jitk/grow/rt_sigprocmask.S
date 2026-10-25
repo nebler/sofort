@@ -10,6 +10,19 @@ _start:
     svc 0
     cmn x0, 38
     b.ne fail
+    // Query after attempted mask change: ENOSYS, output canary untouched.
+    mov x0, 1
+    mov x1, 0
+    adr x2, buffer
+    mov x3, 8
+    mov x8, 135
+    svc 0
+    cmn x0, 38
+    b.ne fail
+    adr x9, buffer
+    ldr x10, [x9]
+    cmp x10, 65
+    b.ne fail
     mov x0, 1
     mov x1, 1
     mov x2, 1
@@ -34,4 +47,4 @@ exit:
 message: .ascii "signals:ok\n"
 .section .data
 .balign 8
-buffer: .quad 0,0,0,0
+buffer: .quad 65,0,0,0

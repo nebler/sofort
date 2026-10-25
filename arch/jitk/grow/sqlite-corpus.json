@@ -1,0 +1,12 @@
+[
+  {"name":"aggregate","sql":"SELECT json_object('count',count(*),'sum',sum(v),'max',max(v)) FROM n;"},
+  {"name":"ordered","sql":"SELECT v FROM n ORDER BY v;"},
+  {"name":"grouped","sql":"SELECT v,count(*) FROM n GROUP BY v ORDER BY v;"},
+  {"name":"filtered","sql":"SELECT sum(v),min(v) FROM n WHERE v>=5;"},
+  {"name":"join","sql":"SELECT count(*) FROM n a JOIN n b ON a.v=b.v;"},
+  {"name":"schema","sql":"SELECT name,type FROM sqlite_schema ORDER BY name;"},
+  {"name":"integrity","sql":"PRAGMA integrity_check;"},
+  {"name":"bad-query","sql":"SELEC v FROM n;"},
+  {"name":"missing-table","sql":"SELECT * FROM missing_table;"},
+  {"name":"readonly-write","sql":"INSERT INTO n VALUES(42);"}
+]

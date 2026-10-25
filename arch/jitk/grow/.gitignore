@@ -1,1 +1,6 @@
 __pycache__/
+/results/r7-*/**/*.bin
+/results/r7-*/**/sqlite3-static
+/results/r7-*/**/accepted.bundle
+/results/r7-*/**/*.elf
+/results/r7-*/**/*.o

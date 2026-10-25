@@ -1,6 +1,6 @@
 """Copy-only build/VM helpers. All subprocesses have bounded watchdogs and reap."""
 import hashlib, json, math, os, pathlib, shutil, signal, statistics, subprocess, tempfile, time
-IGNORED = ('.git','target','__pycache__','dist','test-work','test-results','.READY','.R4')
+IGNORED = ('.git','target','target-ring','__pycache__','dist','test-work','test-results','.READY','.R4')
 ROOT = pathlib.Path(__file__).resolve().parent
 CANONICAL = ROOT.parent/'kernel'
 def scratch(prefix='jitk-grow-'):
@@ -53,6 +53,9 @@ def process(cmd, destination, data=b'ping\n', timeout=10):
         try:
             if data: p.stdin.write(data); p.stdin.flush()
             p.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            kill_reap(p)
+            timed_out=True
         except BaseException:
             kill_reap(p); raise
         finally:
@@ -62,7 +65,8 @@ def process(cmd, destination, data=b'ping\n', timeout=10):
     elapsed=time.perf_counter()-start
     stdout=pathlib.Path(str(destination)+'.stdout').read_bytes()
     stderr=pathlib.Path(str(destination)+'.stderr').read_bytes()
-    item={'load_gate':gate,'seconds':elapsed,'returncode':p.returncode,'uptime_before':before,'uptime_after':load()}
+    item={'load_gate':gate,'seconds':elapsed,'returncode':p.returncode,'timeout':locals().get('timed_out',False),
+          'uptime_before':before,'uptime_after':load()}
     dump(str(destination)+'.json',item)
     return item,stdout,stderr
 
@@ -80,15 +84,22 @@ def copy_kernel(destination):
     return src,before
 
 def probe_source(name):
+    if name in ('fstat','pread64'): return ROOT/'fs-probe.c'
     return CANONICAL/'tests/fixtures/grow/ppoll.S' if name=='ppoll' else ROOT/(name+'.S')
 
-def build(work, out, elf, argv):
+def build(work, out, elf, argv, resources=None):
     work=pathlib.Path(work).resolve(); out=pathlib.Path(out).resolve(); out.mkdir(parents=True,exist_ok=True)
     assert work!=CANONICAL.resolve() and CANONICAL.resolve() not in work.parents
     assert (work/'build.sh').is_file(), 'canonical kernel build.sh is required'
     env=dict(SAFE_ENV,JITK_OUT_DIR=str(out),CARGO_TARGET_DIR=str(work.parent/'target'),
              JITK_ELF=str(elf),JITK_ARGV_JSON=json.dumps(argv))
-    p=run(['sh',work/'build.sh','--features','qjs,grow-trace'],cwd=work,env=env)
+    if resources is not None: env['JITK_RESOURCES']=str(resources)
+    try:
+        p=run(['sh',work/'build.sh','--features','qjs,grow-trace'],cwd=work,env=env)
+    except RuntimeError as e:
+        (out/'build.log').write_text(str(e))
+        dump(out/'failure.json',{'class':'loader-or-build-failure','detail':str(e)})
+        raise
     (out/'build.log').write_bytes(p.stdout+p.stderr)
     assert (out/'kernel.bin').is_file()
     return out/'kernel.bin'

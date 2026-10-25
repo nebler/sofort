@@ -6,10 +6,49 @@ from runtime import *
 from adapters import guest, linux, compare
 from loop import validate_source, installation_patch
 from agent import proposal, validate_proposal
+from observations import observe, require_result
+from profiles import PROFILES, mutations
 
 FIXTURES=ROOT/'tests/fixtures'
 
 class Verify(unittest.TestCase):
+    def test_registered_enosys_and_argument_errors_are_retained(self):
+        value=observe((FIXTURES/'rt_sigaction/guest.stdout').read_bytes())
+        self.assertTrue(value['trace_complete'])
+        self.assertFalse(value['missing'])
+        self.assertEqual(value['registered_enosys'][0]['nr'],134)
+        self.assertEqual(value['registered_enosys'][0]['ret'],-38)
+        self.assertEqual(len(value['registered_enosys'][0]['args']),6)
+        self.assertEqual(value['argument_errors'],value['registered_enosys'])
+    def test_fatal_and_truncated_output_fail_closed(self):
+        for raw in (b'\x1efatal control byte\n',b'\x1e{"v":2,"kind":"fatal"}\n',
+                    (FIXTURES/'ppoll/guest.stdout').read_bytes()[:-20]):
+            value=observe(raw)
+            self.assertFalse(value['trace_complete'])
+            with self.assertRaises(AssertionError):
+                require_result(value,{'stdout_hex':'','stderr_hex':'','exit':0})
+    def test_fd2_is_compared_as_bytes_and_guest_exit_is_independent(self):
+        raw=(FIXTURES/'rt_sigaction/guest.stdout').read_bytes()
+        raw=b'\x1e{"v":2,"kind":"log","hex":"00ff0a"}\n'+raw
+        value=observe(raw)
+        self.assertEqual(value['stderr_hex'],'00ff0a')
+        with self.assertRaises(AssertionError):
+            require_result(value,dict(value,exit=1))
+        with self.assertRaises(AssertionError):
+            require_result(value,dict(value,stderr_hex=''))
+    def test_every_target_requires_independent_cases_and_mutants(self):
+        for name,profile in PROFILES.items():
+            self.assertTrue(all(profile['cases'].get(k) for k in ('semantic','error','state')))
+            variants=mutations(name,(CANONICAL/f'src/syscalls/{name}.rs').read_text())
+            self.assertGreaterEqual(len(variants),2)
+            self.assertEqual(len(variants),len(set(variants.values())))
+    def test_loader_failure_receipt(self):
+        with scratch() as d:
+            work=pathlib.Path(d)/'kernel';work.mkdir();(work/'build.sh').touch()
+            out=pathlib.Path(d)/'out'
+            with patch('runtime.run',side_effect=RuntimeError('ELF rejected: PT_INTERP')):
+                with self.assertRaises(RuntimeError): build(work,out,pathlib.Path('/payload'),['probe'])
+            self.assertEqual(json.loads((out/'failure.json').read_text())['class'],'loader-or-build-failure')
     def test_complete_differentials(self):
         for name in ('ppoll','rt_sigaction','rt_sigprocmask'):
             d=FIXTURES/name
