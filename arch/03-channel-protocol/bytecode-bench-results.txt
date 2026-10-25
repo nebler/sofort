@@ -1,0 +1,2 @@
+source_compile bytes=4731 n=1000 median_us=271.417 p90_us=728.708
+bytecode_decode bytes=4057 n=1000 median_us=16.000 p90_us=26.334

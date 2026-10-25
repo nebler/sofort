@@ -1,0 +1,75 @@
+{
+  "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+  "kernel-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "3662e0b6532667cb2f5c0cd5c77a1c8bef40a5a33ff92e10e5beff4c96d2c997",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "text-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "4f87755cac77ee105378b8e61faeec0d797253d8e15c4719c77c9b3e1d5142a6",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "heap-exec": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "287c44b51b1f5e733843472979eccb25156bd9c9228f811c2f768d69584c6251",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "privileged": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "b7829f93ed6db10bff6cd6d621e53c71aebaf5d3b79eb6b5112d02fee3dc25e0",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "el0-hvc": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "18aa229498486450a9ad5e1931e15536fa12f4214b8e26c1355f9c54707c9ec2",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "bad-pointer": {
+    "returncode": 0,
+    "output": "\u001eexit=0000000000000000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "afb5dd3237cb5640863f1fa06a06010a16b5a97142779da8f686b5c151792a81",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "pan": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12345,\"pc\":4194312,\"args\":[1,2147510552,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080003f38\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "4025de8d49d60183bda85a72198fefba9a8d05f4dd130db42c1384f0e1479e1d",
+    "load": "4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51",
+    "status": "PASS"
+  },
+  "alias-write": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12346,\"pc\":4194312,\"args\":[1,2147510552,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600004f far=0000000080080000 pc=0000000080003e8c\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "f6f70516c2d19a6da625150a5cb03e77f4518d19a7edaf4cf701a4ce49aae2fe",
+    "load": "4:52  up  6:05, 2 users, load averages: 24.90 32.35 46.25",
+    "status": "PASS"
+  },
+  "unknown-syscall": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":511,\"pc\":4194312,\"args\":[1,2147510560,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eexit=0000000000000000\n",
+    "stderr": "{\"sandbox\":\"ok\"}\n",
+    "image_sha256": "1d9c826b1982f25a8d652a6c97242bce91d2781ac4eaf3da77a5a465ecb64384",
+    "load": "4:52  up  6:05, 2 users, load averages: 24.90 32.35 46.25",
+    "status": "PASS"
+  }
+}

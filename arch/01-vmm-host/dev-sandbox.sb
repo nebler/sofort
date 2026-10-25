@@ -1,0 +1,11 @@
+(version 1)
+(deny default)
+; Compatibility experiment only. A production policy needs a separate security review.
+(allow process-exec (literal "/private/tmp/jitk-01/jitk-vmm") (literal "/private/tmp/jitk-01/sandbox-probe"))
+(allow file-map-executable)
+(allow sysctl-read)
+(allow file-read* (subpath "/System") (subpath "/usr/lib") (subpath "/private/tmp/jitk-01") (subpath "/tmp/jitk-01"))
+(allow file-read-metadata)
+(allow iokit-open-user-client (iokit-user-client-class "AppleHVClient"))
+; Dyld/startup needs to read the root directory (observed sandbox denial).
+(allow file-read-data (literal "/"))

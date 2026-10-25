@@ -1,0 +1,57 @@
+{
+  "load": "3:13  up  4:26, 2 users, load averages: 63.50 92.53 88.27",
+  "kernel-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "text-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "heap-exec": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "privileged": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "el0-hvc": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "bad-pointer": {
+    "returncode": 0,
+    "output": "\u001eexit=0000000000000000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "pan": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12345,\"pc\":4194312,\"args\":[1,2147510552,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080004028\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "alias-write": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":12346,\"pc\":4194312,\"args\":[1,2147510552,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eFAULT esr=000000009600004f far=0000000080080000 pc=000000008000401c\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "unknown-syscall": {
+    "returncode": 0,
+    "output": "\u001e{\"v\":2,\"kind\":\"missing\",\"seq\":1,\"nr\":511,\"pc\":4194312,\"args\":[1,2147510560,0,58,0,0],\"input\":null,\"timeout\":null}\n\u001eexit=0000000000000000\n",
+    "stderr": "",
+    "status": "PASS"
+  }
+}

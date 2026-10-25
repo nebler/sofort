@@ -1,0 +1,5 @@
+(version 1)
+(deny default)
+; dylib is already mapped; profile is loaded by trusted code before sandbox_init.
+(allow file-read-data (literal "/private/tmp/jitk-07/kk.bin"))
+(allow sysctl-read (sysctl-name "hw.pagesize_compat"))

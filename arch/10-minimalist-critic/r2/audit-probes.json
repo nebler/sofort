@@ -1,0 +1,29 @@
+{
+  "r1_packer_accepts_same_page_rx_rw": true,
+  "manifest": {
+    "entry": 4194560,
+    "base": 4194304,
+    "bytes": 4096,
+    "sha256": "8a405468c93401202ac13aef25002a8d639c011e40f436a252723bbe6389f5d4",
+    "segments": [
+      {
+        "va": 4194304,
+        "offset": 0,
+        "filesz": 2048,
+        "memsz": 2048,
+        "flags": 5
+      },
+      {
+        "va": 4196352,
+        "offset": 2048,
+        "filesz": 2048,
+        "memsz": 2048,
+        "flags": 6
+      }
+    ]
+  },
+  "user_stack_pa_end": "0x82c00000",
+  "guest_32m_pa_end": "0x82000000",
+  "old_user_va_limit_pa_end": "0x83000000",
+  "note": "RX/RW byte ranges are disjoint but require conflicting 4-KiB page permissions. 32-MiB RAM ends before the old stack."
+}

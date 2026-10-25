@@ -1,0 +1,45 @@
+[
+  {
+    "nr": 73,
+    "name": "ppoll",
+    "ret": 1,
+    "args": [
+      [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      1,
+      null,
+      "NULL",
+      8
+    ],
+    "output": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "nr": 29,
+    "name": "ioctl",
+    "ret": -25,
+    "args": [
+      1,
+      21523,
+      "PTR"
+    ]
+  },
+  {
+    "nr": 94,
+    "name": "exit_group",
+    "args": [
+      0
+    ],
+    "ret": null
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "uptime": "3:04  up  4:18, 2 users, load averages: 73.95 84.12 75.88",
+  "load": [
+    73.9482421875,
+    84.12060546875,
+    75.87744140625
+  ],
+  "n": 1,
+  "machine": "macOS-26.6.1-arm64-arm-64bit",
+  "protocol_source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/protocol/dispatcher.ts",
+  "executor_ready_at_start": false,
+  "bench_ready_at_start": false,
+  "gate": "interleaved with load per sample",
+  "measurement": "spawn/run-send to validated done; page cache warm; cleanup excluded",
+  "contracts": {
+    "jitk-cold": "fresh process + single-use HW VM",
+    "hl-strict-cold": "fresh process + single-use HW VM",
+    "jitk-parked": "fresh process + single-use HW VM",
+    "hl-strict-prespawned": "fresh process + single-use HW VM",
+    "hl-logical-clone": "shared-HW-VM, fresh logical sandbox"
+  },
+  "tool_delay_ms": 5,
+  "sampling_seconds": 0.00025,
+  "worker_sha256": "fcd845e16819858d25ea06b999d231f97b4248fc21bc135b50e5a87dbdda57f8",
+  "host_sha256": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed",
+  "kernel_sha256": "3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8",
+  "snapshot_index": {
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "manifests": [
+      {
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "digest": "sha256:fd4135fd8b280986b396a05e18d399d8a1d3433daf6d50212267f1bc3c318fb2",
+        "size": 760,
+        "annotations": {
+          "dev.hyperlight.snapshot.arch": "aarch64",
+          "dev.hyperlight.snapshot.hypervisor": "hvf",
+          "org.opencontainers.image.ref.name": "base",
+          "dev.hyperlight.snapshot.cpu.vendor": "0x61"
+        }
+      }
+    ]
+  }
+}

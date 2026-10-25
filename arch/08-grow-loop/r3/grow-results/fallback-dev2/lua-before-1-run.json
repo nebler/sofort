@@ -1,0 +1,24 @@
+{
+  "seconds": 0.05734629100152233,
+  "uptime_before": "3:12  up  4:26, 2 users, load averages: 77.79 97.04 89.72",
+  "uptime_after": "3:12  up  4:26, 2 users, load averages: 77.79 97.04 89.72",
+  "missing": {
+    "v": 2,
+    "kind": "missing",
+    "seq": 21,
+    "nr": 134,
+    "pc": 4401344,
+    "args": [
+      2,
+      33548832,
+      0,
+      8,
+      33548912,
+      33548864
+    ],
+    "input": null,
+    "timeout": null
+  },
+  "returncode": -9,
+  "discovery_kill_expected": true
+}

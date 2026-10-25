@@ -1,0 +1,213 @@
+{
+  "node": "/private/tmp/jitk-09/node-real",
+  "version": "v24.22.1",
+  "uptime": "2:41  up  3:55, 2 users, load averages: 48.27 50.56 48.30",
+  "corpus": {
+    "cases": 71,
+    "runs": 142
+  },
+  "boundaries": {
+    "checks": 10,
+    "consecutiveCalls": 4096,
+    "maxFrameBytes": 1048576
+  },
+  "fuzz": {
+    "mutations": 25000,
+    "chunkDifferentialRuns": 50000,
+    "accepted": 622,
+    "rejected": 24378,
+    "seed": "0x3c0ffee"
+  }
+}
+{
+  "loadBefore": "2:41  up  3:55, 2 users, load averages: 48.42 50.51 48.31",
+  "loadAfter": "2:41  up  3:55, 2 users, load averages: 48.42 50.51 48.31",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+{
+  loadBefore: '2:41  up  3:55, 2 users, load averages: 48.42 50.51 48.31',
+  loadAfter: '2:41  up  3:55, 2 users, load averages: 48.39 50.47 48.31',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+{
+  loadBefore: '2:41  up  3:55, 2 users, load averages: 48.39 50.47 48.31',
+  loadAfter: '2:41  up  3:55, 2 users, load averages: 48.39 50.47 48.31',
+  watchdogDeadlineMs: 250,
+  hostEventLoopBlockedMs: 1500,
+  observedReapAfterHostUnblockMs: 1576.03475,
+  reaped: true,
+  killLatency: 'UNVERIFIED: host event loop intentionally blocked'
+}
+02 r2 READY / native Rust host / tick=0us (panic=abort; containment integration pending)
+PASS exact requested demo
+PASS binary codec roundtrip
+PASS async fanout and UTF8
+PASS capture console + provider prelude closure
+PASS deny has no side effect
+PASS approval is fail closed
+PASS approved call executes once
+PASS provenance accumulates across calls
+PASS CPU infinite loop SIGKILL
+PASS AbortSignal kills awaiting guest
+PASS tool that never settles cannot defeat deadline
+PASS fresh process per execute
+PASS unknown inherited method denied
+PASS sanitized names and collisions
+PASS generated types + host validation
+PASS TanStack driver on actual stripped body
+PASS TanStack memory mismatch fails explicitly
+PASS TanStack createCodeModeTool integration
+PASS bounded log capture (v1 truncates/drops)
+PASS warm pool capacity and single use
+20 checks passed
+PASS Cloudflare wrapper github
+PASS Cloudflare wrapper binary
+{
+  "selection": "02 r2 READY / native Rust host / tick=0us (panic=abort; containment integration pending)",
+  "loadBefore": "2:41  up  3:55, 2 users, load averages: 48.28 50.41 48.30",
+  "loadAfter": "2:41  up  3:55, 2 users, load averages: 48.28 50.41 48.30",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "n": 30,
+      "calls": 1920,
+      "maxOutstanding": 64,
+      "executeMs": {
+        "median": 75.12599999999998,
+        "p90": 155.9404169999998,
+        "p99": 232.3772909999998
+      },
+      "samples": [
+        172.16916600000002,
+        34.070334,
+        180.30366600000002,
+        64.55850000000004,
+        39.71524999999997,
+        118.03545800000006,
+        48.82229199999995,
+        94.22975000000008,
+        107.13258299999995,
+        152.38933399999996,
+        113.17716600000017,
+        96.70808399999987,
+        72.79725000000008,
+        81.56391600000006,
+        129.26683400000002,
+        44.15816699999982,
+        102.96670900000004,
+        86.42366700000002,
+        55.417625000000044,
+        95.90345900000011,
+        75.12599999999998,
+        232.3772909999998,
+        27.898833000000195,
+        155.9404169999998,
+        68.29754099999991,
+        57.785457999999835,
+        63.14716700000008,
+        53.88737499999979,
+        48.95529099999976,
+        43.427459
+      ]
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}

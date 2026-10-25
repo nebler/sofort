@@ -1,0 +1,22 @@
+[
+  {
+    "binary": "lua",
+    "profile": "combined",
+    "n": 30,
+    "application_pass": 30,
+    "injected_per_run": [
+      4
+    ],
+    "strict_equivalence": false
+  },
+  {
+    "binary": "sqlite",
+    "profile": "combined",
+    "n": 30,
+    "application_pass": 30,
+    "injected_per_run": [
+      3
+    ],
+    "strict_equivalence": false
+  }
+]

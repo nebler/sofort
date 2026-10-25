@@ -1,0 +1,22 @@
+{
+  "counts": {
+    "brk": 2,
+    "close": 1,
+    "execve": 1,
+    "exit_group": 1,
+    "ioctl": 1,
+    "lseek": 3,
+    "mmap": 79,
+    "munmap": 42,
+    "openat": 1,
+    "ppoll": 27,
+    "read": 26,
+    "readlinkat": 2,
+    "readv": 1,
+    "set_tid_address": 1,
+    "writev": 39
+  },
+  "extra": [
+    "ppoll"
+  ]
+}

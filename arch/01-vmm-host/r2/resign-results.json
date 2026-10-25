@@ -1,0 +1,402 @@
+{
+  "uptime_start": "2:22  up  3:36, 2 users, load averages: 22.68 18.24 17.87",
+  "samples": [
+    {
+      "first": {
+        "main_ms": 936.864083,
+        "guest_ms": 1016.938375,
+        "total_ms": 1018.38725
+      },
+      "subsequent": {
+        "main_ms": 5.395375,
+        "guest_ms": 12.471459,
+        "total_ms": 13.716334
+      }
+    },
+    {
+      "first": {
+        "main_ms": 877.619542,
+        "guest_ms": 893.906,
+        "total_ms": 895.585125
+      },
+      "subsequent": {
+        "main_ms": 37.328875,
+        "guest_ms": 52.745417,
+        "total_ms": 54.903625
+      }
+    },
+    {
+      "first": {
+        "main_ms": 750.001917,
+        "guest_ms": 764.824792,
+        "total_ms": 766.372917
+      },
+      "subsequent": {
+        "main_ms": 7.751875,
+        "guest_ms": 19.475458,
+        "total_ms": 20.882833
+      }
+    },
+    {
+      "first": {
+        "main_ms": 978.410583,
+        "guest_ms": 1004.261916,
+        "total_ms": 1007.475708
+      },
+      "subsequent": {
+        "main_ms": 10.156041,
+        "guest_ms": 23.898125,
+        "total_ms": 25.538208
+      }
+    },
+    {
+      "first": {
+        "main_ms": 727.035666,
+        "guest_ms": 749.201833,
+        "total_ms": 750.355166
+      },
+      "subsequent": {
+        "main_ms": 66.712792,
+        "guest_ms": 77.101542,
+        "total_ms": 78.692875
+      }
+    },
+    {
+      "first": {
+        "main_ms": 820.265041,
+        "guest_ms": 843.492,
+        "total_ms": 844.752708
+      },
+      "subsequent": {
+        "main_ms": 54.4055,
+        "guest_ms": 72.22625,
+        "total_ms": 74.085125
+      }
+    },
+    {
+      "first": {
+        "main_ms": 722.725125,
+        "guest_ms": 738.311292,
+        "total_ms": 739.909375
+      },
+      "subsequent": {
+        "main_ms": 10.296042,
+        "guest_ms": 18.609917,
+        "total_ms": 20.164834
+      }
+    },
+    {
+      "first": {
+        "main_ms": 669.2335,
+        "guest_ms": 682.7905,
+        "total_ms": 684.546125
+      },
+      "subsequent": {
+        "main_ms": 7.174125,
+        "guest_ms": 20.301333,
+        "total_ms": 21.73575
+      }
+    },
+    {
+      "first": {
+        "main_ms": 741.999792,
+        "guest_ms": 779.738667,
+        "total_ms": 781.194208
+      },
+      "subsequent": {
+        "main_ms": 14.012792,
+        "guest_ms": 32.671709,
+        "total_ms": 34.253917
+      }
+    },
+    {
+      "first": {
+        "main_ms": 924.118,
+        "guest_ms": 940.243084,
+        "total_ms": 941.761875
+      },
+      "subsequent": {
+        "main_ms": 69.191541,
+        "guest_ms": 81.995791,
+        "total_ms": 83.623958
+      }
+    },
+    {
+      "first": {
+        "main_ms": 798.576542,
+        "guest_ms": 810.573542,
+        "total_ms": 812.249625
+      },
+      "subsequent": {
+        "main_ms": 8.059333,
+        "guest_ms": 17.50325,
+        "total_ms": 18.575667
+      }
+    },
+    {
+      "first": {
+        "main_ms": 645.0495,
+        "guest_ms": 686.391834,
+        "total_ms": 688.018792
+      },
+      "subsequent": {
+        "main_ms": 15.514541,
+        "guest_ms": 29.962416,
+        "total_ms": 32.749
+      }
+    },
+    {
+      "first": {
+        "main_ms": 650.966583,
+        "guest_ms": 669.361583,
+        "total_ms": 670.924917
+      },
+      "subsequent": {
+        "main_ms": 8.51725,
+        "guest_ms": 22.400459,
+        "total_ms": 24.183125
+      }
+    },
+    {
+      "first": {
+        "main_ms": 855.355541,
+        "guest_ms": 885.895583,
+        "total_ms": 887.656458
+      },
+      "subsequent": {
+        "main_ms": 8.052334,
+        "guest_ms": 19.042375,
+        "total_ms": 20.639584
+      }
+    },
+    {
+      "first": {
+        "main_ms": 817.646834,
+        "guest_ms": 832.566042,
+        "total_ms": 835.041792
+      },
+      "subsequent": {
+        "main_ms": 16.481083,
+        "guest_ms": 28.713917,
+        "total_ms": 30.421292
+      }
+    },
+    {
+      "first": {
+        "main_ms": 747.889791,
+        "guest_ms": 771.084958,
+        "total_ms": 775.801083
+      },
+      "subsequent": {
+        "main_ms": 9.769583,
+        "guest_ms": 29.048958,
+        "total_ms": 30.646166
+      }
+    },
+    {
+      "first": {
+        "main_ms": 727.827875,
+        "guest_ms": 759.153042,
+        "total_ms": 760.852375
+      },
+      "subsequent": {
+        "main_ms": 6.1375,
+        "guest_ms": 21.05225,
+        "total_ms": 22.287334
+      }
+    },
+    {
+      "first": {
+        "main_ms": 885.725667,
+        "guest_ms": 964.290167,
+        "total_ms": 966.048
+      },
+      "subsequent": {
+        "main_ms": 49.982667,
+        "guest_ms": 62.484042,
+        "total_ms": 63.80225
+      }
+    },
+    {
+      "first": {
+        "main_ms": 940.175208,
+        "guest_ms": 956.214875,
+        "total_ms": 957.910416
+      },
+      "subsequent": {
+        "main_ms": 8.12025,
+        "guest_ms": 22.258292,
+        "total_ms": 23.804125
+      }
+    },
+    {
+      "first": {
+        "main_ms": 635.729917,
+        "guest_ms": 649.885375,
+        "total_ms": 651.517125
+      },
+      "subsequent": {
+        "main_ms": 12.980875,
+        "guest_ms": 25.988292,
+        "total_ms": 27.510833
+      }
+    },
+    {
+      "first": {
+        "main_ms": 562.407833,
+        "guest_ms": 584.799,
+        "total_ms": 587.185625
+      },
+      "subsequent": {
+        "main_ms": 11.126708,
+        "guest_ms": 27.697583,
+        "total_ms": 29.395042
+      }
+    },
+    {
+      "first": {
+        "main_ms": 822.8865,
+        "guest_ms": 839.546084,
+        "total_ms": 841.05375
+      },
+      "subsequent": {
+        "main_ms": 8.431541,
+        "guest_ms": 23.598083,
+        "total_ms": 24.985333
+      }
+    },
+    {
+      "first": {
+        "main_ms": 835.956708,
+        "guest_ms": 852.690708,
+        "total_ms": 853.920416
+      },
+      "subsequent": {
+        "main_ms": 5.461292,
+        "guest_ms": 17.856417,
+        "total_ms": 18.93525
+      }
+    },
+    {
+      "first": {
+        "main_ms": 658.693709,
+        "guest_ms": 674.384792,
+        "total_ms": 676.511584
+      },
+      "subsequent": {
+        "main_ms": 65.988167,
+        "guest_ms": 80.332625,
+        "total_ms": 81.941792
+      }
+    },
+    {
+      "first": {
+        "main_ms": 795.073875,
+        "guest_ms": 824.362541,
+        "total_ms": 826.402166
+      },
+      "subsequent": {
+        "main_ms": 8.064125,
+        "guest_ms": 20.065375,
+        "total_ms": 21.519583
+      }
+    },
+    {
+      "first": {
+        "main_ms": 757.059209,
+        "guest_ms": 774.359917,
+        "total_ms": 776.107709
+      },
+      "subsequent": {
+        "main_ms": 9.725875,
+        "guest_ms": 22.918333,
+        "total_ms": 24.813041
+      }
+    },
+    {
+      "first": {
+        "main_ms": 706.146792,
+        "guest_ms": 722.122292,
+        "total_ms": 723.727042
+      },
+      "subsequent": {
+        "main_ms": 9.371083,
+        "guest_ms": 21.32875,
+        "total_ms": 23.303916
+      }
+    },
+    {
+      "first": {
+        "main_ms": 769.876666,
+        "guest_ms": 783.613583,
+        "total_ms": 784.684708
+      },
+      "subsequent": {
+        "main_ms": 4.931208,
+        "guest_ms": 11.61175,
+        "total_ms": 12.656291
+      }
+    },
+    {
+      "first": {
+        "main_ms": 685.380833,
+        "guest_ms": 697.95475,
+        "total_ms": 699.66025
+      },
+      "subsequent": {
+        "main_ms": 7.921584,
+        "guest_ms": 19.919584,
+        "total_ms": 21.668542
+      }
+    },
+    {
+      "first": {
+        "main_ms": 670.881042,
+        "guest_ms": 683.3745,
+        "total_ms": 684.924792
+      },
+      "subsequent": {
+        "main_ms": 17.514666,
+        "guest_ms": 33.56075,
+        "total_ms": 35.143083
+      }
+    }
+  ],
+  "summary": {
+    "first": {
+      "main_ms": {
+        "median": 753.530563,
+        "p90": 924.118,
+        "p99": 978.410583
+      },
+      "guest_ms": {
+        "median": 777.0492919999999,
+        "p90": 956.214875,
+        "p99": 1016.938375
+      },
+      "total_ms": {
+        "median": 778.6509585,
+        "p90": 957.910416,
+        "p99": 1018.38725
+      }
+    },
+    "subsequent": {
+      "main_ms": {
+        "median": 9.747729,
+        "p90": 54.4055,
+        "p99": 69.191541
+      },
+      "guest_ms": {
+        "median": 23.258208,
+        "p90": 72.22625,
+        "p99": 81.995791
+      },
+      "total_ms": {
+        "median": 24.899186999999998,
+        "p90": 74.085125,
+        "p99": 83.623958
+      }
+    }
+  },
+  "uptime_end": "2:23  up  3:37, 2 users, load averages: 21.52 18.79 18.10"
+}

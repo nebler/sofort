@@ -1,0 +1,18 @@
+{
+  "selection": "integrated jitk / VMM canonical / kernel canonical",
+  "integrated": true,
+  "host": {
+    "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+    "sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e"
+  },
+  "image": {
+    "path": "/private/tmp/jitk-10/h2-01/jitk/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+    "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+  },
+  "gate": {
+    "idleCorePercent": 0,
+    "evidence": "/private/tmp/jitk-10/h2-01/jitk/kernel/.READY: 0.00% idle; 1000/1000"
+  },
+  "vmmReady": true,
+  "kernelReady": true
+}

@@ -1,0 +1,20 @@
+{
+  "manifest": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/manifest.json",
+  "sha256": "7803d9b5f4bf7bd2ea959f7400f4edcdc6907fefcef4f33dd6d89f44c4971671",
+  "artifacts": {
+    "V-v2-darwin": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "B-r3-darwin": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+    "K-kernel": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "E-executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+    "W-watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "L-linux-rebuilt": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+    "P-policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+    "H-hyperlight-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "H-snapshot-index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09",
+    "Lua-elf": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "R3-executor.js": "749be00794a49753429d72b89124269d33b1ed93ba1b473461574b34a1bf21ea",
+    "C-relocated-darwin": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7",
+    "C-executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed"
+  },
+  "evidence_count": 81
+}

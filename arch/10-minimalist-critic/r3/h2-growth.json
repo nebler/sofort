@@ -1,0 +1,340 @@
+{
+  "gate": "PASS",
+  "owner_patch_apply_check": "PASS in separate clean source copy",
+  "canonical": true,
+  "source": "/private/tmp/jitk-10/h2-01/jitk/kernel",
+  "repository": "/tmp/jitk-08/r3/runs/run-20261024T040023/kernel",
+  "transactions": [
+    {
+      "name": "ppoll",
+      "gate": "PASS",
+      "manifest_version_before": 0,
+      "manifest_version_after": 1,
+      "seconds": 2.9595415409985435,
+      "stages": {
+        "assemble_probe": {
+          "seconds": 0.3444639579993236,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+        },
+        "linux_oracle": {
+          "seconds": 0.7651392919997306,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+        },
+        "build_candidate": {
+          "seconds": 0.8891770409991295,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+        },
+        "fresh_vm_differential_n30": {
+          "seconds": 0.7347565000000031,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+        }
+      },
+      "benchmark": {
+        "n": 30,
+        "unit": "ms",
+        "median": 8.819208000204526,
+        "p90": 27.179541999430512,
+        "p99": 52.38558400014881,
+        "samples": [
+          27.179541999430512,
+          9.148375000222586,
+          8.622625000498374,
+          9.612417001335416,
+          11.32520900137024,
+          32.079749998956686,
+          8.83662500018545,
+          8.82958300098835,
+          9.07220800036157,
+          9.63616600165551,
+          35.43679200083716,
+          8.377332998861675,
+          9.639833000619547,
+          8.530334000170114,
+          8.109124999464257,
+          8.266667000498273,
+          8.808832999420702,
+          7.821249999324209,
+          8.877583000867162,
+          8.27075000051991,
+          52.38558400014881,
+          8.754874999794993,
+          7.868250000683474,
+          8.222500000556465,
+          8.367041000383324,
+          9.81737500114832,
+          8.997000000817934,
+          8.513167000273825,
+          8.63937500071188,
+          8.656082998641068
+        ]
+      },
+      "commit": "e4c54712d84a314f6cf6f29ab872b432722cbe29"
+    },
+    {
+      "name": "rt_sigprocmask",
+      "gate": "PASS",
+      "manifest_version_before": 1,
+      "manifest_version_after": 2,
+      "seconds": 2.383030957998926,
+      "stages": {
+        "assemble_probe": {
+          "seconds": 0.05714795799940475,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+        },
+        "linux_oracle": {
+          "seconds": 0.39081208300012804,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+        },
+        "build_candidate": {
+          "seconds": 0.9816955409987713,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+        },
+        "fresh_vm_differential_n30": {
+          "seconds": 0.7816504999991594,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+        }
+      },
+      "benchmark": {
+        "n": 30,
+        "unit": "ms",
+        "median": 11.045500500586058,
+        "p90": 12.875415999587858,
+        "p99": 18.93374999963271,
+        "samples": [
+          8.915000000342843,
+          9.229333001712803,
+          13.08041599986609,
+          9.31437499821186,
+          10.51937500051281,
+          16.654832999847713,
+          12.635334000151488,
+          11.153292000017245,
+          11.705709001034847,
+          12.689833998592803,
+          10.79862500046147,
+          11.846707999211503,
+          12.06912499947066,
+          9.94087500112073,
+          10.781375000078697,
+          11.795750000601402,
+          9.539707998555969,
+          11.061291999794776,
+          10.280417000103625,
+          18.93374999963271,
+          11.140915999931167,
+          12.875415999587858,
+          10.748583999884431,
+          11.029709001377341,
+          12.371583999993163,
+          11.410208000597777,
+          8.808124999632128,
+          9.980875000110245,
+          9.40308300050674,
+          9.058249999725376
+        ]
+      },
+      "commit": "bb8b4c74803c1859d61caa6101e2819bedb87b7e"
+    },
+    {
+      "name": "rt_sigaction",
+      "gate": "PASS",
+      "manifest_version_before": 2,
+      "manifest_version_after": 3,
+      "seconds": 2.313068707999264,
+      "stages": {
+        "assemble_probe": {
+          "seconds": 0.05294579200017324,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+        },
+        "linux_oracle": {
+          "seconds": 0.33647733299949323,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+        },
+        "build_candidate": {
+          "seconds": 0.9915580420001788,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+        },
+        "fresh_vm_differential_n30": {
+          "seconds": 0.7829455840001174,
+          "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+          "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+        }
+      },
+      "benchmark": {
+        "n": 30,
+        "unit": "ms",
+        "median": 10.370666499511572,
+        "p90": 20.72579099876748,
+        "p99": 26.69633299956331,
+        "samples": [
+          22.883374998855288,
+          10.46445800056972,
+          12.127083000450511,
+          26.69633299956331,
+          18.294249999598833,
+          12.189042001409689,
+          20.998541000153637,
+          11.250833000303828,
+          11.183833999893977,
+          19.50487499925657,
+          10.40724999984377,
+          9.983250000004773,
+          10.05066699872259,
+          20.72579099876748,
+          12.32091599922569,
+          10.334082999179373,
+          10.141958999156486,
+          10.56224999956612,
+          10.976957999446313,
+          10.122333998879185,
+          8.937041000535828,
+          9.411250000994187,
+          8.060542000748683,
+          8.637708999231108,
+          8.904665999580175,
+          8.472000001347624,
+          9.776874998351559,
+          8.460082999590668,
+          8.371207999516628,
+          9.099249999053427
+        ]
+      },
+      "commit": "6451aeb91fd0e6479dc03fc02396235385755baa"
+    }
+  ],
+  "kernel_delta_lines": 6,
+  "manifest_version": 3,
+  "seconds": 20.459940333001214,
+  "stages": {
+    "copy_kernel": {
+      "seconds": 0.19726450000052864,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 18.28 57.58 66.48",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 18.28 57.58 66.48"
+    },
+    "qjs_build_missing": {
+      "seconds": 4.08579495900085,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 18.28 57.58 66.48",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+    },
+    "qjs_discovery": {
+      "seconds": 0.09654504199897929,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+    },
+    "qjs_build_after": {
+      "seconds": 0.8132042910001474,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+    },
+    "qjs_linux": {
+      "seconds": 0.34354937500029337,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+    },
+    "qjs_live": {
+      "seconds": 0.03640820799955691,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16"
+    },
+    "lua_linux_normal_n30": {
+      "seconds": 1.2194922500002576,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.78 56.83 66.16",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+    },
+    "lua_linux_profile_n30": {
+      "seconds": 1.595227583000451,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+    },
+    "lua_build_missing_0": {
+      "seconds": 0.9172107499998674,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+    },
+    "lua_discovery_0": {
+      "seconds": 0.02218154200090794,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.63 56.15 65.87"
+    },
+    "lua_build_missing_1": {
+      "seconds": 0.8326646250006888,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+    },
+    "lua_discovery_1": {
+      "seconds": 0.021885832999032573,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+    },
+    "lua_build_after": {
+      "seconds": 0.7488856669988309,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56"
+    },
+    "lua_vm_n30": {
+      "seconds": 0.6850748329998169,
+      "uptime_before": "4:00  up  5:14, 2 users, load averages: 17.26 55.43 65.56",
+      "uptime_after": "4:00  up  5:14, 2 users, load averages: 16.44 54.63 65.21"
+    }
+  },
+  "lua_vm": {
+    "n": 30,
+    "unit": "ms",
+    "median": 10.60497900016344,
+    "p90": 13.53620800000499,
+    "p99": 34.09520800050814,
+    "samples": [
+      11.469458000647137,
+      10.341291999793611,
+      11.987332998614875,
+      10.221334001471405,
+      10.639584001182811,
+      10.236125001028995,
+      11.342707999574486,
+      13.028749999648426,
+      10.59437500043714,
+      10.615582999889739,
+      10.680542000045534,
+      20.709833001092193,
+      10.2359169995907,
+      9.713290999570745,
+      8.947750000515953,
+      10.142584000277566,
+      9.2811670001538,
+      9.07237499995972,
+      8.665208999445895,
+      8.857750000970555,
+      9.156957999948645,
+      9.589750001396169,
+      9.614291999241686,
+      34.09520800050814,
+      15.301292000003741,
+      12.554458000522573,
+      13.53620800000499,
+      13.51095800055191,
+      12.420041999575915,
+      12.857875000918284
+    ]
+  },
+  "uptime": "4:00  up  5:14, 2 users, load averages: 16.44 54.63 65.21",
+  "controller_sha256": {
+    "loop.py": "57594c7e3504389e4c4ae85bbcf76886f476427a3147de49e481c993af3b1d56",
+    "runtime.py": "a51261993387d1de5c612461b5894127fcc1f10c139b8e2def08a25ff908d79c",
+    "adapters.py": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5"
+  },
+  "lua_elf_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+  "qjs_elf_sha256": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+  "host": "/tmp/jitk-02/r3/host-no-tick",
+  "host_sha256": "c751583737c2abed6c80a64dc83bc1ce2f1544d94b12ca4ac7b974d1bc6fb61c"
+}

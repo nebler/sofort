@@ -1,0 +1,7 @@
+;; Comparison only: same policy applied by deprecated sandbox-exec (adds exec + "/" grants).
+(version 1)
+(deny default)
+(allow process-exec (literal "/private/tmp/jitk-07/r2/jitk-vmm"))
+(allow file-read-data (literal "/"))
+(allow file-read-data (subpath "/private/tmp/jitk-07/r2/images"))
+(allow sysctl-read (sysctl-name "hw.pagesize_compat"))

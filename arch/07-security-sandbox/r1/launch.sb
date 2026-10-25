@@ -1,0 +1,6 @@
+(version 1)
+(deny default)
+(allow process-exec (literal "/private/tmp/jitk-07/host"))
+(allow file-read* (literal "/private/tmp/jitk-07/libkrun.2.dylib") (literal "/private/tmp/jitk-07/kk.bin"))
+(allow file-read-data (literal "/"))
+(allow sysctl-read (sysctl-name "hw.pagesize_compat"))

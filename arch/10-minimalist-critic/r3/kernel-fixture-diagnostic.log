@@ -1,0 +1,42 @@
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/grow-contract-diagnostic/kernel)
+    Finished `release` profile [optimized] target(s) in 36.30s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/grow-contract-diagnostic/kernel)
+    Finished `release` profile [optimized] target(s) in 14.86s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/grow-contract-diagnostic/kernel)
+    Finished `release` profile [optimized] target(s) in 18.82s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/grow-contract-diagnostic/kernel)
+    Finished `release` profile [optimized] target(s) in 11.15s
+{
+  "load": "3:54  up  5:07, 2 users, load averages: 44.23 64.51 67.01",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK"
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK"
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ],
+    "registered_enosys": [
+      29,
+      134,
+      135,
+      216
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}

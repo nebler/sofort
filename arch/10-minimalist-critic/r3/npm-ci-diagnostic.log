@@ -1,0 +1,35 @@
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: @cloudflare/codemode@0.5.5
+npm error Found: @tanstack/ai@1.0.0
+npm error node_modules/@tanstack/ai
+npm error   @tanstack/ai@"1.0.0" from the root project
+npm error   peer @tanstack/ai@"^1.0.0" from @tanstack/ai-code-mode@1.0.0
+npm error   node_modules/@tanstack/ai-code-mode
+npm error     @tanstack/ai-code-mode@"1.0.0" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional @tanstack/ai@">=0.8.0 <1.0.0" from @cloudflare/codemode@0.5.5
+npm error node_modules/@cloudflare/codemode
+npm error   @cloudflare/codemode@"0.5.5" from the root project
+npm error
+npm error Conflicting peer dependency: @tanstack/ai@0.71.0
+npm error node_modules/@tanstack/ai
+npm error   peerOptional @tanstack/ai@">=0.8.0 <1.0.0" from @cloudflare/codemode@0.5.5
+npm error   node_modules/@cloudflare/codemode
+npm error     @cloudflare/codemode@"0.5.5" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /tmp/jitk-10/npm-cache/_logs/2026-10-24T01_15_57_781Z-eresolve-report.txt
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm error A complete log of this run can be found in: /tmp/jitk-10/npm-cache/_logs/2026-10-24T01_15_57_781Z-debug-0.log

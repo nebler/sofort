@@ -1,0 +1,23 @@
+{
+  "uptime": "2:35  up  3:48, 2 users, load averages: 70.79 86.28 56.90",
+  "checks": {
+    "no-image": true,
+    "bad-mem": true,
+    "bad-seed": true,
+    "unknown": true,
+    "seed-epoch-counter-single-console": true,
+    "wait-go-preserves-1000-following-bytes": true,
+    "eof-before-go": true,
+    "real-r1-qjs-ready": true,
+    "invalid-hvc-aborts": true,
+    "loc-under-200": true,
+    "no-libkrun-dylib": true,
+    "signature": true
+  },
+  "probe_stdout": "GUEST_TICKS 0000003993cc4b98\nFDT magic=00000000d00dfeed bytes=00000000000005b8\nnode \n  compatible=linux,dummy-virt|\nnode cpus\nnode cpu@0\n  compatible=arm,arm-v8|\n  reg=0000000000000000\nnode memory@80000000\n  reg=00000000800000000000000002000000\nnode chosen\n  bootargs=jitk.seed=00112233445566778899aabbccddeeff jitk.epoch_ns=1792800000000000000 jitk.counter=247292501284|\nnode intc\n  compatible=arm,gic-v3|\n  reg=0000000009fd000000000000000100000000000009fe00000000000000020000\nnode timer\n  compatible=arm,armv8-timer|\nnode apb-pclk\n  compatible=fixed-clock|\nnode psci\n  compatible=arm,psci-0.2|\nnode rtc@a001000\n  compatible=arm,pl031|arm,primecell|\n  reg=000000000a0010000000000000001000\nnode virtio_mmio@a002000\n  compatible=virtio,mmio|\n  reg=000000000a0020000000000000001000\nvirtio @000000000a002000 DeviceID=0000000000000003\nvirtio-count=0000000000000001\n",
+  "probe_stderr": "",
+  "binary_sha256": "f514554ffaf4eba25d00137168219bf4cfcc5b6bf2f7191afab26e2eb37ecc3d",
+  "source_lines": 103,
+  "otool": "/tmp/jitk-01/r2/jitk-vmm:\n\t/System/Library/Frameworks/Hypervisor.framework/Versions/A/Hypervisor (compatibility version 1.0.0, current version 259.6.4)\n\t/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n",
+  "uptime_end": "2:35  up  3:48, 2 users, load averages: 70.79 86.28 56.90"
+}

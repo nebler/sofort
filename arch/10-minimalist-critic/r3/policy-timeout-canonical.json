@@ -1,0 +1,13 @@
+{
+  "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/policy/policy.mjs",
+  "sourceSha256": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+  "integrated": true,
+  "timeoutMs": 5,
+  "elapsedMs": 101.85587499999997,
+  "invoked": true,
+  "aborted": true,
+  "revoked": false,
+  "settled": false,
+  "outstanding": 1,
+  "interpretation": "AbortSignal is cooperative: no host-side completion/revocation guarantee for a tool that ignores it."
+}

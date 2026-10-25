@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-24",
+  "host": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M4 Pro",
+  "macos": "26.6.1 (25G76)",
+  "timezone": "Europe/Berlin",
+  "libkrun": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "quickjs": "7d1c13c5d8f8c6b32893786ed35cdcebd88194d2",
+  "quickjs_ng": "e68078618935dbd28c41c98931f99d9091daba50",
+  "toolchain": "Rust 1.95.0; clang host -O2; Bellard GCC -O2 static musl; NG CMake Release static musl",
+  "linux_container": "alpine:3.22 linux/arm64; local-container filesystem for measured binaries/scripts",
+  "quantiles": "median middle pair; nearest-rank p90/p99",
+  "boot_samples_per_case": 100,
+  "native_samples_per_case": 100,
+  "churn_samples": 30,
+  "observed_load_averages": [
+    "24.79 25.82 14.87",
+    "30.65 26.78 14.46",
+    "35.09 28.39 18.20"
+  ],
+  "warning": "Concurrent external builds; warm file cache; these are not production KVM or full jitk measurements. getrusage inherited fork HWM; use /proc/self/status VmHWM.",
+  "files": {
+    "/tmp/jitk-06/qjs-original": {
+      "bytes": 9688056,
+      "sha256": "d87997d1e249c8dd15e6b7a2f9a8c4932612a023a17b8b2d21e8359739a580e9"
+    },
+    "/tmp/jitk-06/qjs-stripped": {
+      "bytes": 2394360,
+      "sha256": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341"
+    },
+    "/tmp/jitk-06/qjs-rebuilt-stripped": {
+      "bytes": 2394360,
+      "sha256": "8e08b021ca157bc6179ac7d22235a39e89f0b0f315660c0ce5e8b0997f960fa5"
+    },
+    "/tmp/jitk-06/qjs-ng-stripped": {
+      "bytes": 1378128,
+      "sha256": "e3b4057a3ce248a1f790db03bcf11f3b261aed7e5ebdd1dae1371f20f8dc2373"
+    },
+    "/tmp/jitk-06/bootstrap-stripped": {
+      "bytes": 1115992,
+      "sha256": "f7182c7e5c900d91dc4bf053e1d530cffa237e8e91d6c6d32160a78ed6701adc"
+    },
+    "/tmp/jitk-06/bootstrap-ng-stripped": {
+      "bytes": 1312592,
+      "sha256": "2e5151ae3224df3a52e3db6b23b35db7865d774185aeffab250465c922e0b796"
+    },
+    "/tmp/jitk-06/kk.bin": {
+      "bytes": 24,
+      "sha256": "f82411ed394e499325633e638995efa60c70ab56bf74aaa8c68c701da8a11844"
+    },
+    "/tmp/jitk-06/host-buffered": {
+      "bytes": 53472,
+      "sha256": "32cf83569cc003873c9a15f7f2ffa728cefd0e855108cb4d52eb2f8845343acc"
+    },
+    "/tmp/jitk-06/instrumented/libkrun.2.dylib": {
+      "bytes": 3284288,
+      "sha256": "a7872b699a638a5e49f8c08bdda13ad898685ad9d35840dd2634f7d6b23a8827"
+    }
+  },
+  "cleanup": "Temporary jitk-06-bench container removal confirmed (docker rm -f exited 0); host artifacts and raw results retained."
+}

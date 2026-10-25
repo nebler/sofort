@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-24T01:34:42.200917+00:00",
+  "uptime": "3:34  up  4:48, 2 users, load averages: 33.86 51.83 63.49",
+  "samples": [
+    {
+      "args": [],
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0x0\",\"create_name\":\"HV_SUCCESS\",\"destroy_rc\":\"0x0\",\"default_ipa\":0,\"max_ipa\":0,\"selected_ipa\":0,\"get_default_rc\":0,\"get_max_rc\":0,\"set_ipa_rc\":0}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "default"
+      ],
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0x0\",\"create_name\":\"HV_SUCCESS\",\"destroy_rc\":\"0x0\",\"default_ipa\":36,\"max_ipa\":40,\"selected_ipa\":36,\"get_default_rc\":0,\"get_max_rc\":0,\"set_ipa_rc\":0}\n",
+      "stderr": ""
+    },
+    {
+      "args": [],
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0x0\",\"create_name\":\"HV_SUCCESS\",\"destroy_rc\":\"0x0\",\"default_ipa\":0,\"max_ipa\":0,\"selected_ipa\":0,\"get_default_rc\":0,\"get_max_rc\":0,\"set_ipa_rc\":0}\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Bracketed null/default-config/null create/destroy controls. No vCPU/guest/RAM. Every fresh process reaped; no performance claim."
+}

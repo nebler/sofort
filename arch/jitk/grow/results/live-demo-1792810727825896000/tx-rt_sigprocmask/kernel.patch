@@ -1,0 +1,10 @@
+diff --git a/src/syscalls/rt_sigprocmask.rs b/src/syscalls/rt_sigprocmask.rs
+new file mode 100644
+index 0000000..53cdf2d
+--- /dev/null
++++ b/src/syscalls/rt_sigprocmask.rs
+@@ -0,0 +1,4 @@
++pub fn call(a: &[usize]) -> isize {
++    let _ = a;
++    -38
++}

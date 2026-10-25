@@ -1,0 +1,56 @@
+{
+  "kernel-write": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "text-write": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "heap-exec": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "privileged": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "el0-hvc": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "bad-pointer": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nexit=0000000000000000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "pan": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=000000009600000f far=0000000000400000 pc=0000000080002100\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "alias-write": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nFAULT esr=000000009600004f far=0000000081000000 pc=0000000080001dc4\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "unknown-syscall": {
+    "returncode": 0,
+    "output": "hello jitk fdt=0000000083e00000\nENOSYS nr=00000000000001ff\nexit=0000000000000000\n",
+    "stderr": "",
+    "status": "PASS"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "round": 4,
+  "status": "REVIEW_COMPLETE; I1_FAIL; I2_FAIL; I3_PASS_CONTENDED; I4_DONE",
+  "at": "2026-10-24T03:39:24.798439+00:00",
+  "load": [
+    62.98486328125,
+    60.853515625,
+    62.75830078125
+  ],
+  "frozen_manifest_sha256": "7803d9b5f4bf7bd2ea959f7400f4edcdc6907fefcef4f33dd6d89f44c4971671",
+  "artifacts_sha256": {
+    "V-v2-darwin": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "B-r3-darwin": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+    "K-kernel": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "E-executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+    "W-watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "L-linux-rebuilt": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+    "P-policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+    "H-hyperlight-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "H-snapshot-index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09",
+    "Lua-elf": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "R3-executor.js": "749be00794a49753429d72b89124269d33b1ed93ba1b473461574b34a1bf21ea",
+    "C-relocated-darwin": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7",
+    "C-executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed"
+  },
+  "owned_loc": 9409,
+  "r4_report_sha256": "135eaa2bfa1bbeab3f377c03302bce434fb502911667a525187e98f3b132a6dd",
+  "docs_sha256": {
+    "CLAIMS.md": "24a34bbabfbc439cc121deb567702e4f5796aef3573a0dbc3cf330ec4c72861f",
+    "KILL-CRITERIA.md": "a0a4d613ce4cb6d2c0b99dfc3cc9ae522fe8c7ada9d7c64d9c76659a64b50923",
+    "ARCHITECTURE.md": "982b8b772233b3ca0d6b0a2d1b75913d01461016ad7a3a0dee0ecf2653c5e1ce",
+    "ARTIFACTS-R4.json": "025a822d60effeb2c5d3d3c24c397e341de98fd4741de18a2c3a6f3309669d58",
+    "delegate.py": "979fd2397cd3ea5ae1dbd839382b2ade4f0bf72688160d1f3f80b5574a311ce3",
+    "count-loc.py": "b292af8113c92e660046fe8a555a79b2730248c6a6aa9ee3c778f78f91d1f37c"
+  }
+}

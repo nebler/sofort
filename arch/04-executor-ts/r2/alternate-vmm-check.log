@@ -1,0 +1,35 @@
+{
+  "launcher": "/tmp/jitk-01/r2/jitk-vmm",
+  "kernel": {
+    "source": "/tmp/jitk-02/r2/kernel.bin",
+    "path": "/tmp/jitk-04/r2/00040cfa7187a3cf25fb7cf8f01d973bf41f4f9179b4fc382dcb890b34d13edf-kernel.bin",
+    "sha256": "00040cfa7187a3cf25fb7cf8f01d973bf41f4f9179b4fc382dcb890b34d13edf"
+  },
+  "loadBefore": "2:38  up  3:52, 2 users, load averages: 32.65 52.19 48.30",
+  "loadAfter": "2:38  up  3:52, 2 users, load averages: 32.65 52.19 48.30",
+  "results": [
+    {
+      "code": "return 2",
+      "result": {
+        "result": 2,
+        "logs": []
+      }
+    },
+    {
+      "code": "return (await github.listIssues({repo:'x'})).length",
+      "result": {
+        "result": 2,
+        "logs": []
+      }
+    }
+  ],
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  }
+}

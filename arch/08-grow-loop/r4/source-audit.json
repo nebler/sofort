@@ -1,0 +1,27 @@
+{
+  "owned_physical_source_lines": 970,
+  "files": {
+    "rt_sigaction.S": 37,
+    "Makefile": 10,
+    "test.py": 119,
+    "runtime.py": 140,
+    "agent.py": 57,
+    "loop.py": 228,
+    "rt_sigprocmask.S": 37,
+    "demo.py": 64,
+    "prepare.py": 14,
+    "probe.ld": 11,
+    "adapters.py": 123,
+    "oracle/Dockerfile": 4,
+    "oracle/run_profile.py": 30,
+    "oracle/normalize.py": 75,
+    "oracle/test_normalize.py": 21
+  },
+  "kernel_source_duplicates": [],
+  "fixture_bytes": 17444,
+  "load": [
+    65.92236328125,
+    65.78173828125,
+    56.8759765625
+  ]
+}

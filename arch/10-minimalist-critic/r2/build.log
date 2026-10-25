@@ -1,0 +1,63 @@
+make all SYSCFLAGS="-DLUA_USE_POSIX"
+make[1]: Entering directory '/work/lua-5.4.8/src'
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lapi.o lapi.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie  -c lcode.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lctype.o lctype.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ldebug.o ldebug.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ldo.o ldo.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ldump.o ldump.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lfunc.o lfunc.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lgc.o lgc.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie  -c llex.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lmem.o lmem.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lobject.o lobject.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lopcodes.o lopcodes.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie  -c lparser.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lstate.o lstate.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lstring.o lstring.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ltable.o ltable.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ltm.o ltm.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lundump.o lundump.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lvm.o lvm.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lzio.o lzio.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lauxlib.o lauxlib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lbaselib.o lbaselib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lcorolib.o lcorolib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ldblib.o ldblib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o liolib.o liolib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lmathlib.o lmathlib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o loadlib.o loadlib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o loslib.o loslib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lstrlib.o lstrlib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o ltablib.o ltablib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lutf8lib.o lutf8lib.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o linit.o linit.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o lua.o lua.c
+gcc -std=gnu99 -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_POSIX -O2 -fno-pie   -c -o luac.o luac.c
+ar rcu liblua.a lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o ltm.o lundump.o lvm.o lzio.o lauxlib.o lbaselib.o lcorolib.o ldblib.o liolib.o lmathlib.o loadlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o linit.o 
+ar: `u' modifier ignored since `D' is the default (see `U')
+ranlib liblua.a
+gcc -std=gnu99 -o lua  -static -no-pie lua.o liblua.a -lm  
+gcc -std=gnu99 -o luac  -static -no-pie luac.o liblua.a -lm  
+make[1]: Leaving directory '/work/lua-5.4.8/src'
+gcc (Alpine 14.2.0) 14.2.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.22/main: No such file or directory
+WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.22/community: No such file or directory
+binutils: Tools necessary to build programs
+binutils: https://www.gnu.org/software/binutils/
+binutils: 14 MiB
+gcc: The GNU Compiler Collection
+gcc: https://gcc.gnu.org
+gcc: 122 MiB
+musl: the musl c library (libc) implementation
+musl: https://musl.libc.org/
+musl: 706 KiB
+strace: Diagnostic, debugging and instructional userspace tracer
+strace: https://strace.io
+strace: 1220 KiB
+6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929  /work/lua-static
+005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff  /work/sqlite3-static

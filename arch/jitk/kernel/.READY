@@ -1,0 +1,26 @@
+{
+  "image": "dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin",
+  "manifest": "dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.json",
+  "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
+  "bytes": 2924584,
+  "ram_mib": 32,
+  "created_utc": "2026-10-24T12:13:51.076496+00:00",
+  "guest_loc": 1488,
+  "build_rs_loc": 57,
+  "gates": {
+    "G1": "1000/1000; idle CPU below ps resolution (rerun on this image)",
+    "G2": "30 x 64 reversed replies",
+    "isolation": "11/11 (adds fs-alias-write, fs-user-read)",
+    "packer": "7/7",
+    "grow_contract": "4/4; both exit slots exercised",
+    "clocks": "30/30; origin error <1ms",
+    "fs_differential": "probe/Lua/QuickJS 30/30 byte-identical vs Linux ro bind mount; bootstrap 3/3; test_fs corruption PASS"
+  },
+  "test_host": "integrated VMM v2 (JITK_VMM_BINARY)",
+  "test_host_sha256": "2e3cfb02b0ab7cba9fc460694863ca45d6c2b0800f37dcf44d642c5a560e4e77",
+  "note": "Read-only resource archive (RESULTS-fs.md). Default image has an empty /. Kernel make test passed on this image with the raw-direct-load VMM; G1/G2 rerun PASS. Contended functional evidence.",
+  "previous_image": "dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+  "verification_manifest": "syscalls.manifest.json",
+  "verification_sha256": "8224c221d4787bf14cead105ab22e508ea366f161009495c9c05cfc2c5c6d07d",
+  "owner_patch_sha256": "d0ceaf3c8ee0120b8baccc886d368bd7d002fc446c2e214347737c7219a24eb6"
+}

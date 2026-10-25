@@ -1,0 +1,20 @@
+{
+  "started_utc": "2026-10-24T01:08:39.621995+00:00",
+  "command": "cp -R arch/jitk /tmp/jitk-10/clean && (cd /tmp/jitk-10/clean && make build test)",
+  "markers": {
+    "bench/.READY": "2026-10-24T01:05Z: R2 cold and raw parked one-tool paths pass, gate/statistics/external watchdog checks pass. Integrated artifact selection and final n>=30 suite pending; .READY means harness usable, not quiet-host H4 passed. Run python3 arch/jitk/bench/run.py --samples 30. See README.md for 09 adapter contract.\n",
+    "protocol/.READY": "Canonical protocol source/build ready. 71 vectors x 2 chunkings, 25,000 deterministic mutations, boundary 4096 calls/1MiB and strict tsc pass. VM/hostile results separate; see README.\n"
+  },
+  "uptime_before": "3:08  up  4:22, 2 users, load averages: 152.62 116.33 91.09",
+  "overrides": {
+    "CARGO_TARGET_DIR": "/tmp/jitk-10/kernel-target",
+    "JITK_VMM_BUILD": "/tmp/jitk-10/vmm",
+    "JITK_TEST_IMAGES": "/tmp/jitk-10/test-images"
+  },
+  "copy_exit": 0,
+  "make_exit": 2,
+  "elapsed_s": 247.40165558399895,
+  "uptime_after": "3:12  up  4:26, 2 users, load averages: 77.79 97.04 89.72",
+  "finished_utc": "2026-10-24T01:12:51.869046+00:00",
+  "log_sha256": "1d3ed3d892c9a3f1c0634eaf5a148fb88435ed765c5cf5c9cf7752ab03ab0b81"
+}

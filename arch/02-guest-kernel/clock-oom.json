@@ -1,0 +1,6 @@
+{
+  "host_epoch_ms_before": 1792800508846,
+  "host_epoch_ms_after": 1792800509823,
+  "guest_output": "hello jitk fdt=0000000083e00000\n8710917\nOOM InternalError: out of memory\nexit=0000000000000000\n",
+  "returncode": 0
+}

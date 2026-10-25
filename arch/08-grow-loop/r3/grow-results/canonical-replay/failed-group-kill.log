@@ -1,0 +1,44 @@
+copy_kernel 15.842 s
+qjs_build_missing 50.938 s
+qjs_discovery 3.05 s
+assemble_probe 3.023 s
+linux_oracle 10.265 s
+build_candidate 22.046 s
+fresh_vm_differential_n30 35.486 s
+qjs_build_after 24.873 s
+qjs_linux 7.343 s
+qjs_live 3.016 s
+lua_linux_normal_n30 22.595 s
+lua_linux_profile_n30 25.243 s
+lua_build_missing_0 24.572 s
+lua_discovery_0 0.455 s
+assemble_probe 4.665 s
+linux_oracle 5.459 s
+build_candidate 24.359 s
+fresh_vm_differential_n30 21.306 s
+lua_build_missing_1 5.245 s
+lua_discovery_1 0.422 s
+Traceback (most recent call last):
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/loop.py", line 65, in discover
+    if p.poll() is None: os.killpg(p.pid,signal.SIGKILL)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/loop.py", line 219, in <module>
+    if __name__=='__main__': main()
+                             ~~~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/loop.py", line 178, in main
+    miss=r.stage('lua_discovery_'+str(index),lambda:discover(image,out/f'lua-before-{index}-run'))
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/loop.py", line 21, in stage
+    try: return fn()
+                ~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/loop.py", line 178, in <lambda>
+    miss=r.stage('lua_discovery_'+str(index),lambda:discover(image,out/f'lua-before-{index}-run'))
+                                                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/loop.py", line 68, in discover
+    if p.poll() is None: os.killpg(p.pid,signal.SIGKILL);p.wait()
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted

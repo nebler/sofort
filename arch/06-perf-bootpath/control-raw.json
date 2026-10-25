@@ -1,0 +1,802 @@
+[
+  {
+    "case": "buffered",
+    "us": 8818.625
+  },
+  {
+    "case": "stock",
+    "us": 19851.083
+  },
+  {
+    "case": "buffered",
+    "us": 9107.375
+  },
+  {
+    "case": "buffered",
+    "us": 7801.167
+  },
+  {
+    "case": "buffered",
+    "us": 8131.875
+  },
+  {
+    "case": "buffered",
+    "us": 8884.542
+  },
+  {
+    "case": "buffered",
+    "us": 9362.209
+  },
+  {
+    "case": "buffered",
+    "us": 8946.042
+  },
+  {
+    "case": "buffered",
+    "us": 8150.333
+  },
+  {
+    "case": "buffered",
+    "us": 8806.166
+  },
+  {
+    "case": "stock",
+    "us": 8212.5
+  },
+  {
+    "case": "buffered",
+    "us": 9753.208
+  },
+  {
+    "case": "buffered",
+    "us": 7662.167
+  },
+  {
+    "case": "buffered",
+    "us": 8627.917
+  },
+  {
+    "case": "stock",
+    "us": 8685.166
+  },
+  {
+    "case": "stock",
+    "us": 8784.292
+  },
+  {
+    "case": "stock",
+    "us": 7875.292
+  },
+  {
+    "case": "stock",
+    "us": 9192.958
+  },
+  {
+    "case": "stock",
+    "us": 8217.166
+  },
+  {
+    "case": "stock",
+    "us": 8713.958
+  },
+  {
+    "case": "buffered",
+    "us": 9457.875
+  },
+  {
+    "case": "buffered",
+    "us": 9297.375
+  },
+  {
+    "case": "stock",
+    "us": 8714.291
+  },
+  {
+    "case": "stock",
+    "us": 8573.959
+  },
+  {
+    "case": "stock",
+    "us": 8482.167
+  },
+  {
+    "case": "buffered",
+    "us": 8637.042
+  },
+  {
+    "case": "buffered",
+    "us": 7955.958
+  },
+  {
+    "case": "stock",
+    "us": 8256.167
+  },
+  {
+    "case": "buffered",
+    "us": 7707.334
+  },
+  {
+    "case": "buffered",
+    "us": 8994.708
+  },
+  {
+    "case": "buffered",
+    "us": 8674.167
+  },
+  {
+    "case": "stock",
+    "us": 8981.708
+  },
+  {
+    "case": "buffered",
+    "us": 7983.834
+  },
+  {
+    "case": "buffered",
+    "us": 8294.167
+  },
+  {
+    "case": "stock",
+    "us": 9140.958
+  },
+  {
+    "case": "buffered",
+    "us": 7931.25
+  },
+  {
+    "case": "stock",
+    "us": 8707.042
+  },
+  {
+    "case": "buffered",
+    "us": 8492.958
+  },
+  {
+    "case": "stock",
+    "us": 8532.625
+  },
+  {
+    "case": "stock",
+    "us": 8699.25
+  },
+  {
+    "case": "buffered",
+    "us": 8830.709
+  },
+  {
+    "case": "stock",
+    "us": 8470.333
+  },
+  {
+    "case": "buffered",
+    "us": 7656.834
+  },
+  {
+    "case": "buffered",
+    "us": 8309.416
+  },
+  {
+    "case": "stock",
+    "us": 8703.542
+  },
+  {
+    "case": "buffered",
+    "us": 9680.958
+  },
+  {
+    "case": "stock",
+    "us": 9000.458
+  },
+  {
+    "case": "stock",
+    "us": 7504.25
+  },
+  {
+    "case": "buffered",
+    "us": 8462.833
+  },
+  {
+    "case": "stock",
+    "us": 8539.458
+  },
+  {
+    "case": "stock",
+    "us": 9443.292
+  },
+  {
+    "case": "buffered",
+    "us": 8272.916
+  },
+  {
+    "case": "stock",
+    "us": 8812.458
+  },
+  {
+    "case": "stock",
+    "us": 8396.375
+  },
+  {
+    "case": "buffered",
+    "us": 8544.042
+  },
+  {
+    "case": "buffered",
+    "us": 8337.625
+  },
+  {
+    "case": "stock",
+    "us": 8653.667
+  },
+  {
+    "case": "buffered",
+    "us": 7987.417
+  },
+  {
+    "case": "stock",
+    "us": 7714.125
+  },
+  {
+    "case": "buffered",
+    "us": 8088.958
+  },
+  {
+    "case": "stock",
+    "us": 8539.583
+  },
+  {
+    "case": "stock",
+    "us": 8304.834
+  },
+  {
+    "case": "buffered",
+    "us": 8640.625
+  },
+  {
+    "case": "buffered",
+    "us": 8189.208
+  },
+  {
+    "case": "buffered",
+    "us": 8385.75
+  },
+  {
+    "case": "buffered",
+    "us": 7999.833
+  },
+  {
+    "case": "stock",
+    "us": 8603.917
+  },
+  {
+    "case": "stock",
+    "us": 7206.375
+  },
+  {
+    "case": "buffered",
+    "us": 7968.667
+  },
+  {
+    "case": "stock",
+    "us": 9034.708
+  },
+  {
+    "case": "buffered",
+    "us": 8879.0
+  },
+  {
+    "case": "stock",
+    "us": 8667.375
+  },
+  {
+    "case": "stock",
+    "us": 8960.041
+  },
+  {
+    "case": "stock",
+    "us": 8270.792
+  },
+  {
+    "case": "stock",
+    "us": 8405.458
+  },
+  {
+    "case": "buffered",
+    "us": 8530.041
+  },
+  {
+    "case": "stock",
+    "us": 8846.5
+  },
+  {
+    "case": "buffered",
+    "us": 8083.083
+  },
+  {
+    "case": "stock",
+    "us": 8488.166
+  },
+  {
+    "case": "buffered",
+    "us": 11803.5
+  },
+  {
+    "case": "stock",
+    "us": 11521.625
+  },
+  {
+    "case": "buffered",
+    "us": 11453.333
+  },
+  {
+    "case": "stock",
+    "us": 15623.375
+  },
+  {
+    "case": "stock",
+    "us": 12267.125
+  },
+  {
+    "case": "buffered",
+    "us": 9749.417
+  },
+  {
+    "case": "stock",
+    "us": 10142.25
+  },
+  {
+    "case": "stock",
+    "us": 11578.084
+  },
+  {
+    "case": "buffered",
+    "us": 9165.375
+  },
+  {
+    "case": "stock",
+    "us": 7882.625
+  },
+  {
+    "case": "stock",
+    "us": 8918.792
+  },
+  {
+    "case": "stock",
+    "us": 9007.375
+  },
+  {
+    "case": "stock",
+    "us": 8410.083
+  },
+  {
+    "case": "buffered",
+    "us": 9041.833
+  },
+  {
+    "case": "stock",
+    "us": 7941.792
+  },
+  {
+    "case": "stock",
+    "us": 8586.375
+  },
+  {
+    "case": "stock",
+    "us": 8194.0
+  },
+  {
+    "case": "stock",
+    "us": 9130.167
+  },
+  {
+    "case": "stock",
+    "us": 8916.334
+  },
+  {
+    "case": "buffered",
+    "us": 8906.292
+  },
+  {
+    "case": "buffered",
+    "us": 7961.542
+  },
+  {
+    "case": "stock",
+    "us": 8777.333
+  },
+  {
+    "case": "buffered",
+    "us": 9886.625
+  },
+  {
+    "case": "stock",
+    "us": 14556.292
+  },
+  {
+    "case": "stock",
+    "us": 10204.917
+  },
+  {
+    "case": "buffered",
+    "us": 9755.0
+  },
+  {
+    "case": "buffered",
+    "us": 8755.916
+  },
+  {
+    "case": "stock",
+    "us": 9404.333
+  },
+  {
+    "case": "stock",
+    "us": 9351.75
+  },
+  {
+    "case": "buffered",
+    "us": 10771.167
+  },
+  {
+    "case": "stock",
+    "us": 10089.083
+  },
+  {
+    "case": "buffered",
+    "us": 10256.208
+  },
+  {
+    "case": "stock",
+    "us": 9372.958
+  },
+  {
+    "case": "stock",
+    "us": 9174.042
+  },
+  {
+    "case": "stock",
+    "us": 11545.167
+  },
+  {
+    "case": "buffered",
+    "us": 8846.209
+  },
+  {
+    "case": "buffered",
+    "us": 10006.667
+  },
+  {
+    "case": "stock",
+    "us": 10394.5
+  },
+  {
+    "case": "buffered",
+    "us": 9336.333
+  },
+  {
+    "case": "buffered",
+    "us": 8666.583
+  },
+  {
+    "case": "buffered",
+    "us": 10455.834
+  },
+  {
+    "case": "stock",
+    "us": 9665.25
+  },
+  {
+    "case": "stock",
+    "us": 8594.834
+  },
+  {
+    "case": "buffered",
+    "us": 8696.333
+  },
+  {
+    "case": "buffered",
+    "us": 8972.709
+  },
+  {
+    "case": "stock",
+    "us": 10609.333
+  },
+  {
+    "case": "stock",
+    "us": 8985.875
+  },
+  {
+    "case": "stock",
+    "us": 10380.75
+  },
+  {
+    "case": "buffered",
+    "us": 9894.709
+  },
+  {
+    "case": "stock",
+    "us": 8907.625
+  },
+  {
+    "case": "buffered",
+    "us": 9198.458
+  },
+  {
+    "case": "buffered",
+    "us": 10684.458
+  },
+  {
+    "case": "buffered",
+    "us": 9380.625
+  },
+  {
+    "case": "buffered",
+    "us": 9019.125
+  },
+  {
+    "case": "buffered",
+    "us": 8960.084
+  },
+  {
+    "case": "buffered",
+    "us": 9639.75
+  },
+  {
+    "case": "buffered",
+    "us": 9789.334
+  },
+  {
+    "case": "buffered",
+    "us": 9749.75
+  },
+  {
+    "case": "stock",
+    "us": 9751.584
+  },
+  {
+    "case": "buffered",
+    "us": 9957.375
+  },
+  {
+    "case": "buffered",
+    "us": 10032.917
+  },
+  {
+    "case": "stock",
+    "us": 9767.375
+  },
+  {
+    "case": "buffered",
+    "us": 9402.583
+  },
+  {
+    "case": "stock",
+    "us": 8982.083
+  },
+  {
+    "case": "stock",
+    "us": 9542.125
+  },
+  {
+    "case": "buffered",
+    "us": 9861.75
+  },
+  {
+    "case": "buffered",
+    "us": 9265.834
+  },
+  {
+    "case": "stock",
+    "us": 9408.542
+  },
+  {
+    "case": "stock",
+    "us": 9643.375
+  },
+  {
+    "case": "buffered",
+    "us": 11145.958
+  },
+  {
+    "case": "buffered",
+    "us": 14090.042
+  },
+  {
+    "case": "stock",
+    "us": 14391.084
+  },
+  {
+    "case": "buffered",
+    "us": 13623.792
+  },
+  {
+    "case": "buffered",
+    "us": 15257.042
+  },
+  {
+    "case": "stock",
+    "us": 15686.416
+  },
+  {
+    "case": "buffered",
+    "us": 17301.833
+  },
+  {
+    "case": "stock",
+    "us": 12812.208
+  },
+  {
+    "case": "buffered",
+    "us": 12602.5
+  },
+  {
+    "case": "stock",
+    "us": 16007.25
+  },
+  {
+    "case": "buffered",
+    "us": 16914.167
+  },
+  {
+    "case": "stock",
+    "us": 13036.792
+  },
+  {
+    "case": "stock",
+    "us": 22092.459
+  },
+  {
+    "case": "stock",
+    "us": 15610.334
+  },
+  {
+    "case": "buffered",
+    "us": 15522.583
+  },
+  {
+    "case": "buffered",
+    "us": 11504.083
+  },
+  {
+    "case": "stock",
+    "us": 10139.75
+  },
+  {
+    "case": "stock",
+    "us": 9623.833
+  },
+  {
+    "case": "stock",
+    "us": 9580.667
+  },
+  {
+    "case": "buffered",
+    "us": 16142.166
+  },
+  {
+    "case": "buffered",
+    "us": 10053.417
+  },
+  {
+    "case": "stock",
+    "us": 10307.5
+  },
+  {
+    "case": "stock",
+    "us": 10574.458
+  },
+  {
+    "case": "stock",
+    "us": 11118.042
+  },
+  {
+    "case": "buffered",
+    "us": 11166.959
+  },
+  {
+    "case": "buffered",
+    "us": 9684.292
+  },
+  {
+    "case": "buffered",
+    "us": 9444.209
+  },
+  {
+    "case": "stock",
+    "us": 9900.625
+  },
+  {
+    "case": "buffered",
+    "us": 9661.708
+  },
+  {
+    "case": "stock",
+    "us": 11581.208
+  },
+  {
+    "case": "stock",
+    "us": 9988.916
+  },
+  {
+    "case": "stock",
+    "us": 7872.458
+  },
+  {
+    "case": "buffered",
+    "us": 9017.334
+  },
+  {
+    "case": "buffered",
+    "us": 9348.958
+  },
+  {
+    "case": "stock",
+    "us": 9787.166
+  },
+  {
+    "case": "buffered",
+    "us": 11597.542
+  },
+  {
+    "case": "buffered",
+    "us": 11647.042
+  },
+  {
+    "case": "buffered",
+    "us": 10234.292
+  },
+  {
+    "case": "buffered",
+    "us": 9168.125
+  },
+  {
+    "case": "buffered",
+    "us": 8782.208
+  },
+  {
+    "case": "stock",
+    "us": 7926.625
+  },
+  {
+    "case": "stock",
+    "us": 9621.875
+  },
+  {
+    "case": "stock",
+    "us": 9472.417
+  },
+  {
+    "case": "buffered",
+    "us": 8683.042
+  },
+  {
+    "case": "buffered",
+    "us": 10245.25
+  },
+  {
+    "case": "stock",
+    "us": 9053.875
+  },
+  {
+    "case": "buffered",
+    "us": 7833.458
+  },
+  {
+    "case": "stock",
+    "us": 8476.333
+  },
+  {
+    "case": "buffered",
+    "us": 8599.5
+  },
+  {
+    "case": "stock",
+    "us": 8440.458
+  },
+  {
+    "case": "stock",
+    "us": 9052.375
+  },
+  {
+    "case": "stock",
+    "us": 8821.375
+  }
+]

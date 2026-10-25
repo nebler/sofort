@@ -1,0 +1,34 @@
+{
+  "context": {
+    "utc": "2026-10-24T02:56:10.469997+00:00",
+    "load": [
+      83.8681640625,
+      48.46044921875,
+      48.884765625
+    ],
+    "uptime": "4:56  up  6:09, 2 users, load averages: 83.87 48.46 48.88"
+  },
+  "checks": [
+    {
+      "argv": [
+        "make",
+        "-n",
+        "build"
+      ],
+      "exit": 0,
+      "stdout": "python3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" kernel build\njitk: dry-run delegation kernel/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" vmm build\njitk: dry-run delegation vmm/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" protocol build\njitk: dry-run delegation protocol/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor dependencies\njitk: dry-run delegation executor/dependencies\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor build\njitk: dry-run delegation executor/build\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "docs/delegate.py",
+        "executor/policy",
+        "test"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "jitk: set JITK_NODE to a verified absolute Node >=24 executable; see executor/README.md\n"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:689
+    const error = new Error(
+                  ^
+
+Error: Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+    at Object.<anonymous> (/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:689:19)
+    at Module._compile (node:internal/modules/cjs/loader:1734:14)
+    ... 4 lines matching cause stack trace ...
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1491:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/lib.js:54:16) {
+  cause: Error: Cannot find module '@hyperlight-dev/js-host-api-wasm32-wasi'
+  Require stack:
+  - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js
+  - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/lib.js
+      at /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:537:19
+      ... 8 lines matching cause stack trace ...
+      at wrapModuleLoad (node:internal/modules/cjs/loader:235:24) {
+    cause: Error: Cannot find module './js-host-api.wasi.cjs'
+    Require stack:
+    - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js
+    - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/lib.js
+        at /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:537:19
+        ... 8 lines matching cause stack trace ...
+        at wrapModuleLoad (node:internal/modules/cjs/loader:235:24) {
+      cause: Error: Cannot find module '@hyperlight-dev/js-host-api-darwin-arm64'
+      Require stack:
+      - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js
+      - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/lib.js
+          at /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:537:19
+          ... 8 lines matching cause stack trace ...
+          at wrapModuleLoad (node:internal/modules/cjs/loader:235:24) {
+        cause: Error: Cannot find module './js-host-api.darwin-arm64.node'
+        Require stack:
+        - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js
+        - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/lib.js
+            at /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:537:19
+            ... 8 lines matching cause stack trace ...
+            at wrapModuleLoad (node:internal/modules/cjs/loader:235:24) {
+          cause: Error: Cannot find module '@hyperlight-dev/js-host-api-darwin-universal'
+          Require stack:
+          - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js
+          - /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/lib.js
+              at /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/node_modules/@hyperlight-dev/js-host-api/index.js:537:19
+              ... 8 lines matching cause stack trace ...
+              at wrapModuleLoad (node:internal/modules/cjs/loader:235:24) {
+            cause: [Error]
+          }
+        }
+      }
+    }
+  }
+}
+
+Node.js v23.10.0

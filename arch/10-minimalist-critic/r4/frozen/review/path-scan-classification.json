@@ -1,0 +1,27 @@
+{
+  "scope": "Interpretation only: any byte/symlink hit fails the strict scan. Source hits include deliberate canary strings and are not all proven input dependencies.",
+  "strict_hit_files": 84,
+  "owned_loc_source_hit_files": 13,
+  "owned_loc_source_paths": [
+    "vmm/Makefile",
+    "vmm/build-linux.sh",
+    "vmm/build.py",
+    "vmm/tests/build-guests.py",
+    "vmm/tests/check.py",
+    "vmm/tests/console-abuse.py",
+    "vmm/tests/nested-kvm.py",
+    "vmm/tests/sandbox-bench.py",
+    "vmm/sandbox/tests/escape.rs",
+    "vmm/sandbox/tests/run-escape.sh",
+    "protocol/Makefile",
+    "protocol/report.py",
+    "protocol/vm.mjs"
+  ],
+  "strict_files": 6250,
+  "symlinks": 7,
+  "load": [
+    78.89453125,
+    56.2197265625,
+    61.671875
+  ]
+}

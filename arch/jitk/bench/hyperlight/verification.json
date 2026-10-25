@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "latency_results": 750,
+  "parked_memory_observations": 150,
+  "per_cell_n": 30,
+  "gate_pass": 0,
+  "comparisons": 15,
+  "r3_lines": 167,
+  "remaining_worker_inventory": [],
+  "note": "Controller finally reaped its owned workers and external watchdog; other-owner inventory is read-only."
+}

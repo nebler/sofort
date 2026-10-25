@@ -1,0 +1,8 @@
+{
+  "lua": "5.4.8",
+  "sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+  "source_archive_sha256": "4f18ddae154e793e46eeab727c59ef1c0c0c2b744e7b94219710d76f530629ae",
+  "compiler_packages": "binutils-2.44-r3 aarch64 {binutils} (GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause) [installed]\ngcc-14.2.0-r6 aarch64 {gcc} (GPL-2.0-or-later AND LGPL-2.1-or-later) [installed]\nmusl-1.2.5-r13 aarch64 {musl} (MIT) [installed]\npython3-3.12.15-r0 aarch64 {python3} (PSF-2.0) [installed]\nstrace-6.13-r0 aarch64 {strace} (BSD-3-Clause) [installed]\n",
+  "ELF": "static ET_EXEC aarch64-musl, stripped",
+  "recipe": "Alpine 3.21 arm64; Lua 5.4.8 make posix, MYCFLAGS=-Os, MYLDFLAGS=\"-static -no-pie\"; strip executable"
+}

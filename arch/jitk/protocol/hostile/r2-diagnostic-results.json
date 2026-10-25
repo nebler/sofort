@@ -1,0 +1,467 @@
+{
+  "config": {
+    "image": "/tmp/jitk-02/r2/kernel.bin",
+    "host": "/tmp/jitk-02/r2/host",
+    "cli": "02-r2",
+    "source": "02 R2 fallback",
+    "imageSha256": "3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8",
+    "hostSha256": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed",
+    "bootstrapSha256": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280"
+  },
+  "n": 1,
+  "node": "/private/tmp/jitk-09/node-real",
+  "method": "Fresh hardware VM per attack. Test fixture policy holds/denies calls, never invokes a provider. No credentials or external effects. Kernel natural kill or dispatcher SIGKILL required; watchdog is failure.",
+  "cases": [
+    {
+      "name": "forged authority envelope",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 156.64 108.51 86.55",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 156.64 108.51 86.55",
+      "totalMs": {
+        "n": 1,
+        "p50": 365.98920799999996,
+        "p90": 365.98920799999996,
+        "p99": 365.98920799999996
+      },
+      "samples": [
+        365.98920799999996
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "forged prototype capability",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 156.64 108.51 86.55",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "totalMs": {
+        "n": 1,
+        "p50": 238.82458299999962,
+        "p90": 238.82458299999962,
+        "p99": 238.82458299999962
+      },
+      "samples": [
+        238.82458299999962
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "forged kernel record",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "totalMs": {
+        "n": 1,
+        "p50": 373.05733299999974,
+        "p90": 373.05733299999974,
+        "p99": 373.05733299999974
+      },
+      "samples": [
+        373.05733299999974
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "duplicate call id",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "totalMs": {
+        "n": 1,
+        "p50": 27.646083000000544,
+        "p90": 27.646083000000544,
+        "p99": 27.646083000000544
+      },
+      "samples": [
+        27.646083000000544
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "65 outstanding calls",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "AssertionError [ERR_ASSERTION]: {\"exit\":{\"status\":0,\"signal\":null},\"kernel\":[\"exit=0000000000000000\"],\"done\":{\"t\":\"done\",\"err\":{\"name\":\"SyntaxError\",\"message\":\"unexpected end of string\"}},\"calls\":0,\"logs\":0}\n+ actual - expected\n\n+ {\n+   err: {\n+     message: 'unexpected end of string',\n+     name: 'SyntaxError'\n+   },\n+   t: 'done'\n+ }\n- undefined\n"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "4097 total calls",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "Error: external watchdog fired (not a conformance pass)"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "1025 raw log records",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "AssertionError [ERR_ASSERTION]: {\"exit\":{\"status\":0,\"signal\":null},\"kernel\":[\"exit=0000000000000000\"],\"done\":{\"t\":\"done\",\"err\":{\"name\":\"SyntaxError\",\"message\":\"unexpected end of string\"}},\"calls\":0,\"logs\":0}\n+ actual - expected\n\n+ {\n+   err: {\n+     message: 'unexpected end of string',\n+     name: 'SyntaxError'\n+   },\n+   t: 'done'\n+ }\n- undefined\n"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "raw log byte flood",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "AssertionError [ERR_ASSERTION]: {\"exit\":{\"status\":0,\"signal\":null},\"kernel\":[\"exit=0000000000000000\"],\"done\":{\"t\":\"done\",\"err\":{\"name\":\"SyntaxError\",\"message\":\"unexpected end of string\"}},\"calls\":0,\"logs\":0}\n+ actual - expected\n\n+ {\n+   err: {\n+     message: 'unexpected end of string',\n+     name: 'SyntaxError'\n+   },\n+   t: 'done'\n+ }\n- undefined\n"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "escaped Unicode log overflow",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "loadAfter": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "AssertionError [ERR_ASSERTION]: {\"exit\":{\"status\":0,\"signal\":null},\"kernel\":[\"exit=0000000000000000\"],\"done\":{\"t\":\"done\",\"err\":{\"name\":\"SyntaxError\",\"message\":\"unexpected end of string\"}},\"calls\":0,\"logs\":0}\n+ actual - expected\n\n+ {\n+   err: {\n+     message: 'unexpected end of string',\n+     name: 'SyntaxError'\n+   },\n+   t: 'done'\n+ }\n- undefined\n"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "oversized raw frame",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "Error: external watchdog fired (not a conformance pass)"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "os.write fd1 control 0x0",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "totalMs": {
+        "n": 1,
+        "p50": 29.391875000001164,
+        "p90": 29.391875000001164,
+        "p99": 29.391875000001164
+      },
+      "samples": [
+        29.391875000001164
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x9",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "totalMs": {
+        "n": 1,
+        "p50": 202.18195799999376,
+        "p90": 202.18195799999376,
+        "p99": 202.18195799999376
+      },
+      "samples": [
+        202.18195799999376
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0xd",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "totalMs": {
+        "n": 1,
+        "p50": 19.404833000000508,
+        "p90": 19.404833000000508,
+        "p99": 19.404833000000508
+      },
+      "samples": [
+        19.404833000000508
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x1e",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "totalMs": {
+        "n": 1,
+        "p50": 19.11541700000089,
+        "p90": 19.11541700000089,
+        "p99": 19.11541700000089
+      },
+      "samples": [
+        19.11541700000089
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x1f",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "totalMs": {
+        "n": 1,
+        "p50": 25.079624999998487,
+        "p90": 25.079624999998487,
+        "p99": 25.079624999998487
+      },
+      "samples": [
+        25.079624999998487
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x7f",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 155.38 113.65 89.31",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "AssertionError [ERR_ASSERTION]: {\"fault\":\"ASCII\",\"exit\":{\"status\":null,\"signal\":\"SIGKILL\"},\"kernel\":[],\"calls\":1,\"logs\":0}\n\n1 !== 0\n"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "os.write fd1 control 0x80",
+      "pass": 0,
+      "fail": 1,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "totalMs": null,
+      "samples": [],
+      "errors": [
+        "AssertionError [ERR_ASSERTION]: {\"fault\":\"ASCII\",\"exit\":{\"status\":null,\"signal\":\"SIGKILL\"},\"kernel\":[],\"calls\":1,\"logs\":0}\n\n1 !== 0\n"
+      ],
+      "outcomes": []
+    },
+    {
+      "name": "fd2 forged call dropped",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "totalMs": {
+        "n": 1,
+        "p50": 442.21399999999994,
+        "p90": 442.21399999999994,
+        "p99": 442.21399999999994
+      },
+      "samples": [
+        442.21399999999994
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "fd2 RS dropped",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "loadAfter": "3:08  up  4:21, 2 users, load averages: 154.47 114.16 89.64",
+      "totalMs": {
+        "n": 1,
+        "p50": 288.6877499999973,
+        "p90": 288.6877499999973,
+        "p99": 288.6877499999973
+      },
+      "samples": [
+        288.6877499999973
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        }
+      ]
+    }
+  ]
+}

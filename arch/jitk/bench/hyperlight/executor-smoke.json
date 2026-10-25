@@ -1,0 +1,674 @@
+[
+  {
+    "mode": "jitk-cold",
+    "case": "return2",
+    "t": "measurement",
+    "latency_ms": 13.85199999999999,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38974,
+    "parked_memory_bytes": null,
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-cold",
+    "case": "one_tool_5ms",
+    "t": "measurement",
+    "latency_ms": 19.304125,
+    "tool_calls": 1,
+    "max_pending": 1,
+    "call_stamps_ms": [
+      110.231791
+    ],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38977,
+    "parked_memory_bytes": null,
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-cold",
+    "case": "promise10_5ms",
+    "t": "measurement",
+    "latency_ms": 20.620125,
+    "tool_calls": 10,
+    "max_pending": 10,
+    "call_stamps_ms": [
+      110.440542,
+      110.787959,
+      110.834792,
+      110.887417,
+      110.939459,
+      110.980125,
+      111.026125,
+      111.078709,
+      111.117542,
+      111.153292
+    ],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38980,
+    "parked_memory_bytes": null,
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-cold",
+    "case": "json1m",
+    "t": "measurement",
+    "latency_ms": 21.768665999999996,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38985,
+    "parked_memory_bytes": null,
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-cold",
+    "case": "cpu50ms",
+    "t": "measurement",
+    "latency_ms": 68.13433300000001,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38990,
+    "parked_memory_bytes": null,
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-parked",
+    "case": "return2",
+    "t": "measurement",
+    "latency_ms": 3.489083000000008,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38993,
+    "parked_memory_bytes": {
+      "user_ns": 100562,
+      "system_ns": 80376,
+      "wired": 0,
+      "rss": 16105472,
+      "footprint": 11125264
+    },
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-parked",
+    "case": "one_tool_5ms",
+    "t": "measurement",
+    "latency_ms": 10.44570800000001,
+    "tool_calls": 1,
+    "max_pending": 1,
+    "call_stamps_ms": [
+      117.819417
+    ],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38996,
+    "parked_memory_bytes": {
+      "user_ns": 96466,
+      "system_ns": 72226,
+      "wired": 0,
+      "rss": 16138240,
+      "footprint": 11158032
+    },
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-parked",
+    "case": "promise10_5ms",
+    "t": "measurement",
+    "latency_ms": 16.333542000000023,
+    "tool_calls": 10,
+    "max_pending": 10,
+    "call_stamps_ms": [
+      148.775417,
+      149.116167,
+      149.179917,
+      149.233917,
+      149.347125,
+      149.387375,
+      149.43575,
+      149.489167,
+      149.526667,
+      149.566375
+    ],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 38999,
+    "parked_memory_bytes": {
+      "user_ns": 356925,
+      "system_ns": 87820,
+      "wired": 0,
+      "rss": 16138240,
+      "footprint": 11141624
+    },
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-parked",
+    "case": "json1m",
+    "t": "measurement",
+    "latency_ms": 12.332875000000001,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39007,
+    "parked_memory_bytes": {
+      "user_ns": 94151,
+      "system_ns": 70894,
+      "wired": 0,
+      "rss": 16138240,
+      "footprint": 11141624
+    },
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "jitk-parked",
+    "case": "cpu50ms",
+    "t": "measurement",
+    "latency_ms": 59.598,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      25.71142578125,
+      75.18017578125,
+      82.05517578125
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39011,
+    "parked_memory_bytes": {
+      "user_ns": 102591,
+      "system_ns": 83366,
+      "wired": 0,
+      "rss": 16171008,
+      "footprint": 11190800
+    },
+    "jitk_path": "04 integrated executor",
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-cold",
+    "case": "return2",
+    "t": "measurement",
+    "latency_ms": 11.80429199999999,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39015,
+    "parked_memory_bytes": null,
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-cold",
+    "case": "one_tool_5ms",
+    "t": "measurement",
+    "latency_ms": 22.425915999999987,
+    "tool_calls": 1,
+    "max_pending": 1,
+    "call_stamps_ms": [
+      125.25625
+    ],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39018,
+    "parked_memory_bytes": null,
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-cold",
+    "case": "promise10_5ms",
+    "t": "measurement",
+    "latency_ms": 75.60366699999999,
+    "tool_calls": 10,
+    "max_pending": 1,
+    "call_stamps_ms": [
+      114.286542,
+      121.186709,
+      127.452042,
+      134.311959,
+      140.554625,
+      147.376084,
+      153.770334,
+      159.388167,
+      166.101167,
+      171.824709
+    ],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39021,
+    "parked_memory_bytes": null,
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-cold",
+    "case": "json1m",
+    "t": "measurement",
+    "latency_ms": 24.810541,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39028,
+    "parked_memory_bytes": null,
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-cold",
+    "case": "cpu50ms",
+    "t": "measurement",
+    "latency_ms": 66.209666,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39031,
+    "parked_memory_bytes": null,
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-prespawned",
+    "case": "return2",
+    "t": "measurement",
+    "latency_ms": 3.9553749999999894,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39053,
+    "parked_memory_bytes": {
+      "user_ns": 65379,
+      "system_ns": 55771,
+      "wired": 0,
+      "rss": 7372800,
+      "footprint": 1933720
+    },
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-prespawned",
+    "case": "one_tool_5ms",
+    "t": "measurement",
+    "latency_ms": 11.232167000000004,
+    "tool_calls": 1,
+    "max_pending": 1,
+    "call_stamps_ms": [
+      116.874125
+    ],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39083,
+    "parked_memory_bytes": {
+      "user_ns": 55196,
+      "system_ns": 42384,
+      "wired": 0,
+      "rss": 7372800,
+      "footprint": 1917312
+    },
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-prespawned",
+    "case": "promise10_5ms",
+    "t": "measurement",
+    "latency_ms": 70.370791,
+    "tool_calls": 10,
+    "max_pending": 1,
+    "call_stamps_ms": [
+      128.17775,
+      135.735083,
+      140.89975,
+      148.262458,
+      154.446417,
+      160.637458,
+      167.756333,
+      173.356167,
+      180.676292,
+      187.552208
+    ],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39162,
+    "parked_memory_bytes": {
+      "user_ns": 62474,
+      "system_ns": 51960,
+      "wired": 0,
+      "rss": 7389184,
+      "footprint": 1933696
+    },
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-prespawned",
+    "case": "json1m",
+    "t": "measurement",
+    "latency_ms": 17.523416999999995,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39230,
+    "parked_memory_bytes": {
+      "user_ns": 64425,
+      "system_ns": 50185,
+      "wired": 0,
+      "rss": 7389184,
+      "footprint": 1933696
+    },
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  },
+  {
+    "mode": "hl-strict-prespawned",
+    "case": "cpu50ms",
+    "t": "measurement",
+    "latency_ms": 56.002166,
+    "tool_calls": 0,
+    "max_pending": 0,
+    "call_stamps_ms": [],
+    "load_at_result": [
+      26.53515625,
+      74.529296875,
+      81.78515625
+    ],
+    "pool_at_resolve": {
+      "tokens": 1,
+      "creating": 0,
+      "parked": 0,
+      "live": 1,
+      "maxTokens": 1,
+      "maxCreating": 1,
+      "closed": false
+    },
+    "worker_pid": 39261,
+    "parked_memory_bytes": {
+      "user_ns": 59810,
+      "system_ns": 45436,
+      "wired": 0,
+      "rss": 7421952,
+      "footprint": 1966464
+    },
+    "jitk_path": null,
+    "host_path": "04 integrated executor",
+    "isolation": "fresh process + single-use HW VM"
+  }
+]

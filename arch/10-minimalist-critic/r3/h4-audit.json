@@ -1,0 +1,285 @@
+{
+  "audited_utc": "2026-10-24T02:41:27.612477+00:00",
+  "scope": "Read-only integrity/count audit of owner06 evidence, not an independent timing reproduction.",
+  "raw_sha256": "adc0aadaa3eee399af1985a80796ba2f2762dddf525ea36061e8d20903880033",
+  "table_sha256": "23f567496886407a599a852f7e42ed4964aef73efc29fff000c662e81f98fa3a",
+  "started_at": "2026-10-24T01:40:05.128705+00:00",
+  "finished_at": "2026-10-24T02:40:41.977828+00:00",
+  "sample_count": 2460,
+  "case_count": 41,
+  "cases": {
+    "executor-cold/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-cold/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-cold/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-cold/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-cold/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-parked/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-parked/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-parked/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-parked/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "executor-parked/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-clone/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-clone/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-clone/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-clone/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-clone/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-parked-memory/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict-parked/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict-parked/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict-parked/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict-parked/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict-parked/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "hl-strict/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-cold/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-cold/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-cold/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-cold/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-cold/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-parked-memory/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-parked-raw/json1m": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-parked-raw/one_tool": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-parked-raw/one_tool_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-parked-raw/promise10_5ms": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-parked-raw/return2": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-refill/4": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "jitk-refill/8": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "sandbox-apply/off": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    },
+    "sandbox-apply/on": {
+      "n": 60,
+      "pass": 60,
+      "fail": 0,
+      "gated": 0
+    }
+  },
+  "complete_blocks": true,
+  "all_expected_cases": true,
+  "all_rows_have_load_evidence": true,
+  "status_counts": {
+    "PASS": 2460
+  },
+  "gate_passed": 0,
+  "gate_timed_out": 2460,
+  "load1_min": 14.3974609375,
+  "load1_max": 145.5537109375,
+  "artifacts": {
+    "vmm": {
+      "path": "/tmp/jitk-06/r3/run-1792805993469828000/jitk-vmm",
+      "recorded": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+      "actual": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+      "matches": true
+    },
+    "image": {
+      "path": "/tmp/jitk-06/r3/run-1792805993469828000/kernel.bin",
+      "recorded": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "actual": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "matches": true
+    }
+  },
+  "min_validated_per_case": 60,
+  "quiet_n30_all_cases": false,
+  "complete_contended_table": true
+}

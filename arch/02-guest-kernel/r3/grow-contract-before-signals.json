@@ -1,0 +1,28 @@
+{
+  "load": "3:13  up  4:27, 2 users, load averages: 54.74 89.70 87.31",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK"
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK"
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}

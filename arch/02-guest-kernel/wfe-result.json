@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "wall_s": 1.0578748329999144,
+  "cpu_s": 0.151924,
+  "stdout": "hello jitk fdt=0000000083e00000\nREADY\nhi\nexit=0000000000000000\n",
+  "stderr": ""
+}

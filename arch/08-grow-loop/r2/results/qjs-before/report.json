@@ -1,0 +1,10 @@
+{
+  "script": "os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print(\"reply:\"+s)})",
+  "result": "observed real qjs nr73 missing; discovery VM stopped at first miss",
+  "build_seconds": 1.0707868339995912,
+  "discover_and_reap_seconds": 0.0581108749993291,
+  "returncode": -9,
+  "kernel_sha256": "2916d4313a404be968c725fd024e2c0181c6501474a8eb6fde232279bbe4c6c8",
+  "uptime_before": "2:37  up  3:50, 2 users, load averages: 17.01 59.35 50.25",
+  "uptime_after": "2:37  up  3:50, 2 users, load averages: 17.01 59.35 50.25"
+}

@@ -1,0 +1,21 @@
+{
+  "context": {
+    "utc": "2026-10-24T02:54:55.109814+00:00",
+    "load": [
+      49.923828125,
+      36.8642578125,
+      45.2978515625
+    ],
+    "uptime": "4:54  up  6:08, 2 users, load averages: 49.92 36.86 45.30"
+  },
+  "root": "/tmp/jitk-10/r4/scan-control-u9qmz3z0",
+  "scope": "all regular file bytes and symlink targets; no exclusions; symlinks not followed",
+  "pattern": "/tmp/jitk-[0-9]{2}(?![0-9])|arch/[0-9]{2}-|2026\\-10\\-23\\-is\\-there\\-a\\-way\\-we\\-5a54f52b",
+  "files": 0,
+  "symlinks": 0,
+  "bytes": 0,
+  "hits": [],
+  "errors": [],
+  "pass": true,
+  "hit_files_by_component": {}
+}

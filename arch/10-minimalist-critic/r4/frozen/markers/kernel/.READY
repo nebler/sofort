@@ -1,0 +1,25 @@
+{
+  "image": "dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+  "manifest": "dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.json",
+  "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "bytes": 2924544,
+  "ram_mib": 32,
+  "created_utc": "2026-10-24T02:54:11.465623+00:00",
+  "guest_loc": 1440,
+  "build_rs_loc": 56,
+  "gates": {
+    "G1": "1000/1000; idle CPU below ps resolution",
+    "G2": "30 x 64 reversed replies",
+    "isolation": "9/9",
+    "packer": "5/5",
+    "grow_contract": "4/4; both exit slots exercised",
+    "clocks": "30/30; origin error <1ms"
+  },
+  "test_host": "integrated VMM v2 (JITK_VMM_BINARY)",
+  "test_host_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "note": "Round 4 arbitrary-basename copy build/test and G1/G2 pass on VMM v2. Contended functional evidence; no quiet-host performance claim. Lua profile not rerun in round 4.",
+  "previous_image": "dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin",
+  "verification_manifest": "syscalls.manifest.json",
+  "verification_sha256": "43bc43ed64828578fdf983e625c42a4a7ac555d7463d30c4cc5cf892e1e9934c",
+  "owner_patch_sha256": "d0ceaf3c8ee0120b8baccc886d368bd7d002fc446c2e214347737c7219a24eb6"
+}

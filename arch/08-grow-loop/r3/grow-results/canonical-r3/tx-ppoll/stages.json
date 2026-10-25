@@ -1,0 +1,22 @@
+{
+  "assemble_probe": {
+    "seconds": 0.6047679169987532,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.73 58.29 73.00",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 48.73 58.29 73.00"
+  },
+  "linux_oracle": {
+    "seconds": 3.7262081659991964,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.73 58.29 73.00",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 46.83 57.74 72.72"
+  },
+  "build_candidate": {
+    "seconds": 2.6539610420004465,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 46.83 57.74 72.72",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 47.65 57.73 72.62"
+  },
+  "fresh_vm_differential_n30": {
+    "seconds": 2.9432271660007245,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 47.65 57.73 72.62",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 47.65 57.73 72.62"
+  }
+}

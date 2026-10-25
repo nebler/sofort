@@ -1,0 +1,26 @@
+{
+  "image": "dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+  "manifest": "dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.json",
+  "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "bytes": 2924544,
+  "ram_mib": 32,
+  "created_utc": "2026-10-24T01:25:02.505882+00:00",
+  "guest_loc": 1455,
+  "build_rs_loc": 53,
+  "gates": {
+    "G1": "0.00% idle; 1000/1000",
+    "G2": "30 x 64 reversed replies",
+    "isolation": "9/9",
+    "packer": "5/5",
+    "grow_contract": "4/4",
+    "registered_enosys": "134/135 return -38 with invalid pointers; no missing record",
+    "lua_profile": "30/30; stdout matches normal Linux; no missing records"
+  },
+  "test_host": "/tmp/jitk-02/r3/host-no-tick",
+  "test_host_sha256": "c751583737c2abed6c80a64dc83bc1ce2f1544d94b12ca4ac7b974d1bc6fb61c",
+  "note": "Owner-applied six-line Lua signal profile: always ENOSYS, no signal state. Full kernel regressions rerun using r2-based panic=abort functional host; sandbox and quiet performance are separate gates.",
+  "previous_image": "dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin",
+  "verification_manifest": "syscalls.manifest.json",
+  "verification_sha256": "43bc43ed64828578fdf983e625c42a4a7ac555d7463d30c4cc5cf892e1e9934c",
+  "owner_patch_sha256": "d0ceaf3c8ee0120b8baccc886d368bd7d002fc446c2e214347737c7219a24eb6"
+}

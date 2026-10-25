@@ -1,0 +1,20 @@
+{
+  "17": "getcwd",
+  "29": "ioctl",
+  "56": "openat",
+  "57": "close",
+  "62": "lseek",
+  "63": "read",
+  "64": "write",
+  "65": "readv",
+  "66": "writev",
+  "78": "readlinkat",
+  "93": "exit",
+  "94": "exit_group",
+  "96": "set_tid_address",
+  "113": "clock_gettime",
+  "214": "brk",
+  "215": "munmap",
+  "222": "mmap",
+  "73": "ppoll"
+}

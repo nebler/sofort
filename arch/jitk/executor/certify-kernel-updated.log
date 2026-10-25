@@ -1,0 +1,316 @@
+CERTIFY pool-check
+{
+  "loadBefore": "3:24  up  4:38, 2 users, load averages: 106.93 68.29 69.87",
+  "loadAfter": "3:24  up  4:38, 2 users, load averages: 106.93 68.29 69.87",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+CERTIFY resolve-check
+PASS resolve before kill/reap; VMM AND watchdog hold token
+CERTIFY sandbox-check
+PASS host-only ack AND ready, fragmented ack, missing/guest-forged ack rejected
+CERTIFY transport-check
+{
+  loadBefore: '3:24  up  4:38, 2 users, load averages: 99.97 67.49 69.58',
+  loadAfter: '3:24  up  4:38, 2 users, load averages: 99.97 67.49 69.58',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+CERTIFY watchdog-check
+{
+  loadBefore: '3:24  up  4:38, 2 users, load averages: 104.21 68.91 70.07',
+  loadAfter: '3:24  up  4:38, 2 users, load averages: 104.21 68.91 70.07',
+  watchdogDeadlineMs: 250,
+  hostEventLoopBlockedMs: 1500,
+  observedReapAfterHostUnblockMs: 1572.2927909999999,
+  reaped: true,
+  killLatency: 'UNVERIFIED: host event loop intentionally blocked'
+}
+CERTIFY verify
+integrated jitk / VMM canonical / kernel canonical
+PASS exact requested demo
+PASS binary codec roundtrip
+PASS async fanout and UTF8
+PASS capture console + provider prelude closure
+PASS deny has no side effect
+PASS approval is fail closed
+PASS approved call executes once
+PASS provenance accumulates across calls
+PASS CPU infinite loop SIGKILL
+PASS AbortSignal kills awaiting guest
+PASS tool that never settles cannot defeat deadline
+PASS fresh process per execute
+PASS unknown inherited method denied
+PASS sanitized names and collisions
+PASS generated types + host validation
+PASS TanStack driver on actual stripped body
+PASS TanStack memory mismatch fails explicitly
+PASS TanStack createCodeModeTool integration
+PASS bounded log capture (v1 truncates/drops)
+PASS warm pool capacity and single use
+20 checks passed
+CERTIFY wrapper-conformance
+PASS Cloudflare wrapper github
+PASS Cloudflare wrapper binary
+CERTIFY api-check
+{
+  "selection": "integrated jitk / VMM canonical / kernel canonical",
+  "loadBefore": "3:25  up  4:38, 2 users, load averages: 103.37 70.43 70.59",
+  "loadAfter": "3:25  up  4:39, 2 users, load averages: 109.54 72.72 71.39",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 2,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "n": 30,
+      "calls": 1920,
+      "maxOutstanding": 64,
+      "executeMs": {
+        "median": 236.79279099999985,
+        "p90": 495.5869170000001,
+        "p99": 629.1280830000014
+      },
+      "samples": [
+        414.80891700000006,
+        218.41491700000006,
+        134.6032499999999,
+        313.3653330000002,
+        114.59233399999994,
+        201.69604199999958,
+        298.93987500000003,
+        298.04224999999997,
+        177.00970800000005,
+        495.5869170000001,
+        54.745332999999846,
+        189.86404099999982,
+        280.78050000000076,
+        323.5877909999999,
+        51.43654200000037,
+        36.59941600000002,
+        66.9100840000001,
+        428.81116699999984,
+        126.14966700000059,
+        403.2424170000004,
+        547.3152089999994,
+        98.21799999999985,
+        516.0142079999996,
+        425.95650000000023,
+        132.59162500000093,
+        164.32025000000067,
+        451.6665830000002,
+        277.9040420000001,
+        236.79279099999985,
+        629.1280830000014
+      ]
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}
+CERTIFY policy-check
+22 policy assertions passed
+22 executor policy assertions passed (plus 22 security owner assertions)
+CERTIFY hyperlight-check
+6/6 Hyperlight through canonical executor; kind hyperlight-js
+CERTIFY demo
+integrated jitk / VMM canonical / kernel canonical
+3:25  up  4:39, 2 users, load averages: 112.81 74.72 72.12
+Agent writes code:
+const results = await Promise.all([
+  github.listIssues({repo:'jitk/kernel'}),
+  github.listIssues({repo:'jitk/executor'})
+]);
+return {issues:results.flat(), total:results.flat().length};
+Fresh microVM result: {"result":{"issues":[{"repo":"jitk/kernel","title":"Ship fresh single-use VMs"},{"repo":"jitk/executor","title":"Ship fresh single-use VMs"}],"total":2},"logs":[]}
+Concurrent tools: 2 timings ms: {"start":0.9624999999998636,"acquired":3.388249999999971,"runSent":14.452624999999898,"firstCall":17.648167000000058,"firstRet":25.817291999999952,"done":26.776749999999993,"resolve":27.114332999999988,"callerResolve":27.12245800000005}
+CERTIFY breakdown
+{
+  "selection": "integrated jitk / VMM canonical / kernel canonical",
+  "integrated": true,
+  "loadBefore": "3:25  up  4:39, 2 users, load averages: 112.81 74.72 72.12",
+  "loadAfter": "3:26  up  4:40, 2 users, load averages: 104.83 80.32 74.44",
+  "warmups": 5,
+  "n": 50,
+  "unit": "ms",
+  "summary": {
+    "acquire": {
+      "n": 50,
+      "median": 0.10145899999770336,
+      "p90": 0.5660840000000462,
+      "p99": 11.503333000000566
+    },
+    "sendRun": {
+      "n": 50,
+      "median": 0.2978750000038417,
+      "p90": 1.8829999999979918,
+      "p99": 2.9654999999984284
+    },
+    "firstCall": {
+      "n": 50,
+      "median": 6.644500000002154,
+      "p90": 46.7767500000009,
+      "p99": 108.6796669999967
+    },
+    "ret": {
+      "n": 50,
+      "median": 0.17799999999988358,
+      "p90": 0.7865419999998267,
+      "p99": 12.545000000001892
+    },
+    "done": {
+      "n": 50,
+      "median": 0.8004589999982272,
+      "p90": 26.226500000004307,
+      "p99": 131.84891600000265
+    },
+    "resolve": {
+      "n": 50,
+      "median": 0.0365830000009737,
+      "p90": 0.09500000000116415,
+      "p99": 0.2789580000026035
+    },
+    "execute": {
+      "n": 50,
+      "median": 10.9096669999999,
+      "p90": 63.26783299999806,
+      "p99": 219.38441600000078
+    },
+    "killAfterResolve": {
+      "n": 50,
+      "median": 0.07870900000034453,
+      "p90": 0.2658750000009604,
+      "p99": 0.9252090000009048
+    },
+    "reapAfterResolve": {
+      "n": 50,
+      "median": 9.21858400000201,
+      "p90": 68.97387499999604,
+      "p99": 123.01929100000052
+    }
+  },
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 4,
+    "maxCreating": 2,
+    "closed": true
+  }
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364'
+- '5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36'
+
+    at file:///Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/certify.mjs:20:87
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364',
+  expected: '5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

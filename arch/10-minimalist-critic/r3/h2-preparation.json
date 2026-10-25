@@ -1,0 +1,6 @@
+{
+  "utc": "2026-10-24T02:00:21.759243+00:00",
+  "root": "/tmp/jitk-10/h2-01/jitk",
+  "origin": "Source-stable poll-04 copy; supplemental kernel test patch fully reversed before moving. Refreshed only current producer vmm/.READY metadata. No runtime implementation edited. Basename jitk retains current selector expectation; clean/ relocation bug remains separate.",
+  "vmm_marker_bytes": 0
+}

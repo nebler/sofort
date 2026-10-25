@@ -1,0 +1,75 @@
+{
+  "supplied_unwind": {
+    "killed_after_200ms": true,
+    "rc": -9,
+    "elapsed_ms": 204.31433400062815,
+    "stdout": "",
+    "stderr": "\nthread 'fc_vcpu 0' (457818) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  "panic_abort": {
+    "killed_after_200ms": true,
+    "rc": -9,
+    "elapsed_ms": 206.13816699915333,
+    "stdout": "",
+    "stderr": ""
+  },
+  "panic_abort_3s": {
+    "killed_after_3s": false,
+    "rc": -6,
+    "elapsed_ms": 7.452249999914784,
+    "stdout": "",
+    "stderr": "\nthread 'fc_vcpu 0' (462858) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  "panic_abort_n10": [
+    {
+      "rc": -6,
+      "elapsed_ms": 26.928291999865905,
+      "stderr": "\nthread 'fc_vcpu 0' (464059) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 14.733207999597653,
+      "stderr": "\nthread 'fc_vcpu 0' (464064) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 9.253750000425498,
+      "stderr": "\nthread 'fc_vcpu 0' (464069) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 8.789083000010578,
+      "stderr": "\nthread 'fc_vcpu 0' (464074) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 8.590292000008048,
+      "stderr": "\nthread 'fc_vcpu 0' (464079) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 7.554208000328799,
+      "stderr": "\nthread 'fc_vcpu 0' (464084) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 8.034333000068727,
+      "stderr": "\nthread 'fc_vcpu 0' (464088) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 9.370249999847147,
+      "stderr": "\nthread 'fc_vcpu 0' (464096) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 8.880249999492662,
+      "stderr": "\nthread 'fc_vcpu 0' (464101) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "rc": -6,
+      "elapsed_ms": 9.652249999817286,
+      "stderr": "\nthread 'fc_vcpu 0' (464106) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=305419896\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    }
+  ]
+}

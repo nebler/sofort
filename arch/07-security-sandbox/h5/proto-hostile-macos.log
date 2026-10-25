@@ -1,0 +1,20 @@
+forged authority envelope 30/30 
+forged prototype capability 30/30 
+forged kernel record 30/30 
+duplicate call id 30/30 
+65 outstanding calls 30/30 
+4097 total calls 30/30 
+1025 raw log records 30/30 
+raw log byte flood 30/30 
+escaped Unicode log overflow 30/30 
+oversized raw frame 30/30 
+os.write fd1 control 0x0 30/30 
+os.write fd1 control 0x9 30/30 
+os.write fd1 control 0xd 30/30 
+os.write fd1 control 0x1e 30/30 
+os.write fd1 control 0x1f 30/30 
+os.write fd1 control 0x7f 30/30 
+os.write fd1 control 0x80 30/30 
+fd2 forged call dropped 30/30 
+fd2 RS dropped 30/30 
+EXIT=0

@@ -1,0 +1,118 @@
+{
+  "marker": {
+    "round": 4,
+    "status": "FUNCTIONAL_PASS; F2_TIMING_GATE_FAIL",
+    "at": "2026-10-24T03:08:46.411590+00:00",
+    "load_at_marker": [
+      53.08642578125,
+      79.544921875,
+      71.38427734375
+    ],
+    "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "executor_bundle_sha256": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+    "watchdog_sha256": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "functional_certificate_sha256": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+    "owned_source_inventory_sha256": "a5954ec1a25b4ddf1ff5e5660e9d17069a7e15280939668e13d787a7837ecce8",
+    "tests": "20 executor; Cloudflare/TanStack; 30x64; canonical policy22 + executor policy22; Hyperlight6; lifecycle/ack/transport/watchdog; E4 n50",
+    "deadline_probes": {
+      "h5-resource-probe-final": {
+        "sha256": "29c647993c4c99861c6d19b3c65f08bec409fbfff75c8a911121e5115b6b2a1b",
+        "summary": {
+          "blocked_host": {
+            "n": 30,
+            "timeout_errors": 30,
+            "api_overshoot_le50": 0,
+            "vm_enforcement_overshoot_le50": 29,
+            "watchdog_receipts": 30,
+            "callback_signals": 29,
+            "max_api_overshoot_ms": 296.4806659999999,
+            "max_vm_enforcement_overshoot_ms": 143.072021484375,
+            "handled": 0,
+            "controls_pass": 30,
+            "elapsed_ms": {
+              "median": 214.21549999999843,
+              "p90": 227.8232079999998,
+              "p99": 326.4806659999999
+            },
+            "blocked_invocations": 29,
+            "admitted_overshoot_gt50ms": 29,
+            "late_successes": 0
+          }
+        },
+        "load1_min": 63.5947265625,
+        "load1_max": 83.40576171875
+      },
+      "h5-cpu-probe-final": {
+        "sha256": "44962a47e4c8eccf4c74c50537fd95fb9f3d1a59f9f9c39aae1ac1d47d8107d0",
+        "summary": {
+          "cpu": {
+            "n": 30,
+            "timeout_errors": 30,
+            "api_overshoot_le50": 28,
+            "vm_enforcement_overshoot_le50": 28,
+            "watchdog_receipts": 13,
+            "callback_signals": 0,
+            "max_api_overshoot_ms": 295.79512500000055,
+            "max_vm_enforcement_overshoot_ms": 139.455810546875,
+            "handled": 30,
+            "controls_pass": 30,
+            "elapsed_ms": {
+              "median": 34.24016699999993,
+              "p90": 54.27983300000051,
+              "p99": 325.79512500000055
+            },
+            "blocked_invocations": 0,
+            "admitted_overshoot_gt50ms": 0,
+            "late_successes": 0
+          }
+        },
+        "load1_min": 73.06005859375,
+        "load1_max": 112.85107421875
+      }
+    },
+    "open": "Original API overshoot target fails. Same-thread synchronous callbacks block Promise settlement; OS scheduling also has observed >50ms external timer delays.",
+    "source_hashes": {
+      "backend.ts": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+      "executor.ts": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968",
+      "pool.ts": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb",
+      "select-backend.ts": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0",
+      "policy-adapter.ts": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
+      "policy-check.ts": "4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f",
+      "watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "fixtures/parking-gate.json": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717"
+    }
+  },
+  "functional_inputs": {
+    "vendor/codemode.mjs": "79091b106e34cbf8fd972d43b7c46d3a3a0c5b732f1fbfbc6cab5191cdd241db",
+    "upstream.ts": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf",
+    "codec.mjs": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e",
+    "code.ts": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760",
+    "policy-adapter.ts": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
+    "../protocol/dispatcher.ts": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f",
+    "backend.ts": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+    "pool.ts": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb",
+    "../bench/hyperlight/backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
+    "executor.ts": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968",
+    "select-backend.ts": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0",
+    "api-check.ts": "d4c3f0140ee90c877be3343a0fb3091d451c4f1ddea034a7b725d4365f5d8088",
+    "breakdown.ts": "b706534560d1b766875ebcf0903993a29f266fc82c4b055b1c7f5c5d0eb0516e",
+    "hyperlight-check.ts": "767c57c9797e8fb6a1bf0239b498c0da666dc23be9211222ff9d430ee27ca718",
+    "policy-check.ts": "4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f",
+    "pool-check.ts": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede",
+    "providers.ts": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161",
+    "resolve-check.ts": "617bccb3714e3f12053a0495ffd43de782397e6976408fa4f9653fb1e481a240",
+    "sandbox-check.ts": "24863ae7f8ff7390e96666f41677770500382e7d457f4e4cacb3a830299d2159",
+    "transport-check.ts": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc",
+    "verify.ts": "3d419ed3970a4316e4a30b3f190fa02b106370204bc54730055b2e0d3829729d",
+    "watchdog-check.ts": "8594e037329c962eea26c0469140af4f95e0330ef6ea919e548ea625da12a863",
+    "wrapper-conformance.ts": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5",
+    "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/.cache/inputs/jitk-vmm": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel.bin": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "../protocol/bootstrap.js": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280",
+    "policy/policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+    "watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "policy/policy-test.mjs": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c",
+    "fixtures/parking-gate.json": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717"
+  }
+}

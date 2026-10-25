@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{font-family:var(--font-sans,system-ui);color:var(--foreground,#ddd);margin:0}
+table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.45;table-layout:fixed}
+th,td{text-align:left;vertical-align:top;padding:10px 6px;border-bottom:1px solid var(--border,#444);overflow-wrap:anywhere}
+thead{color:var(--muted-foreground,#999)}th:first-child{width:12%}
+.chosen{background:var(--accent-surface,#12372d)}.chosen th{color:var(--accent-surface-foreground,#9de0bf)}
+small{display:block;color:var(--muted-foreground,#999);font-size:11px;line-height:1.5;margin-top:10px}
+@media(max-width:480px){th,td{padding:7px 3px;font-size:10px}th:first-child{width:10%}}
+</style></head><body><table aria-label="Architecture decision matrix">
+<thead><tr><th>Option</th><th>Scale / perf</th><th>Simplicity</th><th>Security</th><th>Growth story</th><th>Demo path</th></tr></thead>
+<tbody>
+<tr><th>A<br>Library OS</th><td>Potential best; VM result unverified</td><td>Fewest pieces; 52 C-library imports</td><td>VM boundary; engine exploit reaches EL1</td><td>Grow libc services</td><td>Engine compiles; libc link incomplete</td></tr>
+<tr class="chosen"><th>B<br>Selected</th><td>Full execution and density unverified</td><td>15 traced syscalls; remove guest ELF parser</td><td>EL0 + VM + host sandbox required</td><td>ENOSYS → oracle → agent patch</td><td>Existing static qjs; clearest growth demo</td></tr>
+<tr><th>C<br>Linux VM</th><td>≤125 ms boot specification; snapshots need measurement</td><td>Least custom kernel work</td><td>Mature VM design; jail required</td><td>Fails custom-kernel growth requirement</td><td>Strong baseline; needs KVM host</td></tr>
+<tr><th>D<br>Native dev</th><td>Cheap fixtures; production scale unverified</td><td>Small adapter; second environment</td><td>In-process fails hardware isolation</td><td>Kernel only exercised in production</td><td>Trusted tests only</td></tr>
+</tbody></table><small>Engineering judgments, not benchmark rankings. A counts static imports; B counts observed syscalls: they are different measures. Full evidence, source links, M0–M4 gates and kill criteria are in PROPOSAL.md.</small></body></html>

@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "loadavg": [
+    73.06005859375,
+    68.5908203125,
+    59.4375
+  ],
+  "unix": 1792810957.482194,
+  "canonical_source_directory": "vmm/tests/fixtures",
+  "compiled_bytes_match_R3": true,
+  "hashes": {
+    "bad-sysreg.bin": "d86438502c6feaf9fc53b5981152d31a85abb7b3094d4f971a0da24467dacc04",
+    "console_avail_oob.bin": "a840ca761d97820769feda5757828e5fcfa0e87ee841594829941b63915e104f",
+    "mmio-halfword.bin": "dd47ecdd5529fe19bce7dab43a043ab2ecc0a9ad6dd16478fe9cf061f9c1fe8f",
+    "rtc_oob_read.bin": "a60a836108cd9f1d6fb121c39f242f6ca657adeb763b4a0fef37e00c5a065608",
+    "unknown-hvc.bin": "fd171655630d980f1bd11fcc56f7754916c35563036e30234e44c6165f4a72dc",
+    "unknown-smc.bin": "137833cac33f65902b07bb4dcff123826bbb51729424d7faa99c1eb20e995f07"
+  }
+}

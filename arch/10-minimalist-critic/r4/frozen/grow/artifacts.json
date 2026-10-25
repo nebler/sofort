@@ -1,0 +1,9 @@
+{
+  "canonical_baseline_kernel_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "vmm_v2_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "lua_elf_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+  "replay_qjs_kernel_sha256": "4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee",
+  "replay_lua_kernel_sha256": "23e95bc45b39803fdb822a801153f4fd442f284221d25f4c5548d7c298ab51e5",
+  "live_qjs_kernel_sha256": "5dae9a0c75d8ee132fd4df1aff1ea5d1931c3dd6c043f6c7cce0cec6c33b68b1",
+  "live_lua_kernel_sha256": "46c8051cbc927805b088efa0810b39c4f3e276aa4cab8b417c112920b0b6dee3"
+}

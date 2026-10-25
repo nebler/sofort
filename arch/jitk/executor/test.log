@@ -1,0 +1,197 @@
+{
+  "loadBefore": "3:18  up  4:31, 2 users, load averages: 49.35 57.33 72.05",
+  "loadAfter": "3:18  up  4:31, 2 users, load averages: 49.35 57.33 72.05",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+PASS resolve before kill/reap; VMM AND watchdog hold token
+PASS host-only ack AND ready, fragmented ack, missing/guest-forged ack rejected
+{
+  loadBefore: '3:18  up  4:32, 2 users, load averages: 47.64 56.84 71.79',
+  loadAfter: '3:18  up  4:32, 2 users, load averages: 47.64 56.84 71.79',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+{
+  loadBefore: '3:18  up  4:32, 2 users, load averages: 47.64 56.84 71.79',
+  loadAfter: '3:18  up  4:32, 2 users, load averages: 47.64 56.84 71.79',
+  watchdogDeadlineMs: 250,
+  hostEventLoopBlockedMs: 1500,
+  observedReapAfterHostUnblockMs: 1561.0399579999998,
+  reaped: true,
+  killLatency: 'UNVERIFIED: host event loop intentionally blocked'
+}
+transitional jitk / VMM 01 r2 / kernel canonical
+PASS exact requested demo
+PASS binary codec roundtrip
+PASS async fanout and UTF8
+PASS capture console + provider prelude closure
+PASS deny has no side effect
+PASS approval is fail closed
+PASS approved call executes once
+PASS provenance accumulates across calls
+PASS CPU infinite loop SIGKILL
+PASS AbortSignal kills awaiting guest
+PASS tool that never settles cannot defeat deadline
+PASS fresh process per execute
+PASS unknown inherited method denied
+PASS sanitized names and collisions
+PASS generated types + host validation
+PASS TanStack driver on actual stripped body
+PASS TanStack memory mismatch fails explicitly
+PASS TanStack createCodeModeTool integration
+PASS bounded log capture (v1 truncates/drops)
+PASS warm pool capacity and single use
+20 checks passed
+PASS Cloudflare wrapper github
+PASS Cloudflare wrapper binary
+{
+  "selection": "transitional jitk / VMM 01 r2 / kernel canonical",
+  "loadBefore": "3:18  up  4:32, 2 users, load averages: 48.07 56.78 71.68",
+  "loadAfter": "3:18  up  4:32, 2 users, load averages: 49.27 56.88 71.63",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 2,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "n": 30,
+      "calls": 1920,
+      "maxOutstanding": 64,
+      "executeMs": {
+        "median": 123.23366700000008,
+        "p90": 247.89412500000026,
+        "p99": 271.6964169999999
+      },
+      "samples": [
+        87.19858300000001,
+        97.78433399999997,
+        141.07324999999997,
+        107.34533300000004,
+        123.23366700000008,
+        157.126084,
+        56.51637500000004,
+        270.56795799999986,
+        34.20379200000002,
+        233.08241700000008,
+        266.33045800000014,
+        271.6964169999999,
+        102.83641699999998,
+        74.94125000000031,
+        71.88879199999974,
+        154.46662500000002,
+        162.9278750000003,
+        159.5994579999997,
+        137.17241699999977,
+        40.666375000000244,
+        19.661249999999654,
+        19.35495800000035,
+        233.03549999999996,
+        30.511583999999857,
+        211.02291699999978,
+        236.01866699999982,
+        247.89412500000026,
+        93.99975000000086,
+        152.32479199999943,
+        121.34000000000015
+      ]
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}
+22 policy assertions passed
+22 executor policy assertions passed (plus 22 security owner assertions)
+6/6 Hyperlight through canonical executor; kind hyperlight-js

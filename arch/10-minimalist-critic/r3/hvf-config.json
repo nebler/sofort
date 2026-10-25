@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-24T01:34:17.010304+00:00",
+  "uptime": "3:34  up  4:48, 2 users, load averages: 41.39 54.65 64.80",
+  "samples": {
+    "default": {
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0xfae94005\",\"create_name\":\"HV_NO_RESOURCES\",\"destroy_rc\":\"0x0\",\"default_ipa\":36,\"max_ipa\":40,\"selected_ipa\":36,\"get_default_rc\":0,\"get_max_rc\":0,\"set_ipa_rc\":0}\n",
+      "stderr": ""
+    },
+    "max": {
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0xfae94005\",\"create_name\":\"HV_NO_RESOURCES\",\"destroy_rc\":\"0x0\",\"default_ipa\":36,\"max_ipa\":40,\"selected_ipa\":40,\"get_default_rc\":0,\"get_max_rc\":0,\"set_ipa_rc\":0}\n",
+      "stderr": ""
+    }
+  },
+  "scope": "One fresh process per IPA config, create/destroy only; no vCPU/RAM/guest; no performance claim."
+}

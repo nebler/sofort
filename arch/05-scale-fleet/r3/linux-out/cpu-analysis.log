@@ -1,0 +1,235 @@
+{
+  "label": "NESTED",
+  "performance": false,
+  "raw_report_sha256": "010b3285176825fc86490118e2c871d89dc35303d41919686aba2567e0cdb08a",
+  "status": "TOTAL_USER_SYSTEM_MEASURED; PRECISE_HOST_USER_GUEST_SPLIT_UNVERIFIED",
+  "warning": "Linux global guest ticks and wait4 adjusted task user do not close exactly in this nested run. Negative residuals are preserved in raw data, never treated as physical negative CPU. Guest estimates and host-user residuals are approximate, not an additive high-resolution profile. Tick resolution alone is not a sufficient error bound.",
+  "negative_residual_cases": [
+    "one_tool",
+    "concurrency_2",
+    "concurrency_7",
+    "concurrency_8"
+  ],
+  "rows": [
+    {
+      "case": "boot",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 4.64611,
+      "vmm_system_ms": 7.441330000000001,
+      "vmm_total_ms": 12.08744,
+      "guest_estimate_ms": 4.6,
+      "host_user_residual_ms": 0.04611000000000054,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": false,
+      "outer_load": {
+        "unix": 1792805722.4542358,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 20.71 45.92 60.71",
+        "loadavg": [
+          20.71484375,
+          45.9208984375,
+          60.71435546875
+        ]
+      }
+    },
+    {
+      "case": "one_tool",
+      "n": 30,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 5.110166666666668,
+      "vmm_system_ms": 8.561366666666666,
+      "vmm_total_ms": 13.671533333333334,
+      "guest_estimate_ms": 5.333333333333333,
+      "host_user_residual_ms": -0.22316666666666496,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.3333333333333333,
+      "negative_residual": true,
+      "outer_load": {
+        "unix": 1792805724.4764569,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 20.71 45.92 60.71",
+        "loadavg": [
+          20.71484375,
+          45.9208984375,
+          60.71435546875
+        ]
+      }
+    },
+    {
+      "case": "concurrency_1",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 4.433090000000001,
+      "vmm_system_ms": 7.64211,
+      "vmm_total_ms": 12.0752,
+      "guest_estimate_ms": 4.4,
+      "host_user_residual_ms": 0.03309000000000051,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": false,
+      "outer_load": {
+        "unix": 1792805724.4764569,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 20.71 45.92 60.71",
+        "loadavg": [
+          20.71484375,
+          45.9208984375,
+          60.71435546875
+        ]
+      }
+    },
+    {
+      "case": "concurrency_2",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 3.3203300000000002,
+      "vmm_system_ms": 8.7166,
+      "vmm_total_ms": 12.03693,
+      "guest_estimate_ms": 3.4,
+      "host_user_residual_ms": -0.07966999999999969,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": true,
+      "outer_load": {
+        "unix": 1792805726.5037088,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 20.71 45.92 60.71",
+        "loadavg": [
+          20.71484375,
+          45.9208984375,
+          60.71435546875
+        ]
+      }
+    },
+    {
+      "case": "concurrency_3",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 4.853629999999999,
+      "vmm_system_ms": 8.348980000000001,
+      "vmm_total_ms": 13.20261,
+      "guest_estimate_ms": 4.8,
+      "host_user_residual_ms": 0.05362999999999918,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": false,
+      "outer_load": {
+        "unix": 1792805728.524087,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 19.30 45.21 60.38",
+        "loadavg": [
+          19.2958984375,
+          45.2080078125,
+          60.3759765625
+        ]
+      }
+    },
+    {
+      "case": "concurrency_4",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 3.7549300000000017,
+      "vmm_system_ms": 9.16429,
+      "vmm_total_ms": 12.919220000000001,
+      "guest_estimate_ms": 3.7,
+      "host_user_residual_ms": 0.05493000000000148,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": false,
+      "outer_load": {
+        "unix": 1792805729.534056,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 19.30 45.21 60.38",
+        "loadavg": [
+          19.2958984375,
+          45.2080078125,
+          60.3759765625
+        ]
+      }
+    },
+    {
+      "case": "concurrency_5",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 4.211970000000001,
+      "vmm_system_ms": 8.86866,
+      "vmm_total_ms": 13.080630000000001,
+      "guest_estimate_ms": 4.2,
+      "host_user_residual_ms": 0.011970000000000702,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": false,
+      "outer_load": {
+        "unix": 1792805730.545578,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 19.30 45.21 60.38",
+        "loadavg": [
+          19.2958984375,
+          45.2080078125,
+          60.3759765625
+        ]
+      }
+    },
+    {
+      "case": "concurrency_6",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 5.3233,
+      "vmm_system_ms": 8.30456,
+      "vmm_total_ms": 13.62786,
+      "guest_estimate_ms": 5.2,
+      "host_user_residual_ms": 0.12329999999999952,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": false,
+      "outer_load": {
+        "unix": 1792805732.5669272,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 18.23 44.56 60.06",
+        "loadavg": [
+          18.23095703125,
+          44.556640625,
+          60.05712890625
+        ]
+      }
+    },
+    {
+      "case": "concurrency_7",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 4.171109999999999,
+      "vmm_system_ms": 8.27871,
+      "vmm_total_ms": 12.449819999999999,
+      "guest_estimate_ms": 4.3,
+      "host_user_residual_ms": -0.12889000000000106,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": true,
+      "outer_load": {
+        "unix": 1792805733.580787,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 18.23 44.56 60.06",
+        "loadavg": [
+          18.23095703125,
+          44.556640625,
+          60.05712890625
+        ]
+      }
+    },
+    {
+      "case": "concurrency_8",
+      "n": 100,
+      "label": "NESTED",
+      "vmm_user_including_guest_ms": 4.43938,
+      "vmm_system_ms": 8.99443,
+      "vmm_total_ms": 13.43381,
+      "guest_estimate_ms": 4.8,
+      "host_user_residual_ms": -0.36061999999999994,
+      "residual_is_exact": false,
+      "guest_counter_resolution_ms_vm": 0.1,
+      "negative_residual": true,
+      "outer_load": {
+        "unix": 1792805735.606852,
+        "uptime": "3:35  up  4:49, 2 users, load averages: 18.23 44.56 60.06",
+        "loadavg": [
+          18.23095703125,
+          44.556640625,
+          60.05712890625
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "source": "arch/04-executor-ts/r4/h5-cpu-probe.json",
+  "receipt_sha256": "310b1e10f4cac94a86061b7c94a3db872d1d90bbe7eaf20ed79252f1874508a6",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "finished": "2026-10-24T02:55:01.327Z",
+  "harness_error": null,
+  "pool_after_close": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "cases": {
+    "cpu": {
+      "n": 30,
+      "controls_pass": 30,
+      "admitted_callbacks": 0,
+      "watchdog_receipts": 13,
+      "external_kill_le50": 13,
+      "effective_kill_le50": 30,
+      "max_external_kill_overshoot_ms": 47.455078125,
+      "api_le50": 29,
+      "max_api_overshoot_ms": 56.534874999999374,
+      "signals_received_aborted": 0,
+      "late_successes": 0,
+      "load1_range": [
+        46.220703125,
+        54.9345703125
+      ]
+    }
+  },
+  "audited_utc": "2026-10-24T02:58:14.409576+00:00",
+  "auditor_load": [
+    101.5029296875,
+    64.4150390625,
+    54.98193359375
+  ]
+}

@@ -1,0 +1,35 @@
+109   execve("\x2f\x70\x61\x79\x6c\x6f\x61\x64", ["\x2f\x70\x61\x79\x6c\x6f\x61\x64", "\x2d\x65", "\x6c\x6f\x63\x61\x6c\x20\x76\x61\x6c\x75\x65\x73\x3d\x7b\x39\x2c\x31\x2c\x35\x2c\x33\x2c\x35\x7d\x0a\x74\x61\x62\x6c\x65\x2e\x73\x6f\x72\x74\x28\x76\x61\x6c\x75\x65\x73\x29\x0a\x6c\x6f\x63\x61\x6c\x20\x73\x75\x6d\x3d\x30\x0a\x66\x6f\x72\x20\x5f\x2c\x76\x61\x6c\x75\x65\x20\x69\x6e\x20\x69\x70\x61\x69\x72\x73\x28\x76\x61\x6c\x75\x65\x73\x29\x20\x64\x6f\x20\x73\x75\x6d\x3d\x73\x75\x6d\x2b\x76\x61\x6c\x75\x65\x20\x65\x6e\x64\x0a\x61\x73\x73\x65\x72\x74\x28\x23\x76\x61\x6c\x75\x65\x73\x3d\x3d\x35\x20\x61\x6e\x64\x20\x76\x61\x6c\x75\x65\x73\x5b\x31\x5d\x3d\x3d\x31\x20\x61\x6e\x64\x20\x76\x61\x6c\x75\x65\x73\x5b\x35\x5d\x3d\x3d\x39\x20\x61\x6e\x64\x20\x73\x75\x6d\x3d\x3d\x32\x33\x29\x0a\x69\x6f\x2e\x77\x72\x69\x74\x65\x28\x73\x74\x72\x69\x6e\x67\x2e\x66\x6f\x72\x6d\x61\x74\x28\x27\x7b\x22\x63\x6f\x75\x6e\x74\x22\x3a\x25\x64\x2c\x22\x73\x75\x6d\x22\x3a\x25\x64\x2c\x22\x6d\x61\x78\x22\x3a\x25\x64\x7d\x5c\x6e\x27\x2c\x23\x76\x61\x6c\x75\x65\x73\x2c\x73\x75\x6d\x2c\x76\x61\x6c\x75\x65\x73\x5b\x23\x76\x61\x6c\x75\x65\x73\x5d\x29\x29\x0a"], ["\x50\x41\x54\x48\x3d\x2f\x62\x69\x6e\x3a\x2f\x75\x73\x72\x2f\x62\x69\x6e", "\x4c\x43\x5f\x41\x4c\x4c\x3d\x43", "\x4c\x41\x4e\x47\x3d\x43", "\x54\x5a\x3d\x55\x54\x43"]) = 0
+109   set_tid_address(0x4711f0)         = 109
+109   brk(NULL)                         = 0x17160000
+109   brk(0x17162000)                   = 0x17162000
+109   mmap(0x17160000, 4096, 0, 0x32, -1, 0) = 0x17160000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf955000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf954000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf953000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf952000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf951000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf950000
+109   mmap(NULL, 8192, 0x3, 0x22, -1, 0) = 0xffffaf94e000
+109   munmap(0xffffaf954000, 4096)      = 0
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf954000
+109   mmap(NULL, 8192, 0x3, 0x22, -1, 0) = 0xffffaf94c000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf94b000
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf94a000
+109   munmap(0xffffaf94a000, 4096)      = 0
+109   rt_sigprocmask(0x1, [33 34], NULL, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+109   rt_sigaction(2, {sa_handler=0x4006a8, sa_mask=[], sa_flags=0x4000000, sa_restorer=0x43cf5c}, NULL, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+109   mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffffaf94a000
+109   ioctl(1, 0x5413, 0xffffec01d558)  = -1 ENOTTY (Not a tty)
+109   writev(1, [{iov_base="", iov_len=0}, {iov_base="\x7b\x22\x63\x6f\x75\x6e\x74\x22\x3a\x35\x2c\x22\x73\x75\x6d\x22\x3a\x32\x33\x2c\x22\x6d\x61\x78\x22\x3a\x39\x7d\x0a", iov_len=29}], 2) = 29
+109   rt_sigaction(2, {sa_handler=0, sa_mask=[], sa_flags=0x4000000, sa_restorer=0x43cf5c}, NULL, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+109   munmap(0xffffaf94b000, 4096)      = 0
+109   munmap(0xffffaf954000, 4096)      = 0
+109   munmap(0xffffaf952000, 4096)      = 0
+109   munmap(0xffffaf951000, 4096)      = 0
+109   munmap(0xffffaf94c000, 8192)      = 0
+109   munmap(0xffffaf950000, 4096)      = 0
+109   munmap(0xffffaf94e000, 8192)      = 0
+109   munmap(0xffffaf953000, 4096)      = 0
+109   munmap(0xffffaf94a000, 4096)      = 0
+109   munmap(0xffffaf955000, 4096)      = 0
+109   exit_group(0)                     = ?

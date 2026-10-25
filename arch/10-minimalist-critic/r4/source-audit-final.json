@@ -1,0 +1,665 @@
+{
+  "context": {
+    "utc": "2026-10-24T03:18:58.599550+00:00",
+    "load": [
+      45.5029296875,
+      63.63330078125,
+      69.10498046875
+    ],
+    "uptime": "5:18  up  6:32, 2 users, load averages: 45.50 63.63 69.10"
+  },
+  "original_audit_sha256": "dbb435462968a5b3fcc63701ca6d230ec35cea60cb5026ae23b0d60f87c1e025",
+  "r3_total": 10658,
+  "r4_total": 9409,
+  "delta": -1249,
+  "r3_duplicate_groups": [
+    {
+      "r3_group": [
+        "bench/hyperlight/watchdog.py",
+        "executor/watchdog.py"
+      ],
+      "current": [
+        {
+          "path": "bench/hyperlight/watchdog.py",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "executor/watchdog.py",
+          "exists": true,
+          "sha256": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "executor/fixtures/policy-owner-test.mjs",
+        "executor/policy/policy-test.mjs"
+      ],
+      "current": [
+        {
+          "path": "executor/fixtures/policy-owner-test.mjs",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "executor/policy/policy-test.mjs",
+          "exists": true,
+          "sha256": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "grow/fallback-kernel/src/boot.S",
+        "kernel/src/boot.S"
+      ],
+      "current": [
+        {
+          "path": "grow/fallback-kernel/src/boot.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/boot.S",
+          "exists": true,
+          "sha256": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "grow/fallback-kernel/src/syscalls/ioctl.rs",
+        "kernel/src/syscalls/ioctl.rs"
+      ],
+      "current": [
+        {
+          "path": "grow/fallback-kernel/src/syscalls/ioctl.rs",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/syscalls/ioctl.rs",
+          "exists": true,
+          "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "grow/fallback-kernel/src/vectors.S",
+        "kernel/src/vectors.S"
+      ],
+      "current": [
+        {
+          "path": "grow/fallback-kernel/src/vectors.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/vectors.S",
+          "exists": true,
+          "sha256": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "grow/proposals/ppoll.rs",
+        "kernel/src/syscalls/ppoll.rs"
+      ],
+      "current": [
+        {
+          "path": "grow/proposals/ppoll.rs",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/syscalls/ppoll.rs",
+          "exists": true,
+          "sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "grow/proposals/rt_sigaction.rs",
+        "kernel/src/syscalls/rt_sigaction.rs"
+      ],
+      "current": [
+        {
+          "path": "grow/proposals/rt_sigaction.rs",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/syscalls/rt_sigaction.rs",
+          "exists": true,
+          "sha256": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "grow/proposals/rt_sigprocmask.rs",
+        "kernel/src/syscalls/rt_sigprocmask.rs"
+      ],
+      "current": [
+        {
+          "path": "grow/proposals/rt_sigprocmask.rs",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/syscalls/rt_sigprocmask.rs",
+          "exists": true,
+          "sha256": "41a598203348d53dbba585bb456426254a77554961a8b0c366d930a1dd6cbcba",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "kernel/src/syscalls/exit.rs",
+        "kernel/src/syscalls/exit_group.rs"
+      ],
+      "current": [
+        {
+          "path": "kernel/src/syscalls/exit.rs",
+          "exists": true,
+          "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd",
+          "symlink": null
+        },
+        {
+          "path": "kernel/src/syscalls/exit_group.rs",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "linux/guest/bad-sysreg.S",
+        "vmm/tests/fixtures/bad-sysreg.S"
+      ],
+      "current": [
+        {
+          "path": "linux/guest/bad-sysreg.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "vmm/tests/fixtures/bad-sysreg.S",
+          "exists": true,
+          "sha256": "45252d52ce35d37ca181afea185e7ea2b4a893f97b5b98da991fa40369d5e697",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "linux/guest/console_avail_oob.S",
+        "vmm/tests/fixtures/console_avail_oob.S"
+      ],
+      "current": [
+        {
+          "path": "linux/guest/console_avail_oob.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "vmm/tests/fixtures/console_avail_oob.S",
+          "exists": true,
+          "sha256": "9f4cdeb1d7ae51d6044c28d59750f3f66dd5c763f17a9af5727ed57e20729cc7",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "linux/guest/mmio-halfword.S",
+        "vmm/tests/fixtures/mmio-halfword.S"
+      ],
+      "current": [
+        {
+          "path": "linux/guest/mmio-halfword.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "vmm/tests/fixtures/mmio-halfword.S",
+          "exists": true,
+          "sha256": "89a7fcfc9bbf023657414c5c1361094ca4d3ffe92b793950085007584c71c558",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "linux/guest/rtc_oob_read.S",
+        "vmm/tests/fixtures/rtc_oob_read.S"
+      ],
+      "current": [
+        {
+          "path": "linux/guest/rtc_oob_read.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "vmm/tests/fixtures/rtc_oob_read.S",
+          "exists": true,
+          "sha256": "c202cc7673e0baab2ce61b0b95cc34e12b4a6b03a66ea0cb70e61e163721ffee",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "linux/guest/unknown-hvc.S",
+        "vmm/tests/fixtures/unknown-hvc.S"
+      ],
+      "current": [
+        {
+          "path": "linux/guest/unknown-hvc.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "vmm/tests/fixtures/unknown-hvc.S",
+          "exists": true,
+          "sha256": "b797e0854c04b8af4c60f185d72588303e854f8a5bac462da72bde54fe6f02d8",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    },
+    {
+      "r3_group": [
+        "linux/guest/unknown-smc.S",
+        "vmm/tests/fixtures/unknown-smc.S"
+      ],
+      "current": [
+        {
+          "path": "linux/guest/unknown-smc.S",
+          "exists": false,
+          "sha256": null,
+          "symlink": null
+        },
+        {
+          "path": "vmm/tests/fixtures/unknown-smc.S",
+          "exists": true,
+          "sha256": "e6173ab4ff7166376533316a55201db55cab4c824932c6c67b0c415edcae189f",
+          "symlink": null
+        }
+      ],
+      "identical_copies_remain": false
+    }
+  ],
+  "current_identical_source_groups": [
+    [
+      "linux/guest/link.ld",
+      "vmm/tests/fixtures/link.ld"
+    ]
+  ],
+  "active_source_inventory": {
+    "CONTRACTS.md": "8637694e7185adb5ba11633b43d17171b03abc156b91dd3ecda6fd9f090abe9a",
+    "Makefile": "76741109e90cd63e2515b54d95a8b2b38912ef4c57fd0a0f50d8aa9949c1d231",
+    "README.md": "d14476db4eb816ec1107d075f3e48b7eaff24d9d33df573ffcf04e978d8373ad",
+    "bench/.R4": "c778bc083fdf20e0b19d1b3cf32016aff4db5043c2682e0fee308a75b0dba7cd",
+    "bench/.READY": "0330ba23237abd6a6d9a4df1287a8157ca92bf56235f2bfa3fc9bcecdfc6667c",
+    "bench/Makefile": "b055dc59feec4ef29b5db5b734d119e48e173e3db9b4ca76b412221e650e274c",
+    "bench/README.md": "595bdc02bc85afabf45275c9681e39723573a4d3338c1784108ed0f29e2732a9",
+    "bench/RESULTS.md": "c96fe3feaa388878a4bfec2742115b28595bc68ecbed002cd1d62242819ba2b0",
+    "bench/cases.json": "c00e3f14ac67000f7645a930c487a02123ea63c697dd05cd71e4186fc0034b46",
+    "bench/executor.mjs": "afba25fa20eb329c6e9feacb969ea501fff0eb2e797fefb980fc9b48e4d00b73",
+    "bench/processes.py": "37768574c5b4b9029600569cff4c73b9c383e79b2db9736b6f04640669254328",
+    "bench/r4-raw.json": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b",
+    "bench/r4-verification.json": "309b0e4f31c28ee4b0b6746ecaf674c07a05cddca0f7c0e61b4245cb81a9bfbd",
+    "bench/raw.json": "adc0aadaa3eee399af1985a80796ba2f2762dddf525ea36061e8d20903880033",
+    "bench/recertify.py": "34b99b61bc6acd77e4679333b60ba64861afdccc343212e314c7731947e3a317",
+    "bench/run.py": "406b2ea3fa3747cb8c4cafb9d5b1f3802313020e1a22cf8b15fd75c195925d9d",
+    "bench/sandbox_probe.c": "4ed83ff4c0e19e320d062f8b4b2e70c6b2bbae99d473c25f5a0a13be95667fbb",
+    "bench/smoke.json": "27b353fa5da60b3c495876f9c05d750b6c0a8e842648dd87485636a8e47d2f8a",
+    "bench/verification.json": "9c9ac1c56339dcf3b3a4749af572b4588f049169489d7bf65c20ae315fc5c140",
+    "bench/watchdog.py": "4ce65e5616cbc2372929f53521292d8f710026ee1aac414629d526d5efee96d6",
+    "bench/hyperlight/.R4": "aad321a8d9ed57292e0c2fb61baba8c561c2ed1c8775c618d9810ecad3a5efe5",
+    "bench/hyperlight/.READY": "d52771ee794cec0663ea92b2fa78c2fc51728138034d9362b94177fbf3289a12",
+    "bench/hyperlight/Cargo.lock": "352f488944fb306637fb7bf90cd3c5077f5c337539bf4ae69530000e2d48c731",
+    "bench/hyperlight/Cargo.toml": "a91e850f946403ed2843730b7552b571097aa1e330839ba37693bf05881af8b8",
+    "bench/hyperlight/INTEGRATION.md": "9647db322a55c6cd207166061634585cfe63830b877ea920c1db8dcc83514a61",
+    "bench/hyperlight/Makefile": "ed7f098137db22e269985f2a622694faf423c1e99e72ffa3545cead158802895",
+    "bench/hyperlight/README.md": "1c6d1c79668436925d53abc6d042c58676dd2d1585a05c66240d6cecde6da394",
+    "bench/hyperlight/adapter-results.log": "e88415d7c80696c0c1e6ff7187c9c8d25ab20e0c81f6e80d0fe7ce9300fef0b8",
+    "bench/hyperlight/adapter-test.ts": "10182a6b2ae74a1b14aa666081fa390fa13a81083bccb3baf7ef76c6051f8b73",
+    "bench/hyperlight/adapter.json": "7cc2cf73ae5c14cf6688420e90bd4109eee52c0ee02ec187825786b77422a254",
+    "bench/hyperlight/analysis.log": "421201b08b183c192b9f5900b022a54fc84a667bcf5ffa05d58f73e04947a1a3",
+    "bench/hyperlight/analyze.py": "5edd5a93e7bf872e5130d65a2a1b4986fd9d5cd244ee1f29b8c23205034e9070",
+    "bench/hyperlight/backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
+    "bench/hyperlight/bench.log": "0b12204d1985da0db7c2fb549b11304692d68775de058744de90bbccb4a1f3bd",
+    "bench/hyperlight/bench.py": "9544b28b8e05e2fd7abb369116a4a4f1b31b496368c5b3f579334fee701cf084",
+    "bench/hyperlight/bootstrap.js": "cd4e7bf93e5e91eb93b1e630a2c49244aa553eecf029a5a8f1a6bc93d3319cd1",
+    "bench/hyperlight/build.sh": "0c86011b7f1f7e3e1d58caead6275dfb566bd4a1c2a0eeeeea4471487e5093d8",
+    "bench/hyperlight/config.ts": "119085b03bf433cc3fa4fad411d3fc31b1cd9d3b431448a3d0c6b11f3cf59b8c",
+    "bench/hyperlight/executor-results.log": "e1b78b2fae69e957bbf54ca7afd6ebdd9631a2d7d2eade10f6df7acf1269d0b9",
+    "bench/hyperlight/executor-runner.mjs": "8c445fec928987495c079b497ed20bbe86ba8aec252cd2a3eb60eecd0717ec51",
+    "bench/hyperlight/executor-smoke.json": "d0e56db9745ec5dbf16741afe22a8fd8eac66195319156c6d63254f6f807f8cc",
+    "bench/hyperlight/executor-test.mjs": "11cdc4b5d8ccd1ca4ab8170d4cc3052c309afdb6fc1a9393f46fac0c8eab4781",
+    "bench/hyperlight/load_linux.rs": "c59ed6c043b70806181b5975f4d2ded130931dd394fd6331c4ed950e8c9e31bc",
+    "bench/hyperlight/package.json": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+    "bench/hyperlight/provenance.json": "0ceda25f8a502f400e4d24f2d6497bea69a8937ec9b8f265867a8e2a2fad5fce",
+    "bench/hyperlight/verification.json": "b407a7c4bb6171989c6c18aa5dd69ef2e66b0eddc84318516f1d8d464146577e",
+    "bench/hyperlight/worker.rs": "c5e48acbb0b78afe1673aa33fbbdb3b571db4fc5f8846e9b7f1d468cd57cc4c9",
+    "bench/hyperlight/smoke/metadata.json": "2f328750d4991576b92c1d9a35baba3535251ef0f3a659d5083d0ce5615eeb6b",
+    "bench/hyperlight/smoke/raw-summary.json": "768d5d33b47cd1fd1247c623cb77f54eab1d0c1363f3fecb82074bccc99bdb42",
+    "bench/hyperlight/smoke/raw.jsonl": "633fd1479ffa382c3643dab8f41143a4f4e6481ac1c06a17be6594f509c109b9",
+    "bench/hyperlight/smoke-r3/RESULTS.md": "a3c38c37f81a2c903284a6297bdd19cca172bd3020ece147ee8845eda7b4e5dd",
+    "bench/hyperlight/smoke-r3/raw.json": "3ef9c9e36a20e4c772536b379825940e114017346cfa6a57479845d6f32878bc",
+    "docs/.READY": "9a546e193d8fbfeb8392cddd388ad2344e988c15c2dabb01b62b6e152e51a830",
+    "docs/ARCHITECTURE.md": "91d5bced51503cbbd7284ef8fac5e64f1816610b78e24963262045321116ad71",
+    "docs/CLAIMS.md": "b1efb5ec495896b81b8e7307c3fb2f0d7f99c315ee3fcfe5fc9713345cd47f97",
+    "docs/KILL-CRITERIA.md": "1bb24bdf5113183c798e294d2b6d87de8f872dbf0800c3b6c0f730dbeb5028a9",
+    "docs/count-loc.py": "b292af8113c92e660046fe8a555a79b2730248c6a6aa9ee3c778f78f91d1f37c",
+    "docs/delegate.py": "979fd2397cd3ea5ae1dbd839382b2ade4f0bf72688160d1f3f80b5574a311ce3",
+    "executor/.R4": "790051eb1672deae1000a1871f9220672bf0baeb66a8c4cfcfe5e042ed1abb37",
+    "executor/.READY": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+    "executor/.gitignore": "a5d6be4a0396556b5383e781ad94758f8302144cebfec3f0675958263efe7816",
+    "executor/.npmrc": "445f49ef5108bf0ad1e069f0da58ebef592f86ff5396aac62f637bd4c8a75f42",
+    "executor/Makefile": "d46455cf588a6af6dfb2824c2e176e277e65d4ff331a190bae550f50d603ebde",
+    "executor/README.md": "93bb48ba719f8063061938bd82b3c7e2df1e4deb369f402ade6dcd66feaf6a97",
+    "executor/api-check-results.json": "5a808b49c6c3d98e6c7de3a216b237d68eb66c6e72883a76a5a566f05c70a3f7",
+    "executor/api-check.ts": "d4c3f0140ee90c877be3343a0fb3091d451c4f1ddea034a7b725d4365f5d8088",
+    "executor/backend.ts": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+    "executor/breakdown-results.json": "e39e4566a0b4b37a157bdeefe6ba6dbb727ae02137f2af19ef1c8f5347407c0c",
+    "executor/breakdown.log": "0654a6c41169fb60593c6f3609f92a2fe318635a47693ba8d379eafbda38aa64",
+    "executor/breakdown.ts": "b706534560d1b766875ebcf0903993a29f266fc82c4b055b1c7f5c5d0eb0516e",
+    "executor/build.mjs": "57d6024c41d02e99171c385c36c9d874412679c13cc7f3acf940b5ffc9c7092c",
+    "executor/certify-kernel-updated.log": "ee5ac3d282bd66545e7c112fbf4696c7b51a9bec6c67050e04e8c95e1bc55d21",
+    "executor/certify.mjs": "4f6ccb76d117ebb60e82341ccae62aef42f6fb029d16c993c30852d35b101c64",
+    "executor/cloudflare-binary.generated.mjs": "f4480e16e698c82ae58b544dde477f126160b3c900e4b3e7d21047c35fe7d860",
+    "executor/cloudflare-github.generated.mjs": "bd8e51a8f4af8ece7e8e623f11292d73e3fb6c3acd2ab20d15807d86f1df9289",
+    "executor/code.ts": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760",
+    "executor/codec.mjs": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e",
+    "executor/demo.log": "095ccf2297ccb3e7430550a21814c031449a463def7c707895f0fb171bb5c452",
+    "executor/executor.ts": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968",
+    "executor/generated-tools.d.ts": "ecb6a2193fcd3bfa6b1cd6c3679e1438853a983d7ebabb15a13d3cbd5420e0ad",
+    "executor/hyperlight-check-results.json": "0e4f6d2eb93c45cb712736d7a402695bda1c14db0ae65a834dfabbb6add45a7f",
+    "executor/hyperlight-check.ts": "767c57c9797e8fb6a1bf0239b498c0da666dc23be9211222ff9d430ee27ca718",
+    "executor/integration-selection.json": "b2fb32033a79df489ca4e319b183720856454c2763f1d4f57bdbf56c550c4d04",
+    "executor/package-lock.json": "07a5d2696dd8af991275a0dd234654a925545295f3a36cababfc5fee8e38014a",
+    "executor/package.json": "45aefa1d8dbe925d39320961b84f73a1a9b1b933be9713ec8bdab013df018079",
+    "executor/policy-adapter.ts": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
+    "executor/policy-check-results.json": "40bafebaec841812c58503cb4eceb3a6d95a2d5f126fd54b61e7591eebd54058",
+    "executor/policy-check.ts": "4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f",
+    "executor/pool-check-results.json": "054bb7e48ae41121574c9e73a86cc99f964cfca8385434705cee6ba2eb3e2ea9",
+    "executor/pool-check.ts": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede",
+    "executor/pool.ts": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb",
+    "executor/providers.ts": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161",
+    "executor/r4-certify.log": "dc01d8d2669a53925dce3c0e1c81249260373e38744836c53136da25e53832ab",
+    "executor/r4-hyperlight.log": "2e70962648bd6070ac99c4b7a0e0eb5a77b85d008d03d6512b1d08339c2ae7f8",
+    "executor/resolve-check.ts": "617bccb3714e3f12053a0495ffd43de782397e6976408fa4f9653fb1e481a240",
+    "executor/run.sh": "e17c9810eaa1023ad80fa387454b3982399ba5a3fbb2ae33ef8984485539a213",
+    "executor/sandbox-check.ts": "24863ae7f8ff7390e96666f41677770500382e7d457f4e4cacb3a830299d2159",
+    "executor/select-backend.ts": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0",
+    "executor/test.log": "655a1d780392784659fa81c3f2697b41d07300475c25015486a4708cfa7947fa",
+    "executor/transitional-r2-breakdown-results.json": "f23e2f6c52d1e8da656ce3f3bba8ae864c689d342ded5f4a6397852d0a22cc0c",
+    "executor/transport-check-results.json": "c35a14d886f4c7e29eb3f686b0067d18c9ad1515c40a204f0e7d7e7294e89851",
+    "executor/transport-check.ts": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc",
+    "executor/tsconfig.json": "d8d1951f3cac84824ffdbaa8d29b54e23ec5850f0b2fcda09373f7b53ba0bde9",
+    "executor/type-proof.ts": "b24f3a25525f1a4b55f25b0fe4f9fe1863e5b10fa89b3375f61ed25f13d33ffc",
+    "executor/upstream.ts": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf",
+    "executor/verification-results.json": "92dad7991c33a30888a592da5ef1e7273ba49fa0e4b4ba0672ffcbeb14455335",
+    "executor/verify.ts": "3d419ed3970a4316e4a30b3f190fa02b106370204bc54730055b2e0d3829729d",
+    "executor/watchdog-check-results.json": "a256cda3d0eb698b990b7536b3b10fdf7669f58964b963110a061db57f30787b",
+    "executor/watchdog-check.ts": "8594e037329c962eea26c0469140af4f95e0330ef6ea919e548ea625da12a863",
+    "executor/watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "executor/wrapper-conformance-results.json": "e4e95e1b2b20d987b84d577082ccd6be855b28042acf0fb7a1e5b68ec49f978f",
+    "executor/wrapper-conformance.ts": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5",
+    "executor/.cache/inputs/jitk-vmm": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "executor/.cache/inputs/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "executor/.cache/inputs/snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09",
+    "executor/.cache/inputs/snapshot/oci-layout": "18f0797eab35a4597c1e9624aa4f15fd91f6254e5538c1e0d193b2a95dd4acc6",
+    "executor/.cache/inputs/snapshot/blobs/sha256/120ce90b0f14bc00f3f45817c3c61026c8467f7797c54753b626e754655a11d1": "120ce90b0f14bc00f3f45817c3c61026c8467f7797c54753b626e754655a11d1",
+    "executor/.cache/inputs/snapshot/blobs/sha256/2fd2c2bbd6d6e60f4e6f631dbc96c7b26b73270648c33fda7f9cf868509f82e7": "2fd2c2bbd6d6e60f4e6f631dbc96c7b26b73270648c33fda7f9cf868509f82e7",
+    "executor/.cache/inputs/snapshot/blobs/sha256/622f0d2263988918d0676e9e668a89d957538f7bff7c15e7aaf67976416e737e": "622f0d2263988918d0676e9e668a89d957538f7bff7c15e7aaf67976416e737e",
+    "executor/.cache/inputs/snapshot/blobs/sha256/88d5262ae7d3bfe1d7da551e336888787e9ac24ab20d19591d79c3d699d55c8b": "88d5262ae7d3bfe1d7da551e336888787e9ac24ab20d19591d79c3d699d55c8b",
+    "executor/examples/demo.ts": "eca67aaf1375c37122b9bb3be261b1bf7816e67f3d251486ba4aada721754acc",
+    "executor/fixtures/ack-peer.mjs": "8696aaf17f2c4ed2159ccaf03a4ad86698a4f44437daa5743dffcf7d0ed992c0",
+    "executor/fixtures/parking-gate.json": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717",
+    "executor/fixtures/protocol-peer.mjs": "9e0ca4b0c0c2638af9d99d27bbd10b237d92fb852bc2e36cf8e63fd9c18c413c",
+    "executor/policy/.READY": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "executor/policy/README.md": "e643b7c35db51e7900835226c57ba6f5fa68e7af50d911368079f6191943b601",
+    "executor/policy/policy-hostile.mjs": "da3bda12a752d21073b01cdec53c94accbb8d8b9135c35b9cc9528c58ab88f99",
+    "executor/policy/policy-test.mjs": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c",
+    "executor/policy/policy.d.ts": "3aebdee012a3c37d34e69ae5ab2195ebbc259789ed62b72347f77a6aba5468dc",
+    "executor/policy/policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+    "executor/vendor/LICENSE.cloudflare": "b33ae783f02478cd31787cd07cbf61cd3a6fbee1a50b2baf832b8f0fb7c600f7",
+    "executor/vendor/README.md": "170330b25c341000b4bdd815590ba24554c8999ece7a754b2fa64fe7e5a11e25",
+    "executor/vendor/codemode.mjs": "79091b106e34cbf8fd972d43b7c46d3a3a0c5b732f1fbfbc6cab5191cdd241db",
+    "grow/.R4": "ca303e47f45701e7b9a7d2a35c359a3a94ef4a95a7c165c569b036de43ddcc68",
+    "grow/.READY": "dce809ec98fd6d5e26f1d840f2778ee68c1e2f511a7f4f7959ad7566c7c05d97",
+    "grow/.gitignore": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+    "grow/DEMO.md": "834f51e37c318f526b6ce6ad4ee13dbabfeb9185f3a022579b6b046e3f46e198",
+    "grow/Makefile": "9677144e5eabfa25e9a213909849529660b44300e7faad9c41357a8ea184c6fc",
+    "grow/README.md": "ec4d48b71c88757ac3a21e68406fffeb749384504ecb14f8fbb249cf8c4c5f23",
+    "grow/SOURCE.json": "2bdc81ab9801c10d5dd2726021a7399f0a6eb4d354264c6832fd3530f8bbd521",
+    "grow/adapters.py": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5",
+    "grow/agent.py": "ed292c0945cf485f6502cb248ad26142c26da12b9ddcc65a4eb27896150cffd8",
+    "grow/demo-release.json": "844e134274ee84e5a17d7d5ab0540b3ac8c2789e0f0b8d7daa31474039fd8c9a",
+    "grow/demo.py": "c2b98512ee3641eb3f88243ebf7997768797f5f38e9e733134dc304d622eeadc",
+    "grow/fixtures.lua": "406133b216d2570c962f14beb5ffeac559ce0c7c74b9aa51f645cd5c66a4ddf3",
+    "grow/loop.py": "130d33a7f255e658345200191d5966dd977b9041085d48ec8541ef99f13a8bb3",
+    "grow/prepare.py": "7c6268627a7b63099655b99519fdd58bfabda8b89c3a13dae92d99bced82837d",
+    "grow/probe.ld": "422f0b75defc00cb89a25e3aae37e030d9ecf31d167d67b4454b8cf0287aaf43",
+    "grow/release.json": "a1f88b262f6430d90ba1cad050d723d7fc17503e4b4e42788dddb0eee8bfb449",
+    "grow/rt_sigaction.S": "27fd5f2e839fff665485832516b53fdf79a13b42c3b1f128b5a689e9c5215b9e",
+    "grow/rt_sigprocmask.S": "ec82afca4be67a34b88f15621b399c993f24c9ae060a3c069290557b0c5d4242",
+    "grow/runtime.py": "4692ddbabad903f095f022bcc0f7024c56565d1f1ff9ec2dedec8983765c633a",
+    "grow/syscalls.manifest.json": "43bc43ed64828578fdf983e625c42a4a7ac555d7463d30c4cc5cf892e1e9934c",
+    "grow/test.py": "9f04bd5ed58945903dbaf5f1185a2a6f438710718e5e6aba7a5ad82729eb1d85",
+    "grow/oracle/Dockerfile": "e6b375462ba1ee513ef313444c17837f61ed2fc58cbe311a311f00620488a1b8",
+    "grow/oracle/normalize.py": "e7dbb25346792058cd108e56b856b753b41a216aad9863768c1c1730f076dd68",
+    "grow/oracle/run_profile.py": "c57ec95516e4f64b741637a8d6709c649d8c6710a013653e837dbc9ea995437f",
+    "grow/oracle/test_normalize.py": "31916b77b614448e10932fe5eca1533a20936207c876a8986c6428361d608f0c",
+    "grow/payload/LICENSE-Lua.txt": "7a02bc5e5bbf69dc75c43a35bab2a3d87a62fba73fd982e39e7a425a55173818",
+    "grow/payload/lua-static": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "grow/payload/provenance.json": "b29ed16d69054bb26665d1394b7394f0d5e1568e375b6e7e51f503c43855389d",
+    "grow/tests/fixtures/README.md": "46a66422fc27d2114962a7d98ae99ff563bd220ebf6034458e898d984d2cb2f6",
+    "grow/tests/fixtures/lua-linux.stdout": "ba6094153ead0f5eb17f6781ad3895d7d87e06c32137d504e690193ee8191334",
+    "grow/tests/fixtures/lua.stdout": "dc431587a6024dc4f453db63632dbf0b30906acf43ff73352c67f70bbac9c687",
+    "grow/tests/fixtures/ppoll/guest.stdout": "8655e5f88e177dd10c74b1a168f1334a21be95edd19244e4dfba4e14f22938c4",
+    "grow/tests/fixtures/ppoll/linux.json": "07df59a1af831f4e1684a8914d3a84e14e915c69bd6db276ceb3646c9789cb7f",
+    "grow/tests/fixtures/ppoll/linux.strace": "aca517957e3b9419ff19c00529fd0d2a49c65d6e3b36d1945e7bc72637c85b2c",
+    "grow/tests/fixtures/rt_sigaction/guest.stdout": "1e2e40b061ac6ee66dd28dfa3e522a937b0ccc461a33c09a4f5e8d79077fb7f6",
+    "grow/tests/fixtures/rt_sigaction/linux.json": "66202a848cbe472088b41f111a063da079f96335a225fe3259e1c5a601761f06",
+    "grow/tests/fixtures/rt_sigaction/linux.strace": "6745a045d683effa9f079ba19ecd5516334f4a2625c92ee1163886124d4525be",
+    "grow/tests/fixtures/rt_sigprocmask/guest.stdout": "acbf311d7e272b1a91270d96b09f7feee4349d2f649eb51a3f09e7cc13017ffd",
+    "grow/tests/fixtures/rt_sigprocmask/linux.json": "121a03bc6a9173795de7608ccc0f25e34f64644807700f03302daac4f2288038",
+    "grow/tests/fixtures/rt_sigprocmask/linux.strace": "e083a99d994d4ca6a90154e7acd76c06c5e27397b920f01c2552e3ae7be26439",
+    "kernel/.R4": "3f39dc04f8687d679c9e5278ba3008b6944eec72f2f5374fd9591657c3524fa3",
+    "kernel/.READY": "e3aaf6bbbd630b6fa9067c2f774385115927f8c2e3f210c0c8191dae45ee2c85",
+    "kernel/.gitignore": "a038a0676090f6d5e4ab098ec4aca5ea5ba76a8be815bc470b866b9e62de45dd",
+    "kernel/Cargo.lock": "6fdfac0f592bff4db159cfa4d472fd6851b40c81d6ca2c99635585b47625f131",
+    "kernel/Cargo.toml": "c78e5d95f4728e348bbbc106b7873ed8501f727da6f20c3572cdc27af84d6f3e",
+    "kernel/Makefile": "d102832e8dd7bfbf8cff9ddf618c0a8bc472ee2e2eb6a6812b2fb61067e536ec",
+    "kernel/README.md": "8536733ee818f7c3bed922a84561bd6cc35bbcc3878cd2b91e9c41fce16c3b60",
+    "kernel/artifact.py": "80abbf44e22fd0bddcf40c98a9f4e5d07d4d7e03abe9c849ae5d263ea078ed3f",
+    "kernel/bootstrap.js": "563c24147a4977243d82e897f12888fbbb5e09ffab3874ceb0377796dfe28d96",
+    "kernel/build.rs": "4c7d6d013d65801fdcd7205f7e7e9a6c0cfc606edb239407ce369ebd74642cc4",
+    "kernel/build.sh": "eb39b23473a58b08e77633bbf1289c65759f91f4735dba7e6fa96d305329f2eb",
+    "kernel/link.ld": "ff153a55d5f100c8e629618dd85e188b50fee73d4f453c6054635d0af35a390d",
+    "kernel/prepare.py": "8c2b611a1d6ce21d00d2513d74c89af632577be5096dfca637e68dccb8926c69",
+    "kernel/slots.json": "cfb6f1b6515417bec5e6fbb5af0b82b91f7a191e0896233fb7481af10745cfb8",
+    "kernel/syscalls.manifest.json": "43bc43ed64828578fdf983e625c42a4a7ac555d7463d30c4cc5cf892e1e9934c",
+    "kernel/payload/qjs": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+    "kernel/src/boot.S": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27",
+    "kernel/src/console.rs": "50c0b6e676ba95045f90a7a1026e13a98b8b0aa53b1c62983d0027e455f24427",
+    "kernel/src/fdt.rs": "2b6fc25cfc3a8f6bc2f47f0db8208747e199f87420fa2bd8141e187115ca898a",
+    "kernel/src/main.rs": "23781eed700e082a31c96c1df5471d07ca60e984ed69b35bc18ef599b7611d30",
+    "kernel/src/mmu.rs": "287f6ac8fc976f4b3742dd53d801a63d2725387467fe45bf9ec5d872589efe44",
+    "kernel/src/syscalls.rs": "2409824fb811df3f66e99ae02dae34c2869983c6ae71ed3ecb6526789bcf60fa",
+    "kernel/src/trace.rs": "7a231757c245f11d6112bc4a5053411f25d37f5edcf151837bebbfc3b1e3c88a",
+    "kernel/src/user.rs": "1cd8d93d65b069da05f2f1c0b857a411eccf66fb0da0ceab60885fcf00ae10c5",
+    "kernel/src/vectors.S": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738",
+    "kernel/src/wait.rs": "57efa1de74d1d2f810472d5d05bebbd3cb3f590514731530d02fa31d0bb065b4",
+    "kernel/src/syscalls/brk.rs": "e79b38d0ed7a8893c9f98ab5c87d2c97888c9e6ac63a5c59c6620dcb7297cf31",
+    "kernel/src/syscalls/clock_gettime.rs": "00ccd2816f3094fba9c053a8946f6d2e991bf90a9aa42a9da81dedaf21ae176e",
+    "kernel/src/syscalls/close.rs": "1d3cf4c66b8e35e296eeeaf1d7900add85ab83b2c4c545c1cf1eebc56029e991",
+    "kernel/src/syscalls/exit.rs": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd",
+    "kernel/src/syscalls/getcwd.rs": "733dce273bd66cd3bf6f3e61d3c67474806ca143e09ac0a31294472af3794ea6",
+    "kernel/src/syscalls/ioctl.rs": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff",
+    "kernel/src/syscalls/lseek.rs": "a640122c132396ac215199c6f9ce667ff620af73124798039d1484e0aa9096ab",
+    "kernel/src/syscalls/mmap.rs": "4a617c0e2ed02a51c4185b7d306a2b95d0a2d1b9ea8bb10ccd9fab88cd8ada9c",
+    "kernel/src/syscalls/mremap.rs": "ba99bc5f99bce39810d5f6f15c6f553a90a1399b1438e01de99af8b78eece56f",
+    "kernel/src/syscalls/munmap.rs": "003651167f569b9c3f2c4fb785b602d89299e4b986d15c26396774591d8b280f",
+    "kernel/src/syscalls/openat.rs": "2d2b9f6bda37b2951d3bda8264a46c4f75e8fecb86b45158ae010170f4de692b",
+    "kernel/src/syscalls/ppoll.rs": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33",
+    "kernel/src/syscalls/read.rs": "4339ff744a36293ed8faa03caec69946020d8f2c77b1b9b6c9dff83b69505cd4",
+    "kernel/src/syscalls/readlinkat.rs": "36bc0a51c905823d8254ddb88055f777cc9551a02a635623d20a63b803f1b0d5",
+    "kernel/src/syscalls/readv.rs": "bf90628c677b449262fc950474164cd5e3e8b2670bbf7f54b406050e00207873",
+    "kernel/src/syscalls/rt_sigaction.rs": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36",
+    "kernel/src/syscalls/rt_sigprocmask.rs": "41a598203348d53dbba585bb456426254a77554961a8b0c366d930a1dd6cbcba",
+    "kernel/src/syscalls/set_tid_address.rs": "8b1c109892ff62df0f67a507fcc5bd416e28428196da2251af443b3c4eb94662",
+    "kernel/src/syscalls/write.rs": "6fbe0b0047b2afcabc83761e4ed7dd2acb0661d586fe97486b68fb66cf5c17aa",
+    "kernel/src/syscalls/writev.rs": "40ff0972f289eaca6ec4a5a026033049f6764485b98b87276ec2fef1fbe44cff",
+    "kernel/tests/checks.py": "28ab50605c35f23a4d60a4021dc1956cfd4e0887a8f5fc0fa3bc37c7095d0f4d",
+    "kernel/tests/clock-check.py": "0b465d3768db87f7dc7a25163305ba2a2a2271e27f8af5edf33935631a59721a",
+    "kernel/tests/demo.py": "993c374edba8d5ec88d64dad2f0a36b279b0caf6f5957219d94a6d19a082b8ae",
+    "kernel/tests/grow_contract.py": "30457dda533aee6d94e508966de7c432559109501553adca418ba75ec7ca8924",
+    "kernel/tests/host.sh": "75a3d155b66f574bdb23a23d7dd85c5654150c71f1eaeeeb592256f9fa4c272b",
+    "kernel/tests/lua_profile.py": "29f55d300de7aef38f5687f515b0cb95d2abd34a23073eeac59109558ff47678",
+    "kernel/tests/measure.py": "c18f470fa557c955009f51a86feb609a4daa6a926198f48374cb4676980329c6",
+    "kernel/tests/regression.py": "4f475027acfd47fd365c08d41ed1aa9e2737ffd717263f2d3d1d29c7cfe50aca",
+    "kernel/tests/run-probes.py": "5e19a99079da5aa90446eee05fedc7adeed8f9b2ec5a1410e405d647066e0481",
+    "kernel/tests/test_handlers.py": "979cdb382599bb54b55349fe4e506478514d5b329ab32dbb55b7f40bc83f4ddc",
+    "kernel/tests/test_packer.py": "5ef364c972f424c8f73b2a36c3def1a2af3db974e5739e2e26adcf59010fec89",
+    "kernel/tests/fixtures/grow/ioctl.S": "10f1a581a105f56681aa5cf2ecd08a98fa1c163f4621b030ef52360009a2b1a7",
+    "kernel/tests/fixtures/grow/ppoll.S": "7633c17506d0ee3fe8d26113c02da71946913e68ac2bbbf47dad451a4992befd",
+    "linux/.R4": "8b70d1e4c8e4aeec16fb12b9f06a03d73f68f5b199b282bf7f717862d0587304",
+    "linux/.READY": "e6916eceadde4df8920a598adad25e3d9f3756324b418a4bc99609bd06237037",
+    "linux/README.md": "9da26c5eac3aea7042e66d8c5359900f425898a81735f9488a7fa55d9798db8e",
+    "linux/build-faults.py": "794740979a2bc35b91f2ae5ea1697bdb6257e071e750bdb4eef2867a2585e857",
+    "linux/build-kernel.py": "448982a555bd66cbdd1030ee3de13bd3809d3f83cd3e4dde880c278d8df73c36",
+    "linux/build-linux.sh": "674b4182606a82b1cd659966739b290f973706467bb09190d5551783cbbc8a11",
+    "linux/build-probes.py": "8a12b1ee415439b2049c78bf23686502ddaebda2d4809f1f0f1aa7d233d16516",
+    "linux/cpu-analysis.py": "a6010a446b0440714d7010b4cfc716becfc4249ee6e53659d1ced11576fc8d47",
+    "linux/docker-build.sh": "e4a64e7efeda6134956673e3ce142f26a5f489436c9c5d6ba19b56432759ea8f",
+    "linux/nested.sh": "4201074f2ece2704c138b458fb432f4403d926d00ec7e29a4e30f5e370f6abdb",
+    "linux/prepare-nested.sh": "b978c82b4a52b7938f2295a71f3f0ada6be457678f7a0c9d86ab09d1061995fa",
+    "linux/run.sh": "a858db7189a6ad3c182ce9cb974a3e252935600cfa04349e29dc0e8b5f69356e",
+    "linux/seccomp-probe.c": "64d3a90b3641666ff24643ca7f2ae5d8523ba9166d6c0e2e93cfc02738089de5",
+    "linux/spawn-cg.c": "abff20bbadf7f90a317ec7fda17d618618f15abca20adf53062f15d102579569",
+    "linux/stage-canonical.py": "2505d5eadda2abc568f413cc7cd6cf1678f92d9d3ae9f2190d3cb464a8218d5d",
+    "linux/suite.py": "2662a83403a6a423f100ba7acce49e1d31d9a7b000d021ddf56abef0f3fc7d79",
+    "linux/summarize.py": "6bd530aab0a3e50af385b10713de192609063ce2d07466bf9a2703c3172236ce",
+    "linux/guest/kk.bin": "f82411ed394e499325633e638995efa60c70ab56bf74aaa8c68c701da8a11844",
+    "linux/guest/link.ld": "fefbc19b18f0124da259b7703d6cb4b827bde69b07e62570ef2719408afc8cff",
+    "linux/nested/init": "8c475cc2c7ec3a164170091f01618b78277765a07d712d0f00dcc7241b7df499",
+    "linux/nested/parking-check.py": "2884d10259b1e090087495dc07afc1a7b19a11b440f85717e501d054d489e66c",
+    "linux/nested/preflight.py": "321fc695486d2e6d98d90d871eab4d702a419e99f6c530d4ab091e3a6d071cb8",
+    "linux/nested/prepare-stdlib.sh": "ede0a3b0eb843e45d7eec0423aee062b26a1fc20a619e8a759f3b7980b217a1b",
+    "linux/nested/run-qemu.py": "0866f545f9c2c635660fbc7683218fbc6aabbc1a63cb13a7175d30adf70d4f96",
+    "protocol/.READY": "673bc685d210d6dbfb6d372261dd5a0bd129f0254fc3af423b80e766c14238bc",
+    "protocol/Makefile": "01b346ab34dcbfe8491bf6bcbda52fc9eb7a5e7b25e14127c2630b312529ab8b",
+    "protocol/PROTOCOL-v1.md": "d61c92f6208a093e10c26538c10b9f765d3377ff29eaeb86f0bab27903769e0b",
+    "protocol/README.md": "46f24b2c9d039e2f75335bb03f6ce7b5fb2b7c912ab2cb6e68d62dd262e2fe8b",
+    "protocol/bench-dispatcher.mjs": "e92d8e07e89b3310b785e461e852b466c7853bee9d06e7894b1598031053b48b",
+    "protocol/bootstrap.js": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280",
+    "protocol/build.mjs": "a05756e9205293cc82049a2699f23266e009855e2426b68b1eb92803c4eb71b8",
+    "protocol/dispatcher.js": "8b5a2e3085b3dcb9e7e2b9eecead3558d59f1485e4bd0b7b8a1a85f5b8e4958d",
+    "protocol/dispatcher.ts": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f",
+    "protocol/import-check.mjs": "a72823115c737a50949412b6720074cf97b1ab568a9d5bd70a36de32c8eaeb1b",
+    "protocol/make-vectors.py": "8435f44a1b75f43bf80b57e12a63318f486121bd55e3d2ddc023e598e9d5adbb",
+    "protocol/package.json": "ea3a81476fefa9e26f4da81f301cfad1444c0f1f120a9a509fde91518f52aa22",
+    "protocol/report.py": "39a7602fecd577c163609228cb0a8aabf981416dac23f9b1a48b8a0098f538b1",
+    "protocol/test-results.json": "0bd5b3b6641edd3d7667d5bf774c21a2ca9648ecef00f6b4516b4ca228620f4e",
+    "protocol/test.mjs": "dc4520db6fe7788b39c3dcfa3e69351e4d0447fe1c8731934cc5c759f02da4e8",
+    "protocol/vectors.json": "d06607613bacc175d8d817461750aa2149fd7d22a3ac482754c3f46b89305b94",
+    "protocol/vm-r2-fallback-results.json": "4346613853c338d4718881c134e0bd83556b6113523387d9eae695911f2eb2e7",
+    "protocol/vm-results.json": "3c5b04dff26164518c5e757cbd643550f77499f1562eeda547065a5ac7da63f0",
+    "protocol/vm-test.mjs": "9f43185f2014ab778b6dcd9f33b5cf4130e676d3c2cd19715c2036f57264fa74",
+    "protocol/vm.mjs": "329ed24acc300b6a232d8c4bf048d5119cbcf0051257f472c19e1b19a6b996d4",
+    "protocol/watchdog.py": "3733ad277b4fab370adc234043a5e384949703e973c344a9c053cd6369bf9e15",
+    "protocol/hostile/README.md": "07f8eb93996b7c04dd4429d896d824e13a3b56db0f598fb3b64c62cb10937a71",
+    "protocol/hostile/cases.mjs": "feb1b8e10c9179355a8d1c31e703cd74efa67f7e3b93b6893b5991ba2158ed0a",
+    "protocol/hostile/integrated-smoke-results.json": "e5720d9df59e4f4b15a16f1b5d2f09b58f01c258db6780077d6fe2c17142c1f3",
+    "protocol/hostile/r2-diagnostic-results.json": "79271ecd0cd7bb88365f7b1b4081e90f531a9842b1e27de21084e2d84740378c",
+    "protocol/hostile/results.json": "7d439d1dc943b676a3e2c7fb9156f5718764af6bac406b4b3ca2c397f6425e89",
+    "protocol/hostile/run.mjs": "b207fabdd1fbc236de96ab51b37d4663a42c9a2e4b7c117a96b178063beb62a6",
+    "vmm/.READY": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vmm/.gitignore": "0cf256cc9234b415f912f5b0e9f8c9364688466041611047cd3f599c35f4efa6",
+    "vmm/Makefile": "5fb49f580a5f523cd42f0f6d9f427c6e80b0b49b6fec0cbbc86e509873f206bd",
+    "vmm/README.md": "104ceec7a89e06a053d35b51342dc3bf2d44216f34a6f133bbe9430121d621b1",
+    "vmm/build-linux.sh": "a92a00161ffb96aaf1b5c999dd8bddc137d8b9de1295f60fd370376e5e439bd6",
+    "vmm/build.py": "0c42934052f8554aebd081b900858110441a59d35f518b1d98bfddf692648f95",
+    "vmm/hypervisor.entitlements": "70d65ae13874e183526aa48e55bb330f2156da94effca24f89b5e2f940262723",
+    "vmm/patches/control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "vmm/patches/libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+    "vmm/patches/native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295",
+    "vmm/patches/series": "d645b7043510a2bb44509d635178c14a4973552ebb3c30c94a683db9d2529179",
+    "vmm/patches/thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "vmm/sandbox/.READY": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vmm/sandbox/README.md": "ea2c53457abf0dcc16249208505727f4e79385052288cc3aaf1c71d7c4fc31a7",
+    "vmm/sandbox/jitk.sb": "cdeb2bc119fcba93466f0f0fa9471082530bbdcd9607439e259315dfd1cbdad4",
+    "vmm/sandbox/mod.rs": "a2bebbd445e47b7f0a86cef5a956e40f5feac0e766788872cf6b43b55f5bb4e2",
+    "vmm/sandbox/tests/escape.rs": "03419c5a4c5e1202ea72e9023b402c0e2e3af873d2be9c592858f2f88fdfae0d",
+    "vmm/sandbox/tests/run-escape.sh": "b2f222126b9252270128cd80db7a55c3949693783585c57e9eb8eccb2d6a72b4",
+    "vmm/sandbox/tests/run-unit.sh": "ef26cfea9068e140c0fb8571a9ec8d641d080ec92d17774a16d114dc5c6cf907",
+    "vmm/src/confinement.rs": "f1f3cd249fcd053e59c8405972af80e6346de9f07c0944f65ca322b3edec3bc9",
+    "vmm/src/main.rs": "6c92592319ccb9ebe2e14bc3191c8eb24ed4a2e7c25a59b1643beb355c2394d6",
+    "vmm/tests/build-guests.py": "492eae331ce70221e944500f15195d319e3b8172097a5449a3154e5520064e7d",
+    "vmm/tests/check.py": "e0fc95afbfe46068abc6981c6c9f3f3440aa995536df7bbd54ff67f3faa5a315",
+    "vmm/tests/console-abuse.py": "7c055a208c7e571effa684feb6211972755da3d859be74d325aa7245342f0a70",
+    "vmm/tests/nested-kvm.py": "499724a31fafa640910ee409f5ef25283dd699b608f7a913b0a1c6f605abd659",
+    "vmm/tests/sandbox-bench.py": "1d2539ec6708dabeeacc66cee91fe96eac44117ba299d22395494e94ea3007f5",
+    "vmm/tests/seccomp-probe.rs": "bcebb427c1cdef4f3f60c37f78b67282db0b632290e6c45d81ef8e82d3f6faba",
+    "vmm/tests/fixtures/bad-sysreg-handled.S": "772cac29b65d14a4937c1b95354357bf281759514f6bed44a4a4e870295b35b8",
+    "vmm/tests/fixtures/bad-sysreg.S": "45252d52ce35d37ca181afea185e7ea2b4a893f97b5b98da991fa40369d5e697",
+    "vmm/tests/fixtures/console-abuse.c": "c0c4c99a4d514f9d5000ef05ba7f8c9b29e2d47ed37ef6c8254cc1d35f3bd350",
+    "vmm/tests/fixtures/console_avail_oob.S": "9f4cdeb1d7ae51d6044c28d59750f3f66dd5c763f17a9af5727ed57e20729cc7",
+    "vmm/tests/fixtures/link.ld": "fefbc19b18f0124da259b7703d6cb4b827bde69b07e62570ef2719408afc8cff",
+    "vmm/tests/fixtures/mmio-halfword.S": "89a7fcfc9bbf023657414c5c1361094ca4d3ffe92b793950085007584c71c558",
+    "vmm/tests/fixtures/parking-guest.c": "eab11e853cf06a29c3ef09c11d89234b0bde26590ce2e6e15bf56aefe528b2cc",
+    "vmm/tests/fixtures/probe.ld": "529f660f3f2cad8aacf7a6884f9450e3747f765f0461ab360e7c530c405f8d11",
+    "vmm/tests/fixtures/psci-cpu-on.S": "bc336755c11cbd32bdbfc0abdad4632757d18bb079b08a1555ff8d15101aa974",
+    "vmm/tests/fixtures/psci-reset.S": "3a6ffc8a3554d0a67663119a1dfa20cef1f5fb1c40cfd0522e6499800b3492b3",
+    "vmm/tests/fixtures/rtc_oob_read.S": "c202cc7673e0baab2ce61b0b95cc34e12b4a6b03a66ea0cb70e61e163721ffee",
+    "vmm/tests/fixtures/start.S": "b1cac15c04738ad1de3cd7418d01377d3ad60c7c6f4e916547cce563179a805d",
+    "vmm/tests/fixtures/unknown-hvc.S": "b797e0854c04b8af4c60f185d72588303e854f8a5bac462da72bde54fe6f02d8",
+    "vmm/tests/fixtures/unknown-smc.S": "e6173ab4ff7166376533316a55201db55cab4c824932c6c67b0c415edcae189f",
+    "vmm/tests/fixtures/vbar-sysreg.S": "c75b742084ad40b3b71b76c6beb732d9f8dbf2dfed3f1ba62be915a3b841f0b0"
+  }
+}

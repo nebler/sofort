@@ -1,0 +1,20 @@
+{
+  "utc": "2026-10-24T01:33:37.966579+00:00",
+  "uptime": "3:33  up  4:47, 2 users, load averages: 41.52 56.38 65.81",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "scope": "One sequential boot/EOF comparison, no submitted JS, no tools or credentials; every child joined or killed on 10s timeout. Not a performance sample.",
+  "samples": {
+    "native": {
+      "rc": 1,
+      "host_sha256": "c751583737c2abed6c80a64dc83bc1ce2f1544d94b12ca4ac7b974d1bc6fb61c",
+      "stdout": "",
+      "stderr": "Error: BootError(\"Internal(Vm(VmSetup(VmCreate)))\")\n"
+    },
+    "canonical": {
+      "rc": 70,
+      "host_sha256": "b850f72cc88455ed56d131ef435d5f2474ebf5901702b1551cb019aa0c5514e2",
+      "stdout": "",
+      "stderr": "{\"sandbox\":\"ok\"}\njitk-vmm: boot error: Internal(Vm(VmSetup(VmCreate)))\n"
+    }
+  }
+}

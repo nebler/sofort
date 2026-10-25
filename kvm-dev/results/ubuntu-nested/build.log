@@ -1,0 +1,46 @@
+make: Entering directory '/home/dev/jitk-work/vmm/libkrun'
+cargo build --locked --release -p libkrun 
+    Finished `release` profile [optimized] target(s) in 0.07s
+cp target/release/libkrun.so target/release/libkrun.so.2.0.0
+make: Leaving directory '/home/dev/jitk-work/vmm/libkrun'
+warning: constant `SEATBELT_PROFILE` is never used
+  --> /home/dev/jitk/vmm/src/../sandbox/mod.rs:20:11
+   |
+20 | pub const SEATBELT_PROFILE: &str = include_str!("jitk.sb");
+   |           ^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: 1 warning emitted
+
+warning: constant `SEATBELT_PROFILE` is never used
+  --> /home/dev/jitk/vmm/tests/../src/../sandbox/mod.rs:20:11
+   |
+20 | pub const SEATBELT_PROFILE: &str = include_str!("jitk.sb");
+   |           ^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `compile_profile` is never used
+   --> /home/dev/jitk/vmm/tests/../src/../sandbox/mod.rs:100:8
+    |
+100 | pub fn compile_profile(_images: &Path, _out: &Path) -> Result<(), E> {
+    |        ^^^^^^^^^^^^^^^
+
+warning: 2 warnings emitted
+
+{
+  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "patches_sha256": {
+    "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+  },
+  "panic": "abort",
+  "features": [],
+  "sandbox_ready": true,
+  "binary": "/home/dev/jitk-work/vmm/jitk-vmm",
+  "binary_sha256": "58c04d7d42bff8f062103b360beb53fc7e6778cd94e9119cce95b39348bd6a5e",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+}

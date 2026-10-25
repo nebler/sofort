@@ -1,0 +1,20 @@
+{
+  "image": "dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin",
+  "manifest": "dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.json",
+  "sha256": "5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36",
+  "bytes": 2924544,
+  "ram_mib": 32,
+  "created_utc": "2026-10-24T01:14:03.741679+00:00",
+  "guest_loc": 1449,
+  "build_rs_loc": 53,
+  "gates": {
+    "G1": "0.00% idle; 1000/1000",
+    "G2": "30 x 64 reversed replies",
+    "isolation": "9/9",
+    "packer": "5/5",
+    "grow_contract": "4/4"
+  },
+  "test_host": "/tmp/jitk-02/r3/host-no-tick",
+  "test_host_sha256": "c751583737c2abed6c80a64dc83bc1ce2f1544d94b12ca4ac7b974d1bc6fb61c",
+  "note": "Functional host uses r2 panic=abort libkrun; omits tick_us to test native default. Integrated sandbox launcher initially blocked; kernel READY does not certify sandbox or quiet performance."
+}

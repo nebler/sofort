@@ -1,0 +1,57 @@
+{
+  "load": "2:36  up  3:50, 2 users, load averages: 24.79 67.40 52.45",
+  "kernel-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "text-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "heap-exec": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "privileged": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "el0-hvc": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "bad-pointer": {
+    "returncode": 0,
+    "output": "\u001eexit=0000000000000000\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "pan": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009600000f far=0000000000400000 pc=00000000800023c4\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "alias-write": {
+    "returncode": 0,
+    "output": "\u001eFAULT esr=000000009600004f far=0000000080080000 pc=000000008000211c\n",
+    "stderr": "",
+    "status": "PASS"
+  },
+  "unknown-syscall": {
+    "returncode": 0,
+    "output": "\u001eENOSYS nr=00000000000001ff\n\u001eexit=0000000000000000\n",
+    "stderr": "",
+    "status": "PASS"
+  }
+}

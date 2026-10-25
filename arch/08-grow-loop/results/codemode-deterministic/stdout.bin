@@ -1,0 +1,3 @@
+{"t":"call","id":0,"ns":"github","fn":"listPRs","args":{"repo":"acme/api","state":"open"}}
+{"t":"call","id":1,"ns":"github","fn":"comment","args":{"id":1,"body":"ping 50"}}
+{"t":"done","result":{"count":1}}

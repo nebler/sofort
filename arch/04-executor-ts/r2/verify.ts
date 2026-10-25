@@ -1,0 +1,45 @@
+import assert from 'node:assert/strict';
+import {performance} from 'node:perf_hooks';
+import {writeFile} from 'node:fs/promises';
+import {z} from 'zod';
+import {toolDefinition} from '@tanstack/ai';
+import {stripTypeScript,createCodeModeTool} from '@tanstack/ai-code-mode';
+import {MicroVMExecutor,SandboxPool} from './executor.js';
+import {selectBackend} from './select-backend.js';
+import {execFileSync} from 'node:child_process';
+const selected=selectBackend();
+console.log(selected.selection);
+import {defineTool,prepareProviders} from './providers.js';
+const pool=new SandboxPool(selected.backend,selected.gate?2:0,8,{parkingGate:selected.gate});
+const loadBefore=execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim();
+const seen:any[]=[];
+const ex=new MicroVMExecutor(pool,(call,ctx)=>{seen.push({fn:call.fn,labels:ctx.provenance});return call.fn==='write'?'requireApproval':call.fn==='blocked'?'deny':'allow';});
+const rows:any[]=[];
+async function test(name:string,fn:()=>Promise<void>){const t=performance.now();await fn();rows.push({name,ok:true,ms:performance.now()-t});console.log('PASS '+name);}
+let effects=0;
+const providers=[{name:'github',fns:{listIssues:async()=>[{id:1},{id:2}],slow:async()=>new Promise(r=>setTimeout(()=>r('ok'),200)),write:async()=>++effects,blocked:async()=>++effects,echo:async(...a:unknown[])=>a[0]}}];
+try {
+await pool.warm();
+await test('exact requested demo',async()=>{assert.equal((await ex.execute("const r=await github.listIssues({repo:'x'});return r.length",providers)).result,2);});
+await test('binary codec roundtrip',async()=>{const r=await ex.execute('return await github.echo(new Uint8Array([0,127,255]))',providers);assert.deepEqual(r.result,new Uint8Array([0,127,255]));});
+await test('async fanout and UTF8',async()=>{const r=await ex.execute("return await Promise.all([github.echo('größer 🌍'), github.echo(2)])",providers);assert.deepEqual(r.result,['größer 🌍',2]);});
+await test('capture console + provider prelude closure',async()=>{const r=await ex.execute("console.warn('a',2);return github.local(3)",[{...providers[0]!,prelude:'github.local=x=>x+2;'}]);assert.equal(r.result,5);assert.deepEqual(r.logs,['[warn] a 2']);});
+await test('deny has no side effect',async()=>{const r=await ex.execute('return await github.blocked()',providers);assert.match(r.error!,/policy denied/);assert.equal(effects,0);});
+await test('approval is fail closed',async()=>{const r=await ex.execute('return await github.write()',providers);assert.match(r.error!,/approval required/);assert.equal(effects,0);});
+await test('approved call executes once',async()=>{const r=await ex.execute('return await github.write()',providers,{approve:async()=>true});assert.equal(r.result,1);assert.equal(effects,1);});
+await test('provenance accumulates across calls',async()=>{await ex.execute('await github.echo(1);return await github.echo(2)',providers);assert(seen.at(-1).labels.includes('tool-untrusted'));});
+await test('CPU infinite loop SIGKILL',async()=>{const t=performance.now();const r=await ex.execute('while(true){}',providers,{timeout:30});assert.match(r.error!,/timed out/);assert(performance.now()-t<1000);});
+await test('AbortSignal kills awaiting guest',async()=>{const c=new AbortController();setTimeout(()=>c.abort(),30);const r=await ex.execute('return await github.slow()',providers,{signal:c.signal});assert.match(r.error!,/aborted/);});
+await test('tool that never settles cannot defeat deadline',async()=>{const r=await ex.execute('return await tools.hang()',[{name:'tools',fns:{hang:async()=>new Promise(()=>{})}}],{timeout:30});assert.match(r.error!,/timed out/);});
+await test('fresh process per execute',async()=>{await ex.execute('globalThis.leak=42;return 1',providers);assert.equal((await ex.execute('return typeof globalThis.leak',providers)).result,'undefined');});
+await test('unknown inherited method denied',async()=>{const r=await ex.execute('return await github.toString()',providers);assert.match(r.error!,/unknown tool|not a function/);});
+await test('sanitized names and collisions',async()=>{assert.equal((await ex.execute('return await github.list_issues()',[{name:'github',fns:{'list-issues':async()=>5}}])).result,5);assert.match((await ex.execute('return 1',[{name:'github',fns:{'a-b':async()=>1,a_b:async()=>2}}])).error!,/collision/);});
+await test('generated types + host validation',async()=>{const t=defineTool(z.object({repo:z.string()}),z.array(z.object({id:z.number()})),async()=>[{id:1}]);const p=prepareProviders([{name:'github',tools:{listIssues:t}},{name:'gitlab',tools:{listIssues:t}}]);await writeFile(process.cwd()+'/generated-tools.d.ts',p.types+'\n');assert(p.types.includes('declare const github'));assert.equal((await ex.execute("return (await github.listIssues({repo:'x'})).length",p.providers)).result,1);assert.match((await ex.execute('return await github.listIssues({repo:5})',p.providers)).error!,/invalid_type/);});
+await test('TanStack driver on actual stripped body',async()=>{const context=await ex.createContext({bindings:{external_echo:{name:'external_echo',description:'echo',inputSchema:{type:'object'},execute:async(x)=>x}},memoryLimit:selected.backend.memoryLimitMB});const r=await context.execute(await stripTypeScript("const n: number = 7; return await external_echo({n});"));assert.deepEqual(r,{success:true,value:{n:7},logs:[]});const again=await context.execute("return 'a plain string'");assert.equal(again.value,'a plain string');await context.dispose();assert.equal((await context.execute('return 1')).success,false);});
+await test('TanStack memory mismatch fails explicitly',async()=>{await assert.rejects(()=>ex.createContext({bindings:{},memoryLimit:64}),/matching backend/);});
+await test('TanStack createCodeModeTool integration',async()=>{const tool=createCodeModeTool({driver:ex,memoryLimit:selected.backend.memoryLimitMB,tools:[toolDefinition({name:'echo',description:'echo',inputSchema:z.object({n:z.number()})}).server(async args=>args)],debug:false});const r:any=await tool.execute!({typescriptCode:'const n: number = 9; console.log(n); return (await external_echo({n})).n+1;'},undefined as never);assert.equal(r.success,true);assert.equal(r.result,10);});
+await test('bounded log capture (v1 truncates/drops)',async()=>{const r=await ex.execute("for(let i=0;i<10000;i++)console.log('a');return 1",providers);assert.equal(r.result,1);assert(!r.error);assert.equal(r.logs?.length,1024);});
+await test('warm pool capacity and single use',async()=>{const p=new SandboxPool(selected.backend,selected.gate?1:0,1,{parkingGate:selected.gate});await p.warm();const s=await p.acquire();await assert.rejects(()=>p.acquire(),/saturated/);await p.release(s);await p.close();});
+}finally{await pool.close();}
+await writeFile(process.cwd()+'/verification-results.json',JSON.stringify({selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows},null,2)+'\n');
+console.log(`${rows.length} checks passed`);

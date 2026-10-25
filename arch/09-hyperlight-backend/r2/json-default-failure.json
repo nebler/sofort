@@ -1,0 +1,1 @@
+{"phase":"pre-benchmark smoke","heap_mib":16,"scratch_mib":1,"case":"json1m","error":"GuestAborted(13, \"Out of physical memory\")","fix":"all measured Hyperlight modes use 16 MiB scratch and 16 MiB guest heap"}

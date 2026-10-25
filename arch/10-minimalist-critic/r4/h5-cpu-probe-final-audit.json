@@ -1,0 +1,45 @@
+{
+  "source": "arch/04-executor-ts/r4/h5-cpu-probe-final.json",
+  "receipt_sha256": "44962a47e4c8eccf4c74c50537fd95fb9f3d1a59f9f9c39aae1ac1d47d8107d0",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "executor_sha256": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+  "watchdog_sha256": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+  "finished": "2026-10-24T03:03:36.416Z",
+  "harness_error": null,
+  "pool_after_close": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "cases": {
+    "cpu": {
+      "n": 30,
+      "controls_pass": 30,
+      "admitted_callbacks": 0,
+      "admitted_effective_kill_le50": 0,
+      "watchdog_receipts": 13,
+      "external_kill_le50": 11,
+      "effective_kill_le50": 28,
+      "max_external_kill_overshoot_ms": 139.455810546875,
+      "api_le50": 28,
+      "max_api_overshoot_ms": 295.79512500000055,
+      "signals_received_aborted": 0,
+      "late_successes": 0,
+      "load1_range": [
+        73.06005859375,
+        112.85107421875
+      ]
+    }
+  },
+  "audited_utc": "2026-10-24T03:33:48.497680+00:00",
+  "auditor_load": [
+    45.70458984375,
+    45.6396484375,
+    59.63330078125
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "selection": "integrated jitk / confined VMM / current kernel",
+  "loadBefore": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "loadAfter": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 2,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "n": 30,
+      "calls": 1920,
+      "maxOutstanding": 64,
+      "executeMs": {
+        "median": 10.629458999999997,
+        "p90": 11.37299999999999,
+        "p99": 16.826459000000007
+      },
+      "samples": [
+        16.826459000000007,
+        12.11554199999999,
+        11.230666,
+        11.14033400000001,
+        11.671832999999992,
+        11.31004200000001,
+        10.964124999999996,
+        10.53562500000001,
+        10.606708000000026,
+        10.667249999999996,
+        11.047124999999994,
+        10.447958,
+        10.013082999999995,
+        10.892875000000004,
+        10.531750000000017,
+        10.590292000000005,
+        11.37299999999999,
+        10.629458999999997,
+        10.325333,
+        10.743415999999968,
+        10.634916999999973,
+        10.54325,
+        10.575583999999992,
+        11.276292000000012,
+        10.674082999999996,
+        10.399166000000037,
+        10.420582999999965,
+        10.41066699999999,
+        10.108458999999982,
+        9.918375000000026
+      ]
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}

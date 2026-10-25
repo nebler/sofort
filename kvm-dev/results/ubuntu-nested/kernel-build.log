@@ -1,0 +1,3 @@
+   Compiling jitk-02 v0.3.0 (/home/dev/jitk-work/kernel)
+    Finished `release` profile [optimized] target(s) in 0.24s
+{"image": "/home/dev/jitk-work/kernel-1069385910d00d47cb83de04785713719c60d9b74d97183a0b36a5b74aca72f1.bin", "sha256": "1069385910d00d47cb83de04785713719c60d9b74d97183a0b36a5b74aca72f1", "bytes": 2924544}

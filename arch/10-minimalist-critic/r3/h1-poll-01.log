@@ -1,0 +1,52 @@
+jitk: delegating kernel/build (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/clean/kernel)
+    Finished `release` profile [optimized] target(s) in 0.98s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin", "sha256": "5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36", "bytes": 2924544}
+jitk: delegating vmm/build (see /private/tmp/jitk-10/clean/vmm/README.md)
+JITK_VMM_BUILD="/tmp/jitk-01/r3/darwin" python3 build.py
+cargo build --locked --release -p libkrun 
+    Finished `release` profile [optimized] target(s) in 0.33s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib
+/tmp/jitk-01/r3/darwin/jitk-vmm: replacing existing signature
+{
+  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "patches_sha256": {
+    "libkrun-robustness.diff": "777f0e64d0b58da1a0fa69156126d660590e2298894750e8876362dc2148cf66",
+    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+  },
+  "panic": "abort",
+  "features": [],
+  "sandbox_ready": false,
+  "binary": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+  "binary_sha256": "9da61bc38378dd316dcb4d11d998aaa950881f6df892ecffd68033bbef825751",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+}
+jitk: delegating protocol/build (see /private/tmp/jitk-10/clean/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:38088) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+jitk: delegating executor/build (see /private/tmp/jitk-10/clean/executor/README.md)
+./run.sh build
+node:internal/modules/cjs/loader:1568
+  throw err;
+  ^
+
+Error: Cannot find module '/private/tmp/jitk-10/clean/executor/node_modules/typescript/bin/tsc'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at Module._load (node:internal/modules/cjs/loader:1341:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v24.22.1
+make[1]: *** [build] Error 1
+make: *** [build] Error 2

@@ -1,0 +1,182 @@
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r4/anyname/kernel)
+    Finished `release` profile [optimized] target(s) in 11.10s
+{"image": "/private/tmp/jitk-02/r4/anyname/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+python3 tests/test_packer.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.006s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/regression.py
+{
+  "load": "4:52  up  6:05, 2 users, load averages: 28.70 33.32 46.75",
+  "churn": {
+    "cumulative_bytes": 134217728,
+    "ram_mib": 32,
+    "result": {
+      "t": "done",
+      "ok": 8128
+    }
+  },
+  "clock": {
+    "host_interval_plus_1ms": 30,
+    "n": 30,
+    "midpoint_delta_ms": {
+      "n": 30,
+      "p50": -0.54375,
+      "p90": 0.029,
+      "p99": 0.1115
+    }
+  },
+  "finite_timer_e2e_ms": {
+    "n": 30,
+    "p50": 28.133854499999998,
+    "p90": 42.951458,
+    "p99": 91.310709
+  },
+  "eof": "PASS: clean input EOF terminates without a success frame",
+  "partial_rx": "PASS: 1-byte run fragments + 32KiB ret",
+  "control_forgery": [
+    "\u001efatal control byte"
+  ],
+  "atomic_ascii": [
+    {
+      "byte": 0,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 30,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 127,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 128,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 255,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
+{
+  "load": "4:52  up  6:05, 2 users, load averages: 28.70 33.32 46.75",
+  "status": "PASS",
+  "n": 30,
+  "method": "Realtime minus guest counter compared with host realtime minus same-domain mach counter; 64 bracketed guest samples, narrowest retained. Date.now is millisecond quantized.",
+  "origin_error_ms": {
+    "n": 30,
+    "p50": -0.6082763671875,
+    "p90": -0.11083984375,
+    "p99": -0.038818359375
+  },
+  "guest_bracket_width_ms": {
+    "n": 30,
+    "p50": 0.00024999678134918213,
+    "p90": 0.0002500005066394806,
+    "p99": 0.0002500005066394806
+  },
+  "worst_abs_error_bound_ms": 0.9793730452656746,
+  "samples_ms": [
+    -0.979248046875,
+    -0.755126953125,
+    -0.552734375,
+    -0.248779296875,
+    -0.3330078125,
+    -0.3798828125,
+    -0.8779296875,
+    -0.859375,
+    -0.54248046875,
+    -0.39599609375,
+    -0.681640625,
+    -0.66455078125,
+    -0.089599609375,
+    -0.8330078125,
+    -0.11083984375,
+    -0.80712890625,
+    -0.72509765625,
+    -0.62890625,
+    -0.038818359375,
+    -0.731689453125,
+    -0.373291015625,
+    -0.587646484375,
+    -0.91845703125,
+    -0.97119140625,
+    -0.326171875,
+    -0.294677734375,
+    -0.69140625,
+    -0.4296875,
+    -0.793701171875,
+    -0.344482421875
+  ]
+}
+kernel-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '3662e0b6532667cb2f5c0cd5c77a1c8bef40a5a33ff92e10e5beff4c96d2c997', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+text-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '4f87755cac77ee105378b8e61faeec0d797253d8e15c4719c77c9b3e1d5142a6', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+heap-exec {'returncode': 0, 'output': '\x1eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '287c44b51b1f5e733843472979eccb25156bd9c9228f811c2f768d69584c6251', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+privileged {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'b7829f93ed6db10bff6cd6d621e53c71aebaf5d3b79eb6b5112d02fee3dc25e0', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+el0-hvc {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '18aa229498486450a9ad5e1931e15536fa12f4214b8e26c1355f9c54707c9ec2', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+bad-pointer {'returncode': 0, 'output': '\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'afb5dd3237cb5640863f1fa06a06010a16b5a97142779da8f686b5c151792a81', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+pan {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12345,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080003f38\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '4025de8d49d60183bda85a72198fefba9a8d05f4dd130db42c1384f0e1479e1d', 'load': '4:52  up  6:05, 2 users, load averages: 26.80 32.85 46.51', 'status': 'PASS'}
+alias-write {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12346,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600004f far=0000000080080000 pc=0000000080003e8c\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'f6f70516c2d19a6da625150a5cb03e77f4518d19a7edaf4cf701a4ce49aae2fe', 'load': '4:52  up  6:05, 2 users, load averages: 24.90 32.35 46.25', 'status': 'PASS'}
+unknown-syscall {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":511,"pc":4194312,"args":[1,2147510560,0,58,0,0],"input":null,"timeout":null}\n\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '1d9c826b1982f25a8d652a6c97242bce91d2781ac4eaf3da77a5a465ecb64384', 'load': '4:52  up  6:05, 2 users, load averages: 24.90 32.35 46.25', 'status': 'PASS'}
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r4/anyname/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 1.04s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r4/anyname/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.71s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r4/anyname/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.69s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r4/anyname/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.70s
+{
+  "load": "4:52  up  6:05, 2 users, load averages: 24.90 32.35 46.25",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK",
+    "exit_slot": 93
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK",
+    "exit_slot": 94
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ],
+    "registered_enosys": [
+      29,
+      134,
+      135,
+      216
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,169 @@
+{
+ "binary": "/tmp/jitk-07/r3/jitk-vmm-stock",
+ "uptime": "3:50  up  5:04, 2 users, load averages: 74.61 84.19 72.74",
+ "modes": {
+  "4": {
+   "pass": 0,
+   "n": 5,
+   "cpu_s_p50": 5.771447,
+   "cpu_s_max": 5.988809,
+   "wall_s_p50": 3.0042324169990025,
+   "rows": [
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.038151458000357,
+     "cpu_s": 1.7468240000000002,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0028494170001068,
+     "cpu_s": 2.773975,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0044347910006763,
+     "cpu_s": 5.771447,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0042324169990025,
+     "cpu_s": 5.988809,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0008193339999707,
+     "cpu_s": 5.968737,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    }
+   ]
+  },
+  "8": {
+   "pass": 0,
+   "n": 5,
+   "cpu_s_p50": 1.4012099999999998,
+   "cpu_s_max": 3.20089,
+   "wall_s_p50": 3.011915582999791,
+   "rows": [
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.011915582999791,
+     "cpu_s": 3.20089,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0091707079991465,
+     "cpu_s": 1.4012099999999998,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.010860374999538,
+     "cpu_s": 0.8488819999999999,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.036219666000761,
+     "cpu_s": 1.5739809999999999,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0588997499999095,
+     "cpu_s": 0.820475,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    }
+   ]
+  },
+  "9": {
+   "pass": 0,
+   "n": 5,
+   "cpu_s_p50": 0.736729,
+   "cpu_s_max": 1.0869719999999998,
+   "wall_s_p50": 3.063579416999346,
+   "rows": [
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0663524999999936,
+     "cpu_s": 0.467437,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.063579416999346,
+     "cpu_s": 0.636837,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.040583042000435,
+     "cpu_s": 0.736729,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.083168040999226,
+     "cpu_s": 1.0869719999999998,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    },
+    {
+     "rc": -9,
+     "watchdog": true,
+     "wall_s": 3.0078947080000944,
+     "cpu_s": 1.014021,
+     "alive": false,
+     "ack": true,
+     "vmcreate_retry": false
+    }
+   ]
+  }
+ },
+ "uptime_end": "3:51  up  5:04, 2 users, load averages: 56.90 77.85 70.97"
+}

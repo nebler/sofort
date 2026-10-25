@@ -1,0 +1,48 @@
+{
+  "unix": 1792811529.244737,
+  "loadavg": [
+    92.08984375,
+    76.01806640625,
+    70.77685546875
+  ],
+  "rows": [
+    {
+      "case": "python-and-shell-syntax",
+      "pass": true
+    },
+    {
+      "case": "portable-path-audit-including-evidence-and-markers",
+      "pass": true,
+      "matches": 0
+    },
+    {
+      "case": "canonical-fixtures-only",
+      "pass": true,
+      "fixtures": {
+        "console_avail_oob.S": "9f4cdeb1d7ae51d6044c28d59750f3f66dd5c763f17a9af5727ed57e20729cc7",
+        "bad-sysreg.S": "45252d52ce35d37ca181afea185e7ea2b4a893f97b5b98da991fa40369d5e697",
+        "unknown-hvc.S": "b797e0854c04b8af4c60f185d72588303e854f8a5bac462da72bde54fe6f02d8",
+        "unknown-smc.S": "e6173ab4ff7166376533316a55201db55cab4c824932c6c67b0c415edcae189f",
+        "mmio-halfword.S": "89a7fcfc9bbf023657414c5c1361094ca4d3ffe92b793950085007584c71c558",
+        "rtc_oob_read.S": "c202cc7673e0baab2ce61b0b95cc34e12b4a6b03a66ea0cb70e61e163721ffee"
+      }
+    },
+    {
+      "case": "H3-and-marker-report-hashes",
+      "pass": true
+    },
+    {
+      "case": "source-input-hashes-still-current",
+      "pass": true
+    },
+    {
+      "case": "missing-external-base-error",
+      "pass": true,
+      "error": "JITK_NESTED_BASE must contain base.cpio.gz and vmlinuz"
+    },
+    {
+      "case": "outer-qemu-reaped-and-build-container-removed",
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "retrieved_at_utc": "2026-10-24T00:30:15.936380+00:00",
+  "source": "https://spot-price.s3.amazonaws.com/spot.js",
+  "source_sha256": "3624b033d08f7c2ff9460d6c389713ba640178ed452fa9e4881089a629d3dfeb",
+  "caveat": "AWS public regional spot feed; no AZ timestamp or capacity guarantee. Confirm DescribeSpotPriceHistory in selected AZ before any rental.",
+  "prices": [
+    {
+      "region": "us-east-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "1.0222"
+    },
+    {
+      "region": "us-east-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.4995"
+    },
+    {
+      "region": "us-west-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.3536"
+    },
+    {
+      "region": "us-west-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.5715"
+    },
+    {
+      "region": "ca-central-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.5393"
+    },
+    {
+      "region": "eu-west-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "1.0013"
+    },
+    {
+      "region": "eu-central-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.524"
+    },
+    {
+      "region": "eu-west-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.9163"
+    },
+    {
+      "region": "eu-north-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.4416"
+    },
+    {
+      "region": "ap-southeast-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.4875"
+    },
+    {
+      "region": "ap-southeast-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.6757"
+    },
+    {
+      "region": "ap-northeast-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.5998"
+    },
+    {
+      "region": "ap-northeast-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.3024"
+    },
+    {
+      "region": "ap-south-1",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.5146"
+    },
+    {
+      "region": "eu-south-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.7782"
+    },
+    {
+      "region": "ap-south-2",
+      "instance": "c7g.metal",
+      "linux_usd_hour": "0.4122"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "selection": "../kernel only; .READY required",
+  "per_run_provenance": "results/<run>/source.json: complete canonical source SHA-256 map",
+  "payload": "payload/provenance.json: shipped static musl Lua 5.4.8",
+  "oracle": "oracle/Dockerfile; image identity recorded per transaction",
+  "source_policy": "fresh temporary Git repository per invocation; no canonical edits",
+  "proposal_modes": "default replay from canonical handlers; --live real headless CLI"
+}

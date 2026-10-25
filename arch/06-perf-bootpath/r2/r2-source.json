@@ -1,0 +1,28 @@
+{
+  "ready": "G1 PASS: native IRQ-only WFI, 1000 exchanges, 0.00 CPU-s / 10.02s (0.01s resolution)\nG2 PASS: 30 x 64 concurrent calls, reverse replies, real virtio-console\nkernel=/tmp/jitk-02/r2/kernel.bin\nlauncher=/tmp/jitk-02/r2/launch\nsha256=00040cfa7187a3cf25fb7cf8f01d973bf41f4f9179b4fc382dcb890b34d13edf\n",
+  "original_sha256": "00040cfa7187a3cf25fb7cf8f01d973bf41f4f9179b4fc382dcb890b34d13edf",
+  "sources": {
+    "Cargo.toml": "4b8b0dfee273de5cf433a961552004bcdacf6c8d416f6640702eca2e37c1b9bd",
+    "host.rs": "3706032b07745d93283cd16554da3fa4a119266a9d1bc8bb522be4b72675c91a",
+    "bootstrap.js": "563c24147a4977243d82e897f12888fbbb5e09ffab3874ceb0377796dfe28d96",
+    "link.ld": "ff153a55d5f100c8e629618dd85e188b50fee73d4f453c6054635d0af35a390d",
+    "probes/heap-exec.S": "68413b04a6c898413516a7c984b10781343ff1f60ed86a36433f167aa328f0ff",
+    "probes/alias-write.S": "e20dfae41e273ade6f26d403a471b4efeeb9a48e6e9f9c21139f139e3a2ef0a3",
+    "probes/text-write.S": "60d20dec0643a25f53cb4aceac0ff8af7ed7d9e77eab4905054d54ee09947ce8",
+    "probes/pan.S": "2465c133729bc3a3958b69f66b3a17368754ad04e3a55e0da9bbb35429067451",
+    "probes/bad-pointer.S": "94b41dbd65df06789de5f9f138127e3220228a4c30e6f1a7d5c4fae498d5a7ec",
+    "probes/el0-hvc.S": "57eabb85d81b80ac33dfc9b408c14c631674dee2a9d4281d506760194debc63f",
+    "probes/kernel-write.S": "26b5bcd19505227812e8e503cfdcbf8f7db085ceb5dbb2b3ae8fccb6e565b04c",
+    "probes/privileged.S": "d72e5beec3e2afa36dccee5277d2b57b4a7dfa3cf5ddd0612b873358e9b4c5e9",
+    "probes/unknown-syscall.S": "bbe89936ed20cf96032e461859cae2061afc4edb343c1afb422d3a9c488f5919",
+    "src/wait.rs": "297ceff60a426be9301a01c8099ef263dd013f1a43abd7f9a642cc6082caf87f",
+    "src/mmu.rs": "287f6ac8fc976f4b3742dd53d801a63d2725387467fe45bf9ec5d872589efe44",
+    "src/packed.rs": "5f7befaf5a658e2f3a00de3c9ddc5862f5283b4a5be8726ae4db7a974e46d200",
+    "src/boot.S": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27",
+    "src/vectors.S": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738",
+    "src/user.rs": "c73456a7bc82b140be2073ad469fde1b4363f6772bd066192e42523c06f5b96f",
+    "src/console.rs": "f2c9df293672d042c7a06a28fd8932199fc9373bcf739a06fbf1742ad590e221",
+    "src/fdt.rs": "db250c95af0ec523bbd13fda72e50f011224ea412e93c6ab70c7d5b8bf217401",
+    "src/main.rs": "9365dc4a0c502ea07ce5c59b517313f3a649b98cabf81e80b45a900b9aeff54d"
+  }
+}

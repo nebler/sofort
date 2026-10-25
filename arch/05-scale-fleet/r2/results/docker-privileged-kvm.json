@@ -1,0 +1,13 @@
+{
+  "uname": {
+    "system": "Linux",
+    "node": "95f05fc5c76a",
+    "release": "6.10.14-linuxkit",
+    "version": "#1 SMP Mon Feb 24 16:35:16 UTC 2025",
+    "machine": "aarch64",
+    "processor": ""
+  },
+  "dev_kvm_exists": false,
+  "errno": 2,
+  "error": "[Errno 2] No such file or directory: '/dev/kvm'"
+}

@@ -1,0 +1,19 @@
+{
+  "host": {
+    "source": "/tmp/jitk-02/r2/host",
+    "path": "/tmp/jitk-04/r2/b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed-host",
+    "sha256": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed"
+  },
+  "image": {
+    "source": "/tmp/jitk-02/r2/kernel.bin",
+    "path": "/tmp/jitk-04/r2/3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8-kernel.bin",
+    "sha256": "3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8"
+  },
+  "tick": 0,
+  "gate": {
+    "idleCorePercent": 0,
+    "evidence": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/r2/parking-0.json"
+  },
+  "ownerReady": "G1 PASS: native IRQ-only WFI, 1000 exchanges, 0.00 CPU-s / 10.01s (0.01s resolution)\nG2 PASS: 30 x 64 concurrent calls, reverse replies, real virtio-console\nkernel=/tmp/jitk-02/r2/kernel.bin\nlauncher=/tmp/jitk-02/r2/launch\nsha256=3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8\n",
+  "ownerReadme": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/r2/README.md"
+}

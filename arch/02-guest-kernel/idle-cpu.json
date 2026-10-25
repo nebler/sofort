@@ -1,0 +1,8 @@
+{
+  "idle_wall_seconds": 1.0073606670002846,
+  "whole_wall_seconds": 1.230225999999675,
+  "host_cpu_seconds": 1.0131429999999995,
+  "cpu_per_idle_wall": 1.0057400821663343,
+  "output": "hi\nexit=0000000000000000\n",
+  "returncode": 0
+}

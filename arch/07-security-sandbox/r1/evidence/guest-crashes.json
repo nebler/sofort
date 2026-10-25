@@ -1,0 +1,22 @@
+[
+  {
+    "guest": "bad-sysreg",
+    "timeout_ms": 500,
+    "stderr": "\nthread 'fc_vcpu 0' (422165) panicked at src/hvf/src/lib.rs:839:18:\nunexpected exception: 0x20\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "guest": "unknown-hvc",
+    "timeout_ms": 500,
+    "stderr": "\nthread 'fc_vcpu 0' (422492) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=57005\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "guest": "unknown-smc",
+    "timeout_ms": 500,
+    "stderr": "\nthread 'fc_vcpu 0' (422652) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=57005\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "guest": "mmio-halfword",
+    "timeout_ms": 500,
+    "stderr": "\nthread 'fc_vcpu 0' (422718) panicked at src/hvf/src/lib.rs:746:30:\nunsupported mmio len=2\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  }
+]

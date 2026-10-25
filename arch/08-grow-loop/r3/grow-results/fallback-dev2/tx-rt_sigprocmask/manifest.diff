@@ -1,0 +1,34 @@
+--- a/syscalls.manifest.json
++++ b/syscalls.manifest.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": 3,
+-  "version": 1,
++  "version": 2,
+   "scope": "R3 verified contracts; inherited ABI unverified",
+   "contracts": [
+     {
+@@ -17,7 +17,22 @@
+         "complete_probe_trace": true
+       },
+       "evidence_sha256": "611653a151151dc0407e0c740c1aed433c0a09cb711f35301fe0c9cae4280989"
++    },
++    {
++      "nr": 135,
++      "name": "rt_sigprocmask",
++      "source_sha256": "41a598203348d53dbba585bb456426254a77554961a8b0c366d930a1dd6cbcba",
++      "status": "profile-enosys",
++      "domain": "always -38; no signals installed or delivered; no user-memory access",
++      "oracle": "native Linux strace inject=rt_sigprocmask:error=ENOSYS",
++      "full_linux_abi_equivalence": false,
++      "gate": {
++        "n": 30,
++        "pass": 30,
++        "complete_probe_trace": true
++      },
++      "evidence_sha256": "dd2ca33065eb8e69452c91e8d2616b1344ad6fa12dab3651852a127400470cef"
+     }
+   ],
+-  "kernel_delta_lines": 0
++  "kernel_delta_lines": 3
+ }

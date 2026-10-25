@@ -1,0 +1,4 @@
+{"metric":"memory","n":0,"rss":6078464,"footprint":1540432,"wired":0}
+{"metric":"fresh_create","i":0,"ns":50678042}
+{"metric":"fresh_create_to_result","i":0,"ns":50804125}
+{"metric":"memory","n":1,"rss":42385408,"footprint":34701888,"wired":0}

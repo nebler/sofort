@@ -1,0 +1,69 @@
+Recorded successful recipe. Run setup on a fresh private /tmp/jitk-06 tree.
+All paths used for writes are /tmp/jitk-06 or this proposal directory.
+Set D to the absolute arch/06-perf-bootpath directory for the Docker bind below.
+
+# Boot: copy sources and built artifacts; no edits to /tmp/jitk-spike.
+mkdir -p /tmp/jitk-06/lib /tmp/jitk-06/instrumented
+cp -cR /tmp/jitk-spike/libkrun /tmp/jitk-06/libkrun
+cp /tmp/jitk-spike/libkrun/include/libkrun.h /tmp/jitk-06/lib/
+cp /tmp/jitk-spike/libkrun/examples/chroot_vm.entitlements /tmp/jitk-06/lib/
+cp /tmp/jitk-spike/libkrun/target/release/libkrun.2.0.0.dylib /tmp/jitk-06/lib/libkrun.2.dylib
+cp /tmp/jitk-spike/boot/kk.bin /tmp/jitk-06/
+cp /tmp/jitk-spike/sc/qjs-static /tmp/jitk-06/qjs-original
+cp /tmp/jitk-spike/sc/qjs-static /tmp/jitk-06/qjs-stripped
+llvm-strip --strip-all /tmp/jitk-06/qjs-stripped
+python3 arch/06-perf-bootpath/instrument_libkrun.py
+python3 arch/06-perf-bootpath/add_payload_trace.py
+RUSTUP_TOOLCHAIN=1.95.0 make -C /tmp/jitk-06/libkrun
+cp /tmp/jitk-06/libkrun/target/release/libkrun.2.0.0.dylib /tmp/jitk-06/instrumented/libkrun.2.dylib
+codesign --force --sign - /tmp/jitk-06/instrumented/libkrun.2.dylib
+clang -O2 arch/06-perf-bootpath/host.c -I/tmp/jitk-06/lib -L/tmp/jitk-06/instrumented -lkrun.2 -Wl,-rpath,/tmp/jitk-06/instrumented -o /tmp/jitk-06/host-buffered
+codesign --force --sign - --entitlements /tmp/jitk-06/lib/chroot_vm.entitlements /tmp/jitk-06/host-buffered
+python3 arch/06-perf-bootpath/bench_boot.py 100
+cp /tmp/jitk-spike/boot/host.c /tmp/jitk-06/host-plain.c
+clang -O2 /tmp/jitk-06/host-plain.c -I/tmp/jitk-06/lib -L/tmp/jitk-06/lib -lkrun.2 -Wl,-rpath,/tmp/jitk-06/lib -o /tmp/jitk-06/host-plain
+codesign --force --sign - --entitlements /tmp/jitk-06/lib/chroot_vm.entitlements /tmp/jitk-06/host-plain
+python3 arch/06-perf-bootpath/bench_control.py
+
+# Linux arm64: check out pinned sources, then patch timing only.
+git clone https://github.com/bellard/quickjs.git /tmp/jitk-06/quickjs
+git -C /tmp/jitk-06/quickjs checkout 7d1c13c5d8f8c6b32893786ed35cdcebd88194d2
+git clone https://github.com/quickjs-ng/quickjs.git /tmp/jitk-06/quickjs-ng
+git -C /tmp/jitk-06/quickjs-ng checkout e68078618935dbd28c41c98931f99d9091daba50
+python3 arch/06-perf-bootpath/prepare_qjs.py
+cp arch/06-perf-bootpath/prepare_bytecode.py arch/06-perf-bootpath/prepare_samecontext.py arch/06-perf-bootpath/bench_qjs.py arch/06-perf-bootpath/bench_churn.py /tmp/jitk-06/
+D="$PWD/arch/06-perf-bootpath"
+docker run -d --name jitk-06-bench --platform linux/arm64 -v /tmp/jitk-06:/work -v "$D:/results" -w /work alpine:3.22 sleep 10000
+docker exec jitk-06-bench sh -c 'apk add -q build-base cmake python3 linux-headers strace'
+# Commands below execute inside that container (docker exec ... sh -c '...').
+cd /work/quickjs
+make -j4 LDFLAGS=-static qjs qjsc libquickjs.a
+./qjsc -e -o bootstrap.c bootstrap.js
+cd /work/quickjs-ng
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_EXE_LINKER_FLAGS=-static
+cmake --build build -j4
+./build/qjsc -e -o bootstrap.c bootstrap.js
+python3 /work/prepare_bytecode.py
+cd /work/quickjs
+cc -O2 -static -I. bootstrap.c libquickjs.a -lm -lpthread -ldl -o bootstrap-bin
+./qjsc -c -o bootstrap-data.c bootstrap.js
+python3 /work/prepare_samecontext.py
+make -j4 LDFLAGS=-static qjs
+cd /work/quickjs-ng
+cc -D_GNU_SOURCE -O2 -static -I. bootstrap.c build/libqjs-libc.a build/libqjs.a -lm -lpthread -ldl -o bootstrap-bin
+mkdir -p /tmp/jitk-06/quickjs /tmp/jitk-06/quickjs-ng/build
+cp /work/quickjs/qjs /work/quickjs/bootstrap.js /work/quickjs/bootstrap-bin /tmp/jitk-06/quickjs/
+cp /work/quickjs-ng/bootstrap.js /work/quickjs-ng/bootstrap-bin /tmp/jitk-06/quickjs-ng/
+cp /work/quickjs-ng/build/qjs /tmp/jitk-06/quickjs-ng/build/
+BENCH_ROOT=/tmp/jitk-06 python3 /work/bench_qjs.py
+python3 /work/bench_churn.py
+ls -l /dev/kvm
+
+# Main results (full quantiles in adjacent JSON and PROPOSAL.md):
+# Strip: 9688056 -> 2394360 bytes.
+# Boot bare 11849.19/23820.04/30236.21 us median/p90/p99, n=100.
+# Payload read+copy original initrd 3069/5310/26443 us; stripped RAW 665/1160/3249 us.
+# Bellard source main->first 323/402/527 us; same-context bytecode 242/298/428 us.
+# Bellard source parked result 177/249/400 us; same-context bytecode 172/263/2632 us.
+# Churn n=30 mmap bytes 134446592/134446592/134446592; VmHWM 2292/2296/2300 KiB.
+# /dev/kvm: No such file or directory.

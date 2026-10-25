@@ -1,0 +1,5 @@
+binutils-2.44-r3 aarch64 {binutils} (GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause) [installed]
+gcc-14.2.0-r6 aarch64 {gcc} (GPL-2.0-or-later AND LGPL-2.1-or-later) [installed]
+musl-1.2.5-r13 aarch64 {musl} (MIT) [installed]
+python3-3.12.15-r0 aarch64 {python3} (PSF-2.0) [installed]
+strace-6.13-r0 aarch64 {strace} (BSD-3-Clause) [installed]

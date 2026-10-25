@@ -1,0 +1,139 @@
+{
+  "final-enabled": {
+    "phase": "final copied-tree test after owner 04 .R4",
+    "executor_status": "FUNCTIONAL_PASS; F2_TIMING_GATE_FAIL",
+    "load_before": [
+      103.0234375,
+      78.90966796875,
+      71.86474609375
+    ],
+    "hashes": {
+      "/tmp/jitk-09/r4/anyname/executor/build/backend.js": "058dd0164f3633bc1cbbefc52ac65d17cf89b7e30d1e26b3e7c5d6a0aae34db3",
+      "/tmp/jitk-09/r4/anyname/executor/build/executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "/tmp/jitk-09/r4/anyname/executor/watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "/tmp/jitk-09/node-real": "df969da390dce1b230f7d23ab2892b5d7b994ae4a7107b6f434a97068b73f11e",
+      "/tmp/jitk-09/adapter-target/release/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+      "/tmp/jitk-09/r3-snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09"
+    },
+    "returncode": 0,
+    "stdout": "{\"checks\":13,\"status\":\"PASS\"}\n",
+    "stderr": "(node:7708) ExperimentalWarning: Transform Types is an experimental feature and might change at any time\n(Use `node-real --trace-warnings ...` to show where the warning was created)\n",
+    "load_after": [
+      100.33154296875,
+      79.20556640625,
+      72.05615234375
+    ]
+  },
+  "copied-skip": {
+    "load_before": [
+      129.28466796875,
+      103.77783203125,
+      77.0546875
+    ],
+    "argv": [
+      "make",
+      "-C",
+      "/tmp/jitk-09/r4/anyname/bench/hyperlight",
+      "test"
+    ],
+    "returncode": 0,
+    "stdout": "SKIP: 13 adapter checks: HYPERLIGHT_JS_SRC is unset; see README.md for source/build setup\n",
+    "stderr": "",
+    "load_after": [
+      129.28466796875,
+      103.77783203125,
+      77.0546875
+    ]
+  },
+  "final-audit": {
+    "status": "PASS",
+    "check": "canonical defaults, both image overrides, precedence, copied-source identity, active-source path audit, Python/Node/shell syntax",
+    "load_before": [
+      125.23828125,
+      88.64306640625,
+      75.89404296875
+    ],
+    "load_after": [
+      125.23828125,
+      88.64306640625,
+      75.89404296875
+    ],
+    "source_sha256": {
+      "Cargo.lock": "352f488944fb306637fb7bf90cd3c5077f5c337539bf4ae69530000e2d48c731",
+      "Cargo.toml": "a91e850f946403ed2843730b7552b571097aa1e330839ba37693bf05881af8b8",
+      "INTEGRATION.md": "9647db322a55c6cd207166061634585cfe63830b877ea920c1db8dcc83514a61",
+      "Makefile": "ed7f098137db22e269985f2a622694faf423c1e99e72ffa3545cead158802895",
+      "README.md": "1c6d1c79668436925d53abc6d042c58676dd2d1585a05c66240d6cecde6da394",
+      "adapter-test.ts": "10182a6b2ae74a1b14aa666081fa390fa13a81083bccb3baf7ef76c6051f8b73",
+      "adapter.json": "7cc2cf73ae5c14cf6688420e90bd4109eee52c0ee02ec187825786b77422a254",
+      "analyze.py": "5edd5a93e7bf872e5130d65a2a1b4986fd9d5cd244ee1f29b8c23205034e9070",
+      "backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
+      "bench.py": "9544b28b8e05e2fd7abb369116a4a4f1b31b496368c5b3f579334fee701cf084",
+      "bootstrap.js": "cd4e7bf93e5e91eb93b1e630a2c49244aa553eecf029a5a8f1a6bc93d3319cd1",
+      "build.sh": "0c86011b7f1f7e3e1d58caead6275dfb566bd4a1c2a0eeeeea4471487e5093d8",
+      "config.ts": "119085b03bf433cc3fa4fad411d3fc31b1cd9d3b431448a3d0c6b11f3cf59b8c",
+      "executor-runner.mjs": "8c445fec928987495c079b497ed20bbe86ba8aec252cd2a3eb60eecd0717ec51",
+      "executor-test.mjs": "11cdc4b5d8ccd1ca4ab8170d4cc3052c309afdb6fc1a9393f46fac0c8eab4781",
+      "load_linux.rs": "c59ed6c043b70806181b5975f4d2ded130931dd394fd6331c4ed950e8c9e31bc",
+      "worker.rs": "c5e48acbb0b78afe1673aa33fbbdb3b571db4fc5f8846e9b7f1d468cd57cc4c9"
+    },
+    "owned_active_top_level_loc": 614
+  },
+  "manifest-check": {
+    "load_before": [
+      102.6142578125,
+      77.48291015625,
+      63.15380859375
+    ],
+    "operation": "offline locked cargo metadata; no build or launcher",
+    "returncode": 0,
+    "stderr": "",
+    "load_after": [
+      102.6142578125,
+      77.48291015625,
+      63.15380859375
+    ],
+    "dependencies": {
+      "hyperlight-js": "/tmp/jitk-09/r4/manifest-check/hyperlight-js/src/hyperlight-js",
+      "hyperlight-js-common": "/tmp/jitk-09/r4/manifest-check/hyperlight-js/src/hyperlight-js-common"
+    }
+  },
+  "invalid-source": {
+    "check": "explicit invalid source fails clearly before VM launch",
+    "load_before": [
+      46.24755859375,
+      81.46484375,
+      71.7578125
+    ],
+    "returncode": 2,
+    "stdout": "",
+    "stderr": "(node:6398) ExperimentalWarning: Transform Types is an experimental feature and might change at any time\n(Use `node-real --trace-warnings ...` to show where the warning was created)\n/private/tmp/jitk-09/r4/anyname/bench/hyperlight/config.ts:14\n    throw Error('HYPERLIGHT_JS_SRC must contain src/hyperlight-js/Cargo.toml');\n          ^\n\nError: HYPERLIGHT_JS_SRC must contain src/hyperlight-js/Cargo.toml\n    at testPrerequisite (/private/tmp/jitk-09/r4/anyname/bench/hyperlight/config.ts:14:11)\n    at <anonymous> (/private/tmp/jitk-09/r4/anyname/bench/hyperlight/adapter-test.ts:5:12)\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.22.1\nmake: *** [test] Error 1\n",
+    "load_after": [
+      47.4287109375,
+      81.125,
+      71.6943359375
+    ]
+  },
+  "readiness": [
+    {
+      "time": "2026-10-24T03:02:03.075171+00:00",
+      "ready": false,
+      "load": [
+        63.5947265625,
+        65.70458984375,
+        58.03173828125
+      ]
+    },
+    {
+      "time": "2026-10-24T03:11:56.690548+00:00",
+      "ready": true,
+      "load": [
+        81.79248046875,
+        73.548828125,
+        69.8583984375
+      ],
+      "marker": "{\n  \"round\": 4,\n  \"status\": \"FUNCTIONAL_PASS; F2_TIMING_GATE_FAIL\",\n  \"at\": \"2026-10-24T03:08:46.411590+00:00\",\n  \"load_at_marker\": [\n    53.08642578125,\n    79.544921875,\n    71.38427734375\n  ],\n  \"vmm_sha256\": \"276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e\",\n  \"image_sha256\": \"a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364\",\n  \"executor_bundle_sha256\": \"9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed\",\n  \"watchdog_sha256\": \"206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014\",\n  \"functional_certificate_sha256\": \"45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6\",\n  \"owned_source_inventory_sha256\": \"a5954ec1a25b4ddf1ff5e5660e9d17069a7e15280939668e13d787a7837ecce8\",\n  \"tests\": \"20 executor; Cloudflare/TanStack; 30x64; canonical policy22 + executor policy22; Hyperlight6; lifecycle/ack/transport/watchdog; E4 n50\",\n  \"deadline_probes\": {\n    \"h5-resource-probe-final\": {\n      \"sha256\": \"29c647993c4c99861c6d19b3c65f08bec409fbfff75c8a911121e5115b6b2a1b\",\n      \"summary\": {\n        \"blocked_host\": {\n          \"n\": 30,\n          \"timeout_errors\": 30,\n          \"api_overshoot_le50\": 0,\n          \"vm_enforcement_overshoot_le50\": 29,\n          \"watchdog_receipts\": 30,\n          \"callback_signals\": 29,\n          \"max_api_overshoot_ms\": 296.4806659999999,\n          \"max_vm_enforcement_overshoot_ms\": 143.072021484375,\n          \"handled\": 0,\n          \"controls_pass\": 30,\n          \"elapsed_ms\": {\n            \"median\": 214.21549999999843,\n            \"p90\": 227.8232079999998,\n            \"p99\": 326.4806659999999\n          },\n          \"blocked_invocations\": 29,\n          \"admitted_overshoot_gt50ms\": 29,\n          \"late_successes\": 0\n        }\n      },\n      \"load1_min\": 63.5947265625,\n      \"load1_max\": 83.40576171875\n    },\n    \"h5-cpu-probe-final\": {\n      \"sha256\": \"44962a47e4c8eccf4c74c50537fd95fb9f3d1a59f9f9c39aae1ac1d47d8107d0\",\n      \"summary\": {\n        \"cpu\": {\n          \"n\": 30,\n          \"timeout_errors\": 30,\n          \"api_overshoot_le50\": 28,\n          \"vm_enforcement_overshoot_le50\": 28,\n          \"watchdog_receipts\": 13,\n          \"callback_signals\": 0,\n          \"max_api_overshoot_ms\": 295.79512500000055,\n          \"max_vm_enforcement_overshoot_ms\": 139.455810546875,\n          \"handled\": 30,\n          \"controls_pass\": 30,\n          \"elapsed_ms\": {\n            \"median\": 34.24016699999993,\n            \"p90\": 54.27983300000051,\n            \"p99\": 325.79512500000055\n          },\n          \"blocked_invocations\": 0,\n          \"admitted_overshoot_gt50ms\": 0,\n          \"late_successes\": 0\n        }\n      },\n      \"load1_min\": 73.06005859375,\n      \"load1_max\": 112.85107421875\n    }\n  },\n  \"open\": \"Original API overshoot target fails. Same-thread synchronous callbacks block Promise settlement; OS scheduling also has observed >50ms external timer delays.\",\n  \"source_hashes\": {\n    \"backend.ts\": \"95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531\",\n    \"executor.ts\": \"5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968\",\n    \"pool.ts\": \"f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb\",\n    \"select-backend.ts\": \"60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0\",\n    \"policy-adapter.ts\": \"b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d\",\n    \"policy-check.ts\": \"4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f\",\n    \"watchdog.py\": \"206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014\",\n    \"fixtures/parking-gate.json\": \"89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717\"\n  }\n}\n"
+    }
+  ],
+  "limits": "Functional adapter checks only. Existing R3 worker and snapshot supplied explicitly; worker not rebuilt. No jitk VMM executed. Executor F2 timing gate remains failed."
+}

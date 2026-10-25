@@ -1,0 +1,34 @@
+{
+  "name": "jitk-executor-r2",
+  "version": "1.0.0",
+  "main": "build/executor.js",
+  "scripts": {
+    "build": "./run.sh build",
+    "typecheck": "./run.sh typecheck",
+    "test": "./run.sh check",
+    "bench": "./run.sh bench"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@cloudflare/codemode": "0.5.5",
+    "@hyperlight-dev/js-host-api": "0.4.0",
+    "@tanstack/ai": "1.0.0",
+    "@tanstack/ai-code-mode": "1.0.0",
+    "ai": "7.0.152",
+    "zod": "4.6.7",
+    "acorn": "8.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  },
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./build/executor.js"
+  }
+}

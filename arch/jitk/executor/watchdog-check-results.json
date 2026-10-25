@@ -1,0 +1,16 @@
+{
+  "receipt": {
+    "pid": 18449,
+    "timeout": true,
+    "deadline": 1792844087519,
+    "firedAt": 1792844087520.0652,
+    "killAt": 1792844087520.081
+  },
+  "killOvershootMs": 1.0810546875,
+  "loadBefore": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "loadAfter": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "watchdogDeadlineMs": 250,
+  "hostEventLoopBlockedMs": 1500,
+  "observedReapAfterHostUnblockMs": 1514.767958,
+  "reaped": true
+}

@@ -1,0 +1,9 @@
+{
+  selection: '02 r2 READY / native Rust host / tick=0us (panic=abort; containment integration pending)',
+  pid: '93979',
+  loadBefore: '2:36  up  3:50, 2 users, load averages: 22.40 65.49 51.94',
+  loadAfter: '2:36  up  3:50, 2 users, load averages: 19.79 63.52 51.40',
+  elapsedSeconds: 10.004696166,
+  cpuSeconds: 0,
+  idleCorePercent: 0
+}

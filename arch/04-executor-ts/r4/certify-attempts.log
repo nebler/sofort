@@ -1,0 +1,105 @@
+CERTIFY pool-check
+{
+  "loadBefore": "4:57  up  6:10, 2 users, load averages: 80.14 53.44 50.69",
+  "loadAfter": "4:57  up  6:10, 2 users, load averages: 80.14 53.44 50.69",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+CERTIFY resolve-check
+PASS resolve before kill/reap; VMM AND watchdog hold token
+CERTIFY sandbox-check
+PASS host-only ack AND ready, fragmented ack, missing/guest-forged ack rejected
+CERTIFY transport-check
+{
+  loadBefore: '4:57  up  6:11, 2 users, load averages: 91.86 56.82 51.92',
+  loadAfter: '4:57  up  6:11, 2 users, load averages: 85.54 56.09 51.69',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+CERTIFY watchdog-check
+file:///Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/build/watchdog-check.js:533
+    if (Date.now() >= deadline) throw Error("Execution timed out");
+                                      ^
+
+Error: Execution timed out
+    at ProcessSandbox.armDeadline (file:///Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/build/watchdog-check.js:533:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/build/watchdog-check.js:598:3
+
+Node.js v24.22.1
+node:internal/errors:986
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /private/tmp/jitk-09/node-real build/watchdog-check.js
+    at genericNodeError (node:internal/errors:986:15)
+    at wrappedFn (node:internal/errors:540:14)
+    at checkExecSyncError (node:child_process:943:11)
+    at execFileSync (node:child_process:979:15)
+    at file:///Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/certify.mjs:16:2
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 99388,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v24.22.1

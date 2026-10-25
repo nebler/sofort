@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "created_utc": "2026-10-24T02:54:11.471319+00:00",
+  "copy_command": "cp -R arch/jitk /tmp/jitk-02/r4/anyname",
+  "build_test_command": "JITK_VMM_BINARY=/tmp/jitk-01/r3/darwin/jitk-vmm make -C /tmp/jitk-02/r4/anyname/kernel build test",
+  "build_test_exit": 0,
+  "parking_exit": 0,
+  "integration_exit": 0,
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_bytes": 2924544,
+  "manifest_sha256": "57571a7b7782fd0229dfd1354c85ea5602d06b6cba8b0e011c1fa3ffd44997bb",
+  "tested_source_inventory_sha256": "352478b3d365c643d6910940885e72f5fc00835ef983c61943ae5d1c35d047ec",
+  "source_copy_matches": true,
+  "guest_loc": 1440,
+  "maximum_owned_vms": 1,
+  "children_reaped": true,
+  "load": {
+    "build_test": "4:52  up  6:05, 2 users, load averages: 28.70 33.32 46.75",
+    "grow": "4:52  up  6:05, 2 users, load averages: 24.90 32.35 46.25",
+    "parking": "4:52  up  6:06, 2 users, load averages: 20.33 30.98 45.52",
+    "integration_start": "4:52  up  6:06, 2 users, load averages: 15.54 29.20 44.54",
+    "integration_load1_range": [
+      13.69140625,
+      15.53955078125
+    ]
+  },
+  "isolation_images": {
+    "kernel-write": "3662e0b6532667cb2f5c0cd5c77a1c8bef40a5a33ff92e10e5beff4c96d2c997",
+    "text-write": "4f87755cac77ee105378b8e61faeec0d797253d8e15c4719c77c9b3e1d5142a6",
+    "heap-exec": "287c44b51b1f5e733843472979eccb25156bd9c9228f811c2f768d69584c6251",
+    "privileged": "b7829f93ed6db10bff6cd6d621e53c71aebaf5d3b79eb6b5112d02fee3dc25e0",
+    "el0-hvc": "18aa229498486450a9ad5e1931e15536fa12f4214b8e26c1355f9c54707c9ec2",
+    "bad-pointer": "afb5dd3237cb5640863f1fa06a06010a16b5a97142779da8f686b5c151792a81",
+    "pan": "4025de8d49d60183bda85a72198fefba9a8d05f4dd130db42c1384f0e1479e1d",
+    "alias-write": "f6f70516c2d19a6da625150a5cb03e77f4518d19a7edaf4cf701a4ce49aae2fe",
+    "unknown-syscall": "1d9c826b1982f25a8d652a6c97242bce91d2781ac4eaf3da77a5a465ecb64384"
+  },
+  "grow_images": {
+    "ioctl": "049a72f602756485fadedf19d10c19872e4f605cc12fcb6d4f23ff68c4a0c8c3",
+    "ppoll": "8a7f29e2708d122b9da6fbf0ebf01337a3a87c60fb55a0fc0400ec2aee221e70",
+    "registered-enosys": "02a50219da507eb296649c6c956f979425454e684f4b7b200a91dad106504e9f",
+    "deleted-ioctl": "5b1819ca37a887b05e26b67c738159f4038b3f73237fdd717758032d4a3a8817"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "binaries": {
+    "dynamic": {
+      "size": 514864,
+      "sha256": "3c9ad92e9d69e091c38f6cf29f65e1cc3e17cffd1f08ab182f80d46c4c038dac"
+    },
+    "libkrun.2.dylib": {
+      "size": 3284608,
+      "sha256": "78caf38969462f9364e980b3aa25f1e839a8ba6c7647c46e4884ae002afd06cd"
+    },
+    "static-baseline": {
+      "size": 1446368,
+      "sha256": "87140825c1c4220d10d80f6fbd5d13e754cefa385a352c3215fa6bbb1833ea11"
+    },
+    "static-strip": {
+      "size": 1162096,
+      "sha256": "88408532483d9b519611d28a196fa7721415649a41d1cc5d086eabe8ab82fe91"
+    },
+    "static-lto": {
+      "size": 1203392,
+      "sha256": "3f9b17d1aa9e9ab7b2c9a7e6a3f9b401dc71b77d9cad8d6a47b61707c76786a2"
+    },
+    "static-minimal": {
+      "size": 767520,
+      "sha256": "7e434d63c3c6fd0f0c586d80d6f50e9e2e3ab805d87b960a20e1e73cb34164e1"
+    },
+    "static-trace": {
+      "size": 993552,
+      "sha256": "a3888c8036505a9c664af7af4dd73dcc0db819e08aa6fbcf920cbe6f6dbdcad4"
+    },
+    "jitk-vmm": {
+      "size": 767488,
+      "sha256": "f514554ffaf4eba25d00137168219bf4cfcc5b6bf2f7191afab26e2eb37ecc3d"
+    }
+  },
+  "minimal_features": [
+    {
+      "file": "/tmp/jitk-01/r2/libkrun/target/release/.fingerprint/libkrun-8c19f5a6eb3920be/lib-krun.json",
+      "features": "[]",
+      "declared_features": "[\"amd-sev\", \"aws-nitro\", \"bitfield\", \"blk\", \"ffi\", \"gpu\", \"input\", \"iocuddle\", \"kbs-types\", \"krun_display\", \"krun_input\", \"net\", \"serde\", \"serde_json\", \"tdx\", \"tee\", \"timesync\", \"vhost-user\", \"virgl_resource_map2\"]"
+    }
+  ],
+  "runtime_source_matches_upstream": {
+    "src/libkrun/src/vmm/builder.rs": true,
+    "src/libkrun/src/vmm/macos/vstate.rs": true
+  },
+  "source_sha256": {
+    "main.rs": "6f8d14d1799c9095037e90af815e66c4589f027acadb6e057acbe18732afd80b",
+    "measured-main.rs": "c22620dcaea7e3eb7c49cb6c3ec3ffcee8367e89171f76c40acdfeba10c40215",
+    "dynkrun.rs": "46e9b5a8ac5ba38e8a4f5c9cc9a957ae799bb88525aff29a57c5a9b083bed9e0",
+    "parking-guest.c": "5019bb952b7136bb06128e9b5e3fab7c42972b99227624e7fdb48e1667f12d2c",
+    "start.S": "b1cac15c04738ad1de3cd7418d01377d3ad60c7c6f4e916547cce563179a805d"
+  },
+  "upstream_revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c"
+}

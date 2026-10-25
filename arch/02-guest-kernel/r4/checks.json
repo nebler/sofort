@@ -1,0 +1,60 @@
+{
+  "load": "4:52  up  6:05, 2 users, load averages: 28.70 33.32 46.75",
+  "churn": {
+    "cumulative_bytes": 134217728,
+    "ram_mib": 32,
+    "result": {
+      "t": "done",
+      "ok": 8128
+    }
+  },
+  "clock": {
+    "host_interval_plus_1ms": 30,
+    "n": 30,
+    "midpoint_delta_ms": {
+      "n": 30,
+      "p50": -0.54375,
+      "p90": 0.029,
+      "p99": 0.1115
+    }
+  },
+  "finite_timer_e2e_ms": {
+    "n": 30,
+    "p50": 28.133854499999998,
+    "p90": 42.951458,
+    "p99": 91.310709
+  },
+  "eof": "PASS: clean input EOF terminates without a success frame",
+  "partial_rx": "PASS: 1-byte run fragments + 32KiB ret",
+  "control_forgery": [
+    "\u001efatal control byte"
+  ],
+  "atomic_ascii": [
+    {
+      "byte": 0,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 30,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 127,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 128,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 255,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

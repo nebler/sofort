@@ -1,0 +1,23 @@
+{
+  "load_gate": {
+    "threshold": 6,
+    "budget_s": 0,
+    "wait_s": 3.0829996831016615e-06,
+    "passed": false,
+    "timed_out": true,
+    "observations": [
+      {
+        "elapsed_s": 3.0829996831016615e-06,
+        "load": [
+          50.9921875,
+          56.7998046875,
+          71.25830078125
+        ]
+      }
+    ]
+  },
+  "seconds": 0.10857037500136357,
+  "returncode": 0,
+  "uptime_before": "3:18  up  4:32, 2 users, load averages: 50.99 56.80 71.26",
+  "uptime_after": "3:18  up  4:32, 2 users, load averages: 50.99 56.80 71.26"
+}

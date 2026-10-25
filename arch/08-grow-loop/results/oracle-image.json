@@ -1,0 +1,65 @@
+[
+    {
+        "Id": "sha256:c82b5355c2623a6ee30d29e05a0690b219591f898ff4c4fd53e35b80c27f5a73",
+        "RepoTags": [
+            "jitk-oracle:08"
+        ],
+        "RepoDigests": [
+            "jitk-oracle@sha256:c82b5355c2623a6ee30d29e05a0690b219591f898ff4c4fd53e35b80c27f5a73"
+        ],
+        "Parent": "",
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-23T23:57:11.047285553Z",
+        "DockerVersion": "",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+            ],
+            "Cmd": null,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "/",
+            "Entrypoint": [
+                "python3",
+                "/opt/entry.py"
+            ],
+            "OnBuild": null,
+            "Labels": null
+        },
+        "Architecture": "arm64",
+        "Variant": "v8",
+        "Os": "linux",
+        "Size": 128033119,
+        "GraphDriver": {
+            "Data": null,
+            "Name": "overlayfs"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:f27c84aef3509463528cb456fbf5bfa25cdc7dcea6912131a622883b5e005744",
+                "sha256:a5a355aa2dc3d61ba4541a6290b9508aff2fd18e0d5470e5d3e530a71d0d2ac5",
+                "sha256:97d4628d8e87cf40bf7d54c28390e5f74bb7e39f3014668a866eab853df996ef",
+                "sha256:364947e7e95cab5139bba6c8799a2ac126fa4b2f84d29d7668ef4d114f6c38a6"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-23T23:57:11.190112011Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:c82b5355c2623a6ee30d29e05a0690b219591f898ff4c4fd53e35b80c27f5a73",
+            "size": 856
+        }
+    }
+]

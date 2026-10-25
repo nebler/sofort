@@ -1,0 +1,667 @@
+{
+  "started_utc": "2026-10-24T02:16:32.755Z",
+  "uptime_start": "4:16  up  5:30, 2 users, load averages: 41.66 41.12 54.38",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "scope": "Real fresh single-use VMs; reviewed SDK copy. Warm preparation excluded; timings are resource/deadline diagnostics, NOT canonical H4 performance. No providers with external effects or credentials.",
+  "fixed_vm_lifetime_ms": 5000,
+  "n_per_case": 30,
+  "rows": [
+    {
+      "case": "cpu",
+      "round": 0,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 62.827999999999975,
+      "overshoot_ms": 32.827999999999975,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        41.662109375,
+        41.123046875,
+        54.3779296875
+      ],
+      "load_after": [
+        41.662109375,
+        41.123046875,
+        54.3779296875
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 1,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 87.51675,
+      "overshoot_ms": 57.51675,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        41.662109375,
+        41.123046875,
+        54.3779296875
+      ],
+      "load_after": [
+        41.662109375,
+        41.123046875,
+        54.3779296875
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 2,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 81.60687499999995,
+      "overshoot_ms": 51.606874999999945,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        41.662109375,
+        41.123046875,
+        54.3779296875
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 3,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 116.10733300000015,
+      "overshoot_ms": 86.10733300000015,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 4,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 87.39899999999989,
+      "overshoot_ms": 57.39899999999989,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 5,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 145.24854099999993,
+      "overshoot_ms": 115.24854099999993,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 6,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 79.55349999999999,
+      "overshoot_ms": 49.553499999999985,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 7,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 40.387666999999965,
+      "overshoot_ms": 10.387666999999965,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 8,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 47.32725000000028,
+      "overshoot_ms": 17.327250000000276,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 9,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 34.13729199999989,
+      "overshoot_ms": 4.1372919999998885,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 10,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 93.41716600000018,
+      "overshoot_ms": 63.41716600000018,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 11,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 35.702749999999924,
+      "overshoot_ms": 5.702749999999924,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 12,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 59.3420000000001,
+      "overshoot_ms": 29.3420000000001,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 13,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 45.59699999999975,
+      "overshoot_ms": 15.596999999999753,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 14,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 52.527084000000286,
+      "overshoot_ms": 22.527084000000286,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 15,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 43.65049999999974,
+      "overshoot_ms": 13.650499999999738,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 16,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 52.39008400000057,
+      "overshoot_ms": 22.39008400000057,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 17,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 78.14383399999952,
+      "overshoot_ms": 48.143833999999515,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 18,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 139.54620799999975,
+      "overshoot_ms": 109.54620799999975,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 19,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 76.82874999999967,
+      "overshoot_ms": 46.82874999999967,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 20,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 153.78112499999952,
+      "overshoot_ms": 123.78112499999952,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 21,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 32.48762499999975,
+      "overshoot_ms": 2.4876249999997526,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 22,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 56.543916999999965,
+      "overshoot_ms": 26.543916999999965,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 23,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 44.622040999999626,
+      "overshoot_ms": 14.622040999999626,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        45.61279296875,
+        41.95068359375,
+        54.59228515625
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 24,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 66.93166699999983,
+      "overshoot_ms": 36.931666999999834,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 25,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 94.83666600000015,
+      "overshoot_ms": 64.83666600000015,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 26,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 59.815207999999984,
+      "overshoot_ms": 29.815207999999984,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 27,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 49.45045800000025,
+      "overshoot_ms": 19.450458000000253,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 28,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 100.89600000000064,
+      "overshoot_ms": 70.89600000000064,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    },
+    {
+      "case": "cpu",
+      "round": 29,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 60.713417000000845,
+      "overshoot_ms": 30.713417000000845,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ],
+      "load_after": [
+        49.0869140625,
+        42.7314453125,
+        54.79345703125
+      ]
+    }
+  ],
+  "pool_after_close": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "finished_utc": "2026-10-24T02:16:40.145Z",
+  "uptime_end": "4:16  up  5:30, 2 users, load averages: 49.09 42.73 54.79",
+  "summary": {
+    "cpu": {
+      "n": 30,
+      "handled": 30,
+      "controls_pass": 30,
+      "elapsed_ms": {
+        "median": 61.77070850000041,
+        "p90": 116.10733300000015,
+        "p99": 153.78112499999952
+      },
+      "blocked_invocations": 0,
+      "admitted_overshoot_gt50ms": 0,
+      "late_successes": 0
+    }
+  }
+}

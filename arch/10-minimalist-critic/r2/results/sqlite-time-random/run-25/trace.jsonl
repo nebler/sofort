@@ -1,0 +1,40 @@
+{"v":1,"seq":0,"tid":"T0","nr":221,"name":"execve","args":["\"\\x2f\\x62\\x69\\x6e\\x2d\\x69\\x6e\\x70\\x75\\x74\\x2f\\x73\\x71\\x6c\\x69\\x74\\x65\\x33\\x2d\\x73\\x74\\x61\\x74\\x69\\x63\"","[\"\\x2f\\x62\\x69\\x6e\\x2d\\x69\\x6e\\x70\\x75\\x74\\x2f\\x73\\x71\\x6c\\x69\\x74\\x65\\x33\\x2d\\x73\\x74\\x61\\x74\\x69\\x63\", \"\\x2d\\x62\\x61\\x74\\x63\\x68\", \"\\x2d\\x69\\x6e\\x69\\x74\", \"\\x2f\\x64\\x65\\x76\\x2f\\x6e\\x75\\x6c\\x6c\", \"\\x3a\\x6d\\x65\\x6d\\x6f\\x72\\x79\\x3a\", \"\\x53\\x45\\x4c\\x45\\x43\\x54\\x20\\x6c\\x65\\x6e\\x67\\x74\\x68\\x28\\x72\\x61\\x6e\\x64\\x6f\\x6d\\x62\\x6c\\x6f\\x62\\x28\\x33\\x32\\x29\\x29\\x3d\\x33\\x32\\x20\\x41\\x4e\\x44\\x20\\x75\\x6e\\x69\\x78\\x65\\x70\\x6f\\x63\\x68\\x28\\x27\\x6e\\x6f\\x77\\x27\\x29\\x3e\\x31\\x37\\x30\\x30\\x30\\x30\\x30\\x30\\x30\\x30\\x3b\"]","[\"\\x50\\x41\\x54\\x48\\x3d\\x2f\\x75\\x73\\x72\\x2f\\x62\\x69\\x6e\\x3a\\x2f\\x62\\x69\\x6e\", \"\\x4c\\x41\\x4e\\x47\\x3d\\x43\", \"\\x4c\\x43\\x5f\\x41\\x4c\\x4c\\x3d\\x43\", \"\\x54\\x5a\\x3d\\x55\\x54\\x43\"]"],"ret":0,"errno":null}
+{"v":1,"seq":1,"tid":"T0","nr":96,"name":"set_tid_address","args":["P0"],"ret":"T0","errno":null}
+{"v":1,"seq":2,"tid":"T0","nr":29,"name":"ioctl","args":["0","0x5413","P1"],"ret":-1,"errno":"ENOTTY"}
+{"v":1,"seq":3,"tid":"T0","nr":29,"name":"ioctl","args":["1","0x5413","P1"],"ret":-1,"errno":"ENOTTY"}
+{"v":1,"seq":4,"tid":"T0","nr":135,"name":"rt_sigprocmask","args":["0x1","[33 34]","NULL","8"],"ret":0,"errno":null}
+{"v":1,"seq":5,"tid":"T0","nr":134,"name":"rt_sigaction","args":["2","{sa_handler=0x411388, sa_mask=[], sa_flags=0x14000000, sa_restorer=0x5092a4}","{sa_handler=0, sa_mask=[], sa_flags=0}","8"],"ret":0,"errno":null}
+{"v":1,"seq":6,"tid":"T0","nr":214,"name":"brk","args":["NULL"],"ret":"HEAP+0","errno":null}
+{"v":1,"seq":7,"tid":"T0","nr":214,"name":"brk","args":["HEAP+8192"],"ret":"HEAP+8192","errno":null}
+{"v":1,"seq":8,"tid":"T0","nr":222,"name":"mmap","args":["P2","4096","0","0x32","-1","0"],"ret":"M0+0","errno":null}
+{"v":1,"seq":9,"tid":"T0","nr":222,"name":"mmap","args":["NULL","4096","0x3","0x22","-1","0"],"ret":"M1+0","errno":null}
+{"v":1,"seq":10,"tid":"T0","nr":48,"name":"faccessat","args":["-100","\"\\x3a\\x6d\\x65\\x6d\\x6f\\x72\\x79\\x3a\"","0"],"ret":-1,"errno":"ENOENT"}
+{"v":1,"seq":11,"tid":"T0","nr":56,"name":"openat","args":["-100","\"\\x2f\\x64\\x65\\x76\\x2f\\x6e\\x75\\x6c\\x6c\"","0x20000"],"ret":3,"errno":null}
+{"v":1,"seq":12,"tid":"T0","nr":222,"name":"mmap","args":["NULL","4096","0x3","0x22","-1","0"],"ret":"M2+0","errno":null}
+{"v":1,"seq":13,"tid":"T0","nr":63,"name":"read","args":["3","\"\"","1024"],"ret":0,"errno":null}
+{"v":1,"seq":14,"tid":"T0","nr":57,"name":"close","args":["3"],"ret":0,"errno":null}
+{"v":1,"seq":15,"tid":"T0","nr":215,"name":"munmap","args":["M2+0","4096"],"ret":0,"errno":null}
+{"v":1,"seq":16,"tid":"T0","nr":56,"name":"openat","args":["-100","\"\\x3a\\x6d\\x65\\x6d\\x6f\\x72\\x79\\x3a\"","0x20000"],"ret":-1,"errno":"ENOENT"}
+{"v":1,"seq":17,"tid":"T0","nr":222,"name":"mmap","args":["NULL","4096","0x3","0x22","-1","0"],"ret":"M3+0","errno":null}
+{"v":1,"seq":18,"tid":"T0","nr":222,"name":"mmap","args":["NULL","16384","0x3","0x22","-1","0"],"ret":"M4+0","errno":null}
+{"v":1,"seq":19,"tid":"T0","nr":222,"name":"mmap","args":["NULL","8192","0x3","0x22","-1","0"],"ret":"M5+0","errno":null}
+{"v":1,"seq":20,"tid":"T0","nr":222,"name":"mmap","args":["NULL","49152","0x3","0x22","-1","0"],"ret":"M6+0","errno":null}
+{"v":1,"seq":21,"tid":"T0","nr":222,"name":"mmap","args":["NULL","4096","0x3","0x22","-1","0"],"ret":"M7+0","errno":null}
+{"v":1,"seq":22,"tid":"T0","nr":222,"name":"mmap","args":["NULL","4096","0x3","0x22","-1","0"],"ret":"M8+0","errno":null}
+{"v":1,"seq":23,"tid":"T0","nr":222,"name":"mmap","args":["NULL","4096","0x3","0x22","-1","0"],"ret":"M9+0","errno":null}
+{"v":1,"seq":24,"tid":"T0","nr":172,"name":"getpid","args":[],"ret":211,"errno":null}
+{"v":1,"seq":25,"tid":"T0","nr":56,"name":"openat","args":["-100","\"\\x2f\\x64\\x65\\x76\\x2f\\x75\\x72\\x61\\x6e\\x64\\x6f\\x6d\"","0xa0000"],"ret":3,"errno":null}
+{"v":1,"seq":26,"tid":"T0","nr":25,"name":"fcntl","args":["3","0x2","0x1"],"ret":0,"errno":null}
+{"v":1,"seq":27,"tid":"T0","nr":63,"name":"read","args":["3","\"\\xe1\\x95\\xf9\\x64\\xdb\\x53\\x9e\\x8a\\x79\\x84\\xa1\\xb3\\x0d\\xbe\\xbf\\xe9\\xe1\\x6c\\x9f\\xa2\\x2c\\x03\\xa1\\xd4\\x30\\xce\\x74\\x5c\\x1f\\x49\\xc2\\x60\\xc2\\xff\\xb1\\x24\\x66\\x0f\\xe1\\x95\\x96\\x8d\\x9e\\x95\"","44"],"ret":44,"errno":null}
+{"v":1,"seq":28,"tid":"T0","nr":57,"name":"close","args":["3"],"ret":0,"errno":null}
+{"v":1,"seq":29,"tid":"T0","nr":29,"name":"ioctl","args":["1","0x5413","P3"],"ret":-1,"errno":"ENOTTY"}
+{"v":1,"seq":30,"tid":"T0","nr":66,"name":"writev","args":["1","[{iov_base=\"\\x31\", iov_len=1}, {iov_base=\"\\x0a\", iov_len=1}]","2"],"ret":2,"errno":null}
+{"v":1,"seq":31,"tid":"T0","nr":215,"name":"munmap","args":["M4+0","16384"],"ret":0,"errno":null}
+{"v":1,"seq":32,"tid":"T0","nr":215,"name":"munmap","args":["M5+0","8192"],"ret":0,"errno":null}
+{"v":1,"seq":33,"tid":"T0","nr":215,"name":"munmap","args":["M9+0","4096"],"ret":0,"errno":null}
+{"v":1,"seq":34,"tid":"T0","nr":215,"name":"munmap","args":["M8+0","4096"],"ret":0,"errno":null}
+{"v":1,"seq":35,"tid":"T0","nr":215,"name":"munmap","args":["M7+0","4096"],"ret":0,"errno":null}
+{"v":1,"seq":36,"tid":"T0","nr":215,"name":"munmap","args":["M3+0","4096"],"ret":0,"errno":null}
+{"v":1,"seq":37,"tid":"T0","nr":215,"name":"munmap","args":["M6+0","49152"],"ret":0,"errno":null}
+{"v":1,"seq":38,"tid":"T0","nr":215,"name":"munmap","args":["M1+0","4096"],"ret":0,"errno":null}
+{"v":1,"seq":39,"tid":"T0","nr":94,"name":"exit_group","args":["0"],"ret":null,"errno":null}

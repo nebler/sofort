@@ -1,0 +1,16 @@
+{
+  "assumptions": {
+    "executions": 1000000,
+    "cpu_ms": 10,
+    "wall_s": 1,
+    "host_hour_UNVERIFIED": 2.32
+  },
+  "jitk_or_firecracker_host_only_1000eps": 0.6444444444444445,
+  "jitk_or_firecracker_host_only_100eps": 6.444444444444445,
+  "jitk_or_firecracker_host_only_198_2eps": 3.2514855925552193,
+  "cloudflare_reused_one_code_and_id_day": 0.502,
+  "cloudflare_unique_snippet_each_execution": 2000.5,
+  "lambda_arm_128mib_one_second": 1.8666749999999999,
+  "e2b_1vcpu_1gib_one_second": 18.5,
+  "e2b_default_2vcpu_4gib_one_second": 46.0
+}

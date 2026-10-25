@@ -1,0 +1,12 @@
+{
+  "copy_command": "cp -R arch/jitk /tmp/jitk-05/r4/anyname",
+  "cache_command": "cp -R /tmp/jitk-05/r3/stdlib /tmp/jitk-05/r4/anyname/linux/.work/",
+  "run_command": "JITK_NESTED_BASE=/tmp/jitk-05/r3 JITK_NESTED_VCPUS=1 /tmp/jitk-05/r4/anyname/linux/run.sh --nested",
+  "work_selection": "default linux/.work; JITK_WORK was unset",
+  "external_input_hashes": {
+    "vmlinuz": "391a3b39b265585ed094fba56994c4613a3c41fc65b9670e42da5a66d63ca07e",
+    "base.cpio.gz": "e8b0b1bc1661a3814b5768fd46dfea93b02207bd1aeab8f27f4b5d3b5b9455d6",
+    "libpython3.13-stdlib_3.13.5-2+deb13u5_arm64.deb": "d1178d24e4d143cc6c577d9dc0f26dd982efccc2e600d25ce86361f168a22be0"
+  },
+  "scope": "Fresh VMM and kernel build plus full H3 in renamed copy. Debian base and Python standard-library cache reused from own R3 scratch; no other owner output used."
+}

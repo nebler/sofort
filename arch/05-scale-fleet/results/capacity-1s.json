@@ -1,0 +1,22 @@
+{
+  "assumptions": {
+    "rate": 1000,
+    "wall": 1,
+    "cpu_ms": 15,
+    "boot_ms": 10,
+    "replenish_window": 0.02,
+    "burst": 32,
+    "host_hour": 2.32
+  },
+  "idle_target": 66,
+  "active_mean": 1000,
+  "mean_vms": 1066,
+  "mean_reserved_gib": 41.640625,
+  "refill_parallelism": 10,
+  "cpu_upper_eps": 2800.0,
+  "memory_upper_eps": 1982.0,
+  "scenario_upper_eps": 1982.0,
+  "construction_bound": "UNVERIFIED",
+  "host_dollars_million_at_requested_rate": 0.6444444444444445,
+  "host_dollars_million_with_25pct_spare": 0.8055555555555556
+}

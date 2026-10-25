@@ -1,0 +1,96 @@
+11    execve("/work/qjs-static", ["/work/qjs-static", "/src/guest.mjs"], 0xfffffdd74860 /* 5 vars */) = 0
+11    set_tid_address(0x649768)         = 11
+11    brk(NULL)                         = 0x29005000
+11    brk(0x29007000)                   = 0x29007000
+11    mmap(0x29005000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x29005000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8af000
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ad000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ac000
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8aa000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a6000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a5000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a4000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a3000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a2000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a1000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8a0000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a89f000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a89e000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a89d000
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a89b000
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a899000
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a897000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a893000
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a891000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a88d000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a88c000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a888000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a887000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a883000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a882000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a87e000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a87d000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a879000
+11    munmap(0xffff9a87d000, 4096)      = 0
+11    openat(AT_FDCWD, "/src/guest.mjs", O_RDONLY|O_LARGEFILE) = 3
+11    lseek(3, 0, SEEK_END)             = 2567
+11    lseek(3, 0, SEEK_CUR)             = 2567
+11    lseek(3, 0, SEEK_SET)             = 0
+11    readv(3, [{iov_base="// Development transport, delibe"..., iov_len=2566}, {iov_base="\n", iov_len=1024}], 2) = 2567
+11    close(3)                          = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a87d000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a878000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a874000
+11    munmap(0xffff9a874000, 16384)     = 0
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a874000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a873000
+11    munmap(0xffff9a87d000, 4096)      = 0
+11    openat(AT_FDCWD, "/src/codec.mjs", O_RDONLY|O_LARGEFILE) = 3
+11    lseek(3, 0, SEEK_END)             = 1938
+11    lseek(3, 0, SEEK_CUR)             = 1938
+11    lseek(3, 0, SEEK_SET)             = 0
+11    readv(3, [{iov_base="// Same wire tag/semantics as co"..., iov_len=1937}, {iov_base="\n", iov_len=1024}], 2) = 1938
+11    close(3)                          = 0
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a871000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a87d000
+11    munmap(0xffff9a87d000, 4096)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a87d000
+11    mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a86a000
+11    munmap(0xffff9a8aa000, 8192)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ab000
+11    munmap(0xffff9a8ab000, 4096)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ab000
+11    munmap(0xffff9a8ab000, 4096)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ab000
+11    munmap(0xffff9a8ab000, 4096)      = 0
+11    munmap(0xffff9a871000, 8192)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ab000
+11    munmap(0xffff9a8ab000, 4096)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ab000
+11    munmap(0xffff9a8ab000, 4096)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8ab000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8aa000
+11    munmap(0xffff9a8aa000, 4096)      = 0
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8aa000
+11    munmap(0xffff9a8aa000, 4096)      = 0
+11    readlinkat(AT_FDCWD, "/src", 0xfffffad753c8, 4086) = -1 EINVAL (Invalid argument)
+11    readlinkat(AT_FDCWD, "/src/codec.mjs", 0xfffffad753c8, 4096) = -1 EINVAL (Invalid argument)
+11    readlinkat(AT_FDCWD, "/src", 0xfffffad75608, 4086) = -1 EINVAL (Invalid argument)
+11    readlinkat(AT_FDCWD, "/src/guest.mjs", 0xfffffad75608, 4096) = -1 EINVAL (Invalid argument)
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8aa000
+11    munmap(0xffff9a8aa000, 4096)      = 0
+11    mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a871000
+11    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a8aa000
+11    munmap(0xffff9a8aa000, 4096)      = 0
+11    mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a862000
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a85e000
+11    munmap(0xffff9a85e000, 16384)     = 0
+11    mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff9a85e000
+11    ioctl(1, TIOCGWINSZ, 0xfffffad77a38) = -1 ENOTTY (Not a tty)
+11    writev(1, [{iov_base="", iov_len=0}, {iov_base="{\"t\":\"ready\",\"version\":1}\n", iov_len=26}], 2) = 26
+11    ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+11    read(0, "{\"t\": \"run\", \"code\": \"(async()=>"..., 4096) = 175
+11    writev(1, [{iov_base="{\"t\":\"call\",\"id\":0,\"ns\":\"github\""..., iov_len=74}, {iov_base=NULL, iov_len=0}], 2) = 74
+11    writev(1, [{iov_base="{\"t\":\"done\",\"result\":2}\n", iov_len=24}, {iov_base=NULL, iov_len=0}], 2) = 24
+11    exit_group(0)                     = ?
+11    +++ exited with 0 +++

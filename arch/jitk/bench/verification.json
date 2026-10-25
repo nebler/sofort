@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "samples": 2460,
+  "cases": 41,
+  "per_case": 60,
+  "quiet_samples": 0,
+  "load1_range": [
+    14.3974609375,
+    145.5537109375
+  ],
+  "executor_lifecycle_checks": 600,
+  "input_hashes": "all matched",
+  "owned_processes": "none",
+  "all_private_run_directories_live_processes": [],
+  "measurement_source_archive": "measured-source/",
+  "measurement_hashes": "all archived sources matched raw.json",
+  "post_run_cleanup_fix": "owned descendant sessions terminated before wrappers; two aborted-run leftovers removed",
+  "cleanup_regressions": "PASS detached child wrapper cleanup + watchdog EOF + real parked executor interruption"
+}

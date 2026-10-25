@@ -1,0 +1,22 @@
+{
+  "recorded_utc": "2026-10-24T02:04:02.813285+00:00",
+  "command": "make demo",
+  "cwd": "/tmp/jitk-10/h2-01/jitk",
+  "exit_code": 0,
+  "runtime_edits": false,
+  "kernel_fixture_patch_reversed": true,
+  "files_sha256": {
+    "h2-growth.json": "a4188d6b6ce1bc0326b3278bd78f26e9e5ff63a642657997b36052e9e9c63e26",
+    "h2-live-demo.json": "1b0b437ff509ae196fc26a0db08b38e3dc91110dcdb078c7caf6991d84daffc0",
+    "h2-executor-selection.json": "8abeab6ecb71e0130369cf602a587224787f6735d8169a3bbc3644690604a03e"
+  },
+  "growth_run": "run-20261024T040023",
+  "probe_passes": 90,
+  "lua_n": 30,
+  "native_growth_host_sha256": "c751583737c2abed6c80a64dc83bc1ce2f1544d94b12ca4ac7b974d1bc6fb61c",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "live_qjs_hex": "7265706c793a70696e670a",
+  "live_lua_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+  "all_vms_reaped": true,
+  "scope": "Functional H2 command. Executor uses canonical sandbox VMM; development growth/live demo use certificate native host. Not performance or full H5 evidence."
+}

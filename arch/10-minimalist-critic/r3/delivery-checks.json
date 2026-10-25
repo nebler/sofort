@@ -1,0 +1,25 @@
+{
+  "help": {
+    "exit": 0,
+    "stdout": "build: kernel, VMM, executor\ntest: every subtree suite\nbench: canonical area-06 harness\ndemo: executor, syscall regrowth, Lua (H2)\nlinux-nested: area-05 nested KVM suite\nloc: owned-source inventory\n",
+    "stderr": ""
+  },
+  "dryrun": {
+    "exit": 0,
+    "stdout": "python3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" kernel build\njitk: dry-run delegation kernel/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" vmm build\njitk: dry-run delegation vmm/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" protocol build\njitk: dry-run delegation protocol/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor dependencies\njitk: dry-run delegation executor/dependencies\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor build\njitk: dry-run delegation executor/build\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" kernel test\njitk: dry-run delegation kernel/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" vmm test\njitk: dry-run delegation vmm/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" vmm/sandbox test\njitk: dry-run delegation vmm/sandbox/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" protocol test\njitk: dry-run delegation protocol/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor test\njitk: dry-run delegation executor/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor/policy test\njitk: dry-run delegation executor/policy/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" grow test\njitk: dry-run delegation grow/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" bench test\njitk: dry-run delegation bench/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" bench/hyperlight test\njitk: dry-run delegation bench/hyperlight/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" linux test\njitk: dry-run delegation linux/test\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" executor demo\njitk: dry-run delegation executor/demo\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" grow grow\njitk: dry-run delegation grow/grow\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" grow demo\njitk: dry-run delegation grow/demo\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" bench bench\njitk: dry-run delegation bench/bench\npython3 \"/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/delegate.py\" linux nested\njitk: dry-run delegation linux/nested\n",
+    "stderr": ""
+  },
+  "missing_subtree": {
+    "exit": 2,
+    "stdout": "",
+    "stderr": "jitk: kernel is incomplete: missing /private/tmp/jitk-10/delegate-missing/kernel/README.md; owner must supply documented build entrypoint\nmake: *** [build] Error 1\n",
+    "clear": true
+  },
+  "links": {
+    "count": 210,
+    "missing": []
+  },
+  "architecture_diagram_ascii": true,
+  "r3_lines": 96,
+  "r3_within_200_lines": true
+}

@@ -1,0 +1,21 @@
+[
+  "qemu-system-aarch64",
+  "-M",
+  "virt,virtualization=on,gic-version=3",
+  "-accel",
+  "hvf",
+  "-cpu",
+  "host",
+  "-smp",
+  "1",
+  "-m",
+  "6144",
+  "-kernel",
+  "/tmp/jitk-05/r3/vmlinuz",
+  "-initrd",
+  "/tmp/jitk-05/r3/test.cpio.gz",
+  "-append",
+  "console=ttyAMA0 rdinit=/init quiet",
+  "-nographic",
+  "-no-reboot"
+]

@@ -1,0 +1,16 @@
+{
+  "started_utc": "2026-10-24T02:18:02.213123+00:00",
+  "uptime_before": "4:18  up  5:31, 2 users, load averages: 57.96 47.84 55.71",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "scope": "Unmodified owner03 hostile runner, 30/case, frozen v2 production VMM and image; no real tools or credentials.",
+  "exit_code": 0,
+  "cleanup_pids": [],
+  "children_after": [],
+  "cases": 19,
+  "passed": 570,
+  "failed": 0,
+  "results_sha256": "00dde7a856d1bc1e87616a0df70a41f18d718df2da6f5b6c6f9bff7982beb45d",
+  "finished_utc": "2026-10-24T02:19:57.674224+00:00",
+  "uptime_after": "4:19  up  5:33, 2 users, load averages: 84.80 58.85 58.89"
+}

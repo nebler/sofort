@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "finished_at": "2026-10-24T03:03:35.683081+00:00",
+  "load_at_verification": [
+    134.8505859375,
+    92.04443359375,
+    69.81494140625
+  ],
+  "portable_smoke": {
+    "samples": 8,
+    "failures": 0,
+    "load1_range": [
+      47.3671875,
+      47.3671875
+    ]
+  },
+  "historical_provenance": "R3 raw and smoke paths retained as immutable evidence; no executable-source external-area references",
+  "external_area_source_references": [],
+  "surviving_owned_vm_paths": [],
+  "harness_sha256": {
+    "run.py": "406b2ea3fa3747cb8c4cafb9d5b1f3802313020e1a22cf8b15fd75c195925d9d",
+    "cases.json": "c00e3f14ac67000f7645a930c487a02123ea63c697dd05cd71e4186fc0034b46",
+    "executor.mjs": "afba25fa20eb329c6e9feacb969ea501fff0eb2e797fefb980fc9b48e4d00b73",
+    "watchdog.py": "4ce65e5616cbc2372929f53521292d8f710026ee1aac414629d526d5efee96d6",
+    "sandbox_probe.c": "4ed83ff4c0e19e320d062f8b4b2e70c6b2bbae99d473c25f5a0a13be95667fbb",
+    "processes.py": "37768574c5b4b9029600569cff4c73b9c383e79b2db9736b6f04640669254328"
+  },
+  "recertify_sha256": "34b99b61bc6acd77e4679333b60ba64861afdccc343212e314c7731947e3a317",
+  "raw_sha256": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b"
+}

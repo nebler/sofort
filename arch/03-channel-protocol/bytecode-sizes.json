@@ -1,0 +1,10 @@
+{
+  "source_bytes": 4731,
+  "bytecode_bytes": 4057,
+  "qjs_raw_bytecode_exit": 1,
+  "stderr": "SyntaxError: unexpected token in expression: '\u0005'\n    at /work/bootstrap.qbc:1:1\n",
+  "qjs_static_bytes": 9688056,
+  "qjs_stripped_bytes": 2394464,
+  "qjsc_static_bytes": 5951216,
+  "qjsc_static_stripped_bytes": 1050560
+}

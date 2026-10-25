@@ -1,0 +1,31 @@
+# Investment and exposure kill criteria — final R4
+
+The [hash registry](ARTIFACTS-R4.json) defines V/K/E/W (certified v2 set),
+C (independent rebuild), L (Linux rebuild), B (R3 comparison) and H (Hyperlight).
+Evidence below is frozen in the [manifest](../../10-minimalist-critic/r4/frozen/manifest.json).
+Thresholds are review criteria, not measured performance promises. The old
+criteria ledger is [preserved](../../10-minimalist-critic/r4/historical-KILL-CRITERIA.md).
+
+| Criterion | Current status | Frozen evidence and exact scope | Artifact hashes |
+|---|---|---|---|
+| I1/H1 renamed clean-copy build and every subtree test | FAIL; build PASS | [receipt/log](../../10-minimalist-critic/r4/frozen/review/i1.json): test exit2 at stale direct-import guard after Hyperlight delegates to ProcessBackend. Kernel/VMM/sandbox completed; later aggregate suites not reached. Load1 43.01→76.45 at command boundaries | [C/K/E/W](ARTIFACTS-R4.json) |
+| F1 no forbidden product-tree references | FAIL | [strict scan](../../10-minimalist-critic/r4/frozen/review/path-scan-final.json):84 matching files,13 owned-source files; includes historical/generated/binary strings, with no waiver. [Classification](../../10-minimalist-critic/r4/frozen/review/path-scan-classification.json) distinguishes source from provenance | [source inventory](ARTIFACTS-R4.json) |
+| H2 real deleted-handler regrowth then unchanged Lua | PASS functional | [independent demo](../../10-minimalist-critic/r4/frozen/review/demo.log): exit0,90 probes+30 Lua, explicit REPLAY;100.09s,load1 76.45→30.70. [Owner live run](../../10-minimalist-critic/r4/frozen/grow-R4.md) separately records actual CLI sampling | [C/K, integration images/Lua; V/live images](ARTIFACTS-R4.json) |
+| H3 full nested KVM functional suite | PASS owner; aggregate replay not reached | [report/table](../../10-minimalist-critic/r4/frozen/linux-R4.md):100 boots,30 tools,800 concurrent completions,256 held/returned,720 seccomp,180 faults,children0;outer load1 32.99–140.85. One outer vCPU, no metal timing transfer | [L/K](ARTIFACTS-R4.json) |
+| H4 load-aware n≥30 distributions | PASS contended evidence; quiet UNMEASURED | [canonical table](../../10-minimalist-critic/r4/frozen/bench/RESULTS.md):R3 full2460,load1 14.40–145.55; R4 subset480,load1 12.48–112.85; zero quiet gates in both. Only the specified subset is recertified on v2 | [B/H/K; V versus B/K](ARTIFACTS-R4.json) |
+| H5 named hostile classes and no host effect | Bounded historical coverage; exposure FAIL | [R3 matrix](../../10-minimalist-critic/r4/frozen/security-R3.md), [independent R3 replay](../../10-minimalist-critic/r4/frozen/r3/protocol-replay.json); current I2 below fails. Full matrix on E, Linux escape and EOF-mid-call unverified; per-fixture load retained | [V/K/R3-executor; E for current I2](ARTIFACTS-R4.json) |
+| I2 execution deadline overshoot≤50ms,30/30 blocking+CPU probes | FAIL | [blocking](../../10-minimalist-critic/r4/frozen/executor/h5-resource-probe-final.json):kill29/30,API0/30,worst kill143.072ms,load1 63.59–83.41. [CPU](../../10-minimalist-critic/r4/frozen/executor/h5-cpu-probe-final.json):kill28/30,API28/30,worst139.456ms,load1 73.06–112.85. Kill syscall timestamps are not measured process-death times; no late successes,60/60 recovery controls | [V/K/E/W](ARTIFACTS-R4.json) |
+| Host tool cancellation/result allocations/outstanding work bounded | UNMEASURED beyond cooperative fixtures | [signals and limitations](../../10-minimalist-critic/r4/frozen/executor-R4.md), [noncooperative policy probe](../../10-minimalist-critic/r4/frozen/r3/policy-noncooperative.json). AbortSignal does not interrupt same-thread synchronous JS or force-settle an ignoring callback | [E/P/W](ARTIFACTS-R4.json) |
+| Parked idle<2% core and1000 stall-free exchanges | PASS listed v2 fixtures | [Darwin](../../10-minimalist-critic/r4/frozen/kernel-R4.md),[nested Linux](../../10-minimalist-critic/r4/frozen/linux-R4.md), with each measured load. Not a fleet-wide CPU or absolute-latency claim | [V/K and L/K](ARTIFACTS-R4.json) |
+| Aggregate parked+tool-wait CPU≤10% host capacity | UNMEASURED | No sustained fleet attribution; per-VM fixture results do not decide this threshold | [V/K/L scope only](ARTIFACTS-R4.json) |
+| M4 arm64 Linux overhead p99≤10ms at c32; attributable≤5CPU-ms and≤32MiB/invocation | UNMEASURED | [nested limitations](../../10-minimalist-critic/r4/frozen/linux-R4.md); require metal distributions and supervisor/watchdog/system attribution. Configured guest RAM is not total memory | [L/K, nested only](ARTIFACTS-R4.json) |
+| Keep JS-only investment only if equivalent Hyperlight is>20% behind in density/throughput | UNMEASURED | [contended comparison](../../10-minimalist-critic/r4/frozen/bench/RESULTS.md); logical clones have a different HW-isolation contract. I3 omits a fresh Hyperlight run | [B/K/H; V subset only](ARTIFACTS-R4.json) |
+| Lua adds≤350 kernel LOC; no signal delivery/threads/general filesystem | PASS restricted profile | [grow receipts](../../10-minimalist-critic/r4/frozen/grow-R4.md):canonical/replay+6 and live candidate+8;stage load1 46.22–138.09. Lua already computes with missing-slot ENOSYS; no arbitrary ABI claim | [V/K, repacked replay/live images/Lua](ARTIFACTS-R4.json) |
+| I4 owned source remains reviewable; investigate beyond5750 LOC | FAIL planning alarm; I4 measurement complete | [R3-method inventory](../../10-minimalist-critic/r4/frozen/review/loc-final.json):9409 physical lines including tests/build/config,down1249;load1 45.50. [All15 listed duplicate groups resolved](../../10-minimalist-critic/r4/frozen/review/source-audit-final.json); one linker-script pair remains. Patch delta+174/−93 separate; size alone is not evidence of insecurity | [inventory hash](ARTIFACTS-R4.json) |
+
+Keep the artifact private while exposure criteria fail. Repair the aggregate
+import guard and remaining path hygiene, then rerun the exact I1. Replay both
+failed deadline probes against any proposed mechanism change; a timer moved out
+of Node fixes event-loop dependence but does not establish the measured bound.
+Defer metal cost and equivalent-isolation investment decisions until matching
+measurements exist. This review provisioned no cloud resources.

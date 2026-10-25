@@ -1,0 +1,9 @@
+
+running 4 tests
+test tests::invalid_fd ... ok
+test tests::terminal_probe ... ok
+test tests::unknown_request ... ok
+test tests::scalar_fuzz_10000 ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

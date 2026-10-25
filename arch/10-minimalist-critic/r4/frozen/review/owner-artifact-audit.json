@@ -1,0 +1,251 @@
+{
+  "at": "2026-10-24T03:16:12.262425+00:00",
+  "load": [
+    56.01513671875,
+    78.271484375,
+    74.5810546875
+  ],
+  "checks": [
+    {
+      "name": "executor bundle",
+      "actual": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "expected": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "pass": true
+    },
+    {
+      "name": "watchdog",
+      "actual": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "expected": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "pass": true
+    },
+    {
+      "name": "certificate",
+      "actual": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+      "expected": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+      "pass": true
+    },
+    {
+      "name": "executor/backend.ts",
+      "actual": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+      "expected": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+      "pass": true
+    },
+    {
+      "name": "executor/executor.ts",
+      "actual": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968",
+      "expected": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968",
+      "pass": true
+    },
+    {
+      "name": "executor/pool.ts",
+      "actual": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb",
+      "expected": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb",
+      "pass": true
+    },
+    {
+      "name": "executor/select-backend.ts",
+      "actual": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0",
+      "expected": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0",
+      "pass": true
+    },
+    {
+      "name": "executor/policy-adapter.ts",
+      "actual": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
+      "expected": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
+      "pass": true
+    },
+    {
+      "name": "executor/policy-check.ts",
+      "actual": "4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f",
+      "expected": "4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f",
+      "pass": true
+    },
+    {
+      "name": "executor/watchdog.py",
+      "actual": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "expected": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "pass": true
+    },
+    {
+      "name": "executor/fixtures/parking-gate.json",
+      "actual": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717",
+      "expected": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717",
+      "pass": true
+    },
+    {
+      "name": "bench/run.py",
+      "actual": "406b2ea3fa3747cb8c4cafb9d5b1f3802313020e1a22cf8b15fd75c195925d9d",
+      "expected": "406b2ea3fa3747cb8c4cafb9d5b1f3802313020e1a22cf8b15fd75c195925d9d",
+      "pass": true
+    },
+    {
+      "name": "bench/cases.json",
+      "actual": "c00e3f14ac67000f7645a930c487a02123ea63c697dd05cd71e4186fc0034b46",
+      "expected": "c00e3f14ac67000f7645a930c487a02123ea63c697dd05cd71e4186fc0034b46",
+      "pass": true
+    },
+    {
+      "name": "bench/executor.mjs",
+      "actual": "afba25fa20eb329c6e9feacb969ea501fff0eb2e797fefb980fc9b48e4d00b73",
+      "expected": "afba25fa20eb329c6e9feacb969ea501fff0eb2e797fefb980fc9b48e4d00b73",
+      "pass": true
+    },
+    {
+      "name": "bench/watchdog.py",
+      "actual": "4ce65e5616cbc2372929f53521292d8f710026ee1aac414629d526d5efee96d6",
+      "expected": "4ce65e5616cbc2372929f53521292d8f710026ee1aac414629d526d5efee96d6",
+      "pass": true
+    },
+    {
+      "name": "bench/sandbox_probe.c",
+      "actual": "4ed83ff4c0e19e320d062f8b4b2e70c6b2bbae99d473c25f5a0a13be95667fbb",
+      "expected": "4ed83ff4c0e19e320d062f8b4b2e70c6b2bbae99d473c25f5a0a13be95667fbb",
+      "pass": true
+    },
+    {
+      "name": "bench/processes.py",
+      "actual": "37768574c5b4b9029600569cff4c73b9c383e79b2db9736b6f04640669254328",
+      "expected": "37768574c5b4b9029600569cff4c73b9c383e79b2db9736b6f04640669254328",
+      "pass": true
+    },
+    {
+      "name": "bench recertify",
+      "actual": "34b99b61bc6acd77e4679333b60ba64861afdccc343212e314c7731947e3a317",
+      "expected": "34b99b61bc6acd77e4679333b60ba64861afdccc343212e314c7731947e3a317",
+      "pass": true
+    },
+    {
+      "name": "bench raw",
+      "actual": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b",
+      "expected": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b",
+      "pass": true
+    },
+    {
+      "name": "h5-resource-probe-final receipt",
+      "actual": "29c647993c4c99861c6d19b3c65f08bec409fbfff75c8a911121e5115b6b2a1b",
+      "expected": "29c647993c4c99861c6d19b3c65f08bec409fbfff75c8a911121e5115b6b2a1b",
+      "pass": true
+    },
+    {
+      "name": "h5-resource-probe-final vmm_sha256",
+      "actual": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "expected": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "pass": true
+    },
+    {
+      "name": "h5-resource-probe-final image_sha256",
+      "actual": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "expected": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "pass": true
+    },
+    {
+      "name": "h5-resource-probe-final executor_sha256",
+      "actual": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "expected": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "pass": true
+    },
+    {
+      "name": "h5-resource-probe-final watchdog_sha256",
+      "actual": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "expected": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "pass": true
+    },
+    {
+      "name": "h5-cpu-probe-final receipt",
+      "actual": "44962a47e4c8eccf4c74c50537fd95fb9f3d1a59f9f9c39aae1ac1d47d8107d0",
+      "expected": "44962a47e4c8eccf4c74c50537fd95fb9f3d1a59f9f9c39aae1ac1d47d8107d0",
+      "pass": true
+    },
+    {
+      "name": "h5-cpu-probe-final vmm_sha256",
+      "actual": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "expected": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "pass": true
+    },
+    {
+      "name": "h5-cpu-probe-final image_sha256",
+      "actual": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "expected": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "pass": true
+    },
+    {
+      "name": "h5-cpu-probe-final executor_sha256",
+      "actual": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "expected": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "pass": true
+    },
+    {
+      "name": "h5-cpu-probe-final watchdog_sha256",
+      "actual": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "expected": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "pass": true
+    },
+    {
+      "name": "grow/adapters.py",
+      "actual": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5",
+      "expected": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5",
+      "pass": true
+    },
+    {
+      "name": "grow/agent.py",
+      "actual": "ed292c0945cf485f6502cb248ad26142c26da12b9ddcc65a4eb27896150cffd8",
+      "expected": "ed292c0945cf485f6502cb248ad26142c26da12b9ddcc65a4eb27896150cffd8",
+      "pass": true
+    },
+    {
+      "name": "grow/demo.py",
+      "actual": "c2b98512ee3641eb3f88243ebf7997768797f5f38e9e733134dc304d622eeadc",
+      "expected": "c2b98512ee3641eb3f88243ebf7997768797f5f38e9e733134dc304d622eeadc",
+      "pass": true
+    },
+    {
+      "name": "grow/loop.py",
+      "actual": "130d33a7f255e658345200191d5966dd977b9041085d48ec8541ef99f13a8bb3",
+      "expected": "130d33a7f255e658345200191d5966dd977b9041085d48ec8541ef99f13a8bb3",
+      "pass": true
+    },
+    {
+      "name": "grow/prepare.py",
+      "actual": "7c6268627a7b63099655b99519fdd58bfabda8b89c3a13dae92d99bced82837d",
+      "expected": "7c6268627a7b63099655b99519fdd58bfabda8b89c3a13dae92d99bced82837d",
+      "pass": true
+    },
+    {
+      "name": "grow/runtime.py",
+      "actual": "4692ddbabad903f095f022bcc0f7024c56565d1f1ff9ec2dedec8983765c633a",
+      "expected": "4692ddbabad903f095f022bcc0f7024c56565d1f1ff9ec2dedec8983765c633a",
+      "pass": true
+    },
+    {
+      "name": "grow/test.py",
+      "actual": "9f04bd5ed58945903dbaf5f1185a2a6f438710718e5e6aba7a5ad82729eb1d85",
+      "expected": "9f04bd5ed58945903dbaf5f1185a2a6f438710718e5e6aba7a5ad82729eb1d85",
+      "pass": true
+    },
+    {
+      "name": "linux report",
+      "actual": "140a0be1ebbdbe41225b16c6333f447a0920dee3a75284d356f9cf42041eb965",
+      "expected": "140a0be1ebbdbe41225b16c6333f447a0920dee3a75284d356f9cf42041eb965",
+      "pass": true
+    },
+    {
+      "name": "linux source manifest",
+      "actual": "c4823722f50b6e6b1935af12084d7af404350572dd7da606d8d286375cdb0629",
+      "expected": "c4823722f50b6e6b1935af12084d7af404350572dd7da606d8d286375cdb0629",
+      "pass": true
+    },
+    {
+      "name": "canonical VMM",
+      "actual": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "expected": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "pass": true
+    },
+    {
+      "name": "kernel",
+      "actual": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "expected": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

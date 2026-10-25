@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "qjs",
+    "--std",
+    "-e",
+    "os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print(\"reply:\"+s)})"
+  ],
+  "expected_hex": "7265706c793a70696e670a",
+  "stdin_hex": "70696e670a",
+  "samples": 1,
+  "injections": []
+}

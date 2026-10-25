@@ -1,0 +1,6 @@
+.work/
+out/
+__pycache__/
+kernel/qjs.flat
+kernel/target/
+kernel/packed.json

@@ -1,0 +1,5 @@
+{
+  "status": "PASS",
+  "remaining_benchmark_processes": [],
+  "method": "ps inventory for /tmp/jitk-06 and perf-bootpath/r2 after all batches"
+}

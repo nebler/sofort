@@ -1,0 +1,9 @@
+# GIC investigation — corrected by runtime evidence
+
+Initial source concern (HvfGicV3 does not signal VcpuList.wfe_sender) was insufficient to conclude native WFI failure. Area 01's instrumented native WFI run never enters vstate::wait_for_event. Native hv_vcpu_run handles WFI and SPI wake; WFE is a different path. Local native rlib logs `JITK_GIC hvf`; FDT has GICD 0x09fd0000, GICR 0x09fe0000 and console IRQ33. Userspace GicV3 would place GICR at 0x09fb0000.
+
+Our early IRQ-only kernel did stall: it consumed pending IRQs and then checked only cached readiness, without re-reading the used ring. A completion racing the caller's ring check and IAR/EOI could therefore lose its wake. The fix is fresh console::service() after IAR/EOI and immediately before deciding to WFI. IRQ exceptions remain masked at PSTATE. The timer fallback hid this bug because it eventually re-polled.
+
+The guest configures GICD/GICR/ICC from FDT, routes SPI33 to affinity0, and sets edge trigger to accommodate libkrun's native hv_gic_set_spi(true)-only injection. The source-channel concern still applies to trapped WFE, but no libkrun patch should be proposed for native WFI on this OS without runtime proof.
+
+Separate console finding: libkrun event_handler.rs handles guest control-RX kicks by consuming their eventfd but does not invoke process_control_rx on that branch. With only one offered descriptor, already queued PORT_OPEN/PORT_NAME messages can strand EOF behind them. The guest now posts all eight control RX buffers before DEVICE_READY and drains/reposts every completion. In the fixed one-port topology there are at most three setup messages plus EOF, so this also avoids that host defect without a host patch. A host completeness patch is `raise_irq |= self.read_queue_event(CONTROL_RXQ_INDEX,event) && self.process_control_rx();` on the control-RX-kick branch.

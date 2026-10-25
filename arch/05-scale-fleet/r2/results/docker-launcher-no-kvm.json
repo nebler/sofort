@@ -1,0 +1,1 @@
+{"returncode": -6, "stdout": "", "stderr": "\nthread '<unnamed>' (197) panicked at src/libkrun/src/vmm/linux/vstate.rs:430:30:\nError creating the Kvm object: Error(2)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"}

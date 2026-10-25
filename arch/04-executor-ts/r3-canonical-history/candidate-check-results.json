@@ -1,0 +1,6 @@
+{
+  "candidate": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+  "image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin",
+  "status": "UNVERIFIED",
+  "error": "Error: Command failed: /tmp/jitk-01/r3/darwin/jitk-vmm --compile-profile /tmp/jitk-04/r3/profiles/42673-9fb39cc21ec9d218892759b45193f7b694f2e2b8b466dec4afc62722a083cbf8.sbbin --images /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist\njitk-vmm: area 07 sandbox module not ready\n"
+}

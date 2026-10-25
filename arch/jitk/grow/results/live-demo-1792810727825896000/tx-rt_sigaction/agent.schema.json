@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "enum": [
+        "src/syscalls/rt_sigaction.rs"
+      ]
+    },
+    "source": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "source"
+  ],
+  "additionalProperties": false
+}

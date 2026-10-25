@@ -1,0 +1,14 @@
+{
+  "kernel_sha256": "3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8",
+  "kernel_bytes": 2924544,
+  "host_sha256": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed",
+  "bootstrap_sha256": "563c24147a4977243d82e897f12888fbbb5e09ffab3874ceb0377796dfe28d96",
+  "guest_kernel_loc": 1218,
+  "ram_mib": 32,
+  "qjs_heap_limit_bytes": 16777216,
+  "parking": "native GICv3 IRQ33 + WFI; timer-only fallback for positive tick",
+  "gates": {
+    "G1": "PASS",
+    "G2": "PASS"
+  }
+}

@@ -1,0 +1,22 @@
+02 r2 READY / native Rust host / tick=0us (panic=abort; containment integration pending)
+PASS exact requested demo
+PASS binary codec roundtrip
+PASS async fanout and UTF8
+PASS capture console + provider prelude closure
+PASS deny has no side effect
+PASS approval is fail closed
+PASS approved call executes once
+PASS provenance accumulates across calls
+PASS CPU infinite loop SIGKILL
+PASS AbortSignal kills awaiting guest
+PASS tool that never settles cannot defeat deadline
+PASS fresh process per execute
+PASS unknown inherited method denied
+PASS sanitized names and collisions
+PASS generated types + host validation
+PASS TanStack driver on actual stripped body
+PASS TanStack memory mismatch fails explicitly
+PASS TanStack createCodeModeTool integration
+PASS bounded log capture (v1 truncates/drops)
+PASS warm pool capacity and single use
+20 checks passed

@@ -1,0 +1,157 @@
+commit 0b02b5ff905fbd4139bf54ed8fbf3814ca193418
+Author:     jitk grow loop <jitk@example.invalid>
+AuthorDate: Sat Oct 24 02:33:30 2026 +0200
+Commit:     jitk grow loop <jitk@example.invalid>
+CommitDate: Sat Oct 24 02:33:30 2026 +0200
+
+    grow ioctl after real-VM Linux differential gate
+
+diff --git a/acceptance.json b/acceptance.json
+new file mode 100644
+index 0000000..4abe038
+--- /dev/null
++++ b/acceptance.json
+@@ -0,0 +1,89 @@
++{
++  "probe": "ioctl",
++  "reference_sha256": "a890bba31c028a107b1db6b6b81c7bf0607d0ba5efdeee430f42b1282e9dcc89",
++  "guest_sha256": "05c0a5a1be9eec2a0f99d856f85abeef24fdf4da9c39f530d625bc0d2a26c191",
++  "benchmark": {
++    "n": 30,
++    "unit": "ms",
++    "scope": "traced process spawn through guest completion and reap",
++    "median": 18.42170849977265,
++    "p90": 44.30779200083634,
++    "p99": 222.03137500036974,
++    "samples": [
++      44.30779200083634,
++      15.267749999111402,
++      28.487333000157378,
++      28.28350000163482,
++      50.86545799895248,
++      14.211457999408594,
++      222.03137500036974,
++      25.06520899987663,
++      17.767041999832145,
++      12.628167000002577,
++      17.0579160003399,
++      18.599375000121654,
++      52.09525000100257,
++      21.62937499997497,
++      30.20733300036227,
++      30.513957999573904,
++      21.337250000215136,
++      14.951084000131232,
++      17.254542000955553,
++      16.523041998880217,
++      14.693166998767992,
++      14.533083000060287,
++      17.000332998577505,
++      17.570750000231783,
++      14.240750000681146,
++      21.406624999144697,
++      18.11512499989476,
++      20.145874999798252,
++      19.976625000708736,
++      18.244041999423644
++    ],
++    "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
++    "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
++  },
++  "stages": {
++    "build_probe": {
++      "seconds": 1.775318583000626,
++      "uptime_before": "2:32  up  3:46, 2 users, load averages: 153.71 100.76 56.48",
++      "uptime_after": "2:32  up  3:46, 2 users, load averages: 153.71 100.76 56.48"
++    },
++    "build_missing_kernel": {
++      "seconds": 5.396097042001202,
++      "uptime_before": "2:32  up  3:46, 2 users, load averages: 153.71 100.76 56.48",
++      "uptime_after": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35"
++    },
++    "discover_fresh_vm": {
++      "seconds": 0.10727404099998239,
++      "uptime_before": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35",
++      "uptime_after": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35"
++    },
++    "linux_oracle": {
++      "seconds": 8.705673791999288,
++      "uptime_before": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35",
++      "uptime_after": "2:33  up  3:46, 2 users, load averages: 128.74 97.82 56.20"
++    },
++    "headless_codex": {
++      "seconds": 12.051335750000362,
++      "uptime_before": "2:33  up  3:46, 2 users, load averages: 128.74 97.82 56.20",
++      "uptime_after": "2:33  up  3:47, 2 users, load averages: 118.55 96.66 56.27"
++    },
++    "build_candidate_kernel": {
++      "seconds": 5.048031500000434,
++      "uptime_before": "2:33  up  3:47, 2 users, load averages: 110.42 95.33 56.04",
++      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
++    },
++    "differential_fresh_vm": {
++      "seconds": 0.043636667000100715,
++      "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
++      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
++    },
++    "thirty_fresh_vms": {
++      "seconds": 0.92488400000002,
++      "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
++      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
++    }
++  }
++}
+diff --git a/kernel/src/syscalls/ioctl.rs b/kernel/src/syscalls/ioctl.rs
+new file mode 100644
+index 0000000..8f56e4e
+--- /dev/null
++++ b/kernel/src/syscalls/ioctl.rs
+@@ -0,0 +1,13 @@
++pub fn call(a: &[usize]) -> isize {
++    let fd = match a.first() {
++        Some(&fd) => fd,
++        None => return -9,
++    };
++    if fd > 2 {
++        return -9;
++    }
++    match a.get(1) {
++        Some(&0x5413) => -25,
++        _ => -38,
++    }
++}
+diff --git a/syscalls.manifest.json b/syscalls.manifest.json
+index 1df1c3c..067d812 100644
+--- a/syscalls.manifest.json
++++ b/syscalls.manifest.json
+@@ -1,6 +1,28 @@
+ {
+   "schema": 2,
+-  "surface_version": "0.0.0",
++  "surface_version": "0.1.0",
+   "scope": "G4 bounded ABI probes; inherited handlers unverified",
+-  "verified_contracts": []
++  "verified_contracts": [
++    {
++      "nr": 29,
++      "name": "ioctl",
++      "status": "restricted",
++      "domain": "Implement pub fn call(a: &[usize]) -> isize for Linux AArch64 ioctl.\nfds 0,1,2 exist (non-TTY). Invalid fd => -9 (EBADF).\nFor valid fd and request 0x5413 (TIOCGWINSZ) return -25 (ENOTTY), do not touch argp.\nFor any other request return -38 (ENOSYS; registered restricted ABI, not a missing module).\nNo unsafe, imports, dependencies, raw pointers, include macros, tool calls or tests.\n",
++      "source_sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff",
++      "tests": {
++        "native_linux": "PASS",
++        "fresh_vm_differential": "PASS",
++        "repeat_fresh_vms": 30,
++        "full_qjs_trace": "UNVERIFIED",
++        "fuzz": "UNVERIFIED"
++      }
++    }
++  ],
++  "architecture": "aarch64-linux",
++  "adapter": "g4-v2",
++  "kernel_sha256": "7d87dd04553660d279abb8d1f8265bef9c94cb8f76f263d85958c55f9a8a6803",
++  "elf_sha256": "0fbd487e0bdaf17b45f138abedb2cef886b4c1ac513cb4f6afb0bcd82fd72492",
++  "fixture_sha256": "6f1653fcfef28f65f90ab7745891b75df46c78f8a3e806380419117972854a2f",
++  "oracle_image": "sha256:458a19a1e97ca3687507732f8e11cc5054f97cf4989fd796f4cc9faddba08f67",
++  "receipt_sha256": "05c0a5a1be9eec2a0f99d856f85abeef24fdf4da9c39f530d625bc0d2a26c191"
+ }

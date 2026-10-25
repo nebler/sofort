@@ -1,0 +1,149 @@
+{
+  "load": "2:39  up  3:52, 2 users, load averages: 37.87 52.12 48.37",
+  "ready_ms": {
+    "packed": {
+      "n": 30,
+      "p50": 29.3957505,
+      "p90": 58.321667,
+      "p99": 101.194333
+    },
+    "runtime_elf_copy": {
+      "n": 30,
+      "p50": 34.071604,
+      "p90": 69.158291,
+      "p99": 95.757333
+    }
+  },
+  "paired_packed_minus_loader_ms": {
+    "n": 30,
+    "p50": -2.4787715000000006,
+    "p90": 32.522375,
+    "p99": 67.341667
+  },
+  "raw_pairs": [
+    {
+      "packed": 58.321667,
+      "runtime_elf_copy": 41.985667
+    },
+    {
+      "runtime_elf_copy": 69.158291,
+      "packed": 8.542667
+    },
+    {
+      "packed": 101.194333,
+      "runtime_elf_copy": 33.852666
+    },
+    {
+      "runtime_elf_copy": 25.971667,
+      "packed": 38.404375
+    },
+    {
+      "packed": 44.319625,
+      "runtime_elf_copy": 33.424917
+    },
+    {
+      "runtime_elf_copy": 35.614792,
+      "packed": 33.494416
+    },
+    {
+      "packed": 43.479625,
+      "runtime_elf_copy": 61.473375
+    },
+    {
+      "runtime_elf_copy": 33.66,
+      "packed": 73.675459
+    },
+    {
+      "packed": 47.915375,
+      "runtime_elf_copy": 44.094583
+    },
+    {
+      "runtime_elf_copy": 30.919417,
+      "packed": 29.374959
+    },
+    {
+      "packed": 48.216959,
+      "runtime_elf_copy": 47.108291
+    },
+    {
+      "runtime_elf_copy": 45.093959,
+      "packed": 11.377458
+    },
+    {
+      "packed": 15.750333,
+      "runtime_elf_copy": 17.464292
+    },
+    {
+      "runtime_elf_copy": 26.422583,
+      "packed": 55.956083
+    },
+    {
+      "packed": 31.453375,
+      "runtime_elf_copy": 34.290542
+    },
+    {
+      "runtime_elf_copy": 21.341041,
+      "packed": 22.732
+    },
+    {
+      "packed": 55.136167,
+      "runtime_elf_copy": 22.613792
+    },
+    {
+      "runtime_elf_copy": 14.198083,
+      "packed": 11.242167
+    },
+    {
+      "packed": 15.301166,
+      "runtime_elf_copy": 95.757333
+    },
+    {
+      "runtime_elf_copy": 52.19275,
+      "packed": 44.860083
+    },
+    {
+      "packed": 29.416542,
+      "runtime_elf_copy": 41.93425
+    },
+    {
+      "runtime_elf_copy": 61.054625,
+      "packed": 13.944625
+    },
+    {
+      "packed": 19.393625,
+      "runtime_elf_copy": 73.405
+    },
+    {
+      "runtime_elf_copy": 27.687541,
+      "packed": 26.201042
+    },
+    {
+      "packed": 26.15975,
+      "runtime_elf_copy": 30.394792
+    },
+    {
+      "runtime_elf_copy": 20.191,
+      "packed": 21.576875
+    },
+    {
+      "packed": 15.021542,
+      "runtime_elf_copy": 41.908042
+    },
+    {
+      "runtime_elf_copy": 58.345542,
+      "packed": 31.312584
+    },
+    {
+      "packed": 24.56725,
+      "runtime_elf_copy": 33.806791
+    },
+    {
+      "runtime_elf_copy": 30.062042,
+      "packed": 9.995916
+    }
+  ],
+  "image_bytes": {
+    "packed": 2924544,
+    "runtime_elf_copy": 2416657
+  }
+}

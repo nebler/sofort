@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-24T03:36:05.916619+00:00",
+  "load": [
+    78.89453125,
+    56.2197265625,
+    61.671875
+  ],
+  "canonical_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "rebuild_sha256": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7",
+  "same_bytes": false,
+  "fields": {
+    "revision": {
+      "canonical": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+      "rebuilt": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+      "matches": true
+    },
+    "patches_sha256": {
+      "canonical": {
+        "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+        "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+        "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+        "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+      },
+      "rebuilt": {
+        "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+        "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+        "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+        "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+      },
+      "matches": true
+    },
+    "panic": {
+      "canonical": "abort",
+      "rebuilt": "abort",
+      "matches": true
+    },
+    "features": {
+      "canonical": [],
+      "rebuilt": [],
+      "matches": true
+    },
+    "sandbox_ready": {
+      "canonical": true,
+      "rebuilt": true,
+      "matches": true
+    },
+    "rustc": {
+      "canonical": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "rebuilt": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "matches": true
+    },
+    "vmm/src/main.rs": {
+      "canonical": "6c92592319ccb9ebe2e14bc3191c8eb24ed4a2e7c25a59b1643beb355c2394d6",
+      "rebuilt": "6c92592319ccb9ebe2e14bc3191c8eb24ed4a2e7c25a59b1643beb355c2394d6",
+      "matches": true
+    },
+    "vmm/src/confinement.rs": {
+      "canonical": "f1f3cd249fcd053e59c8405972af80e6346de9f07c0944f65ca322b3edec3bc9",
+      "rebuilt": "f1f3cd249fcd053e59c8405972af80e6346de9f07c0944f65ca322b3edec3bc9",
+      "matches": true
+    },
+    "vmm/sandbox/mod.rs": {
+      "canonical": "a2bebbd445e47b7f0a86cef5a956e40f5feac0e766788872cf6b43b55f5bb4e2",
+      "rebuilt": "a2bebbd445e47b7f0a86cef5a956e40f5feac0e766788872cf6b43b55f5bb4e2",
+      "matches": true
+    }
+  },
+  "source_and_settings_match": true,
+  "scope": "Source/build provenance only; separate binary certification, no byte-equivalence or performance transfer"
+}

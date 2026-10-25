@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "surface_version": "0.1.0-demo",
+  "abi": "linux-aarch64",
+  "status": "evidence-only; real kernel unverified",
+  "kernel_commit": null,
+  "trace_adapter": "jitk.strace.tokens.v1",
+  "oracle_image_id": "sha256:c82b5355c2623a6ee30d29e05a0690b219591f898ff4c4fd53e35b80c27f5a73",
+  "binary_sha256": "d87997d1e249c8dd15e6b7a2f9a8c4932612a023a17b8b2d21e8359739a580e9",
+  "single_use": true,
+  "loader_exclusions": [
+    "execve"
+  ],
+  "syscalls": [
+    {
+      "nr": 17,
+      "name": "getcwd",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "implementation_status": "proxy-tested-only",
+      "contract": "fds 0..2 + TIOCGWINSZ => ENOTTY; bad fd => EBADF; other request => ENOSYS",
+      "evidence": "results/proxy/report.json"
+    },
+    {
+      "nr": 56,
+      "name": "openat",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 57,
+      "name": "close",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 62,
+      "name": "lseek",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 63,
+      "name": "read",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 65,
+      "name": "readv",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 66,
+      "name": "writev",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 78,
+      "name": "readlinkat",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 94,
+      "name": "exit_group",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 96,
+      "name": "set_tid_address",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 113,
+      "name": "clock_gettime",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk",
+      "evidence": "results/no-vdso.txt"
+    },
+    {
+      "nr": 214,
+      "name": "brk",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 215,
+      "name": "munmap",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    },
+    {
+      "nr": 216,
+      "name": "mremap",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk",
+      "fallback_experiment": "results/mremap-enosys/meta.json; output matches, strict trace rejects"
+    },
+    {
+      "nr": 222,
+      "name": "mmap",
+      "implementation_status": "observed-only",
+      "contract": "UNVERIFIED on jitk"
+    }
+  ],
+  "workloads": [
+    {
+      "id": "hello",
+      "source_sha256": "226922d0bc2a6c829574cb708a98f7b8cc30c59f2079e5736e61017b166b3e8a",
+      "trace_sha256": "edd1862c894a2c1bb9002ff42827f0a5f096f8bc4519ddd6e353a1d9faca9d58",
+      "events": 70,
+      "exit": 0
+    },
+    {
+      "id": "codemode",
+      "source_sha256": "a831e2e50ac35981dddd9deee7316c1f7e624bbe68ed667b659fa3394ac7c052",
+      "trace_sha256": "0aceee92b17bc2d1b03caf0df8020bbf3add717d6e928a6a087c85690e58ebb1",
+      "events": 93,
+      "exit": 0
+    },
+    {
+      "id": "json-heavy",
+      "source_sha256": "9639f2a7e735e9a61fd87932b0d4600e8a8fc319fe656fbf6f9b7e1dbf6d0f65",
+      "trace_sha256": "e4977eb806e6481ea9a80c761f4aff4be647438eaae7dde35d557d9e0286fc9c",
+      "events": 551,
+      "exit": 0
+    },
+    {
+      "id": "time-random",
+      "source_sha256": "109ac0bbe2bff4e5facf47dbf275f129dd98c0ca05682d26710894dcb43c8b79",
+      "trace_sha256": "9519823cad36ab1bfd0967a86acdfac1629e2560647c2615e963d94499e35450",
+      "events": 78,
+      "exit": 0
+    },
+    {
+      "id": "loadfile-arrays",
+      "source_sha256": "c54f1b067122e9d8c86396fa7d91026c96124a00324f0eb4f5e7b67a479c6937",
+      "trace_sha256": "ff4b7472a3c2d06263049cf8b2992bf1da201079e61fc14eaf32bf5b092cc69d",
+      "events": 154,
+      "exit": 0
+    },
+    {
+      "id": "codemode-deterministic",
+      "source_sha256": "3b309a8c3dfc25fdd6844a6603a49a092eb4faedfce15c57de78a89e38f7c058",
+      "trace_sha256": "d88b2f1daaf8c92d50cd3e3479ef6d596da86fd058bfd6cf85ed7d61c2b0cd20",
+      "events": 97,
+      "exit": 0
+    }
+  ],
+  "proxy_oracle_image_id": "sha256:458a19a1e97ca3687507732f8e11cc5054f97cf4989fd796f4cc9faddba08f67",
+  "proxy_commit": "25278beba9ca7be793f88a358e68f0444db16809",
+  "proxy_receipt": "results/proxy/accepted.manifest.json"
+}

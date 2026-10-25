@@ -1,0 +1,174 @@
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 1.03s
+{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin", "sha256": "5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36", "bytes": 2924544}
+python3 tests/test_packer.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/regression.py
+{
+  "load": "3:13  up  4:26, 2 users, load averages: 63.50 92.53 88.27",
+  "churn": {
+    "cumulative_bytes": 134217728,
+    "ram_mib": 32,
+    "result": {
+      "t": "done",
+      "ok": 8128
+    }
+  },
+  "clock": {
+    "host_interval_plus_1ms": 30,
+    "n": 30,
+    "midpoint_delta_ms": {
+      "n": 30,
+      "p50": -0.414,
+      "p90": 0.0545,
+      "p99": 0.837
+    }
+  },
+  "finite_timer_e2e_ms": {
+    "n": 30,
+    "p50": 27.062479,
+    "p90": 37.688833,
+    "p99": 40.744042
+  },
+  "eof": "PASS: clean input EOF terminates without a success frame",
+  "partial_rx": "PASS: 1-byte run fragments + 32KiB ret",
+  "control_forgery": [
+    "\u001efatal control byte"
+  ],
+  "atomic_ascii": [
+    {
+      "byte": 0,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 30,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 127,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 128,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 255,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
+{
+  "load": "3:13  up  4:26, 2 users, load averages: 63.50 92.53 88.27",
+  "status": "PASS",
+  "n": 30,
+  "method": "Realtime minus guest counter compared with host realtime minus same-domain mach counter; 64 bracketed guest samples, narrowest retained. Date.now is millisecond quantized.",
+  "origin_error_ms": {
+    "n": 30,
+    "p50": -0.46630859375,
+    "p90": -0.04833984375,
+    "p99": -0.03125
+  },
+  "guest_bracket_width_ms": {
+    "n": 30,
+    "p50": 0.00033299997448921204,
+    "p90": 0.00037499889731407166,
+    "p99": 0.0003750007599592209
+  },
+  "worst_abs_error_bound_ms": 0.978214843198657,
+  "samples_ms": [
+    -0.714111328125,
+    -0.969482421875,
+    -0.342529296875,
+    -0.575439453125,
+    -0.640625,
+    -0.192138671875,
+    -0.55029296875,
+    -0.7666015625,
+    -0.34130859375,
+    -0.823486328125,
+    -0.658447265625,
+    -0.314453125,
+    -0.094482421875,
+    -0.04833984375,
+    -0.268310546875,
+    -0.766845703125,
+    -0.159912109375,
+    -0.210205078125,
+    -0.03125,
+    -0.75,
+    -0.67822265625,
+    -0.95703125,
+    -0.2001953125,
+    -0.915283203125,
+    -0.036865234375,
+    -0.7607421875,
+    -0.15771484375,
+    -0.214599609375,
+    -0.97802734375,
+    -0.38232421875
+  ]
+}
+kernel-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n', 'stderr': '', 'status': 'PASS'}
+text-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n', 'stderr': '', 'status': 'PASS'}
+heap-exec {'returncode': 0, 'output': '\x1eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n', 'stderr': '', 'status': 'PASS'}
+privileged {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '', 'status': 'PASS'}
+el0-hvc {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '', 'status': 'PASS'}
+bad-pointer {'returncode': 0, 'output': '\x1eexit=0000000000000000\n', 'stderr': '', 'status': 'PASS'}
+pan {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12345,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080004028\n', 'stderr': '', 'status': 'PASS'}
+alias-write {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12346,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600004f far=0000000080080000 pc=000000008000401c\n', 'stderr': '', 'status': 'PASS'}
+unknown-syscall {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":511,"pc":4194312,"args":[1,2147510560,0,58,0,0],"input":null,"timeout":null}\n\x1eexit=0000000000000000\n', 'stderr': '', 'status': 'PASS'}
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r3/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.74s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r3/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.82s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r3/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.98s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-02/r3/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 0.93s
+{
+  "load": "3:13  up  4:27, 2 users, load averages: 54.74 89.70 87.31",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK"
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK"
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}

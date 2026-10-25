@@ -1,0 +1,10 @@
+{
+  "proxy": "strace ptrace fault injection; pure Rust errno stub compiled on host",
+  "before": "mismatch: trace.jsonl",
+  "stdout_alone_would_pass": true,
+  "after": "exact trace/stdout/stderr/exit match",
+  "unit_tests": 4,
+  "scalar_fuzz_cases": 10000,
+  "commit": "25278beba9ca7be793f88a358e68f0444db16809",
+  "seconds": 133.607
+}

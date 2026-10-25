@@ -1,0 +1,1 @@
+{"type": "object", "properties": {"path": {"type": "string", "enum": ["kernel/src/syscalls/ioctl.rs"]}, "source": {"type": "string"}}, "required": ["path", "source"], "additionalProperties": false}

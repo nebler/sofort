@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "ret": -25,
+      "args": [
+        1,
+        21523,
+        "PTR"
+      ]
+    },
+    {
+      "nr": 94,
+      "name": "exit_group",
+      "ret": null,
+      "args": [
+        0
+      ]
+    }
+  ],
+  "stdout_hex": "68690a",
+  "stderr_hex": "",
+  "exit": 0
+}

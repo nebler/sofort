@@ -1,0 +1,60 @@
+{
+  "loadBefore": "2:41  up  3:55, 2 users, load averages: 48.42 50.51 48.31",
+  "loadAfter": "2:41  up  3:55, 2 users, load averages: 48.39 50.47 48.31",
+  "rows": [
+    {
+      "mode": "badready",
+      "result": {
+        "error": "Error: protocol SCHEMA",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "del",
+      "result": {
+        "error": "Error: protocol ASCII",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "trailing",
+      "result": {
+        "error": "Error: protocol STATE",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "duplicate",
+      "result": {
+        "error": "Error: protocol DUPLICATE",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "unknown",
+      "result": {
+        "error": "Error: Error: Error: unknown tool",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "replay",
+      "result": {
+        "error": "Error: protocol ID",
+        "logs": []
+      },
+      "effects": 1,
+      "policies": 1
+    }
+  ]
+}

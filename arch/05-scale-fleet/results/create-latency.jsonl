@@ -1,0 +1,8 @@
+{"live": 1, "median_build_ms": 358.1425419997686, "p90_build_ms": 358.1425419997686, "serial_build_vms_sec": 2.7921843476518524, "last_build_ms": 358.1425419997686}
+{"live": 10, "median_build_ms": 14.64574999999968, "p90_build_ms": 26.626417000443325, "serial_build_vms_sec": 20.178400507752276, "last_build_ms": 26.626417000443325}
+{"live": 25, "median_build_ms": 16.676707999977225, "p90_build_ms": 26.626417000443325, "serial_build_vms_sec": 32.51207460075724, "last_build_ms": 18.43554100014444}
+{"live": 50, "median_build_ms": 14.076500500323164, "p90_build_ms": 27.04150000045047, "serial_build_vms_sec": 43.67931703158953, "last_build_ms": 16.953499999544874}
+{"live": 100, "median_build_ms": 15.995082999779697, "p90_build_ms": 30.766459000005852, "serial_build_vms_sec": 46.586147737150405, "last_build_ms": 35.09633300018322}
+{"live": 127, "median_build_ms": 15.493292000428482, "p90_build_ms": 31.643457999962266, "serial_build_vms_sec": 47.133332407658514, "last_build_ms": 13.346333000299637}
+{"index": 128, "error": "vmm build failed code=8 result=72057598332895240", "elapsed_ms": 14.125499999863678}
+{"cleanup_live": 0}

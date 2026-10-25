@@ -1,0 +1,1465 @@
+{
+  "measured_utc": "2026-10-24T01:09:23.748301+00:00",
+  "method": "physical lines incl blanks/comments; owned source/build scripts/config and test code; no vendor/generated/data/output; owned fixture code included",
+  "components": {
+    "bench": {
+      "implementation/build": 475,
+      "test": 0,
+      "total": 475
+    },
+    "bench/hyperlight": {
+      "implementation/build": 508,
+      "test": 42,
+      "total": 550
+    },
+    "docs": {
+      "implementation/build": 111,
+      "test": 0,
+      "total": 111
+    },
+    "executor": {
+      "implementation/build": 619,
+      "test": 305,
+      "total": 924
+    },
+    "grow": {
+      "implementation/build": 2312,
+      "test": 47,
+      "total": 2359
+    },
+    "integration": {
+      "implementation/build": 30,
+      "test": 0,
+      "total": 30
+    },
+    "kernel": {
+      "implementation/build": 1734,
+      "test": 365,
+      "total": 2099
+    },
+    "linux": {
+      "implementation/build": 645,
+      "test": 116,
+      "total": 761
+    },
+    "protocol": {
+      "implementation/build": 619,
+      "test": 204,
+      "total": 823
+    },
+    "vmm": {
+      "implementation/build": 218,
+      "test": 595,
+      "total": 813
+    },
+    "vmm/sandbox": {
+      "implementation/build": 409,
+      "test": 0,
+      "total": 409
+    }
+  },
+  "total": 9354,
+  "files": [
+    {
+      "path": "Makefile",
+      "component": "integration",
+      "kind": "implementation/build",
+      "lines": 30,
+      "sha256": "97a6f7b8ba8c0b86f35ffb44b15d82bd9bf7da6e01a1d6f14133cb9ec1418bc8"
+    },
+    {
+      "path": "bench/Makefile",
+      "component": "bench",
+      "kind": "implementation/build",
+      "lines": 9,
+      "sha256": "b055dc59feec4ef29b5db5b734d119e48e173e3db9b4ca76b412221e650e274c"
+    },
+    {
+      "path": "bench/executor.mjs",
+      "component": "bench",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "2c757a0423a8be32abf6f45b3b1101d59f71ce697f000ed72dd6e97093e999da"
+    },
+    {
+      "path": "bench/hyperlight/Cargo.toml",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 18,
+      "sha256": "5602dabb7abe6079f8a0b3320ae5a93f7a3cd260038fbb0624ab39854c96110d"
+    },
+    {
+      "path": "bench/hyperlight/adapter-test.ts",
+      "component": "bench/hyperlight",
+      "kind": "test",
+      "lines": 42,
+      "sha256": "41b01b8eb99aac14473e992d1c35ff68849fa6dc160d7810467ac81de2cea77c"
+    },
+    {
+      "path": "bench/hyperlight/analyze.py",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 51,
+      "sha256": "5edd5a93e7bf872e5130d65a2a1b4986fd9d5cd244ee1f29b8c23205034e9070"
+    },
+    {
+      "path": "bench/hyperlight/backend.ts",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 85,
+      "sha256": "692a13be62b6b904001c6eb1e1f1222c1789e9aafc2a679a2f4a54f262771ef7"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 117,
+      "sha256": "8e71ecbbc1e8d144ccbd5714eb539f9c9533b2769fd52a3bc8d21848f389e358"
+    },
+    {
+      "path": "bench/hyperlight/bootstrap.js",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 47,
+      "sha256": "cd4e7bf93e5e91eb93b1e630a2c49244aa553eecf029a5a8f1a6bc93d3319cd1"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 14,
+      "sha256": "84fbe6e043746e0fdc7dcb9d37e7e30407f7ea02a794f572f32d0894d52feb24"
+    },
+    {
+      "path": "bench/hyperlight/executor-runner.mjs",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 32,
+      "sha256": "f47f610e10c3a6620097204b44f28b036b5c5c556a165033daf44816988526d3"
+    },
+    {
+      "path": "bench/hyperlight/load_linux.rs",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "c59ed6c043b70806181b5975f4d2ded130931dd394fd6331c4ed950e8c9e31bc"
+    },
+    {
+      "path": "bench/hyperlight/watchdog.py",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 10,
+      "sha256": "a0d3d29bea2baf3385b53f7fb266e97efa3610ee6986c7a6d08bc0524d8f6f7b"
+    },
+    {
+      "path": "bench/hyperlight/worker.rs",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 119,
+      "sha256": "2a67b0ed580f045534b7592bb284fc91739ad4931e976fab16f8d4fcb517c721"
+    },
+    {
+      "path": "bench/run.py",
+      "component": "bench",
+      "kind": "implementation/build",
+      "lines": 383,
+      "sha256": "687099cdf7431436d39795d82293de1370aa8be583d08b48f2a2515b541fa82e"
+    },
+    {
+      "path": "bench/sandbox_probe.c",
+      "component": "bench",
+      "kind": "implementation/build",
+      "lines": 20,
+      "sha256": "1fffa77647d715c77542ed678cd3f16f3b065ff8c8ef0e8be6cf87cef4154eb7"
+    },
+    {
+      "path": "bench/watchdog.py",
+      "component": "bench",
+      "kind": "implementation/build",
+      "lines": 28,
+      "sha256": "bcdcdaf45bb524fadf110f3aad71230881bd66d233873d0e3801c9e0587bf3fa"
+    },
+    {
+      "path": "docs/count-loc.py",
+      "component": "docs",
+      "kind": "implementation/build",
+      "lines": 76,
+      "sha256": "fb91a75020b21835f1515aeccaec0436bb5bc8885e45021d6f78f8b1833e003b"
+    },
+    {
+      "path": "docs/delegate.py",
+      "component": "docs",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "5a2c7f5ae9d6db8764d6bb8dc71e88aaddd4098f10031ef0145d435af3b2d330"
+    },
+    {
+      "path": "executor/api-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 32,
+      "sha256": "b6170907ffdeaad9fc13df173be9b9f7d11ffc298a504dd57d8eb25d64198d3a"
+    },
+    {
+      "path": "executor/backend.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 140,
+      "sha256": "c494bb5a03f623e1d03af6fcf6c8876e0ef7c37a6c86fa8e2a101770a0d241b6"
+    },
+    {
+      "path": "executor/breakdown.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 33,
+      "sha256": "dd4902c5ec1f8b222f14a6894d2eb097eec8e5d1e799cfef6e0521c98dc3b0e6"
+    },
+    {
+      "path": "executor/build.mjs",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "cac17aaec94ce3ca1a771ec858a4c309658cac2bdb74f2980552317afc49333e"
+    },
+    {
+      "path": "executor/code.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760"
+    },
+    {
+      "path": "executor/codec.mjs",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 33,
+      "sha256": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e"
+    },
+    {
+      "path": "executor/examples/demo.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 29,
+      "sha256": "eca67aaf1375c37122b9bb3be261b1bf7816e67f3d251486ba4aada721754acc"
+    },
+    {
+      "path": "executor/executor.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 155,
+      "sha256": "a0dcd25ec515cd509f34bf550e16855ca0e1fd9fec189a46661ee144ada2e403"
+    },
+    {
+      "path": "executor/fixtures/protocol-peer.mjs",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "9e0ca4b0c0c2638af9d99d27bbd10b237d92fb852bc2e36cf8e63fd9c18c413c"
+    },
+    {
+      "path": "executor/policy-adapter.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 18,
+      "sha256": "5ac2dfd50250ff2552015449b85e2a527ca57924f639d8a4b1d918d3f146eaf1"
+    },
+    {
+      "path": "executor/policy-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 49,
+      "sha256": "2c57f42934b7afd2ecdbff0e45468766b4b1dfe2f10d986b9356e38001f650c5"
+    },
+    {
+      "path": "executor/pool-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 55,
+      "sha256": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede"
+    },
+    {
+      "path": "executor/pool.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 86,
+      "sha256": "6cdc680b72ae6c0d451f49c973410d503e7de98ab26cab0d4dce18e631383c0b"
+    },
+    {
+      "path": "executor/providers.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 25,
+      "sha256": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161"
+    },
+    {
+      "path": "executor/resolve-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 14,
+      "sha256": "617bccb3714e3f12053a0495ffd43de782397e6976408fa4f9653fb1e481a240"
+    },
+    {
+      "path": "executor/run.sh",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 24,
+      "sha256": "287584df0a77c86ab51cdac276d85f4adb7528d049f324179646b89fb5b7faf6"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 41,
+      "sha256": "94c12b5f2825395bb95728c22753ab650d5f4d89ac22894bd2dabd51d9257ad6"
+    },
+    {
+      "path": "executor/transport-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc"
+    },
+    {
+      "path": "executor/type-proof.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 13,
+      "sha256": "b24f3a25525f1a4b55f25b0fe4f9fe1863e5b10fa89b3375f61ed25f13d33ffc"
+    },
+    {
+      "path": "executor/upstream.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 5,
+      "sha256": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf"
+    },
+    {
+      "path": "executor/verify.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 45,
+      "sha256": "7cebdfe593b05b0947cf41dac7eac46ebc0d3b2f7b991ead41721bf9656a7b92"
+    },
+    {
+      "path": "executor/watchdog-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "54d30cbc5f8f95411fd0e1219aa2b8ef23a229338cf2e295a66ddc35f82b5112"
+    },
+    {
+      "path": "executor/watchdog.py",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 10,
+      "sha256": "a0d3d29bea2baf3385b53f7fb266e97efa3610ee6986c7a6d08bc0524d8f6f7b"
+    },
+    {
+      "path": "executor/wrapper-conformance.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 40,
+      "sha256": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5"
+    },
+    {
+      "path": "grow/adapters.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 123,
+      "sha256": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5"
+    },
+    {
+      "path": "grow/fallback-kernel/Cargo.toml",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "eacd3d40188b082d4d7cf75492c6dd7d05bb3a3c91be568c505c88cd979bb188"
+    },
+    {
+      "path": "grow/fallback-kernel/build.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 24,
+      "sha256": "33c074bbbcaf34f2a17295e4f7ff00f913f0498c48cb2d97ddb452f9cbe68807"
+    },
+    {
+      "path": "grow/fallback-kernel/link.ld",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 14,
+      "sha256": "037768740a678ce6091edfb7f65c4feeec8b8108450cc43c6ba6161bc481a936"
+    },
+    {
+      "path": "grow/fallback-kernel/src/boot.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27"
+    },
+    {
+      "path": "grow/fallback-kernel/src/console.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 180,
+      "sha256": "bc78c4b13b29712b41a9ba122267502cccf55b697281eebeb42a423a15d88192"
+    },
+    {
+      "path": "grow/fallback-kernel/src/fdt.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 62,
+      "sha256": "02dfb7fb2da69518c68fd4c829b6315ad3268186329dab9b4438d78e66fb5c89"
+    },
+    {
+      "path": "grow/fallback-kernel/src/main.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 53,
+      "sha256": "1e748fce43d7d54f6dc0f8d80b149778e94b18f1446e08b6629b4d986edea3be"
+    },
+    {
+      "path": "grow/fallback-kernel/src/mmu.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 108,
+      "sha256": "4ff8544972cd0625fa3eee07cbd76b6ea8ebfe6493b51443feaea20e320dee59"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/brk.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "76c3f246363fc2804245392c5ca896932b012dd5bf7934ef6518d2bb779568b8"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/clock_gettime.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 22,
+      "sha256": "3943467acb504d83525fd51fed69cf2d9f6bf18710c1da586e60ed3257241c6b"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/close.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "1cfd7c5821d7d1f09923302fdc064509f4030a7307086668d188099e28bb76bf"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/exit.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "febcf82f03a41e790dbfcfd2595e242933e11295f3984d9f329e03a95a41c862"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/exit_group.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "1faffa9cf5084026afb81d61d8d8b1ffe817b8ca6a35d5f41efe28324b084d6a"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/getcwd.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "8a7ba884423caa4ad543652cc10453f778474e93b8271667e64c850ebd420e06"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/ioctl.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/lseek.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "850dfe5ff6002a75d4aba718d8d84002d0adb0712110cd5ec8496c6d8974c776"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/mmap.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 26,
+      "sha256": "77ddb547c94e05183328ce2956e9a02be8a12b07709e6b5d4789ce9f5b9b29c9"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/munmap.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 22,
+      "sha256": "593e652c90d941f690b3222a4a8b3c8ca94e0510ac9fbd8cd623fac1bb6fcef5"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/openat.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "5bd67fb64e76569a8f0d6157146ffdf71942d17a3e803d2a27027f57b9bfcd81"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/ppoll.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 88,
+      "sha256": "78cf1f7ceaa2318a5adc8247b1d0fc0dcaf0ab1bd984a8f54f45b89c685420df"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/read.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 19,
+      "sha256": "7049b23900b234f07ae8cb1831c3c5c52d56aeb87289b0e9f283b2d0e1a4cc7b"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/readlinkat.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "db1d5b332f9d40ed12c695a2f4634c49872e5649650e926788287cb90f6ddb21"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/readv.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 41,
+      "sha256": "c029c3807cd48300e73a893effd9d62c0ee25527a516f528ac85f6f37c004216"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/set_tid_address.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "1f118c8b79b496f3f1aab1ab80484ded1e4385657e0658af0ccf066cf74486e8"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/write.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "e1b121e77ea2a5aa9c64865906a4471a31f72a0e03b22e24a10f4335c99c5358"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/writev.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 41,
+      "sha256": "7e86d45a8af4de3b4104b0296f6c3dc76343e67d8ce1a0d1d87cd2ac7c83f80c"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 36,
+      "sha256": "b1529b200ab119dd9d27617e026a0b5bda53b99d8f270ec81a25c4d7a320dae2"
+    },
+    {
+      "path": "grow/fallback-kernel/src/trace.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 70,
+      "sha256": "42031c6d2898297d955f0fbebf6a682e3adb7bed72781d3347be7034fcc5dd9c"
+    },
+    {
+      "path": "grow/fallback-kernel/src/user.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 218,
+      "sha256": "daa967c35045ef5a0d0d59fe93d8d24101006a1bb12f641611207102b7ebbbe3"
+    },
+    {
+      "path": "grow/fallback-kernel/src/vectors.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 120,
+      "sha256": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738"
+    },
+    {
+      "path": "grow/fixtures.lua",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 6,
+      "sha256": "406133b216d2570c962f14beb5ffeac559ce0c7c74b9aa51f645cd5c66a4ddf3"
+    },
+    {
+      "path": "grow/handler_tests.rs",
+      "component": "grow",
+      "kind": "test",
+      "lines": 26,
+      "sha256": "d3be5dc9a5a2ce7ae897cec86f57d807461b276834a46432ef32f975fbfeb59d"
+    },
+    {
+      "path": "grow/ioctl.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 38,
+      "sha256": "6f1653fcfef28f65f90ab7745891b75df46c78f8a3e806380419117972854a2f"
+    },
+    {
+      "path": "grow/loop.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 181,
+      "sha256": "22edf9977746c6a098395c548a75b4013b59f18fd717bc3e3f920c33d8ed3bf9"
+    },
+    {
+      "path": "grow/oracle/Dockerfile",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 5,
+      "sha256": "6bb16350ef028393ee529b9bbb3d0af7dd65d424f3774dcb79405964ff50f8af"
+    },
+    {
+      "path": "grow/oracle/build-ng.sh",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 12,
+      "sha256": "f98a0d57a57530f5729a530951a4c95500095ff8aa45683f31e95917509a346e"
+    },
+    {
+      "path": "grow/oracle/entry.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 32,
+      "sha256": "30f1c44e57d5d91f330313d9abe6c41ba37d0d05cbb89edee55b0352c7cae904"
+    },
+    {
+      "path": "grow/oracle/no-vdso.c",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 43,
+      "sha256": "78d840bb432db095e1ef49db64bd085b77bcbfcb58becd86f617507f7e6dcfab"
+    },
+    {
+      "path": "grow/oracle/normalize.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 75,
+      "sha256": "e7dbb25346792058cd108e56b856b753b41a216aad9863768c1c1730f076dd68"
+    },
+    {
+      "path": "grow/oracle/run.sh",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 16,
+      "sha256": "760136fe8f8fae61f038e698cf251778b97d3514790206a5f499580e2b3d24a5"
+    },
+    {
+      "path": "grow/oracle/run_profile.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 26,
+      "sha256": "1ecf902267c46caa52f2aae204bec3c797eb3acf09f1cb05d3965ca47487bf29"
+    },
+    {
+      "path": "grow/oracle/suite.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 16,
+      "sha256": "26162bea42a45faa4dccfd952d038bb82db5b4efcc4204ffcc16b0442a364d2e"
+    },
+    {
+      "path": "grow/oracle/test_normalize.py",
+      "component": "grow",
+      "kind": "test",
+      "lines": 21,
+      "sha256": "31916b77b614448e10932fe5eca1533a20936207c876a8986c6428361d608f0c"
+    },
+    {
+      "path": "grow/ppoll.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 91,
+      "sha256": "7633c17506d0ee3fe8d26113c02da71946913e68ac2bbbf47dad451a4992befd"
+    },
+    {
+      "path": "grow/probe.ld",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 11,
+      "sha256": "422f0b75defc00cb89a25e3aae37e030d9ecf31d167d67b4454b8cf0287aaf43"
+    },
+    {
+      "path": "grow/proposals/ppoll.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 89,
+      "sha256": "0765c3742ee42595668c63dadb2322f0daf7643a3c683281ab5ed5b8f3bc73cf"
+    },
+    {
+      "path": "grow/proposals/rt_sigaction.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36"
+    },
+    {
+      "path": "grow/proposals/rt_sigprocmask.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "41a598203348d53dbba585bb456426254a77554961a8b0c366d930a1dd6cbcba"
+    },
+    {
+      "path": "grow/rt_sigaction.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 37,
+      "sha256": "27fd5f2e839fff665485832516b53fdf79a13b42c3b1f128b5a689e9c5215b9e"
+    },
+    {
+      "path": "grow/rt_sigprocmask.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 37,
+      "sha256": "ec82afca4be67a34b88f15621b399c993f24c9ae060a3c069290557b0c5d4242"
+    },
+    {
+      "path": "grow/runtime.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 95,
+      "sha256": "e9f40b7f5cf6a937c8e3f084b7cd2de80399aca7f5c6d254c3c4ddac0a8644c2"
+    },
+    {
+      "path": "grow/signals.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 54,
+      "sha256": "ad745745add5b872962677d49346993f940e01706a2e700589751f1c3573abfa"
+    },
+    {
+      "path": "kernel/Cargo.toml",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "c78e5d95f4728e348bbbc106b7873ed8501f727da6f20c3572cdc27af84d6f3e"
+    },
+    {
+      "path": "kernel/Makefile",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 8,
+      "sha256": "d102832e8dd7bfbf8cff9ddf618c0a8bc472ee2e2eb6a6812b2fb61067e536ec"
+    },
+    {
+      "path": "kernel/artifact.py",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "bae05ae4122f56e69f374b35d45a71a35f81af4146aff944a53e1dba151d1a3e"
+    },
+    {
+      "path": "kernel/bootstrap.js",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 123,
+      "sha256": "563c24147a4977243d82e897f12888fbbb5e09ffab3874ceb0377796dfe28d96"
+    },
+    {
+      "path": "kernel/build.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 53,
+      "sha256": "1f3f184a25f441369fb5bf0effc59ec08ca4bf2e3d2bfee475793f0206ce47ae"
+    },
+    {
+      "path": "kernel/build.sh",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 10,
+      "sha256": "836eb6d9bb09a1ae8d631829e1e05f1930dae84ea40f8c10829512799dbc811b"
+    },
+    {
+      "path": "kernel/link.ld",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "ff153a55d5f100c8e629618dd85e188b50fee73d4f453c6054635d0af35a390d"
+    },
+    {
+      "path": "kernel/prepare.py",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 46,
+      "sha256": "8c2b611a1d6ce21d00d2513d74c89af632577be5096dfca637e68dccb8926c69"
+    },
+    {
+      "path": "kernel/src/boot.S",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27"
+    },
+    {
+      "path": "kernel/src/console.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 254,
+      "sha256": "50c0b6e676ba95045f90a7a1026e13a98b8b0aa53b1c62983d0027e455f24427"
+    },
+    {
+      "path": "kernel/src/fdt.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 116,
+      "sha256": "db250c95af0ec523bbd13fda72e50f011224ea412e93c6ab70c7d5b8bf217401"
+    },
+    {
+      "path": "kernel/src/main.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 68,
+      "sha256": "23781eed700e082a31c96c1df5471d07ca60e984ed69b35bc18ef599b7611d30"
+    },
+    {
+      "path": "kernel/src/mmu.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 109,
+      "sha256": "287f6ac8fc976f4b3742dd53d801a63d2725387467fe45bf9ec5d872589efe44"
+    },
+    {
+      "path": "kernel/src/syscalls/brk.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "e79b38d0ed7a8893c9f98ab5c87d2c97888c9e6ac63a5c59c6620dcb7297cf31"
+    },
+    {
+      "path": "kernel/src/syscalls/clock_gettime.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 20,
+      "sha256": "00ccd2816f3094fba9c053a8946f6d2e991bf90a9aa42a9da81dedaf21ae176e"
+    },
+    {
+      "path": "kernel/src/syscalls/close.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "1d3cf4c66b8e35e296eeeaf1d7900add85ab83b2c4c545c1cf1eebc56029e991"
+    },
+    {
+      "path": "kernel/src/syscalls/exit.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "path": "kernel/src/syscalls/exit_group.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "path": "kernel/src/syscalls/getcwd.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "733dce273bd66cd3bf6f3e61d3c67474806ca143e09ac0a31294472af3794ea6"
+    },
+    {
+      "path": "kernel/src/syscalls/ioctl.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "path": "kernel/src/syscalls/lseek.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "a640122c132396ac215199c6f9ce667ff620af73124798039d1484e0aa9096ab"
+    },
+    {
+      "path": "kernel/src/syscalls/mmap.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 37,
+      "sha256": "4a617c0e2ed02a51c4185b7d306a2b95d0a2d1b9ea8bb10ccd9fab88cd8ada9c"
+    },
+    {
+      "path": "kernel/src/syscalls/mremap.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "ba99bc5f99bce39810d5f6f15c6f553a90a1399b1438e01de99af8b78eece56f"
+    },
+    {
+      "path": "kernel/src/syscalls/munmap.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 22,
+      "sha256": "003651167f569b9c3f2c4fb785b602d89299e4b986d15c26396774591d8b280f"
+    },
+    {
+      "path": "kernel/src/syscalls/openat.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "2d2b9f6bda37b2951d3bda8264a46c4f75e8fecb86b45158ae010170f4de692b"
+    },
+    {
+      "path": "kernel/src/syscalls/ppoll.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 94,
+      "sha256": "ef4137b8c25384043313458b4fa65693c04916149ae1494f38d3769ce8a06dc3"
+    },
+    {
+      "path": "kernel/src/syscalls/read.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 19,
+      "sha256": "4339ff744a36293ed8faa03caec69946020d8f2c77b1b9b6c9dff83b69505cd4"
+    },
+    {
+      "path": "kernel/src/syscalls/readlinkat.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "36bc0a51c905823d8254ddb88055f777cc9551a02a635623d20a63b803f1b0d5"
+    },
+    {
+      "path": "kernel/src/syscalls/readv.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "bf90628c677b449262fc950474164cd5e3e8b2670bbf7f54b406050e00207873"
+    },
+    {
+      "path": "kernel/src/syscalls/set_tid_address.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "8b1c109892ff62df0f67a507fcc5bd416e28428196da2251af443b3c4eb94662"
+    },
+    {
+      "path": "kernel/src/syscalls/write.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "6fbe0b0047b2afcabc83761e4ed7dd2acb0661d586fe97486b68fb66cf5c17aa"
+    },
+    {
+      "path": "kernel/src/syscalls/writev.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 52,
+      "sha256": "40ff0972f289eaca6ec4a5a026033049f6764485b98b87276ec2fef1fbe44cff"
+    },
+    {
+      "path": "kernel/src/syscalls.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 57,
+      "sha256": "e882ed9cbc56b7e109a6f7e8ff21e48c98d434c4ce189bded8602a033009b6bb"
+    },
+    {
+      "path": "kernel/src/trace.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 56,
+      "sha256": "7a231757c245f11d6112bc4a5053411f25d37f5edcf151837bebbfc3b1e3c88a"
+    },
+    {
+      "path": "kernel/src/user.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 151,
+      "sha256": "1cd8d93d65b069da05f2f1c0b857a411eccf66fb0da0ceab60885fcf00ae10c5"
+    },
+    {
+      "path": "kernel/src/vectors.S",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 120,
+      "sha256": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738"
+    },
+    {
+      "path": "kernel/src/wait.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 100,
+      "sha256": "363deb3fc1445a35c393c9dff7893d57a9a740f1b60131bcfd94ef7c9da58c13"
+    },
+    {
+      "path": "kernel/tests/checks.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 47,
+      "sha256": "aed7e3b690ee6e7b6cfb1054ecb3ab5bedbbd47f4514cc1aa8cfab29c45f5a4c"
+    },
+    {
+      "path": "kernel/tests/clock-check.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 24,
+      "sha256": "0b465d3768db87f7dc7a25163305ba2a2a2271e27f8af5edf33935631a59721a"
+    },
+    {
+      "path": "kernel/tests/demo.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 16,
+      "sha256": "993c374edba8d5ec88d64dad2f0a36b279b0caf6f5957219d94a6d19a082b8ae"
+    },
+    {
+      "path": "kernel/tests/grow_contract.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 81,
+      "sha256": "a5badf75dd177c4d450b57db326e0414850b0e3de7879911e3c32ebef55bf6d2"
+    },
+    {
+      "path": "kernel/tests/measure.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 93,
+      "sha256": "6d41b3b0e087fce4a35c059dae8a4ae59da83529af49557041bcfe3a18b42347"
+    },
+    {
+      "path": "kernel/tests/regression.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 5,
+      "sha256": "4f475027acfd47fd365c08d41ed1aa9e2737ffd717263f2d3d1d29c7cfe50aca"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 28,
+      "sha256": "106d4016c447e2fb530759f5c814aeccaf041e98fd9eaf716782cea40dd9e00f"
+    },
+    {
+      "path": "kernel/tests/test_handlers.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 44,
+      "sha256": "c80aabe8d151a37289f74907ded5f1b60880917295878fe8e311b8b863d2d7c1"
+    },
+    {
+      "path": "kernel/tests/test_packer.py",
+      "component": "kernel",
+      "kind": "test",
+      "lines": 27,
+      "sha256": "5ef364c972f424c8f73b2a36c3def1a2af3db974e5739e2e26adcf59010fec89"
+    },
+    {
+      "path": "linux/build-kernel.py",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "a1b024124e965d347aaf81c47b4e15d9e1c50027941b3a6c9fa07d3abaeebed6"
+    },
+    {
+      "path": "linux/build-linux.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 32,
+      "sha256": "fba4a99590cd5db6136e3935a3303ca3957c08cbd0e34eb4075a717dd816449e"
+    },
+    {
+      "path": "linux/docker-build.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 11,
+      "sha256": "b102f0cad00b48e0a491c9bb398c673c1dda62c4c1d2d60a0fad32baf40fb72e"
+    },
+    {
+      "path": "linux/guest/bad-sysreg.S",
+      "component": "linux",
+      "kind": "test",
+      "lines": 7,
+      "sha256": "45252d52ce35d37ca181afea185e7ea2b4a893f97b5b98da991fa40369d5e697"
+    },
+    {
+      "path": "linux/guest/console_avail_oob.S",
+      "component": "linux",
+      "kind": "test",
+      "lines": 56,
+      "sha256": "9f4cdeb1d7ae51d6044c28d59750f3f66dd5c763f17a9af5727ed57e20729cc7"
+    },
+    {
+      "path": "linux/guest/link.ld",
+      "component": "linux",
+      "kind": "test",
+      "lines": 2,
+      "sha256": "fefbc19b18f0124da259b7703d6cb4b827bde69b07e62570ef2719408afc8cff"
+    },
+    {
+      "path": "linux/guest/mmio-halfword.S",
+      "component": "linux",
+      "kind": "test",
+      "lines": 8,
+      "sha256": "89a7fcfc9bbf023657414c5c1361094ca4d3ffe92b793950085007584c71c558"
+    },
+    {
+      "path": "linux/guest/rtc_oob_read.S",
+      "component": "linux",
+      "kind": "test",
+      "lines": 27,
+      "sha256": "c202cc7673e0baab2ce61b0b95cc34e12b4a6b03a66ea0cb70e61e163721ffee"
+    },
+    {
+      "path": "linux/guest/unknown-hvc.S",
+      "component": "linux",
+      "kind": "test",
+      "lines": 8,
+      "sha256": "b797e0854c04b8af4c60f185d72588303e854f8a5bac462da72bde54fe6f02d8"
+    },
+    {
+      "path": "linux/guest/unknown-smc.S",
+      "component": "linux",
+      "kind": "test",
+      "lines": 8,
+      "sha256": "e6173ab4ff7166376533316a55201db55cab4c824932c6c67b0c415edcae189f"
+    },
+    {
+      "path": "linux/main.rs",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 114,
+      "sha256": "73328e4173709d1aa707b3a45122a62d9f08adb23bc53c869374ce8ab2b03c62"
+    },
+    {
+      "path": "linux/nested/init",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "8c475cc2c7ec3a164170091f01618b78277765a07d712d0f00dcc7241b7df499"
+    },
+    {
+      "path": "linux/nested/run-qemu.py",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 9,
+      "sha256": "d135633443b88a4b5ce70b00c70cb7e1968f4bb8fdb06f54bb3f4c959a6f37e1"
+    },
+    {
+      "path": "linux/nested.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 23,
+      "sha256": "8a79feffcd36a469ce5e96628788eb8731141c081f5edcb4217864f9169df28a"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "b2196af5afff60259ec452885d7ec037fc421e90003076d10a5074de994cae56"
+    },
+    {
+      "path": "linux/run.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 30,
+      "sha256": "4942cc8b5f3d8af5c3e18d09f7188f454ef6f8ef89bc22a6535c02ef39740980"
+    },
+    {
+      "path": "linux/security/confine.rs",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 153,
+      "sha256": "20fcb3cdc06452b08542e5aa734e92095b6c05113db15bb14864b8bbcb285cd6"
+    },
+    {
+      "path": "linux/spawn-cg.c",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 46,
+      "sha256": "abff20bbadf7f90a317ec7fda17d618618f15abca20adf53062f15d102579569"
+    },
+    {
+      "path": "linux/suite.py",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 182,
+      "sha256": "2fe674ec3f6003326bf8865bbfe171df024ab420ead6e631d06da1ba0bf3d634"
+    },
+    {
+      "path": "protocol/Makefile",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 11,
+      "sha256": "cc9ea9d5ddbcbe4545e06faa604636eab898c4c249e29b9d3b5cd2743fa0eb86"
+    },
+    {
+      "path": "protocol/bench-dispatcher.mjs",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 32,
+      "sha256": "e92d8e07e89b3310b785e461e852b466c7853bee9d06e7894b1598031053b48b"
+    },
+    {
+      "path": "protocol/bootstrap.js",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 134,
+      "sha256": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280"
+    },
+    {
+      "path": "protocol/build.mjs",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 6,
+      "sha256": "a05756e9205293cc82049a2699f23266e009855e2426b68b1eb92803c4eb71b8"
+    },
+    {
+      "path": "protocol/dispatcher.ts",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 229,
+      "sha256": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f"
+    },
+    {
+      "path": "protocol/hostile/cases.mjs",
+      "component": "protocol",
+      "kind": "test",
+      "lines": 24,
+      "sha256": "37b32f07b82f102fe326d89be1de8b3535312c0a290c1df9eafe264573718cab"
+    },
+    {
+      "path": "protocol/hostile/run.mjs",
+      "component": "protocol",
+      "kind": "test",
+      "lines": 36,
+      "sha256": "b207fabdd1fbc236de96ab51b37d4663a42c9a2e4b7c117a96b178063beb62a6"
+    },
+    {
+      "path": "protocol/make-vectors.py",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 116,
+      "sha256": "8435f44a1b75f43bf80b57e12a63318f486121bd55e3d2ddc023e598e9d5adbb"
+    },
+    {
+      "path": "protocol/test.mjs",
+      "component": "protocol",
+      "kind": "test",
+      "lines": 94,
+      "sha256": "dc4520db6fe7788b39c3dcfa3e69351e4d0447fe1c8731934cc5c759f02da4e8"
+    },
+    {
+      "path": "protocol/vm-test.mjs",
+      "component": "protocol",
+      "kind": "test",
+      "lines": 50,
+      "sha256": "9f43185f2014ab778b6dcd9f33b5cf4130e676d3c2cd19715c2036f57264fa74"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 82,
+      "sha256": "2a71afba8cc224c72956847f639e11eb20a0fa9e9ba4f2cde4bd4af0bbed1572"
+    },
+    {
+      "path": "protocol/watchdog.py",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 9,
+      "sha256": "3733ad277b4fab370adc234043a5e384949703e973c344a9c053cd6369bf9e15"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 16,
+      "sha256": "a92a00161ffb96aaf1b5c999dd8bddc137d8b9de1295f60fd370376e5e439bd6"
+    },
+    {
+      "path": "vmm/build.py",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 59,
+      "sha256": "84dabb5944afe5284714a3a37afc7950d3e29e16bd33596406edeb5fc3a43cab"
+    },
+    {
+      "path": "vmm/sandbox/jitk.sb",
+      "component": "vmm/sandbox",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "cdeb2bc119fcba93466f0f0fa9471082530bbdcd9607439e259315dfd1cbdad4"
+    },
+    {
+      "path": "vmm/sandbox/mod.rs",
+      "component": "vmm/sandbox",
+      "kind": "implementation/build",
+      "lines": 396,
+      "sha256": "29c5cb96f323d00a8205c2fd1bae2985f5128e655a552bc5f495bfe421402031"
+    },
+    {
+      "path": "vmm/src/confinement.rs",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 24,
+      "sha256": "c6ff8e9f67b234fa1cd2221ea66557d1365b0d47ed3621559aaaf1c103c0f0c5"
+    },
+    {
+      "path": "vmm/src/main.rs",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 119,
+      "sha256": "6c92592319ccb9ebe2e14bc3191c8eb24ed4a2e7c25a59b1643beb355c2394d6"
+    },
+    {
+      "path": "vmm/tests/build-guests.py",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 21,
+      "sha256": "78c3e5fbfda66e024bba3fc96a906866a1df1b6a38ea61aa1f7fbdd15738cdd6"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 134,
+      "sha256": "f420a0bea1a493f272e5485126965a8ce2661ad6d3824e33cbcf1a70149629cb"
+    },
+    {
+      "path": "vmm/tests/fixtures/bad-sysreg.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 7,
+      "sha256": "45252d52ce35d37ca181afea185e7ea2b4a893f97b5b98da991fa40369d5e697"
+    },
+    {
+      "path": "vmm/tests/fixtures/console_avail_oob.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 56,
+      "sha256": "9f4cdeb1d7ae51d6044c28d59750f3f66dd5c763f17a9af5727ed57e20729cc7"
+    },
+    {
+      "path": "vmm/tests/fixtures/link.ld",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 2,
+      "sha256": "fefbc19b18f0124da259b7703d6cb4b827bde69b07e62570ef2719408afc8cff"
+    },
+    {
+      "path": "vmm/tests/fixtures/mmio-halfword.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 8,
+      "sha256": "89a7fcfc9bbf023657414c5c1361094ca4d3ffe92b793950085007584c71c558"
+    },
+    {
+      "path": "vmm/tests/fixtures/parking-guest.c",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 146,
+      "sha256": "5019bb952b7136bb06128e9b5e3fab7c42972b99227624e7fdb48e1667f12d2c"
+    },
+    {
+      "path": "vmm/tests/fixtures/probe.ld",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 11,
+      "sha256": "529f660f3f2cad8aacf7a6884f9450e3747f765f0461ab360e7c530c405f8d11"
+    },
+    {
+      "path": "vmm/tests/fixtures/rtc_oob_read.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 27,
+      "sha256": "c202cc7673e0baab2ce61b0b95cc34e12b4a6b03a66ea0cb70e61e163721ffee"
+    },
+    {
+      "path": "vmm/tests/fixtures/start.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 52,
+      "sha256": "b1cac15c04738ad1de3cd7418d01377d3ad60c7c6f4e916547cce563179a805d"
+    },
+    {
+      "path": "vmm/tests/fixtures/unknown-hvc.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 8,
+      "sha256": "b797e0854c04b8af4c60f185d72588303e854f8a5bac462da72bde54fe6f02d8"
+    },
+    {
+      "path": "vmm/tests/fixtures/unknown-smc.S",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 8,
+      "sha256": "e6173ab4ff7166376533316a55201db55cab4c824932c6c67b0c415edcae189f"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 80,
+      "sha256": "913afc43f620de001a59ca7402c188e2f17983fb7e89f52de6c207c5a860c875"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 35,
+      "sha256": "faf3fa22ba4eb824957a48717798ec98e0cfd897e99febe0d1d701a6a7d8fd49"
+    }
+  ],
+  "identical_source_groups": [
+    [
+      "bench/hyperlight/watchdog.py",
+      "executor/watchdog.py"
+    ],
+    [
+      "grow/fallback-kernel/src/boot.S",
+      "kernel/src/boot.S"
+    ],
+    [
+      "grow/fallback-kernel/src/syscalls/ioctl.rs",
+      "kernel/src/syscalls/ioctl.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/vectors.S",
+      "kernel/src/vectors.S"
+    ],
+    [
+      "kernel/src/syscalls/exit.rs",
+      "kernel/src/syscalls/exit_group.rs"
+    ],
+    [
+      "linux/guest/bad-sysreg.S",
+      "vmm/tests/fixtures/bad-sysreg.S"
+    ],
+    [
+      "linux/guest/console_avail_oob.S",
+      "vmm/tests/fixtures/console_avail_oob.S"
+    ],
+    [
+      "linux/guest/link.ld",
+      "vmm/tests/fixtures/link.ld"
+    ],
+    [
+      "linux/guest/mmio-halfword.S",
+      "vmm/tests/fixtures/mmio-halfword.S"
+    ],
+    [
+      "linux/guest/rtc_oob_read.S",
+      "vmm/tests/fixtures/rtc_oob_read.S"
+    ],
+    [
+      "linux/guest/unknown-hvc.S",
+      "vmm/tests/fixtures/unknown-hvc.S"
+    ],
+    [
+      "linux/guest/unknown-smc.S",
+      "vmm/tests/fixtures/unknown-smc.S"
+    ]
+  ]
+}

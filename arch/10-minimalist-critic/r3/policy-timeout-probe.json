@@ -1,0 +1,12 @@
+{
+  "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/07-security-sandbox/policy.mjs",
+  "integrated": false,
+  "timeoutMs": 5,
+  "observedAfterMs": 100,
+  "invoked": true,
+  "aborted": true,
+  "revoked": false,
+  "settled": false,
+  "outstanding": 1,
+  "interpretation": "AbortSignal is cooperative: no host-side completion/revocation guarantee for a tool that ignores it."
+}

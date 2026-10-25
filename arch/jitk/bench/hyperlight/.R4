@@ -1,0 +1,80 @@
+{
+  "round": 4,
+  "status": "F1_FIXED; F3_FIXED; COPIED_TREE_ADAPTER_PASS",
+  "at": "2026-10-24T03:14:06.743071+00:00",
+  "load_at_marker": [
+    110.82275390625,
+    92.369140625,
+    78.17724609375
+  ],
+  "executor_marker_sha256": "790051eb1672deae1000a1871f9220672bf0baeb66a8c4cfcfe5e042ed1abb37",
+  "executor_status": "FUNCTIONAL_PASS; F2_TIMING_GATE_FAIL",
+  "tests": {
+    "source_unset": {
+      "checks": 13,
+      "status": "SKIP",
+      "exit": 0,
+      "load_before": [
+        129.28466796875,
+        103.77783203125,
+        77.0546875
+      ],
+      "load_after": [
+        129.28466796875,
+        103.77783203125,
+        77.0546875
+      ]
+    },
+    "source_set": {
+      "checks": 13,
+      "status": "PASS",
+      "exit": 0,
+      "load_before": [
+        103.0234375,
+        78.90966796875,
+        71.86474609375
+      ],
+      "load_after": [
+        100.33154296875,
+        79.20556640625,
+        72.05615234375
+      ]
+    }
+  },
+  "source_sha256": {
+    "Cargo.lock": "352f488944fb306637fb7bf90cd3c5077f5c337539bf4ae69530000e2d48c731",
+    "Cargo.toml": "a91e850f946403ed2843730b7552b571097aa1e330839ba37693bf05881af8b8",
+    "INTEGRATION.md": "9647db322a55c6cd207166061634585cfe63830b877ea920c1db8dcc83514a61",
+    "Makefile": "ed7f098137db22e269985f2a622694faf423c1e99e72ffa3545cead158802895",
+    "README.md": "1c6d1c79668436925d53abc6d042c58676dd2d1585a05c66240d6cecde6da394",
+    "adapter-test.ts": "10182a6b2ae74a1b14aa666081fa390fa13a81083bccb3baf7ef76c6051f8b73",
+    "adapter.json": "7cc2cf73ae5c14cf6688420e90bd4109eee52c0ee02ec187825786b77422a254",
+    "analyze.py": "5edd5a93e7bf872e5130d65a2a1b4986fd9d5cd244ee1f29b8c23205034e9070",
+    "backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
+    "bench.py": "9544b28b8e05e2fd7abb369116a4a4f1b31b496368c5b3f579334fee701cf084",
+    "bootstrap.js": "cd4e7bf93e5e91eb93b1e630a2c49244aa553eecf029a5a8f1a6bc93d3319cd1",
+    "build.sh": "0c86011b7f1f7e3e1d58caead6275dfb566bd4a1c2a0eeeeea4471487e5093d8",
+    "config.ts": "119085b03bf433cc3fa4fad411d3fc31b1cd9d3b431448a3d0c6b11f3cf59b8c",
+    "executor-runner.mjs": "8c445fec928987495c079b497ed20bbe86ba8aec252cd2a3eb60eecd0717ec51",
+    "executor-test.mjs": "11cdc4b5d8ccd1ca4ab8170d4cc3052c309afdb6fc1a9393f46fac0c8eab4781",
+    "load_linux.rs": "c59ed6c043b70806181b5975f4d2ded130931dd394fd6331c4ed950e8c9e31bc",
+    "worker.rs": "c5e48acbb0b78afe1673aa33fbbdb3b571db4fc5f8846e9b7f1d468cd57cc4c9"
+  },
+  "tested_artifacts_sha256": {
+    "executor/build/backend.js": "058dd0164f3633bc1cbbefc52ac65d17cf89b7e30d1e26b3e7c5d6a0aae34db3",
+    "executor/build/executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+    "executor/watchdog.py": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+    "node": "df969da390dce1b230f7d23ab2892b5d7b994ae4a7107b6f434a97068b73f11e",
+    "hyperlight_worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "hyperlight_snapshot_files": {
+      "blobs/sha256/120ce90b0f14bc00f3f45817c3c61026c8467f7797c54753b626e754655a11d1": "120ce90b0f14bc00f3f45817c3c61026c8467f7797c54753b626e754655a11d1",
+      "blobs/sha256/2fd2c2bbd6d6e60f4e6f631dbc96c7b26b73270648c33fda7f9cf868509f82e7": "2fd2c2bbd6d6e60f4e6f631dbc96c7b26b73270648c33fda7f9cf868509f82e7",
+      "blobs/sha256/622f0d2263988918d0676e9e668a89d957538f7bff7c15e7aaf67976416e737e": "622f0d2263988918d0676e9e668a89d957538f7bff7c15e7aaf67976416e737e",
+      "blobs/sha256/88d5262ae7d3bfe1d7da551e336888787e9ac24ab20d19591d79c3d699d55c8b": "88d5262ae7d3bfe1d7da551e336888787e9ac24ab20d19591d79c3d699d55c8b",
+      "index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09",
+      "oci-layout": "18f0797eab35a4597c1e9624aa4f15fd91f6254e5538c1e0d193b2a95dd4acc6"
+    }
+  },
+  "verification_sha256": "e865ffed04f66af02f52361aa4d1a9e0e5ed82a12ac11729043b5f08de26324d",
+  "limits": "Functional adapter checks only. Existing R3 worker and snapshot supplied explicitly; worker not rebuilt. No jitk VMM executed. Executor F2 timing gate remains failed."
+}

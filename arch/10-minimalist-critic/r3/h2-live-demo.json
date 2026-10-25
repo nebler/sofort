@@ -1,0 +1,109 @@
+{
+  "elapsed_seconds": 45.00286958400102,
+  "uptime_before": "4:00  up  5:14, 2 users, load averages: 16.44 54.63 65.21",
+  "uptime_after": "4:01  up  5:15, 2 users, load averages: 49.77 56.42 65.23",
+  "events": [
+    {
+      "scheduled_seconds": 0,
+      "actual_seconds": 0.005620416999590816,
+      "text": "REAL KERNEL / EL0: recorded growth receipts + two LIVE fresh VMs.\nKernel source: /private/tmp/jitk-10/h2-01/jitk/kernel (isolated copy; canonical source stays unchanged)."
+    },
+    {
+      "scheduled_seconds": 3,
+      "actual_seconds": 3.0100183340000513,
+      "text": "RECORDED QuickJS failure, ppoll deleted in the copy:\n{\n  \"v\": 2,\n  \"kind\": \"missing\",\n  \"seq\": 44,\n  \"nr\": 73,\n  \"pc\": 5466184,\n  \"args\": [\n    8593488,\n    1,\n    0,\n    0,\n    8,\n    0\n  ],\n  \"input\": \"0000000001000000\",\n  \"timeout\": null\n}\n"
+    },
+    {
+      "scheduled_seconds": 7,
+      "actual_seconds": 7.00262608400044,
+      "text": "RECORDED ppoll regrowth: Linux oracle \u2192 agent-authored proposal \u2192 rebuild \u2192 30 complete probe trace matches.\nTransaction 2.960s; manifest 0\u21921. Uses WFI and post-ack RX recheck."
+    },
+    {
+      "scheduled_seconds": 12,
+      "actual_seconds": 12.004720083999928,
+      "text": "LIVE fresh VM: same QuickJS os.setReadHandler script, same ping input."
+    },
+    {
+      "scheduled_seconds": 13,
+      "actual_seconds": 13.007391041999654,
+      "text": "reply:ping (spawn\u2192completion\u2192reap 0.011777s; this run, contended)"
+    },
+    {
+      "scheduled_seconds": 18,
+      "actual_seconds": 18.000242709000304,
+      "text": "RECORDED alternate EL0 binary: exact static musl Lua 5.4.8.\nFirst missing:\n{\n  \"v\": 2,\n  \"kind\": \"missing\",\n  \"seq\": 20,\n  \"nr\": 135,\n  \"pc\": 4401548,\n  \"args\": [\n    1,\n    33520192,\n    0,\n    8,\n    33520224,\n    4653056\n  ],\n  \"input\": null,\n  \"timeout\": null\n}\n"
+    },
+    {
+      "scheduled_seconds": 22,
+      "actual_seconds": 22.001289416999498,
+      "text": "RECORDED rt_sigprocmask: explicit ENOSYS profile; no signal state or pointer access.\n30 native-Linux injected-profile checks justify Lua fallback. Manifest 1\u21922.\n// Lua profile: no signal delivery or thread state. No user pointers are touched.\n// This is an explicit ENOSYS contract, never a claim of Linux signal support.\npub fn call(_: &[usize]) -> isize { -38 }\n"
+    },
+    {
+      "scheduled_seconds": 25,
+      "actual_seconds": 25.0012094169997,
+      "text": "RECORDED second missing:\n{\n  \"v\": 2,\n  \"kind\": \"missing\",\n  \"seq\": 21,\n  \"nr\": 134,\n  \"pc\": 4401344,\n  \"args\": [\n    2,\n    33520160,\n    0,\n    8,\n    33520240,\n    33520192\n  ],\n  \"input\": null,\n  \"timeout\": null\n}\n"
+    },
+    {
+      "scheduled_seconds": 28,
+      "actual_seconds": 28.00202045900005,
+      "text": "rt_sigaction profile accepted: 30 fresh probe VMs match injected Linux. Manifest 2\u21923.\nNormal Linux and ENOSYS-injected Linux both compute identical Lua output, 30/30 each."
+    },
+    {
+      "scheduled_seconds": 31,
+      "actual_seconds": 31.00655279199964,
+      "text": "LIVE fresh VM: Lua sorts {9,1,5,3,5}, computes count/sum/max, and prints:"
+    },
+    {
+      "scheduled_seconds": 32,
+      "actual_seconds": 32.00268654200045,
+      "text": "{\"count\":5,\"sum\":23,\"max\":9} (spawn\u2192completion\u2192reap 0.730480s; this run, contended)"
+    },
+    {
+      "scheduled_seconds": 38,
+      "actual_seconds": 38.02098712500083,
+      "text": "Lua output = normal Linux byte-for-byte; 30/30 fresh VMs.\nLua kernel delta: 6 LOC (kill line >350).\nOwner-applicable outputs: lua-kernel.patch + manifest.diff; no canonical edits."
+    },
+    {
+      "scheduled_seconds": 43,
+      "actual_seconds": 43.003925541999706,
+      "text": "All VMs exited/reaped. Actual complete preparation: 20.460s.\n45s is labeled playback plus live boots; full Lua syscall equivalence is UNVERIFIED."
+    }
+  ],
+  "qjs_live": {
+    "load_gate": {
+      "threshold": 6,
+      "budget_s": 0,
+      "passed": false,
+      "load": [
+        15.2158203125,
+        53.10791015625,
+        64.55078125
+      ]
+    },
+    "seconds": 0.01177704099973198,
+    "returncode": 0,
+    "uptime_before": "4:00  up  5:14, 2 users, load averages: 15.22 53.11 64.55",
+    "uptime_after": "4:00  up  5:14, 2 users, load averages: 15.22 53.11 64.55"
+  },
+  "lua_live": {
+    "load_gate": {
+      "threshold": 6,
+      "budget_s": 0,
+      "passed": false,
+      "load": [
+        17.150390625,
+        51.04052734375,
+        63.53955078125
+      ]
+    },
+    "seconds": 0.7304800839992822,
+    "returncode": 0,
+    "uptime_before": "4:01  up  5:14, 2 users, load averages: 17.15 51.04 63.54",
+    "uptime_after": "4:01  up  5:14, 2 users, load averages: 17.15 51.04 63.54"
+  },
+  "canonical": true,
+  "source_run": "run-20261024T040023",
+  "qjs_output_hex": "7265706c793a70696e670a",
+  "lua_output_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+  "all_vms_reaped": true
+}

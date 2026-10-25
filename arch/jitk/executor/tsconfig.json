@@ -1,0 +1,1 @@
+{"compilerOptions":{"target":"ES2022","module":"NodeNext","moduleResolution":"NodeNext","strict":true,"skipLibCheck":true,"types":["node"],"allowJs":true,"noEmit":true,"allowImportingTsExtensions":true},"include":["*.ts","*.mjs","vendor/*.mjs","examples/*.ts"],"exclude":["build","node_modules"]}

@@ -1,0 +1,38 @@
+{
+  "status": "FAILED",
+  "kvm_results": "UNVERIFIED",
+  "sources": {
+    "kernel_source": "02 R2 snapshot BEFORE READY, 2026-10-24; Linux/KVM UNVERIFIED",
+    "libkrun_commit": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+    "qjs_source": "Bellard QuickJS 2026-06-04, original spike static musl aarch64, stripped by 02",
+    "qjs_sha256": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+    "source_sha256": {
+      "kernel/Cargo.toml": "4b8b0dfee273de5cf433a961552004bcdacf6c8d416f6640702eca2e37c1b9bd",
+      "kernel/bootstrap.js": "93eb200ffc0e4f23ed59dcdc92fadec2df95dfb4e6f4c90fd7ca70513ec8f163",
+      "kernel/link.ld": "ff153a55d5f100c8e629618dd85e188b50fee73d4f453c6054635d0af35a390d",
+      "kernel/Cargo.lock": "07c5829466b06094ed7bd6c7420d91644d3e0e571edce916afdd4e3aba5ca7cf",
+      "kernel/prepare.py": "19da00b8fcab90b4fb00b08dab16721443c31a12951e75b5ffdb748a749642b9",
+      "kernel/src/wait.rs": "9455f7b054a01b13baf19299a21984434bbcb8cd46888c28f819b2ad1427f87a",
+      "kernel/src/mmu.rs": "287f6ac8fc976f4b3742dd53d801a63d2725387467fe45bf9ec5d872589efe44",
+      "kernel/src/packed.rs": "5f7befaf5a658e2f3a00de3c9ddc5862f5283b4a5be8726ae4db7a974e46d200",
+      "kernel/src/boot.S": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27",
+      "kernel/src/vectors.S": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738",
+      "kernel/src/user.rs": "a16d87418fe1983289361176ea85364c8d0b7f71c89fc23a969566f7a5337032",
+      "kernel/src/console.rs": "53e35a77005a21a4c5bbfe4c29b5e9718bc3af4ce9100a2038d2ad37929d26fc",
+      "kernel/src/fdt.rs": "db250c95af0ec523bbd13fda72e50f011224ea412e93c6ab70c7d5b8bf217401",
+      "kernel/src/main.rs": "bf51e30c2ca13682a93f0b2329213b5ee72bb8e52654dcfa3f4f0562c3d5b94b"
+    }
+  },
+  "uptime_start": "00:33:25 up  2:00,  0 user,  load average: 31.06, 18.29, 11.79",
+  "uname": [
+    "Linux",
+    "ee580267baf0",
+    "6.10.14-linuxkit",
+    "#1 SMP Mon Feb 24 16:35:16 UTC 2025",
+    "aarch64"
+  ],
+  "cpu_count": 12,
+  "error": "FileNotFoundError(2, 'No such file or directory')",
+  "children_remaining": 0,
+  "uptime_end": "00:33:25 up  2:00,  0 user,  load average: 31.06, 18.29, 11.79"
+}

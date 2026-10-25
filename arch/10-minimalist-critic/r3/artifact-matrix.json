@@ -1,0 +1,69 @@
+{
+  "measured_utc": "2026-10-24T02:24:53.448228+00:00",
+  "scope": "Do not combine gates into an unqualified single-artifact release claim.",
+  "H1": {
+    "receipt": "h1-poll-05.json",
+    "result": "FAIL; build PASS",
+    "source_stable": true
+  },
+  "H2": {
+    "receipt": "h2-01.json",
+    "selection": {
+      "selection": "integrated jitk / VMM canonical / kernel canonical",
+      "integrated": true,
+      "host": {
+        "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+        "sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e"
+      },
+      "image": {
+        "path": "/private/tmp/jitk-10/h2-01/jitk/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+        "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+      },
+      "gate": {
+        "idleCorePercent": 0,
+        "evidence": "/private/tmp/jitk-10/h2-01/jitk/kernel/.READY: 0.00% idle; 1000/1000"
+      },
+      "vmmReady": true,
+      "kernelReady": true
+    }
+  },
+  "H3": {
+    "receipt": "../../jitk/linux/out/report.json",
+    "artifacts": {
+      "jitk-vmm": "a171694c30e4e86e84ac81a771f18c5c2cf8be692887be2bbadcc1013f7f7a63",
+      "spawn-cg": "2d279ac06f6d2fc444974dea407d9350d1ab8043bd2b68aba120f2297b2b2b5c",
+      "kernel.bin": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+    },
+    "robustness_sha256": "777f0e64d0b58da1a0fa69156126d660590e2298894750e8876362dc2148cf66"
+  },
+  "H4": {
+    "receipt": "../../jitk/bench/raw.json",
+    "frozen_vmm_sha256": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+    "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "status": "COMPLETE contended table; quiet credibility UNVERIFIED",
+    "sample_count": 2460,
+    "gated": 0,
+    "audit": "h4-audit.json",
+    "raw_sha256": "adc0aadaa3eee399af1985a80796ba2f2762dddf525ea36061e8d20903880033",
+    "table_sha256": "23f567496886407a599a852f7e42ed4964aef73efc29fff000c662e81f98fa3a"
+  },
+  "H5_independent": {
+    "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "cases": 19,
+    "passed": 570,
+    "failed": 0,
+    "children_after": []
+  },
+  "certificate": {
+    "receipt": "executor-certificate-0128.json",
+    "host": {
+      "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+      "sha256": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e"
+    },
+    "image": {
+      "path": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+      "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+    }
+  }
+}

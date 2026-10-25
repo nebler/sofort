@@ -1,0 +1,128 @@
+{
+  "proposal_mode": "replay",
+  "elapsed_seconds": 45.010058125000796,
+  "uptime_before": "5:28  up  6:42, 2 users, load averages: 55.43 79.56 75.71",
+  "uptime_after": "5:29  up  6:43, 2 users, load averages: 30.70 69.64 72.25",
+  "events": [
+    {
+      "scheduled_seconds": 0,
+      "actual_seconds": 0.005314124999131309,
+      "text": "RECORDED REPLAY: canonical kernel copied; ppoll and signal handlers deleted only in the disposable repository."
+    },
+    {
+      "scheduled_seconds": 3,
+      "actual_seconds": 3.009799583000131,
+      "text": "RECORDED REPLAY QuickJS miss:\n{\n  \"v\": 2,\n  \"kind\": \"missing\",\n  \"seq\": 44,\n  \"nr\": 73,\n  \"pc\": 5466184,\n  \"args\": [\n    8593488,\n    1,\n    0,\n    0,\n    8,\n    0\n  ],\n  \"input\": \"0000000001000000\",\n  \"timeout\": null\n}\n"
+    },
+    {
+      "scheduled_seconds": 7,
+      "actual_seconds": 7.010020458001236,
+      "text": "RECORDED REPLAY ppoll: Linux oracle \u2192 one-file proposal \u2192 rebuild \u2192 30 fresh complete probe matches.\nTransaction 9.038s; stage loads saved in report. WFI wait helper retained."
+    },
+    {
+      "scheduled_seconds": 12,
+      "actual_seconds": 12.003512457999022,
+      "text": "EXECUTING fresh QuickJS VM on canonical v2 VMM."
+    },
+    {
+      "scheduled_seconds": 13,
+      "actual_seconds": 13.010402167001303,
+      "text": "reply:ping (spawn\u2192reap 0.142220s; 5:28  up  6:42, 2 users, load averages: 45.19 76.11 74.54)"
+    },
+    {
+      "scheduled_seconds": 18,
+      "actual_seconds": 18.010019124998507,
+      "text": "RECORDED REPLAY Lua startup miss:\n{\n  \"v\": 2,\n  \"kind\": \"missing\",\n  \"seq\": 20,\n  \"nr\": 135,\n  \"pc\": 4401548,\n  \"args\": [\n    1,\n    33520192,\n    0,\n    8,\n    33520224,\n    4653056\n  ],\n  \"input\": null,\n  \"timeout\": null\n}\n"
+    },
+    {
+      "scheduled_seconds": 22,
+      "actual_seconds": 22.001668291999522,
+      "text": "RECORDED REPLAY rt_sigprocmask: explicit ENOSYS profile; no signal state or pointer access.\n// Lua profile: no signal delivery or thread state. No user pointers are touched.\n// This is an explicit ENOSYS contract, never a claim of Linux signal support.\npub fn call(_: &[usize]) -> isize { -38 }\n"
+    },
+    {
+      "scheduled_seconds": 25,
+      "actual_seconds": 25.010017000000516,
+      "text": "RECORDED REPLAY second miss:\n{\n  \"v\": 2,\n  \"kind\": \"missing\",\n  \"seq\": 21,\n  \"nr\": 134,\n  \"pc\": 4401344,\n  \"args\": [\n    2,\n    33520160,\n    0,\n    8,\n    33520240,\n    33520192\n  ],\n  \"input\": null,\n  \"timeout\": null\n}\n"
+    },
+    {
+      "scheduled_seconds": 28,
+      "actual_seconds": 28.010017374999734,
+      "text": "RECORDED REPLAY: both signal profiles pass 30 fresh probe VMs each against explicitly ENOSYS-injected Linux."
+    },
+    {
+      "scheduled_seconds": 31,
+      "actual_seconds": 31.004614417000994,
+      "text": "EXECUTING fresh Lua VM: sort {9,1,5,3,5}; compute count/sum/max."
+    },
+    {
+      "scheduled_seconds": 32,
+      "actual_seconds": 32.00599299999885,
+      "text": "{\"count\":5,\"sum\":23,\"max\":9} (spawn\u2192reap 0.108758s; 5:29  up  6:42, 2 users, load averages: 36.81 72.75 73.37)"
+    },
+    {
+      "scheduled_seconds": 38,
+      "actual_seconds": 38.010364999998274,
+      "text": "RECORDED REPLAY: Lua output matches normal Linux, 30/30 fresh VMs. Explicit Lua profile: 6 LOC. Lua already computes with missing-slot ENOSYS; growth verifies that contract."
+    },
+    {
+      "scheduled_seconds": 43,
+      "actual_seconds": 43.00970816699919,
+      "text": "All VMs reaped. Preparation 53.719s; stage loads saved. Presentation time excludes preparation. Full Lua syscall equivalence UNVERIFIED."
+    }
+  ],
+  "qjs_live": {
+    "load_gate": {
+      "threshold": 6,
+      "budget_s": 0,
+      "wait_s": 6.624999514315277e-06,
+      "passed": false,
+      "timed_out": true,
+      "observations": [
+        {
+          "elapsed_s": 6.624999514315277e-06,
+          "load": [
+            45.1875,
+            76.1064453125,
+            74.5419921875
+          ]
+        }
+      ]
+    },
+    "seconds": 0.14222037499712314,
+    "returncode": 0,
+    "uptime_before": "5:28  up  6:42, 2 users, load averages: 45.19 76.11 74.54",
+    "uptime_after": "5:28  up  6:42, 2 users, load averages: 45.19 76.11 74.54"
+  },
+  "lua_live": {
+    "load_gate": {
+      "threshold": 6,
+      "budget_s": 0,
+      "wait_s": 5.332996806828305e-06,
+      "passed": false,
+      "timed_out": true,
+      "observations": [
+        {
+          "elapsed_s": 5.332996806828305e-06,
+          "load": [
+            36.814453125,
+            72.7509765625,
+            73.3720703125
+          ]
+        }
+      ]
+    },
+    "seconds": 0.10875779200068791,
+    "returncode": 0,
+    "uptime_before": "5:29  up  6:42, 2 users, load averages: 36.81 72.75 73.37",
+    "uptime_after": "5:29  up  6:42, 2 users, load averages: 36.81 72.75 73.37"
+  },
+  "source_run": "run-20261024T052740",
+  "kernel_baseline_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "qjs_image_sha256": "4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee",
+  "lua_image_sha256": "23e95bc45b39803fdb822a801153f4fd442f284221d25f4c5548d7c298ab51e5",
+  "vmm_sha256": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7",
+  "lua_elf_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+  "qjs_output_hex": "7265706c793a70696e670a",
+  "lua_output_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+  "all_vms_reaped": true
+}

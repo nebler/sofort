@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-24T03:39:48.739451+00:00",
+  "load": [
+    56.8251953125,
+    59.64453125,
+    62.26953125
+  ],
+  "frozen_hashes_verified": 94,
+  "links_verified": 136,
+  "broken_links": [],
+  "report_lines": 52,
+  "manifest_sha256": "7803d9b5f4bf7bd2ea959f7400f4edcdc6907fefcef4f33dd6d89f44c4971671",
+  "docs_marker_hashes_match": true,
+  "completion_marker_forbidden_references": 0,
+  "scope": "No VM rerun; artifact/evidence/document consistency only.",
+  "report_sha256": "135eaa2bfa1bbeab3f377c03302bce434fb502911667a525187e98f3b132a6dd",
+  "docs_completion_marker_sha256": "7d9dd1b99a00d5c90181c7be50a35186daa5536996c261d7cc79d9d4e7c61dcb"
+}

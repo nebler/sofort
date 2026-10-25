@@ -1,0 +1,1923 @@
+{
+  "started_utc": "2026-10-24T02:12:19.612Z",
+  "uptime_start": "4:12  up  5:26, 2 users, load averages: 35.65 53.67 62.40",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "scope": "Real fresh single-use VMs; reviewed SDK copy. Warm preparation excluded; timings are resource/deadline diagnostics, NOT canonical H4 performance. No providers with external effects or credentials.",
+  "fixed_vm_lifetime_ms": 5000,
+  "n_per_case": 30,
+  "rows": [
+    {
+      "case": "memory",
+      "round": 0,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 46.90387499999997,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 0,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 3.1722089999999525,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 0,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 264.945292,
+      "overshoot_ms": 234.945292,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 1,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 11.738207999999986,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 1,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.134292000000187,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 1,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 224.62616700000012,
+      "overshoot_ms": 194.62616700000012,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 2,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 28.019333999999844,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 2,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 4.508583000000044,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 2,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 210.54250000000002,
+      "overshoot_ms": 180.54250000000002,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 3,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 16.781291999999667,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 3,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.6027500000000146,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 3,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 231.19304200000033,
+      "overshoot_ms": 201.19304200000033,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 4,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 44.45841699999983,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 4,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.435417000000143,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 4,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 213.94158300000026,
+      "overshoot_ms": 183.94158300000026,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 5,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 7.908500000000004,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 5,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 26.714540999999826,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 5,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 221.6351249999998,
+      "overshoot_ms": 191.6351249999998,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 6,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 12.523124999999709,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 6,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.7169160000003103,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 6,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 226.22237499999983,
+      "overshoot_ms": 196.22237499999983,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 7,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 17.05054199999995,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 7,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 5.890332999999373,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 7,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 238.95324999999957,
+      "overshoot_ms": 208.95324999999957,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        35.64990234375,
+        53.66796875,
+        62.40478515625
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 8,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 35.591167000000496,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 8,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 27.79162499999984,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 8,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 220.72095900000022,
+      "overshoot_ms": 190.72095900000022,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 9,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 66.38029199999983,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 9,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.9184589999995296,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 9,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 220.0595000000003,
+      "overshoot_ms": 190.0595000000003,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 10,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 23.97950000000037,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 10,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 35.311125000000175,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 10,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 229.6327080000001,
+      "overshoot_ms": 199.6327080000001,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 11,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 12.280708000000232,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 11,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 3.8502499999995052,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 11,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 216.37804099999994,
+      "overshoot_ms": 186.37804099999994,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 12,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 18.78454099999999,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 12,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 34.06737500000054,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 12,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 214.88624999999956,
+      "overshoot_ms": 184.88624999999956,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 13,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 55.44825000000037,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 13,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 12.400832999999693,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 13,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 214.37054199999966,
+      "overshoot_ms": 184.37054199999966,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 14,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 19.899250000000393,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 14,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.6222499999985303,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 14,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 204.87754099999984,
+      "overshoot_ms": 174.87754099999984,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 15,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 4.397082999999839,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 15,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 31.22845799999959,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 15,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 230.59679099999994,
+      "overshoot_ms": 200.59679099999994,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ],
+      "load_after": [
+        33.35546875,
+        52.89306640625,
+        62.080078125
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 16,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 8.569083000000319,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 16,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 5.410374999999476,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 16,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 215.94166699999914,
+      "overshoot_ms": 185.94166699999914,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 17,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 10.430791999999201,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 17,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 36.55212500000016,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 17,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 222.01350000000093,
+      "overshoot_ms": 192.01350000000093,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 18,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 47.18187500000022,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 18,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 1.8319999999985157,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 18,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 231.15258300000096,
+      "overshoot_ms": 201.15258300000096,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 19,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 19.298542000000452,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 19,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 10.93762500000048,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 19,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 215.183708999999,
+      "overshoot_ms": 185.183708999999,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 20,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 3.882917000000816,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 20,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 3.600084000001516,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 20,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 210.5354159999988,
+      "overshoot_ms": 180.5354159999988,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 21,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 7.692000000000917,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 21,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 3.013958999999886,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 21,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 36.09295800000109,
+      "overshoot_ms": 6.09295800000109,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 22,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 5.8663329999999405,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 22,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 31.232249999999112,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 22,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 235.30704199999855,
+      "overshoot_ms": 205.30704199999855,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 23,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 7.9812089999995806,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 23,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 4.60924999999952,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 23,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 225.62916600000062,
+      "overshoot_ms": 195.62916600000062,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 24,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 40.40883399999984,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 24,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 36.1511249999985,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 24,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 223.6102919999994,
+      "overshoot_ms": 193.6102919999994,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 25,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 5.555958999999348,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 25,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 5.691832999998951,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 25,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 234.9477910000005,
+      "overshoot_ms": 204.9477910000005,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 26,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 10.463999999999942,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 26,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 16.776458000000275,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.04736328125,
+        52.7119140625,
+        61.96240234375
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 26,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 241.33179199999904,
+      "overshoot_ms": 211.33179199999904,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 27,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 18.286207999999533,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 27,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.8979159999998956,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 27,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 214.3340420000004,
+      "overshoot_ms": 184.3340420000004,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 28,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 11.138208000000304,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 28,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 4.187708000001294,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 28,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 220.6554589999996,
+      "overshoot_ms": 190.6554589999996,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "memory",
+      "round": 29,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 8.76745899999878,
+      "overshoot_ms": 0,
+      "error": "Error: InternalError: out of memory",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "stack",
+      "round": 29,
+      "timeout_ms": 1000,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 2.64495800000077,
+      "overshoot_ms": 0,
+      "error": "Error: protocol EOF",
+      "control_ok": true,
+      "handled": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 29,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 233.63329100000192,
+      "overshoot_ms": 203.63329100000192,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ],
+      "load_after": [
+        34.12353515625,
+        52.41748046875,
+        61.80419921875
+      ]
+    }
+  ],
+  "pool_after_close": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "finished_utc": "2026-10-24T02:12:35.648Z",
+  "uptime_end": "4:12  up  5:26, 2 users, load averages: 34.12 52.42 61.80",
+  "summary": {
+    "memory": {
+      "n": 30,
+      "handled": 30,
+      "controls_pass": 30,
+      "elapsed_ms": {
+        "median": 14.652208499999688,
+        "p90": 46.90387499999997,
+        "p99": 66.38029199999983
+      },
+      "blocked_invocations": 0,
+      "admitted_overshoot_gt50ms": 0,
+      "late_successes": 0
+    },
+    "stack": {
+      "n": 30,
+      "handled": 30,
+      "controls_pass": 30,
+      "elapsed_ms": {
+        "median": 4.558916499999782,
+        "p90": 34.06737500000054,
+        "p99": 36.55212500000016
+      },
+      "blocked_invocations": 0,
+      "admitted_overshoot_gt50ms": 0,
+      "late_successes": 0
+    },
+    "blocked_host": {
+      "n": 30,
+      "handled": 0,
+      "controls_pass": 30,
+      "elapsed_ms": {
+        "median": 221.82431250000036,
+        "p90": 235.30704199999855,
+        "p99": 264.945292
+      },
+      "blocked_invocations": 29,
+      "admitted_overshoot_gt50ms": 29,
+      "late_successes": 0
+    }
+  }
+}

@@ -1,0 +1,202 @@
+00:33:34.145020 execve("./jitk-vmm-base", ["./jitk-vmm-base", "park.bin"], 0xfffff6aa4168 /* 5 vars */) = 0
+00:33:34.146079 brk(NULL)               = 0xaaaae5e35000
+00:33:34.147948 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbafaa000
+00:33:34.148743 faccessat(AT_FDCWD, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+00:33:34.149098 openat(AT_FDCWD, "/work/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+00:33:34.149671 newfstatat(AT_FDCWD, "/work/", {st_mode=S_IFDIR|0755, st_size=160, ...}, 0) = 0
+00:33:34.150012 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+00:33:34.150235 fstat(3, {st_mode=S_IFREG|0644, st_size=4335, ...}) = 0
+00:33:34.151502 mmap(NULL, 4335, PROT_READ, MAP_PRIVATE, 3, 0) = 0xffffbafa8000
+00:33:34.152427 close(3)                = 0
+00:33:34.153147 openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+00:33:34.173124 read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+00:33:34.177002 fstat(3, {st_mode=S_IFREG|0644, st_size=133768, ...}) = 0
+00:33:34.183409 mmap(NULL, 263104, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xffffbaf31000
+00:33:34.184906 mmap(0xffffbaf40000, 197568, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffffbaf40000
+00:33:34.186933 munmap(0xffffbaf31000, 61440) = 0
+00:33:34.187207 munmap(0xffffbaf71000, 960) = 0
+00:33:34.188982 mprotect(0xffffbaf5f000, 65536, PROT_NONE) = 0
+00:33:34.189732 mmap(0xffffbaf6f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1f000) = 0xffffbaf6f000
+00:33:34.227252 mmap(0xffffbaf40000, 126976, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffffbaf40000
+00:33:34.227652 close(3)                = 0
+00:33:34.227969 openat(AT_FDCWD, "/work/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+00:33:34.228675 openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+00:33:34.228966 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\200$\2\0\0\0\0\0"..., 832) = 832
+00:33:34.229764 fstat(3, {st_mode=S_IFREG|0755, st_size=1716616, ...}) = 0
+00:33:34.231933 mmap(NULL, 1892368, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xffffbad71000
+00:33:34.233854 mmap(0xffffbad80000, 1826832, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffffbad80000
+00:33:34.235090 munmap(0xffffbad71000, 61440) = 0
+00:33:34.235691 munmap(0xffffbaf3f000, 16) = 0
+00:33:34.236641 mprotect(0xffffbaf1c000, 69632, PROT_NONE) = 0
+00:33:34.237424 mmap(0xffffbaf2d000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x19d000) = 0xffffbaf2d000
+00:33:34.241962 mmap(0xffffbaf32000, 49168, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xffffbaf32000
+00:33:34.244395 mmap(0xffffbad80000, 1687552, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffffbad80000
+00:33:34.244806 close(3)                = 0
+00:33:34.245751 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbafa6000
+00:33:34.246732 set_tid_address(0xffffbafa60f0) = 186
+00:33:34.246921 set_robust_list(0xffffbafa6100, 24) = 0
+00:33:34.247307 rseq(0xffffbafa68a0, 0x20, 0, 0xd428bc00) = 0
+00:33:34.247880 mprotect(0xffffbaf2d000, 12288, PROT_READ) = 0
+00:33:34.248722 mprotect(0xffffbaf6f000, 4096, PROT_READ) = 0
+00:33:34.249086 mprotect(0xaaaacd057000, 36864, PROT_READ) = 0
+00:33:34.253069 mprotect(0xffffbafb0000, 8192, PROT_READ) = 0
+00:33:34.253893 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+00:33:34.254602 munmap(0xffffbafa8000, 4335) = 0
+00:33:34.255128 ppoll([{fd=0, events=0}, {fd=1, events=0}, {fd=2, events=0}], 3, {tv_sec=0, tv_nsec=0}, NULL, 0) = 0 (Timeout)
+00:33:34.255608 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+00:33:34.256010 getrandom("\xf2\x0a\xe3\x27\xcd\x93\x65\x41", 8, GRND_NONBLOCK) = 8
+00:33:34.257180 brk(NULL)               = 0xaaaae5e35000
+00:33:34.258420 brk(0xaaaae5e56000)     = 0xaaaae5e56000
+00:33:34.259063 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY|O_CLOEXEC) = 3
+00:33:34.259713 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+00:33:34.260643 fstat(3, {st_mode=S_IFREG|0444, st_size=0, ...}) = 0
+00:33:34.261271 read(3, "aaaaccf70000-aaaacd046000 r-xp 0"..., 1024) = 1024
+00:33:34.262100 read(3, "ffffbaf6f000 ---p 0001f000 00:02"..., 1024) = 1024
+00:33:34.263943 read(3, "000 rw-p 00000000 00:00 0       "..., 1024) = 59
+00:33:34.265748 close(3)                = 0
+00:33:34.268363 sched_getaffinity(186, 32, [0 1 2 3]) = 8
+00:33:34.270108 rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+00:33:34.272011 sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+00:33:34.273026 mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffbafa1000
+00:33:34.277932 mprotect(0xffffbafa1000, 4096, PROT_NONE) = 0
+00:33:34.279443 sigaltstack({ss_sp=0xffffbafa2000, ss_flags=0, ss_size=16384}, NULL) = 0
+00:33:34.280531 gettid()                = 186
+00:33:34.321986 rt_sigaction(SIGSEGV, {sa_handler=0xaaaaccff50e0, sa_mask=[], sa_flags=SA_ONSTACK|SA_SIGINFO}, NULL, 8) = 0
+00:33:34.359049 rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+00:33:34.359979 rt_sigaction(SIGBUS, {sa_handler=0xaaaaccff50e0, sa_mask=[], sa_flags=SA_ONSTACK|SA_SIGINFO}, NULL, 8) = 0
+00:33:34.365532 dup(0)                  = 3
+00:33:34.380264 fcntl(3, F_GETFL)       = 0 (flags O_RDONLY)
+00:33:34.415310 fcntl(3, F_SETFL, O_RDONLY|O_NONBLOCK) = 0
+00:33:34.416487 dup(1)                  = 4
+00:33:34.418108 fcntl(4, F_GETFL)       = 0x20001 (flags O_WRONLY|O_LARGEFILE)
+00:33:34.418992 fcntl(4, F_SETFL, O_WRONLY|O_NONBLOCK|O_LARGEFILE) = 0
+00:33:34.419254 epoll_create1(EPOLL_CLOEXEC) = 5
+00:33:34.419568 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+00:33:34.420162 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_DROPPABLE|MAP_ANONYMOUS, -1, 0) = 0xffffbafa9000
+00:33:34.420803 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbafa8000
+00:33:34.421190 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+00:33:34.421819 getrandom("\xa5\xf5\x1d\xce\x28\x15\xd1\xd1\x27\xf7\x62\x8b\x55\x9f\x43\x47\x03\xf5\xfe\x9e\x86\xa7\x7d\xb6\x10\xad\x37\x34\x52\x32\x91\xba", 32, 0) = 32
+00:33:34.422487 mmap(NULL, 67108864, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xffffb6c00000
+00:33:34.422886 openat(AT_FDCWD, "park.bin", O_RDONLY|O_CLOEXEC) = 6
+00:33:34.423242 statx(6, "", AT_STATX_SYNC_AS_STAT|AT_EMPTY_PATH, STATX_ALL, {stx_mask=STATX_ALL|STATX_MNT_ID, stx_attributes=0, stx_mode=S_IFREG|0755, stx_size=4628, ...}) = 0
+00:33:34.423462 read(6, "\363\3\0\252\241\1\0X?\0\0\221\241\1\0X\302\1\0X?\0\2\353b\0\0T?\204\0\370"..., 4628) = 4628
+00:33:34.423674 read(6, "", 32)         = 0
+00:33:34.423895 close(6)                = 0
+00:33:34.426624 openat(AT_FDCWD, "/dev/kvm", O_RDWR|O_CLOEXEC) = 6
+00:33:34.427353 ioctl(6, KVM_GET_API_VERSION, 0) = 12
+00:33:34.427985 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_IRQCHIP) = 1
+00:33:34.428282 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_IOEVENTFD) = 1
+00:33:34.428812 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_IRQFD) = 1
+00:33:34.429555 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_USER_MEMORY) = 1
+00:33:34.429794 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_ARM_PSCI_0_2) = 1
+00:33:34.430183 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_NR_MEMSLOTS) = 32767
+00:33:34.430555 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_ARM_VM_IPA_SIZE) = 40
+00:33:34.431155 ioctl(6, KVM_CHECK_EXTENSION, KVM_CAP_ARM_VM_IPA_SIZE) = 40
+00:33:34.431530 ioctl(6, KVM_CREATE_VM, 0x28) = 7
+00:33:34.432231 ioctl(6, KVM_GET_VCPU_MMAP_SIZE, 0) = 8192
+00:33:34.433596 ioctl(7, KVM_SET_USER_MEMORY_REGION, {slot=0, flags=0, guest_phys_addr=0x80000000, memory_size=67108864, userspace_addr=0xffffb6c00000}) = 0
+00:33:34.526595 close(6)                = 0
+00:33:34.541869 eventfd2(0, EFD_NONBLOCK) = 6
+00:33:34.557435 fcntl(6, F_DUPFD_CLOEXEC, 3) = 8
+00:33:34.558689 ioctl(7, KVM_CREATE_VCPU, 0) = 9
+00:33:34.559902 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_SHARED, 9, 0) = 0xffffbaf9f000
+00:33:34.561573 ioctl(7, KVM_ARM_PREFERRED_TARGET, 0xffffe4ee15a0) = 0
+00:33:34.563977 ioctl(7, KVM_CHECK_EXTENSION, KVM_CAP_ARM_PTRAUTH_ADDRESS) = 1
+00:33:34.565183 ioctl(7, KVM_CHECK_EXTENSION, KVM_CAP_ARM_PTRAUTH_GENERIC) = 1
+00:33:34.565867 ioctl(7, KVM_CHECK_EXTENSION, KVM_CAP_ARM_SVE) = 0
+00:33:34.568042 ioctl(9, KVM_ARM_VCPU_INIT, 0xffffe4ee15a0) = 0
+00:33:34.569168 ioctl(9, KVM_SET_ONE_REG, 0xffffe4ee1520) = 0
+00:33:34.569874 ioctl(9, KVM_SET_ONE_REG, 0xffffe4ee1520) = 0
+00:33:34.583039 ioctl(9, KVM_SET_ONE_REG, 0xffffe4ee1520) = 0
+00:33:34.596315 ioctl(9, KVM_ARM_SET_DEVICE_ADDR or KVM_GET_ONE_REG, 0xffffe4ee1540) = 0
+00:33:34.597275 ioctl(7, KVM_CREATE_DEVICE, 0xffffe4ee1768) = 0
+00:33:34.597595 ioctl(10, KVM_SET_DEVICE_ATTR, 0xffffe4ee1778) = 0
+00:33:34.597864 ioctl(10, KVM_SET_DEVICE_ATTR, 0xffffe4ee1790) = 0
+00:33:34.628944 ioctl(10, KVM_SET_DEVICE_ATTR, 0xffffe4ee17b0) = 0
+00:33:34.629605 ioctl(10, KVM_SET_DEVICE_ATTR, 0xffffe4ee17c8) = 0
+00:33:34.631415 eventfd2(0, EFD_NONBLOCK) = 11
+00:33:34.632109 fcntl(11, F_DUPFD_CLOEXEC, 3) = 12
+00:33:34.633201 ioctl(7, KVM_IRQFD, 0xffffe4ee1650) = 0
+00:33:34.633584 close(11)               = 0
+00:33:34.634112 eventfd2(0, EFD_NONBLOCK) = 11
+00:33:34.637363 eventfd2(0, EFD_NONBLOCK) = 13
+00:33:34.638122 eventfd2(0, EFD_NONBLOCK) = 14
+00:33:34.639074 epoll_ctl(5, EPOLL_CTL_ADD, 13, {events=EPOLLIN, data=0xd}) = 0
+00:33:34.639413 epoll_ctl(5, EPOLL_CTL_ADD, 14, {events=EPOLLIN, data=0xe}) = 0
+00:33:34.639789 epoll_ctl(5, EPOLL_CTL_ADD, 11, {events=EPOLLIN, data=0xb}) = 0
+00:33:34.641134 rt_sigaction(SIGWINCH, {sa_handler=0xaaaaccf91398, sa_mask=~[RTMIN RT_1], sa_flags=SA_SIGINFO}, NULL, 8) = 0
+00:33:34.641692 eventfd2(0, EFD_NONBLOCK) = 15
+00:33:34.642493 eventfd2(0, EFD_NONBLOCK) = 16
+00:33:34.647807 eventfd2(0, EFD_NONBLOCK) = 17
+00:33:34.650233 eventfd2(0, EFD_NONBLOCK) = 18
+00:33:34.650954 eventfd2(0, 0)          = 19
+00:33:34.651621 ioctl(7, KVM_IOEVENTFD, 0xffffe4ee0ff0) = 0
+00:33:34.654207 ioctl(7, KVM_IOEVENTFD, 0xffffe4ee0ff0) = 0
+00:33:34.655432 ioctl(7, KVM_IOEVENTFD, 0xffffe4ee0ff0) = 0
+00:33:34.657701 ioctl(7, KVM_IOEVENTFD, 0xffffe4ee0ff0) = 0
+00:33:34.660293 ioctl(7, KVM_IRQFD, 0xffffe4ee0eb0) = 0
+00:33:34.661943 rt_sigaction(SIGRT_2, {sa_handler=0xaaaaccfa4b9c, sa_mask=~[RTMIN RT_1], sa_flags=SA_SIGINFO}, NULL, 8) = 0
+00:33:34.663108 rt_sigaction(SIGRT_1, {sa_handler=0xffffbae03680, sa_mask=[], sa_flags=SA_ONSTACK|SA_RESTART|SA_SIGINFO}, NULL, 8) = 0
+00:33:34.663530 rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
+00:33:34.663720 mmap(NULL, 2162688, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffb69f0000
+00:33:34.663919 mprotect(0xffffb6a00000, 2097152, PROT_READ|PROT_WRITE) = 0
+00:33:34.664671 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+00:33:34.667505 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xffffb6bff1b0, parent_tid=0xffffb6bff1b0, exit_signal=0, stack=0xffffb69f0000, stack_size=0x20e9c0, tls=0xffffb6bff800} => {parent_tid=[187]}, 88) = 187
+00:33:34.667967 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+00:33:34.669396 sched_yield()           = 0
+00:33:34.670446 sched_yield()           = 0
+00:33:34.670958 sched_yield()           = 0
+00:33:34.671293 sched_yield()           = 0
+00:33:34.671887 futex(0xaaaae5e3a458, FUTEX_WAIT_BITSET_PRIVATE, 4294967295, NULL, FUTEX_BITSET_MATCH_ANY) = 0
+00:33:34.705199 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+00:33:34.705913 getpid()                = 186
+00:33:34.706058 tgkill(186, 187, SIGRT_2) = 0
+00:33:34.713901 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+00:33:34.726817 epoll_ctl(5, EPOLL_CTL_ADD, 6, {events=EPOLLIN, data=0x6}) = 0
+00:33:34.732585 epoll_pwait(5, [{events=EPOLLIN, data=0xd}], 128, -1, NULL, 8) = 1
+00:33:35.742752 read(13, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.743394 epoll_ctl(5, EPOLL_CTL_ADD, 15, {events=EPOLLIN, data=0xf}) = 0
+00:33:35.744112 epoll_ctl(5, EPOLL_CTL_ADD, 16, {events=EPOLLIN, data=0x10}) = 0
+00:33:35.744418 epoll_ctl(5, EPOLL_CTL_ADD, 17, {events=EPOLLIN, data=0x11}) = 0
+00:33:35.744892 epoll_ctl(5, EPOLL_CTL_ADD, 18, {events=EPOLLIN, data=0x12}) = 0
+00:33:35.745694 epoll_ctl(5, EPOLL_CTL_DEL, 13, 0xffffe4ee20f0) = 0
+00:33:35.746050 epoll_pwait(5, [{events=EPOLLIN, data=0xf}, {events=EPOLLIN, data=0x10}, {events=EPOLLIN, data=0x11}, {events=EPOLLIN, data=0x12}], 128, -1, NULL, 8) = 4
+00:33:35.746773 read(15, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.747289 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.748879 read(16, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.749187 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.749371 read(17, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.749557 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.749728 read(18, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.750360 write(11, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.750667 write(11, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.751611 write(11, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.751880 eventfd2(0, EFD_NONBLOCK) = 20
+00:33:35.752209 fcntl(20, F_DUPFD_CLOEXEC, 3) = 21
+00:33:35.752861 mmap(NULL, 2162688, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffb67e0000
+00:33:35.753330 mprotect(0xffffb67f0000, 2097152, PROT_READ|PROT_WRITE) = 0
+00:33:35.753952 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+00:33:35.754638 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xffffb69ef1b0, parent_tid=0xffffb69ef1b0, exit_signal=0, stack=0xffffb67e0000, stack_size=0x20e9c0, tls=0xffffb69ef800} => {parent_tid=[188]}, 88) = 188
+00:33:35.756418 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+00:33:35.757352 mmap(NULL, 2162688, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffb65d0000
+00:33:35.759143 mprotect(0xffffb65e0000, 2097152, PROT_READ|PROT_WRITE) = 0
+00:33:35.759818 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+00:33:35.760135 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xffffb67df1b0, parent_tid=0xffffb67df1b0, exit_signal=0, stack=0xffffb65d0000, stack_size=0x20e9c0, tls=0xffffb67df800} => {parent_tid=[189]}, 88) = 189
+00:33:35.760721 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+00:33:35.760904 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.761628 futex(0xaaaae5e39eb0, FUTEX_WAKE_PRIVATE, 1) = 1
+00:33:35.761720 epoll_pwait(5, [{events=EPOLLIN, data=0xb}], 128, -1, NULL, 8) = 1
+00:33:35.761855 read(11, "\3\0\0\0\0\0\0\0", 8) = 8
+00:33:35.762121 futex(0xaaaae5e39eb0, FUTEX_WAIT_BITSET_PRIVATE, 2, NULL, FUTEX_BITSET_MATCH_ANY) = -1 EAGAIN (Resource temporarily unavailable)
+00:33:35.762453 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.763251 futex(0xaaaae5e39eb0, FUTEX_WAKE_PRIVATE, 1) = 0
+00:33:35.763991 epoll_pwait(5, [{events=EPOLLIN, data=0xb}], 128, -1, NULL, 8) = 1
+00:33:36.149252 read(11, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:36.152874 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:36.168310 epoll_pwait(5, [{events=EPOLLIN, data=0x6}], 128, -1, NULL, 8) = 1
+00:33:36.168899 read(6, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:36.169243 futex(0xaaaae5e3a8f8, FUTEX_WAKE_PRIVATE, 1) = 1
+00:33:36.169543 futex(0xffffb67df1b0, FUTEX_WAIT_BITSET|FUTEX_CLOCK_REALTIME, 189, NULL, FUTEX_BITSET_MATCH_ANY) = 0
+00:33:36.173152 write(20, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:36.173658 exit_group(0)           = ?
+00:33:36.205372 +++ exited with 0 +++

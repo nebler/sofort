@@ -1,0 +1,20 @@
+{
+  "syscalls": [
+    "brk",
+    "close",
+    "execve",
+    "exit_group",
+    "ioctl",
+    "lseek",
+    "mmap",
+    "munmap",
+    "openat",
+    "ppoll",
+    "read",
+    "readlinkat",
+    "readv",
+    "set_tid_address",
+    "writev"
+  ],
+  "count": 15
+}

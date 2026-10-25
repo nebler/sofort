@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-24T03:29:07.719020+00:00",
+  "load": [
+    34.9873046875,
+    71.775390625,
+    73.02392578125
+  ],
+  "command_result": "make build test exit2",
+  "failure": "AssertionError: bench/hyperlight/backend.ts must consume canonical protocol",
+  "classification": "Stale direct-import source guard rejects R4 transitive delegation; primary I1 remains FAIL, no foreign file patched.",
+  "edges": [
+    {
+      "from": "bench/hyperlight/backend.ts",
+      "to": "executor/build/backend.js",
+      "via": "runtime dynamic import of ProcessBackend"
+    },
+    {
+      "from": "executor/backend.ts",
+      "to": "protocol/dispatcher.js",
+      "via": "Dispatcher and LIMIT import"
+    }
+  ],
+  "files": {
+    "protocol/import-check.mjs": "a72823115c737a50949412b6720074cf97b1ab568a9d5bd70a36de32c8eaeb1b",
+    "bench/hyperlight/backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
+    "executor/backend.ts": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531",
+    "executor/build/backend.js": "058dd0164f3633bc1cbbefc52ac65d17cf89b7e30d1e26b3e7c5d6a0aae34db3",
+    "executor/build/executor.js": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed"
+  }
+}

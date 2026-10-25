@@ -1,0 +1,15 @@
+[package]
+name = "jitk-vmm-sketch"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "jitk-vmm"
+path = "src/main.rs"
+
+[dependencies]
+libkrun = { git = "https://github.com/libkrun/libkrun", rev = "a1d8616765da03980f3be1bb8714bfdd3842f33c", default-features = false }
+
+[profile.release]
+panic = "abort"
+lto = true

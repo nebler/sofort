@@ -1,0 +1,475 @@
+{
+  "measured_utc": "2026-10-24T01:09:23.450663+00:00",
+  "identical_source_groups": [
+    [
+      "bench/hyperlight/watchdog.py",
+      "executor/watchdog.py"
+    ],
+    [
+      "grow/fallback-kernel/src/boot.S",
+      "kernel/src/boot.S"
+    ],
+    [
+      "grow/fallback-kernel/src/syscalls/ioctl.rs",
+      "kernel/src/syscalls/ioctl.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/vectors.S",
+      "kernel/src/vectors.S"
+    ],
+    [
+      "kernel/src/syscalls/exit.rs",
+      "kernel/src/syscalls/exit_group.rs"
+    ],
+    [
+      "linux/guest/bad-sysreg.S",
+      "vmm/tests/fixtures/bad-sysreg.S"
+    ],
+    [
+      "linux/guest/console_avail_oob.S",
+      "vmm/tests/fixtures/console_avail_oob.S"
+    ],
+    [
+      "linux/guest/mmio-halfword.S",
+      "vmm/tests/fixtures/mmio-halfword.S"
+    ],
+    [
+      "linux/guest/rtc_oob_read.S",
+      "vmm/tests/fixtures/rtc_oob_read.S"
+    ],
+    [
+      "linux/guest/unknown-hvc.S",
+      "vmm/tests/fixtures/unknown-hvc.S"
+    ],
+    [
+      "linux/guest/unknown-smc.S",
+      "vmm/tests/fixtures/unknown-smc.S"
+    ],
+    [
+      "linux/patches/control-rx.diff",
+      "vmm/patches/control-rx.diff"
+    ],
+    [
+      "linux/patches/libkrun-robustness.diff",
+      "vmm/patches/libkrun-robustness.diff"
+    ],
+    [
+      "linux/patches/thread-hook.diff",
+      "vmm/patches/thread-hook.diff"
+    ]
+  ],
+  "external_path_candidates": [
+    {
+      "path": "bench/executor.mjs",
+      "line": 13,
+      "text": "    parkingGate:{idleCorePercent:0,evidence:'arch/02-guest-kernel/r2/parking-1000.json (historical functional gate)'}});"
+    },
+    {
+      "path": "bench/hyperlight/Cargo.toml",
+      "line": 6,
+      "text": "hyperlight-js = { path = \"/tmp/jitk-09/hyperlight-js/src/hyperlight-js\", default-features = false, features = [\"hvf\"] }"
+    },
+    {
+      "path": "bench/hyperlight/Cargo.toml",
+      "line": 8,
+      "text": "hyperlight-js-common = { path = \"/tmp/jitk-09/hyperlight-js/src/hyperlight-js-common\" }"
+    },
+    {
+      "path": "bench/hyperlight/adapter-test.ts",
+      "line": 4,
+      "text": "const worker='/tmp/jitk-09/adapter-target/release/r2-worker';"
+    },
+    {
+      "path": "bench/hyperlight/adapter-test.ts",
+      "line": 5,
+      "text": "const snapshot='/tmp/jitk-09/r3-snapshot';"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 10,
+      "text": "NODE='/tmp/jitk-09/node-real';TMP=Path('/tmp/jitk-09')"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 20,
+      "text": "        self.cfg={'vmm':'/tmp/jitk-02/r2/host','image':'/tmp/jitk-02/r2/kernel.bin','launcher':'02-r2'}"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 50,
+      "text": "                     isolation=CONTRACTS[mode],jitk_path='raw /tmp/jitk-02/r2 (04 not READY at run start)' if mode.startswith('jitk') else None)"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 57,
+      "text": "    w=b.Worker(['/tmp/jitk-02/r2/host','/tmp/jitk-02/r2/kernel.bin'] if kind=='jitk' else"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 5,
+      "text": "export CARGO_TARGET_DIR=/tmp/jitk-09/adapter-target"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 8,
+      "text": "codesign --force --sign - --entitlements /tmp/jitk-spike/libkrun/examples/chroot_vm.entitlements /tmp/jitk-09/adapter-target/release/r2-worker"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 12,
+      "text": "shutil.rmtree('/tmp/jitk-09/r3-snapshot',ignore_errors=True)"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 13,
+      "text": "subprocess.run(['/tmp/jitk-09/adapter-target/release/r2-worker','save','/tmp/jitk-09/r3-snapshot'],check=True,timeout=30)"
+    },
+    {
+      "path": "bench/hyperlight/executor-runner.mjs",
+      "line": 14,
+      "text": "  parkingGate:{idleCorePercent:0,evidence:'arch/02-guest-kernel/r2/READY: G1 idle 0%, 1000 exchanges'}});"
+    },
+    {
+      "path": "bench/hyperlight/worker.rs",
+      "line": 78,
+      "text": "    let path=args.get(2).map(String::as_str).unwrap_or(\"/tmp/jitk-09/r2-snapshot\");"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 161,
+      "text": "        image=marker_path(k,['image','kernel'],[k/'dist/kernel.bin',k/'build/kernel.bin',k/'kernel.bin',Path('/tmp/jitk-02/r3/kernel.bin')])"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 163,
+      "text": "        image=image or '/tmp/jitk-02/r2/kernel.bin'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 167,
+      "text": "        vmm=marker_path(v,['binary','vmm','host'],[v/'build/jitk-vmm',v/'target/release/jitk-vmm',Path('/tmp/jitk-01/r3/darwin/jitk-vmm')])"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 169,
+      "text": "        vmm=vmm or '/tmp/jitk-01/r2/jitk-vmm'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 172,
+      "text": "    frozen=Path('/tmp/jitk-06/r3')/('run-'+str(time.time_ns()));frozen.mkdir(parents=True)"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 180,
+      "text": "        profile=next((str(p) for p in [ARCH/'jitk/vmm/build/jitk.sbbin',ARCH/'jitk/vmm/sandbox/jitk.sbbin',Path('/tmp/jitk-01/r3/jitk.sbbin')] if p.exists()),None)"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 187,
+      "text": "    probe_profile=profile or '/tmp/jitk-07/r2/jitk.sbbin'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 189,
+      "text": "        probe=Path('/tmp/jitk-06/r3/sandbox-probe');probe.parent.mkdir(parents=True,exist_ok=True)"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 195,
+      "text": "    elif Path('/tmp/jitk-09/adapter-target/release/r2-worker').exists():"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 196,
+      "text": "        worker='/tmp/jitk-09/adapter-target/release/r2-worker';snap='/tmp/jitk-09/r2-snapshot'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 249,
+      "text": "        cmd=[s.get('node','/tmp/jitk-09/node-real'),str(HERE/'executor.mjs'),s['executor']['build'],mode,case,json.dumps(s)]"
+    },
+    {
+      "path": "executor/policy-adapter.ts",
+      "line": 5,
+      "text": "const fallback=new URL('../../../07-security-sandbox/policy.mjs',import.meta.url);"
+    },
+    {
+      "path": "executor/policy-check.ts",
+      "line": 10,
+      "text": "const original=readFileSync(existsSync(testPath)?testPath:new URL('../../../07-security-sandbox/policy-test.mjs',import.meta.url),'utf8')"
+    },
+    {
+      "path": "executor/run.sh",
+      "line": 4,
+      "text": "TASK_NODE=${JITK_NODE:-/tmp/jitk-09/node-real}"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 21,
+      "text": "  if(selected==='local-qjs')return {backend:new LocalProcessQjsBackend(process.env.QJS??'/tmp/jitk-04/quickjs-2026-06-04/qjs'),selection:'UNSAFE local-qjs',integrated:false};"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 23,
+      "text": "  const host=artifact(vmmReady?markerArtifact(jitk+'vmm/',['binary','vmm','host'],['jitk-vmm','build/jitk-vmm','target/release/jitk-vmm']):'/tmp/jitk-01/r2/jitk-vmm');"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 24,
+      "text": "  const image=artifact(kernelReady?markerArtifact(jitk+'kernel/',['image','kernel'],['dist/kernel.bin','kernel.bin','build/kernel.bin']):'/tmp/jitk-02/r2/kernel.bin');"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 36,
+      "text": "    mkdirSync('/tmp/jitk-04/r3',{recursive:true});"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 37,
+      "text": "    sandboxProfile='/tmp/jitk-04/r3/profile-'+host.sha256.slice(0,12)+'-'+image.sha256.slice(0,12)+'.sbbin';"
+    },
+    {
+      "path": "grow/oracle/build-ng.sh",
+      "line": 4,
+      "text": "curl -fLsS https://github.com/quickjs-ng/quickjs/archive/refs/tags/v0.17.0.tar.gz -o /tmp/jitk-08/ng.tar.gz"
+    },
+    {
+      "path": "grow/oracle/build-ng.sh",
+      "line": 5,
+      "text": "tar -xzf /tmp/jitk-08/ng.tar.gz -C /tmp/jitk-08"
+    },
+    {
+      "path": "grow/oracle/build-ng.sh",
+      "line": 7,
+      "text": "  --cpus 2 --memory 1g -v /tmp/jitk-08:/work:rw jitk-oracle:08 -c '"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 5,
+      "text": "TMP = pathlib.Path('/tmp/jitk-08/r3')"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 68,
+      "text": "    SELECTED_HOST = pathlib.Path('/tmp/jitk-02/r2/host' if canonical else '/tmp/jitk-08/r2/host')"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 71,
+      "text": "    return SELECTED_HOST or pathlib.Path('/tmp/jitk-02/r2/host')"
+    },
+    {
+      "path": "kernel/build.sh",
+      "line": 4,
+      "text": "export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/tmp/jitk-02/r3/target}"
+    },
+    {
+      "path": "kernel/tests/grow_contract.py",
+      "line": 5,
+      "text": "work=Path('/tmp/jitk-02/r3/grow-contract');work.mkdir(parents=True,exist_ok=True)"
+    },
+    {
+      "path": "kernel/tests/grow_contract.py",
+      "line": 15,
+      "text": "host=os.environ.get('JITK_TEST_HOST','/tmp/jitk-02/r2/host')"
+    },
+    {
+      "path": "kernel/tests/measure.py",
+      "line": 9,
+      "text": "HOST=os.environ.get('JITK_TEST_HOST','/tmp/jitk-02/r2/host'); KERNEL=os.environ.get('JITK_TEST_KERNEL',str(Path(__file__).resolve().parents[1]/'dist/kernel.bin'))"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 13,
+      "text": " obj=f'/tmp/jitk-02/r3/{name}.o';binary=f'/tmp/jitk-02/r3/{name}.bin'"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 18,
+      "text": " env['CARGO_TARGET_DIR']='/tmp/jitk-02/r3/probe-target'"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 21,
+      "text": " subprocess.run(['/opt/homebrew/opt/llvm@22/bin/llvm-objcopy','-O','binary','/tmp/jitk-02/r3/probe-target/aarch64-unknown-none/release/jitk-02','/tmp/jitk-02/r3/probe-kernel.bin'],check=True)"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 22,
+      "text": " r=subprocess.run([os.environ.get('JITK_TEST_HOST','/tmp/jitk-02/r2/host'),'/tmp/jitk-02/r3/probe-kernel.bin'],capture_output=True,timeout=5)"
+    },
+    {
+      "path": "kernel/tests/test_handlers.py",
+      "line": 41,
+      "text": "with tempfile.TemporaryDirectory(dir='/tmp/jitk-02/r3') as d:"
+    },
+    {
+      "path": "linux/docker-build.sh",
+      "line": 4,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/nested.sh",
+      "line": 4,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "line": 3,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "line": 7,
+      "text": "if [[ -s /tmp/jitk-07/kvm/base.cpio.gz && -s /tmp/jitk-07/kvm/vmlinuz ]]; then"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "line": 8,
+      "text": " cp /tmp/jitk-07/kvm/{base.cpio.gz,vmlinuz} \"$WORK/\""
+    },
+    {
+      "path": "linux/run.sh",
+      "line": 6,
+      "text": " export JITK_WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 12,
+      "text": " let image='/tmp/jitk-02/r2/kernel.bin', source='02 R2 fallback';"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 14,
+      "text": "  const choices=[root+'kernel/dist/kernel.bin',root+'kernel/kernel.bin',root+'kernel/build/kernel.bin','/tmp/jitk-02/r3/kernel.bin'];"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 21,
+      "text": " const host=process.env.JITK_VMM||'/tmp/jitk-02/r2/host';"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 4,
+      "text": "mkdir -p /tmp/jitk-01/r3/linux /tmp/jitk-01/r3/cargo-linux"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 7,
+      "text": "  -v \"$root:/vmm:ro\" -v /tmp/jitk-01:/tmp/jitk-01 \\"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 8,
+      "text": "  -v \"${LIBKRUN_SOURCE:-/tmp/jitk-spike/libkrun}:/source:ro\" \\"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 9,
+      "text": "  -e LIBKRUN_SOURCE=/source -e JITK_VMM_BUILD=/tmp/jitk-01/r3/linux \\"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 10,
+      "text": "  -e CARGO_HOME=/tmp/jitk-01/r3/cargo-linux \\"
+    },
+    {
+      "path": "vmm/build.py",
+      "line": 13,
+      "text": "OUT = Path(os.environ.get(\"JITK_VMM_BUILD\", f\"/tmp/jitk-01/r3/{SYSTEM.lower()}\"))"
+    },
+    {
+      "path": "vmm/tests/build-guests.py",
+      "line": 7,
+      "text": "OUT = Path(os.environ.get(\"JITK_TEST_IMAGES\", \"/tmp/jitk-01/r3/images\"))"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "line": 16,
+      "text": "parser.add_argument(\"--binary\", default=f\"/tmp/jitk-01/r3/{platform.system().lower()}/jitk-vmm\")"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "line": 17,
+      "text": "parser.add_argument(\"--images\", default=\"/tmp/jitk-01/r3/images\")"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "line": 18,
+      "text": "parser.add_argument(\"--profile\", default=\"/tmp/jitk-01/r3/jitk.sbbin\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 14,
+      "text": "p.add_argument(\"--binary\", default=\"/tmp/jitk-01/r3/linux/jitk-vmm\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 16,
+      "text": "p.add_argument(\"--base\", default=\"/tmp/jitk-07/kvm\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 19,
+      "text": "out = Path(\"/tmp/jitk-01/r3/nested\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 25,
+      "text": "shutil.copytree(\"/tmp/jitk-01/r3/images\", work / \"images\", dirs_exist_ok=True)"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "line": 12,
+      "text": "p.add_argument(\"--binary\", default=\"/tmp/jitk-01/r3/darwin/jitk-vmm\")"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "line": 13,
+      "text": "p.add_argument(\"--profile\", default=\"/tmp/jitk-01/r3/jitk.sbbin\")"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "line": 14,
+      "text": "p.add_argument(\"--image\", default=\"/tmp/jitk-01/r3/images/first.bin\")"
+    }
+  ],
+  "patch_deltas": [
+    {
+      "path": "linux/patches/control-rx.diff",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "linux/patches/libkrun-robustness.diff",
+      "added": 133,
+      "removed": 80
+    },
+    {
+      "path": "linux/patches/thread-hook.diff",
+      "added": 16,
+      "removed": 1
+    },
+    {
+      "path": "vmm/patches/control-rx.diff",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "vmm/patches/libkrun-robustness.diff",
+      "added": 133,
+      "removed": 80
+    },
+    {
+      "path": "vmm/patches/native-build.diff",
+      "added": 1,
+      "removed": 3
+    },
+    {
+      "path": "vmm/patches/thread-hook.diff",
+      "added": 16,
+      "removed": 1
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "integrated_samples": 800,
+  "parking_exchanges": 2000,
+  "clock_uncertainty_ns": 2541,
+  "report_lines": 149
+}

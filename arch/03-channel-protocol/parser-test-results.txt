@@ -1,0 +1,26 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.228
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling ryu v1.0.23
+   Compiling syn v2.0.119
+   Compiling serde_derive v1.0.228
+   Compiling jitk-channel-sketch v0.1.0 (/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/03-channel-protocol)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 42s
+     Running unittests parser.rs (/tmp/jitk-03/final-target/debug/deps/parser-228c9beaf9d761a3)
+
+running 7 tests
+test tests::fragmented_and_reordered ... ok
+test tests::hostile_schemas ... ok
+test tests::ids_window_state_eof ... ok
+test tests::depth_size_encoding ... ok
+test tests::generated_malformed_no_panics ... ok
+test tests::log_total_and_structural_budgets ... ok
+test outbound::tests::ascii_cap_and_partial_writes ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+

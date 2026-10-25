@@ -1,0 +1,192 @@
+{
+  "baseline_17": [
+    "brk",
+    "clock_gettime",
+    "close",
+    "exit_group",
+    "getcwd",
+    "ioctl",
+    "lseek",
+    "mmap",
+    "mremap",
+    "munmap",
+    "openat",
+    "ppoll",
+    "read",
+    "readlinkat",
+    "readv",
+    "set_tid_address",
+    "writev"
+  ],
+  "cases": {
+    "lua": {
+      "binary_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+      "bytes": 395104,
+      "argv": [
+        "/case/agent.lua"
+      ],
+      "n": 30,
+      "traced_names": [
+        "brk",
+        "close",
+        "execve",
+        "exit_group",
+        "ioctl",
+        "mmap",
+        "munmap",
+        "openat",
+        "read",
+        "readv",
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "set_tid_address",
+        "writev"
+      ],
+      "traced_count": 14,
+      "no_vdso_names": [
+        "brk",
+        "clock_gettime",
+        "close",
+        "exit_group",
+        "ioctl",
+        "mmap",
+        "munmap",
+        "openat",
+        "read",
+        "readv",
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "set_tid_address",
+        "writev"
+      ],
+      "guest_names": [
+        "brk",
+        "clock_gettime",
+        "close",
+        "exit_group",
+        "ioctl",
+        "mmap",
+        "munmap",
+        "openat",
+        "read",
+        "readv",
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "set_tid_address",
+        "writev"
+      ],
+      "guest_count": 14,
+      "delta_vs_17": [
+        "rt_sigaction",
+        "rt_sigprocmask"
+      ],
+      "unused_from_17": [
+        "getcwd",
+        "lseek",
+        "mremap",
+        "ppoll",
+        "readlinkat"
+      ],
+      "oracle_traced_wall_ms": {
+        "n": 30,
+        "median": 43.1925,
+        "p90": 78.575,
+        "p99": 152.785
+      },
+      "events": {
+        "n": 30,
+        "median": 43.0,
+        "p90": 43,
+        "p99": 43
+      },
+      "all_outputs_equal": true
+    },
+    "sqlite": {
+      "binary_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+      "bytes": 1392336,
+      "argv": [
+        "-batch",
+        "-init",
+        "/dev/null",
+        ":memory:",
+        "CREATE TABLE t(x INTEGER); INSERT INTO t VALUES(9),(1),(5),(3),(5); SELECT json_object('count',count(*),'sum',sum(x),'max',max(x)) FROM t;"
+      ],
+      "n": 30,
+      "traced_names": [
+        "brk",
+        "close",
+        "execve",
+        "exit_group",
+        "faccessat",
+        "ioctl",
+        "mmap",
+        "munmap",
+        "openat",
+        "read",
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "set_tid_address",
+        "writev"
+      ],
+      "traced_count": 14,
+      "no_vdso_names": [
+        "brk",
+        "close",
+        "exit_group",
+        "faccessat",
+        "ioctl",
+        "mmap",
+        "munmap",
+        "openat",
+        "read",
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "set_tid_address",
+        "writev"
+      ],
+      "guest_names": [
+        "brk",
+        "close",
+        "exit_group",
+        "faccessat",
+        "ioctl",
+        "mmap",
+        "munmap",
+        "openat",
+        "read",
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "set_tid_address",
+        "writev"
+      ],
+      "guest_count": 13,
+      "delta_vs_17": [
+        "faccessat",
+        "rt_sigaction",
+        "rt_sigprocmask"
+      ],
+      "unused_from_17": [
+        "clock_gettime",
+        "getcwd",
+        "lseek",
+        "mremap",
+        "ppoll",
+        "readlinkat",
+        "readv"
+      ],
+      "oracle_traced_wall_ms": {
+        "n": 30,
+        "median": 24.000500000000002,
+        "p90": 43.25,
+        "p99": 47.613
+      },
+      "events": {
+        "n": 30,
+        "median": 43.0,
+        "p90": 43,
+        "p99": 43
+      },
+      "all_outputs_equal": true
+    }
+  }
+}

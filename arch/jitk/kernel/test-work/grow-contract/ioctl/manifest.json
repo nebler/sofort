@@ -1,0 +1,379 @@
+{
+  "version": 3,
+  "sha256": "062901e00cc929a465905e0c55b7f282041e6a05c5a6689e6593c6fd01aa3e33",
+  "image": "kernel-062901e00cc929a465905e0c55b7f282041e6a05c5a6689e6593c6fd01aa3e33.bin",
+  "bytes": 532520,
+  "ram_mib": 32,
+  "features": [
+    "default",
+    "grow-trace",
+    "qjs"
+  ],
+  "syscalls": [
+    {
+      "nr": 17,
+      "name": "getcwd",
+      "registered": true,
+      "sha256": "733dce273bd66cd3bf6f3e61d3c67474806ca143e09ac0a31294472af3794ea6"
+    },
+    {
+      "nr": 25,
+      "name": "fcntl",
+      "registered": true,
+      "sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c"
+    },
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "registered": true,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "nr": 56,
+      "name": "openat",
+      "registered": true,
+      "sha256": "3ea3343a63e7ea2dfb9efd93c1b14aae63e9f367394aabb9d5de804b91ecd411"
+    },
+    {
+      "nr": 57,
+      "name": "close",
+      "registered": true,
+      "sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc"
+    },
+    {
+      "nr": 61,
+      "name": "getdents64",
+      "registered": true,
+      "sha256": "b7efb95c2f37b06c990f8ce1fa59046afa2079009820e39e3d0f4b03da6e5812"
+    },
+    {
+      "nr": 62,
+      "name": "lseek",
+      "registered": true,
+      "sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59"
+    },
+    {
+      "nr": 63,
+      "name": "read",
+      "registered": true,
+      "sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759"
+    },
+    {
+      "nr": 64,
+      "name": "write",
+      "registered": true,
+      "sha256": "6fbe0b0047b2afcabc83761e4ed7dd2acb0661d586fe97486b68fb66cf5c17aa"
+    },
+    {
+      "nr": 65,
+      "name": "readv",
+      "registered": true,
+      "sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6"
+    },
+    {
+      "nr": 66,
+      "name": "writev",
+      "registered": true,
+      "sha256": "40ff0972f289eaca6ec4a5a026033049f6764485b98b87276ec2fef1fbe44cff"
+    },
+    {
+      "nr": 73,
+      "name": "ppoll",
+      "registered": true,
+      "sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33"
+    },
+    {
+      "nr": 78,
+      "name": "readlinkat",
+      "registered": true,
+      "sha256": "0e30f8b109d3d710b7cda90390b49478435ab67df2d0ca7af20fa08b7efc4ca2"
+    },
+    {
+      "nr": 79,
+      "name": "newfstatat",
+      "registered": true,
+      "sha256": "b9cc758c6c38d0badac20d5fdd858dbdcac5d0fe5026ad2af3239659c8397b50"
+    },
+    {
+      "nr": 93,
+      "name": "exit",
+      "registered": true,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "nr": 94,
+      "name": "exit",
+      "registered": true,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "nr": 96,
+      "name": "set_tid_address",
+      "registered": true,
+      "sha256": "8b1c109892ff62df0f67a507fcc5bd416e28428196da2251af443b3c4eb94662"
+    },
+    {
+      "nr": 113,
+      "name": "clock_gettime",
+      "registered": true,
+      "sha256": "00ccd2816f3094fba9c053a8946f6d2e991bf90a9aa42a9da81dedaf21ae176e"
+    },
+    {
+      "nr": 134,
+      "name": "rt_sigaction",
+      "registered": true,
+      "sha256": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36"
+    },
+    {
+      "nr": 135,
+      "name": "rt_sigprocmask",
+      "registered": true,
+      "sha256": "41a598203348d53dbba585bb456426254a77554961a8b0c366d930a1dd6cbcba"
+    },
+    {
+      "nr": 214,
+      "name": "brk",
+      "registered": true,
+      "sha256": "132875356ac2b4bdcf3adab5afaa813d4ed2a53646bd2b7ade1d9a5dc8bc2a04"
+    },
+    {
+      "nr": 215,
+      "name": "munmap",
+      "registered": true,
+      "sha256": "9b03d295b8f4aa5fb21067ee1fdc0975b64662953f0fd41f839ac4aa43183c25"
+    },
+    {
+      "nr": 216,
+      "name": "mremap",
+      "registered": true,
+      "sha256": "ba99bc5f99bce39810d5f6f15c6f553a90a1399b1438e01de99af8b78eece56f"
+    },
+    {
+      "nr": 222,
+      "name": "mmap",
+      "registered": true,
+      "sha256": "ee7d875e5bfdf77a4bcb8dd09d3de81dfe1130799976a4a924d43a71f05d0a68"
+    }
+  ],
+  "packed": {
+    "source_sha256": "fc64bb7646605e8e5c9e0c7c0277827030934cb0c4f062e96e852d167e9bd15c",
+    "flat_bytes": 8192,
+    "flat_sha256": "42dc156d6d26a2f84c98d63e27dbf5c42875055fd3641dc84945375c17e7a0cd",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        4194606,
+        5
+      ],
+      [
+        4198400,
+        4198408,
+        6
+      ]
+    ],
+    "entry": 4194480,
+    "phdr": 4194368,
+    "phnum": 2,
+    "resources": {
+      "dir": null,
+      "sha256": "07facbcca859b65e9bcbb97124e967965f276f1388450bbaa4b3de012fd61d6e",
+      "bytes": 40,
+      "entries": 1,
+      "va": "0x402000",
+      "heap": "0x680000"
+    }
+  },
+  "argv": [
+    "probe"
+  ],
+  "verification": {
+    "schema": 3,
+    "version": 3,
+    "scope": "R3 verified contracts; inherited ABI unverified",
+    "contracts": [
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "source_sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33",
+        "status": "restricted",
+        "domain": "bounded ppoll G4 fixture; WFI waits",
+        "oracle": "native Linux",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "611653a151151dc0407e0c740c1aed433c0a09cb711f35301fe0c9cae4280989"
+      },
+      {
+        "nr": 135,
+        "name": "rt_sigprocmask",
+        "source_sha256": "41a598203348d53dbba585bb456426254a77554961a8b0c366d930a1dd6cbcba",
+        "status": "profile-enosys",
+        "domain": "always -38; no signals installed or delivered; no user-memory access",
+        "oracle": "native Linux strace inject=rt_sigprocmask:error=ENOSYS",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "dd2ca33065eb8e69452c91e8d2616b1344ad6fa12dab3651852a127400470cef"
+      },
+      {
+        "nr": 134,
+        "name": "rt_sigaction",
+        "source_sha256": "47e2ded222d7ae69038590502a0e9f705879dee34bcc9df92b0fb0f4d0dc6c36",
+        "status": "profile-enosys",
+        "domain": "always -38; no signals installed or delivered; no user-memory access",
+        "oracle": "native Linux strace inject=rt_sigaction:error=ENOSYS",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "b62179c43563f9ef60d48598100ec2dc5b09b6bf78db0cff9e9e75b6426b357a"
+      },
+      {
+        "nr": 56,
+        "name": "openat",
+        "source_sha256": "3ea3343a63e7ea2dfb9efd93c1b14aae63e9f367394aabb9d5de804b91ecd411",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive paths; RO flag/error precedence of a ro bind mount; O_PATH EINVAL",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 57,
+        "name": "close",
+        "source_sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc",
+        "status": "restricted",
+        "domain": "read-only resource archive: fd 0-2 no-op; archive fds 3..63",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 62,
+        "name": "lseek",
+        "source_sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive fds SEEK_SET/CUR/END; console ESPIPE",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 63,
+        "name": "read",
+        "source_sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive fds; console fd0 unchanged",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 65,
+        "name": "readv",
+        "source_sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6",
+        "status": "restricted",
+        "domain": "read-only resource archive: archive fds fill iovecs in order; console fd0 unchanged",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 78,
+        "name": "readlinkat",
+        "source_sha256": "0e30f8b109d3d710b7cda90390b49478435ab67df2d0ca7af20fa08b7efc4ca2",
+        "status": "restricted",
+        "domain": "read-only resource archive: no symlinks: existing EINVAL, else walk errno",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 25,
+        "name": "fcntl",
+        "source_sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c",
+        "status": "restricted",
+        "domain": "read-only resource archive: F_GETFD/F_SETFD only, else EINVAL",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 61,
+        "name": "getdents64",
+        "source_sha256": "b7efb95c2f37b06c990f8ce1fa59046afa2079009820e39e3d0f4b03da6e5812",
+        "status": "restricted",
+        "domain": "read-only resource archive: . .. then byte-sorted children; d_off = next index",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      },
+      {
+        "nr": 79,
+        "name": "newfstatat",
+        "source_sha256": "b9cc758c6c38d0badac20d5fdd858dbdcac5d0fe5026ad2af3239659c8397b50",
+        "status": "restricted",
+        "domain": "read-only resource archive: mode/size compared; flags 0x100|0x800|0x1000; console AT_EMPTY_PATH EBADF",
+        "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "9e8efd944743695d5683975ca5b05433ece0caaba8d63238a077f947d92d1b4e"
+      }
+    ],
+    "kernel_delta_lines": 6
+  },
+  "verification_sha256": "8224c221d4787bf14cead105ab22e508ea366f161009495c9c05cfc2c5c6d07d"
+}

@@ -1,0 +1,30 @@
+{
+  "arch": "aarch64",
+  "kernel": "6.10.14-linuxkit",
+  "exit": 0,
+  "seconds": 0.396304,
+  "events": 40,
+  "syscalls": [
+    "close",
+    "execve",
+    "exit_group",
+    "faccessat",
+    "getcwd",
+    "getrandom",
+    "ioctl",
+    "lseek",
+    "madvise",
+    "mmap",
+    "mprotect",
+    "openat",
+    "read",
+    "readlinkat",
+    "readv",
+    "rt_sigprocmask",
+    "set_tid_address",
+    "sysinfo",
+    "writev"
+  ],
+  "binary_sha256": "3372133484edf50a69f3c67903af41206d22a061e930e3cfb63269272ef56d2e",
+  "strace": "strace -- version 6.13"
+}

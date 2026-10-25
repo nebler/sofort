@@ -1,0 +1,227 @@
+153   execve("/work/qjs-static", ["/work/qjs-static", "-m", "/proposal/bootstrap.js"], 0xffffd34f2e60 /* 3 vars */) = 0
+153   set_tid_address(0x649768)         = 153
+153   brk(NULL)                         = 0x1dfca000
+153   brk(0x1dfcc000)                   = 0x1dfcc000
+153   mmap(0x1dfca000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x1dfca000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71f000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71d000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71c000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71a000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe716000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe715000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe714000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe713000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe712000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe711000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe710000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe70f000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe70e000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe70d000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe70b000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe709000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe707000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe703000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe701000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6fd000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6fc000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6f8000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6f7000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6f3000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6f2000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6ee000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6ed000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e9000
+153   munmap(0xffffbe6ed000, 4096)      = 0
+153   openat(AT_FDCWD, "/proposal/bootstrap.js", O_RDONLY|O_LARGEFILE) = 3
+153   lseek(3, 0, SEEK_END)             = 4731
+153   lseek(3, 0, SEEK_CUR)             = 4731
+153   lseek(3, 0, SEEK_SET)             = 0
+153   readv(3, [{iov_base="// QuickJS 2026-06-04. Wire v1: "..., iov_len=4730}, {iov_base="\n", iov_len=1024}], 2) = 4731
+153   close(3)                          = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6ed000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e5000
+153   munmap(0xffffbe6e5000, 16384)     = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e8000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e4000
+153   munmap(0xffffbe6e4000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e4000
+153   munmap(0xffffbe6e4000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e4000
+153   munmap(0xffffbe6e4000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e4000
+153   munmap(0xffffbe6e4000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e4000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e3000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6df000
+153   munmap(0xffffbe6df000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6df000
+153   munmap(0xffffbe6df000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6df000
+153   munmap(0xffffbe6df000, 16384)     = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6e2000
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   munmap(0xffffbe6de000, 16384)     = 0
+153   mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6de000
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6dc000
+153   mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6d5000
+153   munmap(0xffffbe71a000, 8192)      = 0
+153   munmap(0xffffbe6ed000, 4096)      = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71b000
+153   munmap(0xffffbe71b000, 4096)      = 0
+153   munmap(0xffffbe6e8000, 4096)      = 0
+153   munmap(0xffffbe6dc000, 8192)      = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71b000
+153   munmap(0xffffbe71b000, 4096)      = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71b000
+153   munmap(0xffffbe6e2000, 4096)      = 0
+153   readlinkat(AT_FDCWD, "/proposal", 0xffffd8a8d338, 4083) = -1 EINVAL (Invalid argument)
+153   readlinkat(AT_FDCWD, "/proposal/bootstrap.js", 0xffffd8a8d338, 4096) = -1 EINVAL (Invalid argument)
+153   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6dc000
+153   mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6cd000
+153   mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6c8000
+153   ioctl(1, TIOCGWINSZ, 0xffffd8a8f758) = -1 ENOTTY (Not a tty)
+153   writev(1, [{iov_base="", iov_len=0}, {iov_base="{\"t\":\"hello\",\"v\":1}\n", iov_len=20}], 2) = 20
+153   writev(1, [{iov_base="{\"t\":\"ready\"}\n", iov_len=14}, {iov_base=NULL, iov_len=0}], 2) = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "{\"t\":\"c", 16384)      = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "ode\",\"source\":", 16384) = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "\"\\n      conso", 16384) = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "le.log(", 16384)         = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "\\\"befor", 16384)       = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "e\\\\nlog\\\", \\\"\\", 16384) = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "u65e5\\u", 16384)        = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "672c\\u8", 16384)        = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "a9e\\ud83d\\ude0", 16384) = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "0\\\");\\n      c", 16384) = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "onst r = await Promis", 16384) = 21
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "e.all(A", 16384)         = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "rray.fr", 16384)         = 7
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "om({length:32},(_,i)=", 16384) = 21
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, ">api.echo({i})", 16384)  = 14
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "));\\n      const next", 16384) = 21
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, " = await api.echo({un", 16384) = 21
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "icode:\\\"\\u65e5\\u672c\\u8a9e\\ud83d"..., 16384) = 91
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "it api.fail(null); } catch(e) { "..., 16384) = 35
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "ied=String(e).includes('DENIED')"..., 16384) = 63
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "solve=>setTimeout(resolve,1));\\n"..., 16384) = 98
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "eof api.then};\\n    \",\"provi", 16384) = 28
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "ders\":[{\"name\":\"api\",\"fns\":[\"ech"..., 16384) = 46
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71a000
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6ed000
+153   munmap(0xffffbe6ed000, 4096)      = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6ed000
+153   munmap(0xffffbe6ed000, 4096)      = 0
+153   writev(1, [{iov_base="{\"t\":\"log\",\"level\":\"log\",\"text\":"..., iov_len=78}, {iov_base=NULL, iov_len=0}], 2) = 78
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":1,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":2,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":3,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":4,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":5,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":6,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":7,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":8,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":9,\"ns\":\"api\",\"f"..., iov_len=58}, {iov_base=NULL, iov_len=0}], 2) = 58
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":10,\"ns\":\"api\",\""..., iov_len=59}, {iov_base=NULL, iov_len=0}], 2) = 59
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":11,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":12,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":13,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":14,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":15,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6c0000
+153   munmap(0xffffbe6c0000, 32768)     = 0
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":16,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6c0000
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":17,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":18,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":19,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":20,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":21,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":22,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":23,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":24,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":25,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":26,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":27,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":28,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":29,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":30,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":31,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":32,\"ns\":\"api\",\""..., iov_len=60}, {iov_base=NULL, iov_len=0}], 2) = 60
+153   mmap(NULL, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6ba000
+153   munmap(0xffffbe71a000, 4096)      = 0
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "{\"t\":\"result\",\"id\":32,\"value\":62"..., 16384) = 1074
+153   mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe6b2000
+153   munmap(0xffffbe6b2000, 32768)     = 0
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71a000
+153   munmap(0xffffbe71a000, 4096)      = 0
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":33,\"ns\":\"api\",\""..., iov_len=108}, {iov_base=NULL, iov_len=0}], 2) = 108
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "{\"t\":\"result\",\"id\":33,\"value\":{\""..., 16384) = 88
+153   writev(1, [{iov_base="{\"t\":\"call\",\"id\":34,\"ns\":\"api\",\""..., iov_len=56}, {iov_base=NULL, iov_len=0}], 2) = 56
+153   ppoll([{fd=0, events=POLLIN}], 1, NULL, NULL, 8) = 1 ([{fd=0, revents=POLLIN}])
+153   read(0, "{\"t\":\"err\",\"id\":34,\"code\":\"DENIE"..., 16384) = 55
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71a000
+153   munmap(0xffffbe71a000, 4096)      = 0
+153   ppoll([{fd=0, events=POLLIN}], 1, {tv_sec=0, tv_nsec=1000000}, NULL, 8) = 0 (Timeout)
+153   writev(1, [{iov_base="{\"t\":\"log\",\"level\":\"info\",\"text\""..., iov_len=42}, {iov_base=NULL, iov_len=0}], 2) = 42
+153   mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbe71a000
+153   munmap(0xffffbe71a000, 4096)      = 0
+153   writev(1, [{iov_base="{\"t\":\"done\",\"ok\":true,\"value\":{\""..., iov_len=227}, {iov_base=NULL, iov_len=0}], 2) = 227
+153   exit_group(0)                     = ?

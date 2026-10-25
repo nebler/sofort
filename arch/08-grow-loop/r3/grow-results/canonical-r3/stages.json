@@ -1,0 +1,72 @@
+{
+  "copy_kernel": {
+    "seconds": 0.27620154099895444,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 50.10 58.72 73.23",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 50.10 58.72 73.23"
+  },
+  "qjs_build_missing": {
+    "seconds": 5.041695874999277,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 50.10 58.72 73.23",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 48.73 58.29 73.00"
+  },
+  "qjs_discovery": {
+    "seconds": 0.15361570800087065,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.73 58.29 73.00",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 48.73 58.29 73.00"
+  },
+  "qjs_build_after": {
+    "seconds": 2.219971250000526,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.80 57.80 72.56",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 48.80 57.80 72.56"
+  },
+  "qjs_linux": {
+    "seconds": 3.545231333000629,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.80 57.80 72.56",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 48.81 57.65 72.42"
+  },
+  "qjs_live": {
+    "seconds": 0.3312443330014503,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.81 57.65 72.42",
+    "uptime_after": "3:17  up  4:31, 2 users, load averages: 48.81 57.65 72.42"
+  },
+  "lua_linux_normal_n30": {
+    "seconds": 12.72306799999933,
+    "uptime_before": "3:17  up  4:31, 2 users, load averages: 48.81 57.65 72.42",
+    "uptime_after": "3:18  up  4:31, 2 users, load averages: 48.86 57.37 72.15"
+  },
+  "lua_linux_profile_n30": {
+    "seconds": 14.549682000000757,
+    "uptime_before": "3:18  up  4:31, 2 users, load averages: 48.86 57.37 72.15",
+    "uptime_after": "3:18  up  4:32, 2 users, load averages: 48.07 56.78 71.68"
+  },
+  "lua_build_missing_0": {
+    "seconds": 2.639164125001116,
+    "uptime_before": "3:18  up  4:32, 2 users, load averages: 48.07 56.78 71.68",
+    "uptime_after": "3:18  up  4:32, 2 users, load averages: 49.27 56.88 71.63"
+  },
+  "lua_discovery_0": {
+    "seconds": 0.1945742079988122,
+    "uptime_before": "3:18  up  4:32, 2 users, load averages: 49.27 56.88 71.63",
+    "uptime_after": "3:18  up  4:32, 2 users, load averages: 49.27 56.88 71.63"
+  },
+  "lua_build_missing_1": {
+    "seconds": 2.134832458999881,
+    "uptime_before": "3:18  up  4:32, 2 users, load averages: 50.72 56.95 71.48",
+    "uptime_after": "3:18  up  4:32, 2 users, load averages: 50.90 56.88 71.37"
+  },
+  "lua_discovery_1": {
+    "seconds": 0.2514404170015041,
+    "uptime_before": "3:18  up  4:32, 2 users, load averages: 50.90 56.88 71.37",
+    "uptime_after": "3:18  up  4:32, 2 users, load averages: 50.90 56.88 71.37"
+  },
+  "lua_build_after": {
+    "seconds": 2.347585708999759,
+    "uptime_before": "3:18  up  4:32, 2 users, load averages: 50.35 56.57 71.09",
+    "uptime_after": "3:18  up  4:32, 2 users, load averages: 50.16 56.43 70.96"
+  },
+  "lua_vm_n30": {
+    "seconds": 5.926523500000258,
+    "uptime_before": "3:18  up  4:32, 2 users, load averages: 50.16 56.43 70.96",
+    "uptime_after": "3:19  up  4:32, 2 users, load averages: 49.99 56.29 70.82"
+  }
+}

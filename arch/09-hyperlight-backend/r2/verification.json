@@ -1,0 +1,11 @@
+{
+  "G5": "PASS",
+  "results": 600,
+  "cases": 20,
+  "n_each": 30,
+  "adapter_checks": 11,
+  "executor_checks": 6,
+  "strict_typecheck": "PASS",
+  "watchdogs_and_workers_reaped": true,
+  "typing_integration": "04 must add hyperlight-js to Backend.kind"
+}

@@ -1,0 +1,12 @@
+{
+  "baseline": {
+    "returncode": 0,
+    "stdout": "read /etc/hosts fd=3 errno=0\nread /private/tmp/jitk-07/outside.txt fd=3 errno=0\nread /private/tmp/jitk-07/kk.bin fd=3 errno=0\nsocket fd=3 errno=0\nconnect rc=0 errno=0\n",
+    "stderr": ""
+  },
+  "sandbox": {
+    "returncode": 0,
+    "stdout": "read /etc/hosts fd=-1 errno=1\nread /private/tmp/jitk-07/outside.txt fd=-1 errno=1\nread /private/tmp/jitk-07/kk.bin fd=3 errno=0\nsocket fd=3 errno=0\nconnect rc=-1 errno=1\n",
+    "stderr": ""
+  }
+}

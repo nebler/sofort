@@ -1,0 +1,75 @@
+{
+  "node": "/private/tmp/jitk-09/node-real",
+  "results": [
+    {
+      "test": "syntax",
+      "backend": "native",
+      "expected": "SyntaxError",
+      "actual": "SyntaxError",
+      "status": 0
+    },
+    {
+      "test": "throw",
+      "backend": "native",
+      "expected": "TypeError",
+      "actual": "TypeError",
+      "status": 0
+    },
+    {
+      "test": "BigInt",
+      "backend": "native",
+      "expected": "SerializationError",
+      "actual": "SerializationError",
+      "status": 1
+    },
+    {
+      "test": "unawaited",
+      "backend": "native",
+      "expected": "SerializationError",
+      "actual": "SerializationError",
+      "status": 1
+    },
+    {
+      "test": "failure cancels pending",
+      "backend": "native",
+      "expected": "Error",
+      "actual": "Error",
+      "status": 0
+    },
+    {
+      "test": "syntax",
+      "backend": "static-linux-docker",
+      "expected": "SyntaxError",
+      "actual": "SyntaxError",
+      "status": 0
+    },
+    {
+      "test": "throw",
+      "backend": "static-linux-docker",
+      "expected": "TypeError",
+      "actual": "TypeError",
+      "status": 0
+    },
+    {
+      "test": "BigInt",
+      "backend": "static-linux-docker",
+      "expected": "SerializationError",
+      "actual": "SerializationError",
+      "status": 1
+    },
+    {
+      "test": "unawaited",
+      "backend": "static-linux-docker",
+      "expected": "SerializationError",
+      "actual": "SerializationError",
+      "status": 1
+    },
+    {
+      "test": "failure cancels pending",
+      "backend": "static-linux-docker",
+      "expected": "Error",
+      "actual": "Error",
+      "status": 0
+    }
+  ]
+}

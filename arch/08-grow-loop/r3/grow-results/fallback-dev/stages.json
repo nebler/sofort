@@ -1,0 +1,27 @@
+{
+  "copy_kernel": {
+    "seconds": 1.8314601250003761,
+    "uptime_before": "3:08  up  4:22, 2 users, load averages: 135.88 111.96 89.28",
+    "uptime_after": "3:08  up  4:22, 2 users, load averages: 135.88 111.96 89.28"
+  },
+  "qjs_build_missing": {
+    "seconds": 22.08999600000061,
+    "uptime_before": "3:08  up  4:22, 2 users, load averages: 152.62 116.33 91.09",
+    "uptime_after": "3:08  up  4:22, 2 users, load averages: 159.16 120.00 92.98"
+  },
+  "qjs_discovery": {
+    "seconds": 2.3945013750017097,
+    "uptime_before": "3:08  up  4:22, 2 users, load averages: 159.16 120.00 92.98",
+    "uptime_after": "3:09  up  4:22, 2 users, load averages: 152.98 119.37 92.92"
+  },
+  "qjs_build_after": {
+    "seconds": 7.450276292000126,
+    "uptime_before": "3:09  up  4:23, 2 users, load averages: 145.83 121.64 94.83",
+    "uptime_after": "3:09  up  4:23, 2 users, load averages: 141.20 121.08 94.79"
+  },
+  "qjs_linux": {
+    "seconds": 18.38595479200012,
+    "uptime_before": "3:09  up  4:23, 2 users, load averages: 141.20 121.08 94.79",
+    "uptime_after": "3:10  up  4:23, 2 users, load averages: 115.27 116.49 93.76"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "seconds": 0.044808083001044,
+  "uptime_before": "3:30  up  4:43, 2 users, load averages: 55.69 72.92 73.03",
+  "uptime_after": "3:30  up  4:43, 2 users, load averages: 55.69 72.92 73.03",
+  "missing": null,
+  "returncode": 1,
+  "discovery_kill_expected": true
+}

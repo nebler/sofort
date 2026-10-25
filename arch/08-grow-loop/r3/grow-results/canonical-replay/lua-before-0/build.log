@@ -1,0 +1,3 @@
+{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/canonical-replay/lua-before-0/kernel-0fd00139eafd25698ea2aa6ca8718c4fa5a7026b4285b458601d05676768d7c3.bin", "sha256": "0fd00139eafd25698ea2aa6ca8718c4fa5a7026b4285b458601d05676768d7c3", "bytes": 991232}
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-08/r3/runs/canonical-replay/kernel)
+    Finished `release` profile [optimized] target(s) in 21.58s

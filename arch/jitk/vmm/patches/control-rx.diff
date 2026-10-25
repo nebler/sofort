@@ -1,0 +1,11 @@
+--- a/src/devices/src/virtio/console/event_handler.rs
++++ b/src/devices/src/virtio/console/event_handler.rs
+@@ -136,7 +136,7 @@
+                 self.read_control_queue_event(event);
+                 raise_irq |= self.process_control_rx();
+             } else if source == control_rxq {
+-                raise_irq |= self.read_queue_event(CONTROL_RXQ_INDEX, event)
++                raise_irq |= self.read_queue_event(CONTROL_RXQ_INDEX, event) && self.process_control_rx()
+             }
+             /* Guest signaled input/output on port */
+             else if let Some(queue_index) = self

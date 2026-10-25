@@ -1,0 +1,18 @@
+[package]
+name = "jitk-hyperlight-r2"
+version = "0.1.0"
+edition = "2024"
+[dependencies]
+hyperlight-js = { path = "/tmp/jitk-09/hyperlight-js/src/hyperlight-js", default-features = false, features = ["hvf"] }
+hyperlight-host = { version = "=0.18.0", default-features = false, features = ["hvf"] }
+hyperlight-js-common = { path = "/tmp/jitk-09/hyperlight-js/src/hyperlight-js-common" }
+serde_json = "1"
+libc = "0.2"
+[profile.release]
+panic = "abort"
+[[bin]]
+name = "r2-worker"
+path = "worker.rs"
+[[bin]]
+name = "r2-load-linux"
+path = "load_linux.rs"

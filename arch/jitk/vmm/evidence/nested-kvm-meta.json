@@ -1,0 +1,27 @@
+{
+  "uptime": "3:57  up  5:11, 2 users, load averages: 86.85 86.58 76.66",
+  "command": [
+    "qemu-system-aarch64",
+    "-M",
+    "virt,virtualization=on,gic-version=3",
+    "-accel",
+    "hvf",
+    "-cpu",
+    "host",
+    "-smp",
+    "4",
+    "-m",
+    "3072",
+    "-kernel",
+    "/tmp/jitk-07/kvm/vmlinuz",
+    "-initrd",
+    "/tmp/jitk-01/r3/nested/test.cpio.gz",
+    "-append",
+    "console=ttyAMA0 rdinit=/init quiet",
+    "-nographic",
+    "-no-reboot"
+  ],
+  "elapsed_s": 157.17447590827942,
+  "qemu_rc": 0,
+  "functional_only": true
+}

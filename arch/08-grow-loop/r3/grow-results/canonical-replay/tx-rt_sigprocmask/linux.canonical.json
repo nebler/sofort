@@ -1,0 +1,47 @@
+{
+  "events": [
+    {
+      "nr": 135,
+      "name": "rt_sigprocmask",
+      "ret": -38,
+      "args": [
+        1,
+        "PTR",
+        "NULL",
+        8
+      ]
+    },
+    {
+      "nr": 135,
+      "name": "rt_sigprocmask",
+      "ret": -38,
+      "args": [
+        1,
+        "PTR",
+        "PTR",
+        8
+      ]
+    },
+    {
+      "nr": 64,
+      "name": "write",
+      "ret": 11,
+      "args": [
+        1,
+        "7369676e616c733a6f6b0a",
+        11
+      ]
+    },
+    {
+      "nr": 94,
+      "name": "exit_group",
+      "ret": null,
+      "args": [
+        0
+      ]
+    }
+  ],
+  "stdout_hex": "7369676e616c733a6f6b0a",
+  "stderr_hex": "",
+  "exit": 0
+}

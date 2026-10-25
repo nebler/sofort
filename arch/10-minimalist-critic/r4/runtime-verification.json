@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-24T03:29:58.956454+00:00",
+  "load": [
+    19.27978515625,
+    61.84716796875,
+    69.27587890625
+  ],
+  "scope": "Read-only exact-path process scan for this integration checkout/workdir after owned commands finished",
+  "surviving_owned_processes": [],
+  "compiled_executor_sha256": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+  "canonical_executor_sha256": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+  "watchdog_sha256": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+  "selection": {
+    "selection": "integrated jitk / confined VMM / current kernel",
+    "integrated": true,
+    "host": {
+      "path": "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/jitk-vmm",
+      "sha256": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7"
+    },
+    "image": {
+      "path": "/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/dist/kernel.bin",
+      "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+    },
+    "vmmReady": true,
+    "kernelReady": true
+  }
+}

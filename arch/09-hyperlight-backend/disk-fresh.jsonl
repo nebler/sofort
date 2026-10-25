@@ -1,0 +1,240 @@
+{"metric": "process_to_result_exit", "i": 0, "ns": 8744167}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 0}
+{"metric": "disk_load", "i": 0, "ns": 394250}
+{"metric": "disk_load_create", "i": 0, "ns": 504334}
+{"metric": "disk_load_to_result", "i": 0, "ns": 1759750}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 0}
+{"metric": "process_to_result_exit", "i": 1, "ns": 8387875}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 1}
+{"metric": "disk_load", "i": 1, "ns": 322708}
+{"metric": "disk_load_create", "i": 1, "ns": 426000}
+{"metric": "disk_load_to_result", "i": 1, "ns": 1827458}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 1}
+{"metric": "process_to_result_exit", "i": 2, "ns": 8312583}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 2}
+{"metric": "disk_load", "i": 2, "ns": 336959}
+{"metric": "disk_load_create", "i": 2, "ns": 444584}
+{"metric": "disk_load_to_result", "i": 2, "ns": 1723459}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 2}
+{"metric": "process_to_result_exit", "i": 3, "ns": 8471541}
+{"metric": "memory", "n": 0, "rss": 6111232, "footprint": 1605968, "wired": 0, "iteration": 3}
+{"metric": "disk_load", "i": 3, "ns": 367084}
+{"metric": "disk_load_create", "i": 3, "ns": 546625}
+{"metric": "disk_load_to_result", "i": 3, "ns": 1879125}
+{"metric": "memory", "n": 1, "rss": 9093120, "footprint": 2392544, "wired": 0, "iteration": 3}
+{"metric": "process_to_result_exit", "i": 4, "ns": 8639583}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 4}
+{"metric": "disk_load", "i": 4, "ns": 333375}
+{"metric": "disk_load_create", "i": 4, "ns": 446000}
+{"metric": "disk_load_to_result", "i": 4, "ns": 2278792}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 4}
+{"metric": "process_to_result_exit", "i": 5, "ns": 12773209}
+{"metric": "memory", "n": 0, "rss": 6094848, "footprint": 1589584, "wired": 0, "iteration": 5}
+{"metric": "disk_load", "i": 5, "ns": 610125}
+{"metric": "disk_load_create", "i": 5, "ns": 742125}
+{"metric": "disk_load_to_result", "i": 5, "ns": 2995125}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 5}
+{"metric": "process_to_result_exit", "i": 6, "ns": 14887000}
+{"metric": "memory", "n": 0, "rss": 6094848, "footprint": 1589584, "wired": 0, "iteration": 6}
+{"metric": "disk_load", "i": 6, "ns": 527875}
+{"metric": "disk_load_create", "i": 6, "ns": 789708}
+{"metric": "disk_load_to_result", "i": 6, "ns": 4604125}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 6}
+{"metric": "process_to_result_exit", "i": 7, "ns": 13398667}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 7}
+{"metric": "disk_load", "i": 7, "ns": 367833}
+{"metric": "disk_load_create", "i": 7, "ns": 485750}
+{"metric": "disk_load_to_result", "i": 7, "ns": 4217708}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 7}
+{"metric": "process_to_result_exit", "i": 8, "ns": 14622334}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 8}
+{"metric": "disk_load", "i": 8, "ns": 956167}
+{"metric": "disk_load_create", "i": 8, "ns": 1107250}
+{"metric": "disk_load_to_result", "i": 8, "ns": 2600959}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 8}
+{"metric": "process_to_result_exit", "i": 9, "ns": 10305292}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 9}
+{"metric": "disk_load", "i": 9, "ns": 322583}
+{"metric": "disk_load_create", "i": 9, "ns": 433667}
+{"metric": "disk_load_to_result", "i": 9, "ns": 1637958}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 9}
+{"metric": "process_to_result_exit", "i": 10, "ns": 8464292}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 10}
+{"metric": "disk_load", "i": 10, "ns": 338709}
+{"metric": "disk_load_create", "i": 10, "ns": 448750}
+{"metric": "disk_load_to_result", "i": 10, "ns": 1525667}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 10}
+{"metric": "process_to_result_exit", "i": 11, "ns": 8868875}
+{"metric": "memory", "n": 0, "rss": 6094848, "footprint": 1589584, "wired": 0, "iteration": 11}
+{"metric": "disk_load", "i": 11, "ns": 451458}
+{"metric": "disk_load_create", "i": 11, "ns": 579958}
+{"metric": "disk_load_to_result", "i": 11, "ns": 1846666}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 11}
+{"metric": "process_to_result_exit", "i": 12, "ns": 8271542}
+{"metric": "memory", "n": 0, "rss": 6111232, "footprint": 1605968, "wired": 0, "iteration": 12}
+{"metric": "disk_load", "i": 12, "ns": 342334}
+{"metric": "disk_load_create", "i": 12, "ns": 455542}
+{"metric": "disk_load_to_result", "i": 12, "ns": 1724750}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 12}
+{"metric": "process_to_result_exit", "i": 13, "ns": 8090292}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 13}
+{"metric": "disk_load", "i": 13, "ns": 308791}
+{"metric": "disk_load_create", "i": 13, "ns": 411291}
+{"metric": "disk_load_to_result", "i": 13, "ns": 1597291}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 13}
+{"metric": "process_to_result_exit", "i": 14, "ns": 8846375}
+{"metric": "memory", "n": 0, "rss": 6111232, "footprint": 1605968, "wired": 0, "iteration": 14}
+{"metric": "disk_load", "i": 14, "ns": 391916}
+{"metric": "disk_load_create", "i": 14, "ns": 515916}
+{"metric": "disk_load_to_result", "i": 14, "ns": 2073041}
+{"metric": "memory", "n": 1, "rss": 9093120, "footprint": 2392544, "wired": 0, "iteration": 14}
+{"metric": "process_to_result_exit", "i": 15, "ns": 9227958}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 15}
+{"metric": "disk_load", "i": 15, "ns": 318250}
+{"metric": "disk_load_create", "i": 15, "ns": 422042}
+{"metric": "disk_load_to_result", "i": 15, "ns": 1836542}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 15}
+{"metric": "process_to_result_exit", "i": 16, "ns": 10888584}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 16}
+{"metric": "disk_load", "i": 16, "ns": 378417}
+{"metric": "disk_load_create", "i": 16, "ns": 567583}
+{"metric": "disk_load_to_result", "i": 16, "ns": 2547083}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 16}
+{"metric": "process_to_result_exit", "i": 17, "ns": 8775834}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 17}
+{"metric": "disk_load", "i": 17, "ns": 346458}
+{"metric": "disk_load_create", "i": 17, "ns": 462083}
+{"metric": "disk_load_to_result", "i": 17, "ns": 1874958}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 17}
+{"metric": "process_to_result_exit", "i": 18, "ns": 8368834}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 18}
+{"metric": "disk_load", "i": 18, "ns": 343042}
+{"metric": "disk_load_create", "i": 18, "ns": 463375}
+{"metric": "disk_load_to_result", "i": 18, "ns": 1736292}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 18}
+{"metric": "process_to_result_exit", "i": 19, "ns": 9379125}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 19}
+{"metric": "disk_load", "i": 19, "ns": 358917}
+{"metric": "disk_load_create", "i": 19, "ns": 476875}
+{"metric": "disk_load_to_result", "i": 19, "ns": 1770042}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 19}
+{"metric": "process_to_result_exit", "i": 20, "ns": 8715292}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 20}
+{"metric": "disk_load", "i": 20, "ns": 376625}
+{"metric": "disk_load_create", "i": 20, "ns": 503500}
+{"metric": "disk_load_to_result", "i": 20, "ns": 1830208}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 20}
+{"metric": "process_to_result_exit", "i": 21, "ns": 9547875}
+{"metric": "memory", "n": 0, "rss": 6111232, "footprint": 1605968, "wired": 0, "iteration": 21}
+{"metric": "disk_load", "i": 21, "ns": 357042}
+{"metric": "disk_load_create", "i": 21, "ns": 469292}
+{"metric": "disk_load_to_result", "i": 21, "ns": 1815792}
+{"metric": "memory", "n": 1, "rss": 9093120, "footprint": 2392544, "wired": 0, "iteration": 21}
+{"metric": "process_to_result_exit", "i": 22, "ns": 11273833}
+{"metric": "memory", "n": 0, "rss": 6094848, "footprint": 1589584, "wired": 0, "iteration": 22}
+{"metric": "disk_load", "i": 22, "ns": 632167}
+{"metric": "disk_load_create", "i": 22, "ns": 797458}
+{"metric": "disk_load_to_result", "i": 22, "ns": 2520958}
+{"metric": "memory", "n": 1, "rss": 9093120, "footprint": 2392544, "wired": 0, "iteration": 22}
+{"metric": "process_to_result_exit", "i": 23, "ns": 10092042}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 23}
+{"metric": "disk_load", "i": 23, "ns": 360542}
+{"metric": "disk_load_create", "i": 23, "ns": 469000}
+{"metric": "disk_load_to_result", "i": 23, "ns": 1758500}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 23}
+{"metric": "process_to_result_exit", "i": 24, "ns": 9027291}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 24}
+{"metric": "disk_load", "i": 24, "ns": 350291}
+{"metric": "disk_load_create", "i": 24, "ns": 470458}
+{"metric": "disk_load_to_result", "i": 24, "ns": 1803125}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 24}
+{"metric": "process_to_result_exit", "i": 25, "ns": 10467875}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 25}
+{"metric": "disk_load", "i": 25, "ns": 349333}
+{"metric": "disk_load_create", "i": 25, "ns": 468625}
+{"metric": "disk_load_to_result", "i": 25, "ns": 2754750}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 25}
+{"metric": "process_to_result_exit", "i": 26, "ns": 8837625}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 26}
+{"metric": "disk_load", "i": 26, "ns": 353375}
+{"metric": "disk_load_create", "i": 26, "ns": 468625}
+{"metric": "disk_load_to_result", "i": 26, "ns": 1771083}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 26}
+{"metric": "process_to_result_exit", "i": 27, "ns": 9053166}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 27}
+{"metric": "disk_load", "i": 27, "ns": 359500}
+{"metric": "disk_load_create", "i": 27, "ns": 482625}
+{"metric": "disk_load_to_result", "i": 27, "ns": 1731791}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 27}
+{"metric": "process_to_result_exit", "i": 28, "ns": 9084292}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 28}
+{"metric": "disk_load", "i": 28, "ns": 330250}
+{"metric": "disk_load_create", "i": 28, "ns": 450666}
+{"metric": "disk_load_to_result", "i": 28, "ns": 1925166}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 28}
+{"metric": "process_to_result_exit", "i": 29, "ns": 8575583}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 29}
+{"metric": "disk_load", "i": 29, "ns": 339084}
+{"metric": "disk_load_create", "i": 29, "ns": 515125}
+{"metric": "disk_load_to_result", "i": 29, "ns": 1736334}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 29}
+{"metric": "process_to_result_exit", "i": 30, "ns": 10440291}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 30}
+{"metric": "disk_load", "i": 30, "ns": 363750}
+{"metric": "disk_load_create", "i": 30, "ns": 485417}
+{"metric": "disk_load_to_result", "i": 30, "ns": 3483500}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 30}
+{"metric": "process_to_result_exit", "i": 31, "ns": 10055750}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 31}
+{"metric": "disk_load", "i": 31, "ns": 348000}
+{"metric": "disk_load_create", "i": 31, "ns": 453917}
+{"metric": "disk_load_to_result", "i": 31, "ns": 2122167}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 31}
+{"metric": "process_to_result_exit", "i": 32, "ns": 11821208}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 32}
+{"metric": "disk_load", "i": 32, "ns": 704666}
+{"metric": "disk_load_create", "i": 32, "ns": 885791}
+{"metric": "disk_load_to_result", "i": 32, "ns": 2326166}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 32}
+{"metric": "process_to_result_exit", "i": 33, "ns": 10070625}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 33}
+{"metric": "disk_load", "i": 33, "ns": 529833}
+{"metric": "disk_load_create", "i": 33, "ns": 706792}
+{"metric": "disk_load_to_result", "i": 33, "ns": 2370250}
+{"metric": "memory", "n": 1, "rss": 9043968, "footprint": 2343392, "wired": 0, "iteration": 33}
+{"metric": "process_to_result_exit", "i": 34, "ns": 9809791}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 34}
+{"metric": "disk_load", "i": 34, "ns": 342416}
+{"metric": "disk_load_create", "i": 34, "ns": 449583}
+{"metric": "disk_load_to_result", "i": 34, "ns": 1958500}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 34}
+{"metric": "process_to_result_exit", "i": 35, "ns": 10818250}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 35}
+{"metric": "disk_load", "i": 35, "ns": 359792}
+{"metric": "disk_load_create", "i": 35, "ns": 466208}
+{"metric": "disk_load_to_result", "i": 35, "ns": 1812958}
+{"metric": "memory", "n": 1, "rss": 9060352, "footprint": 2359776, "wired": 0, "iteration": 35}
+{"metric": "process_to_result_exit", "i": 36, "ns": 9032875}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 36}
+{"metric": "disk_load", "i": 36, "ns": 377792}
+{"metric": "disk_load_create", "i": 36, "ns": 497042}
+{"metric": "disk_load_to_result", "i": 36, "ns": 1869792}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 36}
+{"metric": "process_to_result_exit", "i": 37, "ns": 13050083}
+{"metric": "memory", "n": 0, "rss": 6094848, "footprint": 1589584, "wired": 0, "iteration": 37}
+{"metric": "disk_load", "i": 37, "ns": 363500}
+{"metric": "disk_load_create", "i": 37, "ns": 538000}
+{"metric": "disk_load_to_result", "i": 37, "ns": 2114333}
+{"metric": "memory", "n": 1, "rss": 9093120, "footprint": 2392544, "wired": 0, "iteration": 37}
+{"metric": "process_to_result_exit", "i": 38, "ns": 10434917}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 38}
+{"metric": "disk_load", "i": 38, "ns": 344958}
+{"metric": "disk_load_create", "i": 38, "ns": 552333}
+{"metric": "disk_load_to_result", "i": 38, "ns": 2001500}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 38}
+{"metric": "process_to_result_exit", "i": 39, "ns": 12913750}
+{"metric": "memory", "n": 0, "rss": 6078464, "footprint": 1573200, "wired": 0, "iteration": 39}
+{"metric": "disk_load", "i": 39, "ns": 581375}
+{"metric": "disk_load_create", "i": 39, "ns": 749625}
+{"metric": "disk_load_to_result", "i": 39, "ns": 2243708}
+{"metric": "memory", "n": 1, "rss": 9076736, "footprint": 2376160, "wired": 0, "iteration": 39}

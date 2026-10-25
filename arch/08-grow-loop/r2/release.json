@@ -1,0 +1,14 @@
+{
+  "commit": "b0db0f0da6d54ee74b6df08218eba58e01f0caa9",
+  "repository": "/tmp/jitk-08/r2/release",
+  "bundle": "results/release.bundle",
+  "scope": "all final source/docs/text receipts; raw kernel images delivered alongside, excluded from Git bundle",
+  "transactions": {
+    "ioctl": "0b02b5ff905fbd4139bf54ed8fbf3814ca193418",
+    "ppoll": "353db999cc5f3aff785c32ff301ba337ad1a689e"
+  },
+  "demo_rehearsal": "PASS both 45-second panes, including live fresh qjs VM",
+  "manifest_source_hashes": "PASS",
+  "canonical_trace_equality": "PASS",
+  "transaction_bundle_verification": "PASS"
+}

@@ -1,0 +1,16 @@
+jitk: delegating kernel/build (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/clean/kernel)
+warning: unused import: `write_bytes`
+ --> src/user.rs:4:32
+  |
+4 |     ptr::{copy_nonoverlapping, write_bytes},
+  |                                ^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `jitk-02` (bin "jitk-02") generated 1 warning (run `cargo fix --bin "jitk-02" -p jitk-02` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 23.99s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-a0854791efee1bfe19faec6801db37e672172d511e036c7e239cf72affab2c39.bin", "sha256": "a0854791efee1bfe19faec6801db37e672172d511e036c7e239cf72affab2c39", "bytes": 2924544}
+jitk: no build entrypoint in vmm; see /private/tmp/jitk-10/clean/vmm/README.md; expected Makefile target 'build' or build.sh
+make: *** [build] Error 1

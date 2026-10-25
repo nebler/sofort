@@ -1,0 +1,151 @@
+jitk: delegating kernel/build (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/clean/kernel)
+    Finished `release` profile [optimized] target(s) in 7.87s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+jitk: delegating vmm/build (see /private/tmp/jitk-10/clean/vmm/README.md)
+JITK_VMM_BUILD="/tmp/jitk-10/vmm" python3 build.py
+cargo build --locked --release -p libkrun 
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.24
+   Compiling libc v0.2.186
+   Compiling syn v2.0.117
+   Compiling cfg-if v1.0.4
+   Compiling autocfg v1.5.0
+   Compiling memoffset v0.9.1
+   Compiling cfg_aliases v0.2.1
+   Compiling thiserror v2.0.18
+   Compiling nix v0.30.1
+   Compiling crossbeam-utils v0.8.21
+   Compiling bitflags v2.11.0
+   Compiling log v0.4.29
+   Compiling thiserror-impl v2.0.18
+   Compiling vm-memory v0.18.0
+   Compiling bitflags v1.3.2
+   Compiling vmm-sys-util v0.15.0
+   Compiling crossbeam-channel v0.5.15
+   Compiling zerocopy v0.8.47
+   Compiling krun-utils v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/utils)
+   Compiling zerocopy-derive v0.8.47
+   Compiling memchr v2.8.0
+   Compiling semver v1.0.27
+   Compiling rustc_version v0.4.1
+   Compiling aho-corasick v1.1.4
+   Compiling adler2 v2.0.1
+   Compiling once_cell v1.21.4
+   Compiling rand_core v0.10.1
+   Compiling virtue v0.0.18
+   Compiling regex-syntax v0.8.10
+   Compiling simd-adler32 v0.3.8
+   Compiling getrandom v0.4.2
+   Compiling regex-automata v0.4.14
+   Compiling miniz_oxide v0.8.9
+   Compiling bincode_derive v2.0.1
+   Compiling tracing-core v0.1.36
+   Compiling acpi_tables v0.2.1
+   Compiling imago v0.2.4
+   Compiling krun-smbios v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/smbios)
+   Compiling tracing-attributes v0.1.31
+   Compiling crc32fast v1.5.0
+   Compiling equivalent v1.0.2
+   Compiling krun-arch-gen v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/arch_gen)
+   Compiling utf8parse v0.2.2
+   Compiling foldhash v0.2.0
+   Compiling unty v0.0.4
+   Compiling pin-project-lite v0.2.17
+   Compiling allocator-api2 v0.2.21
+   Compiling hashbrown v0.16.1
+   Compiling tracing v0.1.44
+   Compiling bincode v2.0.1
+   Compiling anstyle-parse v0.2.7
+   Compiling krun-arch v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/arch)
+   Compiling regex v1.12.3
+   Compiling chacha20 v0.10.0
+   Compiling maybe-async v0.2.11
+   Compiling libloading v0.8.9
+   Compiling page_size v0.6.0
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling anstream v0.6.21
+   Compiling krun-hvf v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/hvf)
+   Compiling rand v0.10.2
+   Compiling env_filter v1.0.0
+   Compiling lru v0.16.3
+   Compiling krun-polly v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/polly)
+   Compiling jiff v0.2.23
+   Compiling virtio-bindings v0.2.7
+   Compiling libkrun v2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/libkrun)
+   Compiling vm-fdt v0.3.0
+   Compiling krun-devices v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/devices)
+   Compiling env_logger v0.11.9
+   Compiling flate2 v1.1.9
+   Compiling krun-kernel v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/kernel)
+   Compiling linux-loader v0.14.0
+    Finished `release` profile [optimized] target(s) in 2m 37s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib
+/tmp/jitk-10/vmm/jitk-vmm: replacing existing signature
+{
+  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "patches_sha256": {
+    "libkrun-robustness.diff": "777f0e64d0b58da1a0fa69156126d660590e2298894750e8876362dc2148cf66",
+    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+  },
+  "panic": "abort",
+  "features": [],
+  "sandbox_ready": true,
+  "binary": "/tmp/jitk-10/vmm/jitk-vmm",
+  "binary_sha256": "b850f72cc88455ed56d131ef435d5f2474ebf5901702b1551cb019aa0c5514e2",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+}
+jitk: delegating protocol/build (see /private/tmp/jitk-10/clean/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:57801) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+jitk: delegating executor/build (see /private/tmp/jitk-10/clean/executor/README.md)
+./run.sh build
+jitk: delegating kernel/test (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+    Finished `release` profile [optimized] target(s) in 0.01s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+python3 tests/test_packer.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.004s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/regression.py
+Traceback (most recent call last):
+  File "/private/tmp/jitk-10/clean/kernel/tests/checks.py", line 10, in <module>
+    m,_,_=one(churn);assert m=={'t':'done','ok':8128},m
+          ~~~^^^^^^^
+  File "/private/tmp/jitk-10/clean/kernel/tests/checks.py", line 7, in one
+    v.ready();lo=time.time_ns();v.run(code);m=v.recv();hi=time.time_ns();assert m['t']=='done',m;return m,lo,hi
+    ~~~~~~~^^
+  File "/private/tmp/jitk-10/clean/kernel/tests/measure.py", line 43, in ready
+    m=self.recv(timeout=10);assert m=={'t':'ready','v':1},m
+  File "/private/tmp/jitk-10/clean/kernel/tests/measure.py", line 34, in recv
+    if self.p.stdout not in self.streams:raise RuntimeError({'exit':self.p.poll(),'records':self.records,'stderr':self.stderr.decode(),'partial':self.buf.decode()})
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: {'exit': 70, 'records': [], 'stderr': '{"sandbox":"ok"}\njitk-vmm: boot error: Internal(Vm(VmSetup(VmCreate)))\n', 'partial': ''}
+Traceback (most recent call last):
+  File "/private/tmp/jitk-10/clean/kernel/tests/regression.py", line 5, in <module>
+    subprocess.run([sys.executable,str(p/test)],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 692, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.15/bin/python3.15', '/private/tmp/jitk-10/clean/kernel/tests/checks.py']' returned non-zero exit status 1.
+make[1]: *** [test] Error 1
+make: *** [test] Error 2

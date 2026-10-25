@@ -1,0 +1,14 @@
+{
+  "kk.bin": {
+    "returncode": 0,
+    "timeout": false,
+    "stdout": "",
+    "stderr": ""
+  },
+  "evil.bin": {
+    "returncode": -9,
+    "timeout": true,
+    "stdout": "",
+    "stderr": "\nthread 'fc_vcpu 0' (488697) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=4660\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  }
+}

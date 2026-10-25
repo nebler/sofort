@@ -1,0 +1,100 @@
+diff --git a/src/syscalls/ppoll.rs b/src/syscalls/ppoll.rs
+new file mode 100644
+index 0000000..de341da
+--- /dev/null
++++ b/src/syscalls/ppoll.rs
+@@ -0,0 +1,94 @@
++use super::{copyin, copyout, writable, now_ns, poll_fd, park_poll};
++
++pub fn call(a: &[usize]) -> isize {
++    if a.len() < 5 {
++        return -22;
++    }
++    if a[3] != 0 {
++        return -38;
++    }
++    let nfds = a[1];
++    if nfds > 16 {
++        return -22;
++    }
++    let mut buf = [0u8; 128];
++    let deadline = if a[2] == 0 {
++        None
++    } else {
++        if a[2].checked_add(16).is_none() {
++            return -14;
++        }
++        if copyin(a[2], &mut buf[..16]).is_err() {
++            return -14;
++        }
++        let sec = i64::from_le_bytes([
++            buf[0], buf[1], buf[2], buf[3],
++            buf[4], buf[5], buf[6], buf[7],
++        ]);
++        let nsec = i64::from_le_bytes([
++            buf[8], buf[9], buf[10], buf[11],
++            buf[12], buf[13], buf[14], buf[15],
++        ]);
++        if sec < 0 || nsec < 0 || nsec >= 1_000_000_000 {
++            return -22;
++        }
++        let duration = match (sec as u64)
++            .checked_mul(1_000_000_000)
++            .and_then(|v| v.checked_add(nsec as u64))
++        {
++            Some(v) => v,
++            None => return -22,
++        };
++        match now_ns().checked_add(duration) {
++            Some(v) => Some(v),
++            None => return -22,
++        }
++    };
++
++    let len = nfds * 8;
++    if len != 0 {
++        if a[0] == 0 || a[0].checked_add(len).is_none() {
++            return -14;
++        }
++        if copyin(a[0], &mut buf[..len]).is_err() {
++            return -14;
++        }
++        if !writable(a[0], len) {
++            return -14;
++        }
++    }
++
++    let input = (0..nfds).any(|i| {
++        let p = i * 8;
++        i32::from_le_bytes(buf[p..p+4].try_into().unwrap()) == 0
++            && i16::from_le_bytes(buf[p+4..p+6].try_into().unwrap()) & 1 != 0
++    });
++    loop {
++        let mut ready = 0isize;
++        for i in 0..nfds {
++            let p = i * 8;
++            let fd = i32::from_le_bytes([
++                buf[p], buf[p + 1], buf[p + 2], buf[p + 3],
++            ]);
++            let events = i16::from_le_bytes([buf[p + 4], buf[p + 5]]);
++            let revents = if fd < 0 { 0 } else { poll_fd(fd, events) };
++            let bytes = revents.to_le_bytes();
++            buf[p + 6] = bytes[0];
++            buf[p + 7] = bytes[1];
++            if revents != 0 {
++                ready += 1;
++            }
++        }
++        let expired = match deadline {
++            Some(end) => now_ns() >= end,
++            None => false,
++        };
++        if ready != 0 || expired {
++            if len != 0 && copyout(a[0], &buf[..len]).is_err() {
++                return -14;
++            }
++            return ready;
++        }
++        park_poll(deadline, input);
++    }
++}

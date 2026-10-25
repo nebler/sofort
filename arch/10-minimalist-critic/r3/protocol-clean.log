@@ -1,0 +1,30 @@
+/tmp/jitk-09/node-real build.mjs
+(node:42026) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+python3 make-vectors.py
+71 cases
+10 real-guest cases
+/tmp/jitk-09/node-real test.mjs
+{
+  "node": "/private/tmp/jitk-09/node-real",
+  "version": "v24.22.1",
+  "uptime": "3:15  up  4:29, 2 users, load averages: 16.79 60.76 75.93",
+  "corpus": {
+    "cases": 71,
+    "runs": 142
+  },
+  "boundaries": {
+    "checks": 14,
+    "consecutiveCalls": 4096,
+    "maxFrameBytes": 1048576
+  },
+  "fuzz": {
+    "mutations": 25000,
+    "chunkDifferentialRuns": 50000,
+    "accepted": 622,
+    "rejected": 24378,
+    "seed": "0x3c0ffee"
+  }
+}
+/tmp/jitk-09/node-real import-check.mjs
+Canonical imports: executor, Hyperlight and kernel pass

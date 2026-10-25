@@ -1,0 +1,613 @@
+{
+  "config": {
+    "image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel.bin",
+    "host": "/tmp/jitk-02/r2/host",
+    "cli": "02-r2",
+    "source": "explicit JITK_IMAGE override",
+    "imageSha256": "4a40ab97b3bf487f17b19a96d0ec2159ed3bb3415ddb94ba86b1100eb96e0cab",
+    "hostSha256": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed",
+    "bootstrapSha256": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280"
+  },
+  "n": 1,
+  "node": "/private/tmp/jitk-09/node-real",
+  "method": "Fresh hardware VM per attack. Test fixture policy holds/denies calls, never invokes a provider. No credentials or external effects. Kernel natural kill or dispatcher SIGKILL required; watchdog is failure.",
+  "cases": [
+    {
+      "name": "forged authority envelope",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "totalMs": {
+        "n": 1,
+        "p50": 296.6161669999999,
+        "p90": 296.6161669999999,
+        "p99": 296.6161669999999
+      },
+      "samples": [
+        296.6161669999999
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "forged prototype capability",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "totalMs": {
+        "n": 1,
+        "p50": 33.54458299999999,
+        "p90": 33.54458299999999,
+        "p99": 33.54458299999999
+      },
+      "samples": [
+        33.54458299999999
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "forged kernel record",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "totalMs": {
+        "n": 1,
+        "p50": 268.283416,
+        "p90": 268.283416,
+        "p99": 268.283416
+      },
+      "samples": [
+        268.283416
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "duplicate call id",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "totalMs": {
+        "n": 1,
+        "p50": 83.73637499999995,
+        "p90": 83.73637499999995,
+        "p99": 83.73637499999995
+      },
+      "samples": [
+        83.73637499999995
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "65 outstanding calls",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "totalMs": {
+        "n": 1,
+        "p50": 71.72670799999992,
+        "p90": 71.72670799999992,
+        "p99": 71.72670799999992
+      },
+      "samples": [
+        71.72670799999992
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "4097 total calls",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 104.26 113.76 93.43",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "totalMs": {
+        "n": 1,
+        "p50": 22254.615208,
+        "p90": 22254.615208,
+        "p99": 22254.615208
+      },
+      "samples": [
+        22254.615208
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "1025 raw log records",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "totalMs": {
+        "n": 1,
+        "p50": 575.7194589999999,
+        "p90": 575.7194589999999,
+        "p99": 575.7194589999999
+      },
+      "samples": [
+        575.7194589999999
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "raw log byte flood",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "totalMs": {
+        "n": 1,
+        "p50": 1356.0831249999974,
+        "p90": 1356.0831249999974,
+        "p99": 1356.0831249999974
+      },
+      "samples": [
+        1356.0831249999974
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "escaped Unicode log overflow",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "totalMs": {
+        "n": 1,
+        "p50": 236.43066599999656,
+        "p90": 236.43066599999656,
+        "p99": 236.43066599999656
+      },
+      "samples": [
+        236.43066599999656
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "oversized raw frame",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "totalMs": {
+        "n": 1,
+        "p50": 2155.142667,
+        "p90": 2155.142667,
+        "p99": 2155.142667
+      },
+      "samples": [
+        2155.142667
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1050644,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x0",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "totalMs": {
+        "n": 1,
+        "p50": 32.355500000001484,
+        "p90": 32.355500000001484,
+        "p99": 32.355500000001484
+      },
+      "samples": [
+        32.355500000001484
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x9",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 99.89 112.02 93.39",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 92.39150000000154,
+        "p90": 92.39150000000154,
+        "p99": 92.39150000000154
+      },
+      "samples": [
+        92.39150000000154
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0xd",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 62.25962499999878,
+        "p90": 62.25962499999878,
+        "p99": 62.25962499999878
+      },
+      "samples": [
+        62.25962499999878
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x1e",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 32.886750000001484,
+        "p90": 32.886750000001484,
+        "p99": 32.886750000001484
+      },
+      "samples": [
+        32.886750000001484
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x1f",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 50.48145900000236,
+        "p90": 50.48145900000236,
+        "p99": 50.48145900000236
+      },
+      "samples": [
+        50.48145900000236
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x7f",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 121.11562499999854,
+        "p90": 121.11562499999854,
+        "p99": 121.11562499999854
+      },
+      "samples": [
+        121.11562499999854
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x80",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 42.541332999997394,
+        "p90": 42.541332999997394,
+        "p99": 42.541332999997394
+      },
+      "samples": [
+        42.541332999997394
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "fd2 forged call dropped",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 36.3078749999986,
+        "p90": 36.3078749999986,
+        "p99": 36.3078749999986
+      },
+      "samples": [
+        36.3078749999986
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "fd2 RS dropped",
+      "pass": 1,
+      "fail": 0,
+      "loadBefore": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "loadAfter": "3:10  up  4:24, 2 users, load averages: 96.05 111.02 93.15",
+      "totalMs": {
+        "n": 1,
+        "p50": 110.460833000001,
+        "p90": 110.460833000001,
+        "p99": 110.460833000001
+      },
+      "samples": [
+        110.460833000001
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        }
+      ]
+    }
+  ]
+}

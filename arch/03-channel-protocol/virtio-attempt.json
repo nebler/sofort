@@ -1,0 +1,8 @@
+{
+  "command": "cd /tmp/jitk-03 && /tmp/jitk-spike/boot/host /tmp/jitk-spike/boot/kk.bin < code.jsonl (libkrun.2.dylib symlink in cwd)",
+  "exit": 0,
+  "stdout_bytes": 0,
+  "stderr": "",
+  "elapsed_ms": 12.2275,
+  "transport_test": "FAIL: no hello/ready; available kernel only powers off"
+}

@@ -1,0 +1,50 @@
+{
+ "none": {
+  "rc": 0,
+  "stdout": [
+   "P read /etc/passwd errno=0",
+   "P read /Users/noah/.ssh errno=0",
+   "P read outside-images errno=0",
+   "P read image errno=0",
+   "P write errno=0",
+   "P connect errno=61",
+   "P exec errno=0",
+   "P fork rc=53058 errno=35",
+   "P sysctl kern.hostname rc=0 errno=35"
+  ],
+  "stderr": ""
+ },
+ "compiled": {
+  "rc": 0,
+  "stdout": [
+   "P read /etc/passwd errno=1",
+   "P read /Users/noah/.ssh errno=1",
+   "P read outside-images errno=1",
+   "P read image errno=0",
+   "P write errno=1",
+   "P connect errno=1",
+   "P exec errno=1",
+   "P fork rc=-1 errno=1",
+   "P sysctl kern.hostname rc=-1 errno=1"
+  ],
+  "stderr": ""
+ },
+ "sbpl": {
+  "rc": 0,
+  "stdout": [
+   "P read /etc/passwd errno=1",
+   "P read /Users/noah/.ssh errno=1",
+   "P read outside-images errno=1",
+   "P read image errno=0",
+   "P write errno=1",
+   "P connect errno=1",
+   "P exec errno=1",
+   "P fork rc=-1 errno=1",
+   "P sysctl kern.hostname rc=-1 errno=1"
+  ],
+  "stderr": ""
+ },
+ "sandbox-exec": {
+  "rc": 0
+ }
+}

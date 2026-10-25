@@ -1,0 +1,19 @@
+{
+  "status": "PASS harness build/test; canonical measurement complete",
+  "first_ready_utc": "2026-10-24T01:05Z (R2 cold/parked smoke)",
+  "run_started_utc": "2026-10-24T01:40:05.128705+00:00",
+  "run_finished_utc": "2026-10-24T02:40:41.977828+00:00",
+  "cases": 41,
+  "samples": 2460,
+  "samples_per_case": 60,
+  "validation_failures": 0,
+  "gate_passed": 0,
+  "quiet_H4": "UNVERIFIED; all gate budgets expired",
+  "canonical_table": "RESULTS.md",
+  "raw": "raw.json",
+  "verification": "verification.json",
+  "test": "make -C arch/jitk/bench build test",
+  "cleanup": "detached descendants fixed and tested after collection; all owned workers gone",
+  "measurement_source": "area-06 R3 evidence (outside portable tree)",
+  "vmm_sha256": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e"
+}

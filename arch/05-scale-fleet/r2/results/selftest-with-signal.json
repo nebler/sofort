@@ -1,0 +1,9 @@
+{
+  "signal_cleanup_cases": 1,
+  "success_cases": 32,
+  "negative_cases": 3,
+  "children_remaining": 0,
+  "result": "PASS",
+  "uptime_before": "2:42  up  3:56, 2 users, load averages: 42.66 48.70 47.81",
+  "uptime_after": "2:42  up  3:56, 2 users, load averages: 41.81 48.42 47.71"
+}

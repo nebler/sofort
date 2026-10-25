@@ -1,0 +1,50 @@
+{
+  "events": [
+    {
+      "nr": 73,
+      "name": "ppoll",
+      "ret": 1,
+      "args": [
+        [
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        1,
+        null,
+        "NULL",
+        8
+      ],
+      "output": [
+        [
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "ret": -25,
+      "args": [
+        1,
+        21523,
+        "PTR"
+      ]
+    },
+    {
+      "nr": 94,
+      "name": "exit_group",
+      "ret": null,
+      "args": [
+        0
+      ]
+    }
+  ],
+  "stdout_hex": "7265706c793a70696e670a",
+  "stderr_hex": "",
+  "exit": 0
+}

@@ -1,0 +1,39 @@
+{
+  "area": "08 grow",
+  "round": 4,
+  "gate": "PASS",
+  "artifacts": {
+    "canonical_baseline_kernel_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "vmm_v2_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "lua_elf_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "replay_qjs_kernel_sha256": "4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee",
+    "replay_lua_kernel_sha256": "23e95bc45b39803fdb822a801153f4fd442f284221d25f4c5548d7c298ab51e5",
+    "live_qjs_kernel_sha256": "5dae9a0c75d8ee132fd4df1aff1ea5d1931c3dd6c043f6c7cce0cec6c33b68b1",
+    "live_lua_kernel_sha256": "46c8051cbc927805b088efa0810b39c4f3e276aa4cab8b417c112920b0b6dee3"
+  },
+  "evidence": {
+    "replay": "results/canonical-r4/report.json",
+    "live": "results/live-demo-1792810727825896000/report.json",
+    "live_demo": "results/live-demo-1792810727825896000/demo-1792811135047205000/report.json"
+  },
+  "verification": {
+    "standalone_copy_tests": 19,
+    "standalone_copy_replay_demo": "PASS",
+    "replay_handler_differentials": 90,
+    "replay_lua_runs": 30,
+    "live_cli_calls": 3,
+    "live_handler_differentials": 90,
+    "live_lua_runs": 30,
+    "all_owned_processes_reaped": true,
+    "private_auth_directories_remaining": 0
+  },
+  "controller_sha256": {
+    "adapters.py": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5",
+    "agent.py": "ed292c0945cf485f6502cb248ad26142c26da12b9ddcc65a4eb27896150cffd8",
+    "demo.py": "c2b98512ee3641eb3f88243ebf7997768797f5f38e9e733134dc304d622eeadc",
+    "loop.py": "130d33a7f255e658345200191d5966dd977b9041085d48ec8541ef99f13a8bb3",
+    "prepare.py": "7c6268627a7b63099655b99519fdd58bfabda8b89c3a13dae92d99bced82837d",
+    "runtime.py": "4692ddbabad903f095f022bcc0f7024c56565d1f1ff9ec2dedec8983765c633a",
+    "test.py": "9f04bd5ed58945903dbaf5f1185a2a6f438710718e5e6aba7a5ad82729eb1d85"
+  }
+}

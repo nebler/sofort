@@ -1,0 +1,9 @@
+{
+  "selection": "local-qjs UNSAFE development only",
+  "pid": "72982",
+  "loadBefore": "2:29  up  3:43, 2 users, load averages: 101.66 47.30 29.40",
+  "loadAfter": "2:29  up  3:43, 2 users, load averages: 109.21 51.72 31.30",
+  "elapsedSeconds": 10.043824625000001,
+  "cpuSeconds": 0,
+  "idleCorePercent": 0
+}

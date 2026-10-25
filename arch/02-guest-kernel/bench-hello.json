@@ -1,0 +1,144 @@
+{
+  "command": [
+    "/tmp/jitk-02/host",
+    "/tmp/jitk-02/kernel.bin"
+  ],
+  "summary": {
+    "total_ms": {
+      "n": 30,
+      "median": 6.4883125,
+      "p90": 6.818917,
+      "min": 6.078417,
+      "max": 208.3725
+    },
+    "hello_ms": {
+      "n": 30,
+      "median": 5.889437,
+      "p90": 6.213542,
+      "min": 5.493125,
+      "max": 207.638
+    }
+  },
+  "samples": [
+    {
+      "total_ms": 208.3725,
+      "hello_ms": 207.638
+    },
+    {
+      "total_ms": 6.675209,
+      "hello_ms": 6.106792
+    },
+    {
+      "total_ms": 6.398167,
+      "hello_ms": 5.807833
+    },
+    {
+      "total_ms": 6.604667,
+      "hello_ms": 6.008542
+    },
+    {
+      "total_ms": 6.740042,
+      "hello_ms": 6.166084
+    },
+    {
+      "total_ms": 6.805792,
+      "hello_ms": 6.180292
+    },
+    {
+      "total_ms": 6.483792,
+      "hello_ms": 5.873459
+    },
+    {
+      "total_ms": 6.115834,
+      "hello_ms": 5.513417
+    },
+    {
+      "total_ms": 6.74275,
+      "hello_ms": 6.009833
+    },
+    {
+      "total_ms": 6.502167,
+      "hello_ms": 5.919958
+    },
+    {
+      "total_ms": 6.281375,
+      "hello_ms": 5.695708
+    },
+    {
+      "total_ms": 6.099917,
+      "hello_ms": 5.507792
+    },
+    {
+      "total_ms": 6.383875,
+      "hello_ms": 5.791334
+    },
+    {
+      "total_ms": 6.841875,
+      "hello_ms": 6.259417
+    },
+    {
+      "total_ms": 6.492833,
+      "hello_ms": 5.879458
+    },
+    {
+      "total_ms": 6.818917,
+      "hello_ms": 6.225084
+    },
+    {
+      "total_ms": 6.134167,
+      "hello_ms": 5.562542
+    },
+    {
+      "total_ms": 6.357,
+      "hello_ms": 5.775708
+    },
+    {
+      "total_ms": 6.621458,
+      "hello_ms": 6.010708
+    },
+    {
+      "total_ms": 6.862208,
+      "hello_ms": 6.189291
+    },
+    {
+      "total_ms": 6.451,
+      "hello_ms": 5.899416
+    },
+    {
+      "total_ms": 6.217708,
+      "hello_ms": 5.673166
+    },
+    {
+      "total_ms": 6.078417,
+      "hello_ms": 5.493125
+    },
+    {
+      "total_ms": 6.368667,
+      "hello_ms": 5.793
+    },
+    {
+      "total_ms": 6.103625,
+      "hello_ms": 5.544125
+    },
+    {
+      "total_ms": 6.368416,
+      "hello_ms": 5.797416
+    },
+    {
+      "total_ms": 6.792084,
+      "hello_ms": 6.213542
+    },
+    {
+      "total_ms": 6.174125,
+      "hello_ms": 5.609917
+    },
+    {
+      "total_ms": 6.610584,
+      "hello_ms": 5.948
+    },
+    {
+      "total_ms": 6.549041,
+      "hello_ms": 5.926833
+    }
+  ]
+}

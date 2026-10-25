@@ -1,0 +1,7 @@
+{
+  "return2": {"code":"return 2;","expected":2,"tool_delay_ms":0},
+  "one_tool": {"code":"return await test.echo(2);","expected":2,"tool_delay_ms":0},
+  "one_tool_5ms": {"code":"return await test.echo(2);","expected":2,"tool_delay_ms":5},
+  "promise10_5ms": {"code":"return await Promise.all(Array.from({length:10},(_,i)=>test.echo(i)));","expected":[0,1,2,3,4,5,6,7,8,9],"tool_delay_ms":5},
+  "json1m": {"code":"const s='{\"x\":\"'+\"x\".repeat(1048568)+'\"}'; return JSON.stringify(JSON.parse(s)).length;","expected":1048576,"tool_delay_ms":0}
+}

@@ -1,0 +1,5 @@
+{
+  "path": "src/syscalls/rt_sigaction.rs",
+  "source": "// Lua profile: signals are unsupported. Native Linux injection proves fallback.\n// Returning ENOSYS does not install a handler or access any user pointer.\npub fn call(_: &[usize]) -> isize { -38 }\n",
+  "mode": "replay"
+}

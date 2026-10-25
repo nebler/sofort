@@ -1,0 +1,46 @@
+$ date -u
+Sat Oct 24 00:33:21 UTC 2026
+
+$ sw_vers
+ProductName:		macOS
+ProductVersion:		26.6.1
+BuildVersion:		25G76
+
+$ uname -a
+Darwin Mac 25.6.0 Darwin Kernel Version 25.6.0: Sat Jul 11 15:27:27 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6041 arm64
+
+$ uptime
+ 2:33  up  3:47, 2 users, load averages: 110.42 95.33 56.04
+
+$ sysctl kern.maxproc kern.maxprocperuid
+kern.maxproc: 6000
+kern.maxprocperuid: 4000
+
+$ sysctl -a
+kern.hv.supported: 1
+kern.hv.max_address_spaces: 128
+kern.hv.ipa_size_16k: 4398046511104
+kern.hv.ipa_size_4k: 1099511627776
+kern.hv_support: 1
+kern.hv_disable: 0
+kern.hv_vmm_present: 0
+$ ps -axo pid,comm
+  294 /Library/PrivilegedHelperTools/com.docker.vmnetd
+54200 /Applications/Docker.app/Contents/MacOS/com.docker.backend
+54201 /Applications/Docker.app/Contents/MacOS/com.docker.backend
+54226 com.docker.build
+54228 com.docker.dev-envs
+54229 /Applications/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/MacOS/Docker Desktop
+54237 /Applications/Docker.app/Contents/MacOS/com.docker.virtualization
+54240 /System/Library/Frameworks/Virtualization.framework/Versions/A/XPCServices/com.apple.Virtualization.VirtualMachine.xpc/Contents/MacOS/com.apple.Virtualization.VirtualMachine
+54264 /Applications/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Frameworks/Docker Desktop Helper (GPU).app/Contents/MacOS/Docker Desktop Helper (GPU)
+54266 /Applications/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Frameworks/Docker Desktop Helper.app/Contents/MacOS/Docker Desktop Helper
+54277 /Applications/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Frameworks/Docker Desktop Helper (Renderer).app/Contents/MacOS/Docker Desktop Helper (Renderer)
+71411 docker
+75289 docker
+76601 docker
+79388 docker
+80330 docker
+80600 /tmp/jitk-09/node-real
+80607 /Applications/Docker.app/Contents/Resources/bin/docker
+80642 /tmp/jitk-06/r2/control-rust

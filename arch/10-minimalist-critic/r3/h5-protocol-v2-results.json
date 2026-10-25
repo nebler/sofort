@@ -1,0 +1,8009 @@
+{
+  "config": {
+    "image": "/tmp/jitk-03/r3/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+    "originalImage": "/tmp/jitk-10/h5-resource/kernel.bin",
+    "host": "/tmp/jitk-10/h5-resource/jitk-vmm",
+    "cli": "01-vmm",
+    "source": "explicit JITK_IMAGE override",
+    "imageSha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "hostSha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "bootstrapSha256": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280"
+  },
+  "n": 30,
+  "node": "/private/tmp/jitk-09/node-real",
+  "method": "Fresh hardware VM per attack. Test fixture policy holds/denies calls, never invokes a provider. No credentials or external effects. Kernel natural kill or dispatcher SIGKILL required; watchdog is failure.",
+  "cases": [
+    {
+      "name": "forged authority envelope",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:18  up  5:31, 2 users, load averages: 54.36 47.26 55.46",
+      "loadAfter": "4:18  up  5:31, 2 users, load averages: 54.36 47.26 55.46",
+      "totalMs": {
+        "n": 30,
+        "p50": 104.29977050000025,
+        "p90": 191.33875000000012,
+        "p99": 408.213209
+      },
+      "samples": [
+        122.88245800000004,
+        168.67287499999998,
+        99.0625,
+        191.33875000000012,
+        192.78829200000018,
+        120.52812499999982,
+        123.6483330000001,
+        43.29062500000009,
+        125.80400000000009,
+        76.7447500000003,
+        29.49995799999988,
+        30.02129100000002,
+        33.86366700000008,
+        408.213209,
+        118.89975000000004,
+        237.15237500000012,
+        43.81254200000012,
+        135.7740829999998,
+        76.81429200000002,
+        129.05158399999982,
+        90.59450000000015,
+        155.8122500000004,
+        156.20949999999993,
+        24.64783299999999,
+        49.222624999999425,
+        109.5370410000005,
+        23.130833000000166,
+        23.126541999999972,
+        30.39808400000038,
+        35.04962499999965
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 89,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "forged prototype capability",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:18  up  5:31, 2 users, load averages: 54.36 47.26 55.46",
+      "loadAfter": "4:18  up  5:31, 2 users, load averages: 50.81 46.64 55.19",
+      "totalMs": {
+        "n": 30,
+        "p50": 79.0164375000004,
+        "p90": 137.3252080000002,
+        "p99": 231.40408299999945
+      },
+      "samples": [
+        61.594834000000446,
+        215.9456250000003,
+        98.93379100000038,
+        87.16058299999986,
+        137.3252080000002,
+        81.69237500000054,
+        72.70608400000037,
+        61.00812500000029,
+        46.193750000000364,
+        83.2686249999997,
+        122.5581659999998,
+        109.60062500000004,
+        59.075417000000016,
+        76.34050000000025,
+        25.84479199999987,
+        27.473167000000103,
+        24.18383300000005,
+        231.40408299999945,
+        85.52058300000044,
+        226.21379200000047,
+        61.12920799999938,
+        84.57504199999948,
+        37.87633300000016,
+        38.202917000000525,
+        27.907916999999543,
+        43.84595900000022,
+        88.81916699999965,
+        49.49395899999945,
+        87.39266599999974,
+        91.05641699999978
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "POLICY",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 86,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "forged kernel record",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:18  up  5:31, 2 users, load averages: 50.81 46.64 55.19",
+      "loadAfter": "4:18  up  5:31, 2 users, load averages: 50.81 46.64 55.19",
+      "totalMs": {
+        "n": 30,
+        "p50": 88.80847900000026,
+        "p90": 218.91187499999978,
+        "p99": 411.4006669999999
+      },
+      "samples": [
+        124.69966699999986,
+        100.74945800000023,
+        171.09033400000044,
+        37.02016700000058,
+        229.33108300000004,
+        68.4686670000001,
+        53.92016699999931,
+        78.64012500000172,
+        45.07666699999936,
+        90.49912500000028,
+        31.178125000000364,
+        41.423415999999634,
+        69.3929590000007,
+        48.67170799999985,
+        107.7392920000002,
+        106.67416699999922,
+        39.984958999999435,
+        87.11783300000025,
+        411.4006669999999,
+        129.10691700000098,
+        91.43004199999996,
+        71.00195899999926,
+        197.95900000000074,
+        61.1942080000008,
+        71.92487500000061,
+        218.91187499999978,
+        249.1150000000016,
+        74.34454200000073,
+        94.84245799999917,
+        96.64433400000053
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "duplicate call id",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:18  up  5:31, 2 users, load averages: 50.81 46.64 55.19",
+      "loadAfter": "4:18  up  5:31, 2 users, load averages: 48.26 46.19 54.98",
+      "totalMs": {
+        "n": 30,
+        "p50": 28.113271000000168,
+        "p90": 87.6112919999996,
+        "p99": 394.8271250000016
+      },
+      "samples": [
+        338.26958399999967,
+        394.8271250000016,
+        27.89587500000016,
+        27.606375000001208,
+        26.197249999999258,
+        23.93120799999997,
+        24.755958000001556,
+        22.11920800000007,
+        27.133334000000104,
+        22.09008299999914,
+        39.64208299999882,
+        55.01591700000063,
+        32.312707999999475,
+        32.72333299999991,
+        31.19420899999932,
+        28.330667000000176,
+        82.7232499999991,
+        148.20424999999886,
+        37.42279099999905,
+        25.82179200000064,
+        30.719833999999537,
+        80.02770899999996,
+        28.72441699999945,
+        21.91187499999978,
+        21.248999999999796,
+        20.78766699999869,
+        22.576500000001033,
+        23.743207999999868,
+        25.06225000000086,
+        87.6112919999996
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "ID",
+          "kernel": [],
+          "calls": 1,
+          "logs": 0,
+          "stdoutBytes": 126,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "65 outstanding calls",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:18  up  5:31, 2 users, load averages: 48.26 46.19 54.98",
+      "loadAfter": "4:18  up  5:32, 2 users, load averages: 56.89 48.01 55.57",
+      "totalMs": {
+        "n": 30,
+        "p50": 95.94470799999999,
+        "p90": 420.627625000001,
+        "p99": 527.5354580000003
+      },
+      "samples": [
+        43.86016700000073,
+        79.55695799999921,
+        54.66487500000039,
+        94.5671659999989,
+        202.4203749999997,
+        274.72199999999975,
+        58.28650000000016,
+        71.45479200000045,
+        426.7350839999999,
+        99.95325000000048,
+        58.029749999999694,
+        69.36325000000033,
+        101.81570900000042,
+        527.5354580000003,
+        63.11124999999993,
+        502.8346249999995,
+        86.28087500000038,
+        420.627625000001,
+        282.55754200000047,
+        45.554291000000376,
+        243.58383400000093,
+        129.7538330000025,
+        59.93837500000154,
+        94.23637500000041,
+        135.6305829999983,
+        97.32225000000108,
+        132.8273330000011,
+        65.91712499999994,
+        110.4108750000014,
+        88.01920800000153
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "OUTSTANDING",
+          "kernel": [],
+          "calls": 64,
+          "logs": 0,
+          "stdoutBytes": 3521,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "4097 total calls",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:18  up  5:32, 2 users, load averages: 56.89 48.01 55.57",
+      "loadAfter": "4:19  up  5:32, 2 users, load averages: 68.89 51.60 56.51",
+      "totalMs": {
+        "n": 30,
+        "p50": 1258.1604380000008,
+        "p90": 2084.3386660000033,
+        "p99": 2249.195667
+      },
+      "samples": [
+        1522.8604579999992,
+        926.7062499999993,
+        1103.8222910000004,
+        2084.3386660000033,
+        1359.0635840000032,
+        1377.492624999999,
+        662.6028750000005,
+        2228.4955840000002,
+        1271.1661250000034,
+        657.4276250000003,
+        1269.7671670000018,
+        1529.3679169999996,
+        1117.396084,
+        1015.5664160000015,
+        1723.9212499999994,
+        1316.9614589999983,
+        1109.0167920000022,
+        1626.2405839999992,
+        2249.195667,
+        970.359375,
+        1215.154208,
+        1695.4552079999994,
+        975.9004579999964,
+        828.8692080000037,
+        1096.239207999999,
+        1102.879375000004,
+        1246.5537089999998,
+        1104.2609999999986,
+        1812.711749999995,
+        2107.457125000001
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "CALL_LIMIT",
+          "kernel": [],
+          "calls": 4096,
+          "logs": 0,
+          "stdoutBytes": 228345,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "1025 raw log records",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:32, 2 users, load averages: 68.89 51.60 56.51",
+      "loadAfter": "4:19  up  5:32, 2 users, load averages: 68.89 51.60 56.51",
+      "totalMs": {
+        "n": 30,
+        "p50": 82.21129199999996,
+        "p90": 138.68508299999667,
+        "p99": 231.70704200000182
+      },
+      "samples": [
+        34.483165999998164,
+        205.53233299999556,
+        55.256625000001804,
+        94.00233299999672,
+        37.66937500000495,
+        37.634083000004466,
+        50.85166699999536,
+        61.994917000003625,
+        51.08412500000122,
+        83.05412499999511,
+        92.35837499999616,
+        111.44825000000128,
+        81.3684590000048,
+        24.31204200000502,
+        83.66300000000047,
+        53.137166000000434,
+        100.83037499999773,
+        103.45062499999767,
+        111.47033299999748,
+        94.69683400000213,
+        102.06983400000172,
+        138.68508299999667,
+        231.70704200000182,
+        101.09787499999948,
+        73.41920799999934,
+        31.88799999999901,
+        31.062667000005604,
+        68.06841600000189,
+        35.913457999995444,
+        154.35741699999926
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 1024,
+          "stdoutBytes": 36920,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "raw log byte flood",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:32, 2 users, load averages: 68.89 51.60 56.51",
+      "loadAfter": "4:19  up  5:32, 2 users, load averages: 78.34 54.25 57.39",
+      "totalMs": {
+        "n": 30,
+        "p50": 230.90414600000076,
+        "p90": 383.51345800000126,
+        "p99": 631.3058330000058
+      },
+      "samples": [
+        265.1302910000013,
+        350.7072499999995,
+        257.1523750000051,
+        234.09795799999847,
+        229.30154200000106,
+        74.30308400000649,
+        356.36387500000274,
+        149.76691700000083,
+        138.9277080000029,
+        213.11833399999887,
+        43.121875000004366,
+        293.2393749999974,
+        139.38112499999988,
+        334.23537500000384,
+        383.51345800000126,
+        249.2762920000023,
+        33.562792000004265,
+        49.254000000000815,
+        115.97704099999828,
+        128.25604100000055,
+        411.3265420000025,
+        382.9317080000037,
+        232.50675000000047,
+        371.17645799999445,
+        591.7519590000011,
+        219.09208399998897,
+        82.83216700000048,
+        218.74579200000153,
+        146.44391700001142,
+        631.3058330000058
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "LOG_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 64,
+          "stdoutBytes": 268600,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "escaped Unicode log overflow",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:32, 2 users, load averages: 78.34 54.25 57.39",
+      "loadAfter": "4:19  up  5:32, 2 users, load averages: 81.99 55.41 57.78",
+      "totalMs": {
+        "n": 30,
+        "p50": 113.93483299999934,
+        "p90": 230.1962499999936,
+        "p99": 333.3116250000021
+      },
+      "samples": [
+        33.55845900000713,
+        107.92845799999486,
+        218.95195899999817,
+        229.03783299999486,
+        27.44358400000783,
+        82.72912499999802,
+        119.94120800000383,
+        137.19441599999845,
+        153.3240000000078,
+        333.3116250000021,
+        230.1962499999936,
+        199.0702500000043,
+        122.75424999999814,
+        54.84649999999965,
+        303.87179200000537,
+        50.89849999999569,
+        122.86779200000456,
+        323.35995799998636,
+        37.67933400000038,
+        90.29383300000336,
+        37.88199999999779,
+        89.07970800000476,
+        59.437667000005604,
+        217.0525420000049,
+        23.49579200000153,
+        31.53337500001362,
+        124.74020900001051,
+        139.3379169999971,
+        32.046875,
+        79.75245899999572
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 12350,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "oversized raw frame",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:32, 2 users, load averages: 81.99 55.41 57.78",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 76.53 55.07 57.63",
+      "totalMs": {
+        "n": 30,
+        "p50": 354.6457084999929,
+        "p90": 715.0831249999901,
+        "p99": 971.3141249999899
+      },
+      "samples": [
+        230.49391600000672,
+        670.5247079999972,
+        192.94429200000013,
+        251.56154100000276,
+        284.6932919999963,
+        504.1168340000004,
+        681.6939580000035,
+        191.9836670000077,
+        490.60854099999415,
+        154.68195800000103,
+        194.86900000000605,
+        170.17870800000674,
+        107.11891600000672,
+        147.90904199999932,
+        377.4947910000046,
+        971.3141249999899,
+        351.3273329999938,
+        478.6736249999958,
+        307.48562500000116,
+        277.38104200000816,
+        730.4919579999987,
+        707.0473749999946,
+        182.18433299999742,
+        802.7869170000049,
+        561.1353329999984,
+        454.38979200000176,
+        715.0831249999901,
+        304.8225419999944,
+        357.964083999992,
+        567.8994999999995
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1050644,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1051668,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1050644,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1051668,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1052692,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "FRAME_LIMIT",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 1051668,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x0",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 76.53 55.07 57.63",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 71.60 54.41 57.38",
+      "totalMs": {
+        "n": 30,
+        "p50": 98.26104150000174,
+        "p90": 221.18845899999724,
+        "p99": 328.57249999999476
+      },
+      "samples": [
+        119.16445799999929,
+        72.54879200000141,
+        24.176250000004075,
+        29.309000000008382,
+        36.693041000005906,
+        74.07845899999666,
+        127.19579199999862,
+        104.57779100000334,
+        55.40691700000025,
+        144.3399999999965,
+        74.53620800000499,
+        111.08404099999461,
+        78.85608299999149,
+        175.44362499999988,
+        212.33070900000166,
+        67.31025000000955,
+        221.18845899999724,
+        101.54725000000326,
+        29.510958999992,
+        37.252542000001995,
+        169.56262500000594,
+        239.44441700000607,
+        36.64945799999987,
+        251.14091600000393,
+        192.30629100000078,
+        97.76654199999757,
+        34.01112499998999,
+        328.57249999999476,
+        98.7555410000059,
+        36.897209000002476
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x9",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 71.60 54.41 57.38",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 78.04 56.03 57.94",
+      "totalMs": {
+        "n": 30,
+        "p50": 91.75160449999385,
+        "p90": 240.48912499999278,
+        "p99": 366.2795829999959
+      },
+      "samples": [
+        38.32233300000371,
+        335.97295799999847,
+        125.03641699999571,
+        127.42670799999905,
+        116.97437500000524,
+        90.95899999998801,
+        23.978375000006054,
+        43.84370900000795,
+        173.84858299999905,
+        104.61908400000539,
+        92.54420899999968,
+        122.56612499999756,
+        77.13462500000605,
+        366.2795829999959,
+        158.292082999993,
+        240.48912499999278,
+        71.26350000000093,
+        25.6005839999998,
+        32.121292000010726,
+        83.31495799998811,
+        53.92429200001061,
+        86.37795899999037,
+        226.8469999999943,
+        25.409625000000233,
+        24.51054099999601,
+        78.99012499999662,
+        179.21970799998962,
+        245.3154579999973,
+        47.56466700001329,
+        218.53420900000492
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0xd",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 78.04 56.03 57.94",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 78.04 56.03 57.94",
+      "totalMs": {
+        "n": 30,
+        "p50": 63.63489550000668,
+        "p90": 204.03754099999787,
+        "p99": 295.7647089999955
+      },
+      "samples": [
+        212.3609160000051,
+        36.38474999999744,
+        84.73050000000512,
+        74.57408299999952,
+        202.90929199999664,
+        38.06666700000642,
+        204.03754099999787,
+        86.75145799999882,
+        56.85583299999416,
+        45.63495899998816,
+        60.462375000002794,
+        33.13383299999987,
+        103.9147920000105,
+        100.07383399999526,
+        20.94954200000211,
+        24.558208000002196,
+        26.486583999998402,
+        32.13683300001139,
+        66.80741600001056,
+        36.55641699999978,
+        121.67604199999187,
+        85.78204199999163,
+        39.02466700000514,
+        91.52683400000387,
+        44.874875000008615,
+        205.15766700000677,
+        87.66512499999953,
+        25.45175000000745,
+        35.654374999998254,
+        295.7647089999955
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x1e",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 78.04 56.03 57.94",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 77.56 56.29 58.02",
+      "totalMs": {
+        "n": 30,
+        "p50": 108.35906249999971,
+        "p90": 180.5449579999986,
+        "p99": 325.4156249999942
+      },
+      "samples": [
+        142.67462499999965,
+        311.0744579999882,
+        293.7192090000026,
+        125.4239169999928,
+        61.31037500000093,
+        32.12604200000351,
+        45.68279099999927,
+        93.37304199999198,
+        170.83741700000246,
+        129.58987499999057,
+        22.791042000011657,
+        27.00504099999671,
+        27.538415999995777,
+        58.631374999997206,
+        139.04466699999466,
+        99.31549999999697,
+        133.4069579999923,
+        23.696083000002545,
+        34.16616699998849,
+        325.4156249999942,
+        164.56679100000474,
+        75.52462500000547,
+        155.45887500001118,
+        38.01741600000241,
+        117.40262500000244,
+        42.829667000012705,
+        132.5170000000071,
+        95.49833400000352,
+        138.75070800000685,
+        180.5449579999986
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x1f",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 77.56 56.29 58.02",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 74.07 55.92 57.88",
+      "totalMs": {
+        "n": 30,
+        "p50": 100.66439600000012,
+        "p90": 239.73591699999815,
+        "p99": 377.5114590000012
+      },
+      "samples": [
+        43.380082999996375,
+        157.90204200000153,
+        377.5114590000012,
+        48.39291699999012,
+        239.73591699999815,
+        119.73291700000118,
+        306.39641700001084,
+        159.05408400000306,
+        103.17754199999035,
+        101.43816700000025,
+        33.3044169999921,
+        56.346667000005255,
+        31.90837499999907,
+        176.8660830000008,
+        140.234375,
+        207.2443329999951,
+        112.83416600000055,
+        37.64108399998804,
+        38.50691700000607,
+        195.45558399999572,
+        99.890625,
+        132.89729200000875,
+        316.90812500000175,
+        86.09845800000767,
+        52.042167000006884,
+        20.330667000001995,
+        22.22333299998718,
+        26.028416000001016,
+        97.09845800000767,
+        26.3205830000079
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x7f",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 74.07 55.92 57.88",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 74.07 55.92 57.88",
+      "totalMs": {
+        "n": 30,
+        "p50": 71.45004199998948,
+        "p90": 219.63608299999032,
+        "p99": 323.99262499999895
+      },
+      "samples": [
+        165.16691700000956,
+        135.9204999999929,
+        112.16483399999561,
+        100.28787500000908,
+        41.228833999994094,
+        33.74483300000429,
+        60.68983399998979,
+        19.292834000007133,
+        44.37112500000512,
+        182.8807919999963,
+        227.2359579999902,
+        219.63608299999032,
+        44.59058299999742,
+        23.146790999991936,
+        31.8607500000071,
+        94.24254099999962,
+        32.604584000000614,
+        322.68395799999416,
+        38.67179199999373,
+        323.99262499999895,
+        42.002624999993714,
+        96.36475000000792,
+        33.076917000013054,
+        115.25933399998758,
+        82.21024999998917,
+        94.51020799999242,
+        109.6097080000036,
+        21.756416999996873,
+        36.5638340000005,
+        45.842791999995825
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "os.write fd1 control 0x80",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 74.07 55.92 57.88",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 81.91 57.85 58.55",
+      "totalMs": {
+        "n": 30,
+        "p50": 77.2334794999988,
+        "p90": 211.9810829999915,
+        "p99": 315.0007500000065
+      },
+      "samples": [
+        155.48141699998814,
+        29.00066700000025,
+        44.709459000005154,
+        315.0007500000065,
+        120.67129199999908,
+        78.22316700000374,
+        139.8353749999951,
+        65.0825829999958,
+        96.29108300000371,
+        18.905083000005106,
+        24.733124999998836,
+        76.24379199999385,
+        82.90087500000664,
+        93.55254100001184,
+        233.89341699999932,
+        100.49099999999453,
+        53.96391599999333,
+        201.13229200000933,
+        37.222374999997555,
+        211.9810829999915,
+        48.92262500000652,
+        85.09100000000035,
+        15.492708999998285,
+        26.94787499999802,
+        25.589749999999185,
+        112.91216700000223,
+        246.76900000000023,
+        53.72029100000509,
+        22.90716699999757,
+        24.10487500000454
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": 0,
+            "signal": null
+          },
+          "kernel": [
+            "fatal control byte"
+          ],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 40,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "fd2 forged call dropped",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 81.91 57.85 58.55",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 81.91 57.85 58.55",
+      "totalMs": {
+        "n": 30,
+        "p50": 105.33547899999394,
+        "p90": 262.54175000000396,
+        "p99": 472.14016699999047
+      },
+      "samples": [
+        34.760458999997354,
+        278.039042000004,
+        54.30620900000213,
+        121.49133400000574,
+        25.045750000004773,
+        45.97529200000281,
+        87.84487499999523,
+        32.290958999990835,
+        108.96058300000732,
+        192.62162499999977,
+        67.67254099999263,
+        106.94158299999253,
+        171.59162500000093,
+        68.7141249999986,
+        262.54175000000396,
+        472.14016699999047,
+        163.40891699999338,
+        114.69375000000582,
+        35.248959000004106,
+        81.49554100001114,
+        25.553249999997206,
+        23.240165999988676,
+        29.327458999992814,
+        39.27095800000825,
+        437.1623749999999,
+        164.45637500000885,
+        128.07737499999348,
+        120.52912500000093,
+        103.72937499999534,
+        145.27816599998914
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 87,
+          "hostEffects": 0
+        }
+      ]
+    },
+    {
+      "name": "fd2 RS dropped",
+      "pass": 30,
+      "fail": 0,
+      "loadBefore": "4:19  up  5:33, 2 users, load averages: 84.80 58.85 58.89",
+      "loadAfter": "4:19  up  5:33, 2 users, load averages: 84.80 58.85 58.89",
+      "totalMs": {
+        "n": 30,
+        "p50": 74.36727099999553,
+        "p90": 219.6148749999993,
+        "p99": 232.53533300000709
+      },
+      "samples": [
+        25.79379099998914,
+        228.26574999999139,
+        167.64845900000364,
+        219.94633299999987,
+        65.54008299999987,
+        57.3295000000071,
+        22.24170799998683,
+        36.25775000000431,
+        36.580375000005006,
+        109.04750000000058,
+        219.6148749999993,
+        116.30358299998625,
+        212.22845799999777,
+        44.65008300000045,
+        121.38837500000955,
+        71.31554199999664,
+        26.11341699998593,
+        35.61579199999687,
+        39.37354200000118,
+        147.98791599999822,
+        86.65362499999173,
+        27.774417000007816,
+        178.7850000000035,
+        25.05412499999511,
+        24.497541000004276,
+        64.34849999999278,
+        77.41899999999441,
+        232.53533300000709,
+        98.31291700000293,
+        215.71020800000406
+      ],
+      "errors": [],
+      "outcomes": [
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        },
+        {
+          "exit": {
+            "status": null,
+            "signal": "SIGKILL"
+          },
+          "fault": "SCHEMA",
+          "kernel": [],
+          "calls": 0,
+          "logs": 0,
+          "stdoutBytes": 54,
+          "hostEffects": 0
+        }
+      ]
+    }
+  ]
+}

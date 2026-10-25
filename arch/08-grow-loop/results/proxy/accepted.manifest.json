@@ -1,0 +1,18 @@
+{
+  "surface_version": "0.1.0-demo",
+  "status": "proxy-only",
+  "syscalls": [
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "domain": "fds 0..2 + request 0x5413 => ENOTTY; bad fd => EBADF; other request => ENOSYS",
+      "source_sha256": "894fe28630194ac49a093d16fd919752801c615331f84c7345c6f893b731ec5e"
+    }
+  ],
+  "receipt": {
+    "strict_trace_sha256": "edd1862c894a2c1bb9002ff42827f0a5f096f8bc4519ddd6e353a1d9faca9d58",
+    "unit_tests": 4,
+    "scalar_fuzz_cases": 10000,
+    "scope": "host stub + ptrace injection, not VM"
+  }
+}

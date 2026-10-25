@@ -1,0 +1,56 @@
+[
+  {
+    "ops": [
+      "file-read-data"
+    ],
+    "rc": -6,
+    "stderr": "dyld[40603]: Library not loaded: libkrun.2.dylib\n  Referenced from: <2560C74A-E8FB-3BFC-9C32-1414367F6DB0> /private/tmp/jitk-07/host\n  Reason: tried: 'libkrun.2.dylib' (blocked by sandbox), '/private/tmp/jitk-07/libkrun.2.dylib' (blocked by sandbox)\n"
+  },
+  {
+    "ops": [
+      "file-read-metadata"
+    ],
+    "rc": -6,
+    "stderr": "dyld[40606]: Library not loaded: libkrun.2.dylib\n  Referenced from: <2560C74A-E8FB-3BFC-9C32-1414367F6DB0> /private/tmp/jitk-07/host\n  Reason: tried: 'libkrun.2.dylib' (file system sandbox blocked open())\n"
+  },
+  {
+    "ops": [
+      "file-map-executable"
+    ],
+    "rc": -6,
+    "stderr": "dyld[40608]: Library not loaded: libkrun.2.dylib\n  Referenced from: <2560C74A-E8FB-3BFC-9C32-1414367F6DB0> /private/tmp/jitk-07/host\n  Reason: tried: 'libkrun.2.dylib' (blocked by sandbox)\n"
+  },
+  {
+    "ops": [
+      "file-read-data",
+      "file-read-metadata"
+    ],
+    "rc": 0,
+    "stderr": ""
+  },
+  {
+    "ops": [
+      "file-read-data",
+      "file-map-executable"
+    ],
+    "rc": -6,
+    "stderr": "dyld[40610]: Library not loaded: libkrun.2.dylib\n  Referenced from: <2560C74A-E8FB-3BFC-9C32-1414367F6DB0> /private/tmp/jitk-07/host\n  Reason: tried: 'libkrun.2.dylib' (blocked by sandbox), '/private/tmp/jitk-07/libkrun.2.dylib' (blocked by sandbox)\n"
+  },
+  {
+    "ops": [
+      "file-read-metadata",
+      "file-map-executable"
+    ],
+    "rc": -6,
+    "stderr": "dyld[40611]: Library not loaded: libkrun.2.dylib\n  Referenced from: <2560C74A-E8FB-3BFC-9C32-1414367F6DB0> /private/tmp/jitk-07/host\n  Reason: tried: 'libkrun.2.dylib' (file system sandbox blocked open())\n"
+  },
+  {
+    "ops": [
+      "file-read-data",
+      "file-read-metadata",
+      "file-map-executable"
+    ],
+    "rc": 0,
+    "stderr": ""
+  }
+]

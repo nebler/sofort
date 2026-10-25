@@ -1,0 +1,54 @@
+{
+  "loadBefore": "2:34  up  3:48, 2 users, load averages: 76.73 88.34 56.90",
+  "loadAfter": "2:34  up  3:48, 2 users, load averages: 76.73 88.34 56.90",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}

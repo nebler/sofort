@@ -1,0 +1,103 @@
+jitk: delegating kernel/build (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/clean/kernel)
+    Finished `release` profile [optimized] target(s) in 13.52s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-4a40ab97b3bf487f17b19a96d0ec2159ed3bb3415ddb94ba86b1100eb96e0cab.bin", "sha256": "4a40ab97b3bf487f17b19a96d0ec2159ed3bb3415ddb94ba86b1100eb96e0cab", "bytes": 2924544}
+jitk: delegating vmm/build (see /private/tmp/jitk-10/clean/vmm/README.md)
+Cloning into '/tmp/jitk-10/vmm/libkrun'...
+HEAD is now at a1d86167 init/dhcp: gate retry and lease renewal behind a runtime config
+cargo build --locked --release -p libkrun 
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling libc v0.2.186
+   Compiling cfg-if v1.0.4
+   Compiling autocfg v1.5.0
+   Compiling cfg_aliases v0.2.1
+   Compiling thiserror v2.0.18
+   Compiling crossbeam-utils v0.8.21
+   Compiling bitflags v2.11.0
+   Compiling log v0.4.29
+   Compiling bitflags v1.3.2
+   Compiling nix v0.30.1
+   Compiling zerocopy v0.8.47
+   Compiling memchr v2.8.0
+   Compiling semver v1.0.27
+   Compiling getrandom v0.4.2
+   Compiling simd-adler32 v0.3.8
+   Compiling memoffset v0.9.1
+   Compiling rustc_version v0.4.1
+   Compiling virtue v0.0.18
+   Compiling once_cell v1.21.4
+   Compiling adler2 v2.0.1
+   Compiling rand_core v0.10.1
+   Compiling regex-syntax v0.8.10
+   Compiling miniz_oxide v0.8.9
+   Compiling tracing-core v0.1.36
+   Compiling imago v0.2.4
+   Compiling utf8parse v0.2.2
+   Compiling aho-corasick v1.1.4
+   Compiling allocator-api2 v0.2.21
+   Compiling crc32fast v1.5.0
+   Compiling crossbeam-channel v0.5.15
+   Compiling syn v2.0.117
+   Compiling bincode_derive v2.0.1
+   Compiling unty v0.0.4
+   Compiling foldhash v0.2.0
+   Compiling pin-project-lite v0.2.17
+   Compiling equivalent v1.0.2
+   Compiling krun-arch-gen v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/arch_gen)
+   Compiling anstyle-parse v0.2.7
+   Compiling hashbrown v0.16.1
+   Compiling chacha20 v0.10.0
+   Compiling libloading v0.8.9
+   Compiling vmm-sys-util v0.15.0
+   Compiling bincode v2.0.1
+   Compiling page_size v0.6.0
+   Compiling colorchoice v1.0.5
+   Compiling anstyle v1.0.14
+   Compiling anstyle-query v1.1.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling rand v0.10.2
+   Compiling virtio-bindings v0.2.7
+   Compiling anstream v0.6.21
+   Compiling libkrun v2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/libkrun)
+   Compiling regex-automata v0.4.14
+   Compiling vm-fdt v0.3.0
+   Compiling lru v0.16.3
+   Compiling jiff v0.2.23
+   Compiling flate2 v1.1.9
+   Compiling krun-utils v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/utils)
+   Compiling krun-polly v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/polly)
+   Compiling regex v1.12.3
+   Compiling thiserror-impl v2.0.18
+   Compiling zerocopy-derive v0.8.47
+   Compiling tracing-attributes v0.1.31
+   Compiling maybe-async v0.2.11
+   Compiling env_filter v1.0.0
+   Compiling tracing v0.1.44
+   Compiling vm-memory v0.18.0
+   Compiling env_logger v0.11.9
+   Compiling krun-smbios v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/smbios)
+   Compiling krun-kernel v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/kernel)
+   Compiling linux-loader v0.14.0
+   Compiling acpi_tables v0.2.1
+   Compiling krun-arch v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/arch)
+   Compiling krun-hvf v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/hvf)
+   Compiling krun-devices v0.1.0-2.0.0-dev (/private/tmp/jitk-10/vmm/libkrun/src/devices)
+    Finished `release` profile [optimized] target(s) in 2m 33s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib
+cp: target/release/libkrun.dylib: No such file or directory
+make[1]: *** [target/release/libkrun.2.0.0.dylib] Error 1
+Traceback (most recent call last):
+  File "/private/tmp/jitk-10/clean/vmm/build.py", line 36, in <module>
+    run("make", "-C", str(LIB), "FFI=0", f"target/release/{target}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jitk-10/clean/vmm/build.py", line 18, in run
+    return subprocess.run(args, env=ENV, check=True, **kwargs)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 692, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '('make', '-C', '/tmp/jitk-10/vmm/libkrun', 'FFI=0', 'target/release/libkrun.2.0.0.dylib')' returned non-zero exit status 2.
+make: *** [build] Error 1

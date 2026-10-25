@@ -1,0 +1,7 @@
+#!/bin/sh
+mkdir -p /proc /sys /dev /tmp
+mount -t proc proc /proc; mount -t sysfs sys /sys; mount -t devtmpfs dev /dev 2>/dev/null
+mount -t tmpfs tmp /tmp; mkdir -p /sys/fs/cgroup; mount -t cgroup2 none /sys/fs/cgroup
+echo "KVMCHECK: $(ls -la /dev/kvm 2>&1) lsm=$(cat /sys/kernel/security/lsm 2>/dev/null)"
+[ -x /work/run.sh ] && /work/run.sh
+echo "INIT-DONE"; echo o > /proc/sysrq-trigger; sleep 10

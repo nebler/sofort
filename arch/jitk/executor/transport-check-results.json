@@ -1,0 +1,60 @@
+{
+  "loadBefore": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "loadAfter": "14:14  up 15:28, 2 users, load averages: 3.82 3.88 4.52",
+  "rows": [
+    {
+      "mode": "badready",
+      "result": {
+        "error": "Error: protocol SCHEMA",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "del",
+      "result": {
+        "error": "Error: protocol ASCII",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "trailing",
+      "result": {
+        "error": "Error: protocol STATE",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "duplicate",
+      "result": {
+        "error": "Error: protocol DUPLICATE",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "unknown",
+      "result": {
+        "error": "Error: protocol EOF",
+        "logs": []
+      },
+      "effects": 0,
+      "policies": 0
+    },
+    {
+      "mode": "replay",
+      "result": {
+        "error": "Error: protocol ID",
+        "logs": []
+      },
+      "effects": 1,
+      "policies": 1
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-24T01:38:23.261949+00:00",
+  "certificate_at": "2026-10-24T01:28:25.410Z",
+  "checked": 29,
+  "mismatches": [
+    {
+      "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+      "expected": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+      "actual": "17c0516aeae7487558adfb4e07f88b872dab56b273c2a9d30c59d01c7596ccf3",
+      "match": false
+    }
+  ],
+  "scope": "Exact executor certification inputs, without starting any VM"
+}

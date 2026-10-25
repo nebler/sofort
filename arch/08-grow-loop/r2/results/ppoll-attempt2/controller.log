@@ -1,0 +1,428 @@
+build_probe 0.493 s
+build_missing_kernel 1.363 s
+discover_fresh_vm 0.019 s
+linux_oracle 0.267 s
+headless_codex 21.756 s
+build_candidate_kernel 0.672 s
+Traceback (most recent call last):
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r2/loop.py", line 183, in <module>
+    if __name__=='__main__': main()
+                             ~~~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r2/loop.py", line 147, in main
+    stage('differential_fresh_vm',gate)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r2/loop.py", line 72, in stage
+    before=load();t=time.perf_counter();value=fn()
+                                              ~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r2/loop.py", line 144, in gate
+    raw,secs=vm('after');accepted=guest(raw);compare(reference,accepted)
+                                             ~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r2/adapters.py", line 120, in compare
+    assert a==b, json.dumps({'linux':a,'guest':b},indent=2)
+           ^^^^
+AssertionError: {
+  "linux": {
+    "events": [
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 1,
+        "args": [
+          [
+            [
+              0,
+              1,
+              0
+            ]
+          ],
+          1,
+          null,
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            0,
+            1,
+            1
+          ]
+        ]
+      },
+      {
+        "nr": 63,
+        "name": "read",
+        "ret": 5,
+        "args": [
+          0,
+          "70696e670a",
+          5
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 1,
+        "args": [
+          [
+            [
+              1,
+              4,
+              0
+            ]
+          ],
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            1,
+            4,
+            4
+          ]
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 0,
+        "args": [
+          [
+            [
+              -1,
+              0,
+              0
+            ]
+          ],
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            -1,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 1,
+        "args": [
+          [
+            [
+              999,
+              1,
+              0
+            ]
+          ],
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            999,
+            1,
+            32
+          ]
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": -14,
+        "args": [
+          null,
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": null
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": -22,
+        "args": [
+          [],
+          0,
+          [
+            0,
+            -1
+          ],
+          "NULL",
+          8
+        ],
+        "output": []
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 0,
+        "args": [
+          null,
+          0,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": null
+      },
+      {
+        "nr": 64,
+        "name": "write",
+        "ret": 5,
+        "args": [
+          1,
+          "70696e670a",
+          5
+        ]
+      },
+      {
+        "nr": 64,
+        "name": "write",
+        "ret": 10,
+        "args": [
+          1,
+          "2070706f6c6c204f4b0a",
+          10
+        ]
+      },
+      {
+        "nr": 94,
+        "name": "exit_group",
+        "ret": null,
+        "args": [
+          0
+        ]
+      }
+    ],
+    "stdout_hex": "70696e670a2070706f6c6c204f4b0a",
+    "stderr_hex": "",
+    "exit": 0
+  },
+  "guest": {
+    "events": [
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 1,
+        "args": [
+          [
+            [
+              0,
+              1,
+              0
+            ]
+          ],
+          1,
+          null,
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            0,
+            1,
+            1
+          ]
+        ]
+      },
+      {
+        "nr": 63,
+        "name": "read",
+        "ret": 5,
+        "args": [
+          0,
+          "70696e670a",
+          5
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 1,
+        "args": [
+          [
+            [
+              1,
+              4,
+              0
+            ]
+          ],
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            1,
+            4,
+            4
+          ]
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 0,
+        "args": [
+          [
+            [
+              -1,
+              0,
+              0
+            ]
+          ],
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            -1,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 1,
+        "args": [
+          [
+            [
+              999,
+              1,
+              0
+            ]
+          ],
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": [
+          [
+            999,
+            1,
+            32
+          ]
+        ]
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": -14,
+        "args": [
+          null,
+          1,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": null
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": -22,
+        "args": [
+          [],
+          0,
+          [
+            0,
+            -1
+          ],
+          "NULL",
+          8
+        ],
+        "output": []
+      },
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "ret": 0,
+        "args": [
+          [],
+          0,
+          [
+            0,
+            0
+          ],
+          "NULL",
+          8
+        ],
+        "output": []
+      },
+      {
+        "nr": 64,
+        "name": "write",
+        "ret": 5,
+        "args": [
+          1,
+          "70696e670a",
+          5
+        ]
+      },
+      {
+        "nr": 64,
+        "name": "write",
+        "ret": 10,
+        "args": [
+          1,
+          "2070706f6c6c204f4b0a",
+          10
+        ]
+      },
+      {
+        "nr": 94,
+        "name": "exit_group",
+        "args": [
+          0
+        ],
+        "ret": null
+      }
+    ],
+    "stdout_hex": "70696e670a2070706f6c6c204f4b0a",
+    "stderr_hex": "",
+    "exit": 0
+  }
+}

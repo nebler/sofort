@@ -1,0 +1,11 @@
+{
+  "busy_loop_wall_seconds": 3.01059675,
+  "cpu_time_ns_start": 19828750,
+  "cpu_time_ns_end": 162482291,
+  "computed_cpu_percent": 4.7383808874,
+  "ps_cpu_percent": 2.7,
+  "ps_cpu_time_seconds": 0.17,
+  "rusage_user_seconds": 0.150649,
+  "rusage_system_seconds": 0.01725,
+  "note": "proc_pidinfo task CPU values are mach ticks; multiply by 125/3 to match rusage. The shared host was severely loaded (>100 load average); this is a unit calibration, not a density benchmark."
+}

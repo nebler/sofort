@@ -1,0 +1,217 @@
+{
+  "version": 3,
+  "sha256": "8ed9df2f8168f6b503e0005e0c2ba24aa5dfb8252cabd36ae64225b512cbc1c0",
+  "image": "kernel-8ed9df2f8168f6b503e0005e0c2ba24aa5dfb8252cabd36ae64225b512cbc1c0.bin",
+  "bytes": 2924584,
+  "ram_mib": 32,
+  "features": [
+    "default",
+    "grow-trace",
+    "qjs"
+  ],
+  "syscalls": [
+    {
+      "nr": 17,
+      "name": "getcwd",
+      "registered": true,
+      "sha256": "733dce273bd66cd3bf6f3e61d3c67474806ca143e09ac0a31294472af3794ea6"
+    },
+    {
+      "nr": 25,
+      "name": "fcntl",
+      "registered": true,
+      "sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c"
+    },
+    {
+      "nr": 29,
+      "name": "ioctl",
+      "registered": true,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "nr": 56,
+      "name": "openat",
+      "registered": true,
+      "sha256": "3ea3343a63e7ea2dfb9efd93c1b14aae63e9f367394aabb9d5de804b91ecd411"
+    },
+    {
+      "nr": 57,
+      "name": "close",
+      "registered": true,
+      "sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc"
+    },
+    {
+      "nr": 61,
+      "name": "getdents64",
+      "registered": true,
+      "sha256": "b7efb95c2f37b06c990f8ce1fa59046afa2079009820e39e3d0f4b03da6e5812"
+    },
+    {
+      "nr": 62,
+      "name": "lseek",
+      "registered": true,
+      "sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59"
+    },
+    {
+      "nr": 63,
+      "name": "read",
+      "registered": true,
+      "sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759"
+    },
+    {
+      "nr": 64,
+      "name": "write",
+      "registered": true,
+      "sha256": "6fbe0b0047b2afcabc83761e4ed7dd2acb0661d586fe97486b68fb66cf5c17aa"
+    },
+    {
+      "nr": 65,
+      "name": "readv",
+      "registered": true,
+      "sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6"
+    },
+    {
+      "nr": 66,
+      "name": "writev",
+      "registered": true,
+      "sha256": "40ff0972f289eaca6ec4a5a026033049f6764485b98b87276ec2fef1fbe44cff"
+    },
+    {
+      "nr": 73,
+      "name": "ppoll",
+      "registered": true,
+      "sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33"
+    },
+    {
+      "nr": 78,
+      "name": "readlinkat",
+      "registered": true,
+      "sha256": "0e30f8b109d3d710b7cda90390b49478435ab67df2d0ca7af20fa08b7efc4ca2"
+    },
+    {
+      "nr": 79,
+      "name": "newfstatat",
+      "registered": true,
+      "sha256": "b9cc758c6c38d0badac20d5fdd858dbdcac5d0fe5026ad2af3239659c8397b50"
+    },
+    {
+      "nr": 93,
+      "name": "exit",
+      "registered": true,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "nr": 94,
+      "name": "exit",
+      "registered": true,
+      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+    },
+    {
+      "nr": 96,
+      "name": "set_tid_address",
+      "registered": true,
+      "sha256": "8b1c109892ff62df0f67a507fcc5bd416e28428196da2251af443b3c4eb94662"
+    },
+    {
+      "nr": 113,
+      "name": "clock_gettime",
+      "registered": true,
+      "sha256": "00ccd2816f3094fba9c053a8946f6d2e991bf90a9aa42a9da81dedaf21ae176e"
+    },
+    {
+      "nr": 134,
+      "name": "rt_sigaction",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 135,
+      "name": "rt_sigprocmask",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 214,
+      "name": "brk",
+      "registered": true,
+      "sha256": "132875356ac2b4bdcf3adab5afaa813d4ed2a53646bd2b7ade1d9a5dc8bc2a04"
+    },
+    {
+      "nr": 215,
+      "name": "munmap",
+      "registered": true,
+      "sha256": "9b03d295b8f4aa5fb21067ee1fdc0975b64662953f0fd41f839ac4aa43183c25"
+    },
+    {
+      "nr": 216,
+      "name": "mremap",
+      "registered": true,
+      "sha256": "ba99bc5f99bce39810d5f6f15c6f553a90a1399b1438e01de99af8b78eece56f"
+    },
+    {
+      "nr": 222,
+      "name": "mmap",
+      "registered": true,
+      "sha256": "ee7d875e5bfdf77a4bcb8dd09d3de81dfe1130799976a4a924d43a71f05d0a68"
+    }
+  ],
+  "packed": {
+    "source_sha256": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+    "flat_bytes": 2400256,
+    "flat_sha256": "fb9814aa15dc9f1fa157507eceb2d40318089415db2abc6d5582b07b62d8ca1a",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        6263300,
+        5
+      ],
+      [
+        6321264,
+        6592736,
+        6
+      ]
+    ],
+    "entry": 4197264,
+    "phdr": 4194368,
+    "phnum": 5,
+    "resources": {
+      "dir": null,
+      "sha256": "07facbcca859b65e9bcbb97124e967965f276f1388450bbaa4b3de012fd61d6e",
+      "bytes": 40,
+      "entries": 1,
+      "va": "0x64a000",
+      "heap": "0x680000"
+    }
+  },
+  "argv": [
+    "qjs",
+    "--std",
+    "-e",
+    "os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print(\"reply:\"+s)})"
+  ],
+  "verification": {
+    "schema": 3,
+    "version": 1,
+    "scope": "R3 verified contracts; inherited ABI unverified",
+    "contracts": [
+      {
+        "nr": 73,
+        "name": "ppoll",
+        "source_sha256": "47412424533ee162ade48a00af1c5aa93b05bd98325aa9296c13e8340de86a33",
+        "status": "restricted",
+        "domain": "bounded ppoll G4 fixture; WFI waits",
+        "oracle": "native Linux",
+        "full_linux_abi_equivalence": false,
+        "gate": {
+          "n": 30,
+          "pass": 30,
+          "complete_probe_trace": true
+        },
+        "evidence_sha256": "611653a151151dc0407e0c740c1aed433c0a09cb711f35301fe0c9cae4280989"
+      }
+    ],
+    "kernel_delta_lines": 0
+  },
+  "verification_sha256": "5ffd652d59decc4f36af9dd3a0174a519d7a41dc8a73aa938c3f6f5c41946a5e"
+}

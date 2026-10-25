@@ -1,0 +1,194 @@
+jitk: delegating kernel/build (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/clean/kernel)
+    Finished `release` profile [optimized] target(s) in 1.08s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+jitk: delegating vmm/build (see /private/tmp/jitk-10/clean/vmm/README.md)
+JITK_VMM_BUILD="/tmp/jitk-10/vmm" python3 build.py
+cargo build --locked --release -p libkrun 
+    Finished `release` profile [optimized] target(s) in 0.27s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib
+/tmp/jitk-10/vmm/jitk-vmm: replacing existing signature
+{
+  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "patches_sha256": {
+    "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+  },
+  "panic": "abort",
+  "features": [],
+  "sandbox_ready": true,
+  "binary": "/tmp/jitk-10/vmm/jitk-vmm",
+  "binary_sha256": "49d937f02654a2de5307f0d09b821181c117f9b80204cc4fa43ab074d5e9c9d0",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+}
+jitk: delegating protocol/build (see /private/tmp/jitk-10/clean/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:73854) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+jitk: delegating executor/dependencies (see /private/tmp/jitk-10/clean/executor/README.md)
+
+added 49 packages in 1s
+jitk: delegating executor/build (see /private/tmp/jitk-10/clean/executor/README.md)
+./run.sh build
+jitk: delegating kernel/test (see /private/tmp/jitk-10/clean/kernel/README.md)
+sh build.sh
+    Finished `release` profile [optimized] target(s) in 0.00s
+{"image": "/private/tmp/jitk-10/clean/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+python3 tests/test_packer.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.006s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/regression.py
+{
+  "load": "4:00  up  5:14, 2 users, load averages: 16.44 54.63 65.21",
+  "churn": {
+    "cumulative_bytes": 134217728,
+    "ram_mib": 32,
+    "result": {
+      "t": "done",
+      "ok": 8128
+    }
+  },
+  "clock": {
+    "host_interval_plus_1ms": 30,
+    "n": 30,
+    "midpoint_delta_ms": {
+      "n": 30,
+      "p50": -0.39425,
+      "p90": 0.005,
+      "p99": 0.0515
+    }
+  },
+  "finite_timer_e2e_ms": {
+    "n": 30,
+    "p50": 23.368479,
+    "p90": 24.010042,
+    "p99": 24.876833
+  },
+  "eof": "PASS: clean input EOF terminates without a success frame",
+  "partial_rx": "PASS: 1-byte run fragments + 32KiB ret",
+  "control_forgery": [
+    "\u001efatal control byte"
+  ],
+  "atomic_ascii": [
+    {
+      "byte": 0,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 30,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 127,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 128,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 255,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
+{
+  "load": "4:00  up  5:14, 2 users, load averages: 15.84 53.87 64.88",
+  "status": "PASS",
+  "n": 30,
+  "method": "Realtime minus guest counter compared with host realtime minus same-domain mach counter; 64 bracketed guest samples, narrowest retained. Date.now is millisecond quantized.",
+  "origin_error_ms": {
+    "n": 30,
+    "p50": -0.53759765625,
+    "p90": -0.0810546875,
+    "p99": -0.01904296875
+  },
+  "guest_bracket_width_ms": {
+    "n": 30,
+    "p50": 0.00024999864399433136,
+    "p90": 0.00024999864399433136,
+    "p99": 0.00024999864399433136
+  },
+  "worst_abs_error_bound_ms": 0.9964628899469972,
+  "samples_ms": [
+    -0.6328125,
+    -0.75,
+    -0.420166015625,
+    -0.662353515625,
+    -0.864501953125,
+    -0.44580078125,
+    -0.52001953125,
+    -0.732666015625,
+    -0.0810546875,
+    -0.45849609375,
+    -0.21630859375,
+    -0.55517578125,
+    -0.2216796875,
+    -0.940673828125,
+    -0.497802734375,
+    -0.557861328125,
+    -0.771484375,
+    -0.01904296875,
+    -0.28662109375,
+    -0.389404296875,
+    -0.996337890625,
+    -0.85205078125,
+    -0.8681640625,
+    -0.596923828125,
+    -0.49462890625,
+    -0.27392578125,
+    -0.389404296875,
+    -0.628662109375,
+    -0.077880859375,
+    -0.707275390625
+  ]
+}
+kernel-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+text-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+heap-exec {'returncode': 0, 'output': '\x1eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+privileged {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+el0-hvc {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+bad-pointer {'returncode': 0, 'output': '\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+pan {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12345,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080003f38\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+alias-write {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12346,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600004f far=0000000080080000 pc=0000000080003e8c\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+unknown-syscall {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":511,"pc":4194312,"args":[1,2147510560,0,58,0,0],"input":null,"timeout":null}\n\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'status': 'PASS'}
+Traceback (most recent call last):
+  File "/private/tmp/jitk-10/clean/kernel/tests/grow_contract.py", line 37, in <module>
+    image=build(name,(base/(name+'.S')).read_text());rr,app=run(image,data)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/pathlib/__init__.py", line 986, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/pathlib/__init__.py", line 970, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/jitk-10/08-grow-loop/r2/ioctl.S'
+Traceback (most recent call last):
+  File "/private/tmp/jitk-10/clean/kernel/tests/regression.py", line 5, in <module>
+    subprocess.run([sys.executable,str(p/test)],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 692, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.15/bin/python3.15', '/private/tmp/jitk-10/clean/kernel/tests/grow_contract.py']' returned non-zero exit status 1.
+make[1]: *** [test] Error 1
+make: *** [test] Error 2

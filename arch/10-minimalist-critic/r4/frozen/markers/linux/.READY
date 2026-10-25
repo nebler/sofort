@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-10-24T03:09:48.637242+00:00",
+  "label": "NESTED",
+  "performance": false,
+  "outer_linux_vcpus": 1,
+  "parking_image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "limitations": [
+    "nested non-performance only",
+    "outer SMP4 hard-lockup cause unverified",
+    "precise host-user/guest CPU attribution unverified; see out/cpu-analysis.json"
+  ],
+  "report": "out/report.json",
+  "report_sha256": "140a0be1ebbdbe41225b16c6333f447a0920dee3a75284d356f9cf42041eb965",
+  "artifacts": {
+    "jitk-vmm": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+    "spawn-cg": "b7a39ae6beb3cb8ca20f26c87d1593ca41d37bc736a550ceac6d8cd3434aeef5",
+    "kernel.bin": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+  },
+  "canonical_build": {
+    "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+    "patches_sha256": {
+      "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+      "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+      "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+      "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+    },
+    "panic": "abort",
+    "features": [],
+    "sandbox_ready": true,
+    "binary": "/work/vmm/jitk-vmm",
+    "binary_sha256": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+  }
+}

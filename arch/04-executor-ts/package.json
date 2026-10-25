@@ -1,0 +1,32 @@
+{
+  "name": "04-executor-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "demo": "npm run build && node build/demo.js",
+    "test": "npm run build && node build/verify.js",
+    "wrapper": "npm run build && node build/inspect-wrapper.js",
+    "build": "tsc --noEmit false --outDir build && cp guest.mjs build/guest.mjs",
+    "wrapper-backend": "npm run build && node build/backend-wrapper-demo.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@cloudflare/codemode": "0.5.5",
+    "@hyperlight-dev/js-host-api": "0.4.0",
+    "@tanstack/ai": "1.0.0",
+    "@tanstack/ai-code-mode": "1.0.0",
+    "ai": "7.0.152",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  },
+  "type": "module",
+  "private": true
+}

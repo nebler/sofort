@@ -1,0 +1,19 @@
+# deps / build output
+node_modules/
+target/
+__pycache__/
+.cache/
+*.pyc
+.DS_Store
+
+# upstream clones (re-fetch with arch/research/fetch-repos.sh)
+arch/research/repos/*/
+
+# KVM dev VM: disk images, kernels, keys, logs
+kvm-dev/disk.qcow2
+kvm-dev/img/
+kvm-dev/boot/
+kvm-dev/seed.iso
+kvm-dev/serial.log
+kvm-dev/id_ed25519
+kvm-dev/id_ed25519.pub

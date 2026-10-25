@@ -1,0 +1,257 @@
+[
+  {
+    "case": "cpu50ms",
+    "mode": "hl-strict",
+    "jitk_ms": 60.0627705,
+    "other_ms": 58.9691045,
+    "jitk_minus_other_ms": 1.093665999999999,
+    "difference_95ci_ms": [
+      -0.14018749999999613,
+      2.3861670000000004
+    ],
+    "jitk_over_other_ratio": 1.0185464237463535,
+    "ratio_95ci": [
+      0.9976804909954862,
+      1.0412314619621499
+    ],
+    "local_winner": "inconclusive"
+  },
+  {
+    "case": "cpu50ms",
+    "mode": "hl-fresh-inprocess",
+    "jitk_ms": 60.0627705,
+    "other_ms": 62.772020999999995,
+    "jitk_minus_other_ms": -2.709250499999996,
+    "difference_95ci_ms": [
+      -3.898417000000002,
+      -1.8204174999999978
+    ],
+    "jitk_over_other_ratio": 0.956839839520222,
+    "ratio_95ci": [
+      0.9383152686475528,
+      0.9709571499550721
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "cpu50ms",
+    "mode": "hl-snapshot-logical",
+    "jitk_ms": 60.0627705,
+    "other_ms": 50.7737915,
+    "jitk_minus_other_ms": 9.288978999999998,
+    "difference_95ci_ms": [
+      8.375291999999995,
+      10.860875
+    ],
+    "jitk_over_other_ratio": 1.1829483031614842,
+    "ratio_95ci": [
+      1.1648531738883725,
+      1.2140241695008955
+    ],
+    "local_winner": "hl-snapshot-logical"
+  },
+  {
+    "case": "json1m",
+    "mode": "hl-strict",
+    "jitk_ms": 16.17575,
+    "other_ms": 19.857271,
+    "jitk_minus_other_ms": -3.681521,
+    "difference_95ci_ms": [
+      -10.344542,
+      -3.133291
+    ],
+    "jitk_over_other_ratio": 0.8146008582951807,
+    "ratio_95ci": [
+      0.6224516560009297,
+      0.8446574770076739
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "json1m",
+    "mode": "hl-fresh-inprocess",
+    "jitk_ms": 16.17575,
+    "other_ms": 25.1021665,
+    "jitk_minus_other_ms": -8.926416499999998,
+    "difference_95ci_ms": [
+      -12.545604,
+      -7.590166500000002
+    ],
+    "jitk_over_other_ratio": 0.644396570311969,
+    "ratio_95ci": [
+      0.5755915153511268,
+      0.6931329933543477
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "json1m",
+    "mode": "hl-snapshot-logical",
+    "jitk_ms": 16.17575,
+    "other_ms": 12.7477085,
+    "jitk_minus_other_ms": 3.428041500000001,
+    "difference_95ci_ms": [
+      3.127666999999999,
+      4.985125
+    ],
+    "jitk_over_other_ratio": 1.2689143307599167,
+    "ratio_95ci": [
+      1.2440514703793906,
+      1.3889886891011927
+    ],
+    "local_winner": "hl-snapshot-logical"
+  },
+  {
+    "case": "one_tool_5ms",
+    "mode": "hl-strict",
+    "jitk_ms": 16.814270999999998,
+    "other_ms": 14.228291500000001,
+    "jitk_minus_other_ms": 2.585979499999997,
+    "difference_95ci_ms": [
+      0.6825829999999993,
+      7.429541999999998
+    ],
+    "jitk_over_other_ratio": 1.1817491228655244,
+    "ratio_95ci": [
+      1.0462964306909708,
+      1.4899461949155066
+    ],
+    "local_winner": "hl-strict"
+  },
+  {
+    "case": "one_tool_5ms",
+    "mode": "hl-fresh-inprocess",
+    "jitk_ms": 16.814270999999998,
+    "other_ms": 18.584687000000002,
+    "jitk_minus_other_ms": -1.7704160000000044,
+    "difference_95ci_ms": [
+      -3.9133955000000036,
+      3.609311999999999
+    ],
+    "jitk_over_other_ratio": 0.9047379167591036,
+    "ratio_95ci": [
+      0.7889573106524765,
+      1.1863656302103942
+    ],
+    "local_winner": "inconclusive"
+  },
+  {
+    "case": "one_tool_5ms",
+    "mode": "hl-snapshot-logical",
+    "jitk_ms": 16.814270999999998,
+    "other_ms": 6.19575,
+    "jitk_minus_other_ms": 10.618520999999998,
+    "difference_95ci_ms": [
+      8.384812499999999,
+      16.260896000000002
+    ],
+    "jitk_over_other_ratio": 2.713839486744946,
+    "ratio_95ci": [
+      2.3569699780078732,
+      3.5083474732339592
+    ],
+    "local_winner": "hl-snapshot-logical"
+  },
+  {
+    "case": "promise10_5ms",
+    "mode": "hl-strict",
+    "jitk_ms": 15.5388545,
+    "other_ms": 61.4449795,
+    "jitk_minus_other_ms": -45.906125,
+    "difference_95ci_ms": [
+      -48.865041,
+      -44.402688
+    ],
+    "jitk_over_other_ratio": 0.2528905473880091,
+    "ratio_95ci": [
+      0.23789142589276827,
+      0.2842946706563399
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "promise10_5ms",
+    "mode": "hl-fresh-inprocess",
+    "jitk_ms": 15.5388545,
+    "other_ms": 65.53456249999999,
+    "jitk_minus_other_ms": -49.99570799999999,
+    "difference_95ci_ms": [
+      -51.814207999999994,
+      -47.96856150000001
+    ],
+    "jitk_over_other_ratio": 0.23710930396460647,
+    "ratio_95ci": [
+      0.22328016667486159,
+      0.27102043752411853
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "promise10_5ms",
+    "mode": "hl-snapshot-logical",
+    "jitk_ms": 15.5388545,
+    "other_ms": 53.525000000000006,
+    "jitk_minus_other_ms": -37.986145500000006,
+    "difference_95ci_ms": [
+      -39.0535835,
+      -35.65004150000001
+    ],
+    "jitk_over_other_ratio": 0.29031021952358704,
+    "ratio_95ci": [
+      0.2728939583245593,
+      0.33527607169965545
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "return2",
+    "mode": "hl-strict",
+    "jitk_ms": 9.9127085,
+    "other_ms": 8.0953965,
+    "jitk_minus_other_ms": 1.8173120000000011,
+    "difference_95ci_ms": [
+      0.6541680000000003,
+      2.463583
+    ],
+    "jitk_over_other_ratio": 1.2244870896688014,
+    "ratio_95ci": [
+      1.0730517684667737,
+      1.311057830522458
+    ],
+    "local_winner": "hl-strict"
+  },
+  {
+    "case": "return2",
+    "mode": "hl-fresh-inprocess",
+    "jitk_ms": 9.9127085,
+    "other_ms": 12.7279165,
+    "jitk_minus_other_ms": -2.8152079999999984,
+    "difference_95ci_ms": [
+      -4.337083999999999,
+      -1.6307919999999996
+    ],
+    "jitk_over_other_ratio": 0.7788162736611292,
+    "ratio_95ci": [
+      0.6948921979841004,
+      0.8800075494346177
+    ],
+    "local_winner": "jitk"
+  },
+  {
+    "case": "return2",
+    "mode": "hl-snapshot-logical",
+    "jitk_ms": 9.9127085,
+    "other_ms": 0.8466665,
+    "jitk_minus_other_ms": 9.066042000000001,
+    "difference_95ci_ms": [
+      8.490417,
+      11.284374999999999
+    ],
+    "jitk_over_other_ratio": 11.707925729906641,
+    "ratio_95ci": [
+      9.426659515119693,
+      13.26384676775738
+    ],
+    "local_winner": "hl-snapshot-logical"
+  }
+]

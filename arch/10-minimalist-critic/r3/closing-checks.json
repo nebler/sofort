@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-24T02:42:36.202137+00:00",
+  "protocol_cases": 19,
+  "protocol_passes": 570,
+  "fixture_host_effects": 0,
+  "owned_temp_workers_remaining": [],
+  "delivery_links": 210,
+  "r3_lines": 96,
+  "source_recheck": "final-source-check.json",
+  "h4_audit": "h4-audit.json",
+  "scope": "No foreign process signaled. H2/native-host reaping additionally follows per-run receipt; current scan covers unique reviewer temporary paths."
+}

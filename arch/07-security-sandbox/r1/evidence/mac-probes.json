@@ -1,0 +1,20 @@
+[
+  {
+    "mode": "baseline",
+    "returncode": 0,
+    "stdout": "open[/etc/passwd]=3 errno=0\nopen[/Users/noah/.ssh]=3 errno=0\nopen[/private/tmp/jitk-07/forbidden.txt]=3 errno=0\nopen[kk.bin]=3 errno=0\ncreate=3 errno=0\nsocket=3 errno=0\nconnect=0 errno=0\n",
+    "stderr": ""
+  },
+  {
+    "mode": "launch",
+    "returncode": 0,
+    "stdout": "open[/etc/passwd]=-1 errno=1\nopen[/Users/noah/.ssh]=-1 errno=1\nopen[/private/tmp/jitk-07/forbidden.txt]=-1 errno=1\nopen[kk.bin]=3 errno=0\ncreate=-1 errno=1\nsocket=3 errno=0\nconnect=-1 errno=1\n",
+    "stderr": ""
+  },
+  {
+    "mode": "inprocess",
+    "returncode": 0,
+    "stdout": "open[/etc/passwd]=-1 errno=1\nopen[/Users/noah/.ssh]=-1 errno=1\nopen[/private/tmp/jitk-07/forbidden.txt]=-1 errno=1\nopen[kk.bin]=3 errno=0\ncreate=-1 errno=1\nsocket=3 errno=0\nconnect=-1 errno=1\n",
+    "stderr": "sandbox_init_ns=14371000\n"
+  }
+]

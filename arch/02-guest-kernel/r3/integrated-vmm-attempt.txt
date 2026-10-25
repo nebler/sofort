@@ -1,0 +1,40 @@
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel)
+    Finished `release` profile [optimized] target(s) in 7.51s
+{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel-5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36.bin", "sha256": "5dcfd9054667442aae47621ec78c4fde55646ed303b84e855a8935fc06fe1b36", "bytes": 2924544}
+python3 tests/test_packer.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.080s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 tests/regression.py
+Traceback (most recent call last):
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/tests/checks.py", line 10, in <module>
+    m,_,_=one(churn);assert m=={'t':'done','ok':8128},m
+          ~~~^^^^^^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/tests/checks.py", line 7, in one
+    v.ready();lo=time.time_ns();v.run(code);m=v.recv();hi=time.time_ns();assert m['t']=='done',m;return m,lo,hi
+    ~~~~~~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/tests/measure.py", line 42, in ready
+    m=self.recv(timeout=10);assert m=={'t':'ready','v':1},m
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/tests/measure.py", line 33, in recv
+    if self.p.stdout not in self.streams:raise RuntimeError({'exit':self.p.poll(),'records':self.records,'stderr':self.stderr.decode(),'partial':self.buf.decode()})
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: {'exit': 70, 'records': [], 'stderr': 'jitk-vmm: area 07 sandbox module not ready; refusing unconfined launch\n', 'partial': ''}
+Traceback (most recent call last):
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/tests/regression.py", line 5, in <module>
+    subprocess.run([sys.executable,str(p/test)],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 692, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.15/bin/python3.15', '/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/tests/checks.py']' returned non-zero exit status 1.
+make: *** [test] Error 1

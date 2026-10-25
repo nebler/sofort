@@ -1,0 +1,14 @@
+{
+  "codemode vs repeat-codemode": {
+    "comparison": "mismatch: trace.jsonl",
+    "stdout_equal": false
+  },
+  "codemode-deterministic vs repeat-deterministic": {
+    "comparison": "MATCH",
+    "stdout_equal": true
+  },
+  "json-heavy vs mremap-enosys": {
+    "comparison": "mismatch: trace.jsonl",
+    "stdout_equal": true
+  }
+}

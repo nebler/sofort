@@ -1,0 +1,36 @@
+--- a/src/libkrun/src/vmm/builder.rs
++++ b/src/libkrun/src/vmm/builder.rs
+@@ -1287,9 +1287,20 @@
+         intc = {
+             // If the system supports the in-kernel GIC, use it. Otherwise, fall back to the
+             // userspace implementation.
+-            let gic = match HvfGicV3::new(vm_resources.vm_config().vcpu_count.unwrap() as u64) {
+-                Ok(hvfgic) => IrqChipDevice::new(Box::new(hvfgic)),
+-                Err(_) => IrqChipDevice::new(Box::new(GicV3::new(vcpu_list.clone()))),
++            let gic = if std::env::var_os("JITK_USERSPACE_GIC").is_some() {
++                eprintln!("JITK_GIC userspace (forced)");
++                IrqChipDevice::new(Box::new(GicV3::new(vcpu_list.clone())))
++            } else {
++                match HvfGicV3::new(vm_resources.vm_config().vcpu_count.unwrap() as u64) {
++                    Ok(hvfgic) => {
++                        eprintln!("JITK_GIC hvf");
++                        IrqChipDevice::new(Box::new(hvfgic))
++                    }
++                    Err(e) => {
++                        eprintln!("JITK_GIC userspace fallback: {e:?}");
++                        IrqChipDevice::new(Box::new(GicV3::new(vcpu_list.clone())))
++                    }
++                }
+             };
+             Arc::new(Mutex::new(gic))
+         };
+--- a/src/libkrun/src/vmm/macos/vstate.rs
++++ b/src/libkrun/src/vmm/macos/vstate.rs
+@@ -561,6 +561,7 @@
+         timeout: Option<Duration>,
+         hvf_vcpu: &HvfVcpu,
+     ) {
++        eprintln!("JITK_WAIT_FOR_EVENT timeout={timeout:?}");
+         if !self.vcpu_list.should_wait(hvf_vcpuid) {
+             return;
+         }

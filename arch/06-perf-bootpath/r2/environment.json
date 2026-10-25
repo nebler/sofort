@@ -1,0 +1,92 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "uptime"
+      ],
+      "rc": 0,
+      "stdout": " 2:45  up  3:58, 2 users, load averages: 89.85 59.52 51.88\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "sw_vers"
+      ],
+      "rc": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.1\nBuildVersion:\t\t25G76\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string",
+        "hw.logicalcpu",
+        "hw.memsize"
+      ],
+      "rc": 0,
+      "stdout": "Apple M4 Pro\n12\n25769803776\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/jitk-09/node-real",
+        "--version"
+      ],
+      "rc": 0,
+      "stdout": "v24.22.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "rc": 0,
+      "stdout": "Python 3.15.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "otool",
+        "-L",
+        "/tmp/jitk-06/r2/host"
+      ],
+      "rc": 0,
+      "stdout": "/tmp/jitk-06/r2/host:\n\t/tmp/jitk-06/r2/libkrun.2.dylib (compatibility version 2.0.0, current version 2.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "otool",
+        "-L",
+        "/tmp/jitk-06/r2/vmm-static-minimal"
+      ],
+      "rc": 0,
+      "stdout": "/tmp/jitk-06/r2/vmm-static-minimal:\n\t/System/Library/Frameworks/Hypervisor.framework/Versions/A/Hypervisor (compatibility version 1.0.0, current version 259.6.4)\n\t/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "codesign",
+        "-dvvv",
+        "/tmp/jitk-06/r2/host"
+      ],
+      "rc": 0,
+      "stdout": "",
+      "stderr": "Executable=/private/tmp/jitk-06/r2/host\nIdentifier=host-555549444efc10b8678138049f2361de0c8ebe0b\nFormat=Mach-O thin (arm64)\nCodeDirectory v=20400 size=454 flags=0x2(adhoc) hashes=3+7 location=embedded\nHash type=sha256 size=32\nCandidateCDHash sha256=102d5d6ba3bfe84ef89ac761cd0da682246134f4\nCandidateCDHashFull sha256=102d5d6ba3bfe84ef89ac761cd0da682246134f4265667687f2567fd17371eba\nHash choices=sha256\nCMSDigest=102d5d6ba3bfe84ef89ac761cd0da682246134f4265667687f2567fd17371eba\nCMSDigestType=2\nCDHash=102d5d6ba3bfe84ef89ac761cd0da682246134f4\nSignature=adhoc\nInfo.plist=not bound\nTeamIdentifier=not set\nSealed Resources=none\nInternal requirements count=0 size=12\n"
+    }
+  ],
+  "sha256": {
+    "/tmp/jitk-06/r2/r2-print.bin": "2637986b9c232033fa14241ef385cd157958bf0fcda5ee7af2f1f74d764d91f9",
+    "/tmp/jitk-06/r2/tool.bin": "3ecb8a52a7e1776fad4d32010f0927261a6b094a5dbb956ff67875d99ce4798d",
+    "/tmp/jitk-06/r2/r2-original.bin": "00040cfa7187a3cf25fb7cf8f01d973bf41f4f9179b4fc382dcb890b34d13edf",
+    "/tmp/jitk-06/r2/r2-tool.bin": "e01865253638e25332197156df368aeb5bb427d454529f0a8c4aee929072dcec",
+    "/tmp/jitk-06/r2/print.bin": "a37a16fda4bd6efd4f35fab132098c2c7fccf990f1aca5a33b13057a804f658e",
+    "/tmp/jitk-06/r2/host": "f9f7d60f1b543087c21423768a165e17ab8d472ee0c0d3b050cbd181d3b07467",
+    "/tmp/jitk-06/r2/libkrun.2.dylib": "7ec6392da427c2cc6d42e1192bd62189439152d347bd0089e4d9926f9ad53875",
+    "/tmp/jitk-06/r2/jitk-vmm": "f514554ffaf4eba25d00137168219bf4cfcc5b6bf2f7191afab26e2eb37ecc3d",
+    "/tmp/jitk-06/r2/host-static": "7808a88bf12a425247d877fee72fdbcdb01b62c60ed6244b87670d0b5f385a0d",
+    "/tmp/jitk-06/r2/vmm-final": "bf557507cdd42b695edc8111ae743de1930341c5a2a7ffc9ba46dcc91e49f894"
+  }
+}

@@ -1,0 +1,1 @@
+{"n": 100, "spawn_to_ready_ms": {"median": 7.116833, "p90": 18.801833}, "code_to_done_ms": {"median": 0.3359585, "p90": 0.746041}, "bytecode": {"spawn_to_ready_ms": {"median": 5.468541500000001, "p90": 15.396}, "code_to_done_ms": {"median": 0.334812, "p90": 0.725083}}}

@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-10-24T03:11:04.731389+00:00",
+  "status": "PASS",
+  "label": "NESTED",
+  "performance": false,
+  "outer_linux_vcpus": 1,
+  "children_remaining": 0,
+  "outer_qemu_reaped": true,
+  "artifact_sha256": {
+    "jitk-vmm": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+    "spawn-cg": "b7a39ae6beb3cb8ca20f26c87d1593ca41d37bc736a550ceac6d8cd3434aeef5",
+    "kernel.bin": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "unknown-smc.bin": "137833cac33f65902b07bb4dcff123826bbb51729424d7faa99c1eb20e995f07",
+    "rtc_oob_read.bin": "a60a836108cd9f1d6fb121c39f242f6ca657adeb763b4a0fef37e00c5a065608",
+    "unknown-hvc.bin": "fd171655630d980f1bd11fcc56f7754916c35563036e30234e44c6165f4a72dc",
+    "mmio-halfword.bin": "dd47ecdd5529fe19bce7dab43a043ab2ecc0a9ad6dd16478fe9cf061f9c1fe8f",
+    "bad-sysreg.bin": "d86438502c6feaf9fc53b5981152d31a85abb7b3094d4f971a0da24467dacc04",
+    "kk.bin": "f82411ed394e499325633e638995efa60c70ab56bf74aaa8c68c701da8a11844",
+    "console_avail_oob.bin": "a840ca761d97820769feda5757828e5fcfa0e87ee841594829941b63915e104f",
+    "seccomp-probe": "a8ffaad4ce5727bf136d64ab00a8c967df45303e174ff57a339b9c89d49449e5"
+  },
+  "parking_image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "canonical_build": {
+    "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+    "patches_sha256": {
+      "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+      "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+      "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+      "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+    },
+    "panic": "abort",
+    "features": [],
+    "sandbox_ready": true,
+    "binary": "/work/vmm/jitk-vmm",
+    "binary_sha256": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+  },
+  "producer_v2_binary_sha256": "4445e2ccf6e2446b5d8ab03a5794cb4d94101516037f7328863308a95b16f028",
+  "report": "out/report.json",
+  "report_sha256": "140a0be1ebbdbe41225b16c6333f447a0920dee3a75284d356f9cf42041eb965",
+  "source_inputs_sha256": "c4823722f50b6e6b1935af12084d7af404350572dd7da606d8d286375cdb0629",
+  "outer_load1_range": [
+    32.99072265625,
+    140.845703125
+  ],
+  "limitations": [
+    "nested functional only",
+    "precise guest/host-user CPU attribution unverified",
+    "outer SMP4 issue and metal performance remain unverified"
+  ],
+  "evidence_paths": "Host scratch prefixes in exported logs are normalized to $JITK_WORK or $JITK_ROOT; report data is byte-identical to the tested copy."
+}

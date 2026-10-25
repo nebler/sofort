@@ -1,0 +1,55 @@
+{
+  "files": {
+    "worker.rs": "2a67b0ed580f045534b7592bb284fc91739ad4931e976fab16f8d4fcb517c721",
+    "bootstrap.js": "cd4e7bf93e5e91eb93b1e630a2c49244aa553eecf029a5a8f1a6bc93d3319cd1",
+    "backend.ts": "692a13be62b6b904001c6eb1e1f1222c1789e9aafc2a679a2f4a54f262771ef7",
+    "bench.py": "5b7ea33bc76758a55b242d8e244ef64117deaae8796fc1e63dc74d79f46ae80c",
+    "analyze.py": "5edd5a93e7bf872e5130d65a2a1b4986fd9d5cd244ee1f29b8c23205034e9070",
+    "executor-runner.mjs": "49982a474fd4502e89949ad23d9df83e9d613c295a7835d72b68281a1e9d4d6a",
+    "adapter.json": "ea4e546342a28a7bd912d1ebae0a3007ee4c9df190006907a726f668a2169207",
+    "Cargo.lock": "352f488944fb306637fb7bf90cd3c5077f5c337539bf4ae69530000e2d48c731"
+  },
+  "node": {
+    "path": "/tmp/jitk-09/node-real",
+    "sha256": "df969da390dce1b230f7d23ab2892b5d7b994ae4a7107b6f434a97068b73f11e"
+  },
+  "checks": {
+    "adapter": 13,
+    "executor": 6,
+    "ts_no_emit": "PASS",
+    "integrated_strict_executor_smoke_cells": 20
+  },
+  "upstream": {
+    "hyperlight": "8a7e6b8794fea050ce287eed614088f0beb6b973",
+    "hyperlight-js": "8d208af8ac3ca53f2069c9ef0ca6a45d89e032d7"
+  },
+  "snapshot_evidence": {
+    "recorded_after_run": true,
+    "index": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.oci.image.index.v1+json",
+      "manifests": [
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:120ce90b0f14bc00f3f45817c3c61026c8467f7797c54753b626e754655a11d1",
+          "size": 760,
+          "annotations": {
+            "dev.hyperlight.snapshot.hypervisor": "hvf",
+            "org.opencontainers.image.ref.name": "base",
+            "dev.hyperlight.snapshot.cpu.vendor": "0x61",
+            "dev.hyperlight.snapshot.arch": "aarch64"
+          }
+        }
+      ]
+    },
+    "index_sha256": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09",
+    "note": "No snapshot writes occurred during the run; tenant-free snapshot built before smoke and retained unchanged."
+  },
+  "results": {
+    "samples": 900,
+    "pass": 900,
+    "gate_passed": 0,
+    "raw_sha256": "0cf667760cc30056ccf0c29b5451ba661ca0b50624c105fdeac66e824a699956"
+  },
+  "post_run_controller_sha256": "351028ed156d9cdebacf15e57c5076fca725aa95af02ffd75b17da23c1228816"
+}

@@ -1,0 +1,3 @@
+{"t":"ready","version":1}
+{"t":"call","id":0,"ns":"github","fn":"listIssues","args":[{"repo":"x"}]}
+{"t":"done","result":2}

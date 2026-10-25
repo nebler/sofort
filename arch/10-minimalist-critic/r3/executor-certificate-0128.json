@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "at": "2026-10-24T01:28:25.410Z",
+  "selection": "integrated jitk / VMM canonical / kernel canonical",
+  "integrated": true,
+  "host": {
+    "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+    "sha256": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e"
+  },
+  "image": {
+    "path": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+    "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364"
+  },
+  "gate": {
+    "idleCorePercent": 0,
+    "evidence": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/.READY: 0.00% idle; 1000/1000"
+  },
+  "vmmReady": true,
+  "kernelReady": true,
+  "inputs": {
+    "vendor/codemode.mjs": "79091b106e34cbf8fd972d43b7c46d3a3a0c5b732f1fbfbc6cab5191cdd241db",
+    "upstream.ts": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf",
+    "codec.mjs": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e",
+    "code.ts": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760",
+    "policy-adapter.ts": "5ac2dfd50250ff2552015449b85e2a527ca57924f639d8a4b1d918d3f146eaf1",
+    "../protocol/dispatcher.ts": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f",
+    "backend.ts": "d46727698d68de6eb6466e617c42a7d39298db4f16d6ba4f3ba7f46814325143",
+    "pool.ts": "35eae8477a840be9eaeb426ccce455b51788c983cb39d7e25b6282716a81dec3",
+    "../bench/hyperlight/backend.ts": "692a13be62b6b904001c6eb1e1f1222c1789e9aafc2a679a2f4a54f262771ef7",
+    "executor.ts": "73a14b7e4fd688ee61e14719777265a92931dc14f86e5bb9da94f1cf0d2bb44a",
+    "select-backend.ts": "96b839dd48c478437aeedab5a433050483269b1b08cbaea0a3157ba5f1f1c844",
+    "api-check.ts": "d4c3f0140ee90c877be3343a0fb3091d451c4f1ddea034a7b725d4365f5d8088",
+    "breakdown.ts": "aef6f10dda9e68d0d17bc1f7f54dff7da652688fe4bd5add6d9f62feaacf7da3",
+    "hyperlight-check.ts": "77b78e4c53b23db28bb2a7fbc761271e714132d59a3a21993a78c93b310969be",
+    "policy-check.ts": "1b6578f14caf5b6b4a5de97969a8db42e51e4c080012fc652a97629c70db48c1",
+    "pool-check.ts": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede",
+    "providers.ts": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161",
+    "resolve-check.ts": "617bccb3714e3f12053a0495ffd43de782397e6976408fa4f9653fb1e481a240",
+    "sandbox-check.ts": "2e480a40811cb55e54e60cb999de9216f06a7bf3020d205046b573063ace2cbf",
+    "transport-check.ts": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc",
+    "verify.ts": "7cebdfe593b05b0947cf41dac7eac46ebc0d3b2f7b991ead41721bf9656a7b92",
+    "watchdog-check.ts": "54d30cbc5f8f95411fd0e1219aa2b8ef23a229338cf2e295a66ddc35f82b5112",
+    "wrapper-conformance.ts": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5",
+    "/tmp/jitk-01/r3/darwin/jitk-vmm": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+    "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "../protocol/bootstrap.js": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280",
+    "policy/policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+    "../bench/hyperlight/watchdog.py": "a0d3d29bea2baf3385b53f7fb266e97efa3610ee6986c7a6d08bc0524d8f6f7b",
+    "fixtures/policy-owner-test.mjs": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c"
+  },
+  "tests": "20 executor + Cloudflare/TanStack + 30x64 calls + 22 security policy + 22 executor policy + 6 Hyperlight + lifecycle/ack/hostile/watchdog",
+  "timings": "breakdown-results.json",
+  "n": 50
+}

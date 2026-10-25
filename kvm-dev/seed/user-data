@@ -1,0 +1,11 @@
+#cloud-config
+users:
+  - name: dev
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: [kvm]
+    ssh_authorized_keys: ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAHwMbrbQIF5FESbz2DMQidl9OSodbPmRT9Gy75gJ5QV kvm-dev"]
+package_update: true
+packages: [build-essential, clang, lld, llvm, libclang-dev, libssl-dev, git, curl, strace, python3, pkg-config, rsync, cpio, linux-tools-generic]
+runcmd:
+  - [sh, -c, "usermod -aG kvm dev; su - dev -c 'curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal -t aarch64-unknown-none' && touch /var/lib/kvm-dev-ready"]

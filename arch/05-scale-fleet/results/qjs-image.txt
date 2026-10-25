@@ -1,0 +1,27 @@
+-rwxr-xr-x    1 root     root       2394464 Oct 23 23:52 qjs-static
+
+Elf file type is EXEC (Executable file)
+Entry point 0x400b90
+There are 5 program headers, starting at offset 64
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000
+                 0x00000000001f9204 0x00000000001f9204  R E    0x10000
+  LOAD           0x0000000000207470 0x0000000000607470 0x0000000000607470
+                 0x0000000000041090 0x0000000000042470  RW     0x10000
+  NOTE           0x0000000000000158 0x0000000000400158 0x0000000000400158
+                 0x0000000000000024 0x0000000000000024  R      0x4
+  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x0000000000000000 0x0000000000000000  RW     0x10
+  GNU_RELRO      0x0000000000207470 0x0000000000607470 0x0000000000607470
+                 0x0000000000038b90 0x0000000000038b90  R      0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .note.gnu.build-id .init .text .fini .rodata .eh_frame 
+   01     .init_array .fini_array .data.rel.ro .got .data .bss 
+   02     .note.gnu.build-id 
+   03     
+   04     .init_array .fini_array .data.rel.ro .got 

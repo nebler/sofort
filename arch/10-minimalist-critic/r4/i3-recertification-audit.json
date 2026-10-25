@@ -1,0 +1,304 @@
+{
+  "source": "arch/jitk/bench/r4-raw.json",
+  "receipt_sha256": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b",
+  "finished": "2026-10-24T03:03:35.683081+00:00",
+  "config": {
+    "vmm": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+    "baseline": "/tmp/jitk-06/r3/run-1792805993469828000/jitk-vmm",
+    "image": "/tmp/jitk-06/r4/anyname/kernel/dist/kernel.bin",
+    "scratch_dir": "/tmp/jitk-06/r4/frozen",
+    "output": "/tmp/jitk-06/r4/paired.json",
+    "samples": 60,
+    "gate_budget": 1,
+    "seed": 604
+  },
+  "n": 480,
+  "counts": [
+    {
+      "pass": "paired",
+      "case": "jitk-cold/return2",
+      "build": "baseline",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-cold/return2",
+      "build": "v2",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-parked-memory/one_tool",
+      "build": "baseline",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-parked-memory/one_tool",
+      "build": "v2",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-parked-raw/one_tool",
+      "build": "baseline",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-parked-raw/one_tool",
+      "build": "v2",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-parked-raw/promise10_5ms",
+      "build": "baseline",
+      "n": 60
+    },
+    {
+      "pass": "paired",
+      "case": "jitk-parked-raw/promise10_5ms",
+      "build": "v2",
+      "n": 60
+    }
+  ],
+  "statuses": {
+    "PASS": 480
+  },
+  "gate_passed": 0,
+  "load1_range": [
+    12.48291015625,
+    112.85107421875
+  ],
+  "all_load_evidence": true,
+  "no_duplicate_block_build_case": true,
+  "active_owned_pids": [],
+  "quiet_pass": "No quiet pass was possible: load1 never dropped below 6 during monitored setup and collection.",
+  "artifacts": {
+    "baseline": {
+      "vmm": {
+        "recorded": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+        "actual": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+        "matches": true
+      },
+      "image": {
+        "recorded": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+        "actual": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+        "matches": true
+      }
+    },
+    "v2": {
+      "vmm": {
+        "recorded": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+        "actual": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+        "matches": true
+      },
+      "image": {
+        "recorded": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+        "actual": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+        "matches": true
+      }
+    }
+  },
+  "summary": {
+    "paired": [
+      {
+        "case": "jitk-cold/return2",
+        "metric": "latency_ms",
+        "pairs": 60,
+        "baseline_median": 29.789916499999997,
+        "v2_median": 34.463875,
+        "paired_median_difference": 1.3100829999999997,
+        "paired_ci95": [
+          -5.097918,
+          5.449625000000001
+        ],
+        "load1_range": [
+          12.60400390625,
+          106.4560546875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-cold/return2",
+        "metric": "cpu_ms_vm",
+        "pairs": 60,
+        "baseline_median": 15.737999999999998,
+        "v2_median": 14.729,
+        "paired_median_difference": -1.1469999999999994,
+        "paired_ci95": [
+          -2.7619999999999987,
+          0.28499999999999837
+        ],
+        "load1_range": [
+          12.60400390625,
+          106.4560546875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-raw/one_tool",
+        "metric": "latency_ms",
+        "pairs": 60,
+        "baseline_median": 2.055104,
+        "v2_median": 3.4528745,
+        "paired_median_difference": 0.413041,
+        "paired_ci95": [
+          -0.2628907499999999,
+          2.0061602624999946
+        ],
+        "load1_range": [
+          12.48291015625,
+          112.85107421875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-raw/one_tool",
+        "metric": "cpu_ms_vm",
+        "pairs": 60,
+        "baseline_median": 16.3265,
+        "v2_median": 17.662,
+        "paired_median_difference": 0.7215000000000007,
+        "paired_ci95": [
+          -0.9290000000000003,
+          2.1609999999999996
+        ],
+        "load1_range": [
+          12.48291015625,
+          112.85107421875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-raw/promise10_5ms",
+        "metric": "latency_ms",
+        "pairs": 60,
+        "baseline_median": 9.4862295,
+        "v2_median": 9.8665835,
+        "paired_median_difference": -0.1625210000000008,
+        "paired_ci95": [
+          -1.0839790000000002,
+          0.892790999999999
+        ],
+        "load1_range": [
+          12.48291015625,
+          109.97998046875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-raw/promise10_5ms",
+        "metric": "cpu_ms_vm",
+        "pairs": 60,
+        "baseline_median": 19.2205,
+        "v2_median": 19.689,
+        "paired_median_difference": 0.8394999999999992,
+        "paired_ci95": [
+          -0.3279999999999994,
+          1.6375000000000037
+        ],
+        "load1_range": [
+          12.48291015625,
+          109.97998046875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-memory/one_tool",
+        "metric": "latency_ms",
+        "pairs": 60,
+        "baseline_median": 3.3665624999999997,
+        "v2_median": 2.612896,
+        "paired_median_difference": -0.4314584999999999,
+        "paired_ci95": [
+          -2.612292,
+          0.6635819999999999
+        ],
+        "load1_range": [
+          12.48291015625,
+          109.97998046875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-memory/one_tool",
+        "metric": "footprint_mib",
+        "pairs": 60,
+        "baseline_median": 10.703617095947266,
+        "v2_median": 10.750503540039062,
+        "paired_median_difference": 0.0625,
+        "paired_ci95": [
+          0.046863555908203125,
+          0.06252288818359375
+        ],
+        "load1_range": [
+          12.48291015625,
+          109.97998046875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-memory/one_tool",
+        "metric": "rss_mib",
+        "pairs": 60,
+        "baseline_median": 15.3828125,
+        "v2_median": 15.421875,
+        "paired_median_difference": 0.046875,
+        "paired_ci95": [
+          0.03125,
+          0.0546875
+        ],
+        "load1_range": [
+          12.48291015625,
+          109.97998046875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      },
+      {
+        "case": "jitk-parked-memory/one_tool",
+        "metric": "cpu_ms_vm",
+        "pairs": 60,
+        "baseline_median": 16.625,
+        "v2_median": 16.386499999999998,
+        "paired_median_difference": -0.13350000000000328,
+        "paired_ci95": [
+          -1.985999999999997,
+          1.1819999999999995
+        ],
+        "load1_range": [
+          12.48291015625,
+          109.97998046875
+        ],
+        "gate_passed": 0,
+        "samples": 120,
+        "failures": 0
+      }
+    ]
+  },
+  "audited_utc": "2026-10-24T03:05:05.400818+00:00",
+  "auditor_load": [
+    140.845703125,
+    98.13330078125,
+    72.92236328125
+  ]
+}

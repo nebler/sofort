@@ -1,0 +1,2361 @@
+{
+  "context": {
+    "utc": "2026-10-24T03:18:58.841933+00:00",
+    "load": [
+      45.5029296875,
+      63.63330078125,
+      69.10498046875
+    ],
+    "uptime": "5:18  up  6:32, 2 users, load averages: 45.50 63.63 69.10"
+  },
+  "root": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk",
+  "scope": "all regular file bytes and symlink targets; no exclusions; symlinks not followed",
+  "pattern": "/tmp/jitk-[0-9]{2}(?![0-9])|arch/[0-9]{2}-|2026\\-10\\-23\\-is\\-there\\-a\\-way\\-we\\-5a54f52b",
+  "files": 6249,
+  "symlinks": 7,
+  "bytes": 178240193,
+  "hits": [
+    {
+      "path": "CONTRACTS.md",
+      "kind": "file",
+      "sha256": "8637694e7185adb5ba11633b43d17171b03abc156b91dd3ecda6fd9f090abe9a",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 2255,
+          "line": 32,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 5443,
+          "line": 49,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "bench/r4-raw.json",
+      "kind": "file",
+      "sha256": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b",
+      "matches": 31,
+      "examples": [
+        {
+          "byte": 95,
+          "line": 5,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 146,
+          "line": 6,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 211,
+          "line": 7,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 280,
+          "line": 8,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 320,
+          "line": 9,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1071864,
+          "line": 46168,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072027,
+          "line": 46170,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072112,
+          "line": 46171,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072273,
+          "line": 46173,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072360,
+          "line": 46175,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072450,
+          "line": 46177,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072587,
+          "line": 46181,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072720,
+          "line": 46184,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1072928,
+          "line": 46187,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1073015,
+          "line": 46188,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1073303,
+          "line": 46193,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1073392,
+          "line": 46195,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1073485,
+          "line": 46196,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1077753,
+          "line": 46247,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1077916,
+          "line": 46249,
+          "matched": "/tmp/jitk-06"
+        }
+      ]
+    },
+    {
+      "path": "bench/raw.json",
+      "kind": "file",
+      "sha256": "adc0aadaa3eee399af1985a80796ba2f2762dddf525ea36061e8d20903880033",
+      "matches": 36,
+      "examples": [
+        {
+          "byte": 246,
+          "line": 12,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 464,
+          "line": 15,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 837,
+          "line": 25,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 902,
+          "line": 26,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1172,
+          "line": 29,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1337,
+          "line": 30,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1409,
+          "line": 32,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1484,
+          "line": 34,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1602,
+          "line": 38,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1718,
+          "line": 41,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1909,
+          "line": 44,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1959,
+          "line": 45,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2236,
+          "line": 51,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2323,
+          "line": 53,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2424,
+          "line": 56,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2510,
+          "line": 58,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2848,
+          "line": 63,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 2958,
+          "line": 64,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 3071,
+          "line": 65,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 3166,
+          "line": 66,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "bench/smoke.json",
+      "kind": "file",
+      "sha256": "27b353fa5da60b3c495876f9c05d750b6c0a8e842648dd87485636a8e47d2f8a",
+      "matches": 35,
+      "examples": [
+        {
+          "byte": 371,
+          "line": 18,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 529,
+          "line": 23,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 594,
+          "line": 24,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 864,
+          "line": 27,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1029,
+          "line": 28,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 1084,
+          "line": 30,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1159,
+          "line": 32,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1277,
+          "line": 36,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1360,
+          "line": 38,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1551,
+          "line": 41,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1601,
+          "line": 42,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1878,
+          "line": 48,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 1965,
+          "line": 50,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2066,
+          "line": 53,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2152,
+          "line": 55,
+          "matched": "/tmp/jitk-06"
+        },
+        {
+          "byte": 2490,
+          "line": 60,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 2600,
+          "line": 61,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 2713,
+          "line": 62,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 2808,
+          "line": 63,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 2873,
+          "line": 64,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "bench/__pycache__/processes.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "bc2432e1c4c4c504fb3cec3633952cdfaa3d48262b69609606fd388e9e21533e",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 806,
+          "line": 7,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "bench/__pycache__/recertify.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "c9bf9fb1a99181d37696bf0aacfc16d2f571d1ded30b750a03eda1a3ad5e8903",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 1771,
+          "line": 10,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "bench/__pycache__/run.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "0414395b17026ca09d9d01fb4c608bd6efbeca5e4a8cf5749af9ac9f7e476a36",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 1334,
+          "line": 7,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/.READY",
+      "kind": "file",
+      "sha256": "d52771ee794cec0663ea92b2fa78c2fc51728138034d9362b94177fbf3289a12",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 260,
+          "line": 4,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/provenance.json",
+      "kind": "file",
+      "sha256": "0ceda25f8a502f400e4d24f2d6497bea69a8937ec9b8f265867a8e2a2fad5fce",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 742,
+          "line": 13,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/smoke/metadata.json",
+      "kind": "file",
+      "sha256": "2f328750d4991576b92c1d9a35baba3535251ef0f3a659d5083d0ce5615eeb6b",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 251,
+          "line": 10,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/smoke/raw.jsonl",
+      "kind": "file",
+      "sha256": "633fd1479ffa382c3643dab8f41143a4f4e6481ac1c06a17be6594f509c109b9",
+      "matches": 10,
+      "examples": [
+        {
+          "byte": 1008,
+          "line": 1,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 3104,
+          "line": 3,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 6222,
+          "line": 6,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 8334,
+          "line": 8,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 11476,
+          "line": 11,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 13616,
+          "line": 13,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 16784,
+          "line": 16,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 18896,
+          "line": 18,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 22034,
+          "line": 21,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 24135,
+          "line": 23,
+          "matched": "/tmp/jitk-02"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/smoke-r3/RESULTS.md",
+      "kind": "file",
+      "sha256": "a3c38c37f81a2c903284a6297bdd19cca172bd3020ece147ee8845eda7b4e5dd",
+      "matches": 17,
+      "examples": [
+        {
+          "byte": 9867,
+          "line": 77,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 9904,
+          "line": 78,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 10037,
+          "line": 82,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 10262,
+          "line": 84,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 10403,
+          "line": 88,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 10474,
+          "line": 90,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 10534,
+          "line": 93,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 10604,
+          "line": 95,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 10897,
+          "line": 100,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 11005,
+          "line": 101,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 11116,
+          "line": 102,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 11209,
+          "line": 103,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11272,
+          "line": 104,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11663,
+          "line": 115,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11784,
+          "line": 116,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 11880,
+          "line": 117,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 12006,
+          "line": 118,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/smoke-r3/raw.json",
+      "kind": "file",
+      "sha256": "3ef9c9e36a20e4c772536b379825940e114017346cfa6a57479845d6f32878bc",
+      "matches": 27,
+      "examples": [
+        {
+          "byte": 306,
+          "line": 15,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 345,
+          "line": 16,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 486,
+          "line": 20,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 715,
+          "line": 22,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 864,
+          "line": 26,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 939,
+          "line": 28,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1005,
+          "line": 31,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1079,
+          "line": 33,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1382,
+          "line": 38,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1492,
+          "line": 39,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1605,
+          "line": 40,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1700,
+          "line": 41,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1765,
+          "line": 42,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 2178,
+          "line": 53,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 2301,
+          "line": 54,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 2399,
+          "line": 55,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 2527,
+          "line": 56,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 13707,
+          "line": 518,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 21359,
+          "line": 821,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 27333,
+          "line": 1061,
+          "matched": "/tmp/jitk-02"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/results/RESULTS.md",
+      "kind": "file",
+      "sha256": "dcfc57337c20e2829d65ada70379715787fd53db9e65e13bcb48b63964c465f1",
+      "matches": 17,
+      "examples": [
+        {
+          "byte": 10404,
+          "line": 77,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 10441,
+          "line": 78,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 10574,
+          "line": 82,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 10799,
+          "line": 84,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 10940,
+          "line": 88,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11011,
+          "line": 90,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11071,
+          "line": 93,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11141,
+          "line": 95,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11434,
+          "line": 100,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 11542,
+          "line": 101,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 11653,
+          "line": 102,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 11746,
+          "line": 103,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 11809,
+          "line": 104,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 12200,
+          "line": 115,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 12321,
+          "line": 116,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 12417,
+          "line": 117,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 12543,
+          "line": 118,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "bench/hyperlight/results/raw.json",
+      "kind": "file",
+      "sha256": "0cf667760cc30056ccf0c29b5451ba661ca0b50624c105fdeac66e824a699956",
+      "matches": 317,
+      "examples": [
+        {
+          "byte": 307,
+          "line": 15,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 346,
+          "line": 16,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 487,
+          "line": 20,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 716,
+          "line": 22,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 865,
+          "line": 26,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 940,
+          "line": 28,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1006,
+          "line": 31,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1080,
+          "line": 33,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1383,
+          "line": 38,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1493,
+          "line": 39,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1606,
+          "line": 40,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 1701,
+          "line": 41,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1766,
+          "line": 42,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 2179,
+          "line": 53,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 2302,
+          "line": 54,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 2400,
+          "line": 55,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 2528,
+          "line": 56,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 14525,
+          "line": 540,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 22070,
+          "line": 843,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 27989,
+          "line": 1083,
+          "matched": "/tmp/jitk-02"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/report.json",
+      "kind": "file",
+      "sha256": "fc21d31e5489bd285fc72ed5d37c95652e35430cbc9112b63bf45c11508ba151",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 261,
+          "line": 7,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 335,
+          "line": 8,
+          "matched": "/tmp/jitk-08"
+        },
+        {
+          "byte": 13205,
+          "line": 358,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/source.json",
+      "kind": "file",
+      "sha256": "3d55f21606fbc59ee79a9b1aa1dbde403a8fa7d4098bfbfc91836dbb3b27a7f8",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 37,
+          "line": 2,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/qjs-missing/build.log",
+      "kind": "file",
+      "sha256": "38b750de884ced7512a71c0efbacf5b4b591b2f6eebfdccd7ac1b509b597f5e3",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 332,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/tx-rt_sigprocmask/build/build.log",
+      "kind": "file",
+      "sha256": "a313929040b1a9ecf03f615dc52dd1dcc14269303ad09bbf8dd3d859c3183bb8",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 343,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/tx-rt_sigaction/build/build.log",
+      "kind": "file",
+      "sha256": "e3a1a77d211277f27496c27ba92dd99e03d74ff1e873c5f33854e7747f96bfd1",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 341,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/tx-ppoll/build/build.log",
+      "kind": "file",
+      "sha256": "c77b330b60fcccae5c6d97b2c155558a713344bc432a9df53f51ae0cc98c30e1",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 334,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/lua-after/build.log",
+      "kind": "file",
+      "sha256": "272998190b38e448b462b6048b76b59890a1670911137eb5709bfed001bdba76",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 329,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/qjs-after/build.log",
+      "kind": "file",
+      "sha256": "e2813ff63dfad095ac487e2afd1c8a979731484cf935290769c21fa5bc7e0989",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 330,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/lua-before-0/build.log",
+      "kind": "file",
+      "sha256": "ff018919bece0307bd340df9d1ae5beeca376177e889e3c3f9024d73523e1421",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 332,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/canonical-r4/lua-before-1/build.log",
+      "kind": "file",
+      "sha256": "32f454080adf0188a3875c2549892ff8e608bb8149954594625cbadb0e5fe79c",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 332,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/report.json",
+      "kind": "file",
+      "sha256": "bff908d0c4b524f7acd2162c64d1a728da4bf3407b86dd08f6aa54612ac6e455",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 259,
+          "line": 7,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 333,
+          "line": 8,
+          "matched": "/tmp/jitk-08"
+        },
+        {
+          "byte": 13363,
+          "line": 360,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/source.json",
+      "kind": "file",
+      "sha256": "8ae3ac3c2bb7a918c6994cfc11b8f77e347eea53ac953dc58294929d3c51cb52",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 37,
+          "line": 2,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/qjs-missing/build.log",
+      "kind": "file",
+      "sha256": "f351b91ed17b6716db60f44878006e8f2f2fbb7b11a2bb133712bcd726306ac4",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 349,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-rt_sigprocmask/agent-mode.json",
+      "kind": "file",
+      "sha256": "f5a60318c51c5d8668537057d1e0050aad3fb3bb367014112f268618201b156b",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 319,
+          "line": 15,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 506,
+          "line": 17,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-rt_sigprocmask/agent.log",
+      "kind": "file",
+      "sha256": "b10b390a12673a6b7b2acbb3677255b7323860583f9c40ad6a7a672547640977",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 167,
+          "line": 4,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-rt_sigprocmask/build/build.log",
+      "kind": "file",
+      "sha256": "fd18c513026e2fc4411deb63818f220f44cbda5b2cbc7f86746660a120980556",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 360,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-rt_sigaction/agent-mode.json",
+      "kind": "file",
+      "sha256": "f4ab9ef80be630385aea45cf4d04037faa481c5678f5168497787a91061354ef",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 319,
+          "line": 15,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 504,
+          "line": 17,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-rt_sigaction/agent.log",
+      "kind": "file",
+      "sha256": "2e367fcaacb697d08cdc6b560f1a390af36ef71881b32c32bb5337aaf0d9cce1",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 165,
+          "line": 4,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-rt_sigaction/build/build.log",
+      "kind": "file",
+      "sha256": "2a75369d97c2cdedf34dee02a4136339bf49e63995f98734961a614e1cbce2e2",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 358,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-ppoll/agent-mode.json",
+      "kind": "file",
+      "sha256": "b171ad361eac7403db1056453435b7dabfd62d821256b18db48fbcd9fbb49de3",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 319,
+          "line": 15,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 497,
+          "line": 17,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-ppoll/agent.log",
+      "kind": "file",
+      "sha256": "11ed8e28b98cf6e4a148adeacf1b8325431c2a5510a9046c81a28efc10f76565",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 2025,
+          "line": 4,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/tx-ppoll/build/build.log",
+      "kind": "file",
+      "sha256": "f854e6a09ddf01d53492903b9bb8fcd05ea15c36d41fcdb72354601dcadf1432",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 351,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/lua-after/build.log",
+      "kind": "file",
+      "sha256": "254f770f016b447ca56208762c0e5e2091d60d8afad6f8622e69be02533d0f3c",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 346,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/qjs-after/build.log",
+      "kind": "file",
+      "sha256": "a5d5f8029da8f3e77a82d0134ff41acbf7da3d57c2db2d4d773ee37732cc3793",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 347,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/lua-before-0/build.log",
+      "kind": "file",
+      "sha256": "e84375dd03a1f279136d97efc3b77e31472ac1eb23409af37110e2c39d9deea1",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 349,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "grow/results/live-demo-1792810727825896000/lua-before-1/build.log",
+      "kind": "file",
+      "sha256": "270f43ea49ece4bec8fb630ecf14c74aa85dcb0eb11ab9bfd0099e047ee80767",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 35,
+          "line": 1,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 349,
+          "line": 2,
+          "matched": "/tmp/jitk-08"
+        }
+      ]
+    },
+    {
+      "path": "vmm/Makefile",
+      "kind": "file",
+      "sha256": "5fb49f580a5f523cd42f0f6d9f427c6e80b0b49b6fec0cbbc86e509873f206bd",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 13,
+          "line": 1,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 70,
+          "line": 2,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 104,
+          "line": 3,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/README.md",
+      "kind": "file",
+      "sha256": "104ceec7a89e06a053d35b51342dc3bf2d44216f34a6f133bbe9430121d621b1",
+      "matches": 11,
+      "examples": [
+        {
+          "byte": 2749,
+          "line": 53,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 3221,
+          "line": 63,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 3271,
+          "line": 63,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 3324,
+          "line": 64,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 3410,
+          "line": 64,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 4281,
+          "line": 85,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 4338,
+          "line": 86,
+          "matched": "/tmp/jitk-07"
+        },
+        {
+          "byte": 4415,
+          "line": 87,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 6904,
+          "line": 124,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 6955,
+          "line": 124,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 6991,
+          "line": 124,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "kind": "file",
+      "sha256": "a92a00161ffb96aaf1b5c999dd8bddc137d8b9de1295f60fd370376e5e439bd6",
+      "matches": 6,
+      "examples": [
+        {
+          "byte": 77,
+          "line": 4,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 99,
+          "line": 4,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 296,
+          "line": 7,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 309,
+          "line": 7,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 433,
+          "line": 9,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 473,
+          "line": 10,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/build.py",
+      "kind": "file",
+      "sha256": "0c42934052f8554aebd081b900858110441a59d35f518b1d98bfddf692648f95",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 367,
+          "line": 13,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/evidence/build-darwin.json",
+      "kind": "file",
+      "sha256": "da7743eea15c3c8f2abd0ab82ab1f13f84f6a86674ff7499e99cff9aee195fa4",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 537,
+          "line": 12,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/evidence/build-linux.json",
+      "kind": "file",
+      "sha256": "48979870b5b1dfc2b4bd52d9d0acd3d44e53379f50ea43657df64f50db342c1a",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 537,
+          "line": 12,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/evidence/console-abuse-darwin-stock-control.json",
+      "kind": "file",
+      "sha256": "d5155365d17e4bed26576286666e8f1dc9e5f61255f439518d433a6908af94b8",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 14,
+          "line": 2,
+          "matched": "/tmp/jitk-07"
+        }
+      ]
+    },
+    {
+      "path": "vmm/evidence/console-abuse-darwin.json",
+      "kind": "file",
+      "sha256": "e9b4ecd2ec7654c8d6f0f9f9d386a53856cec668d39f8ed852ae9fc037c5b368",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 14,
+          "line": 2,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/evidence/nested-kvm-meta.json",
+      "kind": "file",
+      "sha256": "6bf9d720ceacd3cc295c51704796638c295ec043e3df29da6e9300badf607ff0",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 283,
+          "line": 16,
+          "matched": "/tmp/jitk-07"
+        },
+        {
+          "byte": 330,
+          "line": 18,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/build-guests.py",
+      "kind": "file",
+      "sha256": "492eae331ce70221e944500f15195d319e3b8172097a5449a3154e5520064e7d",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 176,
+          "line": 7,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "kind": "file",
+      "sha256": "e0fc95afbfe46068abc6981c6c9f3f3440aa995536df7bbd54ff67f3faa5a315",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 354,
+          "line": 15,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 450,
+          "line": 16,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 517,
+          "line": 17,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/console-abuse.py",
+      "kind": "file",
+      "sha256": "7c055a208c7e571effa684feb6211972755da3d859be74d325aa7245342f0a70",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 370,
+          "line": 7,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 462,
+          "line": 8,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 525,
+          "line": 9,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "kind": "file",
+      "sha256": "499724a31fafa640910ee409f5ef25283dd699b608f7a913b0a1c6f605abd659",
+      "matches": 4,
+      "examples": [
+        {
+          "byte": 332,
+          "line": 14,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 479,
+          "line": 16,
+          "matched": "/tmp/jitk-07"
+        },
+        {
+          "byte": 605,
+          "line": 20,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 906,
+          "line": 27,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "kind": "file",
+      "sha256": "1d2539ec6708dabeeacc66cee91fe96eac44117ba299d22395494e94ea3007f5",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 305,
+          "line": 14,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 376,
+          "line": 15,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 440,
+          "line": 16,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/__pycache__/build-guests.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "6b17934a53003d9f352914d99959544d21f3c3d5726f58d2147f4e1d2707da30",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 1051,
+          "line": 15,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/__pycache__/check.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "9f60a83c3a2164f8c2f3377d547402cc91ab86f24e57c5494681e5e5242294e8",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 4182,
+          "line": 12,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 4232,
+          "line": 12,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 4267,
+          "line": 12,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/__pycache__/nested-kvm.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "8892354ccf3dfce13b0a6decbabfefa6fdfc6320a0cfa403fdbbd1e9ed71300a",
+      "matches": 4,
+      "examples": [
+        {
+          "byte": 3013,
+          "line": 8,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 3098,
+          "line": 8,
+          "matched": "/tmp/jitk-07"
+        },
+        {
+          "byte": 3140,
+          "line": 8,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 3235,
+          "line": 9,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/tests/__pycache__/sandbox-bench.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "d55368ccb9ad280327172c8c811c0285736df2335dea807d32c4ccb72fa1fbc4",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 1581,
+          "line": 11,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 1636,
+          "line": 11,
+          "matched": "/tmp/jitk-01"
+        },
+        {
+          "byte": 1673,
+          "line": 11,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/__pycache__/build.cpython-315.pyc",
+      "kind": "file",
+      "sha256": "524e7949b8c81b89c87a5100d1bd3d81e206279e579ee27159e58b2ab8472077",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 2883,
+          "line": 5,
+          "matched": "/tmp/jitk-01"
+        }
+      ]
+    },
+    {
+      "path": "vmm/sandbox/README.md",
+      "kind": "file",
+      "sha256": "ea2c53457abf0dcc16249208505727f4e79385052288cc3aaf1c71d7c4fc31a7",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 3013,
+          "line": 49,
+          "matched": "arch/07-"
+        }
+      ]
+    },
+    {
+      "path": "vmm/sandbox/tests/escape.rs",
+      "kind": "file",
+      "sha256": "03419c5a4c5e1202ea72e9023b402c0e2e3af873d2be9c592858f2f88fdfae0d",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 1468,
+          "line": 24,
+          "matched": "/tmp/jitk-07"
+        },
+        {
+          "byte": 1569,
+          "line": 25,
+          "matched": "/tmp/jitk-07"
+        }
+      ]
+    },
+    {
+      "path": "vmm/sandbox/tests/run-escape.sh",
+      "kind": "file",
+      "sha256": "b2f222126b9252270128cd80db7a55c3949693783585c57e9eb8eccb2d6a72b4",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 1156,
+          "line": 17,
+          "matched": "/tmp/jitk-07"
+        }
+      ]
+    },
+    {
+      "path": "protocol/Makefile",
+      "kind": "file",
+      "sha256": "01b346ab34dcbfe8491bf6bcbda52fc9eb7a5e7b25e14127c2630b312529ab8b",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 8,
+          "line": 1,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/README.md",
+      "kind": "file",
+      "sha256": "46f24b2c9d039e2f75335bb03f6ce7b5fb2b7c912ab2cb6e68d62dd262e2fe8b",
+      "matches": 4,
+      "examples": [
+        {
+          "byte": 460,
+          "line": 9,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 497,
+          "line": 12,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1032,
+          "line": 24,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 1065,
+          "line": 24,
+          "matched": "/tmp/jitk-02"
+        }
+      ]
+    },
+    {
+      "path": "protocol/report.py",
+      "kind": "file",
+      "sha256": "39a7602fecd577c163609228cb0a8aabf981416dac23f9b1a48b8a0098f538b1",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 3555,
+          "line": 30,
+          "matched": "/tmp/jitk-03"
+        }
+      ]
+    },
+    {
+      "path": "protocol/test-results.json",
+      "kind": "file",
+      "sha256": "0bd5b3b6641edd3d7667d5bf774c21a2ca9648ecef00f6b4516b4ca228620f4e",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 21,
+          "line": 2,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/vm-r2-fallback-results.json",
+      "kind": "file",
+      "sha256": "4346613853c338d4718881c134e0bd83556b6113523387d9eae695911f2eb2e7",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 30,
+          "line": 3,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 72,
+          "line": 4,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 444,
+          "line": 12,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/vm-results.json",
+      "kind": "file",
+      "sha256": "3c5b04dff26164518c5e757cbd643550f77499f1562eeda547065a5ac7da63f0",
+      "matches": 4,
+      "examples": [
+        {
+          "byte": 30,
+          "line": 3,
+          "matched": "/tmp/jitk-03"
+        },
+        {
+          "byte": 170,
+          "line": 4,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 256,
+          "line": 5,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 643,
+          "line": 13,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "kind": "file",
+      "sha256": "329ed24acc300b6a232d8c4bf048d5119cbcf0051257f472c19e1b19a6b996d4",
+      "matches": 5,
+      "examples": [
+        {
+          "byte": 637,
+          "line": 12,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 835,
+          "line": 14,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 1272,
+          "line": 21,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 1476,
+          "line": 24,
+          "matched": "/tmp/jitk-03"
+        },
+        {
+          "byte": 1518,
+          "line": 24,
+          "matched": "/tmp/jitk-03"
+        }
+      ]
+    },
+    {
+      "path": "protocol/hostile/README.md",
+      "kind": "file",
+      "sha256": "07f8eb93996b7c04dd4429d896d824e13a3b56db0f598fb3b64c62cb10937a71",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 141,
+          "line": 6,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/hostile/integrated-smoke-results.json",
+      "kind": "file",
+      "sha256": "e5720d9df59e4f4b15a16f1b5d2f09b58f01c258db6780077d6fe2c17142c1f3",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 54,
+          "line": 3,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 140,
+          "line": 4,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 526,
+          "line": 12,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/hostile/r2-diagnostic-results.json",
+      "kind": "file",
+      "sha256": "79271ecd0cd7bb88365f7b1b4081e90f531a9842b1e27de21084e2d84740378c",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 30,
+          "line": 3,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 72,
+          "line": 4,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 444,
+          "line": 12,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "protocol/hostile/results.json",
+      "kind": "file",
+      "sha256": "7d439d1dc943b676a3e2c7fb9156f5718764af6bac406b4b3ca2c397f6425e89",
+      "matches": 4,
+      "examples": [
+        {
+          "byte": 30,
+          "line": 3,
+          "matched": "/tmp/jitk-03"
+        },
+        {
+          "byte": 170,
+          "line": 4,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 256,
+          "line": 5,
+          "matched": "/tmp/jitk-02"
+        },
+        {
+          "byte": 643,
+          "line": 13,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "executor/.READY",
+      "kind": "file",
+      "sha256": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+      "matches": 5,
+      "examples": [
+        {
+          "byte": 195,
+          "line": 7,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 413,
+          "line": 11,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 651,
+          "line": 16,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 2919,
+          "line": 44,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 3098,
+          "line": 45,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/breakdown-results.json",
+      "kind": "file",
+      "sha256": "e39e4566a0b4b37a157bdeefe6ba6dbb727ae02137f2af19ef1c8f5347407c0c",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 164,
+          "line": 6,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 390,
+          "line": 10,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 638,
+          "line": 15,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/certify-kernel-updated.log",
+      "kind": "file",
+      "sha256": "ee5ac3d282bd66545e7c112fbf4696c7b51a9bec6c67050e04e8c95e1bc55d21",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 8506,
+          "line": 304,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/hyperlight-check-results.json",
+      "kind": "file",
+      "sha256": "0e4f6d2eb93c45cb712736d7a402695bda1c14db0ae65a834dfabbb6add45a7f",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 48,
+          "line": 3,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 228,
+          "line": 4,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/integration-selection.json",
+      "kind": "file",
+      "sha256": "b2fb32033a79df489ca4e319b183720856454c2763f1d4f57bdbf56c550c4d04",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 139,
+          "line": 5,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 357,
+          "line": 9,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 595,
+          "line": 14,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/policy-check-results.json",
+      "kind": "file",
+      "sha256": "40bafebaec841812c58503cb4eceb3a6d95a2d5f126fd54b61e7591eebd54058",
+      "matches": 1,
+      "examples": [
+        {
+          "byte": 45,
+          "line": 2,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/r4-certify.log",
+      "kind": "file",
+      "sha256": "dc01d8d2669a53925dce3c0e1c81249260373e38744836c53136da25e53832ab",
+      "matches": 3,
+      "examples": [
+        {
+          "byte": 6658,
+          "line": 231,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 6884,
+          "line": 235,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        },
+        {
+          "byte": 7132,
+          "line": 240,
+          "matched": "2026-10-23-is-there-a-way-we-5a54f52b"
+        }
+      ]
+    },
+    {
+      "path": "executor/.cache/inputs/r2-worker",
+      "kind": "file",
+      "sha256": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+      "matches": 23,
+      "examples": [
+        {
+          "byte": 1175053,
+          "line": 7074,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1184845,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1184950,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1185062,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1185162,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1185242,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1185340,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1185423,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1185827,
+          "line": 7129,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1186334,
+          "line": 7130,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1186438,
+          "line": 7130,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1186532,
+          "line": 7130,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1186624,
+          "line": 7130,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1186718,
+          "line": 7130,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1186805,
+          "line": 7130,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1309652,
+          "line": 7276,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1315104,
+          "line": 7288,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1315272,
+          "line": 7288,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 1323740,
+          "line": 7308,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 3599089,
+          "line": 22810,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "executor/.cache/inputs/snapshot/blobs/sha256/622f0d2263988918d0676e9e668a89d957538f7bff7c15e7aaf67976416e737e",
+      "kind": "file",
+      "sha256": "622f0d2263988918d0676e9e668a89d957538f7bff7c15e7aaf67976416e737e",
+      "matches": 4,
+      "examples": [
+        {
+          "byte": 117396,
+          "line": 144,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 122848,
+          "line": 156,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 123016,
+          "line": 156,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 131484,
+          "line": 176,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    },
+    {
+      "path": "executor/policy/README.md",
+      "kind": "file",
+      "sha256": "e643b7c35db51e7900835226c57ba6f5fa68e7af50d911368079f6191943b601",
+      "matches": 2,
+      "examples": [
+        {
+          "byte": 2736,
+          "line": 44,
+          "matched": "/tmp/jitk-09"
+        },
+        {
+          "byte": 2802,
+          "line": 45,
+          "matched": "/tmp/jitk-09"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "pass": false,
+  "hit_files_by_component": {
+    "CONTRACTS.md": 1,
+    "bench": 14,
+    "grow": 26,
+    "vmm": 22,
+    "protocol": 11,
+    "executor": 10
+  }
+}

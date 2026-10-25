@@ -1,0 +1,587 @@
+{
+  "frozen_utc": "2026-10-24T03:36:57.959081+00:00",
+  "load": [
+    76.88427734375,
+    59.650390625,
+    62.61328125
+  ],
+  "artifacts": {
+    "V-v2-darwin": {
+      "source": "/private/tmp/jitk-06/r4/frozen/jitk-bench-e5kqz2xu/jitk-vmm",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/V-v2-darwin",
+      "sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+      "bytes": 784336
+    },
+    "B-r3-darwin": {
+      "source": "/private/tmp/jitk-06/r4/frozen/jitk-bench-5hajrnb4/jitk-vmm",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/B-r3-darwin",
+      "sha256": "73df1ad31afa79274feda85cf386185141e5a08860b513891dc681ad6b91338e",
+      "bytes": 784320
+    },
+    "K-kernel": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/dist/kernel.bin",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/K-kernel",
+      "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+      "bytes": 2924544
+    },
+    "E-executor.js": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/build/executor.js",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/E-executor.js",
+      "sha256": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "bytes": 41401
+    },
+    "W-watchdog.py": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/watchdog.py",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/W-watchdog.py",
+      "sha256": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014",
+      "bytes": 2341
+    },
+    "L-linux-rebuilt": {
+      "source": "/private/tmp/jitk-05/r4/anyname/linux/.work/jitk-vmm",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/L-linux-rebuilt",
+      "sha256": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
+      "bytes": 725792
+    },
+    "P-policy.mjs": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/policy/policy.mjs",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/P-policy.mjs",
+      "sha256": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+      "bytes": 5804
+    },
+    "H-hyperlight-worker": {
+      "source": "/private/tmp/jitk-09/adapter-target/release/r2-worker",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/H-hyperlight-worker",
+      "sha256": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+      "bytes": 4551552
+    },
+    "H-snapshot-index.json": {
+      "source": "/private/tmp/jitk-09/r3-snapshot/index.json",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/H-snapshot-index.json",
+      "sha256": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09",
+      "bytes": 532
+    },
+    "Lua-elf": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/payload/lua-static",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/Lua-elf",
+      "sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+      "bytes": 395104
+    },
+    "R3-executor.js": {
+      "source": "/private/tmp/jitk-10/h2-01/jitk/executor/build/executor.js",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/R3-executor.js",
+      "sha256": "749be00794a49753429d72b89124269d33b1ed93ba1b473461574b34a1bf21ea",
+      "bytes": 41963
+    },
+    "C-relocated-darwin": {
+      "source": "/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/jitk-vmm",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/C-relocated-darwin",
+      "sha256": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7",
+      "bytes": 784336
+    },
+    "C-executor.js": {
+      "source": "/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/executor/build/executor.js",
+      "frozen": "/tmp/jitk-10/r4/frozen-artifacts/C-executor.js",
+      "sha256": "9a8552c76f79390f10ee2f8c278a5d9fb5dc287372cbb9ba50d15c04d94f53ed",
+      "bytes": 41401
+    }
+  },
+  "recorded_artifacts": {
+    "canonical_baseline_kernel_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+    "vmm_v2_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+    "lua_elf_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "replay_qjs_kernel_sha256": "4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee",
+    "replay_lua_kernel_sha256": "23e95bc45b39803fdb822a801153f4fd442f284221d25f4c5548d7c298ab51e5",
+    "live_qjs_kernel_sha256": "5dae9a0c75d8ee132fd4df1aff1ea5d1931c3dd6c043f6c7cce0cec6c33b68b1",
+    "live_lua_kernel_sha256": "46c8051cbc927805b088efa0810b39c4f3e276aa4cab8b417c112920b0b6dee3",
+    "integration_qjs_image_sha256": "4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee",
+    "integration_lua_image_sha256": "23e95bc45b39803fdb822a801153f4fd442f284221d25f4c5548d7c298ab51e5"
+  },
+  "evidence": {
+    "kernel-R4.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/R4.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/kernel-R4.md",
+      "sha256": "f2b40780210caca17670e2db339032f6c3a56a8fffeb4e4bedab03ca0c4e3da0",
+      "bytes": 3351
+    },
+    "executor-R4.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/R4.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor-R4.md",
+      "sha256": "f74a40c72143ec831f6a3c60fa2240c1016be3ec46d2ba6ddd4d94888636dbe6",
+      "bytes": 4570
+    },
+    "linux-R4.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/05-scale-fleet/R4.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/linux-R4.md",
+      "sha256": "bb24bb6c2ac89f1b7a730cc26021fb65301f04bf7c3c794ff4987a75569a932b",
+      "bytes": 3250
+    },
+    "bench-R4.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/06-perf-bootpath/R4.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/bench-R4.md",
+      "sha256": "41a1d5465fee330884fa757289919f7a77b18cda0d99d47b5d0489a8235ad803",
+      "bytes": 3318
+    },
+    "grow-R4.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/R4.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/grow-R4.md",
+      "sha256": "d19d53a6c40d74a0af3b9223efa7fd1addfad57e4cd48e1754902bc0c8ebb4e1",
+      "bytes": 3636
+    },
+    "hyperlight-R4.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/09-hyperlight-backend/R4.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/hyperlight-R4.md",
+      "sha256": "7516060680e4946ba2bcd40fa2981abe54bbcd0ff1f5fecbda7f96be6ce4b7bd",
+      "bytes": 2763
+    },
+    "executor/h5-resource-probe-final.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/r4/h5-resource-probe-final.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/h5-resource-probe-final.json",
+      "sha256": "29c647993c4c99861c6d19b3c65f08bec409fbfff75c8a911121e5115b6b2a1b",
+      "bytes": 27658
+    },
+    "executor/h5-cpu-probe-final.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/r4/h5-cpu-probe-final.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/h5-cpu-probe-final.json",
+      "sha256": "44962a47e4c8eccf4c74c50537fd95fb9f3d1a59f9f9c39aae1ac1d47d8107d0",
+      "bytes": 23957
+    },
+    "executor/h5-resource-probe.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/r4/h5-resource-probe.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/h5-resource-probe.json",
+      "sha256": "ea48228f4ea86163351449e764d53100b346b2f75cc27112f9411d6856f5f127",
+      "bytes": 27078
+    },
+    "executor/h5-cpu-probe.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/r4/h5-cpu-probe.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/h5-cpu-probe.json",
+      "sha256": "310b1e10f4cac94a86061b7c94a3db872d1d90bbe7eaf20ed79252f1874508a6",
+      "bytes": 23491
+    },
+    "executor/deadline-probe.mjs": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/04-executor-ts/r4/h5-resource-probe.mjs",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/deadline-probe.mjs",
+      "sha256": "12ed29f2b8032cb512a040f667fad7b54eb80f4a702ecf37f5ea74d0897bd760",
+      "bytes": 6384
+    },
+    "executor/certificate.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/certificate.json",
+      "sha256": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+      "bytes": 3926
+    },
+    "executor/phase-results.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/breakdown-results.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/executor/phase-results.json",
+      "sha256": "e39e4566a0b4b37a157bdeefe6ba6dbb727ae02137f2af19ef1c8f5347407c0c",
+      "bytes": 63766
+    },
+    "kernel/receipt.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/r4/receipt.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/kernel/receipt.json",
+      "sha256": "e83529bb32150a455ae4a8d20e50122b59094a979f8875b5b7dadd6cd57daa56",
+      "bytes": 2403
+    },
+    "kernel/g1.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/r4/parking-0.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/kernel/g1.json",
+      "sha256": "94cea85100867e0a217e6403c8038e01fab1a7640e8e24e1e04b100799dd62d7",
+      "bytes": 1151
+    },
+    "kernel/g2.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/r4/integration.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/kernel/g2.json",
+      "sha256": "8864b3a5e309eb61d886f158c3f22884666d06bb58e33f1d0a2d5aa083652e2e",
+      "bytes": 32514
+    },
+    "linux/report.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/linux/out/report.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/linux/report.json",
+      "sha256": "140a0be1ebbdbe41225b16c6333f447a0920dee3a75284d356f9cf42041eb965",
+      "bytes": 927794
+    },
+    "linux/source-inputs.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/linux/out/source-inputs.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/linux/source-inputs.json",
+      "sha256": "c4823722f50b6e6b1935af12084d7af404350572dd7da606d8d286375cdb0629",
+      "bytes": 6122
+    },
+    "linux/build-provenance.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/05-scale-fleet/r4/build-provenance.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/linux/build-provenance.json",
+      "sha256": "887233d6464510c1b5d4e5ac605820038c349154eeb0df0e61cb68201d7dfa48",
+      "bytes": 1004
+    },
+    "bench/RESULTS.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/RESULTS.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/bench/RESULTS.md",
+      "sha256": "c96fe3feaa388878a4bfec2742115b28595bc68ecbed002cd1d62242819ba2b0",
+      "bytes": 19578
+    },
+    "bench/r4-raw.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/r4-raw.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/bench/r4-raw.json",
+      "sha256": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b",
+      "bytes": 1089275
+    },
+    "bench/r3-raw.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/raw.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/bench/r3-raw.json",
+      "sha256": "adc0aadaa3eee399af1985a80796ba2f2762dddf525ea36061e8d20903880033",
+      "bytes": 4132242
+    },
+    "bench/verification.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/r4-verification.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/bench/verification.json",
+      "sha256": "309b0e4f31c28ee4b0b6746ecaf674c07a05cddca0f7c0e61b4245cb81a9bfbd",
+      "bytes": 1222
+    },
+    "grow/artifacts.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r4/artifacts.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/grow/artifacts.json",
+      "sha256": "3e61ee23825afdb50501728fdc49d5bb7c17cbca544f627044a9348388f532dd",
+      "bytes": 672
+    },
+    "grow/verification.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/08-grow-loop/r4/verification.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/grow/verification.json",
+      "sha256": "4da1266ae9eecef78aa0ceb07cb4e614e497c57656bed7ca214da3e931fa3a48",
+      "bytes": 1085
+    },
+    "hyperlight/verification.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/09-hyperlight-backend/r4/verification.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/hyperlight/verification.json",
+      "sha256": "e865ffed04f66af02f52361aa4d1a9e0e5ed82a12ac11729043b5f08de26324d",
+      "bytes": 10029
+    },
+    "security-R3.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/07-security-sandbox/R3.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/security-R3.md",
+      "sha256": "d1a9ef5cad149739afe130ca1ce0d05e560174029e34a7220a5450dcf52b868e",
+      "bytes": 4778
+    },
+    "r3/protocol-replay.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r3/h5-protocol-replay.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/r3/protocol-replay.json",
+      "sha256": "a7c87b9db63a33bb0f0389f6cc895aa318c8d2060f206d77aac000b5e2ff0253",
+      "bytes": 762
+    },
+    "r3/protocol-cases.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r3/h5-protocol-v2-results.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/r3/protocol-cases.json",
+      "sha256": "00dde7a856d1bc1e87616a0df70a41f18d718df2da6f5b6c6f9bff7982beb45d",
+      "bytes": 180020
+    },
+    "r3/resources.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r3/h5-resource-probe.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/r3/resources.json",
+      "sha256": "60f2d6cbc6f1a173954913fa217086aaa263b76f15c24c2b914fdea1e4b2ed3c",
+      "bytes": 44805
+    },
+    "r3/cpu.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r3/h5-cpu-probe.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/r3/cpu.json",
+      "sha256": "0bae04e73a6d920e039490269af97e38fcfddc2d8e1bf2fd8b6e157875ece082",
+      "bytes": 16054
+    },
+    "r3/policy-noncooperative.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r3/policy-timeout-canonical.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/r3/policy-noncooperative.json",
+      "sha256": "a346e69b73a54c95c28f092fb500f0fe6dad5822e9a7c48d16adcb4ac7e259d3",
+      "bytes": 500
+    },
+    "grow/replay.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/canonical-r4/report.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/grow/replay.json",
+      "sha256": "fc21d31e5489bd285fc72ed5d37c95652e35430cbc9112b63bf45c11508ba151",
+      "bytes": 13325
+    },
+    "grow/live.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/live-demo-1792810727825896000/report.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/grow/live.json",
+      "sha256": "bff908d0c4b524f7acd2162c64d1a728da4bf3407b86dd08f6aa54612ac6e455",
+      "bytes": 13483
+    },
+    "grow/live_demo.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/live-demo-1792810727825896000/demo-1792811135047205000/report.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/grow/live_demo.json",
+      "sha256": "8338092dd4130dd7f5fbaca871ac61b8382e40f3ee5d6ef38d504149c24e7af4",
+      "bytes": 5483
+    },
+    "review/i1.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/i1.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/i1.json",
+      "sha256": "aa80420b8b53894b3befd4db0e6ba953910adda85388a50c491e60e9403baee0",
+      "bytes": 155345
+    },
+    "review/copy.log": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/copy.log",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/copy.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "review/build-test.log": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/build-test.log",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/build-test.log",
+      "sha256": "18f749367b30247ac1c341355258600e05086aa0dd6db11a5c51ecb63e6b73d5",
+      "bytes": 17067
+    },
+    "review/demo.log": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/demo.log",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/demo.log",
+      "sha256": "139182a54ac86cec05cc9f88ebe0b74cf0bd114f18e37ef0e86e4ffa81e8cdf4",
+      "bytes": 17866
+    },
+    "review/loc-final.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/loc-final.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/loc-final.json",
+      "sha256": "4cae29bf47472f74fd3e6c66aeee4d8994cd0870be3bb3029de6a7d0a46eaebc",
+      "bytes": 43753
+    },
+    "review/source-audit-final.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/source-audit-final.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/source-audit-final.json",
+      "sha256": "45e5b309b45836c57cae90cad869badbf84a4b55b92a0f943d27d84d5fbc80b2",
+      "bytes": 41837
+    },
+    "review/path-scan-final.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/path-scan-final.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/path-scan-final.json",
+      "sha256": "bb971551e119df7a25363bf67d9ca4ff7b805771ca9c2214fb3ea5d6c374563d",
+      "bytes": 55822
+    },
+    "review/path-scan-classification.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/path-scan-classification.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/path-scan-classification.json",
+      "sha256": "12a2b92a25bf7af1bd6103fe2d7906c83507060dc3588c43f095e4c1eafa93b7",
+      "bytes": 747
+    },
+    "review/i3-recertification-audit.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/i3-recertification-audit.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/i3-recertification-audit.json",
+      "sha256": "c8ef511b9997702bbc6664bfa2dedb3a812324a0c58127d0f1dde25d7e8fe495",
+      "bytes": 7890
+    },
+    "review/h5-resource-probe-final-audit.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/h5-resource-probe-final-audit.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/h5-resource-probe-final-audit.json",
+      "sha256": "f770a2f724dd29eca718899c461990327079c6edaddda21f361f31ab12779360",
+      "bytes": 1395
+    },
+    "review/h5-cpu-probe-final-audit.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/h5-cpu-probe-final-audit.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/h5-cpu-probe-final-audit.json",
+      "sha256": "755eee376bfbeb9e3992d515f25d4a1739d901d44278eb8473720c81284beed4",
+      "bytes": 1382
+    },
+    "review/owner-artifact-audit.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/owner-artifact-audit.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/owner-artifact-audit.json",
+      "sha256": "28df2e23146cbabad8b5c2d1aa2011d67089937a0f192d3a448c27d89b890008",
+      "bytes": 9780
+    },
+    "review/poll-state.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/poll-state.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/poll-state.json",
+      "sha256": "eeac45d445571c9105d24ef43b86c2547bda5f7fee78065d33dc9ca0bf1c3d7a",
+      "bytes": 52092
+    },
+    "review/growth.json": {
+      "source": "/tmp/jitk-10/r4/relocated-cb18d3d39ccd/grow/results/run-20261024T052740/report.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/growth.json",
+      "sha256": "f33335b06e45ef9ad5563d5dc65b63c9f5ceaf15cb30643bacf83eed6c3eb536",
+      "bytes": 13561
+    },
+    "review/growth-demo.json": {
+      "source": "/tmp/jitk-10/r4/relocated-cb18d3d39ccd/grow/results/run-20261024T052740/demo-1792812514198264000/report.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/growth-demo.json",
+      "sha256": "ab07ee5822c72117cdeb3923fa636b3412b422e0fad923a811ffb4919a3d23ec",
+      "bytes": 5578
+    },
+    "review/runtime-verification.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/runtime-verification.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/runtime-verification.json",
+      "sha256": "93e0b27b0ca4f631ab82738eae223b0880c6058c65bc5b4ed4a8c35e8922d3ce",
+      "bytes": 1090
+    },
+    "review/i1-import-guard-failure.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/i1-import-guard-failure.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/i1-import-guard-failure.json",
+      "sha256": "71ff8341ff0d787ec8bfaab4bf29ae358d76d76d2ec6eaa28e3be60bce807b1e",
+      "bytes": 1219
+    },
+    "review/final-check.py": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/final-check.py",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/final-check.py",
+      "sha256": "c8f6f7276c8ee10f09f32318e67860dd19c6f8d4af5c72b0963e0098ad1331da",
+      "bytes": 12896
+    },
+    "review/audit-receipts.py": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/audit-receipts.py",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/audit-receipts.py",
+      "sha256": "fee1fd6105b60a799a02f2a533b9b089bafdb6bbcfd2ea64c98dbb8c72dba4ea",
+      "bytes": 3664
+    },
+    "review/freeze-evidence.py": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/freeze-evidence.py",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/freeze-evidence.py",
+      "sha256": "3aa5a674324098716ea7bd226ab8fb5844bb45a592b4398076783f160b642541",
+      "bytes": 2268
+    },
+    "review/count-loc.py": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/count-loc.py",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/count-loc.py",
+      "sha256": "b292af8113c92e660046fe8a555a79b2730248c6a6aa9ee3c778f78f91d1f37c",
+      "bytes": 4498
+    },
+    "review/CLAIMS.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/CLAIMS.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/CLAIMS.md",
+      "sha256": "24a34bbabfbc439cc121deb567702e4f5796aef3573a0dbc3cf330ec4c72861f",
+      "bytes": 10503
+    },
+    "review/KILL-CRITERIA.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/KILL-CRITERIA.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/KILL-CRITERIA.md",
+      "sha256": "a0a4d613ce4cb6d2c0b99dfc3cc9ae522fe8c7ada9d7c64d9c76659a64b50923",
+      "bytes": 6260
+    },
+    "review/ARCHITECTURE.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/ARCHITECTURE.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/ARCHITECTURE.md",
+      "sha256": "982b8b772233b3ca0d6b0a2d1b75913d01461016ad7a3a0dee0ecf2653c5e1ce",
+      "bytes": 4315
+    },
+    "review/ARTIFACTS-R4.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/docs/ARTIFACTS-R4.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/ARTIFACTS-R4.json",
+      "sha256": "025a822d60effeb2c5d3d3c24c397e341de98fd4741de18a2c3a6f3309669d58",
+      "bytes": 2401
+    },
+    "review/README.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/README.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/README.md",
+      "sha256": "12c23bad08606aadc33b306a99a50e015ee5e65835bf96c299700e43df8bae63",
+      "bytes": 4190
+    },
+    "review/loc-close.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/loc-close.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/loc-close.json",
+      "sha256": "09fb1ba92454f065940dd56440017b8e2ef1667edad9ff42132dbe39aebe1c83",
+      "bytes": 43663
+    },
+    "review/historical-CLAIMS.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/historical-CLAIMS.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/historical-CLAIMS.md",
+      "sha256": "b1efb5ec495896b81b8e7307c3fb2f0d7f99c315ee3fcfe5fc9713345cd47f97",
+      "bytes": 13924
+    },
+    "review/historical-KILL-CRITERIA.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/historical-KILL-CRITERIA.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/historical-KILL-CRITERIA.md",
+      "sha256": "1bb24bdf5113183c798e294d2b6d87de8f872dbf0800c3b6c0f730dbeb5028a9",
+      "bytes": 4484
+    },
+    "review/historical-ARCHITECTURE.md": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/historical-ARCHITECTURE.md",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/historical-ARCHITECTURE.md",
+      "sha256": "91d5bced51503cbbd7284ef8fac5e64f1816610b78e24963262045321116ad71",
+      "bytes": 3587
+    },
+    "review/rebuild-provenance.json": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/rebuild-provenance.json",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/review/rebuild-provenance.json",
+      "sha256": "120abf2a37842d80e2fdbdbcf253ec5dad2e14b76c6bc6676d449c9808353882",
+      "bytes": 2686
+    },
+    "kernel/.R4": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/.R4",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/kernel/.R4",
+      "sha256": "3f39dc04f8687d679c9e5278ba3008b6944eec72f2f5374fd9591657c3524fa3",
+      "bytes": 1648
+    },
+    "kernel/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/kernel/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/kernel/.READY",
+      "sha256": "e3aaf6bbbd630b6fa9067c2f774385115927f8c2e3f210c0c8191dae45ee2c85",
+      "bytes": 1326
+    },
+    "executor/.R4": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/.R4",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/executor/.R4",
+      "sha256": "790051eb1672deae1000a1871f9220672bf0baeb66a8c4cfcfe5e042ed1abb37",
+      "bytes": 3630
+    },
+    "executor/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/executor/.READY",
+      "sha256": "45d6b64ddfbaa8d235918890cbe7467c8efd09470b3f7b3b4dbd3ddbc5aaa3f6",
+      "bytes": 3926
+    },
+    "grow/.R4": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/.R4",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/grow/.R4",
+      "sha256": "ca303e47f45701e7b9a7d2a35c359a3a94ef4a95a7c165c569b036de43ddcc68",
+      "bytes": 1951
+    },
+    "grow/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/grow/.READY",
+      "sha256": "dce809ec98fd6d5e26f1d840f2778ee68c1e2f511a7f4f7959ad7566c7c05d97",
+      "bytes": 7015
+    },
+    "bench/.R4": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/.R4",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/bench/.R4",
+      "sha256": "c778bc083fdf20e0b19d1b3cf32016aff4db5043c2682e0fee308a75b0dba7cd",
+      "bytes": 1541
+    },
+    "bench/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/bench/.READY",
+      "sha256": "0330ba23237abd6a6d9a4df1287a8157ca92bf56235f2bfa3fc9bcecdfc6667c",
+      "bytes": 809
+    },
+    "bench/hyperlight/.R4": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/hyperlight/.R4",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/bench/hyperlight/.R4",
+      "sha256": "aad321a8d9ed57292e0c2fb61baba8c561c2ed1c8775c618d9810ecad3a5efe5",
+      "bytes": 4089
+    },
+    "bench/hyperlight/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/hyperlight/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/bench/hyperlight/.READY",
+      "sha256": "d52771ee794cec0663ea92b2fa78c2fc51728138034d9362b94177fbf3289a12",
+      "bytes": 645
+    },
+    "linux/.R4": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/linux/.R4",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/linux/.R4",
+      "sha256": "8b70d1e4c8e4aeec16fb12b9f06a03d73f68f5b199b282bf7f717862d0587304",
+      "bytes": 2759
+    },
+    "linux/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/linux/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/linux/.READY",
+      "sha256": "e6916eceadde4df8920a598adad25e3d9f3756324b418a4bc99609bd06237037",
+      "bytes": 1550
+    },
+    "vmm/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/vmm/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/vmm/.READY",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "vmm/sandbox/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/vmm/sandbox/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/vmm/sandbox/.READY",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "protocol/.READY": {
+      "source": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/protocol/.READY",
+      "frozen": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/r4/frozen/markers/protocol/.READY",
+      "sha256": "673bc685d210d6dbfb6d372261dd5a0bd129f0254fc3af423b80e766c14238bc",
+      "bytes": 184
+    }
+  }
+}

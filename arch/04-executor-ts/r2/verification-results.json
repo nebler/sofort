@@ -1,0 +1,107 @@
+{
+  "selection": "02 r2 READY / native Rust host / tick=0us (panic=abort; containment integration pending)",
+  "loadBefore": "2:41  up  3:55, 2 users, load averages: 48.39 50.47 48.31",
+  "loadAfter": "2:41  up  3:55, 2 users, load averages: 48.39 50.47 48.31",
+  "rows": [
+    {
+      "name": "exact requested demo",
+      "ok": true,
+      "ms": 49.592708000000016
+    },
+    {
+      "name": "binary codec roundtrip",
+      "ok": true,
+      "ms": 36.84391599999992
+    },
+    {
+      "name": "async fanout and UTF8",
+      "ok": true,
+      "ms": 19.804417000000058
+    },
+    {
+      "name": "capture console + provider prelude closure",
+      "ok": true,
+      "ms": 18.38487500000008
+    },
+    {
+      "name": "deny has no side effect",
+      "ok": true,
+      "ms": 49.03854200000001
+    },
+    {
+      "name": "approval is fail closed",
+      "ok": true,
+      "ms": 20.439917000000037
+    },
+    {
+      "name": "approved call executes once",
+      "ok": true,
+      "ms": 7.349541000000045
+    },
+    {
+      "name": "provenance accumulates across calls",
+      "ok": true,
+      "ms": 180.4553340000001
+    },
+    {
+      "name": "CPU infinite loop SIGKILL",
+      "ok": true,
+      "ms": 100.92537500000003
+    },
+    {
+      "name": "AbortSignal kills awaiting guest",
+      "ok": true,
+      "ms": 62.51087499999994
+    },
+    {
+      "name": "tool that never settles cannot defeat deadline",
+      "ok": true,
+      "ms": 33.76962500000013
+    },
+    {
+      "name": "fresh process per execute",
+      "ok": true,
+      "ms": 56.23416599999996
+    },
+    {
+      "name": "unknown inherited method denied",
+      "ok": true,
+      "ms": 129.21804199999997
+    },
+    {
+      "name": "sanitized names and collisions",
+      "ok": true,
+      "ms": 15.784415999999965
+    },
+    {
+      "name": "generated types + host validation",
+      "ok": true,
+      "ms": 125.363834
+    },
+    {
+      "name": "TanStack driver on actual stripped body",
+      "ok": true,
+      "ms": 113.8404579999999
+    },
+    {
+      "name": "TanStack memory mismatch fails explicitly",
+      "ok": true,
+      "ms": 2.3637919999998758
+    },
+    {
+      "name": "TanStack createCodeModeTool integration",
+      "ok": true,
+      "ms": 112.96637499999997
+    },
+    {
+      "name": "bounded log capture (v1 truncates/drops)",
+      "ok": true,
+      "ms": 279.8902919999998
+    },
+    {
+      "name": "warm pool capacity and single use",
+      "ok": true,
+      "ms": 72.73291699999982
+    }
+  ]
+}

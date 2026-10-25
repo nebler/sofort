@@ -1,0 +1,37 @@
+{
+  "load_before": "2:37  up  3:51, 2 users, load averages: 15.46 56.93 49.54",
+  "load_after": "2:37  up  3:51, 2 users, load averages: 15.02 56.15 49.31",
+  "methodology": "30/case + one discarded warmup; randomized interleaving; whole spawn to reap; no timeout process on success",
+  "hashes": {
+    "r1-host": "e86a1e5f1bbc29010e0c9aab0236d0b58c4c14b27d73baff5978c7b4a371f30f",
+    "one-port-host": "113f762cb9a4b09a72d5f8e5f6c13615f71e2079a07268b27d33179e235f2d32",
+    "bare.bin": "f82411ed394e499325633e638995efa60c70ab56bf74aaa8c68c701da8a11844",
+    "qjs.bin": "97f64c3e45fc5ebb5cecf9643d7e30f1cf2f73c47266f7f2377fcd475e336e51"
+  },
+  "summary": {
+    "r1-bare": {
+      "n": 30,
+      "median_ms": 11.2296665,
+      "p90_ms": 12.204542,
+      "p99_ms": 13.490583,
+      "min_ms": 10.004333,
+      "max_ms": 13.490583
+    },
+    "one-port-bare": {
+      "n": 30,
+      "median_ms": 11.5108545,
+      "p90_ms": 12.122625,
+      "p99_ms": 13.350083,
+      "min_ms": 9.846417,
+      "max_ms": 13.350083
+    },
+    "one-port-qjs": {
+      "n": 30,
+      "median_ms": 13.952145999999999,
+      "p90_ms": 14.634167,
+      "p99_ms": 16.57825,
+      "min_ms": 12.075917,
+      "max_ms": 16.57825
+    }
+  }
+}

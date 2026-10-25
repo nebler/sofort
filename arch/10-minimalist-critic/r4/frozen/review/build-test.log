@@ -1,0 +1,408 @@
+jitk: delegating kernel/build (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/README.md)
+sh build.sh
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel)
+    Finished `release` profile [optimized] target(s) in 5.27s
+{"image": "/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+jitk: delegating vmm/build (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/vmm/README.md)
+JITK_VMM_BUILD="/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm" python3 build.py
+Cloning into '/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun'...
+done.
+HEAD is now at a1d86167 init/dhcp: gate retry and lease renewal behind a runtime config
+cargo build --locked --release -p libkrun 
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling libc v0.2.186
+   Compiling syn v2.0.117
+   Compiling cfg-if v1.0.4
+   Compiling autocfg v1.5.0
+   Compiling memoffset v0.9.1
+   Compiling cfg_aliases v0.2.1
+   Compiling thiserror v2.0.18
+   Compiling nix v0.30.1
+   Compiling crossbeam-utils v0.8.21
+   Compiling log v0.4.29
+   Compiling bitflags v2.11.0
+   Compiling thiserror-impl v2.0.18
+   Compiling vm-memory v0.18.0
+   Compiling bitflags v1.3.2
+   Compiling vmm-sys-util v0.15.0
+   Compiling crossbeam-channel v0.5.15
+   Compiling zerocopy v0.8.47
+   Compiling krun-utils v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/utils)
+   Compiling zerocopy-derive v0.8.47
+   Compiling semver v1.0.27
+   Compiling memchr v2.8.0
+   Compiling aho-corasick v1.1.4
+   Compiling rustc_version v0.4.1
+   Compiling adler2 v2.0.1
+   Compiling virtue v0.0.18
+   Compiling getrandom v0.4.2
+   Compiling regex-syntax v0.8.10
+   Compiling once_cell v1.21.4
+   Compiling rand_core v0.10.1
+   Compiling simd-adler32 v0.3.8
+   Compiling miniz_oxide v0.8.9
+   Compiling regex-automata v0.4.14
+   Compiling tracing-core v0.1.36
+   Compiling bincode_derive v2.0.1
+   Compiling imago v0.2.4
+   Compiling acpi_tables v0.2.1
+   Compiling krun-smbios v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/smbios)
+   Compiling tracing-attributes v0.1.31
+   Compiling unty v0.0.4
+   Compiling utf8parse v0.2.2
+   Compiling foldhash v0.2.0
+   Compiling pin-project-lite v0.2.17
+   Compiling equivalent v1.0.2
+   Compiling allocator-api2 v0.2.21
+   Compiling crc32fast v1.5.0
+   Compiling krun-arch-gen v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/arch_gen)
+   Compiling krun-arch v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/arch)
+   Compiling hashbrown v0.16.1
+   Compiling tracing v0.1.44
+   Compiling anstyle-parse v0.2.7
+   Compiling bincode v2.0.1
+   Compiling regex v1.12.3
+   Compiling chacha20 v0.10.0
+   Compiling maybe-async v0.2.11
+   Compiling libloading v0.8.9
+   Compiling page_size v0.6.0
+   Compiling colorchoice v1.0.5
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v0.6.21
+   Compiling krun-hvf v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/hvf)
+   Compiling env_filter v1.0.0
+   Compiling rand v0.10.2
+   Compiling lru v0.16.3
+   Compiling krun-polly v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/polly)
+   Compiling virtio-bindings v0.2.7
+   Compiling libkrun v2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/libkrun)
+   Compiling vm-fdt v0.3.0
+   Compiling jiff v0.2.23
+   Compiling krun-devices v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/devices)
+   Compiling env_logger v0.11.9
+   Compiling flate2 v1.1.9
+   Compiling krun-kernel v0.1.0-2.0.0-dev (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/libkrun/src/kernel)
+   Compiling linux-loader v0.14.0
+    Finished `release` profile [optimized] target(s) in 1m 06s
+cp target/release/libkrun.dylib target/release/libkrun.2.0.0.dylib
+/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/jitk-vmm: replacing existing signature
+{
+  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+  "patches_sha256": {
+    "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+  },
+  "panic": "abort",
+  "features": [],
+  "sandbox_ready": true,
+  "binary": "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/jitk-vmm",
+  "binary_sha256": "a1fdc1e67260dccee213c11810aab4849751395cb3cd3a886e9084cebae8a7a7",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+}
+jitk: delegating protocol/build (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:11151) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+jitk: delegating executor/dependencies (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/executor/README.md)
+
+added 49 packages in 2m
+npm notice
+npm notice New major version of npm available! 11.19.1 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+jitk: delegating executor/build (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/executor/README.md)
+./run.sh build
+jitk: delegating kernel/test (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/README.md)
+sh build.sh
+    Finished `release` profile [optimized] target(s) in 0.72s
+{"image": "/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}
+python3 tests/test_packer.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.021s
+
+OK
+python3 tests/test_handlers.py
+
+running 1 test
+test semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+python3 tests/regression.py
+{
+  "load": "5:24  up  6:38, 2 users, load averages: 125.67 85.34 75.03",
+  "churn": {
+    "cumulative_bytes": 134217728,
+    "ram_mib": 32,
+    "result": {
+      "t": "done",
+      "ok": 8128
+    }
+  },
+  "clock": {
+    "host_interval_plus_1ms": 30,
+    "n": 30,
+    "midpoint_delta_ms": {
+      "n": 30,
+      "p50": -0.44725,
+      "p90": 10.314,
+      "p99": 48.873
+    }
+  },
+  "finite_timer_e2e_ms": {
+    "n": 30,
+    "p50": 287.962333,
+    "p90": 438.845125,
+    "p99": 488.956084
+  },
+  "eof": "PASS: clean input EOF terminates without a success frame",
+  "partial_rx": "PASS: 1-byte run fragments + 32KiB ret",
+  "control_forgery": [
+    "\u001efatal control byte"
+  ],
+  "atomic_ascii": [
+    {
+      "byte": 0,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 30,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 127,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 128,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    },
+    {
+      "byte": 255,
+      "prefix_callbacks": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
+{
+  "load": "5:25  up  6:39, 2 users, load averages: 125.66 87.97 76.21",
+  "status": "PASS",
+  "n": 30,
+  "method": "Realtime minus guest counter compared with host realtime minus same-domain mach counter; 64 bracketed guest samples, narrowest retained. Date.now is millisecond quantized.",
+  "origin_error_ms": {
+    "n": 30,
+    "p50": -0.55712890625,
+    "p90": -0.198486328125,
+    "p99": -0.034423828125
+  },
+  "guest_bracket_width_ms": {
+    "n": 30,
+    "p50": 0.0002500005066394806,
+    "p90": 0.00029099732637405396,
+    "p99": 0.00029099732637405396
+  },
+  "worst_abs_error_bound_ms": 0.9976835940033197,
+  "samples_ms": [
+    -0.8056640625,
+    -0.034423828125,
+    -0.616455078125,
+    -0.691162109375,
+    -0.802978515625,
+    -0.805908203125,
+    -0.198486328125,
+    -0.75341796875,
+    -0.482177734375,
+    -0.3359375,
+    -0.388427734375,
+    -0.92578125,
+    -0.6845703125,
+    -0.87109375,
+    -0.201416015625,
+    -0.901611328125,
+    -0.497802734375,
+    -0.493896484375,
+    -0.7919921875,
+    -0.875244140625,
+    -0.489013671875,
+    -0.20947265625,
+    -0.72216796875,
+    -0.2998046875,
+    -0.99755859375,
+    -0.114013671875,
+    -0.41162109375,
+    -0.62451171875,
+    -0.48779296875,
+    -0.24072265625
+  ]
+}
+kernel-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000080000000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '3662e0b6532667cb2f5c0cd5c77a1c8bef40a5a33ff92e10e5beff4c96d2c997', 'load': '5:25  up  6:39, 2 users, load averages: 103.99 86.60 76.18', 'status': 'PASS'}
+text-write {'returncode': 0, 'output': '\x1eFAULT esr=000000009200004f far=0000000000400000 pc=0000000000400004\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '4f87755cac77ee105378b8e61faeec0d797253d8e15c4719c77c9b3e1d5142a6', 'load': '5:26  up  6:39, 2 users, load averages: 116.56 89.89 77.47', 'status': 'PASS'}
+heap-exec {'returncode': 0, 'output': '\x1eFAULT esr=000000008200000f far=0000000000680000 pc=0000000000680000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '287c44b51b1f5e733843472979eccb25156bd9c9228f811c2f768d69584c6251', 'load': '5:26  up  6:39, 2 users, load averages: 115.47 90.62 77.88', 'status': 'PASS'}
+privileged {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'b7829f93ed6db10bff6cd6d621e53c71aebaf5d3b79eb6b5112d02fee3dc25e0', 'load': '5:26  up  6:40, 2 users, load averages: 115.23 91.50 78.35', 'status': 'PASS'}
+el0-hvc {'returncode': 0, 'output': '\x1eFAULT esr=0000000002000000 far=0000000000000000 pc=0000000000400000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '18aa229498486450a9ad5e1931e15536fa12f4214b8e26c1355f9c54707c9ec2', 'load': '5:26  up  6:40, 2 users, load averages: 114.66 92.15 78.73', 'status': 'PASS'}
+bad-pointer {'returncode': 0, 'output': '\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'afb5dd3237cb5640863f1fa06a06010a16b5a97142779da8f686b5c151792a81', 'load': '5:26  up  6:40, 2 users, load averages: 121.42 93.92 79.43', 'status': 'PASS'}
+pan {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12345,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600000f far=0000000000400000 pc=0000000080003f38\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '4025de8d49d60183bda85a72198fefba9a8d05f4dd130db42c1384f0e1479e1d', 'load': '5:26  up  6:40, 2 users, load averages: 122.30 95.00 79.98', 'status': 'PASS'}
+alias-write {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":12346,"pc":4194312,"args":[1,2147510552,0,58,0,0],"input":null,"timeout":null}\n\x1eFAULT esr=000000009600004f far=0000000080080000 pc=0000000080003e8c\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': 'f6f70516c2d19a6da625150a5cb03e77f4518d19a7edaf4cf701a4ce49aae2fe', 'load': '5:26  up  6:40, 2 users, load averages: 117.23 94.40 79.86', 'status': 'PASS'}
+unknown-syscall {'returncode': 0, 'output': '\x1e{"v":2,"kind":"missing","seq":1,"nr":511,"pc":4194312,"args":[1,2147510560,0,58,0,0],"input":null,"timeout":null}\n\x1eexit=0000000000000000\n', 'stderr': '{"sandbox":"ok"}\n', 'image_sha256': '1d9c826b1982f25a8d652a6c97242bce91d2781ac4eaf3da77a5a465ecb64384', 'load': '5:26  up  6:40, 2 users, load averages: 116.33 94.59 80.01', 'status': 'PASS'}
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 5.23s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 1.94s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 2.43s
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/kernel/test-work/grow-contract/kernel)
+    Finished `release` profile [optimized] target(s) in 1.40s
+{
+  "load": "5:27  up  6:40, 2 users, load averages: 116.33 94.59 80.01",
+  "ioctl": {
+    "status": "PASS",
+    "records": 12,
+    "stdout": "AAAAAAAA ioctl OK",
+    "exit_slot": 93
+  },
+  "ppoll": {
+    "status": "PASS",
+    "records": 22,
+    "stdout": "ping\n ppoll OK",
+    "exit_slot": 94
+  },
+  "registered_enosys": {
+    "status": "PASS",
+    "missing": [
+      511
+    ],
+    "registered_enosys": [
+      29,
+      134,
+      135,
+      216
+    ]
+  },
+  "deleted_ioctl": {
+    "status": "PASS",
+    "missing": [
+      29,
+      511
+    ],
+    "manifest_registered": false
+  },
+  "status": "PASS"
+}
+jitk: delegating vmm/test (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/vmm/README.md)
+JITK_TEST_IMAGES="/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/test-images" python3 tests/build-guests.py
+/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/test-images
+"/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/jitk-vmm" --compile-profile "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/test.sbbin" --images "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/test-images"
+python3 tests/check.py --binary "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/jitk-vmm" --images "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/test-images" --profile "/tmp/jitk-10/r4/relocated-cb18d3d39ccd-work/vmm/test.sbbin"
+PASS no-image
+PASS bad-mem
+PASS bad-seed
+PASS unknown
+PASS seed-epoch-counter-single-console
+PASS eof-before-go
+PASS real-qjs-ready-and-one-tool
+PASS wait-go-preserves-1000-following-bytes
+GUEST unknown-hvc
+GUEST unknown-smc
+GUEST mmio-halfword
+GUEST bad-sysreg
+GUEST console_avail_oob
+GUEST rtc_oob_read
+PASS invalid-hvc-clean-exit
+PASS one-console-native-cli
+PASS no-libkrun-dylib
+PASS signature
+{
+  "checks": {
+    "no-image": true,
+    "bad-mem": true,
+    "bad-seed": true,
+    "unknown": true,
+    "seed-epoch-counter-single-console": true,
+    "eof-before-go": true,
+    "real-qjs-ready-and-one-tool": true,
+    "wait-go-preserves-1000-following-bytes": true,
+    "invalid-hvc-clean-exit": true,
+    "one-console-native-cli": true,
+    "no-libkrun-dylib": true,
+    "signature": true
+  },
+  "fault_runs": 180
+}
+jitk: delegating vmm/sandbox/test (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/vmm/sandbox/README.md)
+
+running 9 tests
+test tests::clone_threads_only_and_clone3_enosys ... ok
+test tests::fits_kernel_limit ... ok
+test tests::futex_ops_and_seccomp_narrowing ... ok
+test tests::kvm_run_only_in_vcpu ... ok
+test tests::profile_is_minimal ... ok
+test tests::no_exec_memory ... ok
+test tests::vcpu_writes_only_8_bytes ... ok
+test tests::never_allowed_anywhere ... ok
+test tests::wrong_arch_killed ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+jitk: delegating protocol/test (see /private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/protocol/README.md)
+/tmp/jitk-09/node-real build.mjs
+(node:13403) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+python3 make-vectors.py
+71 cases
+10 real-guest cases
+/tmp/jitk-09/node-real test.mjs
+{
+  "node": "/private/tmp/jitk-09/node-real",
+  "version": "v24.22.1",
+  "uptime": "5:27  up  6:41, 2 users, load averages: 76.45 87.13 77.95",
+  "corpus": {
+    "cases": 71,
+    "runs": 142
+  },
+  "boundaries": {
+    "checks": 14,
+    "consecutiveCalls": 4096,
+    "maxFrameBytes": 1048576
+  },
+  "fuzz": {
+    "mutations": 25000,
+    "chunkDifferentialRuns": 50000,
+    "accepted": 622,
+    "rejected": 24378,
+    "seed": "0x3c0ffee"
+  }
+}
+/tmp/jitk-09/node-real import-check.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: bench/hyperlight/backend.ts must consume canonical protocol
+    at file:///private/tmp/jitk-10/r4/relocated-cb18d3d39ccd/protocol/import-check.mjs:9:2
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
+make[1]: *** [test] Error 1
+make: *** [test] Error 2

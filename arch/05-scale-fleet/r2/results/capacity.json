@@ -1,0 +1,56 @@
+{
+  "measured_mac_refill_cpu_ms_vm_conservative": 12.890120833333333,
+  "measured_mac_refill_p99_s": 0.03350591700109362,
+  "measured_mac_c4_refill_vms_s_conservative": 199.51005733336007,
+  "scope": "child getrusage excludes Python broker and work charged outside VMM. Linux CPU is a Mac-input sensitivity scenario, not portable measurement.",
+  "scenarios": [
+    {
+      "host": "macOS available slots at test",
+      "status": "conditional capacity estimate, not sustained mixed workload measurement",
+      "cores": 12,
+      "vm_slots": 117,
+      "execution_cpu_ms_assumed": 10,
+      "mean_wall_s_assumed": 1,
+      "build_reservations": 4,
+      "burst_reserve": 32,
+      "ready_at_rate": 35,
+      "cpu_upper_eps": 366.9705398744618,
+      "occupancy_upper_eps": 78.37400702555851,
+      "refill_upper_eps": 199.51005733336007,
+      "estimated_eps": 78,
+      "linux_condition": "02 macOS G1 passed; mixed-workload validation and RAM reservations still required; slots change with other VM users"
+    },
+    {
+      "host": "Linux c7g.metal projected",
+      "status": "UNVERIFIED projection",
+      "cores": 60,
+      "vm_slots": 2048,
+      "execution_cpu_ms_assumed": 10,
+      "mean_wall_s_assumed": 1,
+      "build_reservations": 64,
+      "burst_reserve": 32,
+      "ready_at_rate": 94,
+      "cpu_upper_eps": 1834.8526993723094,
+      "occupancy_upper_eps": 1888.7168112825952,
+      "refill_upper_eps": "UNVERIFIED Linux",
+      "estimated_eps": 1834,
+      "linux_condition": "requires measured KVM replacement >= estimated_eps, G1, broker and mixed-workload validation"
+    },
+    {
+      "host": "Linux c7g.metal projected long waits",
+      "status": "UNVERIFIED projection",
+      "cores": 60,
+      "vm_slots": 2048,
+      "execution_cpu_ms_assumed": 10,
+      "mean_wall_s_assumed": 10,
+      "build_reservations": 64,
+      "burst_reserve": 32,
+      "ready_at_rate": 39,
+      "cpu_upper_eps": 1834.8526993723094,
+      "occupancy_upper_eps": 194.54814858806918,
+      "refill_upper_eps": "UNVERIFIED Linux",
+      "estimated_eps": 194,
+      "linux_condition": "requires measured KVM replacement >= estimated_eps, G1, broker and mixed-workload validation"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "strict_argv": [
+    "build/target/release/r2-worker",
+    "strict",
+    "build/snapshot"
+  ],
+  "clone_argv": [
+    "build/target/release/r2-worker",
+    "clone",
+    "build/snapshot"
+  ],
+  "env": {},
+  "provenance": "Paths relative to this descriptor; build.sh generates absolute paths for the selected outputs. Hyperlight host 0.18.0; strict fresh single-use HW VM; clone shared HW VM; panic=abort",
+  "files": [
+    "worker.rs",
+    "bootstrap.js",
+    "Cargo.lock",
+    "build/target/release/r2-worker",
+    "build/snapshot/index.json"
+  ]
+}

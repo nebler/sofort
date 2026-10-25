@@ -1,0 +1,3 @@
+{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/canonical-r3/tx-rt_sigprocmask/build/kernel-16d543e786e94ea7b960aa5bde5888110374f738da732d7819e83f5770c9c416.bin", "sha256": "16d543e786e94ea7b960aa5bde5888110374f738da732d7819e83f5770c9c416", "bytes": 532480}
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-08/r3/runs/canonical-r3/kernel)
+    Finished `release` profile [optimized] target(s) in 2.34s

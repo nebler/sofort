@@ -1,0 +1,2 @@
+{"metric":"parallel","workers":1,"calls":30,"ns":1348279250}
+{"metric":"parallel","workers":4,"calls":120,"ns":5455550584}

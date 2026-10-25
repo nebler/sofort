@@ -1,0 +1,17 @@
+{
+  "tick_us": 200,
+  "load": "2:25  up  3:38, 2 users, load averages: 19.10 18.74 18.15",
+  "ready_ms": 9.92275,
+  "idle_seconds": 10.002947959001176,
+  "idle_cpu_seconds": 0.37,
+  "idle_core_percent": 3.6989095766219062,
+  "exchanges": 1000,
+  "rtt_us": {
+    "n": 1000,
+    "p50": 131.792,
+    "p90": 379.0,
+    "p99": 1224.334
+  },
+  "records": [],
+  "status": "PASS"
+}

@@ -1,0 +1,3 @@
+{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/canonical-r4/tx-ppoll/build/kernel-a3fe6b6447f6f7ea06290c36e8e5d958341bdc2d0aa8ec53c8b536af6e2d8864.bin", "sha256": "a3fe6b6447f6f7ea06290c36e8e5d958341bdc2d0aa8ec53c8b536af6e2d8864", "bytes": 532480}
+   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-08/r4/jitk-grow-tu05sd40/kernel)
+    Finished `release` profile [optimized] target(s) in 29.29s

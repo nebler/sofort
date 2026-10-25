@@ -1,0 +1,29 @@
+00:33:35.756481 rseq(0xffffb69ef960, 0x20, 0, 0xd428bc00) = 0
+00:33:35.759077 set_robust_list(0xffffb69ef1c0, 24) = 0
+00:33:35.760569 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+00:33:35.760955 prctl(PR_SET_NAME, "console port") = 0
+00:33:35.761006 mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffa8000000
+00:33:35.761054 munmap(0xffffac000000, 67108864) = 0
+00:33:35.761105 mprotect(0xffffa8000000, 135168, PROT_READ|PROT_WRITE) = 0
+00:33:35.761159 sched_getaffinity(188, 32, [0 1 2 3]) = 8
+00:33:35.761266 gettid()                = 188
+00:33:35.761297 sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+00:33:35.761330 mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffbad7b000
+00:33:35.761380 mprotect(0xffffbad7b000, 4096, PROT_NONE) = 0
+00:33:35.761438 sigaltstack({ss_sp=0xffffbad7c000, ss_flags=0, ss_size=16384}, NULL) = 0
+00:33:35.761486 read(3, 0xffffb6c02008, 1024) = -1 EAGAIN (Resource temporarily unavailable)
+00:33:35.761531 futex(0xaaaae5e39eb0, FUTEX_WAIT_BITSET_PRIVATE, 2, NULL, FUTEX_BITSET_MATCH_ANY) = 0
+00:33:35.761874 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:35.762150 futex(0xaaaae5e39eb0, FUTEX_WAKE_PRIVATE, 1) = 0
+00:33:35.762488 ppoll([{fd=3, events=POLLIN}, {fd=21, events=POLLIN}], 2, NULL, NULL, 0) = 1 ([{fd=3, revents=POLLIN|POLLHUP}])
+00:33:36.147917 read(3, "x", 1024)      = 1
+00:33:36.148115 read(3, "", 1023)       = 0
+00:33:36.148933 write(19, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:36.149064 write(11, "\1\0\0\0\0\0\0\0", 8) = 8
+00:33:36.149270 close(21)               = 0
+00:33:36.149313 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=16384}, NULL) = 0
+00:33:36.149350 munmap(0xffffbad7b000, 20480) = 0
+00:33:36.149471 rt_sigprocmask(SIG_BLOCK, ~[RT_1], NULL, 8) = 0
+00:33:36.149522 madvise(0xffffb67e0000, 2023424, MADV_DONTNEED) = 0
+00:33:36.149593 exit(0)                 = ?
+00:33:36.149685 +++ exited with 0 +++

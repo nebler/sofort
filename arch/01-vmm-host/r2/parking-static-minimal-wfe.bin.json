@@ -1,0 +1,10 @@
+{
+  "binary": "static-minimal",
+  "guest": "wfe.bin",
+  "forced": false,
+  "uptime": "2:26  up  3:39, 2 users, load averages: 17.44 18.37 18.06",
+  "n": 1000,
+  "error": "RuntimeError('pipe EOF')",
+  "stderr": "MAIN_TICKS 234536297869\njitk-vmm: boot error: Internal(Vm(VmSetup(VmCreate)))\n",
+  "validity": "Failed diagnostic attempt; not gate evidence. Final native/userspace/timer/WFE evidence is in parking-static-trace-*.json."
+}

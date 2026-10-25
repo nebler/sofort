@@ -1,0 +1,12 @@
+     29 mmap
+     28 munmap
+      3 lseek
+      2 brk
+      1 writev
+      1 set_tid_address
+      1 readv
+      1 openat
+      1 ioctl
+      1 exit_group
+      1 execve
+      1 close

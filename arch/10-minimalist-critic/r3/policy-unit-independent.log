@@ -1,0 +1,35 @@
+jitk: delegating executor/policy/test (see /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/executor/policy/README.md)
+22 policy assertions passed
+PASS forged "__proto__"."x" expect=KILL got=KILL
+PASS forged "mail"."__proto__" expect=KILL got=KILL
+PASS forged "mail"."constructor" expect=KILL got=KILL
+PASS forged "mail"."toString" expect=KILL got=KILL
+PASS forged "mail"."hasOwnProperty" expect=KILL got=KILL
+PASS forged "constructor"."name" expect=KILL got=KILL
+PASS forged "mail"."reаd" expect=KILL got=KILL
+PASS forged "mail"."rrrrrrrrrrrrrrrrrrr expect=KILL got=KILL
+PASS forged ""."read" expect=KILL got=KILL
+PASS forged "mail"."read\n" expect=KILL got=KILL
+PASS extra field approved:true expect=KILL got=KILL
+PASS extra field label expect=KILL got=KILL
+PASS id replay expect=KILL got=KILL
+PASS id skip expect=KILL got=KILL
+PASS id as string expect=KILL got=KILL
+PASS t != call expect=KILL got=KILL
+PASS run dead after violation expect=KILL got=KILL
+PASS __proto__ pollution in args expect=deny got=deny
+PASS extra arg key (smuggled url) expect=deny got=deny
+PASS deep nesting expect=deny got=deny
+PASS denial budget exhaustion expect=KILL got=KILL
+PASS call budget expect=KILL got=KILL
+PASS deadline passed expect=KILL got=KILL
+PASS exfil via non-endorsable egress after private read expect=deny got=deny
+PASS endorsable egress after private read needs approval expect=approve got=approve
+PASS dispatch approval-required call without approval expect=KILL got=KILL
+PASS forged approval digest expect=null got=null
+PASS approval digest replay expect=KILL got=KILL
+PASS approval of tampered args expect=KILL got=KILL
+PASS dispatch of fabricated call object expect=KILL got=KILL
+PASS allow replayed twice (double side effect) expect=KILL got=KILL
+PASS no side effect from any rejected/forged call expect=handled got=handled
+32/32 hostile policy cases passed

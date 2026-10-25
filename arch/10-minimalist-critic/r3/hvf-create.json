@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-24T01:32:40.771010+00:00",
+  "uptime": "3:32  up  4:46, 2 users, load averages: 39.04 59.07 67.37",
+  "samples": [
+    {
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0x0\",\"create_name\":\"HV_SUCCESS\",\"destroy_rc\":\"0x0\"}\n",
+      "stderr": ""
+    },
+    {
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0x0\",\"create_name\":\"HV_SUCCESS\",\"destroy_rc\":\"0x0\"}\n",
+      "stderr": ""
+    },
+    {
+      "rc": 0,
+      "stdout": "{\"create_rc\":\"0x0\",\"create_name\":\"HV_SUCCESS\",\"destroy_rc\":\"0x0\"}\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Three sequential fresh-process empty HVF create/destroy probes. No vCPU, guest RAM or guest; all subprocesses joined."
+}

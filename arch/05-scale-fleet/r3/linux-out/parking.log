@@ -1,0 +1,2 @@
+qemu-system-aarch64: -accel hvf: error creating platform VGIC
+qemu-system-aarch64: -accel hvf: Error: ret = HV_NO_DEVICE (0xfae94006, at ../accel/hvf/hvf-all.c:221)

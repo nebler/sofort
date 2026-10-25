@@ -1,0 +1,13 @@
+{
+  "load": "2:40  up  3:54, 2 users, load averages: 43.19 50.50 48.09",
+  "idle_seconds": 10.00864808299957,
+  "idle_cpu_seconds": 0.0,
+  "idle_core_percent": 0.0,
+  "status": "PASS",
+  "go_to_result_us": {
+    "n": 30,
+    "p50": 32175.25,
+    "p90": 74390.958,
+    "p99": 107746.0
+  }
+}

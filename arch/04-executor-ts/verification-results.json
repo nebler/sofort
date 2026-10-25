@@ -1,0 +1,102 @@
+[
+  {
+    "name": "exact requested demo",
+    "ok": true,
+    "ms": 7.799250000000029
+  },
+  {
+    "name": "binary codec roundtrip",
+    "ok": true,
+    "ms": 11.112082999999984
+  },
+  {
+    "name": "async fanout and UTF8",
+    "ok": true,
+    "ms": 11.636291999999969
+  },
+  {
+    "name": "capture console + provider prelude closure",
+    "ok": true,
+    "ms": 6.2530419999999935
+  },
+  {
+    "name": "deny has no side effect",
+    "ok": true,
+    "ms": 12.453958
+  },
+  {
+    "name": "approval is fail closed",
+    "ok": true,
+    "ms": 5.2897499999999695
+  },
+  {
+    "name": "approved call executes once",
+    "ok": true,
+    "ms": 8.216875000000016
+  },
+  {
+    "name": "provenance accumulates across calls",
+    "ok": true,
+    "ms": 25.682292000000018
+  },
+  {
+    "name": "CPU infinite loop SIGKILL",
+    "ok": true,
+    "ms": 37.74154199999998
+  },
+  {
+    "name": "AbortSignal kills awaiting guest",
+    "ok": true,
+    "ms": 35.073083999999994
+  },
+  {
+    "name": "tool that never settles cannot defeat deadline",
+    "ok": true,
+    "ms": 36.30150000000003
+  },
+  {
+    "name": "fresh process per execute",
+    "ok": true,
+    "ms": 31.641917000000035
+  },
+  {
+    "name": "unknown inherited method denied",
+    "ok": true,
+    "ms": 11.133375000000001
+  },
+  {
+    "name": "sanitized names and collisions",
+    "ok": true,
+    "ms": 9.290916999999922
+  },
+  {
+    "name": "generated types + host validation",
+    "ok": true,
+    "ms": 26.80945799999995
+  },
+  {
+    "name": "TanStack driver on actual stripped body",
+    "ok": true,
+    "ms": 19.77137499999992
+  },
+  {
+    "name": "TanStack memory mismatch fails explicitly",
+    "ok": true,
+    "ms": 0.26149999999995543
+  },
+  {
+    "name": "TanStack createCodeModeTool integration",
+    "ok": true,
+    "ms": 24.753166999999962
+  },
+  {
+    "name": "bounded log capture",
+    "ok": true,
+    "ms": 5.785167000000001
+  },
+  {
+    "name": "warm pool capacity and single use",
+    "ok": true,
+    "ms": 7.605750000000057
+  }
+]

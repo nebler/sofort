@@ -1,0 +1,5 @@
+fd=-1 ret=-1 errno=9
+fd=0 ret=-1 errno=25
+fd=1 ret=-1 errno=25
+fd=2 ret=-1 errno=25
+fd=3 ret=-1 errno=9

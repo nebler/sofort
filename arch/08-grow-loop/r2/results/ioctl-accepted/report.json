@@ -1,0 +1,97 @@
+{
+  "name": "ioctl",
+  "gate": "PASS bounded real-VM ABI differential",
+  "commit": "0b02b5ff905fbd4139bf54ed8fbf3814ca193418",
+  "repository": "/tmp/jitk-08/r2/loops/ioctl-accepted",
+  "total_seconds": 39.544153832999655,
+  "stages": {
+    "build_probe": {
+      "seconds": 1.775318583000626,
+      "uptime_before": "2:32  up  3:46, 2 users, load averages: 153.71 100.76 56.48",
+      "uptime_after": "2:32  up  3:46, 2 users, load averages: 153.71 100.76 56.48"
+    },
+    "build_missing_kernel": {
+      "seconds": 5.396097042001202,
+      "uptime_before": "2:32  up  3:46, 2 users, load averages: 153.71 100.76 56.48",
+      "uptime_after": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35"
+    },
+    "discover_fresh_vm": {
+      "seconds": 0.10727404099998239,
+      "uptime_before": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35",
+      "uptime_after": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35"
+    },
+    "linux_oracle": {
+      "seconds": 8.705673791999288,
+      "uptime_before": "2:32  up  3:46, 2 users, load averages: 144.28 99.69 56.35",
+      "uptime_after": "2:33  up  3:46, 2 users, load averages: 128.74 97.82 56.20"
+    },
+    "headless_codex": {
+      "seconds": 12.051335750000362,
+      "uptime_before": "2:33  up  3:46, 2 users, load averages: 128.74 97.82 56.20",
+      "uptime_after": "2:33  up  3:47, 2 users, load averages: 118.55 96.66 56.27"
+    },
+    "build_candidate_kernel": {
+      "seconds": 5.048031500000434,
+      "uptime_before": "2:33  up  3:47, 2 users, load averages: 110.42 95.33 56.04",
+      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
+    },
+    "differential_fresh_vm": {
+      "seconds": 0.043636667000100715,
+      "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
+      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
+    },
+    "thirty_fresh_vms": {
+      "seconds": 0.92488400000002,
+      "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
+      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
+    },
+    "commit": {
+      "seconds": 0.14440087500042864,
+      "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
+      "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
+    }
+  },
+  "benchmark": {
+    "n": 30,
+    "unit": "ms",
+    "scope": "traced process spawn through guest completion and reap",
+    "median": 18.42170849977265,
+    "p90": 44.30779200083634,
+    "p99": 222.03137500036974,
+    "samples": [
+      44.30779200083634,
+      15.267749999111402,
+      28.487333000157378,
+      28.28350000163482,
+      50.86545799895248,
+      14.211457999408594,
+      222.03137500036974,
+      25.06520899987663,
+      17.767041999832145,
+      12.628167000002577,
+      17.0579160003399,
+      18.599375000121654,
+      52.09525000100257,
+      21.62937499997497,
+      30.20733300036227,
+      30.513957999573904,
+      21.337250000215136,
+      14.951084000131232,
+      17.254542000955553,
+      16.523041998880217,
+      14.693166998767992,
+      14.533083000060287,
+      17.000332998577505,
+      17.570750000231783,
+      14.240750000681146,
+      21.406624999144697,
+      18.11512499989476,
+      20.145874999798252,
+      19.976625000708736,
+      18.244041999423644
+    ],
+    "uptime_before": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96",
+    "uptime_after": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
+  },
+  "load": "2:33  up  3:47, 2 users, load averages: 104.94 94.45 55.96"
+}

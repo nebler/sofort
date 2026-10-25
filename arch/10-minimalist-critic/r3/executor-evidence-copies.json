@@ -1,0 +1,13 @@
+{
+  "copied_utc": "2026-10-24T01:39:41.123399+00:00",
+  "files": {
+    "arch/jitk/executor/.READY": {
+      "copy": "executor-certificate-0128.json",
+      "sha256": "1f218b3134817ab842e66e760e3b40d4f1249069b12a6e027ba6fcdd6c736154"
+    },
+    "arch/jitk/executor/breakdown-results.json": {
+      "copy": "executor-breakdown-0128.json",
+      "sha256": "4bb74a8290819ff806b799b39070103952171a885efc83294d872890af3f1c30"
+    }
+  }
+}

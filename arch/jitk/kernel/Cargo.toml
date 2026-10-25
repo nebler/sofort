@@ -1,0 +1,15 @@
+[package]
+name = "jitk-02"
+version = "0.3.0"
+edition = "2024"
+[features]
+default = ["qjs"]
+qjs = []
+trace = []
+grow-trace = []
+probe = ["qjs"]
+[profile.release]
+panic = "abort"
+opt-level = "s"
+lto = true
+codegen-units = 1

@@ -1,0 +1,319 @@
+$ clang --target=aarch64-none-elf -nostdinc -isystem /Users/noah/.local/share/zig-0.16.0/lib/include -isystem /Users/noah/.local/share/zig-0.16.0/lib/libc/include/aarch64-linux-musl -isystem /Users/noah/.local/share/zig-0.16.0/lib/libc/include/generic-musl -isystem /Users/noah/.local/share/zig-0.16.0/lib/libc/include/aarch64-linux-any -isystem /Users/noah/.local/share/zig-0.16.0/lib/libc/include/any-linux-any -O2 -ffreestanding -ffunction-sections -I /tmp/jitk-10/quickjs-2026-06-04 -c /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/embed_probe.c -o /tmp/jitk-10/embed-none.o
+exit=0
+$ ld.lld --gc-sections --error-limit=0 -e jitk_eval_probe -o /tmp/jitk-10/embed-none.elf /tmp/jitk-10/embed-none.o /tmp/jitk-10/none-noatomics/cutils.o /tmp/jitk-10/none-noatomics/dtoa.o /tmp/jitk-10/none-noatomics/libregexp.o /tmp/jitk-10/none-noatomics/libunicode.o /tmp/jitk-10/none-noatomics/quickjs.o
+ld.lld: error: undefined symbol: strlen
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(pstrcat)
+>>> referenced by embed_probe.c
+>>>               /tmp/jitk-10/embed-none.o:(jitk_eval_probe)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_NewRuntime2)
+>>> referenced 41 more times
+
+ld.lld: error: undefined symbol: memset
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(dbuf_init2)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_mallocz)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_NewRuntime2)
+>>> referenced 74 more times
+
+ld.lld: error: undefined symbol: realloc
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(dbuf_default_realloc)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(cr_default_realloc)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_realloc)
+
+ld.lld: error: undefined symbol: memcpy
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(dbuf_put)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_realloc_rt)
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(__dbuf_putc)
+>>> referenced 86 more times
+
+ld.lld: error: undefined symbol: strcmp
+>>> referenced by embed_probe.c
+>>>               /tmp/jitk-10/embed-none.o:(jitk_eval_probe)
+>>> referenced by libregexp.c
+>>>               /tmp/jitk-10/none-noatomics/libregexp.o:(re_parse_captures)
+>>> referenced by libregexp.c
+>>>               /tmp/jitk-10/none-noatomics/libregexp.o:(parse_unicode_property)
+>>> referenced 13 more times
+
+ld.lld: error: undefined symbol: abort
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_call_c_function)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(cr_op)
+>>> referenced by libregexp.c
+>>>               /tmp/jitk-10/none-noatomics/libregexp.o:(lre_exec)
+>>> referenced 61 more times
+
+ld.lld: error: undefined symbol: vsnprintf
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(dbuf_printf)
+>>> referenced by cutils.c
+>>>               /tmp/jitk-10/none-noatomics/cutils.o:(dbuf_printf)
+>>> referenced by libregexp.c
+>>>               /tmp/jitk-10/none-noatomics/libregexp.o:(re_parse_error)
+>>> referenced 1 more times
+
+ld.lld: error: undefined symbol: memmove
+>>> referenced by libregexp.c
+>>>               /tmp/jitk-10/none-noatomics/libregexp.o:(re_parse_disjunction)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(cr_invert)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(cr_regexp_canonicalize)
+>>> referenced 13 more times
+
+ld.lld: error: undefined symbol: memcmp
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(unicode_script)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(unicode_general_category)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(unicode_prop)
+>>> referenced 12 more times
+
+ld.lld: error: undefined symbol: strchr
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(unicode_script)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(unicode_general_category)
+>>> referenced by libunicode.c
+>>>               /tmp/jitk-10/none-noatomics/libunicode.o:(unicode_prop)
+>>> referenced 6 more times
+
+ld.lld: error: undefined symbol: abs
+>>> referenced by dtoa.c
+>>>               /tmp/jitk-10/none-noatomics/dtoa.o:(js_dtoa_max_len)
+
+ld.lld: error: undefined symbol: gettimeofday
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_AddIntrinsicBaseObjects)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_date_constructor)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_Date_now)
+
+ld.lld: error: undefined symbol: snprintf
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_AtomGetStrRT)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_AtomGetStrRT)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_SetPropertyFunctionList)
+>>> referenced 13 more times
+
+ld.lld: error: undefined symbol: lrint
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_SetPropertyValue)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_typed_array_fill)
+
+ld.lld: error: undefined symbol: floor
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(JS_DefineProperty)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(set_date_fields)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_number_isInteger)
+>>> referenced 2 more times
+
+ld.lld: error: undefined symbol: trunc
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_date_constructor)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(set_date_fields_checked)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(set_date_fields_checked)
+>>> referenced 13 more times
+
+ld.lld: error: undefined symbol: malloc
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_malloc)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_realloc)
+
+ld.lld: error: undefined symbol: malloc_usable_size
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_free)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_realloc)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_realloc)
+>>> referenced 2 more times
+
+ld.lld: error: undefined symbol: free
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_free)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_def_realloc)
+
+ld.lld: error: undefined symbol: __udivti3
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_bigint_to_string1)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_bigint_divrem)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_bigint_divrem)
+>>> referenced 2 more times
+
+ld.lld: error: undefined symbol: localtime_r
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(get_date_fields)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(set_date_fields)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_date_getTimezoneOffset)
+
+ld.lld: error: undefined symbol: fmod
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_binary_arith_slow)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_binary_arith_slow)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(set_date_fields)
+
+ld.lld: error: undefined symbol: pow
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_binary_arith_slow)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_binary_arith_slow)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_pow)
+
+ld.lld: error: undefined symbol: fabs
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_binary_arith_slow)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_pow)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_number_isSafeInteger)
+>>> referenced 3 more times
+
+ld.lld: error: undefined symbol: strrchr
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_host_resolve_imported_module)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_host_resolve_imported_module)
+
+ld.lld: error: undefined symbol: memchr
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_parse_skip_parens_token)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(is_let)
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_global_decodeURI)
+>>> referenced 4 more times
+
+ld.lld: error: undefined symbol: fmax
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_min_max)
+
+ld.lld: error: undefined symbol: fmin
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_min_max)
+
+ld.lld: error: undefined symbol: hypot
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_hypot)
+
+ld.lld: error: undefined symbol: ceil
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: sqrt
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: acos
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: asin
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: atan
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: atan2
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: cos
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: exp
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: log
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: sin
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: tan
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: cosh
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: sinh
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: tanh
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: acosh
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: asinh
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: atanh
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: expm1
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: log1p
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: log2
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: log10
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+
+ld.lld: error: undefined symbol: cbrt
+>>> referenced by quickjs-noatomics.c
+>>>               /tmp/jitk-10/none-noatomics/quickjs.o:(js_math_funcs)
+exit=1
+$ zig cc -target aarch64-linux-musl -static -O2 -DPROBE_MAIN -I /tmp/jitk-10/quickjs-2026-06-04 /Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/10-minimalist-critic/embed_probe.c /tmp/jitk-10/core-noatomics/cutils.o /tmp/jitk-10/core-noatomics/dtoa.o /tmp/jitk-10/core-noatomics/libregexp.o /tmp/jitk-10/core-noatomics/libunicode.o /tmp/jitk-10/core-noatomics/quickjs.o -Wl,--gc-sections -lm -s -o /tmp/jitk-10/embed-musl
+exit=0
+$ docker run --rm --network=none -v /tmp/jitk-10:/probe:ro alpine:3.22 /probe/embed-musl
+exit=0

@@ -1,0 +1,12 @@
+PASS read-etc-passwd control=ESCAPED confined=BLOCKED errno=1
+PASS read-home-ssh control=ESCAPED confined=BLOCKED errno=1
+PASS read-sibling control=ESCAPED confined=BLOCKED errno=1
+PASS write-tmp control=ESCAPED confined=BLOCKED errno=1
+PASS socket-connect control=BLOCKED errno=61 confined=BLOCKED errno=1
+PASS socket-unix control=ESCAPED confined=BLOCKED errno=1
+PASS exec-sh control=ESCAPED confined=BLOCKED errno=1
+PASS fork control=ESCAPED confined=BLOCKED errno=1
+PASS signal-parent control=ESCAPED confined=BLOCKED errno=1
+PASS mmap-exec control=BLOCKED errno=13 confined=BLOCKED errno=13
+PASS sysctl-hostname control=ESCAPED confined=BLOCKED errno=1
+PASS mach-lookup control=ESCAPED confined=BLOCKED errno=1

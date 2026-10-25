@@ -1,0 +1,12 @@
+{
+  "worker.rs": "2f4b9a03a8b0b29841a74ca7a1e04b8b8a61629c6da273fef396b42b3e2fde9a",
+  "bootstrap.js": "31fbefabe58520d32baac2856c368fd9c3adf31ce335eb6a09125fd29785aa61",
+  "bench.py": "d5d76407c75cb44d9fd4fd8e341e85cb551742bca028e5f379dbf663e3cd85e5",
+  "backend.ts": "0c5cf0ab340384012c9cbb76a30a0f2e47aa633a46995c416e20990b4e49ef44",
+  "protocol.ts": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f",
+  "watchdog.py": "a0d3d29bea2baf3385b53f7fb266e97efa3610ee6986c7a6d08bc0524d8f6f7b",
+  "Cargo.toml": "5602dabb7abe6079f8a0b3320ae5a93f7a3cd260038fbb0624ab39854c96110d",
+  "Cargo.lock": "352f488944fb306637fb7bf90cd3c5077f5c337539bf4ae69530000e2d48c731",
+  "analyze.py": "709e6e36068fe8a822c24fa8fac2c43e0ba135a962aef2ddf03c047c3dfc359d",
+  "/tmp/jitk-09/node-real": "df969da390dce1b230f7d23ab2892b5d7b994ae4a7107b6f434a97068b73f11e"
+}

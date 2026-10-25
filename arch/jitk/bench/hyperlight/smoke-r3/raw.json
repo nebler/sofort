@@ -1,0 +1,2509 @@
+{
+  "schema": 1,
+  "started_at": "2026-10-24T01:07:35.641603+00:00",
+  "config": {
+    "n": 1,
+    "gate_budget": 0.1,
+    "load_threshold": 6,
+    "output": "arch/jitk/bench/hyperlight/smoke-r3",
+    "smoke": true,
+    "seed": 39009,
+    "gate_poll": 0.1
+  },
+  "selection": {
+    "jitk": {
+      "vmm": "/tmp/jitk-02/r2/host",
+      "image": "/tmp/jitk-02/r2/kernel.bin",
+      "launcher": "02-r2"
+    },
+    "executor_ready_at_start": false,
+    "protocol": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/protocol/dispatcher.ts",
+    "canonical_controller_sha256": "e80af1814f16e62b220517e02ca18b72b1052c7edc88363b09e99a99b1f70194",
+    "canonical_controller": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/run.py",
+    "bench_ready_at_start": true,
+    "hyperlight": {
+      "strict_argv": [
+        "/tmp/jitk-09/adapter-target/release/r2-worker",
+        "strict",
+        "/tmp/jitk-09/r3-snapshot"
+      ],
+      "clone_argv": [
+        "/tmp/jitk-09/adapter-target/release/r2-worker",
+        "clone",
+        "/tmp/jitk-09/r3-snapshot"
+      ],
+      "env": {},
+      "provenance": "Round 3 owner-09 integrated source; Hyperlight host 0.18.0; strict fresh process and fresh HW VM with tenant-free snapshot restored before READY; clone shared HW VM; panic=abort",
+      "files": [
+        "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/hyperlight/worker.rs",
+        "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/hyperlight/bootstrap.js",
+        "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/hyperlight/Cargo.lock",
+        "/private/tmp/jitk-09/adapter-target/release/r2-worker",
+        "/private/tmp/jitk-09/r3-snapshot/index.json"
+      ]
+    },
+    "contracts": {
+      "jitk-cold": "fresh process + single-use HW VM",
+      "hl-strict-cold": "fresh process + single-use HW VM",
+      "jitk-parked": "fresh process + single-use HW VM",
+      "hl-strict-prespawned": "fresh process + single-use HW VM",
+      "hl-logical-clone": "shared HW VM, fresh logical clone per request"
+    },
+    "hashes": {
+      "/tmp/jitk-09/adapter-target/release/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+      "/tmp/jitk-02/r2/host": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed",
+      "/tmp/jitk-02/r2/kernel.bin": "3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8",
+      "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/bench/hyperlight/executor-runner.mjs": "f47f610e10c3a6620097204b44f28b036b5c5c556a165033daf44816988526d3"
+    }
+  },
+  "specs": [
+    {
+      "mode": "jitk-cold",
+      "case": "return2",
+      "name": "jitk-cold/return2"
+    },
+    {
+      "mode": "jitk-cold",
+      "case": "one_tool_5ms",
+      "name": "jitk-cold/one_tool_5ms"
+    },
+    {
+      "mode": "jitk-cold",
+      "case": "promise10_5ms",
+      "name": "jitk-cold/promise10_5ms"
+    },
+    {
+      "mode": "jitk-cold",
+      "case": "json1m",
+      "name": "jitk-cold/json1m"
+    },
+    {
+      "mode": "jitk-cold",
+      "case": "cpu50ms",
+      "name": "jitk-cold/cpu50ms"
+    },
+    {
+      "mode": "hl-strict-cold",
+      "case": "return2",
+      "name": "hl-strict-cold/return2"
+    },
+    {
+      "mode": "hl-strict-cold",
+      "case": "one_tool_5ms",
+      "name": "hl-strict-cold/one_tool_5ms"
+    },
+    {
+      "mode": "hl-strict-cold",
+      "case": "promise10_5ms",
+      "name": "hl-strict-cold/promise10_5ms"
+    },
+    {
+      "mode": "hl-strict-cold",
+      "case": "json1m",
+      "name": "hl-strict-cold/json1m"
+    },
+    {
+      "mode": "hl-strict-cold",
+      "case": "cpu50ms",
+      "name": "hl-strict-cold/cpu50ms"
+    },
+    {
+      "mode": "jitk-parked",
+      "case": "return2",
+      "name": "jitk-parked/return2"
+    },
+    {
+      "mode": "jitk-parked",
+      "case": "one_tool_5ms",
+      "name": "jitk-parked/one_tool_5ms"
+    },
+    {
+      "mode": "jitk-parked",
+      "case": "promise10_5ms",
+      "name": "jitk-parked/promise10_5ms"
+    },
+    {
+      "mode": "jitk-parked",
+      "case": "json1m",
+      "name": "jitk-parked/json1m"
+    },
+    {
+      "mode": "jitk-parked",
+      "case": "cpu50ms",
+      "name": "jitk-parked/cpu50ms"
+    },
+    {
+      "mode": "hl-strict-prespawned",
+      "case": "return2",
+      "name": "hl-strict-prespawned/return2"
+    },
+    {
+      "mode": "hl-strict-prespawned",
+      "case": "one_tool_5ms",
+      "name": "hl-strict-prespawned/one_tool_5ms"
+    },
+    {
+      "mode": "hl-strict-prespawned",
+      "case": "promise10_5ms",
+      "name": "hl-strict-prespawned/promise10_5ms"
+    },
+    {
+      "mode": "hl-strict-prespawned",
+      "case": "json1m",
+      "name": "hl-strict-prespawned/json1m"
+    },
+    {
+      "mode": "hl-strict-prespawned",
+      "case": "cpu50ms",
+      "name": "hl-strict-prespawned/cpu50ms"
+    },
+    {
+      "mode": "hl-logical-clone",
+      "case": "return2",
+      "name": "hl-logical-clone/return2"
+    },
+    {
+      "mode": "hl-logical-clone",
+      "case": "one_tool_5ms",
+      "name": "hl-logical-clone/one_tool_5ms"
+    },
+    {
+      "mode": "hl-logical-clone",
+      "case": "promise10_5ms",
+      "name": "hl-logical-clone/promise10_5ms"
+    },
+    {
+      "mode": "hl-logical-clone",
+      "case": "json1m",
+      "name": "hl-logical-clone/json1m"
+    },
+    {
+      "mode": "hl-logical-clone",
+      "case": "cpu50ms",
+      "name": "hl-logical-clone/cpu50ms"
+    },
+    {
+      "mode": "memory",
+      "kind": "jitk",
+      "count": 1,
+      "name": "memory/jitk/1"
+    },
+    {
+      "mode": "memory",
+      "kind": "hl-strict",
+      "count": 1,
+      "name": "memory/hl-strict/1"
+    },
+    {
+      "mode": "memory",
+      "kind": "hl-logical",
+      "count": 1,
+      "name": "memory/hl-logical/1"
+    },
+    {
+      "mode": "memory",
+      "kind": "hl-logical",
+      "count": 17,
+      "name": "memory/hl-logical/17"
+    },
+    {
+      "mode": "memory",
+      "kind": "hl-logical",
+      "count": 33,
+      "name": "memory/hl-logical/33"
+    }
+  ],
+  "samples": [
+    {
+      "name": "memory/hl-logical/33",
+      "block": 0,
+      "mode": "memory",
+      "case": null,
+      "started_at": "2026-10-24T01:07:37.513333+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10794366599999972,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 2.5409999997449972e-06,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          },
+          {
+            "elapsed_s": 0.10794366599999972,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "footprint_mib": 7.297607421875,
+      "rss_mib": 12.234375,
+      "memory_readings": [
+        {
+          "user_ns": 99331,
+          "system_ns": 167331,
+          "wired": 0,
+          "rss": 12828672,
+          "footprint": 7652096
+        },
+        {
+          "user_ns": 99331,
+          "system_ns": 167331,
+          "wired": 0,
+          "rss": 12828672,
+          "footprint": 7652096
+        },
+        {
+          "user_ns": 99331,
+          "system_ns": 167331,
+          "wired": 0,
+          "rss": 12828672,
+          "footprint": 7652096
+        },
+        {
+          "user_ns": 99331,
+          "system_ns": 167331,
+          "wired": 0,
+          "rss": 12828672,
+          "footprint": 7652096
+        },
+        {
+          "user_ns": 99331,
+          "system_ns": 167331,
+          "wired": 0,
+          "rss": 12828672,
+          "footprint": 7652096
+        }
+      ],
+      "units": 33,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:38.148656+00:00",
+      "load_after": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ]
+    },
+    {
+      "name": "hl-strict-prespawned/promise10_5ms",
+      "block": 0,
+      "mode": "hl-strict-prespawned",
+      "case": "promise10_5ms",
+      "started_at": "2026-10-24T01:07:38.300335+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.12047058400000044,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 5.459000000485048e-06,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          },
+          {
+            "elapsed_s": 0.12047058400000044,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "latency_ms": 455.137792,
+      "run_ms": 455.137792,
+      "tool_calls": 10,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        6035176708,
+        6044538500,
+        6051715166,
+        6059841791,
+        6066244625,
+        6072824750,
+        6244673500,
+        6329779041,
+        6337397875,
+        6351131041
+      ],
+      "load_at_timing_start": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "load_at_result": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 83738,
+        "system_ns": 121086,
+        "wired": 0,
+        "rss": 7323648,
+        "footprint": 1900952
+      },
+      "spawn_to_ready_ms": 36.703,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 12.815999999999999,
+      "through_reap_ms": 514.723125,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:39.020425+00:00",
+      "load_after": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ]
+    },
+    {
+      "name": "hl-strict-prespawned/json1m",
+      "block": 0,
+      "mode": "hl-strict-prespawned",
+      "case": "json1m",
+      "started_at": "2026-10-24T01:07:39.128775+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10251454099999968,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 3.624999999729539e-06,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          },
+          {
+            "elapsed_s": 0.10251454099999968,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "latency_ms": 561.578375,
+      "run_ms": 561.578375,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "load_at_result": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 80332,
+        "system_ns": 97635,
+        "wired": 0,
+        "rss": 7290880,
+        "footprint": 1851776
+      },
+      "spawn_to_ready_ms": 18.769334,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 27.422,
+      "through_reap_ms": 633.800917,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:39.927379+00:00",
+      "load_after": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ]
+    },
+    {
+      "name": "jitk-cold/return2",
+      "block": 0,
+      "mode": "jitk-cold",
+      "case": "return2",
+      "started_at": "2026-10-24T01:07:40.072825+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.12264608300000024,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.9580000001678854e-06,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          },
+          {
+            "elapsed_s": 0.12264608300000024,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "latency_ms": 338.771958,
+      "run_ms": 65.034667,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "load_at_result": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 201613,
+        "system_ns": 136653,
+        "wired": 0,
+        "rss": 16252928,
+        "footprint": 11305536
+      },
+      "spawn_to_ready_ms": 273.684833,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 19.046999999999997,
+      "through_reap_ms": 349.835541,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:40.510631+00:00",
+      "load_after": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ]
+    },
+    {
+      "name": "hl-strict-prespawned/one_tool_5ms",
+      "block": 0,
+      "mode": "hl-strict-prespawned",
+      "case": "one_tool_5ms",
+      "started_at": "2026-10-24T01:07:40.661025+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10691112499999988,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.749999999833278e-06,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          },
+          {
+            "elapsed_s": 0.10691112499999988,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "latency_ms": 63.210583,
+      "run_ms": 63.210583,
+      "tool_calls": 1,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        8506288208
+      ],
+      "load_at_timing_start": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "load_at_result": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 72514,
+        "system_ns": 119780,
+        "wired": 0,
+        "rss": 7323648,
+        "footprint": 1900952
+      },
+      "spawn_to_ready_ms": 102.954375,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 10.256,
+      "through_reap_ms": 214.234875,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:41.080101+00:00",
+      "load_after": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ]
+    },
+    {
+      "name": "hl-strict-cold/cpu50ms",
+      "block": 0,
+      "mode": "hl-strict-cold",
+      "case": "cpu50ms",
+      "started_at": "2026-10-24T01:07:41.263119+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.12213775000000027,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.166000000362715e-06,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          },
+          {
+            "elapsed_s": 0.12213775000000027,
+            "load": [
+              159.7919921875,
+              109.95751953125,
+              87.1865234375
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 159.79 109.96 87.19",
+      "latency_ms": 211.200959,
+      "run_ms": 180.556,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        159.7919921875,
+        109.95751953125,
+        87.1865234375
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 86141,
+        "system_ns": 98497,
+        "wired": 0,
+        "rss": 7290880,
+        "footprint": 1851776
+      },
+      "spawn_to_ready_ms": 30.589334,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 19.563,
+      "through_reap_ms": 211.322292,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:41.676919+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "memory/hl-logical/17",
+      "block": 0,
+      "mode": "memory",
+      "case": null,
+      "started_at": "2026-10-24T01:07:41.873666+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10811754200000046,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.04200000076105e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.10811754200000046,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "footprint_mib": 4.51617431640625,
+      "rss_mib": 9.578125,
+      "memory_readings": [
+        {
+          "user_ns": 75278,
+          "system_ns": 99494,
+          "wired": 0,
+          "rss": 10043392,
+          "footprint": 4735552
+        },
+        {
+          "user_ns": 75278,
+          "system_ns": 99494,
+          "wired": 0,
+          "rss": 10043392,
+          "footprint": 4735552
+        },
+        {
+          "user_ns": 75278,
+          "system_ns": 99494,
+          "wired": 0,
+          "rss": 10043392,
+          "footprint": 4735552
+        },
+        {
+          "user_ns": 75278,
+          "system_ns": 99494,
+          "wired": 0,
+          "rss": 10043392,
+          "footprint": 4735552
+        },
+        {
+          "user_ns": 75278,
+          "system_ns": 99494,
+          "wired": 0,
+          "rss": 10043392,
+          "footprint": 4735552
+        }
+      ],
+      "units": 17,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:42.173917+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "jitk-parked/json1m",
+      "block": 0,
+      "mode": "jitk-parked",
+      "case": "json1m",
+      "started_at": "2026-10-24T01:07:42.389788+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.11810995899999988,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 5.999999999062311e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.11810995899999988,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 278.651791,
+      "run_ms": 278.651791,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 327036,
+        "system_ns": 137246,
+        "wired": 0,
+        "rss": 16171008,
+        "footprint": 11158008
+      },
+      "spawn_to_ready_ms": 307.056334,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 35.339999999999996,
+      "through_reap_ms": 616.202375,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:43.029828+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "hl-strict-cold/promise10_5ms",
+      "block": 0,
+      "mode": "hl-strict-cold",
+      "case": "promise10_5ms",
+      "started_at": "2026-10-24T01:07:43.191026+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10430004100000012,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 7.666000000128292e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.10430004100000012,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 380.5895,
+      "run_ms": 326.505542,
+      "tool_calls": 10,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        10886742708,
+        10909129375,
+        10916000541,
+        10924559250,
+        10935831083,
+        10942820625,
+        10949019833,
+        10956502916,
+        10995226791,
+        11049878875
+      ],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 89184,
+        "system_ns": 110305,
+        "wired": 0,
+        "rss": 7307264,
+        "footprint": 1868160
+      },
+      "spawn_to_ready_ms": 54.039958,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 13.106,
+      "through_reap_ms": 381.8715,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:43.642099+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "memory/hl-strict/1",
+      "block": 0,
+      "mode": "memory",
+      "case": null,
+      "started_at": "2026-10-24T01:07:43.747889+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10430095799999961,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 2.4579999990947954e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.10430095799999961,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "footprint_mib": 1.7503662109375,
+      "rss_mib": 6.9375,
+      "memory_readings": [
+        {
+          "user_ns": 79732,
+          "system_ns": 118369,
+          "wired": 0,
+          "rss": 7274496,
+          "footprint": 1835392
+        },
+        {
+          "user_ns": 79732,
+          "system_ns": 118369,
+          "wired": 0,
+          "rss": 7274496,
+          "footprint": 1835392
+        },
+        {
+          "user_ns": 79732,
+          "system_ns": 118369,
+          "wired": 0,
+          "rss": 7274496,
+          "footprint": 1835392
+        },
+        {
+          "user_ns": 79732,
+          "system_ns": 118369,
+          "wired": 0,
+          "rss": 7274496,
+          "footprint": 1835392
+        },
+        {
+          "user_ns": 79732,
+          "system_ns": 118369,
+          "wired": 0,
+          "rss": 7274496,
+          "footprint": 1835392
+        }
+      ],
+      "units": 1,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:43.953583+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "jitk-parked/cpu50ms",
+      "block": 0,
+      "mode": "jitk-parked",
+      "case": "cpu50ms",
+      "started_at": "2026-10-24T01:07:44.101427+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.1030899999999999,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.458999999736648e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.1030899999999999,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 184.420125,
+      "run_ms": 184.420125,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 176959,
+        "system_ns": 113118,
+        "wired": 0,
+        "rss": 16171008,
+        "footprint": 11158008
+      },
+      "spawn_to_ready_ms": 89.880833,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 33.065999999999995,
+      "through_reap_ms": 377.663333,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:44.506120+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "jitk-parked/promise10_5ms",
+      "block": 0,
+      "mode": "jitk-parked",
+      "case": "promise10_5ms",
+      "started_at": "2026-10-24T01:07:44.673671+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10407875000000111,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 5.458000000402308e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.10407875000000111,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 64.191958,
+      "run_ms": 64.191958,
+      "tool_calls": 10,
+      "max_pending": 6,
+      "call_stamps_ns": [
+        12398073916,
+        12398872083,
+        12399840916,
+        12401022375,
+        12401912166,
+        12402269166,
+        12409891625,
+        12409980583,
+        12410292208,
+        12410948416
+      ],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 288822,
+        "system_ns": 205196,
+        "wired": 0,
+        "rss": 16138240,
+        "footprint": 11125240
+      },
+      "spawn_to_ready_ms": 214.248166,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 23.81,
+      "through_reap_ms": 295.020458,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:44.982550+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "hl-strict-prespawned/return2",
+      "block": 0,
+      "mode": "hl-strict-prespawned",
+      "case": "return2",
+      "started_at": "2026-10-24T01:07:45.288838+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.11157870899999978,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 7.000000000090267e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.11157870899999978,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 35.204083,
+      "run_ms": 35.204083,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 86575,
+        "system_ns": 142177,
+        "wired": 0,
+        "rss": 7307264,
+        "footprint": 1868160
+      },
+      "spawn_to_ready_ms": 102.75275,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 12.781,
+      "through_reap_ms": 228.990333,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:45.623084+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "hl-logical-clone/return2",
+      "block": 0,
+      "mode": "hl-logical-clone",
+      "case": "return2",
+      "started_at": "2026-10-24T01:07:45.779120+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10342279199999993,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 8.9170000006078e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.10342279199999993,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 4.984,
+      "run_ms": 4.984,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 102587,
+        "system_ns": 132610,
+        "wired": 0,
+        "rss": 8339456,
+        "footprint": 2277856
+      },
+      "spawn_to_ready_ms": null,
+      "isolation": "shared HW VM, fresh logical clone per request",
+      "jitk_path": null,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:45.917239+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "hl-logical-clone/promise10_5ms",
+      "block": 0,
+      "mode": "hl-logical-clone",
+      "case": "promise10_5ms",
+      "started_at": "2026-10-24T01:07:46.252448+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10529033299999924,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 7.708000000050674e-06,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          },
+          {
+            "elapsed_s": 0.10529033299999924,
+            "load": [
+              158.20703125,
+              110.4560546875,
+              87.49560546875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 158.21 110.46 87.50",
+      "latency_ms": 148.029542,
+      "run_ms": 148.029542,
+      "tool_calls": 10,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        13786684291,
+        13801542791,
+        13810354250,
+        13818815541,
+        13825034250,
+        13839993125,
+        13849089416,
+        13855677208,
+        13872309625,
+        13879964041
+      ],
+      "load_at_timing_start": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "load_at_result": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 114500,
+        "system_ns": 148090,
+        "wired": 0,
+        "rss": 8929280,
+        "footprint": 2392592
+      },
+      "spawn_to_ready_ms": null,
+      "isolation": "shared HW VM, fresh logical clone per request",
+      "jitk_path": null,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:46.453595+00:00",
+      "load_after": [
+        158.20703125,
+        110.4560546875,
+        87.49560546875
+      ]
+    },
+    {
+      "name": "memory/hl-logical/1",
+      "block": 0,
+      "mode": "memory",
+      "case": null,
+      "started_at": "2026-10-24T01:07:46.765426+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.11950637500000028,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 7.334000001080199e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.11950637500000028,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "footprint_mib": 1.7659912109375,
+      "rss_mib": 6.953125,
+      "memory_readings": [
+        {
+          "user_ns": 95326,
+          "system_ns": 100571,
+          "wired": 0,
+          "rss": 7290880,
+          "footprint": 1851776
+        },
+        {
+          "user_ns": 95326,
+          "system_ns": 100571,
+          "wired": 0,
+          "rss": 7290880,
+          "footprint": 1851776
+        },
+        {
+          "user_ns": 95326,
+          "system_ns": 100571,
+          "wired": 0,
+          "rss": 7290880,
+          "footprint": 1851776
+        },
+        {
+          "user_ns": 95326,
+          "system_ns": 100571,
+          "wired": 0,
+          "rss": 7290880,
+          "footprint": 1851776
+        },
+        {
+          "user_ns": 95326,
+          "system_ns": 100571,
+          "wired": 0,
+          "rss": 7290880,
+          "footprint": 1851776
+        }
+      ],
+      "units": 1,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:46.965620+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "hl-strict-cold/return2",
+      "block": 0,
+      "mode": "hl-strict-cold",
+      "case": "return2",
+      "started_at": "2026-10-24T01:07:47.105271+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10272991599999948,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 4.832999998427567e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.10272991599999948,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 19.074125,
+      "run_ms": 3.457291,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 93822,
+        "system_ns": 126924,
+        "wired": 0,
+        "rss": 7290880,
+        "footprint": 1851776
+      },
+      "spawn_to_ready_ms": 15.481,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 11.043999999999999,
+      "through_reap_ms": 19.994625,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:47.164108+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "hl-strict-cold/json1m",
+      "block": 0,
+      "mode": "hl-strict-cold",
+      "case": "json1m",
+      "started_at": "2026-10-24T01:07:47.447807+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10476333300000107,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.625000001037051e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.10476333300000107,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 27.969458,
+      "run_ms": 19.319833,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 61492,
+        "system_ns": 56276,
+        "wired": 0,
+        "rss": 7290880,
+        "footprint": 1851776
+      },
+      "spawn_to_ready_ms": 8.595375,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 20.908999999999995,
+      "through_reap_ms": 28.801875,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:47.709061+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "jitk-cold/promise10_5ms",
+      "block": 0,
+      "mode": "jitk-cold",
+      "case": "promise10_5ms",
+      "started_at": "2026-10-24T01:07:48.243773+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10061966700000013,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.874999998629505e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.10061966700000013,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 76.779541,
+      "run_ms": 19.665708,
+      "tool_calls": 10,
+      "max_pending": 7,
+      "call_stamps_ns": [
+        15747027208,
+        15748462333,
+        15750039083,
+        15751990541,
+        15752683250,
+        15753165583,
+        15753652708,
+        15754180583,
+        15756060583,
+        15756340833
+      ],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 205085,
+        "system_ns": 228042,
+        "wired": 0,
+        "rss": 16252928,
+        "footprint": 11305536
+      },
+      "spawn_to_ready_ms": 57.069666,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 27.858,
+      "through_reap_ms": 78.297583,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:48.331215+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "jitk-cold/json1m",
+      "block": 0,
+      "mode": "jitk-cold",
+      "case": "json1m",
+      "started_at": "2026-10-24T01:07:48.530175+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.10510408300000051,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 5.50000000032469e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.10510408300000051,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 109.016,
+      "run_ms": 18.087,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 173438,
+        "system_ns": 116632,
+        "wired": 0,
+        "rss": 16105472,
+        "footprint": 11092472
+      },
+      "spawn_to_ready_ms": 90.884459,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 24.241,
+      "through_reap_ms": 112.678334,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:48.835957+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "hl-strict-cold/one_tool_5ms",
+      "block": 0,
+      "mode": "hl-strict-cold",
+      "case": "one_tool_5ms",
+      "started_at": "2026-10-24T01:07:49.002237+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.12475370800000007,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 7.832999997958723e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.12475370800000007,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 216.279041,
+      "run_ms": 24.61575,
+      "tool_calls": 1,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        16680245958
+      ],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 82942,
+        "system_ns": 121162,
+        "wired": 0,
+        "rss": 7323648,
+        "footprint": 1884544
+      },
+      "spawn_to_ready_ms": 191.595875,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 10.801,
+      "through_reap_ms": 217.106208,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:49.252082+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "jitk-parked/return2",
+      "block": 0,
+      "mode": "jitk-parked",
+      "case": "return2",
+      "started_at": "2026-10-24T01:07:49.626835+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.14628899999999945,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 5.625000000009095e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.14628899999999945,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 6.821667,
+      "run_ms": 6.821667,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 590521,
+        "system_ns": 184321,
+        "wired": 0,
+        "rss": 16154624,
+        "footprint": 11141624
+      },
+      "spawn_to_ready_ms": 331.476167,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 34.153,
+      "through_reap_ms": 355.512375,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:50.047358+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "hl-logical-clone/json1m",
+      "block": 0,
+      "mode": "hl-logical-clone",
+      "case": "json1m",
+      "started_at": "2026-10-24T01:07:50.250703+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.13010699999999886,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 5.874999999377906e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.13010699999999886,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 34.836917,
+      "run_ms": 34.836917,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 158243,
+        "system_ns": 168483,
+        "wired": 0,
+        "rss": 9224192,
+        "footprint": 2572840
+      },
+      "spawn_to_ready_ms": null,
+      "isolation": "shared HW VM, fresh logical clone per request",
+      "jitk_path": null,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:50.314383+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "hl-strict-prespawned/cpu50ms",
+      "block": 0,
+      "mode": "hl-strict-prespawned",
+      "case": "cpu50ms",
+      "started_at": "2026-10-24T01:07:50.450882+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.12299520799999897,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.791000000561098e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.12299520799999897,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "latency_ms": 162.204416,
+      "run_ms": 162.204416,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "load_at_result": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 82829,
+        "system_ns": 90126,
+        "wired": 0,
+        "rss": 7340032,
+        "footprint": 1900928
+      },
+      "spawn_to_ready_ms": 11.376875,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": null,
+      "cpu_ms_vm": 15.59,
+      "through_reap_ms": 180.522709,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:50.647329+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "memory/jitk/1",
+      "block": 0,
+      "mode": "memory",
+      "case": null,
+      "started_at": "2026-10-24T01:07:51.021749+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.1012702499999989,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.499999997799932e-06,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          },
+          {
+            "elapsed_s": 0.1012702499999989,
+            "load": [
+              162.3544921875,
+              112.1083984375,
+              88.21337890625
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 162.35 112.11 88.21",
+      "footprint_mib": 10.656753540039062,
+      "rss_mib": 15.421875,
+      "memory_readings": [
+        {
+          "user_ns": 535059,
+          "system_ns": 111697,
+          "wired": 0,
+          "rss": 16171008,
+          "footprint": 11174416
+        },
+        {
+          "user_ns": 535059,
+          "system_ns": 111697,
+          "wired": 0,
+          "rss": 16171008,
+          "footprint": 11174416
+        },
+        {
+          "user_ns": 535059,
+          "system_ns": 111697,
+          "wired": 0,
+          "rss": 16171008,
+          "footprint": 11174416
+        },
+        {
+          "user_ns": 535188,
+          "system_ns": 111844,
+          "wired": 0,
+          "rss": 16171008,
+          "footprint": 11174416
+        },
+        {
+          "user_ns": 535188,
+          "system_ns": 111844,
+          "wired": 0,
+          "rss": 16171008,
+          "footprint": 11174416
+        }
+      ],
+      "units": 1,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:51.485515+00:00",
+      "load_after": [
+        162.3544921875,
+        112.1083984375,
+        88.21337890625
+      ]
+    },
+    {
+      "name": "jitk-parked/one_tool_5ms",
+      "block": 0,
+      "mode": "jitk-parked",
+      "case": "one_tool_5ms",
+      "started_at": "2026-10-24T01:07:51.804240+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.11545774999999736,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 4.166000000083159e-06,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          },
+          {
+            "elapsed_s": 0.11545774999999736,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "latency_ms": 8.385292,
+      "run_ms": 8.385292,
+      "tool_calls": 1,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        19563879291
+      ],
+      "load_at_timing_start": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "load_at_result": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 128946,
+        "system_ns": 136351,
+        "wired": 0,
+        "rss": 16302080,
+        "footprint": 11354688
+      },
+      "spawn_to_ready_ms": 112.829083,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 13.309,
+      "through_reap_ms": 133.514833,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:52.138718+00:00",
+      "load_after": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ]
+    },
+    {
+      "name": "hl-logical-clone/one_tool_5ms",
+      "block": 0,
+      "mode": "hl-logical-clone",
+      "case": "one_tool_5ms",
+      "started_at": "2026-10-24T01:07:52.401314+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.13593320800000086,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 4.6249999989811386e-06,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          },
+          {
+            "elapsed_s": 0.13593320800000086,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "latency_ms": 8.641292,
+      "run_ms": 8.641292,
+      "tool_calls": 1,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        19926175000
+      ],
+      "load_at_timing_start": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "load_at_result": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 484872,
+        "system_ns": 356356,
+        "wired": 0,
+        "rss": 17661952,
+        "footprint": 6767168
+      },
+      "spawn_to_ready_ms": null,
+      "isolation": "shared HW VM, fresh logical clone per request",
+      "jitk_path": null,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:52.497633+00:00",
+      "load_after": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ]
+    },
+    {
+      "name": "hl-logical-clone/cpu50ms",
+      "block": 0,
+      "mode": "hl-logical-clone",
+      "case": "cpu50ms",
+      "started_at": "2026-10-24T01:07:52.737787+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.1402228749999992,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 7.624999998512294e-06,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          },
+          {
+            "elapsed_s": 0.1402228749999992,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "latency_ms": 57.299875,
+      "run_ms": 57.299875,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "load_at_result": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 500673,
+        "system_ns": 373378,
+        "wired": 0,
+        "rss": 9289728,
+        "footprint": 2687576
+      },
+      "spawn_to_ready_ms": null,
+      "isolation": "shared HW VM, fresh logical clone per request",
+      "jitk_path": null,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:52.868182+00:00",
+      "load_after": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ]
+    },
+    {
+      "name": "jitk-cold/cpu50ms",
+      "block": 0,
+      "mode": "jitk-cold",
+      "case": "cpu50ms",
+      "started_at": "2026-10-24T01:07:53.019421+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.13286924999999883,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 6.120800000175564e-05,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          },
+          {
+            "elapsed_s": 0.13286924999999883,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "latency_ms": 130.021083,
+      "run_ms": 111.736333,
+      "tool_calls": 0,
+      "max_pending": 0,
+      "call_stamps_ns": [],
+      "load_at_timing_start": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "load_at_result": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 118891,
+        "system_ns": 136898,
+        "wired": 0,
+        "rss": 16236544,
+        "footprint": 11256336
+      },
+      "spawn_to_ready_ms": 18.211042,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 31.817999999999998,
+      "through_reap_ms": 218.609875,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:53.246350+00:00",
+      "load_after": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ]
+    },
+    {
+      "name": "jitk-cold/one_tool_5ms",
+      "block": 0,
+      "mode": "jitk-cold",
+      "case": "one_tool_5ms",
+      "started_at": "2026-10-24T01:07:53.424606+00:00",
+      "gate": {
+        "threshold": 6,
+        "budget_s": 0.1,
+        "wait_s": 0.14384091600000204,
+        "passed": false,
+        "timed_out": true,
+        "observations": [
+          {
+            "elapsed_s": 2.2080000015023415e-06,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          },
+          {
+            "elapsed_s": 0.14384091600000204,
+            "load": [
+              151.83544921875,
+              110.76171875,
+              87.8779296875
+            ]
+          }
+        ]
+      },
+      "load_before": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "uptime": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88",
+      "latency_ms": 221.524292,
+      "run_ms": 34.660625,
+      "tool_calls": 1,
+      "max_pending": 1,
+      "call_stamps_ns": [
+        21083246833
+      ],
+      "load_at_timing_start": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "load_at_result": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ],
+      "parked_memory_bytes": {
+        "user_ns": 426274,
+        "system_ns": 134829,
+        "wired": 0,
+        "rss": 16121856,
+        "footprint": 11108856
+      },
+      "spawn_to_ready_ms": 186.806625,
+      "isolation": "fresh process + single-use HW VM",
+      "jitk_path": "raw /tmp/jitk-02/r2 (04 not READY at run start)",
+      "cpu_ms_vm": 25.363999999999997,
+      "through_reap_ms": 222.768708,
+      "status": "PASS",
+      "finished_at": "2026-10-24T01:07:53.657213+00:00",
+      "load_after": [
+        151.83544921875,
+        110.76171875,
+        87.8779296875
+      ]
+    }
+  ],
+  "raw_path": "arch/jitk/bench/hyperlight/smoke-r3/raw.json",
+  "missing": [
+    "04 integrated executor READY at start; authorized raw r2 channel used"
+  ],
+  "machine": {
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "uptime": "3:07  up  4:21, 2 users, load averages: 156.64 108.51 86.55",
+    "cpu_count": 12
+  },
+  "finished_at": "2026-10-24T01:07:53.883680+00:00",
+  "uptime_end": "3:07  up  4:21, 2 users, load averages: 151.84 110.76 87.88"
+}

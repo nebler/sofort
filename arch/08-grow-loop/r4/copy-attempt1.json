@@ -1,0 +1,15 @@
+{
+  "status": "INCOMPLETE; tests not started",
+  "command": [
+    "cp",
+    "-R",
+    "arch/jitk",
+    "/tmp/jitk-08/r4/anyname"
+  ],
+  "reason": "supervisor TimeoutExpired after 180 seconds; child killed and reaped",
+  "load_at_timeout": [
+    104.18,
+    79.15,
+    64.07
+  ]
+}

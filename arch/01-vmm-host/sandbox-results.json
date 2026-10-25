@@ -1,0 +1,12 @@
+{
+  "boot": {
+    "rc": 0,
+    "stdout": "FDT magic=00000000d00dfeed bytes=0000000000000554\nnode \n  compatible=linux,dummy-virt|\nnode cpus\nnode cpu@0\n  compatible=arm,arm-v8|\n  reg=0000000000000000\nnode memory@80000000\n  reg=00000000800000000000000004000000\nnode chosen\n  bootargs=|\nnode intc\n  compatible=arm,gic-v3|\n  reg=0000000009fd000000000000000100000000000009fe00000000000000020000\nnode timer\n  compatible=arm,armv8-timer|\nnode apb-pclk\n  compatible=fixed-clock|\nnode psci\n  compatible=arm,psci-0.2|\nnode rtc@a001000\n  compatible=arm,pl031|arm,primecell|\n  reg=000000000a0010000000000000001000\nnode virtio_mmio@a002000\n  compatible=virtio,mmio|\n  reg=000000000a0020000000000000001000\nvirtio @000000000a002000 DeviceID=0000000000000003\nvirtio-count=0000000000000001\n",
+    "stderr": ""
+  },
+  "denials": {
+    "rc": 0,
+    "stdout": "read_user_marker fd=-1 errno=1\nwrite_temp fd=-1 errno=1\nnetwork_connect result=-1 errno=1\nfork pid=-1 errno=1\n",
+    "stderr": ""
+  }
+}

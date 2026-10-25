@@ -1,0 +1,126 @@
+{
+  "timeout": [
+    31.916250000000005,
+    31.0385,
+    31.193624999999983,
+    31.539916000000005,
+    31.458208000000013,
+    31.850375000000014,
+    31.855707999999993,
+    33.012208000000044,
+    31.837583000000052,
+    30.027667000000008,
+    31.138833000000034,
+    31.175041999999962,
+    31.216665999999975,
+    31.632083999999963,
+    31.525667,
+    31.227375000000052,
+    29.92304200000001,
+    31.124915999999985,
+    31.776834000000008,
+    31.050082999999972,
+    31.818292000000042,
+    31.774332999999956,
+    31.923125000000027,
+    31.820333000000005,
+    31.78854100000001,
+    31.059750000000008,
+    31.81925000000001,
+    31.381124999999997,
+    31.755916999999954,
+    32.07462500000008
+  ],
+  "parkRoundtrip": {
+    "code": 0,
+    "signal": null,
+    "reason": null
+  },
+  "concurrency": {
+    "live": 16,
+    "reaped": 16,
+    "killToLastReapMs": 3.6599169999999503,
+    "statuses": [
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      },
+      {
+        "code": null,
+        "signal": "SIGKILL",
+        "reason": "test-end"
+      }
+    ]
+  }
+}

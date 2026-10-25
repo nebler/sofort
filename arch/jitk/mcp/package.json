@@ -1,0 +1,10 @@
+{
+  "name": "@jitk/mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "bin": {"jitk-mcp": "server.mjs"},
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2"
+  }
+}

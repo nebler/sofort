@@ -1,0 +1,9 @@
+{
+  "src/main.rs": "b297e234d187a10787dfdeda68e00ae64a8ce89d2a9932b0a4728a422a0bb241",
+  "Cargo.toml": "dcc67072e86e0d303b46c87726897ea52593bbdb26734f4d41d790a25c2c1994",
+  "supervisor.mjs": "9eb60ea4a471658009b545c8a3b5b2bacc312f08e7748dca3ce5aeed52d96c76",
+  "guest-probe.c": "3552f49e4c88730060493ea3c2d9680f353eb0667df82b10fe62fef359bdc3c9",
+  "/tmp/jitk-spike/boot/kk.bin": "f82411ed394e499325633e638995efa60c70ab56bf74aaa8c68c701da8a11844",
+  "/tmp/jitk-spike/libkrun/target/release/deps/libkrun.rlib": "e8d982a3271d4bd80dec17f0ebfa1edab22e2433a35324339848ce2f241ff3ec",
+  "/tmp/jitk-spike/libkrun/target/release/libkrun.2.0.0.dylib": "78caf38969462f9364e980b3aa25f1e839a8ba6c7647c46e4884ae002afd06cd"
+}

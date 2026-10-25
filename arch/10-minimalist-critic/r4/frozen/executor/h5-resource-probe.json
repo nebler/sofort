@@ -1,0 +1,964 @@
+{
+  "started_utc": "2026-10-24T02:54:06.161Z",
+  "uptime_start": "4:54  up  6:07, 2 users, load averages: 44.80 33.39 44.63",
+  "vmm_sha256": "276463d01ac6956a095814ed77053989d21bb52a7ef702f5c2698eb98daba20e",
+  "image_sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364",
+  "scope": "Real fresh single-use VMs; current canonical SDK (original area-10 probe, path changes plus watchdog timestamp observation). Warm preparation excluded; timings are resource/deadline diagnostics, NOT canonical H4 performance. No providers with external effects or credentials.",
+  "fixed_vm_lifetime_ms": 5000,
+  "n_per_case": 30,
+  "rows": [
+    {
+      "case": "blocked_host",
+      "round": 0,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 241.73795800000016,
+      "overshoot_ms": 211.73795800000016,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810446907,
+        "firedAt": 1792810446914.1929,
+        "killAt": 1792810446914.2139
+      },
+      "parent_kill_at": 1792810447112,
+      "absolute_deadline": 1792810446907,
+      "vm_enforcement_overshoot_ms": 7.2138671875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        44.796875,
+        33.38623046875,
+        44.6298828125
+      ],
+      "load_after": [
+        44.796875,
+        33.38623046875,
+        44.6298828125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 1,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 48.13466700000026,
+      "overshoot_ms": 18.134667000000263,
+      "callback_signal_received": false,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810448792,
+        "firedAt": 1792810448813.413,
+        "killAt": 1792810448813.4302
+      },
+      "parent_kill_at": 1792810448800,
+      "absolute_deadline": 1792810448792,
+      "vm_enforcement_overshoot_ms": 21.43017578125,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        44.796875,
+        33.38623046875,
+        44.6298828125
+      ],
+      "load_after": [
+        44.796875,
+        33.38623046875,
+        44.6298828125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 2,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 223.5542089999999,
+      "overshoot_ms": 193.5542089999999,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810450300,
+        "firedAt": 1792810450312.683,
+        "killAt": 1792810450312.7097
+      },
+      "parent_kill_at": 1792810450493,
+      "absolute_deadline": 1792810450300,
+      "vm_enforcement_overshoot_ms": 12.709716796875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ],
+      "load_after": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 3,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 215.28850000000057,
+      "overshoot_ms": 185.28850000000057,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810451773,
+        "firedAt": 1792810451776.458,
+        "killAt": 1792810451776.4832
+      },
+      "parent_kill_at": 1792810451958,
+      "absolute_deadline": 1792810451773,
+      "vm_enforcement_overshoot_ms": 3.483154296875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ],
+      "load_after": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 4,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 45.44208299999991,
+      "overshoot_ms": 15.442082999999911,
+      "callback_signal_received": false,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810453260,
+        "firedAt": 1792810453270.109,
+        "killAt": 1792810453270.137
+      },
+      "parent_kill_at": 1792810453275,
+      "absolute_deadline": 1792810453260,
+      "vm_enforcement_overshoot_ms": 10.136962890625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ],
+      "load_after": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 5,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 205.5298330000005,
+      "overshoot_ms": 175.5298330000005,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810454684,
+        "firedAt": 1792810454699.845,
+        "killAt": 1792810454699.866
+      },
+      "parent_kill_at": 1792810454859,
+      "absolute_deadline": 1792810454684,
+      "vm_enforcement_overshoot_ms": 15.865966796875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        48.01611328125,
+        34.24267578125,
+        44.8662109375
+      ],
+      "load_after": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 6,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 235.4312089999985,
+      "overshoot_ms": 205.4312089999985,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810456068,
+        "firedAt": 1792810456076.0698,
+        "killAt": 1792810456076.099
+      },
+      "parent_kill_at": 1792810456273,
+      "absolute_deadline": 1792810456068,
+      "vm_enforcement_overshoot_ms": 8.09912109375,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ],
+      "load_after": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 7,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 210.44620899999973,
+      "overshoot_ms": 180.44620899999973,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810457123,
+        "firedAt": 1792810457133.082,
+        "killAt": 1792810457133.16
+      },
+      "parent_kill_at": 1792810457300,
+      "absolute_deadline": 1792810457123,
+      "vm_enforcement_overshoot_ms": 10.159912109375,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ],
+      "load_after": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 8,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 213.14133399999992,
+      "overshoot_ms": 183.14133399999992,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810458397,
+        "firedAt": 1792810458406.512,
+        "killAt": 1792810458406.533
+      },
+      "parent_kill_at": 1792810458579,
+      "absolute_deadline": 1792810458397,
+      "vm_enforcement_overshoot_ms": 9.532958984375,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ],
+      "load_after": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 9,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 217.67312499999935,
+      "overshoot_ms": 187.67312499999935,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810459488,
+        "firedAt": 1792810459518.2522,
+        "killAt": 1792810459518.292
+      },
+      "parent_kill_at": 1792810459675,
+      "absolute_deadline": 1792810459488,
+      "vm_enforcement_overshoot_ms": 30.2919921875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.5810546875,
+        35.83203125,
+        45.36474609375
+      ],
+      "load_after": [
+        54.9345703125,
+        36.21630859375,
+        45.4443359375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 10,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 213.11025000000154,
+      "overshoot_ms": 183.11025000000154,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810461117,
+        "firedAt": 1792810461131.071,
+        "killAt": 1792810461131.0972
+      },
+      "parent_kill_at": 1792810461299,
+      "absolute_deadline": 1792810461117,
+      "vm_enforcement_overshoot_ms": 14.09716796875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.9345703125,
+        36.21630859375,
+        45.4443359375
+      ],
+      "load_after": [
+        54.9345703125,
+        36.21630859375,
+        45.4443359375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 11,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": false,
+      "elapsed_ms": 41.265041000002384,
+      "overshoot_ms": 11.265041000002384,
+      "callback_signal_received": false,
+      "parent_kill_at": 1792810462535,
+      "absolute_deadline": 1792810462524,
+      "vm_enforcement_overshoot_ms": 11,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.9345703125,
+        36.21630859375,
+        45.4443359375
+      ],
+      "load_after": [
+        54.9345703125,
+        36.21630859375,
+        45.4443359375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 12,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 235.18229200000133,
+      "overshoot_ms": 205.18229200000133,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810464059,
+        "firedAt": 1792810464065.343,
+        "killAt": 1792810464065.382
+      },
+      "parent_kill_at": 1792810464264,
+      "absolute_deadline": 1792810464059,
+      "vm_enforcement_overshoot_ms": 6.382080078125,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        54.9345703125,
+        36.21630859375,
+        45.4443359375
+      ],
+      "load_after": [
+        53.09765625,
+        36.14599609375,
+        45.365234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 13,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 224.0322500000002,
+      "overshoot_ms": 194.0322500000002,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810465991,
+        "firedAt": 1792810465991.685,
+        "killAt": 1792810465991.7122
+      },
+      "parent_kill_at": 1792810466185,
+      "absolute_deadline": 1792810465991,
+      "vm_enforcement_overshoot_ms": 0.712158203125,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.09765625,
+        36.14599609375,
+        45.365234375
+      ],
+      "load_after": [
+        53.09765625,
+        36.14599609375,
+        45.365234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 14,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 207.5657919999976,
+      "overshoot_ms": 177.5657919999976,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810467660,
+        "firedAt": 1792810467667.872,
+        "killAt": 1792810467667.8982
+      },
+      "parent_kill_at": 1792810467837,
+      "absolute_deadline": 1792810467660,
+      "vm_enforcement_overshoot_ms": 7.898193359375,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.09765625,
+        36.14599609375,
+        45.365234375
+      ],
+      "load_after": [
+        53.09765625,
+        36.14599609375,
+        45.365234375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 15,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 246.45545800000036,
+      "overshoot_ms": 216.45545800000036,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810469431,
+        "firedAt": 1792810469442.472,
+        "killAt": 1792810469442.503
+      },
+      "parent_kill_at": 1792810469645,
+      "absolute_deadline": 1792810469431,
+      "vm_enforcement_overshoot_ms": 11.5029296875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.09765625,
+        36.14599609375,
+        45.365234375
+      ],
+      "load_after": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 16,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 247.46783399999913,
+      "overshoot_ms": 217.46783399999913,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810471155,
+        "firedAt": 1792810471186.603,
+        "killAt": 1792810471186.63
+      },
+      "parent_kill_at": 1792810471372,
+      "absolute_deadline": 1792810471155,
+      "vm_enforcement_overshoot_ms": 31.6298828125,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ],
+      "load_after": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 17,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 214.0631659999999,
+      "overshoot_ms": 184.0631659999999,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810472308,
+        "firedAt": 1792810472311.6072,
+        "killAt": 1792810472311.631
+      },
+      "parent_kill_at": 1792810472491,
+      "absolute_deadline": 1792810472308,
+      "vm_enforcement_overshoot_ms": 3.631103515625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ],
+      "load_after": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 18,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 212.11491699999897,
+      "overshoot_ms": 182.11491699999897,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810473246,
+        "firedAt": 1792810473250.536,
+        "killAt": 1792810473317.186
+      },
+      "parent_kill_at": 1792810473427,
+      "absolute_deadline": 1792810473246,
+      "vm_enforcement_overshoot_ms": 71.18603515625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ],
+      "load_after": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 19,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 205.26270900000236,
+      "overshoot_ms": 175.26270900000236,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810474479,
+        "firedAt": 1792810474479.772,
+        "killAt": 1792810474479.828
+      },
+      "parent_kill_at": 1792810474653,
+      "absolute_deadline": 1792810474479,
+      "vm_enforcement_overshoot_ms": 0.827880859375,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        53.00927734375,
+        36.4091796875,
+        45.40380859375
+      ],
+      "load_after": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 20,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 206.23366600000008,
+      "overshoot_ms": 176.23366600000008,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810475759,
+        "firedAt": 1792810475768.44,
+        "killAt": 1792810475769.502
+      },
+      "parent_kill_at": 1792810475935,
+      "absolute_deadline": 1792810475759,
+      "vm_enforcement_overshoot_ms": 10.501953125,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ],
+      "load_after": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 21,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 221.40108400000463,
+      "overshoot_ms": 191.40108400000463,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810477493,
+        "firedAt": 1792810477540.3662,
+        "killAt": 1792810477568.648
+      },
+      "parent_kill_at": 1792810477683,
+      "absolute_deadline": 1792810477493,
+      "vm_enforcement_overshoot_ms": 75.64794921875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ],
+      "load_after": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 22,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 206.8477090000015,
+      "overshoot_ms": 176.8477090000015,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810478835,
+        "firedAt": 1792810478856.5461,
+        "killAt": 1792810478861.357
+      },
+      "parent_kill_at": 1792810479011,
+      "absolute_deadline": 1792810478835,
+      "vm_enforcement_overshoot_ms": 26.35693359375,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ],
+      "load_after": [
+        49.64501953125,
+        35.9873046875,
+        45.2021484375
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 23,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 211.8473329999979,
+      "overshoot_ms": 181.8473329999979,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810480420,
+        "firedAt": 1792810480430.124,
+        "killAt": 1792810480430.1472
+      },
+      "parent_kill_at": 1792810480601,
+      "absolute_deadline": 1792810480420,
+      "vm_enforcement_overshoot_ms": 10.147216796875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ],
+      "load_after": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 24,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 211.67324999999983,
+      "overshoot_ms": 181.67324999999983,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810481909,
+        "firedAt": 1792810481962.502,
+        "killAt": 1792810481962.522
+      },
+      "parent_kill_at": 1792810482091,
+      "absolute_deadline": 1792810481909,
+      "vm_enforcement_overshoot_ms": 53.52197265625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ],
+      "load_after": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 25,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 206.05029099999956,
+      "overshoot_ms": 176.05029099999956,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810483483,
+        "firedAt": 1792810483544.242,
+        "killAt": 1792810483544.262
+      },
+      "parent_kill_at": 1792810483658,
+      "absolute_deadline": 1792810483483,
+      "vm_enforcement_overshoot_ms": 61.261962890625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ],
+      "load_after": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 26,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 219.2054999999964,
+      "overshoot_ms": 189.2054999999964,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810484743,
+        "firedAt": 1792810484746.8203,
+        "killAt": 1792810484746.85
+      },
+      "parent_kill_at": 1792810484931,
+      "absolute_deadline": 1792810484743,
+      "vm_enforcement_overshoot_ms": 3.85009765625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        47.11083984375,
+        35.6884765625,
+        45.04248046875
+      ],
+      "load_after": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 27,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 205.71637499999633,
+      "overshoot_ms": 175.71637499999633,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810485990,
+        "firedAt": 1792810485994.9329,
+        "killAt": 1792810485997.6692
+      },
+      "parent_kill_at": 1792810486164,
+      "absolute_deadline": 1792810485990,
+      "vm_enforcement_overshoot_ms": 7.669189453125,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ],
+      "load_after": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 28,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 220.1352079999997,
+      "overshoot_ms": 190.1352079999997,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810487407,
+        "firedAt": 1792810487408.61,
+        "killAt": 1792810487408.648
+      },
+      "parent_kill_at": 1792810487593,
+      "absolute_deadline": 1792810487407,
+      "vm_enforcement_overshoot_ms": 1.64794921875,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ],
+      "load_after": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ]
+    },
+    {
+      "case": "blocked_host",
+      "round": 29,
+      "timeout_ms": 30,
+      "blocking_tool_invoked": true,
+      "elapsed_ms": 203.10695800000394,
+      "overshoot_ms": 173.10695800000394,
+      "callback_signal_received": true,
+      "callback_signal_aborted": true,
+      "watchdog_receipt": {
+        "timeout": true,
+        "deadline": 1792810488413,
+        "firedAt": 1792810488423.0679,
+        "killAt": 1792810488423.094
+      },
+      "parent_kill_at": 1792810488586,
+      "absolute_deadline": 1792810488413,
+      "vm_enforcement_overshoot_ms": 10.093994140625,
+      "error": "Execution aborted or timed out",
+      "control_ok": true,
+      "load_before": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ],
+      "load_after": [
+        46.220703125,
+        35.693359375,
+        44.9892578125
+      ]
+    }
+  ],
+  "pool_after_close": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "finished_utc": "2026-10-24T02:54:49.940Z",
+  "uptime_end": "4:54  up  6:08, 2 users, load averages: 46.22 35.69 44.99",
+  "summary": {
+    "blocked_host": {
+      "n": 30,
+      "api_overshoot_le50": 3,
+      "vm_enforcement_overshoot_le50": 26,
+      "watchdog_receipts": 29,
+      "callback_signals": 27,
+      "max_api_overshoot_ms": 217.46783399999913,
+      "max_vm_enforcement_overshoot_ms": 75.64794921875,
+      "handled": 0,
+      "controls_pass": 30,
+      "elapsed_ms": {
+        "median": 212.61258350000026,
+        "p90": 235.4312089999985,
+        "p99": 247.46783399999913
+      },
+      "blocked_invocations": 27,
+      "admitted_overshoot_gt50ms": 27,
+      "late_successes": 0
+    }
+  }
+}

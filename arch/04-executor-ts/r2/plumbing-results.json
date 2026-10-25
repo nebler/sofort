@@ -1,0 +1,132 @@
+{
+  "label": "01 panic=abort Rust VMM + 02 round1 image; spawn/fail-closed/reap plumbing ONLY; not G3",
+  "loadBefore": "2:34  up  3:48, 2 users, load averages: 76.73 88.34 56.90",
+  "loadAfter": "2:34  up  3:48, 2 users, load averages: 75.55 87.90 56.93",
+  "n": 30,
+  "median": 54.256167000000005,
+  "p90": 189.3151660000001,
+  "p99": 256.714917,
+  "remainingChildren": [],
+  "rows": [
+    {
+      "ms": 256.714917,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 116.49670800000001,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 189.3151660000001,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 44.64987499999995,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 38.32970799999998,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 223.967666,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 100.96575000000007,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 154.04983300000004,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 137.74016699999993,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 124.06466699999987,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 191.45724999999993,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 33.963250000000016,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 111.46870899999999,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 93.02474999999981,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 56.33124999999973,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 76.3558750000002,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 38.351042000000234,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 46.6689580000002,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 57.738916999999674,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 56.29354199999989,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 26.62933299999986,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 34.39895899999965,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 54.256167000000005,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 36.810665999999856,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 25.17316699999992,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 25.340041999999812,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 40.771541999999954,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 40.922000000000025,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 28.453708000000006,
+      "error": "Error: protocol JSON"
+    },
+    {
+      "ms": 29.995957999999973,
+      "error": "Error: protocol JSON"
+    }
+  ]
+}

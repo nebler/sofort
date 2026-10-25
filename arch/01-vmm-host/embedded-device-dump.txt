@@ -1,0 +1,29 @@
+FDT magic=00000000d00dfeed bytes=0000000000000554
+node 
+  compatible=linux,dummy-virt|
+node cpus
+node cpu@0
+  compatible=arm,arm-v8|
+  reg=0000000000000000
+node memory@80000000
+  reg=00000000800000000000000004000000
+node chosen
+  bootargs=|
+node intc
+  compatible=arm,gic-v3|
+  reg=0000000009fd000000000000000100000000000009fe00000000000000020000
+node timer
+  compatible=arm,armv8-timer|
+node apb-pclk
+  compatible=fixed-clock|
+node psci
+  compatible=arm,psci-0.2|
+node rtc@a001000
+  compatible=arm,pl031|arm,primecell|
+  reg=000000000a0010000000000000001000
+node virtio_mmio@a002000
+  compatible=virtio,mmio|
+  reg=000000000a0020000000000000001000
+embedded-qjs bytes=000000000093d3f8 ELF-header=000000007f454c46
+virtio @000000000a002000 DeviceID=0000000000000003
+virtio-count=0000000000000001

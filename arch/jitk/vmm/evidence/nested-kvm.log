@@ -1,0 +1,1562 @@
+KVMCHECK: crw------- 1 root root 10, 232 Jan  1  1970 /dev/kvm
+NESTED-LOAD: 0.00 0.00 0.00 2/69 154 UPTIME: 4.65 13.06
+PASS no-image
+PASS bad-mem
+PASS bad-seed
+PASS unknown
+PASS seed-epoch-counter-single-console
+PASS eof-before-go
+PASS real-qjs-ready-and-one-tool
+PASS wait-go-preserves-1000-following-bytes
+GUEST unknown-hvc
+GUEST unknown-smc
+GUEST mmio-halfword
+GUEST bad-sysreg
+GUEST console_avail_oob
+GUEST rtc_oob_read
+GUEST bad-sysreg-handled
+PASS invalid-hvc-clean-exit
+PASS one-console-native-cli
+PASS no-libkrun-dylib
+PASS linux-aarch64
+{
+  "checks": {
+    "no-image": true,
+    "bad-mem": true,
+    "bad-seed": true,
+    "unknown": true,
+    "seed-epoch-counter-single-console": true,
+    "eof-before-go": true,
+    "real-qjs-ready-and-one-tool": true,
+    "wait-go-preserves-1000-following-bytes": true,
+    "invalid-hvc-clean-exit": true,
+    "one-console-native-cli": true,
+    "no-libkrun-dylib": true,
+    "linux-aarch64": true
+  },
+  "fault_runs": 210
+}
+CHECK-EXIT 0
+CHECKS-PASS
+{
+  "uptime": "uptime_s=4.74 13.27 loadavg=0.00 0.00 0.00 1/69 158",
+  "checks": {
+    "no-image": true,
+    "bad-mem": true,
+    "bad-seed": true,
+    "unknown": true,
+    "seed-epoch-counter-single-console": true,
+    "eof-before-go": true,
+    "real-qjs-ready-and-one-tool": true,
+    "wait-go-preserves-1000-following-bytes": true,
+    "invalid-hvc-clean-exit": true,
+    "one-console-native-cli": true,
+    "no-libkrun-dylib": true,
+    "linux-aarch64": true
+  },
+  "faults": {
+    "unknown-hvc": [
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 16.215917,
+        "uptime": "uptime_s=5.51 15.12 loadavg=1.44 0.30 0.10 1/76 183",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 12.656667,
+        "uptime": "uptime_s=5.52 15.17 loadavg=1.44 0.30 0.10 1/78 188",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.709917,
+        "uptime": "uptime_s=5.54 15.21 loadavg=1.44 0.30 0.10 1/78 191",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 13.230417,
+        "uptime": "uptime_s=5.54 15.23 loadavg=1.44 0.30 0.10 1/78 194",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 19.462,
+        "uptime": "uptime_s=5.63 15.49 loadavg=1.44 0.30 0.10 1/78 197",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 79.177667,
+        "uptime": "uptime_s=5.65 15.55 loadavg=1.44 0.30 0.10 1/78 200",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 88.248583,
+        "uptime": "uptime_s=5.73 15.77 loadavg=1.44 0.30 0.10 1/78 203",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 93.868001,
+        "uptime": "uptime_s=5.82 15.92 loadavg=1.44 0.30 0.10 1/79 207",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 41.558333,
+        "uptime": "uptime_s=5.92 16.24 loadavg=1.44 0.30 0.10 1/79 210",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 12.476917,
+        "uptime": "uptime_s=5.97 16.37 loadavg=1.44 0.30 0.10 1/79 213",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 19.928667,
+        "uptime": "uptime_s=5.98 16.41 loadavg=1.44 0.30 0.10 1/79 216",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 17.183209,
+        "uptime": "uptime_s=6.00 16.47 loadavg=1.44 0.30 0.10 1/79 219",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 20.390042,
+        "uptime": "uptime_s=6.02 16.53 loadavg=1.44 0.30 0.10 1/79 222",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 21.877542,
+        "uptime": "uptime_s=6.04 16.58 loadavg=1.44 0.30 0.10 1/79 225",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.378917,
+        "uptime": "uptime_s=6.07 16.65 loadavg=1.44 0.30 0.10 1/79 228",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 80.137834,
+        "uptime": "uptime_s=6.07 16.66 loadavg=1.44 0.30 0.10 1/79 231",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 82.199584,
+        "uptime": "uptime_s=6.16 16.87 loadavg=1.44 0.30 0.10 1/79 234",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 85.182833,
+        "uptime": "uptime_s=6.25 17.12 loadavg=1.44 0.30 0.10 1/79 237",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 40.751875,
+        "uptime": "uptime_s=6.34 17.35 loadavg=1.44 0.30 0.10 1/79 240",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 20.84025,
+        "uptime": "uptime_s=6.38 17.49 loadavg=1.44 0.30 0.10 1/79 243",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 31.710292,
+        "uptime": "uptime_s=6.42 17.60 loadavg=1.44 0.30 0.10 1/79 246",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 124.655083,
+        "uptime": "uptime_s=6.45 17.67 loadavg=1.44 0.30 0.10 1/79 249",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.022,
+        "uptime": "uptime_s=6.58 18.10 loadavg=1.44 0.30 0.10 1/80 253",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.80075,
+        "uptime": "uptime_s=6.58 18.12 loadavg=1.44 0.30 0.10 1/80 256",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 13.393417,
+        "uptime": "uptime_s=6.59 18.14 loadavg=1.44 0.30 0.10 1/80 259",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 96.39225,
+        "uptime": "uptime_s=6.60 18.18 loadavg=1.44 0.30 0.10 1/80 262",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 15.26425,
+        "uptime": "uptime_s=6.71 18.50 loadavg=1.44 0.30 0.10 1/80 265",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 12.254708,
+        "uptime": "uptime_s=6.72 18.55 loadavg=1.44 0.30 0.10 1/80 268",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 11.885708,
+        "uptime": "uptime_s=6.73 18.58 loadavg=1.44 0.30 0.10 1/80 271",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 8.7625,
+        "uptime": "uptime_s=6.75 18.61 loadavg=1.44 0.30 0.10 1/80 274",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ],
+    "unknown-smc": [
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 41.638584,
+        "uptime": "uptime_s=6.76 18.65 loadavg=1.44 0.30 0.10 2/80 277",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 12.813708,
+        "uptime": "uptime_s=6.82 18.82 loadavg=1.44 0.30 0.10 1/80 280",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 11.378834,
+        "uptime": "uptime_s=6.84 18.86 loadavg=1.44 0.30 0.10 1/80 283",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.28075,
+        "uptime": "uptime_s=6.85 18.90 loadavg=1.44 0.30 0.10 1/80 286",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 18.0085,
+        "uptime": "uptime_s=6.86 18.92 loadavg=1.44 0.30 0.10 1/80 289",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 15.624041,
+        "uptime": "uptime_s=6.88 18.97 loadavg=1.44 0.30 0.10 1/80 292",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 18.928417,
+        "uptime": "uptime_s=6.89 19.01 loadavg=1.44 0.30 0.10 1/80 295",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 188.020708,
+        "uptime": "uptime_s=6.91 19.07 loadavg=1.44 0.30 0.10 1/80 298",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 29.994708,
+        "uptime": "uptime_s=7.11 19.53 loadavg=1.44 0.30 0.10 1/80 301",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 23.301708,
+        "uptime": "uptime_s=7.14 19.66 loadavg=1.44 0.30 0.10 1/80 304",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 33.657416,
+        "uptime": "uptime_s=7.17 19.74 loadavg=1.44 0.30 0.10 1/80 307",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 11.176792,
+        "uptime": "uptime_s=7.21 19.83 loadavg=1.44 0.30 0.10 1/80 310",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.787666,
+        "uptime": "uptime_s=7.22 19.86 loadavg=1.44 0.30 0.10 1/80 313",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 13.106291,
+        "uptime": "uptime_s=7.23 19.90 loadavg=1.44 0.30 0.10 1/80 316",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 18.406916,
+        "uptime": "uptime_s=7.24 19.94 loadavg=1.44 0.30 0.10 1/80 319",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 38.096292,
+        "uptime": "uptime_s=7.26 20.00 loadavg=1.44 0.30 0.10 1/80 322",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 88.311125,
+        "uptime": "uptime_s=7.30 20.09 loadavg=1.44 0.30 0.10 1/80 325",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 36.044292,
+        "uptime": "uptime_s=7.39 20.32 loadavg=1.44 0.30 0.10 1/80 328",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 105.746417,
+        "uptime": "uptime_s=7.43 20.41 loadavg=1.44 0.30 0.10 1/80 331",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 81.158167,
+        "uptime": "uptime_s=7.54 20.73 loadavg=1.44 0.30 0.10 1/80 334",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 26.84175,
+        "uptime": "uptime_s=7.63 21.03 loadavg=1.44 0.30 0.10 1/80 337",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 29.199084,
+        "uptime": "uptime_s=7.66 21.11 loadavg=1.44 0.30 0.10 1/80 340",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 60.772458,
+        "uptime": "uptime_s=7.69 21.20 loadavg=1.44 0.30 0.10 1/80 343",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 44.510417,
+        "uptime": "uptime_s=7.76 21.44 loadavg=1.44 0.30 0.10 1/80 346",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 74.170167,
+        "uptime": "uptime_s=7.80 21.57 loadavg=1.44 0.30 0.10 2/80 349",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 35.126375,
+        "uptime": "uptime_s=7.88 21.77 loadavg=1.44 0.30 0.10 1/80 352",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 126.832209,
+        "uptime": "uptime_s=7.92 21.89 loadavg=1.44 0.30 0.10 1/80 355",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 11.000167,
+        "uptime": "uptime_s=8.05 22.21 loadavg=1.44 0.30 0.10 1/80 358",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 77.333209,
+        "uptime": "uptime_s=8.06 22.27 loadavg=1.44 0.30 0.10 1/80 361",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 109.200875,
+        "uptime": "uptime_s=8.14 22.46 loadavg=1.44 0.30 0.10 1/80 364",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ],
+    "mmio-halfword": [
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 14.262084,
+        "uptime": "uptime_s=8.25 22.79 loadavg=1.44 0.30 0.10 1/80 367",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.794042,
+        "uptime": "uptime_s=8.27 22.83 loadavg=1.44 0.30 0.10 1/80 370",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 15.396,
+        "uptime": "uptime_s=8.27 22.85 loadavg=1.44 0.30 0.10 1/80 373",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 100.661833,
+        "uptime": "uptime_s=8.29 22.89 loadavg=1.44 0.30 0.10 1/80 376",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 10.029958,
+        "uptime": "uptime_s=8.41 23.30 loadavg=1.44 0.30 0.10 1/80 379",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.363417,
+        "uptime": "uptime_s=8.42 23.33 loadavg=1.44 0.30 0.10 1/80 382",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.967958,
+        "uptime": "uptime_s=8.43 23.35 loadavg=1.44 0.30 0.10 1/80 385",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.9965,
+        "uptime": "uptime_s=8.44 23.37 loadavg=1.44 0.30 0.10 1/80 388",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.904041,
+        "uptime": "uptime_s=8.45 23.40 loadavg=1.44 0.30 0.10 1/80 391",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.827042,
+        "uptime": "uptime_s=8.46 23.42 loadavg=1.44 0.30 0.10 1/80 394",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 10.683458,
+        "uptime": "uptime_s=8.46 23.44 loadavg=1.44 0.30 0.10 2/80 397",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 8.405083,
+        "uptime": "uptime_s=8.47 23.47 loadavg=1.44 0.30 0.10 1/80 400",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 9.377583,
+        "uptime": "uptime_s=8.48 23.49 loadavg=1.44 0.30 0.10 1/80 403",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 43.358875,
+        "uptime": "uptime_s=8.49 23.52 loadavg=1.44 0.30 0.10 1/80 406",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 249.896792,
+        "uptime": "uptime_s=8.54 23.64 loadavg=1.44 0.30 0.10 1/80 409",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 18.020542,
+        "uptime": "uptime_s=8.79 24.37 loadavg=1.44 0.30 0.10 1/80 412",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 11.539958,
+        "uptime": "uptime_s=8.81 24.42 loadavg=1.44 0.30 0.10 1/80 415",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 59.901333,
+        "uptime": "uptime_s=8.82 24.46 loadavg=1.44 0.30 0.10 1/80 418",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 42.93,
+        "uptime": "uptime_s=8.89 24.65 loadavg=1.44 0.30 0.10 1/80 421",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 45.632584,
+        "uptime": "uptime_s=8.94 24.77 loadavg=1.44 0.30 0.10 1/80 424",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 16.730584,
+        "uptime": "uptime_s=8.98 24.90 loadavg=1.44 0.30 0.10 1/80 427",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 18.560791,
+        "uptime": "uptime_s=9.00 24.94 loadavg=1.44 0.30 0.10 1/80 430",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 8.803417,
+        "uptime": "uptime_s=9.02 24.99 loadavg=1.44 0.30 0.10 1/80 433",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 64.27525,
+        "uptime": "uptime_s=9.03 25.02 loadavg=1.44 0.30 0.10 1/80 436",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 37.337917,
+        "uptime": "uptime_s=9.10 25.16 loadavg=1.44 0.30 0.10 1/80 439",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 30.277333,
+        "uptime": "uptime_s=9.13 25.27 loadavg=1.44 0.30 0.10 1/80 442",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 23.370666,
+        "uptime": "uptime_s=9.16 25.36 loadavg=1.44 0.30 0.10 1/80 445",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 67.961542,
+        "uptime": "uptime_s=9.19 25.45 loadavg=1.44 0.30 0.10 1/80 448",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 39.366875,
+        "uptime": "uptime_s=9.26 25.62 loadavg=1.44 0.30 0.10 1/80 451",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 44.294,
+        "uptime": "uptime_s=9.31 25.78 loadavg=1.44 0.30 0.10 2/80 454",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ],
+    "bad-sysreg": [
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 562.319709,
+        "uptime": "uptime_s=9.36 25.92 loadavg=1.44 0.30 0.10 1/80 457",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 619.782,
+        "uptime": "uptime_s=9.93 27.56 loadavg=1.44 0.30 0.10 1/80 460",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 529.767417,
+        "uptime": "uptime_s=10.55 29.39 loadavg=1.41 0.31 0.10 1/80 463",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 595.961958,
+        "uptime": "uptime_s=11.10 31.03 loadavg=1.41 0.31 0.10 1/80 466",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 560.306167,
+        "uptime": "uptime_s=11.71 32.87 loadavg=1.41 0.31 0.10 1/80 469",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 516.14475,
+        "uptime": "uptime_s=12.29 34.55 loadavg=1.41 0.31 0.10 1/80 472",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 526.389333,
+        "uptime": "uptime_s=12.80 36.09 loadavg=1.41 0.31 0.10 2/80 475",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 581.590917,
+        "uptime": "uptime_s=13.33 37.69 loadavg=1.41 0.31 0.10 1/80 478",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 677.340042,
+        "uptime": "uptime_s=13.92 39.36 loadavg=1.41 0.31 0.10 1/80 481",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 505.528209,
+        "uptime": "uptime_s=14.60 41.27 loadavg=1.41 0.31 0.10 1/80 484",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 507.786833,
+        "uptime": "uptime_s=15.10 42.71 loadavg=1.37 0.32 0.11 1/80 487",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 546.051751,
+        "uptime": "uptime_s=15.61 44.22 loadavg=1.37 0.32 0.11 1/80 490",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 544.860709,
+        "uptime": "uptime_s=16.16 45.86 loadavg=1.37 0.32 0.11 1/80 493",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 516.939125,
+        "uptime": "uptime_s=16.71 47.44 loadavg=1.37 0.32 0.11 1/80 496",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 506.114041,
+        "uptime": "uptime_s=17.22 48.97 loadavg=1.37 0.32 0.11 1/80 499",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 508.928209,
+        "uptime": "uptime_s=17.73 50.49 loadavg=1.37 0.32 0.11 1/80 502",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 518.282208,
+        "uptime": "uptime_s=18.24 52.02 loadavg=1.37 0.32 0.11 1/80 505",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 563.078625,
+        "uptime": "uptime_s=18.76 53.56 loadavg=1.37 0.32 0.11 1/80 508",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 508.372333,
+        "uptime": "uptime_s=19.32 55.27 loadavg=1.37 0.32 0.11 1/80 511",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 526.26475,
+        "uptime": "uptime_s=19.83 56.78 loadavg=1.37 0.32 0.11 1/80 514",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 509.802001,
+        "uptime": "uptime_s=20.36 58.34 loadavg=1.42 0.35 0.12 1/80 517",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 543.924,
+        "uptime": "uptime_s=20.87 59.75 loadavg=1.42 0.35 0.12 1/80 520",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 532.752584,
+        "uptime": "uptime_s=21.50 61.67 loadavg=1.42 0.35 0.12 2/80 523",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 604.20225,
+        "uptime": "uptime_s=22.04 63.25 loadavg=1.42 0.35 0.12 1/80 526",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 522.314375,
+        "uptime": "uptime_s=22.64 64.97 loadavg=1.42 0.35 0.12 1/80 529",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 614.750626,
+        "uptime": "uptime_s=23.17 66.53 loadavg=1.42 0.35 0.12 1/80 532",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 609.868667,
+        "uptime": "uptime_s=23.78 68.39 loadavg=1.42 0.35 0.12 2/80 535",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 512.14125,
+        "uptime": "uptime_s=24.39 70.25 loadavg=1.42 0.35 0.12 1/80 538",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 504.328417,
+        "uptime": "uptime_s=24.90 71.78 loadavg=1.42 0.35 0.12 1/80 541",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": -9,
+        "watchdog": true,
+        "ms": 568.715375,
+        "uptime": "uptime_s=25.41 73.29 loadavg=1.39 0.36 0.12 1/80 544",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ],
+    "console_avail_oob": [
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 68.060792,
+        "uptime": "uptime_s=25.98 75.03 loadavg=1.39 0.36 0.12 2/80 547",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 41.23125,
+        "uptime": "uptime_s=26.05 75.26 loadavg=1.39 0.36 0.12 1/80 550",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 54.549166,
+        "uptime": "uptime_s=26.09 75.38 loadavg=1.39 0.36 0.12 1/80 553",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 48.725375,
+        "uptime": "uptime_s=26.14 75.55 loadavg=1.39 0.36 0.12 1/80 556",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 41.649208,
+        "uptime": "uptime_s=26.19 75.69 loadavg=1.39 0.36 0.12 1/80 559",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 69.068625,
+        "uptime": "uptime_s=26.24 75.81 loadavg=1.39 0.36 0.12 1/80 562",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 43.689208,
+        "uptime": "uptime_s=26.31 76.02 loadavg=1.39 0.36 0.12 1/80 565",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 68.430541,
+        "uptime": "uptime_s=26.35 76.16 loadavg=1.39 0.36 0.12 1/80 568",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 55.050041,
+        "uptime": "uptime_s=26.42 76.37 loadavg=1.39 0.36 0.12 1/80 571",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 58.793792,
+        "uptime": "uptime_s=26.48 76.51 loadavg=1.39 0.36 0.12 1/80 574",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 57.757209,
+        "uptime": "uptime_s=26.54 76.70 loadavg=1.39 0.36 0.12 1/80 577",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 76.608583,
+        "uptime": "uptime_s=26.60 76.87 loadavg=1.39 0.36 0.12 1/80 580",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 48.335083,
+        "uptime": "uptime_s=26.68 77.12 loadavg=1.39 0.36 0.12 1/80 583",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 53.456625,
+        "uptime": "uptime_s=26.73 77.27 loadavg=1.39 0.36 0.12 1/80 586",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 79.942791,
+        "uptime": "uptime_s=26.78 77.41 loadavg=1.39 0.36 0.12 1/80 589",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 70.588875,
+        "uptime": "uptime_s=26.86 77.68 loadavg=1.39 0.36 0.12 1/80 592",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 48.892542,
+        "uptime": "uptime_s=26.93 77.88 loadavg=1.39 0.36 0.12 1/80 595",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 90.23325,
+        "uptime": "uptime_s=26.98 78.03 loadavg=1.39 0.36 0.12 1/80 598",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 56.97625,
+        "uptime": "uptime_s=27.07 78.31 loadavg=1.39 0.36 0.12 1/80 601",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 77.20275,
+        "uptime": "uptime_s=27.13 78.45 loadavg=1.39 0.36 0.12 1/80 604",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 124.104042,
+        "uptime": "uptime_s=27.21 78.69 loadavg=1.39 0.36 0.12 1/80 607",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 73.640125,
+        "uptime": "uptime_s=27.34 79.10 loadavg=1.39 0.36 0.12 1/80 610",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 92.783417,
+        "uptime": "uptime_s=27.42 79.33 loadavg=1.39 0.36 0.12 1/80 613",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 76.906875,
+        "uptime": "uptime_s=27.51 79.61 loadavg=1.39 0.36 0.12 1/80 616",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 93.448459,
+        "uptime": "uptime_s=27.59 79.85 loadavg=1.39 0.36 0.12 1/80 619",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 47.155125,
+        "uptime": "uptime_s=27.68 80.13 loadavg=1.39 0.36 0.12 1/80 622",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 45.748209,
+        "uptime": "uptime_s=27.73 80.27 loadavg=1.39 0.36 0.12 1/80 625",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 46.925166,
+        "uptime": "uptime_s=27.78 80.40 loadavg=1.39 0.36 0.12 1/80 628",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 47.399875,
+        "uptime": "uptime_s=27.83 80.55 loadavg=1.39 0.36 0.12 1/80 631",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 45.170875,
+        "uptime": "uptime_s=27.88 80.70 loadavg=1.39 0.36 0.12 1/80 634",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ],
+    "rtc_oob_read": [
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 8.7345,
+        "uptime": "uptime_s=27.92 80.83 loadavg=1.39 0.36 0.12 2/80 637",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.234875,
+        "uptime": "uptime_s=27.93 80.86 loadavg=1.39 0.36 0.12 1/80 640",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.664291,
+        "uptime": "uptime_s=27.94 80.88 loadavg=1.39 0.36 0.12 1/80 643",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 9.578875,
+        "uptime": "uptime_s=27.95 80.90 loadavg=1.39 0.36 0.12 1/80 646",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.977334,
+        "uptime": "uptime_s=27.96 80.93 loadavg=1.39 0.36 0.12 1/80 649",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.507959,
+        "uptime": "uptime_s=27.96 80.94 loadavg=1.39 0.36 0.12 1/80 652",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 11.706,
+        "uptime": "uptime_s=27.97 80.96 loadavg=1.39 0.36 0.12 1/80 655",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.092708,
+        "uptime": "uptime_s=27.98 81.00 loadavg=1.39 0.36 0.12 1/80 658",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.841334,
+        "uptime": "uptime_s=27.99 81.02 loadavg=1.39 0.36 0.12 1/80 661",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 10.895875,
+        "uptime": "uptime_s=28.00 81.04 loadavg=1.39 0.36 0.12 1/80 664",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.653792,
+        "uptime": "uptime_s=28.01 81.08 loadavg=1.39 0.36 0.12 1/80 667",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.675042,
+        "uptime": "uptime_s=28.01 81.10 loadavg=1.39 0.36 0.12 1/80 670",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 24.795833,
+        "uptime": "uptime_s=28.02 81.11 loadavg=1.39 0.36 0.12 1/80 673",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.389708,
+        "uptime": "uptime_s=28.05 81.17 loadavg=1.39 0.36 0.12 1/80 676",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 9.268208,
+        "uptime": "uptime_s=28.05 81.19 loadavg=1.39 0.36 0.12 1/80 679",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.589916,
+        "uptime": "uptime_s=28.06 81.22 loadavg=1.39 0.36 0.12 1/80 682",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 17.4125,
+        "uptime": "uptime_s=28.07 81.24 loadavg=1.39 0.36 0.12 1/80 685",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.322917,
+        "uptime": "uptime_s=28.09 81.29 loadavg=1.39 0.36 0.12 1/80 688",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.573833,
+        "uptime": "uptime_s=28.10 81.31 loadavg=1.39 0.36 0.12 1/80 691",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.969,
+        "uptime": "uptime_s=28.10 81.33 loadavg=1.39 0.36 0.12 1/80 694",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.120208,
+        "uptime": "uptime_s=28.11 81.35 loadavg=1.39 0.36 0.12 1/80 697",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 9.186583,
+        "uptime": "uptime_s=28.12 81.38 loadavg=1.39 0.36 0.12 1/80 700",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.977583,
+        "uptime": "uptime_s=28.13 81.40 loadavg=1.39 0.36 0.12 1/80 703",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.942125,
+        "uptime": "uptime_s=28.14 81.43 loadavg=1.39 0.36 0.12 1/80 706",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.440209,
+        "uptime": "uptime_s=28.14 81.45 loadavg=1.39 0.36 0.12 1/80 709",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.959125,
+        "uptime": "uptime_s=28.15 81.46 loadavg=1.39 0.36 0.12 1/80 712",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.596084,
+        "uptime": "uptime_s=28.16 81.48 loadavg=1.39 0.36 0.12 1/80 715",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.015083,
+        "uptime": "uptime_s=28.17 81.51 loadavg=1.39 0.36 0.12 1/80 718",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 9.063291,
+        "uptime": "uptime_s=28.17 81.52 loadavg=1.39 0.36 0.12 1/80 721",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 12.633625,
+        "uptime": "uptime_s=28.18 81.55 loadavg=1.39 0.36 0.12 1/80 724",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ],
+    "bad-sysreg-handled": [
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.087166,
+        "uptime": "uptime_s=28.19 81.59 loadavg=1.39 0.36 0.12 1/80 727",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.4495,
+        "uptime": "uptime_s=28.20 81.60 loadavg=1.39 0.36 0.12 1/80 730",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.813417,
+        "uptime": "uptime_s=28.20 81.62 loadavg=1.39 0.36 0.12 1/80 733",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 13.264209,
+        "uptime": "uptime_s=28.21 81.64 loadavg=1.39 0.36 0.12 1/80 736",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.105292,
+        "uptime": "uptime_s=28.22 81.68 loadavg=1.39 0.36 0.12 1/80 739",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.490209,
+        "uptime": "uptime_s=28.23 81.70 loadavg=1.39 0.36 0.12 1/80 742",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.161583,
+        "uptime": "uptime_s=28.24 81.72 loadavg=1.39 0.36 0.12 1/80 745",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.409167,
+        "uptime": "uptime_s=28.24 81.73 loadavg=1.39 0.36 0.12 1/80 748",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.77925,
+        "uptime": "uptime_s=28.25 81.76 loadavg=1.39 0.36 0.12 1/80 751",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.550708,
+        "uptime": "uptime_s=28.26 81.78 loadavg=1.39 0.36 0.12 1/80 754",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.508625,
+        "uptime": "uptime_s=28.26 81.79 loadavg=1.39 0.36 0.12 1/80 757",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.229333,
+        "uptime": "uptime_s=28.27 81.82 loadavg=1.39 0.36 0.12 1/80 760",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 9.766875,
+        "uptime": "uptime_s=28.28 81.84 loadavg=1.39 0.36 0.12 1/80 763",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 10.613959,
+        "uptime": "uptime_s=28.29 81.86 loadavg=1.39 0.36 0.12 1/80 766",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 6.2185,
+        "uptime": "uptime_s=28.30 81.90 loadavg=1.39 0.36 0.12 1/80 769",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.967208,
+        "uptime": "uptime_s=28.31 81.92 loadavg=1.39 0.36 0.12 1/80 772",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.513125,
+        "uptime": "uptime_s=28.32 81.95 loadavg=1.39 0.36 0.12 1/80 775",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 8.598792,
+        "uptime": "uptime_s=28.33 81.97 loadavg=1.39 0.36 0.12 1/80 778",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.027833,
+        "uptime": "uptime_s=28.34 82.00 loadavg=1.39 0.36 0.12 1/80 781",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.516625,
+        "uptime": "uptime_s=28.34 82.02 loadavg=1.39 0.36 0.12 1/80 784",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.885333,
+        "uptime": "uptime_s=28.35 82.03 loadavg=1.39 0.36 0.12 1/80 787",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.343584,
+        "uptime": "uptime_s=28.35 82.05 loadavg=1.39 0.36 0.12 1/80 790",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.367875,
+        "uptime": "uptime_s=28.36 82.06 loadavg=1.39 0.36 0.12 1/80 793",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.123208,
+        "uptime": "uptime_s=28.36 82.08 loadavg=1.39 0.36 0.12 1/80 796",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 4.365084,
+        "uptime": "uptime_s=28.37 82.09 loadavg=1.39 0.36 0.12 1/80 799",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.590166,
+        "uptime": "uptime_s=28.37 82.10 loadavg=1.39 0.36 0.12 1/80 802",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.653,
+        "uptime": "uptime_s=28.38 82.12 loadavg=1.39 0.36 0.12 1/80 805",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 7.987541,
+        "uptime": "uptime_s=28.38 82.13 loadavg=1.39 0.36 0.12 1/80 808",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 3.7255,
+        "uptime": "uptime_s=28.39 82.15 loadavg=1.39 0.36 0.12 1/80 811",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      },
+      {
+        "rc": 0,
+        "watchdog": false,
+        "ms": 5.081917,
+        "uptime": "uptime_s=28.39 82.16 loadavg=1.39 0.36 0.12 1/80 814",
+        "stderr": "{\"sandbox\":\"ok\"}\n"
+      }
+    ]
+  },
+  "samples": [],
+  "probe_stdout": "GUEST_TICKS 0000000000160d6c\nFDT magic=00000000d00dfeed bytes=00000000000005b4\nnode \n  compatible=linux,dummy-virt|\nnode cpus\nnode cpu@0\n  compatible=arm,arm-v8|\n  reg=0000000000000000\nnode memory@80000000\n  reg=00000000800000000000000002000000\nnode chosen\n  bootargs=jitk.seed=00112233445566778899aabbccddeeff jitk.epoch_ns=1792800000000000000 jitk.counter=129251978|\nnode intc\n  compatible=arm,gic-v3|\n  reg=0000000009ff000000000000000100000000000009fd00000000000000020000\nnode timer\n  compatible=arm,armv8-timer|\nnode apb-pclk\n  compatible=fixed-clock|\nnode psci\n  compatible=arm,psci-0.2|\nnode rtc@a001000\n  compatible=arm,pl031|arm,primecell|\n  reg=000000000a0010000000000000001000\nnode virtio_mmio@a002000\n  compatible=virtio,mmio|\n  reg=000000000a0020000000000000001000\nvirtio @000000000a002000 DeviceID=0000000000000003\nvirtio-count=0000000000000001\n",
+  "binary_sha256": "4445e2ccf6e2446b5d8ab03a5794cb4d94101516037f7328863308a95b16f028",
+  "uptime_end": "uptime_s=28.41 82.22 loadavg=1.39 0.36 0.12 1/80 824"
+}
+mode 1: 30/30 pass  cpu p50 0.010s max 0.020s  wall p50 0.012s
+mode 2: 30/30 pass  cpu p50 0.010s max 0.020s  wall p50 0.012s
+mode 3: 30/30 pass  cpu p50 1.280s max 1.640s  wall p50 1.073s
+mode 4: 30/30 pass  cpu p50 0.010s max 0.020s  wall p50 0.012s
+mode 5: 30/30 pass  cpu p50 0.010s max 0.020s  wall p50 0.012s
+mode 6: 30/30 pass  cpu p50 0.010s max 0.020s  wall p50 0.012s
+mode 7: 30/30 pass  cpu p50 0.010s max 0.030s  wall p50 3.005s
+mode 8: 30/30 pass  cpu p50 0.020s max 0.080s  wall p50 0.019s
+mode 9: 30/30 pass  cpu p50 0.010s max 0.040s  wall p50 0.013s
+CONSOLE-PASS
+SECCOMP-PROBE -31 b'SECCOMP-PROBE-CONFINED\n'
+SECCOMP-PASS
+INIT-DONE
+[  156.330872] sysrq: Power Off
+[  156.333014] reboot: Power down

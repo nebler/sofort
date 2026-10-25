@@ -1,0 +1,74 @@
+python3 -B demo.py 
+DEMO PROPOSALS: REPLAY — recorded accepted proposals; no model call. Fresh VM executions follow.
+[00.144s] RECORDED REPLAY: canonical kernel copied; ppoll and signal handlers deleted only in the disposable repository.
+[03.013s] RECORDED REPLAY QuickJS miss:
+{
+  "v": 2,
+  "kind": "missing",
+  "seq": 44,
+  "nr": 73,
+  "pc": 5466184,
+  "args": [
+    8593488,
+    1,
+    0,
+    0,
+    8,
+    0
+  ],
+  "input": "0000000001000000",
+  "timeout": null
+}
+
+[07.005s] RECORDED REPLAY ppoll: Linux oracle → one-file proposal → rebuild → 30 fresh complete probe matches.
+Transaction 86.214s; stage loads saved in report. WFI wait helper retained.
+[12.005s] EXECUTING fresh QuickJS VM on canonical v2 VMM.
+[13.001s] reply:ping (spawn→reap 0.038249s; 5:06  up  6:20, 2 users, load averages: 86.06 95.96 75.42)
+[18.005s] RECORDED REPLAY Lua startup miss:
+{
+  "v": 2,
+  "kind": "missing",
+  "seq": 20,
+  "nr": 135,
+  "pc": 4401548,
+  "args": [
+    1,
+    33520192,
+    0,
+    8,
+    33520224,
+    4653056
+  ],
+  "input": null,
+  "timeout": null
+}
+
+[22.001s] RECORDED REPLAY rt_sigprocmask: explicit ENOSYS profile; no signal state or pointer access.
+// Lua profile: no signal delivery or thread state. No user pointers are touched.
+// This is an explicit ENOSYS contract, never a claim of Linux signal support.
+pub fn call(_: &[usize]) -> isize { -38 }
+
+[25.010s] RECORDED REPLAY second miss:
+{
+  "v": 2,
+  "kind": "missing",
+  "seq": 21,
+  "nr": 134,
+  "pc": 4401344,
+  "args": [
+    2,
+    33520160,
+    0,
+    8,
+    33520240,
+    33520192
+  ],
+  "input": null,
+  "timeout": null
+}
+
+[28.010s] RECORDED REPLAY: both signal profiles pass 30 fresh probe VMs each against explicitly ENOSYS-injected Linux.
+[31.016s] EXECUTING fresh Lua VM: sort {9,1,5,3,5}; compute count/sum/max.
+[32.006s] {"count":5,"sum":23,"max":9} (spawn→reap 0.117051s; 5:07  up  6:21, 2 users, load averages: 74.67 92.65 74.71)
+[38.006s] RECORDED REPLAY: Lua output matches normal Linux, 30/30 fresh VMs. Explicit Lua profile: 6 LOC. Lua already computes with missing-slot ENOSYS; growth verifies that contract.
+[43.014s] All VMs reaped. Preparation 324.098s; stage loads saved. Presentation time excludes preparation. Full Lua syscall equivalence UNVERIFIED.

@@ -1,0 +1,596 @@
+{
+  "measured_utc": "2026-10-24T01:37:01.204565+00:00",
+  "identical_source_groups": [
+    [
+      "bench/hyperlight/watchdog.py",
+      "executor/watchdog.py"
+    ],
+    [
+      "executor/fixtures/policy-owner-test.mjs",
+      "executor/policy/policy-test.mjs"
+    ],
+    [
+      "grow/fallback-kernel/src/boot.S",
+      "kernel/src/boot.S"
+    ],
+    [
+      "grow/fallback-kernel/src/syscalls/ioctl.rs",
+      "kernel/src/syscalls/ioctl.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/vectors.S",
+      "kernel/src/vectors.S"
+    ],
+    [
+      "grow/proposals/ppoll.rs",
+      "kernel/src/syscalls/ppoll.rs"
+    ],
+    [
+      "grow/proposals/rt_sigaction.rs",
+      "kernel/src/syscalls/rt_sigaction.rs"
+    ],
+    [
+      "grow/proposals/rt_sigprocmask.rs",
+      "kernel/src/syscalls/rt_sigprocmask.rs"
+    ],
+    [
+      "grow/results/canonical-r3/tx-ppoll/manifest.diff",
+      "grow/results/canonical-replay/tx-ppoll/manifest.diff"
+    ],
+    [
+      "grow/results/canonical-r3/tx-rt_sigaction/manifest.diff",
+      "grow/results/fallback-dev2/tx-rt_sigaction/manifest.diff"
+    ],
+    [
+      "grow/results/canonical-r3/tx-rt_sigprocmask/manifest.diff",
+      "grow/results/canonical-replay/tx-rt_sigprocmask/manifest.diff",
+      "grow/results/fallback-dev2/tx-rt_sigprocmask/manifest.diff"
+    ],
+    [
+      "grow/results/fallback-dev/tx-ppoll/manifest.diff",
+      "grow/results/fallback-dev2/tx-ppoll/manifest.diff"
+    ],
+    [
+      "kernel/src/syscalls/exit.rs",
+      "kernel/src/syscalls/exit_group.rs"
+    ],
+    [
+      "linux/guest/bad-sysreg.S",
+      "vmm/tests/fixtures/bad-sysreg.S"
+    ],
+    [
+      "linux/guest/console_avail_oob.S",
+      "vmm/tests/fixtures/console_avail_oob.S"
+    ],
+    [
+      "linux/guest/mmio-halfword.S",
+      "vmm/tests/fixtures/mmio-halfword.S"
+    ],
+    [
+      "linux/guest/rtc_oob_read.S",
+      "vmm/tests/fixtures/rtc_oob_read.S"
+    ],
+    [
+      "linux/guest/unknown-hvc.S",
+      "vmm/tests/fixtures/unknown-hvc.S"
+    ],
+    [
+      "linux/guest/unknown-smc.S",
+      "vmm/tests/fixtures/unknown-smc.S"
+    ]
+  ],
+  "external_path_candidates": [
+    {
+      "path": "bench/executor.mjs",
+      "line": 18,
+      "text": "    parkingGate:{idleCorePercent:0,evidence:'arch/02-guest-kernel/r2/parking-1000.json (historical functional gate)'}});"
+    },
+    {
+      "path": "bench/hyperlight/Cargo.toml",
+      "line": 6,
+      "text": "hyperlight-js = { path = \"/tmp/jitk-09/hyperlight-js/src/hyperlight-js\", default-features = false, features = [\"hvf\"] }"
+    },
+    {
+      "path": "bench/hyperlight/Cargo.toml",
+      "line": 8,
+      "text": "hyperlight-js-common = { path = \"/tmp/jitk-09/hyperlight-js/src/hyperlight-js-common\" }"
+    },
+    {
+      "path": "bench/hyperlight/adapter-test.ts",
+      "line": 4,
+      "text": "const worker='/tmp/jitk-09/adapter-target/release/r2-worker';"
+    },
+    {
+      "path": "bench/hyperlight/adapter-test.ts",
+      "line": 5,
+      "text": "const snapshot='/tmp/jitk-09/r3-snapshot';"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 13,
+      "text": "NODE='/tmp/jitk-09/node-real';TMP=Path('/tmp/jitk-09')"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 23,
+      "text": "        self.cfg={'vmm':'/tmp/jitk-02/r2/host','image':'/tmp/jitk-02/r2/kernel.bin','launcher':'02-r2'}"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 53,
+      "text": "                     isolation=CONTRACTS[mode],jitk_path='raw /tmp/jitk-02/r2 (04 not READY at run start)' if mode.startswith('jitk') else None)"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "line": 60,
+      "text": "    w=b.Worker(['/tmp/jitk-02/r2/host','/tmp/jitk-02/r2/kernel.bin'] if kind=='jitk' else"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 5,
+      "text": "export CARGO_TARGET_DIR=/tmp/jitk-09/adapter-target"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 8,
+      "text": "codesign --force --sign - --entitlements /tmp/jitk-spike/libkrun/examples/chroot_vm.entitlements /tmp/jitk-09/adapter-target/release/r2-worker"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 12,
+      "text": "shutil.rmtree('/tmp/jitk-09/r3-snapshot',ignore_errors=True)"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "line": 13,
+      "text": "subprocess.run(['/tmp/jitk-09/adapter-target/release/r2-worker','save','/tmp/jitk-09/r3-snapshot'],check=True,timeout=30)"
+    },
+    {
+      "path": "bench/hyperlight/executor-runner.mjs",
+      "line": 10,
+      "text": "const backend=mode.startsWith('hl-') ? new HyperlightBackend('/tmp/jitk-09/adapter-target/release/r2-worker','/tmp/jitk-09/r3-snapshot',20000) :"
+    },
+    {
+      "path": "bench/hyperlight/executor-runner.mjs",
+      "line": 17,
+      "text": "  parkingGate:{idleCorePercent:0,evidence:'arch/02-guest-kernel/r2/READY: G1 idle 0%, 1000 exchanges'}});"
+    },
+    {
+      "path": "bench/hyperlight/executor-test.mjs",
+      "line": 4,
+      "text": "const backend=new HyperlightBackend('/tmp/jitk-09/adapter-target/release/r2-worker','/tmp/jitk-09/r3-snapshot');"
+    },
+    {
+      "path": "bench/hyperlight/worker.rs",
+      "line": 78,
+      "text": "    let path=args.get(2).map(String::as_str).unwrap_or(\"/tmp/jitk-09/r2-snapshot\");"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 161,
+      "text": "        image=marker_path(k,['image','kernel'],[k/'dist/kernel.bin',k/'build/kernel.bin',k/'kernel.bin',Path('/tmp/jitk-02/r3/kernel.bin')])"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 163,
+      "text": "        image=image or '/tmp/jitk-02/r2/kernel.bin'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 167,
+      "text": "        vmm=marker_path(v,['binary','vmm','host'],[v/'build/jitk-vmm',v/'target/release/jitk-vmm',Path('/tmp/jitk-01/r3/darwin/jitk-vmm')])"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 169,
+      "text": "        vmm=vmm or '/tmp/jitk-01/r2/jitk-vmm'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 172,
+      "text": "    frozen=Path('/tmp/jitk-06/r3')/('run-'+str(time.time_ns()));frozen.mkdir(parents=True)"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 183,
+      "text": "        profile=next((str(p) for p in [ARCH/'jitk/vmm/build/jitk.sbbin',ARCH/'jitk/vmm/sandbox/jitk.sbbin',Path('/tmp/jitk-01/r3/jitk.sbbin')] if p.exists()),None)"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 190,
+      "text": "    probe_profile=profile or '/tmp/jitk-07/r2/jitk.sbbin'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 192,
+      "text": "        probe=Path('/tmp/jitk-06/r3/sandbox-probe');probe.parent.mkdir(parents=True,exist_ok=True)"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 198,
+      "text": "    elif Path('/tmp/jitk-09/adapter-target/release/r2-worker').exists():"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 199,
+      "text": "        worker='/tmp/jitk-09/adapter-target/release/r2-worker';snap='/tmp/jitk-09/r2-snapshot'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 219,
+      "text": "    selection['node']='/tmp/jitk-09/node-real'"
+    },
+    {
+      "path": "bench/run.py",
+      "line": 264,
+      "text": "        cmd=[s.get('node','/tmp/jitk-09/node-real'),str(HERE/'executor.mjs'),s['executor']['build'],mode,case,json.dumps(s)]"
+    },
+    {
+      "path": "docs/delegate.py",
+      "line": 42,
+      "text": "        node = os.environ.get(\"JITK_NODE\", \"/tmp/jitk-09/node-real\")"
+    },
+    {
+      "path": "docs/delegate.py",
+      "line": 45,
+      "text": "        command = [os.environ.get(\"JITK_NODE\", \"/tmp/jitk-09/node-real\"),"
+    },
+    {
+      "path": "docs/delegate.py",
+      "line": 54,
+      "text": "        node = os.environ.get(\"JITK_NODE\", \"/tmp/jitk-09/node-real\")"
+    },
+    {
+      "path": "docs/delegate.py",
+      "line": 80,
+      "text": "        node = os.environ.get(\"JITK_NODE\", \"/tmp/jitk-09/node-real\")"
+    },
+    {
+      "path": "executor/backend.ts",
+      "line": 51,
+      "text": "  mkdirSync('/tmp/jitk-04/r3/profiles',{recursive:true});"
+    },
+    {
+      "path": "executor/backend.ts",
+      "line": 52,
+      "text": "  const path=`/tmp/jitk-04/r3/profiles/${process.pid}-${key}.sbbin`;"
+    },
+    {
+      "path": "executor/policy-adapter.ts",
+      "line": 5,
+      "text": "const fallback=new URL('../../../07-security-sandbox/policy.mjs',import.meta.url);"
+    },
+    {
+      "path": "executor/run.sh",
+      "line": 4,
+      "text": "TASK_NODE=${JITK_NODE:-/tmp/jitk-09/node-real}"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 19,
+      "text": "  if(selected==='local-qjs')return {backend:new LocalProcessQjsBackend(process.env.QJS??'/tmp/jitk-04/quickjs-2026-06-04/qjs'),selection:'UNSAFE local-qjs',integrated:false};"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 21,
+      "text": "  const host=artifact(vmmReady?markerArtifact(jitk+'vmm/',['binary','vmm','host'],['jitk-vmm','build/jitk-vmm','target/release/jitk-vmm',`/tmp/jitk-01/r3/${process.platform}/jitk-vmm`]):'/tmp/jitk-01/r2/jitk-vmm');"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "line": 22,
+      "text": "  const image=artifact(kernelReady?markerArtifact(jitk+'kernel/',['image','kernel'],['dist/kernel.bin','kernel.bin','build/kernel.bin']):'/tmp/jitk-02/r2/kernel.bin');"
+    },
+    {
+      "path": "grow/prepare.py",
+      "line": 5,
+      "text": "ROOT=Path(__file__).resolve().parent;TMP=Path('/tmp/jitk-08/r3');TMP.mkdir(parents=True,exist_ok=True)"
+    },
+    {
+      "path": "grow/prepare.py",
+      "line": 13,
+      "text": "    shutil.copyfile('/tmp/jitk-spike/sc/qjs-static',TMP/'qjs-stripped')"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 5,
+      "text": "TMP = pathlib.Path('/tmp/jitk-08/r3')"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 98,
+      "text": "        SELECTED_HOST=pathlib.Path(certificate.get('test_host','/tmp/jitk-02/r2/host'))"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 100,
+      "text": "    else: SELECTED_HOST=pathlib.Path('/tmp/jitk-08/r2/host')"
+    },
+    {
+      "path": "grow/runtime.py",
+      "line": 103,
+      "text": "    return SELECTED_HOST or pathlib.Path('/tmp/jitk-02/r2/host')"
+    },
+    {
+      "path": "kernel/build.sh",
+      "line": 4,
+      "text": "export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/tmp/jitk-02/r3/target}"
+    },
+    {
+      "path": "kernel/tests/grow_contract.py",
+      "line": 5,
+      "text": "work=Path('/tmp/jitk-02/r3/grow-contract');work.mkdir(parents=True,exist_ok=True)"
+    },
+    {
+      "path": "kernel/tests/host.sh",
+      "line": 4,
+      "text": "VMM=${JITK_VMM_BINARY:-/tmp/jitk-01/r3/darwin/jitk-vmm}"
+    },
+    {
+      "path": "kernel/tests/lua_profile.py",
+      "line": 7,
+      "text": "work=Path('/tmp/jitk-02/r3/lua-signal-profile');work.mkdir(parents=True,exist_ok=True)"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 13,
+      "text": " obj=f'/tmp/jitk-02/r3/{name}.o';binary=f'/tmp/jitk-02/r3/{name}.bin'"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 18,
+      "text": " env['CARGO_TARGET_DIR']='/tmp/jitk-02/r3/probe-target'"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 21,
+      "text": " subprocess.run(['/opt/homebrew/opt/llvm@22/bin/llvm-objcopy','-O','binary','/tmp/jitk-02/r3/probe-target/aarch64-unknown-none/release/jitk-02','/tmp/jitk-02/r3/probe-kernel.bin'],check=True)"
+    },
+    {
+      "path": "kernel/tests/run-probes.py",
+      "line": 22,
+      "text": " r=subprocess.run([os.environ.get('JITK_TEST_HOST',str(Path(__file__).resolve().parent/'host.sh')),'/tmp/jitk-02/r3/probe-kernel.bin'],capture_output=True,timeout=5)"
+    },
+    {
+      "path": "kernel/tests/test_handlers.py",
+      "line": 41,
+      "text": "with tempfile.TemporaryDirectory(dir='/tmp/jitk-02/r3') as d:"
+    },
+    {
+      "path": "linux/docker-build.sh",
+      "line": 4,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/nested/prepare-stdlib.sh",
+      "line": 4,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/nested.sh",
+      "line": 4,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "line": 3,
+      "text": "WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "line": 7,
+      "text": "if [[ -s /tmp/jitk-07/kvm/base.cpio.gz && -s /tmp/jitk-07/kvm/vmlinuz ]]; then"
+    },
+    {
+      "path": "linux/prepare-nested.sh",
+      "line": 8,
+      "text": " cp /tmp/jitk-07/kvm/{base.cpio.gz,vmlinuz} \"$WORK/\""
+    },
+    {
+      "path": "linux/run.sh",
+      "line": 7,
+      "text": " export JITK_WORK=${JITK_WORK:-/tmp/jitk-05/r3}"
+    },
+    {
+      "path": "protocol/report.py",
+      "line": 30,
+      "text": " a=v['config'];lines += [f'- {kind}: image SHA256 `{a[\"imageSha256\"]}`; original `{a.get(\"originalImage\",a[\"image\"])}`; selected `{a[\"source\"]}`.', f'  Host `{a[\"host\"]}`, SHA256 `{a[\"hostSha256\"]}`; bootstrap SHA256 `{a[\"bootstrapSha256\"]}`. Images are pinned under `/tmp/jitk-03/r3/` to avoid concurrent rebuild drift.']"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 12,
+      "text": " let image='/tmp/jitk-02/r2/kernel.bin', source='02 R2 fallback';"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 14,
+      "text": "  const choices=[root+'kernel/dist/kernel.bin',root+'kernel/kernel.bin',root+'kernel/build/kernel.bin','/tmp/jitk-02/r3/kernel.bin'];"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 21,
+      "text": " const host=process.env.JITK_VMM||'/tmp/jitk-02/r2/host';"
+    },
+    {
+      "path": "protocol/vm.mjs",
+      "line": 24,
+      "text": " mkdirSync('/tmp/jitk-03/r3',{recursive:true});image='/tmp/jitk-03/r3/kernel-'+imageSha256+'.bin';"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 4,
+      "text": "mkdir -p /tmp/jitk-01/r3/linux /tmp/jitk-01/r3/cargo-linux"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 7,
+      "text": "  -v \"$root:/vmm:ro\" -v /tmp/jitk-01:/tmp/jitk-01 \\"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 8,
+      "text": "  -v \"${LIBKRUN_SOURCE:-/tmp/jitk-spike/libkrun}:/source:ro\" \\"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 9,
+      "text": "  -e LIBKRUN_SOURCE=/source -e JITK_VMM_BUILD=/tmp/jitk-01/r3/linux \\"
+    },
+    {
+      "path": "vmm/build-linux.sh",
+      "line": 10,
+      "text": "  -e CARGO_HOME=/tmp/jitk-01/r3/cargo-linux \\"
+    },
+    {
+      "path": "vmm/build.py",
+      "line": 13,
+      "text": "OUT = Path(os.environ.get(\"JITK_VMM_BUILD\", f\"/tmp/jitk-01/r3/{SYSTEM.lower()}\"))"
+    },
+    {
+      "path": "vmm/sandbox/tests/escape.rs",
+      "line": 24,
+      "text": "        \"read-sibling\" => libc::open(c(\"/tmp/jitk-07/r3/outside.txt\").as_ptr(), libc::O_RDONLY) as i64,"
+    },
+    {
+      "path": "vmm/sandbox/tests/escape.rs",
+      "line": 25,
+      "text": "        \"write-tmp\" => libc::open(c(\"/tmp/jitk-07-escape-write\").as_ptr(), libc::O_CREAT | libc::O_WRONLY, 0o600) as i64,"
+    },
+    {
+      "path": "vmm/sandbox/tests/run-escape.sh",
+      "line": 17,
+      "text": "  rm -f /tmp/jitk-07-escape-write"
+    },
+    {
+      "path": "vmm/tests/build-guests.py",
+      "line": 7,
+      "text": "OUT = Path(os.environ.get(\"JITK_TEST_IMAGES\", \"/tmp/jitk-01/r3/images\"))"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "line": 15,
+      "text": "parser.add_argument(\"--binary\", default=f\"/tmp/jitk-01/r3/{platform.system().lower()}/jitk-vmm\")"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "line": 16,
+      "text": "parser.add_argument(\"--images\", default=\"/tmp/jitk-01/r3/images\")"
+    },
+    {
+      "path": "vmm/tests/check.py",
+      "line": 17,
+      "text": "parser.add_argument(\"--profile\", default=\"/tmp/jitk-01/r3/jitk.sbbin\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 14,
+      "text": "p.add_argument(\"--binary\", default=\"/tmp/jitk-01/r3/linux/jitk-vmm\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 16,
+      "text": "p.add_argument(\"--base\", default=\"/tmp/jitk-07/kvm\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 20,
+      "text": "out = Path(\"/tmp/jitk-01/r3/nested\")"
+    },
+    {
+      "path": "vmm/tests/nested-kvm.py",
+      "line": 27,
+      "text": "shutil.copytree(\"/tmp/jitk-01/r3/images\", work / \"images\", dirs_exist_ok=True)"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "line": 14,
+      "text": "p.add_argument(\"--binary\", default=\"/tmp/jitk-01/r3/darwin/jitk-vmm\")"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "line": 15,
+      "text": "p.add_argument(\"--profile\", default=\"/tmp/jitk-01/r3/jitk.sbbin\")"
+    },
+    {
+      "path": "vmm/tests/sandbox-bench.py",
+      "line": 16,
+      "text": "p.add_argument(\"--image\", default=\"/tmp/jitk-01/r3/images/first.bin\")"
+    }
+  ],
+  "patch_deltas": [
+    {
+      "path": "grow/results/canonical-r3/manifest.diff",
+      "added": 49,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/canonical-r3/tx-ppoll/manifest.diff",
+      "added": 19,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/canonical-r3/tx-rt_sigaction/manifest.diff",
+      "added": 17,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/canonical-r3/tx-rt_sigprocmask/manifest.diff",
+      "added": 17,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/canonical-replay/tx-ppoll/manifest.diff",
+      "added": 19,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/canonical-replay/tx-rt_sigprocmask/manifest.diff",
+      "added": 17,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/fallback-dev/tx-ppoll/manifest.diff",
+      "added": 19,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/fallback-dev2/manifest.diff",
+      "added": 49,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/fallback-dev2/tx-ppoll/manifest.diff",
+      "added": 19,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/fallback-dev2/tx-rt_sigaction/manifest.diff",
+      "added": 17,
+      "removed": 2
+    },
+    {
+      "path": "grow/results/fallback-dev2/tx-rt_sigprocmask/manifest.diff",
+      "added": 17,
+      "removed": 2
+    },
+    {
+      "path": "vmm/patches/control-rx.diff",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "vmm/patches/libkrun-robustness.diff",
+      "added": 154,
+      "removed": 88
+    },
+    {
+      "path": "vmm/patches/native-build.diff",
+      "added": 1,
+      "removed": 3
+    },
+    {
+      "path": "vmm/patches/thread-hook.diff",
+      "added": 16,
+      "removed": 1
+    }
+  ]
+}

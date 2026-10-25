@@ -1,0 +1,5 @@
+G1 PASS: native IRQ-only WFI, 1000 exchanges, 0.00 CPU-s / 10.01s (0.01s resolution)
+G2 PASS: 30 x 64 concurrent calls, reverse replies, real virtio-console
+kernel=/tmp/jitk-02/r2/kernel.bin
+launcher=/tmp/jitk-02/r2/launch
+sha256=3d64c3dd05494f879cb2ffbe6c520730d2e6d14baea9b75961688d7a69d510b8

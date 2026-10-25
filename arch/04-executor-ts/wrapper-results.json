@@ -1,0 +1,44 @@
+[
+  {
+    "label": "literal wrapper, no shim",
+    "status": 1,
+    "stdout": "",
+    "stderr": "ReferenceError: could not load module filename 'cloudflare:workers'\n\n"
+  },
+  {
+    "label": "unmodified wrapper with Workers/timer shims",
+    "status": 0,
+    "stdout": "{\"result\":2,\"logs\":[\"count 2\"]}\n",
+    "stderr": ""
+  },
+  {
+    "label": "unmodified wrapper + shims in static musl qjs",
+    "status": 0,
+    "stdout": "{\"result\":2,\"logs\":[\"count 2\"]}\n",
+    "stderr": ""
+  },
+  {
+    "label": "native qjs globals",
+    "status": 0,
+    "stdout": "{\"Promise\":\"function\",\"Proxy\":\"function\",\"setTimeout\":\"undefined\",\"console\":\"object\",\"btoa\":\"undefined\",\"atob\":\"undefined\",\"fetch\":\"undefined\",\"TextEncoder\":\"undefined\"}\n",
+    "stderr": ""
+  },
+  {
+    "label": "binary wrapper without base64 globals",
+    "status": 0,
+    "stdout": "{\"error\":\"'btoa' is not defined\",\"logs\":[]}\n",
+    "stderr": ""
+  },
+  {
+    "label": "binary wrapper with codec shims",
+    "status": 0,
+    "stdout": "{\"result\":[0,127,255],\"logs\":[]}\n",
+    "stderr": ""
+  },
+  {
+    "label": "static musl binary wrapper with codec shims",
+    "status": 0,
+    "stdout": "{\"result\":[0,127,255],\"logs\":[]}\n",
+    "stderr": ""
+  }
+]

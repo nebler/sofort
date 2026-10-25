@@ -1,0 +1,88 @@
+{
+  "python_syntax": "PASS",
+  "runtime_fixtures": {
+    "lua": {
+      "strace": 30,
+      "no_vdso": 30,
+      "guest_names": 14,
+      "stable_names": true
+    },
+    "sqlite": {
+      "strace": 30,
+      "no_vdso": 30,
+      "guest_names": 13,
+      "stable_names": true
+    },
+    "sqlite-time-random": {
+      "strace": 30,
+      "no_vdso": 30,
+      "guest_names": 16,
+      "stable_names": true
+    }
+  },
+  "fallback_profiles": [
+    {
+      "binary": "lua",
+      "profile": "guard-denied",
+      "n": 30,
+      "application_pass": 30,
+      "injected_per_run": [
+        1
+      ],
+      "strict_equivalence": false
+    },
+    {
+      "binary": "lua",
+      "profile": "signals-enosys",
+      "n": 30,
+      "application_pass": 30,
+      "injected_per_run": [
+        3
+      ],
+      "strict_equivalence": false
+    },
+    {
+      "binary": "sqlite",
+      "profile": "guard-denied",
+      "n": 30,
+      "application_pass": 30,
+      "injected_per_run": [
+        1
+      ],
+      "strict_equivalence": false
+    },
+    {
+      "binary": "sqlite",
+      "profile": "signals-enosys",
+      "n": 30,
+      "application_pass": 30,
+      "injected_per_run": [
+        2
+      ],
+      "strict_equivalence": false
+    },
+    {
+      "binary": "lua",
+      "profile": "combined",
+      "n": 30,
+      "application_pass": 30,
+      "injected_per_run": [
+        4
+      ],
+      "strict_equivalence": false
+    },
+    {
+      "binary": "sqlite",
+      "profile": "combined",
+      "n": 30,
+      "application_pass": 30,
+      "injected_per_run": [
+        3
+      ],
+      "strict_equivalence": false
+    }
+  ],
+  "loc_budget": 5750,
+  "boot_launches": 180,
+  "r2_lines": 63
+}

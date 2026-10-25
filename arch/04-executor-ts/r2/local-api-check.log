@@ -1,0 +1,124 @@
+{
+  "selection": "local-qjs UNSAFE development only",
+  "loadBefore": "2:35  up  3:49, 2 users, load averages: 54.73 81.63 55.91",
+  "loadAfter": "2:35  up  3:49, 2 users, load averages: 54.73 81.63 55.91",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 1,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "maxOutstanding": 64,
+      "count": 64,
+      "result": {
+        "result": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}

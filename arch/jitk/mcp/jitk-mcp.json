@@ -1,0 +1,7 @@
+{
+  "timeoutMs": 10000,
+  "warm": 2,
+  "maxLive": 8,
+  "providers": ["./providers/demo.mjs"],
+  "resources": "./resources"
+}

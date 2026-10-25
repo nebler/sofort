@@ -1,0 +1,39 @@
+{
+  "uptime": "2:36  up  3:49, 2 users, load averages: 29.51 71.19 53.39",
+  "machine": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "cpu": "arm",
+  "n": 30,
+  "jitk": {
+    "ready_marker": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/02-guest-kernel/r2/READY",
+    "source": "/tmp/jitk-02/r2",
+    "argv": [
+      "/tmp/jitk-09/r2-jitk/host",
+      "/tmp/jitk-09/r2-jitk/kernel.bin"
+    ],
+    "host_sha256": "b9e470a07795e1d350a90b9c8822c8f18713d595b4098bdb0dce10ff480feeed",
+    "kernel_sha256": "00040cfa7187a3cf25fb7cf8f01d973bf41f4f9179b4fc382dcb890b34d13edf"
+  },
+  "sampling_seconds": 0.00025,
+  "tool_latency_ms": 5,
+  "worker_sha256": "fcd845e16819858d25ea06b999d231f97b4248fc21bc135b50e5a87dbdda57f8",
+  "snapshot_index": {
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "manifests": [
+      {
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "digest": "sha256:8d56bc8f3392c61b7aac544506b531c669c90ed9d95d74e82def75f79bba3d1b",
+        "size": 760,
+        "annotations": {
+          "org.opencontainers.image.ref.name": "base",
+          "dev.hyperlight.snapshot.cpu.vendor": "0x61",
+          "dev.hyperlight.snapshot.arch": "aarch64",
+          "dev.hyperlight.snapshot.hypervisor": "hvf"
+        }
+      }
+    ]
+  },
+  "measurement": "request/spawn to validated done; cold cleanup separately; page cache warm",
+  "memory": "external proc_pid_rusage V0, observed max including entire resident process, no HVF kernel allocation attribution",
+  "full_g5": true
+}

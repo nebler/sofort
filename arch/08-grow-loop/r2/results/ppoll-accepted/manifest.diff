@@ -1,0 +1,41 @@
+diff --git a/syscalls.manifest.json b/syscalls.manifest.json
+index 3f9940d..56b5b22 100644
+--- a/syscalls.manifest.json
++++ b/syscalls.manifest.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": 2,
+-  "surface_version": "0.1.0",
++  "surface_version": "0.2.0",
+   "scope": "G4 bounded ABI probes; inherited handlers unverified",
+   "verified_contracts": [
+     {
+@@ -16,6 +16,27 @@
+         "full_qjs_trace": "UNVERIFIED",
+         "fuzz": "UNVERIFIED"
+       }
++    },
++    {
++      "nr": 73,
++      "name": "ppoll",
++      "status": "restricted",
++      "domain": "Implement pub fn call(a: &[usize]) -> isize for Linux AArch64 ppoll.\nImport ONLY super::{copyin,copyout,writable,now_ns,poll_fd} (unused subset okay).\nHelpers: copyin(addr,&mut [u8])->Result<(),isize>; copyout(addr,&[u8])->Result<(),isize>;\nwritable(addr,len)->bool; now_ns()->u64 monotonic;\npoll_fd(fd:i32,events:i16)->i16 returns revents: fd<0 ignored, fd0 POLLIN if readable,\nfd1/2 POLLOUT, other fd POLLNVAL. These helpers are controller-owned checked copies.\nABI a[0]=pollfd*, a[1]=nfds, a[2]=timespec* or 0 for infinite wait,\na[3]=sigmask* (only NULL supported; nonzero returns -38), a[4]=sigsetsize.\nEach pollfd is little endian [i32 fd,i16 events,i16 revents]. Support nfds 0..16,\nreturn -22 for larger. Validate/copy array and writable output before polling.\ntimespec signed i64 seconds/nanoseconds, negatives or nsec>=1e9 => -22;\ninvalid pointers => -14. Use checked arithmetic for timeout/deadline (-22 overflow).\nPreserve fd/events; replace every revents (clear stale bits). Return count of fds with\nnonzero revents, not bits. Negative fds ignored. Ready call returns immediately.\nIf no ready fds, loop until monotonic deadline, or indefinitely for NULL timeout.\nOn timeout copy back zero revents, return 0. No signal handling, no timeout mutation.\nUse fixed stack buffers <=128 bytes. No alloc, unsafe, raw pointer use, external crates,\ninclude macros, inline assembly, filesystem, tools, tests or imports beyond helpers.\nThis is intentionally polling and not a parking implementation. No tool calls needed.\n",
++      "source_sha256": "78cf1f7ceaa2318a5adc8247b1d0fc0dcaf0ab1bd984a8f54f45b89c685420df",
++      "tests": {
++        "native_linux": "PASS",
++        "fresh_vm_differential": "PASS",
++        "repeat_fresh_vms": 30,
++        "full_qjs_trace": "UNVERIFIED",
++        "fuzz": "UNVERIFIED"
++      }
+     }
+-  ]
++  ],
++  "architecture": "aarch64-linux",
++  "adapter": "g4-v2",
++  "kernel_sha256": "f8fe401cf31189544fb401b8030e7573cdc599083734e9e674d1a9d661168fa6",
++  "elf_sha256": "6a4c9c5d0f1f48f128c8fcd9d620c9b408d6ddc48cd9d666b1352b537ec466d3",
++  "fixture_sha256": "7633c17506d0ee3fe8d26113c02da71946913e68ac2bbbf47dad451a4992befd",
++  "oracle_image": "sha256:458a19a1e97ca3687507732f8e11cc5054f97cf4989fd796f4cc9faddba08f67",
++  "receipt_sha256": "611653a151151dc0407e0c740c1aed433c0a09cb711f35301fe0c9cae4280989"
+ }

@@ -1,0 +1,17 @@
+{
+  "source": "arch/02-guest-kernel (round 1)",
+  "selection_reason": "r2/READY absent at copy time",
+  "copied_files": {
+    "Cargo.toml": "205f1d978068c43fa31ead3ddde6ab722a2af445d3dc429f5a7e8e4d7a109565",
+    "Cargo.lock": "07c5829466b06094ed7bd6c7420d91644d3e0e571edce916afdd4e3aba5ca7cf",
+    "link.ld": "037768740a678ce6091edfb7f65c4feeec8b8108450cc43c6ba6161bc481a936",
+    "host.c": "d566f706ec3e58b065f2704162965d3c4e95dc9bd673d65c13c8422b15ec54ce",
+    "src/boot.S": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27",
+    "src/console.rs": "b666a7b5e99b7005000483ad13af3aeba4674fa7e136a8f8a3a6a10d881ef176",
+    "src/fdt.rs": "02dfb7fb2da69518c68fd4c829b6315ad3268186329dab9b4438d78e66fb5c89",
+    "src/main.rs": "17ccc657dc2c8857fa7ec293f3cc83b0323da2f7698bbf073b65b09326b85d5f",
+    "src/mmu.rs": "4ff8544972cd0625fa3eee07cbd76b6ea8ebfe6493b51443feaea20e320dee59",
+    "src/user.rs": "77e1b24cfcbee4e17e60c67a1a0a852b621d8a3aaa2b6da45e3f30ee00fb3cba",
+    "src/vectors.S": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738"
+  }
+}

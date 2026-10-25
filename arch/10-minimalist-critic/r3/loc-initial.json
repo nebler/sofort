@@ -1,0 +1,947 @@
+{
+  "measured_utc": "2026-10-24T01:04:26.046759+00:00",
+  "method": "physical lines incl blanks/comments; owned source/build scripts and tests; no vendor/generated/data/output; fixtures excluded",
+  "components": {
+    "bench": {
+      "implementation/build": 25,
+      "test": 0,
+      "total": 25
+    },
+    "bench/hyperlight": {
+      "implementation/build": 479,
+      "test": 38,
+      "total": 517
+    },
+    "docs": {
+      "implementation/build": 102,
+      "test": 0,
+      "total": 102
+    },
+    "executor": {
+      "implementation/build": 476,
+      "test": 223,
+      "total": 699
+    },
+    "grow": {
+      "implementation/build": 1756,
+      "test": 47,
+      "total": 1803
+    },
+    "integration": {
+      "implementation/build": 30,
+      "test": 0,
+      "total": 30
+    },
+    "kernel": {
+      "implementation/build": 1571,
+      "test": 0,
+      "total": 1571
+    },
+    "linux": {
+      "implementation/build": 464,
+      "test": 0,
+      "total": 464
+    },
+    "protocol": {
+      "implementation/build": 497,
+      "test": 88,
+      "total": 585
+    },
+    "vmm": {
+      "implementation/build": 182,
+      "test": 21,
+      "total": 203
+    }
+  },
+  "total": 5999,
+  "files": [
+    {
+      "path": "Makefile",
+      "component": "integration",
+      "kind": "implementation/build",
+      "lines": 30,
+      "sha256": "97a6f7b8ba8c0b86f35ffb44b15d82bd9bf7da6e01a1d6f14133cb9ec1418bc8"
+    },
+    {
+      "path": "bench/hyperlight/adapter-test.ts",
+      "component": "bench/hyperlight",
+      "kind": "test",
+      "lines": 38,
+      "sha256": "f803af17f30f3070db18512c24fe4bad610857638dff08db3573192ab531b38d"
+    },
+    {
+      "path": "bench/hyperlight/backend.ts",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 85,
+      "sha256": "692a13be62b6b904001c6eb1e1f1222c1789e9aafc2a679a2f4a54f262771ef7"
+    },
+    {
+      "path": "bench/hyperlight/bench.py",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 210,
+      "sha256": "5c5875971a11200c5fd00778db5b1bf93778de82da706cdd4ae578ea12ce2ad4"
+    },
+    {
+      "path": "bench/hyperlight/bootstrap.js",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 36,
+      "sha256": "31fbefabe58520d32baac2856c368fd9c3adf31ce335eb6a09125fd29785aa61"
+    },
+    {
+      "path": "bench/hyperlight/build.sh",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 14,
+      "sha256": "84fbe6e043746e0fdc7dcb9d37e7e30407f7ea02a794f572f32d0894d52feb24"
+    },
+    {
+      "path": "bench/hyperlight/load_linux.rs",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "c59ed6c043b70806181b5975f4d2ded130931dd394fd6331c4ed950e8c9e31bc"
+    },
+    {
+      "path": "bench/hyperlight/watchdog.py",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 10,
+      "sha256": "a0d3d29bea2baf3385b53f7fb266e97efa3610ee6986c7a6d08bc0524d8f6f7b"
+    },
+    {
+      "path": "bench/hyperlight/worker.rs",
+      "component": "bench/hyperlight",
+      "kind": "implementation/build",
+      "lines": 109,
+      "sha256": "2f4b9a03a8b0b29841a74ca7a1e04b8b8a61629c6da273fef396b42b3e2fde9a"
+    },
+    {
+      "path": "bench/watchdog.py",
+      "component": "bench",
+      "kind": "implementation/build",
+      "lines": 25,
+      "sha256": "9239fc141fe069bb6bfc263e32dd9702defe35c21da98eb72154fc4c46e648fe"
+    },
+    {
+      "path": "docs/count-loc.py",
+      "component": "docs",
+      "kind": "implementation/build",
+      "lines": 74,
+      "sha256": "872fae7d8a3f10c5915b56707490dc47413f80ef910ce0258ec12b775c1badbf"
+    },
+    {
+      "path": "docs/delegate.py",
+      "component": "docs",
+      "kind": "implementation/build",
+      "lines": 28,
+      "sha256": "67607d8f7fb2775b02be4e25a5e96a084df7835104c9b5a9769e4887991064f6"
+    },
+    {
+      "path": "executor/api-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 32,
+      "sha256": "b6170907ffdeaad9fc13df173be9b9f7d11ffc298a504dd57d8eb25d64198d3a"
+    },
+    {
+      "path": "executor/backend.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 132,
+      "sha256": "8519e2ad07c335396fbc7d3c80893587f614ec0eccf5bed1ec44ecc7a30e8458"
+    },
+    {
+      "path": "executor/code.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760"
+    },
+    {
+      "path": "executor/codec.mjs",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 33,
+      "sha256": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e"
+    },
+    {
+      "path": "executor/executor.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 154,
+      "sha256": "8ab391aed514127e9e48a65f19cea5194133d793ae5657457d36d4e0cc529009"
+    },
+    {
+      "path": "executor/policy-adapter.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 18,
+      "sha256": "5ac2dfd50250ff2552015449b85e2a527ca57924f639d8a4b1d918d3f146eaf1"
+    },
+    {
+      "path": "executor/pool-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 55,
+      "sha256": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede"
+    },
+    {
+      "path": "executor/pool.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 86,
+      "sha256": "6cdc680b72ae6c0d451f49c973410d503e7de98ab26cab0d4dce18e631383c0b"
+    },
+    {
+      "path": "executor/providers.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 25,
+      "sha256": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161"
+    },
+    {
+      "path": "executor/transport-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc"
+    },
+    {
+      "path": "executor/type-proof.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 13,
+      "sha256": "b24f3a25525f1a4b55f25b0fe4f9fe1863e5b10fa89b3375f61ed25f13d33ffc"
+    },
+    {
+      "path": "executor/upstream.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 5,
+      "sha256": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf"
+    },
+    {
+      "path": "executor/verify.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 45,
+      "sha256": "2d174d86d8b83f87ae9be5d66228dbc07901af9dc61a67aafcab2133507e947e"
+    },
+    {
+      "path": "executor/watchdog-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "54d30cbc5f8f95411fd0e1219aa2b8ef23a229338cf2e295a66ddc35f82b5112"
+    },
+    {
+      "path": "executor/watchdog.py",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 10,
+      "sha256": "a0d3d29bea2baf3385b53f7fb266e97efa3610ee6986c7a6d08bc0524d8f6f7b"
+    },
+    {
+      "path": "executor/wrapper-conformance.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 40,
+      "sha256": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5"
+    },
+    {
+      "path": "grow/adapters.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 120,
+      "sha256": "7a9b2b149b7a6cbf400a75b074d3d4f7d734f7d6f1635c1317c63526db177a10"
+    },
+    {
+      "path": "grow/fallback-kernel/build.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 24,
+      "sha256": "33c074bbbcaf34f2a17295e4f7ff00f913f0498c48cb2d97ddb452f9cbe68807"
+    },
+    {
+      "path": "grow/fallback-kernel/link.ld",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 14,
+      "sha256": "037768740a678ce6091edfb7f65c4feeec8b8108450cc43c6ba6161bc481a936"
+    },
+    {
+      "path": "grow/fallback-kernel/src/boot.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27"
+    },
+    {
+      "path": "grow/fallback-kernel/src/console.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 180,
+      "sha256": "bc78c4b13b29712b41a9ba122267502cccf55b697281eebeb42a423a15d88192"
+    },
+    {
+      "path": "grow/fallback-kernel/src/fdt.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 62,
+      "sha256": "02dfb7fb2da69518c68fd4c829b6315ad3268186329dab9b4438d78e66fb5c89"
+    },
+    {
+      "path": "grow/fallback-kernel/src/main.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 53,
+      "sha256": "1e748fce43d7d54f6dc0f8d80b149778e94b18f1446e08b6629b4d986edea3be"
+    },
+    {
+      "path": "grow/fallback-kernel/src/mmu.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 108,
+      "sha256": "4ff8544972cd0625fa3eee07cbd76b6ea8ebfe6493b51443feaea20e320dee59"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/brk.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "76c3f246363fc2804245392c5ca896932b012dd5bf7934ef6518d2bb779568b8"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/clock_gettime.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 22,
+      "sha256": "3943467acb504d83525fd51fed69cf2d9f6bf18710c1da586e60ed3257241c6b"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/close.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "1cfd7c5821d7d1f09923302fdc064509f4030a7307086668d188099e28bb76bf"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/exit.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "febcf82f03a41e790dbfcfd2595e242933e11295f3984d9f329e03a95a41c862"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/exit_group.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "1faffa9cf5084026afb81d61d8d8b1ffe817b8ca6a35d5f41efe28324b084d6a"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/getcwd.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "8a7ba884423caa4ad543652cc10453f778474e93b8271667e64c850ebd420e06"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/ioctl.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/lseek.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "850dfe5ff6002a75d4aba718d8d84002d0adb0712110cd5ec8496c6d8974c776"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/mmap.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 26,
+      "sha256": "77ddb547c94e05183328ce2956e9a02be8a12b07709e6b5d4789ce9f5b9b29c9"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/munmap.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 22,
+      "sha256": "593e652c90d941f690b3222a4a8b3c8ca94e0510ac9fbd8cd623fac1bb6fcef5"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/openat.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "5bd67fb64e76569a8f0d6157146ffdf71942d17a3e803d2a27027f57b9bfcd81"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/ppoll.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 88,
+      "sha256": "78cf1f7ceaa2318a5adc8247b1d0fc0dcaf0ab1bd984a8f54f45b89c685420df"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/read.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 19,
+      "sha256": "7049b23900b234f07ae8cb1831c3c5c52d56aeb87289b0e9f283b2d0e1a4cc7b"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/readlinkat.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "db1d5b332f9d40ed12c695a2f4634c49872e5649650e926788287cb90f6ddb21"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/readv.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 41,
+      "sha256": "c029c3807cd48300e73a893effd9d62c0ee25527a516f528ac85f6f37c004216"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/set_tid_address.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "1f118c8b79b496f3f1aab1ab80484ded1e4385657e0658af0ccf066cf74486e8"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/write.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "e1b121e77ea2a5aa9c64865906a4471a31f72a0e03b22e24a10f4335c99c5358"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls/writev.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 41,
+      "sha256": "7e86d45a8af4de3b4104b0296f6c3dc76343e67d8ce1a0d1d87cd2ac7c83f80c"
+    },
+    {
+      "path": "grow/fallback-kernel/src/syscalls.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 34,
+      "sha256": "480d562ef88d9196eb9bef499d44182ea50e8050b57638cfb5a2828d74bf4212"
+    },
+    {
+      "path": "grow/fallback-kernel/src/trace.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 70,
+      "sha256": "42031c6d2898297d955f0fbebf6a682e3adb7bed72781d3347be7034fcc5dd9c"
+    },
+    {
+      "path": "grow/fallback-kernel/src/user.rs",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 218,
+      "sha256": "daa967c35045ef5a0d0d59fe93d8d24101006a1bb12f641611207102b7ebbbe3"
+    },
+    {
+      "path": "grow/fallback-kernel/src/vectors.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 120,
+      "sha256": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738"
+    },
+    {
+      "path": "grow/handler_tests.rs",
+      "component": "grow",
+      "kind": "test",
+      "lines": 26,
+      "sha256": "d3be5dc9a5a2ce7ae897cec86f57d807461b276834a46432ef32f975fbfeb59d"
+    },
+    {
+      "path": "grow/ioctl.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 38,
+      "sha256": "6f1653fcfef28f65f90ab7745891b75df46c78f8a3e806380419117972854a2f"
+    },
+    {
+      "path": "grow/oracle/build-ng.sh",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 12,
+      "sha256": "f98a0d57a57530f5729a530951a4c95500095ff8aa45683f31e95917509a346e"
+    },
+    {
+      "path": "grow/oracle/entry.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 32,
+      "sha256": "30f1c44e57d5d91f330313d9abe6c41ba37d0d05cbb89edee55b0352c7cae904"
+    },
+    {
+      "path": "grow/oracle/no-vdso.c",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 43,
+      "sha256": "78d840bb432db095e1ef49db64bd085b77bcbfcb58becd86f617507f7e6dcfab"
+    },
+    {
+      "path": "grow/oracle/normalize.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 75,
+      "sha256": "e7dbb25346792058cd108e56b856b753b41a216aad9863768c1c1730f076dd68"
+    },
+    {
+      "path": "grow/oracle/run.sh",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 16,
+      "sha256": "760136fe8f8fae61f038e698cf251778b97d3514790206a5f499580e2b3d24a5"
+    },
+    {
+      "path": "grow/oracle/suite.py",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 16,
+      "sha256": "26162bea42a45faa4dccfd952d038bb82db5b4efcc4204ffcc16b0442a364d2e"
+    },
+    {
+      "path": "grow/oracle/test_normalize.py",
+      "component": "grow",
+      "kind": "test",
+      "lines": 21,
+      "sha256": "31916b77b614448e10932fe5eca1533a20936207c876a8986c6428361d608f0c"
+    },
+    {
+      "path": "grow/ppoll.S",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 91,
+      "sha256": "7633c17506d0ee3fe8d26113c02da71946913e68ac2bbbf47dad451a4992befd"
+    },
+    {
+      "path": "grow/probe.ld",
+      "component": "grow",
+      "kind": "implementation/build",
+      "lines": 11,
+      "sha256": "422f0b75defc00cb89a25e3aae37e030d9ecf31d167d67b4454b8cf0287aaf43"
+    },
+    {
+      "path": "kernel/bootstrap.js",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 123,
+      "sha256": "563c24147a4977243d82e897f12888fbbb5e09ffab3874ceb0377796dfe28d96"
+    },
+    {
+      "path": "kernel/link.ld",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "ff153a55d5f100c8e629618dd85e188b50fee73d4f453c6054635d0af35a390d"
+    },
+    {
+      "path": "kernel/src/boot.S",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "926db5b34d53684ae9e22155e7062b7f74a84b4dd5a236032b5c88add007aa27"
+    },
+    {
+      "path": "kernel/src/console.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 239,
+      "sha256": "f2c9df293672d042c7a06a28fd8932199fc9373bcf739a06fbf1742ad590e221"
+    },
+    {
+      "path": "kernel/src/fdt.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 116,
+      "sha256": "db250c95af0ec523bbd13fda72e50f011224ea412e93c6ab70c7d5b8bf217401"
+    },
+    {
+      "path": "kernel/src/main.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 67,
+      "sha256": "b9d51b26fa7ea88662d6b7807a7ca2cc0311c8f9586a281abd8a7a7e03b82961"
+    },
+    {
+      "path": "kernel/src/mmu.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 109,
+      "sha256": "287f6ac8fc976f4b3742dd53d801a63d2725387467fe45bf9ec5d872589efe44"
+    },
+    {
+      "path": "kernel/src/syscalls/brk.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 15,
+      "sha256": "e79b38d0ed7a8893c9f98ab5c87d2c97888c9e6ac63a5c59c6620dcb7297cf31"
+    },
+    {
+      "path": "kernel/src/syscalls/clock_gettime.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 20,
+      "sha256": "00ccd2816f3094fba9c053a8946f6d2e991bf90a9aa42a9da81dedaf21ae176e"
+    },
+    {
+      "path": "kernel/src/syscalls/close.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "1d3cf4c66b8e35e296eeeaf1d7900add85ab83b2c4c545c1cf1eebc56029e991"
+    },
+    {
+      "path": "kernel/src/syscalls/exit.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "d77e33fb67382dd803d5e7d5a214160420157120ea8757c94c94fecef10f84ff"
+    },
+    {
+      "path": "kernel/src/syscalls/exit_group.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "d77e33fb67382dd803d5e7d5a214160420157120ea8757c94c94fecef10f84ff"
+    },
+    {
+      "path": "kernel/src/syscalls/getcwd.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "733dce273bd66cd3bf6f3e61d3c67474806ca143e09ac0a31294472af3794ea6"
+    },
+    {
+      "path": "kernel/src/syscalls/ioctl.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "path": "kernel/src/syscalls/lseek.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "c888734050f9c0b50c828a529fb40d7b973f11ca1878ea857eae5245a5fccc58"
+    },
+    {
+      "path": "kernel/src/syscalls/mmap.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 37,
+      "sha256": "4a617c0e2ed02a51c4185b7d306a2b95d0a2d1b9ea8bb10ccd9fab88cd8ada9c"
+    },
+    {
+      "path": "kernel/src/syscalls/mremap.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "ff64eb00788102f53d2579fcdfdc56d999c895c1cb27da11f4100610ac645059"
+    },
+    {
+      "path": "kernel/src/syscalls/munmap.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 22,
+      "sha256": "003651167f569b9c3f2c4fb785b602d89299e4b986d15c26396774591d8b280f"
+    },
+    {
+      "path": "kernel/src/syscalls/openat.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "7e67f42d3cef65b4904d0b1af3724748c099dfb732897c0d6b6f36890d107b77"
+    },
+    {
+      "path": "kernel/src/syscalls/ppoll.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 88,
+      "sha256": "78cf1f7ceaa2318a5adc8247b1d0fc0dcaf0ab1bd984a8f54f45b89c685420df"
+    },
+    {
+      "path": "kernel/src/syscalls/read.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 19,
+      "sha256": "4339ff744a36293ed8faa03caec69946020d8f2c77b1b9b6c9dff83b69505cd4"
+    },
+    {
+      "path": "kernel/src/syscalls/readlinkat.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "60d78cf0f3c63e3f71d6addf0a87c29d67d448e31e1c03eca9e2beefbe6f48a1"
+    },
+    {
+      "path": "kernel/src/syscalls/readv.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "bf90628c677b449262fc950474164cd5e3e8b2670bbf7f54b406050e00207873"
+    },
+    {
+      "path": "kernel/src/syscalls/set_tid_address.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "3aad5050e00ac62779e51b0df0cbbe7012cf9507e1b050c92101327676b28477"
+    },
+    {
+      "path": "kernel/src/syscalls/write.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 17,
+      "sha256": "acc80064579ff442945c63dd5580ebb196674b8914f4c1b415a64f93dcdbe5d9"
+    },
+    {
+      "path": "kernel/src/syscalls/writev.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 52,
+      "sha256": "56a1ec095a5d2cb97d1189d6452f28339a3835c12bdb8f63928f401996cf83aa"
+    },
+    {
+      "path": "kernel/src/syscalls.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 34,
+      "sha256": "480d562ef88d9196eb9bef499d44182ea50e8050b57638cfb5a2828d74bf4212"
+    },
+    {
+      "path": "kernel/src/trace.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 70,
+      "sha256": "42031c6d2898297d955f0fbebf6a682e3adb7bed72781d3347be7034fcc5dd9c"
+    },
+    {
+      "path": "kernel/src/user.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 151,
+      "sha256": "a74e00355656b35f1b3d8018fa7d6de852a6e63f60131bff2a5c71406cda259c"
+    },
+    {
+      "path": "kernel/src/vectors.S",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 120,
+      "sha256": "4d414155b9bc3e468dddad891e32a5f7987fe3332b2ecb06f77f82c92b792738"
+    },
+    {
+      "path": "kernel/src/wait.rs",
+      "component": "kernel",
+      "kind": "implementation/build",
+      "lines": 99,
+      "sha256": "297ceff60a426be9301a01c8099ef263dd013f1a43abd7f9a642cc6082caf87f"
+    },
+    {
+      "path": "linux/build-linux.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 35,
+      "sha256": "2fef79cc42ad3356a71667ec595aecc5f02308ddbffb2a7babd3df746174384e"
+    },
+    {
+      "path": "linux/docker-build.sh",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 11,
+      "sha256": "b102f0cad00b48e0a491c9bb398c673c1dda62c4c1d2d60a0fad32baf40fb72e"
+    },
+    {
+      "path": "linux/guest/bad-sysreg.S",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 7,
+      "sha256": "45252d52ce35d37ca181afea185e7ea2b4a893f97b5b98da991fa40369d5e697"
+    },
+    {
+      "path": "linux/guest/console_avail_oob.S",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 56,
+      "sha256": "9f4cdeb1d7ae51d6044c28d59750f3f66dd5c763f17a9af5727ed57e20729cc7"
+    },
+    {
+      "path": "linux/guest/link.ld",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 2,
+      "sha256": "fefbc19b18f0124da259b7703d6cb4b827bde69b07e62570ef2719408afc8cff"
+    },
+    {
+      "path": "linux/guest/mmio-halfword.S",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 8,
+      "sha256": "89a7fcfc9bbf023657414c5c1361094ca4d3ffe92b793950085007584c71c558"
+    },
+    {
+      "path": "linux/guest/rtc_oob_read.S",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 27,
+      "sha256": "c202cc7673e0baab2ce61b0b95cc34e12b4a6b03a66ea0cb70e61e163721ffee"
+    },
+    {
+      "path": "linux/guest/unknown-hvc.S",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 8,
+      "sha256": "b797e0854c04b8af4c60f185d72588303e854f8a5bac462da72bde54fe6f02d8"
+    },
+    {
+      "path": "linux/guest/unknown-smc.S",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 8,
+      "sha256": "e6173ab4ff7166376533316a55201db55cab4c824932c6c67b0c415edcae189f"
+    },
+    {
+      "path": "linux/main.rs",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 103,
+      "sha256": "0369ffc2294c052a84b76a1f1d41c0d69eabffd17f45dde278788adfcb07eee0"
+    },
+    {
+      "path": "linux/security/confine.rs",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 153,
+      "sha256": "20fcb3cdc06452b08542e5aa734e92095b6c05113db15bb14864b8bbcb285cd6"
+    },
+    {
+      "path": "linux/spawn-cg.c",
+      "component": "linux",
+      "kind": "implementation/build",
+      "lines": 46,
+      "sha256": "abff20bbadf7f90a317ec7fda17d618618f15abca20adf53062f15d102579569"
+    },
+    {
+      "path": "protocol/bench-dispatcher.mjs",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 32,
+      "sha256": "e92d8e07e89b3310b785e461e852b466c7853bee9d06e7894b1598031053b48b"
+    },
+    {
+      "path": "protocol/bootstrap.js",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 134,
+      "sha256": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280"
+    },
+    {
+      "path": "protocol/build.mjs",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 6,
+      "sha256": "a05756e9205293cc82049a2699f23266e009855e2426b68b1eb92803c4eb71b8"
+    },
+    {
+      "path": "protocol/dispatcher.ts",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 229,
+      "sha256": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f"
+    },
+    {
+      "path": "protocol/make-vectors.py",
+      "component": "protocol",
+      "kind": "implementation/build",
+      "lines": 96,
+      "sha256": "371106f1e8c6ba931407f4f94a5eeb84e09dc7f73bdd7f56c1d4fb64c36c544f"
+    },
+    {
+      "path": "protocol/test.mjs",
+      "component": "protocol",
+      "kind": "test",
+      "lines": 88,
+      "sha256": "72e199dec6f3283a00d4452900d1f7373a5028958d54eba1de0674a3d46d9b31"
+    },
+    {
+      "path": "vmm/build.py",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 59,
+      "sha256": "84dabb5944afe5284714a3a37afc7950d3e29e16bd33596406edeb5fc3a43cab"
+    },
+    {
+      "path": "vmm/src/confinement.rs",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 24,
+      "sha256": "c6ff8e9f67b234fa1cd2221ea66557d1365b0d47ed3621559aaaf1c103c0f0c5"
+    },
+    {
+      "path": "vmm/src/main.rs",
+      "component": "vmm",
+      "kind": "implementation/build",
+      "lines": 99,
+      "sha256": "2b81583843bad91ac46a8d2b04fa7b8b2212a4e69d2320de6ad7b591c320514c"
+    },
+    {
+      "path": "vmm/tests/build-guests.py",
+      "component": "vmm",
+      "kind": "test",
+      "lines": 21,
+      "sha256": "78c3e5fbfda66e024bba3fc96a906866a1df1b6a38ea61aa1f7fbdd15738cdd6"
+    }
+  ],
+  "identical_source_groups": [
+    [
+      "bench/hyperlight/watchdog.py",
+      "executor/watchdog.py"
+    ],
+    [
+      "grow/fallback-kernel/src/boot.S",
+      "kernel/src/boot.S"
+    ],
+    [
+      "grow/fallback-kernel/src/syscalls/ioctl.rs",
+      "kernel/src/syscalls/ioctl.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/syscalls/ppoll.rs",
+      "kernel/src/syscalls/ppoll.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/syscalls.rs",
+      "kernel/src/syscalls.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/trace.rs",
+      "kernel/src/trace.rs"
+    ],
+    [
+      "grow/fallback-kernel/src/vectors.S",
+      "kernel/src/vectors.S"
+    ],
+    [
+      "kernel/src/syscalls/exit.rs",
+      "kernel/src/syscalls/exit_group.rs"
+    ]
+  ]
+}

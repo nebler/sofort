@@ -1,0 +1,3 @@
+{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/run-20261024T141804/lua-before-0/kernel-bf2ee838539e8d92e8d7f93f2a8c1863f6fb4b58a00ce0e824f22a9621818298.bin", "sha256": "bf2ee838539e8d92e8d7f93f2a8c1863f6fb4b58a00ce0e824f22a9621818298", "bytes": 991272}
+   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-uazgolh7/kernel)
+    Finished `release` profile [optimized] target(s) in 0.79s

@@ -1,0 +1,215 @@
+{
+  "measured_utc": "2026-10-24T03:05:05.743609+00:00",
+  "load": [
+    140.845703125,
+    98.13330078125,
+    72.92236328125
+  ],
+  "method": "physical lines incl blanks/comments; owned source/build scripts/config and test code; no vendor/generated/data/output; owned fixture code included; executor/policy belongs to 07; .cache contains tested external binaries/snapshot outputs and is excluded",
+  "files": [
+    {
+      "path": "executor/Makefile",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 3,
+      "sha256": "d46455cf588a6af6dfb2824c2e176e277e65d4ff331a190bae550f50d603ebde"
+    },
+    {
+      "path": "executor/api-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 32,
+      "sha256": "d4c3f0140ee90c877be3343a0fb3091d451c4f1ddea034a7b725d4365f5d8088"
+    },
+    {
+      "path": "executor/backend.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 197,
+      "sha256": "95418b50da55029dfc6c7ab39f3fbc024d00e1b359b8e5aa1fadb86076fe1531"
+    },
+    {
+      "path": "executor/breakdown.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 37,
+      "sha256": "b706534560d1b766875ebcf0903993a29f266fc82c4b055b1c7f5c5d0eb0516e"
+    },
+    {
+      "path": "executor/build.mjs",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "57d6024c41d02e99171c385c36c9d874412679c13cc7f3acf940b5ffc9c7092c"
+    },
+    {
+      "path": "executor/certify.mjs",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 26,
+      "sha256": "4f6ccb76d117ebb60e82341ccae62aef42f6fb029d16c993c30852d35b101c64"
+    },
+    {
+      "path": "executor/code.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 13,
+      "sha256": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760"
+    },
+    {
+      "path": "executor/codec.mjs",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 33,
+      "sha256": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e"
+    },
+    {
+      "path": "executor/examples/demo.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 29,
+      "sha256": "eca67aaf1375c37122b9bb3be261b1bf7816e67f3d251486ba4aada721754acc"
+    },
+    {
+      "path": "executor/executor.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 164,
+      "sha256": "5989c3b2aa6f3e69bb5050679a278df7013d2325e3d3260814029eb93a0ee968"
+    },
+    {
+      "path": "executor/fixtures/ack-peer.mjs",
+      "component": "executor",
+      "kind": "test",
+      "lines": 6,
+      "sha256": "8696aaf17f2c4ed2159ccaf03a4ad86698a4f44437daa5743dffcf7d0ed992c0"
+    },
+    {
+      "path": "executor/fixtures/protocol-peer.mjs",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "9e0ca4b0c0c2638af9d99d27bbd10b237d92fb852bc2e36cf8e63fd9c18c413c"
+    },
+    {
+      "path": "executor/hyperlight-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 24,
+      "sha256": "767c57c9797e8fb6a1bf0239b498c0da666dc23be9211222ff9d430ee27ca718"
+    },
+    {
+      "path": "executor/policy-adapter.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 16,
+      "sha256": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d"
+    },
+    {
+      "path": "executor/policy-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 49,
+      "sha256": "4b04f5f0c013587403c4ebc046b1f36cbffa82518cbccd652dcdd381f4f9823f"
+    },
+    {
+      "path": "executor/pool-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 55,
+      "sha256": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede"
+    },
+    {
+      "path": "executor/pool.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 108,
+      "sha256": "f3db05ac0058814093729c4bcc0513d26ea705e6799df0a986b541faac8acdcb"
+    },
+    {
+      "path": "executor/providers.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 25,
+      "sha256": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161"
+    },
+    {
+      "path": "executor/resolve-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 14,
+      "sha256": "617bccb3714e3f12053a0495ffd43de782397e6976408fa4f9653fb1e481a240"
+    },
+    {
+      "path": "executor/run.sh",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 27,
+      "sha256": "e17c9810eaa1023ad80fa387454b3982399ba5a3fbb2ae33ef8984485539a213"
+    },
+    {
+      "path": "executor/sandbox-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 12,
+      "sha256": "24863ae7f8ff7390e96666f41677770500382e7d457f4e4cacb3a830299d2159"
+    },
+    {
+      "path": "executor/select-backend.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 45,
+      "sha256": "60ec4e805799c5aba614205c7ed1aa42d515e7066099a28641b8251fee489fe0"
+    },
+    {
+      "path": "executor/transport-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 19,
+      "sha256": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc"
+    },
+    {
+      "path": "executor/type-proof.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 13,
+      "sha256": "b24f3a25525f1a4b55f25b0fe4f9fe1863e5b10fa89b3375f61ed25f13d33ffc"
+    },
+    {
+      "path": "executor/upstream.ts",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 5,
+      "sha256": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf"
+    },
+    {
+      "path": "executor/verify.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 45,
+      "sha256": "3d419ed3970a4316e4a30b3f190fa02b106370204bc54730055b2e0d3829729d"
+    },
+    {
+      "path": "executor/watchdog-check.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 23,
+      "sha256": "8594e037329c962eea26c0469140af4f95e0330ef6ea919e548ea625da12a863"
+    },
+    {
+      "path": "executor/watchdog.py",
+      "component": "executor",
+      "kind": "implementation/build",
+      "lines": 66,
+      "sha256": "206b9d37ef9a0dea0a9c45829101f3fa50b47df3fbaa84d1324e4cb44a93e014"
+    },
+    {
+      "path": "executor/wrapper-conformance.ts",
+      "component": "executor",
+      "kind": "test",
+      "lines": 40,
+      "sha256": "b1c230b28a4ff6bb5d34c91a2620ced769596e627021d143e8aceb240baa9ce5"
+    }
+  ],
+  "total": 1158
+}

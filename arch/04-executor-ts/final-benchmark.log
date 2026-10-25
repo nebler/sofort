@@ -1,0 +1,42 @@
+
+> 04-executor-ts@1.0.0 demo
+> npm run build && node build/demo.js
+
+
+> 04-executor-ts@1.0.0 build
+> tsc --noEmit false --outDir build && cp guest.mjs build/guest.mjs
+
+{"warm":0,"tools":false,"result":{"result":2,"logs":[]}}
+{"warm":0,"tools":true,"result":{"result":2,"logs":[]}}
+{"warm":4,"tools":false,"result":{"result":2,"logs":[]}}
+{"warm":4,"tools":true,"result":{"result":2,"logs":[]}}
+{
+  "warm0-no-tool": {
+    "n": 100,
+    "median": 10.514250000000004,
+    "p90": 18.685084000000018,
+    "min": 3.4777500000000146,
+    "max": 23.617332999999917
+  },
+  "warm0-one-tool": {
+    "n": 100,
+    "median": 8.78079200000002,
+    "p90": 16.174166000000014,
+    "min": 3.4687920000001213,
+    "max": 39.31470900000022
+  },
+  "warm4-no-tool": {
+    "n": 100,
+    "median": 2.8142499999999018,
+    "p90": 6.986417000000074,
+    "min": 0.670875000000251,
+    "max": 13.732208999999784
+  },
+  "warm4-one-tool": {
+    "n": 100,
+    "median": 3.7324579999999514,
+    "p90": 9.494375000000218,
+    "min": 0.7395419999998012,
+    "max": 28.054459000000406
+  }
+}

@@ -1,0 +1,79 @@
+KVMCHECK: crw------- 1 root root 10, 232 Jan  1  1970 /dev/kvm lsm=
+emptyns rc=0
+== F1 confined kk
+S
+F1 rc=0
+== F2 confined probe
+S
+virtio @000000000a002000 DeviceID=0000000000000003
+virtio-count=0000000000000001
+F2 rc=0
+== F3 confined park+input (console threads spawned AFTER seccomp; clone3->ENOSYS->clone)
+S
+FDT magic=00000000d00dfeed bytes=0000000000000554
+node 
+  compatible=linux,dummy-virt|
+node cpus
+node cpu@0
+  compatible=arm,arm-v8|
+  reg=0000000000000000
+node memory@80000000
+  reg=00000000800000000000000004000000
+node chosen
+  bootargs=|
+node intc
+  compatible=arm,gic-v3|
+  reg=0000000009ff000000000000000100000000000009fd00000000000000020000
+node timer
+  compatible=arm,armv8-timer|
+node apb-pclk
+  compatible=fixed-clock|
+node psci
+  compatible=arm,psci-0.2|
+node rtc@a001000
+  compatible=arm,pl031|arm,primecell|
+  reg=000000000a0010000000000000001000
+node virtio_mmio@a002000
+  compatible=virtio,mmio|
+  reg=000000000a0020000000000000001000
+virtio @000000000a002000 DeviceID=0000000000000003
+virtio-count=0000000000000001
+F3 rc=0
+== F4 landlock probe
+P landlock_abi=6 read_passwd=13 read_image=0 write_tmp=13 connect=13
+S
+F4 rc=0
+Bad system call
+EVIL openat rc=0
+Bad system call
+EVIL socket rc=0
+Bad system call
+EVIL execve rc=0
+Bad system call
+EVIL ioctl rc=0
+Bad system call
+EVIL kvm-create-vm rc=0
+Bad system call
+EVIL mmap-exec rc=0
+EVIL clone3 survived rc=-1 errno=Function not implemented (os error 38)
+EVIL clone3 rc=0
+Bad system call
+EVIL kill rc=0
+Bad system call
+EVIL vcpu-role-eventfd rc=0
+Bad system call
+EVIL console-role-ioctl rc=0
+EVIL-STATUS openat status=159
+EVIL-STATUS socket status=159
+== cgroup memory.max enforcement: 32 MiB cap vs 64 MiB guest touching RAM is guest-side; check VMM fits
+S
+8MiB-cap rc=0
+low 0 high 0 max 0 oom 0 oom_kill 0 oom_group_kill 0 
+slot0 memory.peak=0
+Traceback (most recent call last):
+  File [35m"/work/bench.py"[0m, line [35m1[0m, in [35m<module>[0m
+    import json, os, random, statistics, subprocess, time, sys
+[1;35mModuleNotFoundError[0m: [35mNo module named 'statistics'[0m
+INIT-DONE
+[    4.669725] sysrq: Power Off
+[    4.680908] reboot: Power down

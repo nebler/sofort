@@ -1,0 +1,8 @@
+Round 3 owner 09: pinned offline Rust build/sign/snapshot PASS; strict TS --noEmit PASS;
+13/13 canonical-dispatcher adapter checks PASS; fair 25-cell + 5-memory smoke PASS.
+Native 06 descriptor: adapter.json. Extended matrix: bench.py (imports 06 controller).
+/tmp/jitk-09/node-real only; no protocol copy; panic=abort; external watchdog.
+Final evidence: 900/900 PASS (750 latency, 150 parked memory), n=30 per cell;
+0/900 load gates passed (load1 31.06–159.16), explicitly contended.
+6/6 integrated HL executor conformance; 20/20 strict executor smoke cells.
+R3 verdict and 15 paired bootstrap comparisons complete; all owned workers reaped.

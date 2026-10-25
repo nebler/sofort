@@ -1,0 +1,1 @@
+std.out.puts('FIRST\n');std.out.flush();print('hi');std.out.puts('{"t":"ready","v":1}\n');std.out.flush();

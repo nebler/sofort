@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/05-scale-fleet/r2/linux-kit/bench.py", line 162, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/05-scale-fleet/r2/linux-kit/bench.py", line 150, in main
+    d['kvm']=kvm_probe()
+             ~~~~~~~~~^^
+  File "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/05-scale-fleet/r2/linux-kit/bench.py", line 84, in kvm_probe
+    fd=os.open('/dev/kvm',os.O_RDWR|os.O_CLOEXEC)
+FileNotFoundError: [Errno 2] No such file or directory: '/dev/kvm'

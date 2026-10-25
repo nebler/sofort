@@ -1,0 +1,54 @@
+--- a/src/utils/src/lib.rs
++++ b/src/utils/src/lib.rs
+@@ -28,6 +28,7 @@
+ pub mod rand;
+ #[cfg(target_os = "linux")]
+ pub mod signal;
++pub mod thread_hook;
+ pub mod sized_vec;
+ pub mod sm;
+ pub mod syscall;
+--- /dev/null
++++ b/src/utils/src/thread_hook.rs
+@@ -0,0 +1,9 @@
++//! jitk: per-thread confinement hook (Firecracker-style per-role seccomp).
++//! The embedder registers one fn before build(); every libkrun thread that can
++//! touch guest-controlled state calls `enter(role)` before its first guest-driven action.
++use std::sync::OnceLock;
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum Role { Vcpu, ConsoleRx, ConsoleTx }
++static HOOK: OnceLock<fn(Role)> = OnceLock::new();
++pub fn set(f: fn(Role)) -> bool { HOOK.set(f).is_ok() }
++pub fn enter(role: Role) { if let Some(f) = HOOK.get() { f(role) } }
+--- a/src/libkrun/src/vmm/linux/vstate.rs
++++ b/src/libkrun/src/vmm/linux/vstate.rs
+@@ -1318,6 +1318,7 @@
+         let vcpu_thread = thread::Builder::new()
+             .name(format!("fc_vcpu {}", self.cpu_index()))
+             .spawn(move || {
++                utils::thread_hook::enter(utils::thread_hook::Role::Vcpu);
+                 self.init_thread_local_data()
+                     .expect("Cannot cleanly initialize vcpu TLS.");
+ 
+--- a/src/devices/src/virtio/console/port.rs
++++ b/src/devices/src/virtio/console/port.rs
+@@ -149,6 +149,7 @@
+             thread::Builder::new()
+                 .name("console port".into())
+                 .spawn(move || {
++                    utils::thread_hook::enter(utils::thread_hook::Role::ConsoleRx);
+                     process_rx(
+                         mem, rx_queue, interrupt, input, control, port_id, stopfd, stop,
+                     )
+@@ -158,7 +159,10 @@
+ 
+         let tx_thread = output.map(|output| {
+             let stop = stop.clone();
+-            thread::spawn(move || process_tx(mem, tx_queue, interrupt, output, stop))
++            thread::spawn(move || {
++                utils::thread_hook::enter(utils::thread_hook::Role::ConsoleTx);
++                process_tx(mem, tx_queue, interrupt, output, stop)
++            })
+         });
+ 
+         self.state = PortState::Active {

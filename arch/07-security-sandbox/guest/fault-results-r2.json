@@ -1,0 +1,72 @@
+{
+ "kk/jitk-vmm": {
+  "rc": 0,
+  "ms": 56.9,
+  "stderr": ""
+ },
+ "kk/jitk-vmm-patched": {
+  "rc": 0,
+  "ms": 343.7,
+  "stderr": ""
+ },
+ "unknown-hvc/jitk-vmm": {
+  "rc": -6,
+  "ms": 24.4,
+  "stderr": "thread 'fc_vcpu 0' (737821) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=57005\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+ },
+ "unknown-hvc/jitk-vmm-patched": {
+  "rc": 0,
+  "ms": 16.1,
+  "stderr": ""
+ },
+ "unknown-smc/jitk-vmm": {
+  "rc": -6,
+  "ms": 56.8,
+  "stderr": "thread 'fc_vcpu 0' (737854) panicked at src/hvf/src/lib.rs:652:20:\nUnexpected val=57005\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+ },
+ "unknown-smc/jitk-vmm-patched": {
+  "rc": 0,
+  "ms": 53.5,
+  "stderr": ""
+ },
+ "mmio-halfword/jitk-vmm": {
+  "rc": -6,
+  "ms": 58.1,
+  "stderr": "thread 'fc_vcpu 0' (737881) panicked at src/hvf/src/lib.rs:746:30:\nunsupported mmio len=2\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+ },
+ "mmio-halfword/jitk-vmm-patched": {
+  "rc": 0,
+  "ms": 61.8,
+  "stderr": ""
+ },
+ "bad-sysreg/jitk-vmm": {
+  "rc": -6,
+  "ms": 72.8,
+  "stderr": "thread 'fc_vcpu 0' (737907) panicked at src/hvf/src/lib.rs:839:18:\nunexpected exception: 0x20\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+ },
+ "bad-sysreg/jitk-vmm-patched": {
+  "rc": 75,
+  "ms": 84.4,
+  "stderr": ""
+ },
+ "console_avail_oob/jitk-vmm": {
+  "rc": -6,
+  "ms": 46.7,
+  "stderr": "e.rs:482:49:\ncalled `Result::unwrap()` on an `Err` value: GuestMemory(InvalidGuestAddress(GuestAddress(281474976710658)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+ },
+ "console_avail_oob/jitk-vmm-patched": {
+  "rc": 0,
+  "ms": 106.6,
+  "stderr": ""
+ },
+ "rtc_oob_read/jitk-vmm": {
+  "rc": 0,
+  "ms": 22.3,
+  "stderr": ""
+ },
+ "rtc_oob_read/jitk-vmm-patched": {
+  "rc": 0,
+  "ms": 88.0,
+  "stderr": ""
+ }
+}
