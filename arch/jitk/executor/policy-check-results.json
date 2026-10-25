@@ -1,8 +1,8 @@
 {
   "policySource": "/Users/noah/code/sofort/arch/jitk/executor/policy/policy.mjs",
   "selection": "integrated jitk / confined VMM / current kernel",
-  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
-  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
+  "loadBefore": "22:44  up 2 days, 57 mins, 1 user, load averages: 8.93 10.37 9.71",
+  "loadAfter": "22:44  up 2 days, 57 mins, 1 user, load averages: 8.93 10.37 9.71",
   "rows": [
     {
       "name": "clean run may send",

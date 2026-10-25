@@ -1,10 +1,10 @@
 {
-  "image": "dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin",
-  "manifest": "dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.json",
-  "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6",
+  "image": "dist/kernel-75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732.bin",
+  "manifest": "dist/kernel-75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732.json",
+  "sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732",
   "bytes": 2924584,
   "ram_mib": 32,
-  "created_utc": "2026-10-24T12:13:51.076496+00:00",
+  "created_utc": "2026-10-25T21:43:25.924141+00:00",
   "guest_loc": 1488,
   "build_rs_loc": 57,
   "gates": {
@@ -14,13 +14,14 @@
     "packer": "7/7",
     "grow_contract": "4/4; both exit slots exercised",
     "clocks": "30/30; origin error <1ms",
-    "fs_differential": "probe/Lua/QuickJS 30/30 byte-identical vs Linux ro bind mount; bootstrap 3/3; test_fs corruption PASS"
+    "fs_differential": "probe/Lua/QuickJS 30/30 byte-identical vs Linux ro bind mount; bootstrap 3/3; test_fs corruption PASS",
+    "grow_r7": "fstat 30/30 + pread64 30/30 fresh VMs; mutants 7/7 rejected; SQLite corpus 20/20 exact"
   },
   "test_host": "integrated VMM v2 (JITK_VMM_BINARY)",
-  "test_host_sha256": "2e3cfb02b0ab7cba9fc460694863ca45d6c2b0800f37dcf44d642c5a560e4e77",
-  "note": "Read-only resource archive (RESULTS-fs.md). Default image has an empty /. Kernel make test passed on this image with the raw-direct-load VMM; G1/G2 rerun PASS. Contended functional evidence.",
-  "previous_image": "dist/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin",
+  "test_host_sha256": "23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616",
+  "note": "R7: adds fstat/pread64 (grow/RESULTS-R7-grow.md: named-target acceptance, 13/13 mutants rejected, SQLite 10/10 exact, executor certification PASS). Lead re-ran kernel make test on merged main: PASS. Contended functional evidence.",
+  "previous_image": "dist/kernel-6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6.bin",
   "verification_manifest": "syscalls.manifest.json",
-  "verification_sha256": "8224c221d4787bf14cead105ab22e508ea366f161009495c9c05cfc2c5c6d07d",
+  "verification_sha256": "0bd2615d1a1b88fdb0c8ddcffad1bb1dff55f00e55ec165560cde254d1f55c36",
   "owner_patch_sha256": "d0ceaf3c8ee0120b8baccc886d368bd7d002fc446c2e214347737c7219a24eb6"
 }

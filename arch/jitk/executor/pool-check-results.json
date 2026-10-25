@@ -1,6 +1,6 @@
 {
-  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 32.05 42.44 47.98",
-  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 29.88 41.82 47.72",
+  "loadBefore": "22:44  up 2 days, 57 mins, 1 user, load averages: 9.19 10.46 9.73",
+  "loadAfter": "22:44  up 2 days, 57 mins, 1 user, load averages: 9.19 10.46 9.73",
   "rows": [
     {
       "name": "G1 denies missing / >=2% idle evidence",

@@ -1,10 +1,10 @@
 {
   "artifacts": {
-    "/Users/noah/code/sofort/.inputs/hyperlight/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
-    "/Users/noah/code/sofort/.inputs/hyperlight/snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09"
+    "/tmp/jitk-09/adapter-target/release/r2-worker": "60e83328a0ac6dd13aa21c60b76148a60adf94733e46331d54adaedeb9ed229c",
+    "/tmp/jitk-09/r3-snapshot/index.json": "a5b7ccf1561aa452b6e0e1edd9ab2e499bbd58f085ae06b4203b2ba272e3fa09"
   },
-  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
-  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
+  "loadBefore": "22:44  up 2 days, 57 mins, 1 user, load averages: 8.93 10.37 9.71",
+  "loadAfter": "22:44  up 2 days, 57 mins, 1 user, load averages: 8.93 10.37 9.71",
   "rows": [
     {
       "name": "result",

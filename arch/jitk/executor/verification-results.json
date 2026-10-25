@@ -1,107 +1,107 @@
 {
   "selection": "integrated jitk / confined VMM / current kernel",
-  "loadBefore": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
-  "loadAfter": "9:53  up 1 day, 12:07, 1 user, load averages: 28.13 41.26 47.49",
+  "loadBefore": "22:44  up 2 days, 57 mins, 1 user, load averages: 9.10 10.42 9.72",
+  "loadAfter": "22:44  up 2 days, 57 mins, 1 user, load averages: 9.10 10.42 9.72",
   "rows": [
     {
       "name": "exact requested demo",
       "ok": true,
-      "ms": 6.495125000000002
+      "ms": 5.722290999999984
     },
     {
       "name": "binary codec roundtrip",
       "ok": true,
-      "ms": 11.80291600000001
+      "ms": 12.968291000000022
     },
     {
       "name": "async fanout and UTF8",
       "ok": true,
-      "ms": 11.400374999999997
+      "ms": 10.28645800000001
     },
     {
       "name": "capture console + provider prelude closure",
       "ok": true,
-      "ms": 10.650499999999994
+      "ms": 8.994208999999955
     },
     {
       "name": "deny has no side effect",
       "ok": true,
-      "ms": 10.167833000000002
+      "ms": 9.144583000000011
     },
     {
       "name": "approval is fail closed",
       "ok": true,
-      "ms": 9.602374999999995
+      "ms": 8.780124999999998
     },
     {
       "name": "approved call executes once",
       "ok": true,
-      "ms": 9.411916999999988
+      "ms": 9.190791999999988
     },
     {
       "name": "provenance accumulates across calls",
       "ok": true,
-      "ms": 9.964249999999993
+      "ms": 9.231792000000041
     },
     {
       "name": "CPU infinite loop SIGKILL",
       "ok": true,
-      "ms": 31.099417000000017
+      "ms": 31.535417000000052
     },
     {
       "name": "AbortSignal kills awaiting guest",
       "ok": true,
-      "ms": 31.859290999999985
+      "ms": 33.35900000000004
     },
     {
       "name": "tool that never settles cannot defeat deadline",
       "ok": true,
-      "ms": 31.136083000000042
+      "ms": 31.79325
     },
     {
       "name": "fresh process per execute",
       "ok": true,
-      "ms": 19.219750000000033
+      "ms": 18.497957999999983
     },
     {
       "name": "unknown inherited method denied",
       "ok": true,
-      "ms": 9.408457999999996
+      "ms": 8.276667000000032
     },
     {
       "name": "sanitized names and collisions",
       "ok": true,
-      "ms": 9.201250000000016
+      "ms": 8.720708000000002
     },
     {
       "name": "generated types + host validation",
       "ok": true,
-      "ms": 22.580790999999977
+      "ms": 22.180875000000015
     },
     {
       "name": "TanStack driver on actual stripped body",
       "ok": true,
-      "ms": 24.136082999999985
+      "ms": 21.827249999999992
     },
     {
       "name": "TanStack memory mismatch fails explicitly",
       "ok": true,
-      "ms": 0.3485409999999547
+      "ms": 0.2620409999999538
     },
     {
       "name": "TanStack createCodeModeTool integration",
       "ok": true,
-      "ms": 12.91662500000001
+      "ms": 12.163333000000023
     },
     {
       "name": "bounded log capture (v1 truncates/drops)",
       "ok": true,
-      "ms": 39.56133299999999
+      "ms": 34.157375
     },
     {
       "name": "warm pool capacity and single use",
       "ok": true,
-      "ms": 10.225166000000002
+      "ms": 9.63295800000003
     }
   ]
 }

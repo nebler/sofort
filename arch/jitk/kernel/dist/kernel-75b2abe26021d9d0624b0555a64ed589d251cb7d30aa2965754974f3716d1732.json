@@ -19,7 +19,7 @@
       "nr": 25,
       "name": "fcntl",
       "registered": true,
-      "sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c"
+      "sha256": "e1661894336eb460574b5d46b64d2f04eec331c3990de816625ca9242e37ba04"
     },
     {
       "nr": 29,
@@ -37,7 +37,7 @@
       "nr": 57,
       "name": "close",
       "registered": true,
-      "sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc"
+      "sha256": "29556ef36f73d73da28c418d4783e81ce6b536e14e5b6c7afc3e00a07b6c7466"
     },
     {
       "nr": 61,
@@ -49,37 +49,37 @@
       "nr": 62,
       "name": "lseek",
       "registered": true,
-      "sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59"
+      "sha256": "01755c9e0b1e5a602a0602f53b7450cf2bb7a5059a225a6c3e97e543d3a5af0b"
     },
     {
       "nr": 63,
       "name": "read",
       "registered": true,
-      "sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759"
+      "sha256": "07b3f10781fa319bf8fc324453c27c2b87507efc27b7ef5aa6d66da2dbd880d5"
     },
     {
       "nr": 64,
       "name": "write",
       "registered": true,
-      "sha256": "6fbe0b0047b2afcabc83761e4ed7dd2acb0661d586fe97486b68fb66cf5c17aa"
+      "sha256": "aa80e7025de858eb91a5899ba2c08d3bff22e9bc25851afb9742610407b854e0"
     },
     {
       "nr": 65,
       "name": "readv",
       "registered": true,
-      "sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6"
+      "sha256": "255c87eb0e615f4f52445b2e3390f4aa370e8f8b6fa414f30ac78c79eb7b73ef"
     },
     {
       "nr": 66,
       "name": "writev",
       "registered": true,
-      "sha256": "40ff0972f289eaca6ec4a5a026033049f6764485b98b87276ec2fef1fbe44cff"
+      "sha256": "26ab92cf12307120e4ef6320f6be7bd27dd58b0439cc741c8cb6a01746b8c866"
     },
     {
       "nr": 67,
       "name": "pread64",
       "registered": true,
-      "sha256": "29a5852a6b0bbaba11054bc0096f441b453727fa9d333d726f3cfc15ba8803f9"
+      "sha256": "75d908e6b1d067a6163c4abddac53380191e5f9a3ad606d05af0c0af1507f7bd"
     },
     {
       "nr": 73,
@@ -103,19 +103,19 @@
       "nr": 80,
       "name": "fstat",
       "registered": true,
-      "sha256": "10c1ededa296b47f31d2c320b2487cfdc2eff23dc6dbe8d90212f5878022121b"
+      "sha256": "7cf4c18f9203af081edc9e4baadbfe3bb5f60db92b3789479a76096c084e74d4"
     },
     {
       "nr": 93,
       "name": "exit",
       "registered": true,
-      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+      "sha256": "5da1af0e62feb388446df824dad22109f15bad164b63ed61cc0b2db459666843"
     },
     {
       "nr": 94,
       "name": "exit",
       "registered": true,
-      "sha256": "3fb3c4e7bd049da7ab16d9d858ce4fe6b70b9346f102fb0da144b07cfa1b1dcd"
+      "sha256": "5da1af0e62feb388446df824dad22109f15bad164b63ed61cc0b2db459666843"
     },
     {
       "nr": 96,
@@ -205,7 +205,7 @@
   ],
   "verification": {
     "schema": 3,
-    "version": 5,
+    "version": 6,
     "scope": "R3 verified contracts; inherited ABI unverified",
     "contracts": [
       {
@@ -271,7 +271,7 @@
       {
         "nr": 57,
         "name": "close",
-        "source_sha256": "2365411a4bb159d25550bf6a03d3dbd8adce19acd85cc07f5c70f4b8a9c0d6bc",
+        "source_sha256": "29556ef36f73d73da28c418d4783e81ce6b536e14e5b6c7afc3e00a07b6c7466",
         "status": "restricted",
         "domain": "read-only resource archive: fd 0-2 no-op; archive fds 3..63",
         "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -286,7 +286,7 @@
       {
         "nr": 62,
         "name": "lseek",
-        "source_sha256": "ff29ad4e17cad300e60a5a7634f181cddbce2fd59cf89b670bbe589637537c59",
+        "source_sha256": "01755c9e0b1e5a602a0602f53b7450cf2bb7a5059a225a6c3e97e543d3a5af0b",
         "status": "restricted",
         "domain": "read-only resource archive: archive fds SEEK_SET/CUR/END; console ESPIPE",
         "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -301,7 +301,7 @@
       {
         "nr": 63,
         "name": "read",
-        "source_sha256": "13580cffa3a9fbe625902ff37ec819f2f88ec762e4b75a28401a10400117f759",
+        "source_sha256": "07b3f10781fa319bf8fc324453c27c2b87507efc27b7ef5aa6d66da2dbd880d5",
         "status": "restricted",
         "domain": "read-only resource archive: archive fds; console fd0 unchanged",
         "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -316,7 +316,7 @@
       {
         "nr": 65,
         "name": "readv",
-        "source_sha256": "1270315070272c7d44457ae2f5b8a297daa073ba729d12ce64b1372df55a9df6",
+        "source_sha256": "255c87eb0e615f4f52445b2e3390f4aa370e8f8b6fa414f30ac78c79eb7b73ef",
         "status": "restricted",
         "domain": "read-only resource archive: archive fds fill iovecs in order; console fd0 unchanged",
         "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -346,7 +346,7 @@
       {
         "nr": 25,
         "name": "fcntl",
-        "source_sha256": "2ee05c4faf26fdd0f293675f867e2e6b6c5e13d041f54c5807184777babbe37c",
+        "source_sha256": "e1661894336eb460574b5d46b64d2f04eec331c3990de816625ca9242e37ba04",
         "status": "restricted",
         "domain": "read-only resource archive: F_GETFD/F_SETFD only, else EINVAL",
         "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -391,7 +391,7 @@
       {
         "nr": 80,
         "name": "fstat",
-        "source_sha256": "10c1ededa296b47f31d2c320b2487cfdc2eff23dc6dbe8d90212f5878022121b",
+        "source_sha256": "7cf4c18f9203af081edc9e4baadbfe3bb5f60db92b3789479a76096c084e74d4",
         "status": "restricted",
         "domain": "immutable archive descriptors and console pipe metadata; 128-byte aarch64 stat; checked fd/output; fixed archive uid/gid/times and exact size/blocks",
         "oracle": "native Linux arm64 in pinned jitk-oracle:08; independent raw-syscall probe and unchanged SQLite corpus",
@@ -440,7 +440,7 @@
       {
         "nr": 67,
         "name": "pread64",
-        "source_sha256": "29a5852a6b0bbaba11054bc0096f441b453727fa9d333d726f3cfc15ba8803f9",
+        "source_sha256": "75d908e6b1d067a6163c4abddac53380191e5f9a3ad606d05af0c0af1507f7bd",
         "status": "restricted",
         "domain": "immutable archive regular files; signed offset and overflow checks, EOF/short reads, checked output, unchanged fd position; console ESPIPE",
         "oracle": "native Linux arm64 in pinned jitk-oracle:08; independent raw-syscall probe and unchanged SQLite corpus",
@@ -493,7 +493,21 @@
         "evidence_sha256": "f9210d5cbaba842e099cf779ce5ce5a68c078f0da752be5820c4cf4990dd3cea"
       }
     ],
-    "kernel_delta_lines": 6
+    "kernel_delta_lines": 6,
+    "ring_amendment": {
+      "scope": "Source digests refreshed for transport-ring-only fd branches. Historical semantic/mutation gates apply to the byte-identical default image; native fd/stream evidence is separate.",
+      "handlers": [
+        "close",
+        "lseek",
+        "read",
+        "readv",
+        "fcntl",
+        "fstat",
+        "pread64"
+      ],
+      "default_image_sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732",
+      "native_evidence": "../shard/RESULTS-R7-bytes.md"
+    }
   },
-  "verification_sha256": "47c0eb98bc04a96c7ef9da04c1dd3bec9bf3d1ac914fadc4f4c21bb736f1d1b8"
+  "verification_sha256": "0bd2615d1a1b88fdb0c8ddcffad1bb1dff55f00e55ec165560cde254d1f55c36"
 }

@@ -2,12 +2,12 @@
   "selection": "integrated jitk / confined VMM / current kernel",
   "integrated": true,
   "host": {
-    "path": "/Users/noah/code/sofort/.inputs/jitk-vmm-darwin",
-    "sha256": "6b4b9d6a80cb972a7c8e2f4ebda27950435d3dbc2c55ac2252ffe76d3e7038f8"
+    "path": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+    "sha256": "23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616"
   },
   "image": {
     "path": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
-    "sha256": "6c00a278cff95058241967655810dcf0cc9cfa1158a38630d818f26c3b07cbc6"
+    "sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732"
   },
   "gate": {
     "idleCorePercent": 0,
