@@ -1,0 +1,99 @@
+{
+  "policySource": "/Users/noah/.t3/worktrees/sofort/t3-9f21ceb8/arch/jitk/executor/policy/policy.mjs",
+  "selection": "integrated jitk / confined VMM / current kernel",
+  "loadBefore": "22:24  up 2 days, 38 mins, 1 user, load averages: 7.52 8.08 8.41",
+  "loadAfter": "22:24  up 2 days, 38 mins, 1 user, load averages: 7.52 8.08 8.41",
+  "rows": [
+    {
+      "name": "clean run may send",
+      "ok": true
+    },
+    {
+      "name": "private read returns value",
+      "ok": true
+    },
+    {
+      "name": "minted credentials revoked",
+      "ok": true
+    },
+    {
+      "name": "credentials absent from result",
+      "ok": true
+    },
+    {
+      "name": "output redaction applied",
+      "ok": true
+    },
+    {
+      "name": "private read then send needs approval",
+      "ok": true
+    },
+    {
+      "name": "unapproved write has no effect",
+      "ok": true
+    },
+    {
+      "name": "approved exact call executes",
+      "ok": true
+    },
+    {
+      "name": "private read to nonendorsable egress denied",
+      "ok": true
+    },
+    {
+      "name": "public browsing stays approval free",
+      "ok": true
+    },
+    {
+      "name": "untrusted output then writes needs approval",
+      "ok": true
+    },
+    {
+      "name": "labels reset for a fresh VM/run",
+      "ok": true
+    },
+    {
+      "name": "schema denied",
+      "ok": true
+    },
+    {
+      "name": "schema deny mints no credentials",
+      "ok": true
+    },
+    {
+      "name": "tool errors returned",
+      "ok": true
+    },
+    {
+      "name": "credentials revoked on exception",
+      "ok": true
+    },
+    {
+      "name": "credentials minted with exact tool scope",
+      "ok": true
+    },
+    {
+      "name": "per-call idempotency keys unique",
+      "ok": true
+    },
+    {
+      "name": "denial budget kills run",
+      "ok": true
+    },
+    {
+      "name": "policy call budget kills run",
+      "ok": true
+    },
+    {
+      "name": "none-read computation does not taint",
+      "ok": true
+    },
+    {
+      "name": "no credentials left live at end",
+      "ok": true
+    }
+  ],
+  "minted": 15,
+  "revoked": 15,
+  "live": 0
+}

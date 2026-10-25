@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Offline kvm-dev corpus; never a runtime helper. Run under bench.lock."""
 import hashlib, io, json, os, pathlib, struct, subprocess, tarfile, time
-ROOT = pathlib.Path('/home/dev/r7-bytes')
+ROOT = pathlib.Path(os.environ.get('JITK_NATIVE_ROOT', '/home/dev/r7-bytes')).resolve()
 CENSUS = pathlib.Path('/home/dev/r6-census')
 RAW = ROOT / 'raw'
 REAL = ROOT / 'arch/jitk/shard/target/release/real'

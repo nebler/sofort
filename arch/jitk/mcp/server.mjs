@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// jitk MCP server: tool `execute` runs code-mode JS in a fresh parked microVM;
+// jitk MCP server: execute runs code-mode JS; run uses native Linux ring VMs.
 // resources expose a markdown directory. stdio by default; `--http PORT` serves
 // Streamable HTTP (stateless, JSON responses) on 127.0.0.1.
 import {readdirSync, readFileSync, realpathSync, statSync} from 'node:fs';

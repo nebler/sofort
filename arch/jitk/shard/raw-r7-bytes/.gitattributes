@@ -1,0 +1,4 @@
+# Exact corpus streams must never be normalized or displayed as text diffs.
+*.bin binary
+# Preserve unedited test logs, including their terminal blank lines.
+*.log -whitespace

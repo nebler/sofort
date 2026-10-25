@@ -1,0 +1,23 @@
+   Compiling jitk-shard v0.1.0 (/home/dev/r7-bytes/arch/jitk/shard)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s
+     Running unittests src/main.rs (target/debug/deps/jitk_shard-5e2338d043a25c73)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/real.rs (target/debug/deps/real-9c73b479be233539)
+
+running 9 tests
+test entropy::chacha_zero_key_counter_one ... ok
+test kvm::native::inputs::tests::hostile_inputs ... ok
+test kvm::native::streams::tests::arbitrary_bytes_streams_and_status ... ok
+test kvm::native::streams::tests::completion_and_log_contracts ... ok
+test kvm::native::inputs::tests::bounded_tree_and_binary_data ... ok
+test kvm::native::streams::tests::hostile_headers_and_cursors ... ok
+test kvm::native::streams::tests::stream_budgets_duplicates_and_terminal_order ... ok
+test kvm::native::streams::tests::wraps_and_repeated_credit ... ok
+test kvm::native::streams::tests::header_fuzz_never_reads_past_a_committed_record ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

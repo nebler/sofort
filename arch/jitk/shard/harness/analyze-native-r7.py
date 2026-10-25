@@ -25,5 +25,6 @@ def summarize(path):
     return dict(marginal_mib=statistics.mean(c['current']['bytes_per_vm'] for c in curves)/2**20,
                 components_bytes={k:statistics.mean(c[k]['bytes_per_vm'] for c in curves) for k in curves[0]},
                 curves=curves,cells=cells,max_abs_residual_percent=max(map(abs,residual)))
-out=dict(final=summarize(root),before_cache_fix=summarize(root/'ledger-before'))
+out=dict(final=summarize(root))
+if (root/'ledger-before').is_dir():out['before_cache_fix']=summarize(root/'ledger-before')
 (root/'memory-summary.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2))

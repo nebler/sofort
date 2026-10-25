@@ -2,8 +2,9 @@
 
 MCP clients talk directly to jitk: each `execute` call runs code-mode JavaScript in a
 fresh, pre-booted, single-use microVM through the canonical `MicroVMExecutor`,
-`SandboxPool` and 07 policy layer (`../executor`). No limit, deadline or policy
-logic lives here; this subtree only maps MCP to the executor (`jitk.mjs`, `server.mjs`).
+`SandboxPool` and 07 policy layer (`../executor`). The execute adapter delegates limits, deadlines and policy to the executor.
+The native run adapter below owns bounded ring IPC admission and its worker
+deadline (`jitk.mjs`, `server.mjs`, `native.mjs`).
 
 - **Tool `execute` `{code}`**: an async function body. Returns `{result, logs}` as
   `structuredContent` plus the same JSON as text. Failures set `isError` and return
