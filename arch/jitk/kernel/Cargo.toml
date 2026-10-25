@@ -5,6 +5,7 @@ edition = "2024"
 [features]
 default = ["qjs"]
 qjs = []
+transport-ring = ["qjs"]
 trace = []
 grow-trace = []
 probe = ["qjs"]

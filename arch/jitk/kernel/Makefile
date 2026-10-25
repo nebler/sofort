@@ -1,7 +1,9 @@
-.PHONY: all build test
+.PHONY: all build test ring
 all: build
 build:
 	sh build.sh
+ring:
+	sh build-ring.sh
 test: build
 	python3 tests/test_packer.py
 	python3 tests/test_handlers.py

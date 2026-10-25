@@ -1,5 +1,13 @@
 # Canonical jitk kernel (owner 02)
 
+Experimental shard build: `make ring` (Linux/arm64 toolchain, `llvm-objcopy`) or
+`sh build-ring.sh` emits **`dist/kernel-ring.bin`** in a separate `target-ring/`
+cache. It enables `transport-ring`, packs the same static qjs payload and selects
+`ring-bootstrap.js`. It never overwrites `dist/kernel.bin`. The default build,
+argv, virtio/FDT/GIC path and syscall contracts are unchanged. See
+[`../shard/ABI-R6.md`](../shard/ABI-R6.md) for its bounded ABI-v2 subset and explicit
+RNG, clocks, deadline and policy limitations; it is not a production cutover.
+
 `make -C arch/jitk/kernel` builds the 32 MiB AArch64 RAW image. Requires Rust
 1.95.0 + aarch64-unknown-none, Python 3, LLVM objcopy (override `OBJCOPY`).
 There are no Cargo dependencies or network downloads. `payload/qjs` is the stripped

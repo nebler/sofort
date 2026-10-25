@@ -73,6 +73,9 @@ pub unsafe fn run() -> ! {
         } else {
             packed::ENTRY
         };
+        #[cfg(feature = "transport-ring")]
+        crate::arch::enter_user(&raw const vectors, sp, entry);
+        #[cfg(not(feature = "transport-ring"))]
         asm!("msr vbar_el1,{v}","msr sp_el0,{sp}","msr elr_el1,{entry}","msr spsr_el1,{mask}",".inst 0xd500419f","isb","eret",
          mask=in(reg) 0x3c0u64,v=in(reg) &raw const vectors,sp=in(reg) sp,entry=in(reg) entry,options(noreturn));
     }
@@ -118,7 +121,10 @@ pub(crate) unsafe fn output(va: usize, len: usize) -> isize {
 #[unsafe(no_mangle)]
 unsafe extern "C" fn trap(frame: *mut usize) {
     unsafe {
+        #[cfg(not(feature = "transport-ring"))]
         let f = core::slice::from_raw_parts_mut(frame, 33);
+        #[cfg(feature = "transport-ring")]
+        let f = crate::arch::trap_frame(frame);
         let esr: u64;
         asm!("mrs {v},esr_el1",v=out(reg) esr);
         if esr >> 26 != 0x15 {
@@ -141,6 +147,8 @@ unsafe extern "C" fn trap(frame: *mut usize) {
         }
         let n = f[8];
         let args: [usize; 6] = f[..6].try_into().unwrap();
+        #[cfg(feature = "transport-ring")]
+        if let Some(ret) = crate::console::syscall(n, &args) { f[0] = ret as usize; return; }
         crate::trace::enter(n, &args, f[31]);
         #[cfg(feature = "probe")]
         let ret = match n {
