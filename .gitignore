@@ -59,3 +59,4 @@ arch/research/perf/**/raw-evidence.tar.gz
 /arch/research/perf/linux-ledger/raw/pilot/ledger-jitk-0.json
 /arch/research/perf/linux-ledger/raw/pilot/ledger-jitk-1.json
 /arch/research/perf/linux-ledger/raw/pilot/ledger-bare-process-0.json
+/.inputs/
