@@ -1,0 +1,80 @@
+{
+  "binary": "/home/dev/r6-census/sqlite3-static",
+  "sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+  "bytes": 1392336,
+  "elf_type": 2,
+  "machine": 183,
+  "entry": 4201692,
+  "headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 4194304,
+      "filesz": 1358608,
+      "memsz": 1358608,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 1361712,
+      "vaddr": 5621552,
+      "filesz": 29504,
+      "memsz": 36600,
+      "align": 65536
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 344,
+      "vaddr": 4194648,
+      "filesz": 36,
+      "memsz": 36,
+      "align": 4
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 1361712,
+      "vaddr": 5621552,
+      "filesz": 14544,
+      "memsz": 14544,
+      "align": 1
+    }
+  ],
+  "interpreter": false,
+  "dynamic": false,
+  "tls": [],
+  "pack_error": null,
+  "packed": {
+    "source_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+    "flat_bytes": 1466368,
+    "flat_sha256": "bd6ab80c4efa2bfa1a29fd92b01af9e8389f2ac33be215bb3ceedfc9bdc2e9d8",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        5552912,
+        5
+      ],
+      [
+        5621552,
+        5658152,
+        6
+      ]
+    ],
+    "entry": 4201692,
+    "phdr": 4194368,
+    "phnum": 5
+  }
+}

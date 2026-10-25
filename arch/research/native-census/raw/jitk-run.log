@@ -1,0 +1,4 @@
+jq jitk 127 missing [99, 226, 261, 278, 293] ok False
+sd jitk None missing [130] ok False
+sqlite3 jitk 1 missing [48, 80, 172] ok False
+lua jitk 0 missing [] ok True

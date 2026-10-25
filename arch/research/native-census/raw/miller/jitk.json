@@ -1,0 +1,4 @@
+{
+  "status": "loader-rejected",
+  "reason": "segment outside payload arena"
+}

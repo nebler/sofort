@@ -1,0 +1,37 @@
+52360 execve("/home/dev/r6-census/sqlite3-static", [...], 0xffffc1c3d8f8 /* 7 vars */) = 0
+52360 set_tid_address(0x565530)         = 52360
+52360 ioctl(0, TIOCGWINSZ, 0xffffcf5c0958) = -1 ENOTTY (Inappropriate ioctl for device)
+52360 ioctl(1, TIOCGWINSZ, 0xffffcf5c0958) = -1 ENOTTY (Inappropriate ioctl for device)
+52360 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+52360 rt_sigaction(SIGINT, {sa_handler=0x411388, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x5092a4}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52360 brk(NULL)                         = 0x10a05000
+52360 brk(0x10a07000)                   = 0x10a07000
+52360 mmap(0x10a05000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x10a05000
+52360 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xebb4c2762000
+52360 faccessat(AT_FDCWD, "file:data/demo.db?mode=ro&immutable=1", F_OK) = -1 ENOENT (No such file or directory)
+52360 openat(AT_FDCWD, "dev/null", O_RDONLY|O_LARGEFILE) = 3
+52360 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xebb4c2761000
+52360 read(3, "", 1024)                 = 0
+52360 close(3)                          = 0
+52360 munmap(0xebb4c2761000, 4096)      = 0
+52360 openat(AT_FDCWD, "file:data/demo.db?mode=ro&immutable=1", O_RDONLY|O_LARGEFILE) = -1 ENOENT (No such file or directory)
+52360 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xebb4c2761000
+52360 getcwd("/home/dev/r6-census/fixtures", 4096) = 29
+52360 newfstatat(AT_FDCWD, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52360 newfstatat(AT_FDCWD, "/home/dev", {st_mode=S_IFDIR|0750, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52360 newfstatat(AT_FDCWD, "/home/dev/r6-census", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52360 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52360 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures/data", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52360 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/demo.db", {st_mode=S_IFREG|0644, st_size=8192, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52360 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xebb4c2760000
+52360 munmap(0xebb4c2761000, 4096)      = 0
+52360 getpid()                          = 52360
+52360 getpid()                          = 52360
+52360 openat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/demo.db", O_RDONLY|O_LARGEFILE|O_NOFOLLOW|O_CLOEXEC) = 3
+52360 fcntl(3, F_SETFD, FD_CLOEXEC)     = 0
+52360 fstat(3, 0xffffcf5c0190)          = -1 ENOSYS (Function not implemented) (INJECTED)
+52360 close(3)                          = 0
+52360 munmap(0xebb4c2760000, 4096)      = 0
+52360 writev(2, [...], 2)               = 86
+52360 writev(2, [...], 2)               = 1
+52360 exit_group(1)                     = ?

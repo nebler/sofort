@@ -1,0 +1,10 @@
+{
+  "name": "xz",
+  "version": "v5.8.4",
+  "source": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.gz",
+  "source_sha256": "0014c7886930454fe8bd4228665b51af55eeae560ea135c9c4cd33f55b2591d9",
+  "verified": true,
+  "binary": "/home/dev/r6-census/artifacts/xz/xz-5.8.4/src/xz/xz",
+  "binary_sha256": "77d0a2af37564d372ef9b85599babc653304177b17fb2d3a3cd1d6c28f423dd2",
+  "relink": "make -C src/xz LDFLAGS=-all-static"
+}

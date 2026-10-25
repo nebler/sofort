@@ -1,0 +1,17 @@
+{
+  "returncode": -6,
+  "timeout": false,
+  "stdout_hex": "",
+  "stderr_hex": "466174616c20676c696263206572726f723a2063616e6e6f742067657420656e74726f707920666f72206172633472616e646f6d0a",
+  "uptime": "2113.68 11594.58",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "jq",
+  "syscall": "getrandom",
+  "same_stdout": false,
+  "preserved": false,
+  "injected": true
+}

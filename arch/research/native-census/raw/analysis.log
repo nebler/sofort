@@ -1,0 +1,33 @@
+bb-awk 8  threads False filemap False writefs False runs True
+bb-grep 8  threads False filemap False writefs False runs True
+bb-gzip 8  threads False filemap False writefs False runs False
+bb-sed 8  threads False filemap False writefs False runs True
+bb-sort 7  threads False filemap False writefs False runs True
+bb-tar 10 getuid threads False filemap False writefs False runs True
+bb-wc 5  threads False filemap False writefs False runs True
+curl 34 connect,eventfd2,faccessat,fstat,futex,geteuid,getrandom,getsockname,getsockopt,madvise,mprotect,prlimit64,recvfrom,rseq,sendto,set_robust_list,setsockopt,socket threads False filemap True writefs False runs None
+dasel 26 clone,epoll_create1,epoll_ctl,epoll_pwait,eventfd2,fstat,futex,gettid,getuid,madvise,nanosleep,prctl,prlimit64,sched_getaffinity,sigaltstack threads True filemap False writefs False runs None
+duckdb 0  threads False filemap False writefs False runs None
+duckdb-gnu 29 clone3,faccessat,fstat,futex,getrandom,madvise,mprotect,pread64,prlimit64,rseq,sched_getaffinity,set_robust_list,sysinfo threads True filemap True writefs False runs None
+esbuild 19 clone,futex,gettid,madvise,nanosleep,pread64,prlimit64,sched_getaffinity,sigaltstack threads True filemap False writefs False runs None
+fd 25 clone,futex,getrandom,gettid,mprotect,sched_yield,sigaltstack threads True filemap False writefs False runs None
+ffmpeg 29 clone3,dup,faccessat,fstat,futex,getrandom,getrusage,madvise,mprotect,prctl,prlimit64,rseq,set_robust_list threads True filemap True writefs False runs None
+git 21 faccessat,fstat,getrandom,mprotect,prlimit64,rseq,set_robust_list threads False filemap True writefs False runs None
+git-shell 31 clone,execve,faccessat,fstat,getegid,geteuid,getgid,getpid,getppid,getrandom,getuid,mprotect,pipe2,prlimit64,rseq,set_robust_list,wait4 threads False filemap True writefs False runs None
+gojq 28 clone,epoll_create1,epoll_ctl,epoll_pwait,eventfd2,futex,getpid,gettid,madvise,nanosleep,pread64,prlimit64,rt_sigreturn,sched_getaffinity,sigaltstack,tgkill threads True filemap False writefs False runs None
+gron 23 clone,epoll_create1,epoll_ctl,epoll_pwait,eventfd2,futex,gettid,madvise,nanosleep,pread64,prlimit64,sched_getaffinity,sigaltstack threads True filemap False writefs False runs None
+jq 18 fstat,futex,getrandom,mprotect,prlimit64,rseq,set_robust_list threads False filemap False writefs False runs False
+jq-musl 14 getrandom threads False filemap False writefs False runs True
+lua 13  threads False filemap False writefs False runs True
+micropython 10  threads False filemap False writefs False runs True
+miller 28 clone,epoll_create1,epoll_ctl,epoll_pwait,eventfd2,fstat,futex,getpid,gettid,madvise,nanosleep,prctl,prlimit64,rt_sigreturn,sched_getaffinity,sched_yield,sigaltstack,tgkill threads True filemap False writefs False runs None
+pandoc 36 clone,epoll_create1,epoll_ctl,epoll_pwait,eventfd2,fstat,futex,madvise,mkdirat,mprotect,pipe2,prctl,prlimit64,sched_getaffinity,sched_yield,sysinfo,timerfd_create,timerfd_settime threads True filemap False writefs False runs None
+qpdf 20 faccessat,fstat,futex,getrandom,mprotect,prlimit64,rseq,set_robust_list threads False filemap True writefs False runs None
+qsv 29 clone,fstat,futex,getrandom,gettid,mkdirat,mprotect,prctl,sched_getaffinity,sigaltstack,uname threads True filemap False writefs False runs None
+rg 25 fstat,getrandom,madvise,mprotect,sched_getaffinity,sigaltstack,uname threads False filemap False writefs False runs None
+sd 13 getrandom,mprotect,sigaltstack threads False filemap False writefs False runs False
+sqlite3 19 faccessat,fstat,getpid,pread64 threads False filemap False writefs False runs False
+xz 22 fadvise64,fstat,geteuid,landlock_create_ruleset,landlock_restrict_self,pipe2,prctl,prlimit64,sysinfo threads False filemap False writefs False runs False
+yq 25 clone,epoll_create1,epoll_ctl,epoll_pwait,eventfd2,fstat,futex,gettid,madvise,nanosleep,prctl,prlimit64,sched_getaffinity,sched_yield,sigaltstack threads True filemap False writefs False runs None
+zstd 12  threads False filemap False writefs False runs False
+FREQUENCY [('futex', 10), ('sigaltstack', 10), ('clone', 9), ('fstat', 9), ('prlimit64', 9), ('sched_getaffinity', 9), ('gettid', 8), ('madvise', 8), ('epoll_create1', 6), ('epoll_ctl', 6), ('epoll_pwait', 6), ('eventfd2', 6), ('getrandom', 6), ('mprotect', 6), ('nanosleep', 6), ('prctl', 6), ('pread64', 4), ('sched_yield', 4), ('getpid', 3), ('getuid', 2), ('mkdirat', 2), ('pipe2', 2), ('rt_sigreturn', 2), ('sysinfo', 2), ('tgkill', 2), ('uname', 2), ('faccessat', 1), ('fadvise64', 1), ('geteuid', 1), ('landlock_create_ruleset', 1), ('landlock_restrict_self', 1), ('rseq', 1), ('set_robust_list', 1), ('timerfd_create', 1), ('timerfd_settime', 1)]

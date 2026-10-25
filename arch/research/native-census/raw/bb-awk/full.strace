@@ -1,0 +1,14 @@
+49122 execve("/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox", [""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49122 set_tid_address(0x461904)         = 49122
+49122 brk(NULL)                         = 0x306e4000
+49122 brk(0x306e6000)                   = 0x306e6000
+49122 mmap(0x306e4000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x306e4000
+49122 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe198fbc2f000
+49122 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe198fbc2e000
+49122 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe198fbc2d000
+49122 read(0<pipe:[85099]>, ""..., 463) = 23
+49122 read(0<pipe:[85099]>, "", 463)    = 0
+49122 close(0<pipe:[85099]>)            = 0
+49122 ioctl(1<pipe:[85100]>, TIOCGWINSZ, 0xffffe09c6db8) = -1 ENOTTY (Inappropriate ioctl for device)
+49122 writev(1<pipe:[85100]>, [{iov_base=""..., iov_len=2}, {iov_base=""..., iov_len=1}], 2) = 3
+49122 exit_group(0)                     = ?

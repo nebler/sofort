@@ -1,0 +1,17 @@
+{
+  "returncode": 1,
+  "timeout": false,
+  "stdout_hex": "",
+  "stderr_hex": "466c6578694c6f67676572206572726f723a204f7574707574496f284f73207b20636f64653a2033382c206b696e643a20556e737570706f727465642c206d6573736167653a202246756e6374696f6e206e6f7420696d706c656d656e74656422207d290a",
+  "uptime": "2115.15 11601.83",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "qsv",
+  "syscall": "mkdirat",
+  "same_stdout": false,
+  "preserved": false,
+  "injected": true
+}

@@ -1,0 +1,9 @@
+{
+  "name": "ffmpeg",
+  "version": "latest",
+  "source": "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linuxarm64-lgpl.tar.xz",
+  "source_sha256": "4f494387a1110171c43ce872e68490bc8719ed3f7a0d40183f0a853f195fdbbd",
+  "verified": true,
+  "binary": "/home/dev/r6-census/artifacts/ffmpeg/unpacked/ffmpeg-master-latest-linuxarm64-lgpl/bin/ffmpeg",
+  "note": "BtbN build, not FFmpeg upstream binary; check actual PT_INTERP"
+}

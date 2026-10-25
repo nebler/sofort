@@ -1,0 +1,41 @@
+49051 execve("/home/dev/r6-census/lua-static", [""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49051 set_tid_address(0x4711f0)         = 49051
+49051 brk(NULL)                         = 0x2df3b000
+49051 brk(0x2df3d000)                   = 0x2df3d000
+49051 mmap(0x2df3b000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x2df3b000
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b514c000
+49051 clock_gettime(CLOCK_REALTIME, {tv_sec=1792922852, tv_nsec=278624958}) = 0
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b514b000
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b514a000
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5149000
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5148000
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5147000
+49051 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5145000
+49051 munmap(0xfa62b514b000, 4096)      = 0
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b514b000
+49051 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5143000
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5142000
+49051 clock_gettime(CLOCK_REALTIME, {tv_sec=1792922852, tv_nsec=279913253}) = 0
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5141000
+49051 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+49051 rt_sigaction(SIGINT, {sa_handler=0x4006a8, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x43cf5c}, NULL, 8) = 0
+49051 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", O_RDONLY|O_LARGEFILE) = 3</home/dev/r6-census/fixtures/data/input.txt>
+49051 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfa62b5140000
+49051 read(3</home/dev/r6-census/fixtures/data/input.txt>, ""..., 1024) = 23
+49051 read(3</home/dev/r6-census/fixtures/data/input.txt>, "", 1024) = 0
+49051 close(3</home/dev/r6-census/fixtures/data/input.txt>) = 0
+49051 munmap(0xfa62b5140000, 4096)      = 0
+49051 ioctl(1<pipe:[84993]>, TIOCGWINSZ, 0xffffe3695dd8) = -1 ENOTTY (Inappropriate ioctl for device)
+49051 writev(1<pipe:[84993]>, [{iov_base=""..., iov_len=2}, {iov_base=""..., iov_len=1}], 2) = 3
+49051 rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x43cf5c}, NULL, 8) = 0
+49051 munmap(0xfa62b5142000, 4096)      = 0
+49051 munmap(0xfa62b514b000, 4096)      = 0
+49051 munmap(0xfa62b5149000, 4096)      = 0
+49051 munmap(0xfa62b5148000, 4096)      = 0
+49051 munmap(0xfa62b5143000, 8192)      = 0
+49051 munmap(0xfa62b5147000, 4096)      = 0
+49051 munmap(0xfa62b5145000, 8192)      = 0
+49051 munmap(0xfa62b514a000, 4096)      = 0
+49051 munmap(0xfa62b5141000, 4096)      = 0
+49051 munmap(0xfa62b514c000, 4096)      = 0
+49051 exit_group(0)                     = ?

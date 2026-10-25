@@ -1,0 +1,123 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/curl-distro/curl",
+  "sha256": "765d83012477a47204ce7e85af94bae7768b89a150985c7a12d196388c6ed43f",
+  "bytes": 330288,
+  "elf_type": 3,
+  "machine": 183,
+  "entry": 51072,
+  "headers": [
+    {
+      "type": 6,
+      "flags": 4,
+      "offset": 64,
+      "vaddr": 64,
+      "filesz": 672,
+      "memsz": 672,
+      "align": 8
+    },
+    {
+      "type": 3,
+      "flags": 4,
+      "offset": 772,
+      "vaddr": 772,
+      "filesz": 27,
+      "memsz": 27,
+      "align": 1
+    },
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 291280,
+      "memsz": 291280,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 309072,
+      "vaddr": 374608,
+      "filesz": 18900,
+      "memsz": 21064,
+      "align": 65536
+    },
+    {
+      "type": 2,
+      "flags": 6,
+      "offset": 325864,
+      "vaddr": 391400,
+      "filesz": 560,
+      "memsz": 560,
+      "align": 8
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 736,
+      "vaddr": 736,
+      "filesz": 36,
+      "memsz": 36,
+      "align": 4
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 291104,
+      "vaddr": 291104,
+      "filesz": 32,
+      "memsz": 32,
+      "align": 8
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 291136,
+      "vaddr": 291136,
+      "filesz": 144,
+      "memsz": 144,
+      "align": 4
+    },
+    {
+      "type": 1685382483,
+      "flags": 4,
+      "offset": 291104,
+      "vaddr": 291104,
+      "filesz": 32,
+      "memsz": 32,
+      "align": 8
+    },
+    {
+      "type": 1685382480,
+      "flags": 4,
+      "offset": 279436,
+      "vaddr": 279436,
+      "filesz": 1348,
+      "memsz": 1348,
+      "align": 4
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 309072,
+      "vaddr": 374608,
+      "filesz": 18608,
+      "memsz": 18608,
+      "align": 1
+    }
+  ],
+  "interpreter": true,
+  "dynamic": true,
+  "tls": [],
+  "pack_error": "static ET_EXEC AArch64 required",
+  "packed": null
+}

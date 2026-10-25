@@ -1,0 +1,44 @@
+52411 execve("/home/dev/r6-census/artifacts/sd/unpacked/sd-v1.1.0-aarch64-unknown-linux-musl/sd", [...], 0xfffff85bc360 /* 7 vars */) = 0
+52411 mmap(NULL, 416, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4051000
+52411 set_tid_address(0x600328)         = 52411
+52411 ppoll([...], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([...], left {tv_sec=0, tv_nsec=0})
+52411 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x5429a0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52411 rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52411 sigaltstack(NULL, 0xfffff0f87ca0) = -1 ENOSYS (Function not implemented) (INJECTED)
+52411 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+52411 rt_sigaction(SIGSEGV, {sa_handler=0x527c80, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x5429a0}, NULL, 8) = 0
+52411 rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52411 rt_sigaction(SIGBUS, {sa_handler=0x527c80, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x5429a0}, NULL, 8) = 0
+52411 brk(NULL)                         = 0x2b94e000
+52411 brk(0x2b950000)                   = 0x2b950000
+52411 mmap(0x2b94e000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x2b94e000
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4050000
+52411 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e404e000
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e404d000
+52411 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4049000
+52411 munmap(0xf6b5e404e000, 8192)      = 0
+52411 mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4041000
+52411 munmap(0xf6b5e4049000, 16384)     = 0
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e404f000
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e404e000
+52411 munmap(0xf6b5e4041000, 32768)     = 0
+52411 munmap(0xf6b5e404e000, 4096)      = 0
+52411 munmap(0xf6b5e4050000, 4096)      = 0
+52411 munmap(0xf6b5e404f000, 4096)      = 0
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4050000
+52411 munmap(0xf6b5e4050000, 4096)      = 0
+52411 getrandom(""..., 16, GRND_INSECURE) = 16
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4050000
+52411 munmap(0xf6b5e4050000, 4096)      = 0
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4050000
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e404f000
+52411 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e404e000
+52411 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6b5e4046000
+52411 read(0, ""..., 8192)              = 15
+52411 write(1, ""..., 8)                = 8
+52411 write(1, ""..., 7)                = 7
+52411 read(0, "", 8192)                 = 0
+52411 munmap(0xf6b5e4050000, 4096)      = 0
+52411 munmap(0xf6b5e404f000, 4096)      = 0
+52411 munmap(0xf6b5e404e000, 4096)      = 0
+52411 exit_group(0)                     = ?

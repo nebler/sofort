@@ -1,0 +1,4 @@
+git native 1 oracle False pack static ET_EXEC AArch64 required
+curl native 0 oracle True pack static ET_EXEC AArch64 required
+duckdb-gnu native 0 oracle True pack dynamic ELF/interpreter forbidden
+git-shell native 0 oracle True pack static ET_EXEC AArch64 required

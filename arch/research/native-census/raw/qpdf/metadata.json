@@ -1,0 +1,123 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/qpdf-distro/unpacked/usr/bin/qpdf",
+  "sha256": "d76fb93c9932419464224effd885a9fcda494558d87eda17eac643914b7985f0",
+  "bytes": 67856,
+  "elf_type": 3,
+  "machine": 183,
+  "entry": 5888,
+  "headers": [
+    {
+      "type": 6,
+      "flags": 4,
+      "offset": 64,
+      "vaddr": 64,
+      "filesz": 672,
+      "memsz": 672,
+      "align": 8
+    },
+    {
+      "type": 3,
+      "flags": 4,
+      "offset": 772,
+      "vaddr": 772,
+      "filesz": 27,
+      "memsz": 27,
+      "align": 1
+    },
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 7592,
+      "memsz": 7592,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 64592,
+      "vaddr": 130128,
+      "filesz": 984,
+      "memsz": 1008,
+      "align": 65536
+    },
+    {
+      "type": 2,
+      "flags": 6,
+      "offset": 64640,
+      "vaddr": 130176,
+      "filesz": 592,
+      "memsz": 592,
+      "align": 8
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 736,
+      "vaddr": 736,
+      "filesz": 36,
+      "memsz": 36,
+      "align": 4
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 7424,
+      "vaddr": 7424,
+      "filesz": 32,
+      "memsz": 32,
+      "align": 8
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 7456,
+      "vaddr": 7456,
+      "filesz": 136,
+      "memsz": 136,
+      "align": 4
+    },
+    {
+      "type": 1685382483,
+      "flags": 4,
+      "offset": 7424,
+      "vaddr": 7424,
+      "filesz": 32,
+      "memsz": 32,
+      "align": 8
+    },
+    {
+      "type": 1685382480,
+      "flags": 4,
+      "offset": 6868,
+      "vaddr": 6868,
+      "filesz": 92,
+      "memsz": 92,
+      "align": 4
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 64592,
+      "vaddr": 130128,
+      "filesz": 944,
+      "memsz": 944,
+      "align": 1
+    }
+  ],
+  "interpreter": true,
+  "dynamic": true,
+  "tls": [],
+  "pack_error": "static ET_EXEC AArch64 required",
+  "packed": null
+}

@@ -1,0 +1,7 @@
+bb-sed jitk 0 missing [] ok True
+bb-awk jitk 0 missing [] ok True
+bb-grep jitk 0 missing [] ok True
+bb-sort jitk 0 missing [] ok True
+bb-wc jitk 0 missing [] ok True
+bb-tar jitk 0 missing [174] ok True
+bb-gzip jitk None missing [] ok False

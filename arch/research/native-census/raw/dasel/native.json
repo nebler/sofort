@@ -1,0 +1,114 @@
+{
+  "workload": {
+    "name": "dasel",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/dasel/dasel_linux_arm64",
+    "argv": [
+      "-i",
+      "json",
+      "-o",
+      "json",
+      "--compact",
+      "items"
+    ],
+    "stdin_hex": "7b226974656d73223a5b7b226e616d65223a22616c706861222c226e223a327d2c7b226e616d65223a2262657461222c226e223a357d5d7d0a",
+    "expected_hex": null
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/dasel/dasel_linux_arm64",
+    "sha256": "df33920a792cd8ee5573cec3632a710cd2178d7bc4fc3892c6be78f35e7cbcc6",
+    "bytes": 9765026,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 626784,
+    "headers": [
+      {
+        "type": 6,
+        "flags": 4,
+        "offset": 64,
+        "vaddr": 65600,
+        "filesz": 336,
+        "memsz": 336,
+        "align": 65536
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 3960,
+        "vaddr": 69496,
+        "filesz": 100,
+        "memsz": 100,
+        "align": 4
+      },
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 65536,
+        "filesz": 4296836,
+        "memsz": 4296836,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 4,
+        "offset": 4325376,
+        "vaddr": 4390912,
+        "filesz": 4799664,
+        "memsz": 4799664,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 9175040,
+        "vaddr": 9240576,
+        "filesz": 534976,
+        "memsz": 34352256,
+        "align": 65536
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 8
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [],
+    "pack_error": "segment outside payload arena",
+    "packed": null
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "5b7b226e616d65223a22616c706861222c226e223a327d2c7b226e616d65223a2262657461222c226e223a357d5d0a",
+      "stderr_hex": "",
+      "uptime": "1223.72 6539.71",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "5b7b226e616d65223a22616c706861222c226e223a327d2c7b226e616d65223a2262657461222c226e223a357d5d0a",
+      "stderr_hex": "",
+      "uptime": "1223.76 6539.86",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    }
+  ]
+}

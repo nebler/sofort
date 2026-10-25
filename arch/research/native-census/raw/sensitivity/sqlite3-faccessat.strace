@@ -1,0 +1,60 @@
+52366 execve("/home/dev/r6-census/sqlite3-static", [...], 0xfffff980f988 /* 7 vars */) = 0
+52366 set_tid_address(0x565530)         = 52366
+52366 ioctl(0, TIOCGWINSZ, 0xffffc39d1b38) = -1 ENOTTY (Inappropriate ioctl for device)
+52366 ioctl(1, TIOCGWINSZ, 0xffffc39d1b38) = -1 ENOTTY (Inappropriate ioctl for device)
+52366 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+52366 rt_sigaction(SIGINT, {sa_handler=0x411388, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x5092a4}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52366 brk(NULL)                         = 0x2037c000
+52366 brk(0x2037e000)                   = 0x2037e000
+52366 mmap(0x2037c000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x2037c000
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893554000
+52366 faccessat(AT_FDCWD, "file:data/demo.db?mode=ro&immutable=1", F_OK) = -1 ENOSYS (Function not implemented) (INJECTED)
+52366 openat(AT_FDCWD, "dev/null", O_RDONLY|O_LARGEFILE) = 3
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893553000
+52366 read(3, "", 1024)                 = 0
+52366 close(3)                          = 0
+52366 munmap(0xee4893553000, 4096)      = 0
+52366 openat(AT_FDCWD, "file:data/demo.db?mode=ro&immutable=1", O_RDONLY|O_LARGEFILE) = -1 ENOENT (No such file or directory)
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893553000
+52366 getcwd("/home/dev/r6-census/fixtures", 4096) = 29
+52366 newfstatat(AT_FDCWD, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev", {st_mode=S_IFDIR|0750, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev/r6-census", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures/data", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/demo.db", {st_mode=S_IFREG|0644, st_size=8192, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893552000
+52366 munmap(0xee4893553000, 4096)      = 0
+52366 getpid()                          = 52366
+52366 getpid()                          = 52366
+52366 openat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/demo.db", O_RDONLY|O_LARGEFILE|O_NOFOLLOW|O_CLOEXEC) = 3
+52366 fcntl(3, F_SETFD, FD_CLOEXEC)     = 0
+52366 fstat(3, {st_mode=S_IFREG|0644, st_size=8192, ...}) = 0
+52366 fstat(3, {st_mode=S_IFREG|0644, st_size=8192, ...}) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/demo.db", {st_mode=S_IFREG|0644, st_size=8192, ...}, 0) = 0
+52366 fstat(3, {st_mode=S_IFREG|0644, st_size=8192, ...}) = 0
+52366 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee489354e000
+52366 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee489354c000
+52366 pread64(3, ""..., 100, 0)         = 100
+52366 mmap(NULL, 49152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893540000
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893553000
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee489353f000
+52366 mmap(NULL, 90112, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893529000
+52366 pread64(3, ""..., 4096, 0)        = 4096
+52366 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee4893528000
+52366 pread64(3, ""..., 4096, 4096)     = 4096
+52366 ioctl(1, TIOCGWINSZ, 0xffffc39d16f8) = -1 ENOTTY (Inappropriate ioctl for device)
+52366 writev(1, [...], 2)               = 29
+52366 fstat(3, {st_mode=S_IFREG|0644, st_size=8192, ...}) = 0
+52366 newfstatat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/demo.db", {st_mode=S_IFREG|0644, st_size=8192, ...}, 0) = 0
+52366 close(3)                          = 0
+52366 munmap(0xee489354e000, 16384)     = 0
+52366 munmap(0xee4893529000, 90112)     = 0
+52366 munmap(0xee489354c000, 8192)      = 0
+52366 munmap(0xee4893528000, 4096)      = 0
+52366 munmap(0xee489353f000, 4096)      = 0
+52366 munmap(0xee4893553000, 4096)      = 0
+52366 munmap(0xee4893552000, 4096)      = 0
+52366 munmap(0xee4893540000, 49152)     = 0
+52366 munmap(0xee4893554000, 4096)      = 0
+52366 exit_group(0)                     = ?

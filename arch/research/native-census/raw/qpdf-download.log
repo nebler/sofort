@@ -1,0 +1,10 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Get:1 http://archive.ubuntu.com/ubuntu resolute/universe arm64 qpdf arm64 12.3.2-1 [83.5 kB]
+Fetched 83.5 kB in 1s (158 kB/s)
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Get:1 http://archive.ubuntu.com/ubuntu resolute/main arm64 libqpdf30 arm64 12.3.2-1 [817 kB]
+Fetched 817 kB in 1s (1010 kB/s)

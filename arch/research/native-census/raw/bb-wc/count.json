@@ -1,0 +1,12 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "330a",
+  "stderr_hex": "",
+  "uptime": "1225.41 6546.29",
+  "load": [
+    1.16650390625,
+    0.958984375,
+    0.60546875
+  ]
+}

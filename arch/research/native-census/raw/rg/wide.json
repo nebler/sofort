@@ -1,0 +1,12 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "uptime": "1062.61 5740.58",
+  "load": [
+    1.14599609375,
+    0.861328125,
+    0.50732421875
+  ],
+  "kernel_sha256": "6b7ab0179a0898ebf8dbdae1003962b9d7ae84c0f646af7d8b55fe3115c2fce0",
+  "diagnostic_only": true
+}

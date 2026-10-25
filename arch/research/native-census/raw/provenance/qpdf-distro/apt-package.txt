@@ -1,0 +1,40 @@
+Package: qpdf
+Priority: optional
+Section: universe/text
+Installed-Size: 379
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: arm64
+Version: 12.3.2-1
+Suggests: qpdf-doc
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.3.1), libqpdf30 (>> 12.3.2~), libstdc++6 (>= 13.1)
+Filename: pool/universe/q/qpdf/qpdf_12.3.2-1_arm64.deb
+Size: 83468
+MD5sum: b7b73c273557c74f18531236b960c11f
+SHA1: 2987dc0d613f187130bffd0f2e64db14dddaf630
+SHA256: 71f2f72ae568df412df286a3901cf5ca15cf593c50bc0da519cc240e316cbea2
+SHA512: 39493a1d49f1b83272b442799a38e9a5b8ecd64d8d74288be7a5159607b8e1c6fac1a57b5b2ec422e99d7f191766c3da2e2751d4bc125478fafe7b59f7acba02
+Homepage: https://qpdf.sourceforge.io
+Description-en: tools for transforming and inspecting PDF files
+ QPDF is a program that can be used to linearize (web-optimize),
+ encrypt (password-protect), decrypt, and inspect PDF files from the
+ command-line.  It does these and other structural, content-preserving
+ transformations on PDF files, reading a PDF file as input and
+ creating a new one as output.  It also provides many useful
+ capabilities to developers of PDF-producing software or for people
+ who just want to look at the innards of a PDF file to learn more
+ about how they work.
+ .
+ QPDF understands PDF files that use compressed object streams
+ (supported by newer PDF applications) and can convert such files into
+ those that can be read with older viewers.  It can also be used for
+ checking PDF files for structural errors, inspecting stream contents,
+ or extracting objects from PDF files.  QPDF is not PDF content
+ creation or viewing software -- it does not have the capability to
+ create PDF files from scratch or to display PDF files.
+ .
+ This package includes the command-line qpdf tools.
+Description-md5: 3ec53128ac30187148c6b4572652a1f3
+Original-Maintainer: Jay Berkenbilt <qjb@debian.org>
+Origin: Ubuntu
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+

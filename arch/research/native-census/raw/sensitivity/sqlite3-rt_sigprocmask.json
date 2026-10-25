@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+  "stderr_hex": "",
+  "uptime": "2113.87 11595.55",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "sqlite3",
+  "syscall": "rt_sigprocmask",
+  "same_stdout": true,
+  "preserved": true,
+  "injected": true
+}

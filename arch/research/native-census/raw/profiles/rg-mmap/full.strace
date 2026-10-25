@@ -1,0 +1,73 @@
+50458 execve("/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg", [""..., ""..., ""..., ""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+50458 mmap(NULL, 2832, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xea9b1ae1a000
+50458 set_tid_address(0x8de738)         = 50458
+50458 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/_rjem_malloc.conf", 0xfffff185bb48, 4096) = -1 ENOENT (No such file or directory)
+50458 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xea9b1ae0a000
+50458 madvise(0xea9b1ae0a000, 65536, MADV_DONTNEED) = 0
+50458 munmap(0xea9b1ae0a000, 65536)     = 0
+50458 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/proc/sys/vm/overcommit_memory", O_RDONLY|O_CLOEXEC) = 3</proc/sys/vm/overcommit_memory>
+50458 read(3</proc/sys/vm/overcommit_memory>, ""..., 1) = 1
+50458 close(3</proc/sys/vm/overcommit_memory>) = 0
+50458 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY) = 3</sys/kernel/mm/transparent_hugepage/enabled>
+50458 read(3</sys/kernel/mm/transparent_hugepage/enabled>, ""..., 24) = 23
+50458 read(3</sys/kernel/mm/transparent_hugepage/enabled>, "", 1) = 0
+50458 close(3</sys/kernel/mm/transparent_hugepage/enabled>) = 0
+50458 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xea9b1ae0a000
+50458 madvise(0xea9b1ae0a000, 65536, MADV_FREE) = 0
+50458 munmap(0xea9b1ae0a000, 65536)     = 0
+50458 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xea9b1ac00000
+50458 brk(NULL)                         = 0x50d4000
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=824330278}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=824330278}) = 0
+50458 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xea9b1aa00000
+50458 sched_getaffinity(0, 128, [0 1 2 3 4 5]) = 8
+50458 brk(NULL)                         = 0x50d4000
+50458 brk(0x50d6000)                    = 0x50d6000
+50458 mmap(0x50d4000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x50d4000
+50458 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xea9b1ae19000
+50458 ppoll([{fd=0<pipe:[163262]>, events=0}, {fd=1<pipe:[163263]>, events=0}, {fd=2<pipe:[163264]>, events=0}], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=0, revents=POLLHUP}], left {tv_sec=0, tv_nsec=0})
+50458 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x6f6344}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+50458 rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+50458 sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+50458 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xea9b1ae15000
+50458 mprotect(0xea9b1ae15000, 4096, PROT_NONE) = 0
+50458 sigaltstack({ss_sp=0xea9b1ae16000, ss_flags=0, ss_size=12288}, NULL) = 0
+50458 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+50458 rt_sigaction(SIGSEGV, {sa_handler=0x662f7c, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x6f6344}, NULL, 8) = 0
+50458 rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+50458 rt_sigaction(SIGBUS, {sa_handler=0x662f7c, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x6f6344}, NULL, 8) = 0
+50458 mmap(NULL, 2621440, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xea9b1a780000
+50458 getrandom(""..., 16, GRND_INSECURE) = 16
+50458 getcwd("/home/dev/r6-census/fixtures", 512) = 29
+50458 ioctl(1<pipe:[163263]>, TIOCGWINSZ, 0xfffff185d028) = -1 ENOTTY (Inappropriate ioctl for device)
+50458 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+50458 uname({sysname="Linux", nodename="kvm-dev", release="7.0.0-38-generic", version="#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026", machine="aarch64", domainname="(none)"}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=828330288}) = 0
+50458 mmap(NULL, 3145728, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xea9b1a480000
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=829330291}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=829330291}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=829824834}) = 0
+50458 fstat(1<pipe:[163263]>, {st_dev=makedev(0, 0x10), st_ino=163263, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792923064 /* 2026-10-25T10:11:04.568197339+0000 */, st_atime_nsec=568197339, st_mtime=1792923064 /* 2026-10-25T10:11:04.568197339+0000 */, st_mtime_nsec=568197339, st_ctime=1792923064 /* 2026-10-25T10:11:04.568197339+0000 */, st_ctime_nsec=568197339}) = 0
+50458 fstat(1<pipe:[163263]>, {st_dev=makedev(0, 0x10), st_ino=163263, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792923064 /* 2026-10-25T10:11:04.568197339+0000 */, st_atime_nsec=568197339, st_mtime=1792923064 /* 2026-10-25T10:11:04.568197339+0000 */, st_mtime_nsec=568197339, st_ctime=1792923064 /* 2026-10-25T10:11:04.568197339+0000 */, st_ctime_nsec=568197339}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=830330293}) = 0
+50458 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=830330293}) = 0
+50458 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+50458 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, AT_SYMLINK_NOFOLLOW) = 0
+50458 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=831363713}) = 0
+50458 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/input.txt>
+50458 fcntl(3</home/dev/r6-census/fixtures/data/input.txt>, F_SETFD, FD_CLOEXEC) = 0
+50458 fstat(3</home/dev/r6-census/fixtures/data/input.txt>, {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}) = 0
+50458 mmap(NULL, 23, PROT_READ, MAP_SHARED, 3</home/dev/r6-census/fixtures/data/input.txt>, 0) = 0xea9b1ae14000
+50458 madvise(0xea9b1ae14000, 23, MADV_SEQUENTIAL) = 0
+50458 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=832508049}) = 0
+50458 munmap(0xea9b1ae14000, 23)        = 0
+50458 close(3</home/dev/r6-census/fixtures/data/input.txt>) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=832330298}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=832330298}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=832330298}) = 0
+50458 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=832330298}) = 0
+50458 write(1<pipe:[163263]>, ""..., 16) = 16
+50458 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=12288}, NULL) = 0
+50458 munmap(0xea9b1ae15000, 16384)     = 0
+50458 exit_group(0)                     = ?

@@ -1,0 +1,166 @@
+{
+  "workload": {
+    "name": "git-shell",
+    "category": "hard",
+    "binary": "/home/dev/r6-census/artifacts/git-distro/git",
+    "expected_returncode": 0,
+    "argv": [
+      "-c",
+      "alias.scan=!echo agent-shell",
+      "scan"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "6167656e742d7368656c6c0a"
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/git-distro/git",
+    "sha256": "171572a95cb70f20e1893384fe47bbe5aada549a2e8daa2a5bf5c944bc1f6e70",
+    "bytes": 4329080,
+    "elf_type": 3,
+    "machine": 183,
+    "entry": 134528,
+    "headers": [
+      {
+        "type": 6,
+        "flags": 4,
+        "offset": 64,
+        "vaddr": 64,
+        "filesz": 672,
+        "memsz": 672,
+        "align": 8
+      },
+      {
+        "type": 3,
+        "flags": 4,
+        "offset": 772,
+        "vaddr": 772,
+        "filesz": 27,
+        "memsz": 27,
+        "align": 1
+      },
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 4198732,
+        "memsz": 4198732,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 4243680,
+        "vaddr": 4309216,
+        "filesz": 83088,
+        "memsz": 236720,
+        "align": 65536
+      },
+      {
+        "type": 2,
+        "flags": 6,
+        "offset": 4257080,
+        "vaddr": 4322616,
+        "filesz": 560,
+        "memsz": 560,
+        "align": 8
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 736,
+        "vaddr": 736,
+        "filesz": 36,
+        "memsz": 36,
+        "align": 4
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 4198552,
+        "vaddr": 4198552,
+        "filesz": 32,
+        "memsz": 32,
+        "align": 8
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 4198584,
+        "vaddr": 4198584,
+        "filesz": 148,
+        "memsz": 148,
+        "align": 4
+      },
+      {
+        "type": 1685382483,
+        "flags": 4,
+        "offset": 4198552,
+        "vaddr": 4198552,
+        "filesz": 32,
+        "memsz": 32,
+        "align": 8
+      },
+      {
+        "type": 1685382480,
+        "flags": 4,
+        "offset": 3824052,
+        "vaddr": 3824052,
+        "filesz": 39484,
+        "memsz": 39484,
+        "align": 4
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 16
+      },
+      {
+        "type": 1685382482,
+        "flags": 4,
+        "offset": 4243680,
+        "vaddr": 4309216,
+        "filesz": 16160,
+        "memsz": 16160,
+        "align": 1
+      }
+    ],
+    "interpreter": true,
+    "dynamic": true,
+    "tls": [],
+    "pack_error": "static ET_EXEC AArch64 required",
+    "packed": null
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "6167656e742d7368656c6c0a",
+      "stderr_hex": "",
+      "uptime": "1226.34 6549.84",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "6167656e742d7368656c6c0a",
+      "stderr_hex": "",
+      "uptime": "1226.39 6550.00",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "micropython",
+  "version": "v1.27.0",
+  "source": "https://micropython.org/resources/source/micropython-1.27.0.tar.xz",
+  "source_sha256": "9874b20646c3bbe81d524f779a16875e5d088b7065e175ffd2aa2a02f50573c9",
+  "verified": false,
+  "binary": "/home/dev/r6-census/artifacts/micropython/micropython-1.27.0/ports/unix/build-standard/micropython",
+  "binary_sha256": "4626bf11458cb18785515ddc8a26246a12aafa602fa197346327602489c4ca62",
+  "config": "standard; SSL/FFI/btree off; frozen manifest empty"
+}

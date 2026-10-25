@@ -1,0 +1,17 @@
+{
+  "returncode": 1,
+  "timeout": false,
+  "stdout_hex": "",
+  "stderr_hex": "2f686f6d652f6465762f72362d63656e7375732f6172746966616374732f787a2f787a2d352e382e342f7372632f787a2f787a3a204661696c656420746f20656e61626c65207468652073616e64626f780a",
+  "uptime": "2114.76 11599.88",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "xz",
+  "syscall": "prctl",
+  "same_stdout": false,
+  "preserved": false,
+  "injected": true
+}

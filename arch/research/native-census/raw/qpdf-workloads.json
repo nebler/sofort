@@ -1,0 +1,16 @@
+[
+  {
+    "name": "qpdf",
+    "category": "documents",
+    "binary": "/home/dev/r6-census/artifacts/qpdf-distro/unpacked/usr/bin/qpdf",
+    "argv": [
+      "--show-npages",
+      "data/doc.pdf"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "310a",
+    "env": {
+      "LD_LIBRARY_PATH": "/home/dev/r6-census/artifacts/libqpdf-distro/unpacked/usr/lib/aarch64-linux-gnu:/home/dev/r6-census/artifacts/libjpeg-distro/unpacked/usr/lib/aarch64-linux-gnu"
+    }
+  }
+]

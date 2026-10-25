@@ -1,0 +1,308 @@
+46395 execve("/home/dev/r6-census/artifacts/ffmpeg/unpacked/ffmpeg-master-latest-linuxarm64-lgpl/bin/ffmpeg", ["/home/dev/r6-census/artifacts/ffmpeg/unpacked/ffmpeg-master-latest-linuxarm64-lgpl/bin/ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-threads", "1", "-i", "data/tone.wav", "-threads", "1", "-f", "s16le", "-ac", "1", "-ar", "8000", "pipe:1"], ["PATH=/usr/bin:/bin", "HOME=/nonexistent", "LC_ALL=C", "LANG=C", "TZ=UTC", "GOMAXPROCS=1", "NO_COLOR=1"]) = 0
+46395 brk(NULL)                         = 0xc43d3404e000
+46395 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf87182cf1000
+46395 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+46395 fstat(3</etc/ld.so.cache>, {st_dev=makedev(0xfd, 0x1), st_ino=8047, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=48, st_size=24051, st_atime=1792913991 /* 2026-10-25T07:39:51.783403556+0000 */, st_atime_nsec=783403556, st_mtime=1792913991 /* 2026-10-25T07:39:51.771403584+0000 */, st_mtime_nsec=771403584, st_ctime=1792913991 /* 2026-10-25T07:39:51.772403581+0000 */, st_ctime_nsec=772403581}) = 0
+46395 mmap(NULL, 24051, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0xf87182ceb000
+46395 close(3</etc/ld.so.cache>)        = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libm.so.6>
+46395 read(3</usr/lib/aarch64-linux-gnu/libm.so.6>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\210\1\v\0\0\0\0\0\0\0\0\0@\08\0\n\0@\0\35\0\34\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\210\350\n\0\0\0\0\0\210\350\n\0\0\0\0\0\0\0\1\0\0\0\0\0\1\0\0\0\6\0\0\0\300\374\n\0\0\0\0\0\300\374\v\0\0\0\0\0\300\374\v\0\0\0\0\0L\3\0\0\0\0\0\0X\3\0\0\0\0\0\0\0\0\1\0\0\0\0\0\2\0\0\0\6\0\0\0\320\374\n\0\0\0\0\0\320\374\v\0\0\0\0\0\320\374\v\0\0\0\0\0`\2\0\0\0\0\0\0`\2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0$\0\0\0\0\0\0\0$\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0H\350\n\0\0\0\0\0H\350\n\0\0\0\0\0H\350\n\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0h\350\n\0\0\0\0\0h\350\n\0\0\0\0\0h\350\n\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\4\0\0\0\0\0\0\0S\345td\4\0\0\0H\350\n\0\0\0\0\0H\350\n\0\0\0\0\0H\350\n\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0P\345td\4\0\0\0\2009\n\0\0\0\0\0\2009\n\0\0\0\0\0\2009\n\0\0\0\0\0\f\26\0\0\0\0\0\0\f\26\0\0\0\0\0\0\4\0\0\0\0\0\0\0Q\345td\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0R\345td\4\0\0\0\300\374\n\0\0\0\0\0\300\374\v\0\0\0\0\0\300\374\v\0\0\0\0\0@\3\0\0\0\0\0\0@\3\0\0\0\0\0\0\1\0\0\0\0\0\0\0\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\214\222\323\6(\326\37@\364\277\312\343\234\364\251/m\274\306\261\0\0\0\0\376\3\0\0\22\0\0\0\200\0\0\0\r\0\0\0\245@\0@AH\20\4*T\4N\2\17u\0J\350\200\"\0a\10\312H`\0\200\0>\312`\24\204&\20PA\337\304P\21\2) \20x\2224H\0\222\22\0\200(\252\24%@\212b\30\0\2#\200E \20*\2\20\246\31f\215\321\16\252\21\0\0\0\4!\32B\5\01000\324J: \320\0\10\22\1\204iJG\211\f\20\200H \0`(\220\24\n\5\22\2\2\210\0\6\0\10\2@@\10\203\31 \204EI0E\4 \210#\t\0@F0@\203!A\0", 832) = 832
+46395 fstat(3</usr/lib/aarch64-linux-gnu/libm.so.6>, {st_dev=makedev(0xfd, 0x1), st_ino=5345, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=1416, st_size=723144, st_atime=1792921630 /* 2026-10-25T09:47:10.283000000+0000 */, st_atime_nsec=283000000, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.513725798+0000 */, st_ctime_nsec=513725798}) = 0
+46395 mmap(NULL, 851992, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xf87182bea000
+46395 mmap(0xf87182bf0000, 786456, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libm.so.6>, 0) = 0xf87182bf0000
+46395 munmap(0xf87182bea000, 24576)     = 0
+46395 munmap(0xf87182cb1000, 36888)     = 0
+46395 mprotect(0xf87182c9f000, 65536, PROT_NONE) = 0
+46395 mmap(0xf87182caf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libm.so.6>, 0xaf000) = 0xf87182caf000
+46395 mmap(0xf87182bf0000, 716800, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libm.so.6>, 0) = 0xf87182bf0000
+46395 close(3</usr/lib/aarch64-linux-gnu/libm.so.6>) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libdl.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libdl.so.2>
+46395 read(3</usr/lib/aarch64-linux-gnu/libdl.so.2>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\200\1\1\0\0\0\0\0\0\0\0\0@\08\0\n\0@\0\34\0\33\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0(\10\0\0\0\0\0\0(\10\0\0\0\0\0\0\0\0\1\0\0\0\0\0\1\0\0\0\6\0\0\0P\375\0\0\0\0\0\0P\375\1\0\0\0\0\0P\375\1\0\0\0\0\0\270\2\0\0\0\0\0\0\300\2\0\0\0\0\0\0\0\0\1\0\0\0\0\0\2\0\0\0\6\0\0\0`\375\0\0\0\0\0\0`\375\1\0\0\0\0\0`\375\1\0\0\0\0\0P\2\0\0\0\0\0\0P\2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0$\0\0\0\0\0\0\0$\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\350\7\0\0\0\0\0\0\350\7\0\0\0\0\0\0\350\7\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\10\10\0\0\0\0\0\0\10\10\0\0\0\0\0\0\10\10\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\4\0\0\0\0\0\0\0S\345td\4\0\0\0\350\7\0\0\0\0\0\0\350\7\0\0\0\0\0\0\350\7\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0P\345td\4\0\0\0\20\7\0\0\0\0\0\0\20\7\0\0\0\0\0\0\20\7\0\0\0\0\0\0004\0\0\0\0\0\0\0004\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0Q\345td\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0R\345td\4\0\0\0P\375\0\0\0\0\0\0P\375\1\0\0\0\0\0P\375\1\0\0\0\0\0\260\2\0\0\0\0\0\0\260\2\0\0\0\0\0\0\1\0\0\0\0\0\0\0\4\0\0\0\24\0\0\0\3\0\0\0GNU\0r\376u+,8n\325\35\35\223f\26\261I\335\361\226\370\356\0\0\0\0\3\0\0\0\7\0\0\0\1\0\0\0\6\0\0\0\0 \2\20\10\0\0\0\7\0\0\0\10\0\0\0\0\0\0\0\315\370\363\303\21WL\26\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\v\0h\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\27\0\0\0\2\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0F\0\0\0\"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 832) = 832
+46395 fstat(3</usr/lib/aarch64-linux-gnu/libdl.so.2>, {st_dev=makedev(0xfd, 0x1), st_ino=5344, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67712, st_atime=1792921784 /* 2026-10-25T09:49:44.692419736+0000 */, st_atime_nsec=692419736, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.512725788+0000 */, st_ctime_nsec=512725788}) = 0
+46395 mmap(NULL, 196624, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xf87182bbf000
+46395 mmap(0xf87182bc0000, 131088, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libdl.so.2>, 0) = 0xf87182bc0000
+46395 munmap(0xf87182bbf000, 4096)      = 0
+46395 munmap(0xf87182be1000, 57360)     = 0
+46395 mprotect(0xf87182bc1000, 122880, PROT_NONE) = 0
+46395 mmap(0xf87182bdf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libdl.so.2>, 0xf000) = 0xf87182bdf000
+46395 mmap(0xf87182bc0000, 4096, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libdl.so.2>, 0) = 0xf87182bc0000
+46395 close(3</usr/lib/aarch64-linux-gnu/libdl.so.2>) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/librt.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/librt.so.1>
+46395 read(3</usr/lib/aarch64-linux-gnu/librt.so.1>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\210\1\1\0\0\0\0\0\0\0\0\0@\08\0\n\0@\0\35\0\34\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\340\v\0\0\0\0\0\0\340\v\0\0\0\0\0\0\0\0\1\0\0\0\0\0\1\0\0\0\6\0\0\0(\375\0\0\0\0\0\0(\375\1\0\0\0\0\0(\375\1\0\0\0\0\0\340\2\0\0\0\0\0\0\350\2\0\0\0\0\0\0\0\0\1\0\0\0\0\0\2\0\0\0\6\0\0\08\375\0\0\0\0\0\08\375\1\0\0\0\0\08\375\1\0\0\0\0\0`\2\0\0\0\0\0\0`\2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0$\0\0\0\0\0\0\0$\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\240\v\0\0\0\0\0\0\240\v\0\0\0\0\0\0\240\v\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\300\v\0\0\0\0\0\0\300\v\0\0\0\0\0\0\300\v\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\4\0\0\0\0\0\0\0S\345td\4\0\0\0\240\v\0\0\0\0\0\0\240\v\0\0\0\0\0\0\240\v\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0P\345td\4\0\0\0\0\n\0\0\0\0\0\0\0\n\0\0\0\0\0\0\0\n\0\0\0\0\0\0T\0\0\0\0\0\0\0T\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0Q\345td\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0R\345td\4\0\0\0(\375\0\0\0\0\0\0(\375\1\0\0\0\0\0(\375\1\0\0\0\0\0\330\2\0\0\0\0\0\0\330\2\0\0\0\0\0\0\1\0\0\0\0\0\0\0\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\30fDS\\\251\362\372\374\10VYr]~\319\243\27\37\0\0\0\0\3\0\0\0\n\0\0\0\1\0\0\0\6\0\0\0\0 \0\0\210\0\0\200\n\0\0\0\0\0\0\0\v\0\0\0\315\370\363\303\347? \344\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\v\0\210\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\30\0\0\0\2\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\234\0\0\0\22\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 832) = 832
+46395 fstat(3</usr/lib/aarch64-linux-gnu/librt.so.1>, {st_dev=makedev(0xfd, 0x1), st_ino=5356, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67784, st_atime=1792922032 /* 2026-10-25T09:53:52.357016277+0000 */, st_atime_nsec=357016277, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.517725841+0000 */, st_ctime_nsec=517725841}) = 0
+46395 mmap(NULL, 196624, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xf87182b8f000
+46395 mmap(0xf87182b90000, 131088, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/librt.so.1>, 0) = 0xf87182b90000
+46395 munmap(0xf87182b8f000, 4096)      = 0
+46395 munmap(0xf87182bb1000, 57360)     = 0
+46395 mprotect(0xf87182b91000, 122880, PROT_NONE) = 0
+46395 mmap(0xf87182baf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/librt.so.1>, 0xf000) = 0xf87182baf000
+46395 mmap(0xf87182b90000, 4096, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/librt.so.1>, 0) = 0xf87182b90000
+46395 close(3</usr/lib/aarch64-linux-gnu/librt.so.1>) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libpthread.so.0>
+46395 read(3</usr/lib/aarch64-linux-gnu/libpthread.so.0>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\200\1\1\0\0\0\0\0\0\0\0\0@\08\0\n\0@\0\34\0\33\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\10\n\0\0\0\0\0\0\10\n\0\0\0\0\0\0\0\0\1\0\0\0\0\0\1\0\0\0\6\0\0\0P\375\0\0\0\0\0\0P\375\1\0\0\0\0\0P\375\1\0\0\0\0\0\270\2\0\0\0\0\0\0\300\2\0\0\0\0\0\0\0\0\1\0\0\0\0\0\2\0\0\0\6\0\0\0`\375\0\0\0\0\0\0`\375\1\0\0\0\0\0`\375\1\0\0\0\0\0P\2\0\0\0\0\0\0P\2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0$\0\0\0\0\0\0\0$\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\310\t\0\0\0\0\0\0\310\t\0\0\0\0\0\0\310\t\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\350\t\0\0\0\0\0\0\350\t\0\0\0\0\0\0\350\t\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\4\0\0\0\0\0\0\0S\345td\4\0\0\0\310\t\0\0\0\0\0\0\310\t\0\0\0\0\0\0\310\t\0\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0P\345td\4\0\0\0\360\10\0\0\0\0\0\0\360\10\0\0\0\0\0\0\360\10\0\0\0\0\0\0004\0\0\0\0\0\0\0004\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0Q\345td\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0R\345td\4\0\0\0P\375\0\0\0\0\0\0P\375\1\0\0\0\0\0P\375\1\0\0\0\0\0\260\2\0\0\0\0\0\0\260\2\0\0\0\0\0\0\1\0\0\0\0\0\0\0\4\0\0\0\24\0\0\0\3\0\0\0GNU\0\270\3034\303\206FO\\ h\241\213n\35\321\314\251\227k\23\0\0\0\0\16\0\0\0\7\0\0\0\1\0\0\0\6\0\0\0\0c\0\0\30\200@\0\0\0\0\0\7\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\r\0\0\0\16\0\0\0\0\0\0\0\17\0\0\0\20\0\0\0\357\370\363\303\210\335v\26\210\335v\26\210\335v\26\210\335v\26\211\335v\26\315\370\363\303\317\370\363\303\t\371\363\303\t\371\363\303\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\v\0H\7\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 832) = 832
+46395 fstat(3</usr/lib/aarch64-linux-gnu/libpthread.so.0>, {st_dev=makedev(0xfd, 0x1), st_ino=5354, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67712, st_atime=1792921784 /* 2026-10-25T09:49:44.692419736+0000 */, st_atime_nsec=692419736, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.516725830+0000 */, st_ctime_nsec=516725830}) = 0
+46395 mmap(NULL, 196624, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xf87182b5f000
+46395 mmap(0xf87182b60000, 131088, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpthread.so.0>, 0) = 0xf87182b60000
+46395 munmap(0xf87182b5f000, 4096)      = 0
+46395 munmap(0xf87182b81000, 57360)     = 0
+46395 mprotect(0xf87182b61000, 122880, PROT_NONE) = 0
+46395 mmap(0xf87182b7f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpthread.so.0>, 0xf000) = 0xf87182b7f000
+46395 mmap(0xf87182b60000, 4096, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpthread.so.0>, 0) = 0xf87182b60000
+46395 close(3</usr/lib/aarch64-linux-gnu/libpthread.so.0>) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libc.so.6>
+46395 read(3</usr/lib/aarch64-linux-gnu/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\3101\2\0\0\0\0\0@\0\0\0\0\0\0\0P9\33\0\0\0\0\0\0\0\0\0@\08\0\r\0@\0@\0?\0\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\330\2\0\0\0\0\0\0\330\2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0\230@\27\0\0\0\0\0\230@\27\0\0\0\0\0\230@\27\0\0\0\0\0\33\0\0\0\0\0\0\0\33\0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\230\211\32\0\0\0\0\0\230\211\32\0\0\0\0\0\0\0\1\0\0\0\0\0\1\0\0\0\6\0\0\0\200\320\32\0\0\0\0\0\200\320\33\0\0\0\0\0\200\320\33\0\0\0\0\0XD\0\0\0\0\0\0\300\r\1\0\0\0\0\0\0\0\1\0\0\0\0\0\2\0\0\0\6\0\0\0\210\372\32\0\0\0\0\0\210\372\33\0\0\0\0\0\210\372\33\0\0\0\0\0\20\2\0\0\0\0\0\0\20\2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\30\3\0\0\0\0\0\0\30\3\0\0\0\0\0\0\30\3\0\0\0\0\0\0$\0\0\0\0\0\0\0$\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0X\211\32\0\0\0\0\0X\211\32\0\0\0\0\0X\211\32\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0x\211\32\0\0\0\0\0x\211\32\0\0\0\0\0x\211\32\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\7\0\0\0\4\0\0\0\200\320\32\0\0\0\0\0\200\320\33\0\0\0\0\0\200\320\33\0\0\0\0\0000\0\0\0\0\0\0\0\200\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0S\345td\4\0\0\0X\211\32\0\0\0\0\0X\211\32\0\0\0\0\0X\211\32\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0P\345td\4\0\0\0\264@\27\0\0\0\0\0\264@\27\0\0\0\0\0\264@\27\0\0\0\0\0\24n\0\0\0\0\0\0\24n\0\0\0\0\0\0\4\0\0\0\0\0\0\0Q\345td\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0R\345td\4\0\0\0\200\320\32\0\0\0\0\0\200\320\33\0\0\0\0\0\200\320\33\0\0\0\0\0\200/\0\0\0\0\0\0\200/\0\0\0\0\0\0\1\0\0\0\0\0\0\0\4\0\0\0\24\0\0\0\3\0\0\0GNU\0V\227\324\201h\v\352\222\336\273P\370\240(\223f\217\267\366\341\0\0\0\0", 832) = 832
+46395 fstat(3</usr/lib/aarch64-linux-gnu/libc.so.6>, {st_dev=makedev(0xfd, 0x1), st_ino=5342, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=3496, st_size=1788240, st_atime=1792921630 /* 2026-10-25T09:47:10.280000000+0000 */, st_atime_nsec=280000000, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.511725777+0000 */, st_ctime_nsec=511725777}) = 0
+46395 mmap(NULL, 1957440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xf87182982000
+46395 mmap(0xf87182990000, 1891904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xf87182990000
+46395 munmap(0xf87182982000, 57344)     = 0
+46395 munmap(0xf87182b5e000, 7744)      = 0
+46395 mprotect(0xf87182b39000, 81920, PROT_NONE) = 0
+46395 mmap(0xf87182b4d000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0x1ad000) = 0xf87182b4d000
+46395 mmap(0xf87182b52000, 48704, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xf87182b52000
+46395 mmap(0xf87182990000, 1740800, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xf87182990000
+46395 close(3</usr/lib/aarch64-linux-gnu/libc.so.6>) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>
+46395 read(3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0\0P\3\2\0\0\0\0\0\0\0\0\0@\08\0\n\0@\0\35\0\34\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\310\352\1\0\0\0\0\0\310\352\1\0\0\0\0\0\0\0\1\0\0\0\0\0\1\0\0\0\6\0\0\0h\375\1\0\0\0\0\0h\375\2\0\0\0\0\0h\375\2\0\0\0\0\0p\4\0\0\0\0\0\08\6\0\0\0\0\0\0\0\0\1\0\0\0\0\0\2\0\0\0\6\0\0\0\230\375\1\0\0\0\0\0\230\375\2\0\0\0\0\0\230\375\2\0\0\0\0\0 \2\0\0\0\0\0\0 \2\0\0\0\0\0\0\10\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0p\2\0\0\0\0\0\0$\0\0\0\0\0\0\0$\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\4\0\0\0\4\0\0\0\250\352\1\0\0\0\0\0\250\352\1\0\0\0\0\0\250\352\1\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\7\0\0\0\4\0\0\0h\375\1\0\0\0\0\0h\375\2\0\0\0\0\0h\375\2\0\0\0\0\0\0\0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\10\0\0\0\0\0\0\0S\345td\4\0\0\0\250\352\1\0\0\0\0\0\250\352\1\0\0\0\0\0\250\352\1\0\0\0\0\0 \0\0\0\0\0\0\0 \0\0\0\0\0\0\0\10\0\0\0\0\0\0\0P\345td\4\0\0\0\230\275\1\0\0\0\0\0\230\275\1\0\0\0\0\0\230\275\1\0\0\0\0\0\304\6\0\0\0\0\0\0\304\6\0\0\0\0\0\0\4\0\0\0\0\0\0\0Q\345td\6\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0R\345td\4\0\0\0h\375\1\0\0\0\0\0h\375\2\0\0\0\0\0h\375\2\0\0\0\0\0\230\2\0\0\0\0\0\0\230\2\0\0\0\0\0\0\1\0\0\0\0\0\0\0\4\0\0\0\24\0\0\0\3\0\0\0GNU\0 \201T\361k\305Z/\202C8\247\311\236\276\270\376\10\306\300\0\0\0\0\203\0\0\0\37\0\0\0\20\0\0\0\n\0\0\0\23\34\3\30\4$\0\1\1\341\0T\4\2\10\20\200\304\1$\200\214E\224\3\0`0\4\223\1\24\22\200\300 \300\0\200\2t\1\200\20\10,\302\2h\21+ \322\3\2(\27\265$`l\322\5\241#pB@r\206\30b@@\1@\300\v\0@\22,\10\220\21\2\10A\300!4\231\25(  \30C\v\246\222\10)H\10CJ\34*\234\22O\326\1\207\vA\244\226\315\204\303\305\4\242\333\16\314\37\0\0\0 \0\0\0#\0\0\0\0\0\0\0%\0\0\0(\0\0\0", 832) = 832
+46395 fstat(3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>, {st_dev=makedev(0xfd, 0x1), st_ino=5624, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133776, st_atime=1792921631 /* 2026-10-25T09:47:11.382560625+0000 */, st_atime_nsec=382560625, st_mtime=1774168304 /* 2026-03-22T08:31:44+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.604726768+0000 */, st_ctime_nsec=604726768}) = 0
+46395 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf87182ce9000
+46395 mmap(NULL, 263072, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xf8718294f000
+46395 mmap(0xf87182950000, 197536, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>, 0) = 0xf87182950000
+46395 munmap(0xf8718294f000, 4096)      = 0
+46395 munmap(0xf87182981000, 58272)     = 0
+46395 mprotect(0xf8718296f000, 65536, PROT_NONE) = 0
+46395 mmap(0xf8718297f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>, 0x1f000) = 0xf8718297f000
+46395 mmap(0xf87182950000, 126976, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>, 0) = 0xf87182950000
+46395 close(3</usr/lib/aarch64-linux-gnu/libgcc_s.so.1>) = 0
+46395 mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf87182ce6000
+46395 set_tid_address(0xf87182ce6448)   = 46395
+46395 set_robust_list(0xf87182ce6100, 24) = 0
+46395 rseq(0xf87182ce6c80, 0x21, 0, 0xd428bc00) = 0
+46395 mprotect(0xf87182b4d000, 12288, PROT_READ) = 0
+46395 mprotect(0xf8718297f000, 4096, PROT_READ) = 0
+46395 mprotect(0xf87182b7f000, 4096, PROT_READ) = 0
+46395 mprotect(0xf87182baf000, 4096, PROT_READ) = 0
+46395 mprotect(0xf87182bdf000, 4096, PROT_READ) = 0
+46395 mprotect(0xf87182caf000, 4096, PROT_READ) = 0
+46395 mprotect(0xc43cf4771000, 3665920, PROT_READ) = 0
+46395 mprotect(0xf87182cf9000, 8192, PROT_READ) = 0
+46395 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+46395 getrandom("\x50\x25\x1f\x1c\x7d\xe4\xc1\xd1", 8, GRND_NONBLOCK) = 8
+46395 munmap(0xf87182ceb000, 24051)     = 0
+46395 futex(0xc43cf5539c2c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+46395 futex(0xc43cf5539c38, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+46395 brk(NULL)                         = 0xc43d3404e000
+46395 brk(0xc43d34200000)               = 0xc43d34200000
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+46395 fstat(3</etc/ld.so.cache>, {st_dev=makedev(0xfd, 0x1), st_ino=8047, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=48, st_size=24051, st_atime=1792913991 /* 2026-10-25T07:39:51.783403556+0000 */, st_atime_nsec=783403556, st_mtime=1792913991 /* 2026-10-25T07:39:51.771403584+0000 */, st_mtime_nsec=771403584, st_ctime=1792913991 /* 2026-10-25T07:39:51.772403581+0000 */, st_ctime_nsec=772403581}) = 0
+46395 mmap(NULL, 24051, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0xf87182ceb000
+46395 close(3</etc/ld.so.cache>)        = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/lib/aarch64-linux-gnu/libvulkan.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+46395 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/lib/aarch64-linux-gnu/", {st_dev=makedev(0xfd, 0x1), st_ino=5317, st_mode=S_IFDIR|0755, st_nlink=38, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=80, st_size=36864, st_atime=1792913991 /* 2026-10-25T07:39:51.768403590+0000 */, st_atime_nsec=768403590, st_mtime=1792913991 /* 2026-10-25T07:39:51.742283275+0000 */, st_mtime_nsec=742283275, st_ctime=1792913991 /* 2026-10-25T07:39:51.742283275+0000 */, st_ctime_nsec=742283275}, 0) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libvulkan.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+46395 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/", {st_dev=makedev(0xfd, 0x1), st_ino=5317, st_mode=S_IFDIR|0755, st_nlink=38, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=80, st_size=36864, st_atime=1792913991 /* 2026-10-25T07:39:51.768403590+0000 */, st_atime_nsec=768403590, st_mtime=1792913991 /* 2026-10-25T07:39:51.742283275+0000 */, st_mtime_nsec=742283275, st_ctime=1792913991 /* 2026-10-25T07:39:51.742283275+0000 */, st_ctime_nsec=742283275}, 0) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/lib/libvulkan.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+46395 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/lib/", {st_dev=makedev(0xfd, 0x1), st_ino=4363, st_mode=S_IFDIR|0755, st_nlink=82, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921630 /* 2026-10-25T09:47:10.058000000+0000 */, st_atime_nsec=58000000, st_mtime=1792834653 /* 2026-10-24T09:37:33.532525772+0000 */, st_mtime_nsec=532525772, st_ctime=1792834653 /* 2026-10-24T09:37:33.532525772+0000 */, st_ctime_nsec=532525772}, 0) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/libvulkan.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+46395 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/", {st_dev=makedev(0xfd, 0x1), st_ino=4363, st_mode=S_IFDIR|0755, st_nlink=82, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921630 /* 2026-10-25T09:47:10.058000000+0000 */, st_atime_nsec=58000000, st_mtime=1792834653 /* 2026-10-24T09:37:33.532525772+0000 */, st_mtime_nsec=532525772, st_ctime=1792834653 /* 2026-10-24T09:37:33.532525772+0000 */, st_ctime_nsec=532525772}, 0) = 0
+46395 munmap(0xf87182ceb000, 24051)     = 0
+46395 futex(0xc43cf556f768, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+46395 futex(0xc43cf556f768, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+46395 rt_sigaction(SIGINT, {sa_handler=0xc43cee34af90, sa_mask=~[RTMIN RT_1], sa_flags=SA_RESTART}, NULL, 8) = 0
+46395 rt_sigaction(SIGTERM, {sa_handler=0xc43cee34af90, sa_mask=~[RTMIN RT_1], sa_flags=SA_RESTART}, NULL, 8) = 0
+46395 rt_sigaction(SIGXCPU, {sa_handler=0xc43cee34af90, sa_mask=~[RTMIN RT_1], sa_flags=SA_RESTART}, NULL, 8) = 0
+46395 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_INTERRUPT|SA_NODEFER|SA_RESETHAND}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+46395 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/tone.wav", O_RDONLY) = 3</home/dev/r6-census/fixtures/data/tone.wav>
+46395 fcntl(3</home/dev/r6-census/fixtures/data/tone.wav>, F_SETFD, FD_CLOEXEC) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.328525319+0000 */, st_atime_nsec=328525319, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 lseek(3</home/dev/r6-census/fixtures/data/tone.wav>, 0, SEEK_SET) = 0
+46395 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "RIFF\304\0\0\0WAVEfmt \20\0\0\0\1\0\1\0@\37\0\0\200>\0\0\2\0\20\0data\240\0\0\0\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351", 32768) = 204
+46395 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "", 32768) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "", 65376) = 0
+46395 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "", 32768) = 0
+46395 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "", 32768) = 0
+46395 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "", 32768) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 fstat(3</home/dev/r6-census/fixtures/data/tone.wav>, {st_dev=makedev(0xfd, 0x1), st_ino=1316912, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=204, st_atime=1792922414 /* 2026-10-25T10:00:14.608721351+0000 */, st_atime_nsec=608721351, st_mtime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_mtime_nsec=328720570, st_ctime=1792922414 /* 2026-10-25T10:00:14.328720570+0000 */, st_ctime_nsec=328720570}) = 0
+46395 dup(1<pipe:[73752]>)              = 4<pipe:[73752]>
+46395 fcntl(4<pipe:[73752]>, F_SETFD, FD_CLOEXEC) = 0
+46395 getrusage(RUSAGE_SELF, {ru_utime={tv_sec=0, tv_usec=3092}, ru_stime={tv_sec=0, tv_usec=9278}, ru_maxrss=33040, ru_ixrss=0, ru_idrss=0, ru_isrss=0, ru_minflt=1718, ru_majflt=0, ru_nswap=0, ru_inblock=0, ru_oublock=0, ru_msgsnd=0, ru_msgrcv=0, ru_nsignals=0, ru_nvcsw=274, ru_nivcsw=0}) = 0
+46395 rt_sigaction(SIGRT_1, {sa_handler=0xf87182a193c0, sa_mask=[], sa_flags=SA_ONSTACK|SA_RESTART|SA_SIGINFO}, NULL, 8) = 0
+46395 rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
+46395 mmap(NULL, 8454144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xf87182140000
+46395 madvise(0xf87182140000, 65536, MADV_GUARD_INSTALL) = 0
+46395 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+46395 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xf8718294f108, parent_tid=0xf8718294edb0, exit_signal=0, stack=0xf87182140000, stack_size=0x80e5c0, tls=0xf8718294f400} => {parent_tid=[46396]}, 88) = 46396
+46395 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46396 rseq(0xf8718294f940, 0x21, 0, 0xd428bc00 <unfinished ...>
+46395 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46396 <... rseq resumed>)               = 0
+46395 mmap(NULL, 8454144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0 <unfinished ...>
+46396 set_robust_list(0xf8718294edc0, 24 <unfinished ...>
+46395 <... mmap resumed>)               = 0xf87181930000
+46396 <... set_robust_list resumed>)    = 0
+46395 madvise(0xf87181930000, 65536, MADV_GUARD_INSTALL <unfinished ...>
+46396 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46395 <... madvise resumed>)            = 0
+46396 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46395 rt_sigprocmask(SIG_BLOCK, ~[] <unfinished ...>
+46396 mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+46395 <... rt_sigprocmask resumed>, [], 8) = 0
+46396 <... mmap resumed>)               = 0xf87179800000
+46395 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xf8718213f108, parent_tid=0xf8718213edb0, exit_signal=0, stack=0xf87181930000, stack_size=0x80e5c0, tls=0xf8718213f400} <unfinished ...>
+46396 munmap(0xf87179800000, 41943040)  = 0
+46395 <... clone3 resumed> => {parent_tid=[46397]}, 88) = 46397
+46396 munmap(0xf87180000000, 25165824 <unfinished ...>
+46395 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46397 rseq(0xf8718213f940, 0x21, 0, 0xd428bc00 <unfinished ...>
+46396 <... munmap resumed>)             = 0
+46395 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46395 mmap(NULL, 8454144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0 <unfinished ...>
+46397 <... rseq resumed>)               = 0
+46396 mprotect(0xf8717c000000, 2097152, PROT_READ|PROT_WRITE <unfinished ...>
+46395 <... mmap resumed>)               = 0xf87181120000
+46397 set_robust_list(0xf8718213edc0, 24 <unfinished ...>
+46396 <... mprotect resumed>)           = 0
+46395 madvise(0xf87181120000, 65536, MADV_GUARD_INSTALL <unfinished ...>
+46397 <... set_robust_list resumed>)    = 0
+46396 madvise(0xf8717c000000, 2097152, MADV_HUGEPAGE <unfinished ...>
+46395 <... madvise resumed>)            = 0
+46397 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46396 <... madvise resumed>)            = 0
+46395 rt_sigprocmask(SIG_BLOCK, ~[] <unfinished ...>
+46397 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46395 <... rt_sigprocmask resumed>, [], 8) = 0
+46397 mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+46395 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xf8718192f108, parent_tid=0xf8718192edb0, exit_signal=0, stack=0xf87181120000, stack_size=0x80e5c0, tls=0xf8718192f400} <unfinished ...>
+46397 <... mmap resumed>)               = 0xf87174000000
+46397 munmap(0xf87178000000, 67108864 <unfinished ...>
+46395 <... clone3 resumed> => {parent_tid=[46398]}, 88) = 46398
+46397 <... munmap resumed>)             = 0
+46395 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46398 rseq(0xf8718192f940, 0x21, 0, 0xd428bc00 <unfinished ...>
+46397 mprotect(0xf87174000000, 2097152, PROT_READ|PROT_WRITE <unfinished ...>
+46395 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46398 <... rseq resumed>)               = 0
+46397 <... mprotect resumed>)           = 0
+46395 mmap(NULL, 8454144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0 <unfinished ...>
+46398 set_robust_list(0xf8718192edc0, 24 <unfinished ...>
+46396 futex(0xc43d340897f0, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 0, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+46397 madvise(0xf87174000000, 2097152, MADV_HUGEPAGE <unfinished ...>
+46395 <... mmap resumed>)               = 0xf87180910000
+46398 <... set_robust_list resumed>)    = 0
+46395 madvise(0xf87180910000, 65536, MADV_GUARD_INSTALL <unfinished ...>
+46398 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46397 <... madvise resumed>)            = 0
+46395 <... madvise resumed>)            = 0
+46398 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46395 rt_sigprocmask(SIG_BLOCK, ~[] <unfinished ...>
+46398 mmap(0xf87178000000, 67108864, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+46397 prctl(PR_SET_NAME, "af#0:0" <unfinished ...>
+46395 <... rt_sigprocmask resumed>, [], 8) = 0
+46398 <... mmap resumed>)               = 0xf87178000000
+46397 <... prctl resumed>)              = 0
+46395 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xf8718111f108, parent_tid=0xf8718111edb0, exit_signal=0, stack=0xf87180910000, stack_size=0x80e5c0, tls=0xf8718111f400} <unfinished ...>
+46398 mprotect(0xf87178000000, 2097152, PROT_READ|PROT_WRITE <unfinished ...>
+46397 futex(0xc43d3408a8d0, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 0, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+46398 <... mprotect resumed>)           = 0
+46395 <... clone3 resumed> => {parent_tid=[46399]}, 88) = 46399
+46399 rseq(0xf8718111f940, 0x21, 0, 0xd428bc00 <unfinished ...>
+46398 madvise(0xf87178000000, 2097152, MADV_HUGEPAGE <unfinished ...>
+46395 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46399 <... rseq resumed>)               = 0
+46398 <... madvise resumed>)            = 0
+46395 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46395 futex(0xc43d34086780, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 0, {tv_sec=1792922415, tv_nsec=115037000}, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+46399 set_robust_list(0xf8718111edc0, 24) = 0
+46399 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+46399 mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf8716c000000
+46399 munmap(0xf87170000000, 67108864)  = 0
+46399 mprotect(0xf8716c000000, 2097152, PROT_READ|PROT_WRITE) = 0
+46399 madvise(0xf8716c000000, 2097152, MADV_HUGEPAGE) = 0
+46399 prctl(PR_SET_NAME, "dmx0:wav")    = 0
+46399 read(3</home/dev/r6-census/fixtures/data/tone.wav>, "", 32768) = 0
+46399 rt_sigprocmask(SIG_BLOCK, ~[RT_1], NULL, 8) = 0
+46399 madvise(0xf87180910000, 8314880, MADV_DONTNEED) = 0
+46399 exit(0)                           = ?
+46398 prctl(PR_SET_NAME, "dec0:0:pcm_s16l"...) = 0
+46398 futex(0xc43d3408a8d0, FUTEX_WAKE_PRIVATE, 2147483647) = 1
+46398 rt_sigprocmask(SIG_BLOCK, ~[RT_1] <unfinished ...>
+46397 <... futex resumed>)              = 0
+46398 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46397 futex(0xc43d3408a880, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46398 madvise(0xf87181120000, 8314880, MADV_DONTNEED <unfinished ...>
+46397 <... futex resumed>)              = 0
+46398 <... madvise resumed>)            = 0
+46398 exit(0)                           = ?
+46397 mmap(NULL, 8454144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xf87180100000
+46397 madvise(0xf87180100000, 65536, MADV_GUARD_INSTALL) = 0
+46397 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+46397 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0xf8718090f108, parent_tid=0xf8718090edb0, exit_signal=0, stack=0xf87180100000, stack_size=0x80e5c0, tls=0xf8718090f400} <unfinished ...>
+46400 rseq(0xf8718090f940, 0x21, 0, 0xd428bc00 <unfinished ...>
+46397 <... clone3 resumed> => {parent_tid=[46400]}, 88) = 46400
+46400 <... rseq resumed>)               = 0
+46397 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46400 set_robust_list(0xf8718090edc0, 24 <unfinished ...>
+46397 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46400 <... set_robust_list resumed>)    = 0
+46397 futex(0xc43d340897f0, FUTEX_WAKE_PRIVATE, 2147483647 <unfinished ...>
+46400 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+46397 <... futex resumed>)              = 1
+46400 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46396 <... futex resumed>)              = 0
+46397 rt_sigprocmask(SIG_BLOCK, ~[RT_1] <unfinished ...>
+46400 prctl(PR_SET_NAME, "mux0:s16le" <unfinished ...>
+46397 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46396 futex(0xc43d340897a0, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46400 <... prctl resumed>)              = 0
+46397 madvise(0xf87181930000, 8314880, MADV_DONTNEED <unfinished ...>
+46396 <... futex resumed>)              = 0
+46400 futex(0xc43d3408c4e0, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 0, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+46397 <... madvise resumed>)            = 0
+46396 prctl(PR_SET_NAME, "enc0:0:pcm_s16l"... <unfinished ...>
+46397 exit(0 <unfinished ...>
+46396 <... prctl resumed>)              = 0
+46397 <... exit resumed>)               = ?
+46396 futex(0xc43d3408c4e0, FUTEX_WAKE_PRIVATE, 2147483647 <unfinished ...>
+46400 <... futex resumed>)              = 0
+46396 <... futex resumed>)              = 1
+46400 futex(0xc43d3408c490, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+46396 futex(0xc43d3408c490, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46400 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+46396 <... futex resumed>)              = 0
+46400 futex(0xc43d3408c490, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46396 rt_sigprocmask(SIG_BLOCK, ~[RT_1] <unfinished ...>
+46400 <... futex resumed>)              = 0
+46396 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46400 write(4<pipe:[73752]>, "\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351\0\0\30\26@\37\30\26\0\0\350\351\300\340\350\351", 160 <unfinished ...>
+46396 madvise(0xf87182140000, 8314880, MADV_DONTNEED <unfinished ...>
+46400 <... write resumed>)              = 160
+46396 <... madvise resumed>)            = 0
+46400 futex(0xc43d34086780, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46396 exit(0 <unfinished ...>
+46395 <... futex resumed>)              = 0
+46400 <... futex resumed>)              = 1
+46396 <... exit resumed>)               = ?
+46395 futex(0xc43d34086730, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+46400 futex(0xc43d34086730, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46395 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+46400 <... futex resumed>)              = 0
+46395 futex(0xc43d34086730, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+46400 rt_sigprocmask(SIG_BLOCK, ~[RT_1] <unfinished ...>
+46395 <... futex resumed>)              = 0
+46400 <... rt_sigprocmask resumed>, NULL, 8) = 0
+46395 futex(0xf8718090f108, FUTEX_WAIT_BITSET|FUTEX_CLOCK_REALTIME, 1, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+46400 madvise(0xf87180100000, 8314880, MADV_DONTNEED) = 0
+46400 exit(0)                           = ?
+46395 <... futex resumed>)              = 0
+46395 munmap(0xf87180910000, 8454144)   = 0
+46395 close(4<pipe:[73752]>)            = 0
+46395 ioctl(2<pipe:[73753]>, TCGETS2, 0xfffff3818978) = -1 ENOTTY (Inappropriate ioctl for device)
+46395 close(3</home/dev/r6-census/fixtures/data/tone.wav>) = 0
+46395 exit_group(0)                     = ?

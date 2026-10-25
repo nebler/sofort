@@ -1,0 +1,4 @@
+{"name": "zstd", "error": ""}
+{"name": "xz", "error": ""}
+{"name": "busybox", "version": "1.37.0", "source": "https://busybox.net/downloads/busybox-1.37.0.tar.bz2", "source_sha256": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4", "verified": true, "error": "Command '['make', '-j2', 'CC=/home/dev/r6-census/toolchain/musl-install/bin/musl-gcc', 'busybox']' returned non-zero exit status 2."}
+{"name": "micropython", "version": "v1.27.0", "source": "https://micropython.org/resources/source/micropython-1.27.0.tar.xz", "source_sha256": "9874b20646c3bbe81d524f779a16875e5d088b7065e175ffd2aa2a02f50573c9", "verified": false, "error": "Command '['make', '-j2', '-C', 'ports/unix', 'VARIANT=minimal', 'CC=/home/dev/r6-census/toolchain/musl-install/bin/musl-gcc', 'LDFLAGS=-static']' returned non-zero exit status 2."}

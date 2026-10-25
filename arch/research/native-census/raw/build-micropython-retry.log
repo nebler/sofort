@@ -1,0 +1,7 @@
+make: Entering directory '/home/dev/r6-census/artifacts/micropython/micropython-1.27.0/ports/unix'
+Use make V=1 or set BUILD_VERBOSE in your environment to increase build verbosity.
+makeversionhdr.py: Warning: No git repo or tag info available, falling back to mpconfig.h version info.
+LINK build-minimal/micropython
+   text	   data	    bss	    dec	    hex	filename
+ 193532	  14356	   4784	 212672	  33ec0	build-minimal/micropython
+make: Leaving directory '/home/dev/r6-census/artifacts/micropython/micropython-1.27.0/ports/unix'

@@ -1,0 +1,28 @@
+[
+  {
+    "name": "ffmpeg",
+    "category": "media",
+    "binary": "/home/dev/r6-census/artifacts/ffmpeg/unpacked/ffmpeg-master-latest-linuxarm64-lgpl/bin/ffmpeg",
+    "argv": [
+      "-nostdin",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-threads",
+      "1",
+      "-i",
+      "data/tone.wav",
+      "-threads",
+      "1",
+      "-f",
+      "s16le",
+      "-ac",
+      "1",
+      "-ar",
+      "8000",
+      "pipe:1"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "00001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e900001816401f18160000e8e9c0e0e8e9"
+  }
+]

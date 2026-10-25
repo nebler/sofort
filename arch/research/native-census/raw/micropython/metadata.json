@@ -1,0 +1,71 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/micropython/micropython-1.27.0/ports/unix/build-standard/micropython",
+  "sha256": "4626bf11458cb18785515ddc8a26246a12aafa602fa197346327602489c4ca62",
+  "bytes": 591376,
+  "elf_type": 2,
+  "machine": 183,
+  "entry": 4194708,
+  "headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 4194304,
+      "filesz": 510032,
+      "memsz": 510032,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 549312,
+      "vaddr": 4743616,
+      "filesz": 40944,
+      "memsz": 47720,
+      "align": 65536
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 549312,
+      "vaddr": 4743616,
+      "filesz": 40512,
+      "memsz": 40512,
+      "align": 1
+    }
+  ],
+  "interpreter": false,
+  "dynamic": false,
+  "tls": [],
+  "pack_error": null,
+  "packed": {
+    "source_sha256": "4626bf11458cb18785515ddc8a26246a12aafa602fa197346327602489c4ca62",
+    "flat_bytes": 598016,
+    "flat_sha256": "05441a2c931ae831279de53d2a396b44fd9dad7330fc8325b48a7d71a08b6845",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        4704336,
+        5
+      ],
+      [
+        4743616,
+        4791336,
+        6
+      ]
+    ],
+    "entry": 4194708,
+    "phdr": 4194368,
+    "phnum": 4
+  }
+}

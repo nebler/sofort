@@ -1,0 +1,8 @@
+{
+  "name": "sd",
+  "version": "v1.1.0",
+  "release_url": "https://github.com/chmln/sd/releases/tag/v1.1.0",
+  "asset_url": "https://github.com/chmln/sd/releases/download/v1.1.0/sd-v1.1.0-aarch64-unknown-linux-musl.tar.gz",
+  "asset_sha256": "ec8c93c0533ff21f4851d11566808d4082544baf063d9b96ea77c27e98b7cd99",
+  "verified": true
+}

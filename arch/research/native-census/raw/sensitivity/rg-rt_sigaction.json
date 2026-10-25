@@ -1,0 +1,17 @@
+{
+  "returncode": -6,
+  "timeout": false,
+  "stdout_hex": "",
+  "stderr_hex": "666174616c2072756e74696d65206572726f723a20617373657274696f6e206661696c65643a207369676e616c286c6962633a3a534947504950452c2068616e646c65722920213d206c6962633a3a5349475f4552522c2061626f7274696e670a",
+  "uptime": "2114.06 11596.44",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "rg",
+  "syscall": "rt_sigaction",
+  "same_stdout": false,
+  "preserved": false,
+  "injected": true
+}

@@ -1,0 +1,71 @@
+52403 execve("/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg", [...], 0xffffc0116658 /* 7 vars */) = 0
+52403 mmap(NULL, 2832, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5e44853c000
+52403 set_tid_address(0x8de738)         = 52403
+52403 readlinkat(AT_FDCWD, "/etc/_rjem_malloc.conf", 0xffffcd9be0f8, 4096) = -1 ENOENT (No such file or directory)
+52403 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5e44852c000
+52403 madvise(0xf5e44852c000, 65536, MADV_DONTNEED) = -1 ENOSYS (Function not implemented) (INJECTED)
+52403 munmap(0xf5e44852c000, 65536)     = 0
+52403 openat(AT_FDCWD, "/proc/sys/vm/overcommit_memory", O_RDONLY|O_CLOEXEC) = 3
+52403 read(3, ""..., 1)                 = 1
+52403 close(3)                          = 0
+52403 openat(AT_FDCWD, "/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY) = 3
+52403 read(3, ""..., 24)                = 23
+52403 read(3, "", 1)                    = 0
+52403 close(3)                          = 0
+52403 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf5e44852c000
+52403 madvise(0xf5e44852c000, 65536, MADV_FREE) = -1 ENOSYS (Function not implemented) (INJECTED)
+52403 munmap(0xf5e44852c000, 65536)     = 0
+52403 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf5e448200000
+52403 brk(NULL)                         = 0x12e27000
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=335154151}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=335154151}) = 0
+52403 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf5e448000000
+52403 sched_getaffinity(0, 128, [0 1 2 3 4 5]) = 8
+52403 brk(NULL)                         = 0x12e27000
+52403 brk(0x12e29000)                   = 0x12e29000
+52403 mmap(0x12e27000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x12e27000
+52403 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5e44853b000
+52403 ppoll([...], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([...], left {tv_sec=0, tv_nsec=0})
+52403 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x6f6344}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52403 rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52403 sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+52403 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xf5e448537000
+52403 mprotect(0xf5e448537000, 4096, PROT_NONE) = 0
+52403 sigaltstack({ss_sp=0xf5e448538000, ss_flags=0, ss_size=12288}, NULL) = 0
+52403 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+52403 rt_sigaction(SIGSEGV, {sa_handler=0x662f7c, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x6f6344}, NULL, 8) = 0
+52403 rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+52403 rt_sigaction(SIGBUS, {sa_handler=0x662f7c, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x6f6344}, NULL, 8) = 0
+52403 mmap(NULL, 2621440, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf5e447d80000
+52403 getrandom(""..., 16, GRND_INSECURE) = 16
+52403 getcwd("/home/dev/r6-census/fixtures", 512) = 29
+52403 ioctl(1, TIOCGWINSZ, 0xffffcd9bf5d8) = -1 ENOTTY (Inappropriate ioctl for device)
+52403 newfstatat(AT_FDCWD, "data/input.txt", {st_mode=S_IFREG|0664, st_size=23, ...}, 0) = 0
+52403 uname({sysname="Linux", nodename="kvm-dev", ...}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=341154195}) = 0
+52403 mmap(NULL, 3145728, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf5e447a80000
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=341154195}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=342154203}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC, {tv_sec=2114, tv_nsec=342621123}) = 0
+52403 fstat(1, {st_mode=S_IFIFO|0600, st_size=0, ...}) = 0
+52403 fstat(1, {st_mode=S_IFIFO|0600, st_size=0, ...}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=342154203}) = 0
+52403 newfstatat(AT_FDCWD, "data/input.txt", {st_mode=S_IFREG|0664, st_size=23, ...}, 0) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=343154210}) = 0
+52403 newfstatat(AT_FDCWD, "data/input.txt", {st_mode=S_IFREG|0664, st_size=23, ...}, 0) = 0
+52403 newfstatat(AT_FDCWD, "data/input.txt", {st_mode=S_IFREG|0664, st_size=23, ...}, AT_SYMLINK_NOFOLLOW) = 0
+52403 clock_gettime(CLOCK_MONOTONIC, {tv_sec=2114, tv_nsec=344134592}) = 0
+52403 openat(AT_FDCWD, "data/input.txt", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+52403 fcntl(3, F_SETFD, FD_CLOEXEC)     = 0
+52403 clock_gettime(CLOCK_MONOTONIC, {tv_sec=2114, tv_nsec=344750097}) = 0
+52403 read(3, ""..., 3)                 = 3
+52403 read(3, ""..., 65533)             = 20
+52403 read(3, "", 65536)                = 0
+52403 close(3)                          = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=345154225}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=345154225}) = 0
+52403 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2114, tv_nsec=345154225}) = 0
+52403 write(1, ""..., 16)               = 16
+52403 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=12288}, NULL) = 0
+52403 munmap(0xf5e448537000, 16384)     = 0
+52403 exit_group(0)                     = ?

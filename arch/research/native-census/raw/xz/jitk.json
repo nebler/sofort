@@ -1,0 +1,24 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "uptime": "697.38 3902.16",
+  "load": [
+    0.25244140625,
+    0.4580078125,
+    0.26171875
+  ],
+  "status": "ran",
+  "kernel_sha256": "37dd4f6103f1c426d91d145681add2aa2e9a240b216527480fcac3c353187008",
+  "guest_exit": 1,
+  "missing": [
+    59,
+    175
+  ],
+  "first_missing": 175,
+  "app_hex": "",
+  "native_stdout_equal": false,
+  "unparsed": [],
+  "sandbox_ack": true,
+  "trace_records": 23,
+  "runs_today": false
+}

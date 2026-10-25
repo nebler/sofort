@@ -1,0 +1,9 @@
+{
+  "name": "zstd",
+  "version": "v1.5.7",
+  "source": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+  "source_sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+  "verified": true,
+  "binary": "/home/dev/r6-census/artifacts/zstd/zstd-1.5.7/programs/zstd",
+  "binary_sha256": "5a52c331442b8939469c1337d2526167f4f17bf16fe976b37d8b8c1246b3002c"
+}

@@ -1,0 +1,112 @@
+{
+  "workload": {
+    "name": "bb-gzip",
+    "category": "compression",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "gzip",
+      "-c"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": null
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "sha256": "e6e0d9874eef980f1bf6ce107494bbaed97f37449815acb991f4dd0ed4eb5ec8",
+    "bytes": 329480,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 4211508,
+    "headers": [
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 4194304,
+        "filesz": 264464,
+        "memsz": 264464,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 325952,
+        "vaddr": 4585792,
+        "filesz": 2517,
+        "memsz": 8168,
+        "align": 65536
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 16
+      },
+      {
+        "type": 1685382482,
+        "flags": 4,
+        "offset": 325952,
+        "vaddr": 4585792,
+        "filesz": 1728,
+        "memsz": 1728,
+        "align": 1
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [],
+    "pack_error": null,
+    "packed": {
+      "source_sha256": "e6e0d9874eef980f1bf6ce107494bbaed97f37449815acb991f4dd0ed4eb5ec8",
+      "flat_bytes": 401408,
+      "flat_sha256": "32a5072a4eea292c045ed57a495d44b8cec44b70bc194e50ce1673368d0bf4dc",
+      "physical_base": "0x80080000",
+      "segments": [
+        [
+          4194304,
+          4458768,
+          5
+        ],
+        [
+          4585792,
+          4593960,
+          6
+        ]
+      ],
+      "entry": 4211508,
+      "phdr": 4194368,
+      "phnum": 4
+    }
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "1f8b08000000000000034bcc29c8485430e24a4a2d495430e54a04738db9004922c2c017000000",
+      "stderr_hex": "",
+      "uptime": "1225.44 6546.39",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "1f8b08000000000000034bcc29c8485430e24a4a2d495430e54a04738db9004922c2c017000000",
+      "stderr_hex": "",
+      "uptime": "1225.44 6546.41",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    }
+  ]
+}

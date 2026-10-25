@@ -1,0 +1,25 @@
+52343 execve("/home/dev/r6-census/artifacts/jq/jq-linux-arm64", [...], 0xffffe6640b98 /* 7 vars */) = 0
+52343 brk(NULL)                         = 0x33a6f000
+52343 brk(0x33a6faf8)                   = 0x33a6faf8
+52343 set_tid_address(0x33a6f0d0)       = 52343
+52343 set_robust_list(0x33a6f0e0, 24)   = 0
+52343 rseq(0x33a6f720, 0x20, 0, 0xd428bc00) = 0
+52343 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+52343 readlinkat(AT_FDCWD, "/proc/self/exe", ""..., 4096) = 47
+52343 getrandom(0x5cba28, 8, GRND_NONBLOCK) = -1 ENOSYS (Function not implemented) (INJECTED)
+52343 clock_gettime(CLOCK_MONOTONIC, {tv_sec=2113, tv_nsec=400612494}) = 0
+52343 clock_gettime(CLOCK_MONOTONIC, {tv_sec=2113, tv_nsec=400703078}) = 0
+52343 brk(NULL)                         = 0x33a6faf8
+52343 brk(0x33a90af8)                   = 0x33a90af8
+52343 brk(0x33a91000)                   = 0x33a91000
+52343 mprotect(0x5b8000, 32768, PROT_READ) = 0
+52343 ioctl(1, TCGETS, 0xffffc57cc580)  = -1 ENOTTY (Inappropriate ioctl for device)
+52343 getrandom(0xffffc57cc434, 4, 0)   = -1 ENOSYS (Function not implemented) (INJECTED)
+52343 writev(2, [...], 1)               = 53
+52343 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf6ff5f9dd000
+52343 rt_sigprocmask(SIG_UNBLOCK, [ABRT], NULL, 8) = 0
+52343 gettid()                          = 52343
+52343 getpid()                          = 52343
+52343 tgkill(52343, 52343, SIGABRT)     = 0
+52343 --- SIGABRT {si_signo=SIGABRT, si_code=SI_TKILL, si_pid=52343, si_uid=1000} ---
+52343 +++ killed by SIGABRT (core dumped) +++

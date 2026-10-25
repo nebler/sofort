@@ -1,0 +1,36 @@
+[
+  {
+    "name": "profiles/rg-mmap",
+    "category": "search",
+    "binary": "/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg",
+    "argv": [
+      "--no-config",
+      "--color=never",
+      "--no-ignore",
+      "--mmap",
+      "-j1",
+      "alpha",
+      "data/input.txt"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "616c70686120320a616c70686120330a"
+  },
+  {
+    "name": "profiles/rg-recursive",
+    "category": "search",
+    "binary": "/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg",
+    "argv": [
+      "--no-config",
+      "--color=never",
+      "--no-ignore",
+      "--no-mmap",
+      "-j1",
+      "--sort",
+      "path",
+      "alpha",
+      "data"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  }
+]

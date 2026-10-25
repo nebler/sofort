@@ -1,0 +1,353 @@
+[
+  {
+    "name": "jq",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/jq/jq-linux-arm64",
+    "argv": [
+      "-c",
+      "[.items[].n] | add",
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "370a"
+  },
+  {
+    "name": "gojq",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/gojq/unpacked/gojq_v0.12.19_linux_arm64/gojq",
+    "argv": [
+      "-c",
+      "[.items[].n] | add",
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "370a"
+  },
+  {
+    "name": "yq",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/yq/unpacked/yq_linux_arm64",
+    "argv": [
+      "-o=json",
+      "-I=0",
+      ".items[0].n + .items[1].n",
+      "data/input.yaml"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "370a"
+  },
+  {
+    "name": "miller",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/miller/unpacked/miller-6.22.0-linux-arm64/mlr",
+    "argv": [
+      "--csv",
+      "stats1",
+      "-a",
+      "sum",
+      "-f",
+      "n",
+      "data/input.csv"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "6e5f73756d0a370a"
+  },
+  {
+    "name": "dasel",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/dasel/dasel_linux_arm64",
+    "argv": [
+      "-i",
+      "json",
+      "-o",
+      "json",
+      "--compact",
+      "items"
+    ],
+    "stdin_hex": "7b226974656d73223a5b7b226e616d65223a22616c706861222c226e223a327d2c7b226e616d65223a2262657461222c226e223a357d5d7d0a",
+    "expected_hex": null
+  },
+  {
+    "name": "gron",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/gron/gron",
+    "argv": [
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "qsv",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/qsv/unpacked/qsvlite",
+    "argv": [
+      "select",
+      "name",
+      "data/input.csv"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "6e616d650a616c7068610a626574610a"
+  },
+  {
+    "name": "rg",
+    "category": "search",
+    "binary": "/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg",
+    "argv": [
+      "--no-config",
+      "--color=never",
+      "--no-ignore",
+      "--no-mmap",
+      "-j1",
+      "alpha",
+      "data/input.txt"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "616c70686120320a616c70686120330a"
+  },
+  {
+    "name": "fd",
+    "category": "search",
+    "binary": "/home/dev/r6-census/artifacts/fd/unpacked/fd-v10.5.0-aarch64-unknown-linux-musl/fd",
+    "argv": [
+      "--threads",
+      "1",
+      "--color",
+      "never",
+      "--no-ignore",
+      "--hidden",
+      "notes",
+      "data"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "646174612f7375622f6e6f7465732e7478740a"
+  },
+  {
+    "name": "sd",
+    "category": "text",
+    "binary": "/home/dev/r6-census/artifacts/sd/unpacked/sd-v1.1.0-aarch64-unknown-linux-musl/sd",
+    "argv": [
+      "alpha",
+      "agent"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a",
+    "expected_hex": "6167656e7420320a6265746120350a"
+  },
+  {
+    "name": "sqlite3",
+    "category": "database",
+    "binary": "/home/dev/r6-census/sqlite3-static",
+    "argv": [
+      "-batch",
+      "-init",
+      "dev/null",
+      "file:data/demo.db?mode=ro&immutable=1",
+      "SELECT json_object('count',count(*),'sum',sum(v),'max',max(v)) FROM n;"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a"
+  },
+  {
+    "name": "duckdb",
+    "category": "database",
+    "binary": "/home/dev/r6-census/artifacts/duckdb/unpacked/duckdb",
+    "argv": [
+      "-batch",
+      "-csv",
+      "-c",
+      "SELECT sum(n) FROM read_csv('data/input.csv');"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "73756d286e290a370a"
+  },
+  {
+    "name": "lua",
+    "category": "language",
+    "binary": "/home/dev/r6-census/lua-static",
+    "argv": [
+      "-e",
+      "local s=0; for l in io.lines(\"data/input.txt\") do s=s+tonumber(l:match(\"%d+\")) end; print(s)"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "31300a"
+  },
+  {
+    "name": "micropython",
+    "category": "language",
+    "binary": "/home/dev/r6-census/artifacts/micropython/micropython-1.27.0/ports/unix/build-standard/micropython",
+    "argv": [
+      "-c",
+      "print(sum(int(x.split()[1]) for x in open(\"data/input.txt\")))"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "31300a"
+  },
+  {
+    "name": "pandoc",
+    "category": "documents",
+    "binary": "/home/dev/r6-census/artifacts/pandoc/unpacked/pandoc-3.12.1/bin/pandoc",
+    "argv": [
+      "-f",
+      "markdown",
+      "-t",
+      "html",
+      "data/doc.md"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "zstd",
+    "category": "compression",
+    "binary": "/home/dev/r6-census/artifacts/zstd/zstd-1.5.7/programs/zstd",
+    "argv": [
+      "-q",
+      "-c",
+      "-T1",
+      "data/input.txt"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "xz",
+    "category": "compression",
+    "binary": "/home/dev/r6-census/artifacts/xz/xz-5.8.4/src/xz/xz",
+    "argv": [
+      "-c",
+      "-T1",
+      "data/input.txt"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "esbuild",
+    "category": "language",
+    "binary": "/home/dev/r6-census/artifacts/esbuild/package/bin/esbuild",
+    "argv": [
+      "--minify",
+      "--loader=js"
+    ],
+    "stdin_hex": "6578706f727420636f6e737420616e73776572203d20287829203d3e2078202b20313b0a",
+    "expected_hex": null
+  },
+  {
+    "name": "git",
+    "category": "hard",
+    "binary": null,
+    "argv": [
+      "--no-pager",
+      "diff",
+      "--no-index",
+      "--",
+      "data/input.txt",
+      "data/sub/notes.txt"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "curl",
+    "category": "hard",
+    "binary": null,
+    "argv": [
+      "--silent",
+      "--show-error",
+      "--max-time",
+      "2",
+      "http://127.0.0.1:18086/data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "jq-musl",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/jq-musl/jq-1.8.2/jq",
+    "argv": [
+      "-c",
+      "[.items[].n] | add",
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "370a"
+  },
+  {
+    "name": "bb-sed",
+    "category": "text",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "sed",
+      "s/alpha/agent/g"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": "6167656e7420320a6265746120350a6167656e7420330a"
+  },
+  {
+    "name": "bb-awk",
+    "category": "text",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "awk",
+      "{s+=$2} END {print s}"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": "31300a"
+  },
+  {
+    "name": "bb-grep",
+    "category": "text",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "grep",
+      "alpha"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": "616c70686120320a616c70686120330a"
+  },
+  {
+    "name": "bb-sort",
+    "category": "text",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "sort"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": "616c70686120320a616c70686120330a6265746120350a"
+  },
+  {
+    "name": "bb-wc",
+    "category": "text",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "wc",
+      "-l"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": "330a"
+  },
+  {
+    "name": "bb-tar",
+    "category": "compression",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "tar",
+      "-tf",
+      "data/fixture.tar"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "696e7075742e7478740a"
+  },
+  {
+    "name": "bb-gzip",
+    "category": "compression",
+    "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+    "argv": [
+      "gzip",
+      "-c"
+    ],
+    "stdin_hex": "616c70686120320a6265746120350a616c70686120330a",
+    "expected_hex": null
+  }
+]

@@ -1,0 +1,32 @@
+Package: libjpeg-turbo8
+Source: libjpeg-turbo
+Priority: optional
+Section: libs
+Installed-Size: 448
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: arm64
+Version: 2.1.5-4ubuntu4
+Depends: libc6 (>= 2.38)
+Filename: pool/main/libj/libjpeg-turbo/libjpeg-turbo8_2.1.5-4ubuntu4_arm64.deb
+Size: 157398
+MD5sum: 9e3ab0dfd86b344cd779449109401b83
+SHA1: 25d284282978da7cc2ba46e801ae71571d5d8cbb
+SHA256: cd6cac6155d81d8d2e4a53693a7c91b42b26d1e84d018792d319c24cddaaf9d8
+SHA512: 4e4178ac14581211255c139ff7e24092cf0c9d0c4ec1e99ef2e608a75f7ec966bdb8ea0c1134dda245753e70a3a9958978fd2983394cb0d270fd5ce73978039b
+Homepage: https://www.libjpeg-turbo.org/
+Description-en: libjpeg-turbo JPEG runtime library
+ The libjpeg-turbo JPEG library is a library for handling JPEG files.
+ .
+ libjpeg-turbo is a JPEG image codec that uses SIMD instructions (MMX,
+ SSE2, NEON) to accelerate baseline JPEG compression and decompression
+ on x86, x86-64, and ARM systems.  The libjpeg-turbo JPEG library is
+ an API/ABI compatible with the IJG JPEG library.
+ .
+ This package contains the shared runtime library.
+Description-md5: 08e0ce6ce076575f3375631f6f960ebe
+Multi-Arch: same
+Original-Maintainer: Ondřej Surý <ondrej@debian.org>
+Origin: Ubuntu
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Task: ubuntu-desktop-minimal, ubuntu-desktop, ubuntu-live, server-live, print-server, ubuntu-desktop-raspi, kubuntu-desktop, kubuntu-live, xubuntu-minimal, xubuntu-desktop, xubuntu-live, lubuntu-desktop-minimal, lubuntu-desktop, lubuntu-desktop, lubuntu-live, ubuntustudio-desktop, ubuntustudio-dvd-live, ubuntustudio-live, ubuntustudio-desktop-core, ubuntukylin-desktop, ubuntukylin-live, ubuntukylin-desktop-minimal, ubuntu-mate-core, ubuntu-mate-desktop, ubuntu-mate-live, ubuntu-budgie-desktop-minimal, ubuntu-budgie-desktop, ubuntu-budgie-live, ubuntu-budgie-desktop-raspi, ubuntu-unity-desktop, ubuntu-unity-live, edubuntu-desktop-gnome-minimal, edubuntu-dvd-live, edubuntu-desktop-gnome-raspi, edubuntu-live, ubuntucinnamon-desktop-minimal, ubuntucinnamon-live, ubuntucinnamon-desktop-raspi
+

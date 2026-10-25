@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "6167656e7420320a6265746120350a",
+  "stderr_hex": "",
+  "uptime": "2114.73 11599.74",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "sd",
+  "syscall": "getrandom",
+  "same_stdout": true,
+  "preserved": true,
+  "injected": true
+}

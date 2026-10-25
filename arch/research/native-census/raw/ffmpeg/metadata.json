@@ -1,0 +1,115 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/ffmpeg/unpacked/ffmpeg-master-latest-linuxarm64-lgpl/bin/ffmpeg",
+  "sha256": "28a1f9e92dd691cd7098079aca671c3200206dc98a76a4fd610c0fe76bd2a4e7",
+  "bytes": 120113896,
+  "elf_type": 3,
+  "machine": 183,
+  "entry": 9899372,
+  "headers": [
+    {
+      "type": 6,
+      "flags": 4,
+      "offset": 64,
+      "vaddr": 64,
+      "filesz": 560,
+      "memsz": 560,
+      "align": 8
+    },
+    {
+      "type": 3,
+      "flags": 4,
+      "offset": 624,
+      "vaddr": 624,
+      "filesz": 27,
+      "memsz": 27,
+      "align": 1
+    },
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 115129544,
+      "memsz": 115129544,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 115153712,
+      "vaddr": 115153712,
+      "filesz": 4957800,
+      "memsz": 16503264,
+      "align": 65536
+    },
+    {
+      "type": 2,
+      "flags": 6,
+      "offset": 118720584,
+      "vaddr": 118720584,
+      "filesz": 608,
+      "memsz": 608,
+      "align": 8
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 115129512,
+      "vaddr": 115129512,
+      "filesz": 32,
+      "memsz": 32,
+      "align": 4
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "offset": 115153712,
+      "vaddr": 115153712,
+      "filesz": 136,
+      "memsz": 1136,
+      "align": 16
+    },
+    {
+      "type": 1685382480,
+      "flags": 4,
+      "offset": 106276928,
+      "vaddr": 106276928,
+      "filesz": 1166260,
+      "memsz": 1166260,
+      "align": 4
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 115153712,
+      "vaddr": 115153712,
+      "filesz": 3663056,
+      "memsz": 3663056,
+      "align": 1
+    }
+  ],
+  "interpreter": true,
+  "dynamic": true,
+  "tls": [
+    {
+      "type": 7,
+      "flags": 4,
+      "offset": 115153712,
+      "vaddr": 115153712,
+      "filesz": 136,
+      "memsz": 1136,
+      "align": 16
+    }
+  ],
+  "pack_error": "static ET_EXEC AArch64 required",
+  "packed": null
+}

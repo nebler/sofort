@@ -1,0 +1,290 @@
+49264 execve("/home/dev/r6-census/artifacts/git-distro/git", [""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49264 brk(NULL)                         = 0xb04d7d2c7000
+49264 mprotect(0xb04d4ebb0000, 4202496, PROT_READ|PROT_EXEC|0x10) = 0
+49264 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffb79828e000
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+49264 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+49264 fstat(3</etc/ld.so.cache>, {st_dev=makedev(0xfd, 0x1), st_ino=8047, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=48, st_size=24051, st_atime=1792913991 /* 2026-10-25T07:39:51.783403556+0000 */, st_atime_nsec=783403556, st_mtime=1792913991 /* 2026-10-25T07:39:51.771403584+0000 */, st_mtime_nsec=771403584, st_ctime=1792913991 /* 2026-10-25T07:39:51.772403581+0000 */, st_ctime_nsec=772403581}) = 0
+49264 mmap(NULL, 24051, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0xffb798288000
+49264 close(3</etc/ld.so.cache>)        = 0
+49264 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libpcre2-8.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>
+49264 read(3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>, ""..., 832) = 832
+49264 fstat(3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>, {st_dev=makedev(0xfd, 0x1), st_ino=5702, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=1288, st_size=658040, st_atime=1792921630 /* 2026-10-25T09:47:10.301000000+0000 */, st_atime_nsec=301000000, st_mtime=1770064458 /* 2026-02-02T20:34:18+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.629727034+0000 */, st_ctime_nsec=629727034}) = 0
+49264 mmap(NULL, 786968, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xffb798197000
+49264 mmap(0xffb7981a0000, 721432, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>, 0) = 0xffb7981a0000
+49264 munmap(0xffb798197000, 36864)     = 0
+49264 munmap(0xffb798251000, 25112)     = 0
+49264 mprotect(0xffb798237000, 98304, PROT_NONE) = 0
+49264 mmap(0xffb79824f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>, 0x9f000) = 0xffb79824f000
+49264 mmap(0xffb7981a0000, 618496, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>, 0) = 0xffb7981a0000
+49264 close(3</usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.14.0>) = 0
+49264 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>
+49264 read(3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, ""..., 832) = 832
+49264 fstat(3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, {st_dev=makedev(0xfd, 0x1), st_ino=36577, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133544, st_atime=1792913935 /* 2026-10-25T07:38:55.347531658+0000 */, st_atime_nsec=347531658, st_mtime=1792616180 /* 2026-10-21T20:56:20+0000 */, st_mtime_nsec=0, st_ctime=1792913935 /* 2026-10-25T07:38:55.292531783+0000 */, st_ctime_nsec=292531783}) = 0
+49264 mmap(NULL, 262312, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xffb79815f000
+49264 mmap(0xffb798160000, 196776, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, 0) = 0xffb798160000
+49264 munmap(0xffb79815f000, 4096)      = 0
+49264 munmap(0xffb798191000, 57512)     = 0
+49264 mprotect(0xffb79817a000, 86016, PROT_NONE) = 0
+49264 mmap(0xffb79818f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, 0x1f000) = 0xffb79818f000
+49264 mmap(0xffb798160000, 106496, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, 0) = 0xffb798160000
+49264 close(3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>) = 0
+49264 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libc.so.6>
+49264 read(3</usr/lib/aarch64-linux-gnu/libc.so.6>, ""..., 832) = 832
+49264 fstat(3</usr/lib/aarch64-linux-gnu/libc.so.6>, {st_dev=makedev(0xfd, 0x1), st_ino=5342, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=3496, st_size=1788240, st_atime=1792921630 /* 2026-10-25T09:47:10.280000000+0000 */, st_atime_nsec=280000000, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.511725777+0000 */, st_ctime_nsec=511725777}) = 0
+49264 mmap(NULL, 1957440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xffb797f82000
+49264 mmap(0xffb797f90000, 1891904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xffb797f90000
+49264 munmap(0xffb797f82000, 57344)     = 0
+49264 munmap(0xffb79815e000, 7744)      = 0
+49264 mprotect(0xffb798139000, 81920, PROT_NONE) = 0
+49264 mmap(0xffb79814d000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0x1ad000) = 0xffb79814d000
+49264 mmap(0xffb798152000, 48704, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xffb798152000
+49264 mmap(0xffb797f90000, 1740800, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xffb797f90000
+49264 close(3</usr/lib/aarch64-linux-gnu/libc.so.6>) = 0
+49264 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffb798286000
+49264 set_tid_address(0xffb798286448)   = 49264
+49264 set_robust_list(0xffb798286100, 24) = 0
+49264 rseq(0xffb798286800, 0x21, 0, 0xd428bc00) = 0
+49264 mprotect(0xffb79814d000, 12288, PROT_READ) = 0
+49264 mprotect(0xffb79818f000, 4096, PROT_READ) = 0
+49264 mprotect(0xffb79824f000, 4096, PROT_READ) = 0
+49264 mprotect(0xb04d4efcc000, 16384, PROT_READ) = 0
+49264 mprotect(0xffb798296000, 8192, PROT_READ) = 0
+49264 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+49264 getrandom(""..., 8, GRND_NONBLOCK) = 8
+49264 munmap(0xffb798288000, 24051)     = 0
+49264 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/dev/null", O_RDWR) = 3</dev/null<char 1:3>>
+49264 close(3</dev/null<char 1:3>>)     = 0
+49264 rt_sigprocmask(SIG_UNBLOCK, [PIPE], NULL, 8) = 0
+49264 rt_sigaction(SIGPIPE, {sa_handler=SIG_DFL, sa_mask=[PIPE], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49264 brk(NULL)                         = 0xb04d7d2c7000
+49264 brk(0xb04d7d400000)               = 0xb04d7d400000
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/share/locale", {st_dev=makedev(0xfd, 0x1), st_ino=50250, st_mode=S_IFDIR|0755, st_nlink=199, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792168573 /* 2026-10-16T16:36:13.989188625+0000 */, st_atime_nsec=989188625, st_mtime=1792168337 /* 2026-10-16T16:32:17.671662397+0000 */, st_mtime_nsec=671662397, st_ctime=1792168536 /* 2026-10-16T16:35:36.882793631+0000 */, st_ctime_nsec=882793631}, 0) = 0
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/gitconfig", R_OK) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.config/git/config", R_OK) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.gitconfig", R_OK) = -1 ENOENT (No such file or directory)
+49264 getcwd("/home/dev/r6-census/fixtures", 129) = 29
+49264 getcwd("/home/dev/r6-census/fixtures", 129) = 29
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures", {st_dev=makedev(0xfd, 0x1), st_ino=1310721, st_mode=S_IFDIR|0775, st_nlink=4, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_mtime_nsec=458819561, st_ctime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_ctime_nsec=458819561}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/.git", 0xffffc6677fb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/HEAD", 0xffffc6677e58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census", {st_dev=makedev(0xfd, 0x1), st_ino=1048681, st_mode=S_IFDIR|0775, st_nlink=14, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922690 /* 2026-10-25T10:04:50.998775184+0000 */, st_atime_nsec=998775184, st_mtime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_mtime_nsec=524755380, st_ctime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_ctime_nsec=524755380}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/.git", 0xffffc6677fb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/HEAD", 0xffffc6677e58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev", {st_dev=makedev(0xfd, 0x1), st_ino=262145, st_mode=S_IFDIR|0750, st_nlink=18, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921735 /* 2026-10-25T09:48:55.271443788+0000 */, st_atime_nsec=271443788, st_mtime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_mtime_nsec=124644202, st_ctime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_ctime_nsec=124644202}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/.git", 0xffffc6677fb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/HEAD", 0xffffc6677e58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home", {st_dev=makedev(0xfd, 0x1), st_ino=1668, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792168577 /* 2026-10-16T16:36:17.427225207+0000 */, st_atime_nsec=427225207, st_mtime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_mtime_nsec=560571544, st_ctime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_ctime_nsec=560571544}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/.git", 0xffffc6677fb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/HEAD", 0xffffc6677e58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/", {st_dev=makedev(0xfd, 0x1), st_ino=2, st_mode=S_IFDIR|0755, st_nlink=19, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792913949 /* 2026-10-25T07:39:09.828498789+0000 */, st_atime_nsec=828498789, st_mtime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_mtime_nsec=600000001, st_ctime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_ctime_nsec=600000001}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/.git", 0xffffc6677fb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/HEAD", 0xffffc6677e58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/gitconfig", R_OK) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.config/git/config", R_OK) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.gitconfig", R_OK) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/git-core/git-scan", 0xffffc6678058, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/bin/git-scan", 0xffffc6678058, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/bin/git-scan", 0xffffc6678058, 0) = -1 ENOENT (No such file or directory)
+49264 getcwd("/home/dev/r6-census/fixtures", 129) = 29
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures", {st_dev=makedev(0xfd, 0x1), st_ino=1310721, st_mode=S_IFDIR|0775, st_nlink=4, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_mtime_nsec=458819561, st_ctime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_ctime_nsec=458819561}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/.git", 0xffffc6677eb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/HEAD", 0xffffc6677d58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census", {st_dev=makedev(0xfd, 0x1), st_ino=1048681, st_mode=S_IFDIR|0775, st_nlink=14, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922690 /* 2026-10-25T10:04:50.998775184+0000 */, st_atime_nsec=998775184, st_mtime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_mtime_nsec=524755380, st_ctime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_ctime_nsec=524755380}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/.git", 0xffffc6677eb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/HEAD", 0xffffc6677d58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev", {st_dev=makedev(0xfd, 0x1), st_ino=262145, st_mode=S_IFDIR|0750, st_nlink=18, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921735 /* 2026-10-25T09:48:55.271443788+0000 */, st_atime_nsec=271443788, st_mtime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_mtime_nsec=124644202, st_ctime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_ctime_nsec=124644202}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/.git", 0xffffc6677eb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/HEAD", 0xffffc6677d58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home", {st_dev=makedev(0xfd, 0x1), st_ino=1668, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792168577 /* 2026-10-16T16:36:17.427225207+0000 */, st_atime_nsec=427225207, st_mtime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_mtime_nsec=560571544, st_ctime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_ctime_nsec=560571544}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/.git", 0xffffc6677eb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/HEAD", 0xffffc6677d58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/", {st_dev=makedev(0xfd, 0x1), st_ino=2, st_mode=S_IFDIR|0755, st_nlink=19, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792913949 /* 2026-10-25T07:39:09.828498789+0000 */, st_atime_nsec=828498789, st_mtime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_mtime_nsec=600000001, st_ctime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_ctime_nsec=600000001}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/.git", 0xffffc6677eb8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/HEAD", 0xffffc6677d58, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/gitconfig", R_OK) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.config/git/config", R_OK) = -1 ENOENT (No such file or directory)
+49264 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.gitconfig", R_OK) = -1 ENOENT (No such file or directory)
+49264 getcwd("/home/dev/r6-census/fixtures", 129) = 29
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures", {st_dev=makedev(0xfd, 0x1), st_ino=1310721, st_mode=S_IFDIR|0775, st_nlink=4, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_mtime_nsec=458819561, st_ctime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_ctime_nsec=458819561}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/.git", 0xffffc6677ec8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/.git/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census", {st_dev=makedev(0xfd, 0x1), st_ino=1048681, st_mode=S_IFDIR|0775, st_nlink=14, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922690 /* 2026-10-25T10:04:50.998775184+0000 */, st_atime_nsec=998775184, st_mtime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_mtime_nsec=524755380, st_ctime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_ctime_nsec=524755380}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/.git", 0xffffc6677ec8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/.git/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev", {st_dev=makedev(0xfd, 0x1), st_ino=262145, st_mode=S_IFDIR|0750, st_nlink=18, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921735 /* 2026-10-25T09:48:55.271443788+0000 */, st_atime_nsec=271443788, st_mtime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_mtime_nsec=124644202, st_ctime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_ctime_nsec=124644202}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/.git", 0xffffc6677ec8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/.git/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home", {st_dev=makedev(0xfd, 0x1), st_ino=1668, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792168577 /* 2026-10-16T16:36:17.427225207+0000 */, st_atime_nsec=427225207, st_mtime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_mtime_nsec=560571544, st_ctime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_ctime_nsec=560571544}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/.git", 0xffffc6677ec8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/.git/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/", {st_dev=makedev(0xfd, 0x1), st_ino=2, st_mode=S_IFDIR|0755, st_nlink=19, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792913949 /* 2026-10-25T07:39:09.828498789+0000 */, st_atime_nsec=828498789, st_mtime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_mtime_nsec=600000001, st_ctime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_ctime_nsec=600000001}, 0) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/.git", 0xffffc6677ec8, 0) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/.git/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/HEAD", 0xffffc6677d68, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home", {st_dev=makedev(0xfd, 0x1), st_ino=1668, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792168577 /* 2026-10-16T16:36:17.427225207+0000 */, st_atime_nsec=427225207, st_mtime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_mtime_nsec=560571544, st_ctime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_ctime_nsec=560571544}, AT_SYMLINK_NOFOLLOW) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev", {st_dev=makedev(0xfd, 0x1), st_ino=262145, st_mode=S_IFDIR|0750, st_nlink=18, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921735 /* 2026-10-25T09:48:55.271443788+0000 */, st_atime_nsec=271443788, st_mtime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_mtime_nsec=124644202, st_ctime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_ctime_nsec=124644202}, AT_SYMLINK_NOFOLLOW) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census", {st_dev=makedev(0xfd, 0x1), st_ino=1048681, st_mode=S_IFDIR|0775, st_nlink=14, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922690 /* 2026-10-25T10:04:50.998775184+0000 */, st_atime_nsec=998775184, st_mtime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_mtime_nsec=524755380, st_ctime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_ctime_nsec=524755380}, AT_SYMLINK_NOFOLLOW) = 0
+49264 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures", {st_dev=makedev(0xfd, 0x1), st_ino=1310721, st_mode=S_IFDIR|0775, st_nlink=4, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_mtime_nsec=458819561, st_ctime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_ctime_nsec=458819561}, AT_SYMLINK_NOFOLLOW) = 0
+49264 pipe2([3<pipe:[85328]>, 4<pipe:[85328]>], 0) = 0
+49264 rt_sigprocmask(SIG_SETMASK, ~[RTMIN RT_1], [], 8) = 0
+49264 rt_sigprocmask(SIG_BLOCK, ~[], ~[KILL STOP RTMIN RT_1], 8) = 0
+49264 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffb7982860f0) = 49265
+49264 rt_sigprocmask(SIG_SETMASK, ~[KILL STOP RTMIN RT_1] <unfinished ...>
+49265 set_robust_list(0xffb798286100, 24 <unfinished ...>
+49264 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49265 <... set_robust_list resumed>)    = 0
+49264 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49265 rt_sigprocmask(SIG_SETMASK, ~[KILL STOP RTMIN RT_1] <unfinished ...>
+49264 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49265 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49264 rt_sigaction(SIGINT, {sa_handler=0xb04d4ee47724, sa_mask=[INT], sa_flags=SA_RESTART} <unfinished ...>
+49265 close(3<pipe:[85328]> <unfinished ...>
+49264 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49264 rt_sigaction(SIGHUP, {sa_handler=0xb04d4ee47724, sa_mask=[HUP], sa_flags=SA_RESTART} <unfinished ...>
+49265 <... close resumed>)              = 0
+49264 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 fcntl(4<pipe:[85328]>, F_GETFD <unfinished ...>
+49264 rt_sigaction(SIGTERM, {sa_handler=0xb04d4ee47724, sa_mask=[TERM], sa_flags=SA_RESTART} <unfinished ...>
+49265 <... fcntl resumed>)              = 0
+49264 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 fcntl(4<pipe:[85328]>, F_SETFD, FD_CLOEXEC <unfinished ...>
+49264 rt_sigaction(SIGQUIT, {sa_handler=0xb04d4ee47724, sa_mask=[QUIT], sa_flags=SA_RESTART} <unfinished ...>
+49265 <... fcntl resumed>)              = 0
+49264 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGHUP, {sa_handler=SIG_DFL, sa_mask=[HUP], sa_flags=SA_RESTART} <unfinished ...>
+49264 rt_sigaction(SIGPIPE, {sa_handler=0xb04d4ee47724, sa_mask=[PIPE], sa_flags=SA_RESTART} <unfinished ...>
+49265 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49264 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49265 rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[INT], sa_flags=SA_RESTART} <unfinished ...>
+49264 close(4<pipe:[85328]> <unfinished ...>
+49265 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49264 <... close resumed>)              = 0
+49265 rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[QUIT], sa_flags=SA_RESTART} <unfinished ...>
+49264 read(3<pipe:[85328]> <unfinished ...>
+49265 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGILL, {sa_handler=SIG_DFL, sa_mask=[ILL], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGTRAP, {sa_handler=SIG_DFL, sa_mask=[TRAP], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigprocmask(SIG_BLOCK, ~[], ~[KILL STOP RTMIN RT_1], 8) = 0
+49265 rt_sigaction(SIGABRT, {sa_handler=SIG_DFL, sa_mask=[ABRT], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigprocmask(SIG_SETMASK, ~[KILL STOP RTMIN RT_1], NULL, 8) = 0
+49265 rt_sigaction(SIGBUS, {sa_handler=SIG_DFL, sa_mask=[BUS], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGFPE, {sa_handler=SIG_DFL, sa_mask=[FPE], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGKILL, {sa_handler=SIG_DFL, sa_mask=[KILL], sa_flags=SA_RESTART}, 0xffffc6677e40, 8) = -1 EINVAL (Invalid argument)
+49265 rt_sigaction(SIGUSR1, {sa_handler=SIG_DFL, sa_mask=[USR1], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGSEGV, {sa_handler=SIG_DFL, sa_mask=[SEGV], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGUSR2, {sa_handler=SIG_DFL, sa_mask=[USR2], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGPIPE, {sa_handler=SIG_DFL, sa_mask=[PIPE], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49265 rt_sigaction(SIGALRM, {sa_handler=SIG_DFL, sa_mask=[ALRM], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGTERM, {sa_handler=SIG_DFL, sa_mask=[TERM], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGSTKFLT, {sa_handler=SIG_DFL, sa_mask=[STKFLT], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGCHLD, {sa_handler=SIG_DFL, sa_mask=[CHLD], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGCONT, {sa_handler=SIG_DFL, sa_mask=[CONT], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGSTOP, {sa_handler=SIG_DFL, sa_mask=[STOP], sa_flags=SA_RESTART}, 0xffffc6677e40, 8) = -1 EINVAL (Invalid argument)
+49265 rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[TSTP], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGTTIN, {sa_handler=SIG_DFL, sa_mask=[TTIN], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGTTOU, {sa_handler=SIG_DFL, sa_mask=[TTOU], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGURG, {sa_handler=SIG_DFL, sa_mask=[URG], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGXCPU, {sa_handler=SIG_DFL, sa_mask=[XCPU], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGXFSZ, {sa_handler=SIG_DFL, sa_mask=[XFSZ], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGVTALRM, {sa_handler=SIG_DFL, sa_mask=[VTALRM], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGPROF, {sa_handler=SIG_DFL, sa_mask=[PROF], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGWINCH, {sa_handler=SIG_DFL, sa_mask=[WINCH], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGIO, {sa_handler=SIG_DFL, sa_mask=[IO], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGPWR, {sa_handler=SIG_DFL, sa_mask=[PWR], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGSYS, {sa_handler=SIG_DFL, sa_mask=[SYS], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_2, {sa_handler=SIG_DFL, sa_mask=[RT_2], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_3, {sa_handler=SIG_DFL, sa_mask=[RT_3], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_4, {sa_handler=SIG_DFL, sa_mask=[RT_4], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_5, {sa_handler=SIG_DFL, sa_mask=[RT_5], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_6, {sa_handler=SIG_DFL, sa_mask=[RT_6], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_7, {sa_handler=SIG_DFL, sa_mask=[RT_7], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_8, {sa_handler=SIG_DFL, sa_mask=[RT_8], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_9, {sa_handler=SIG_DFL, sa_mask=[RT_9], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_10, {sa_handler=SIG_DFL, sa_mask=[RT_10], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_11, {sa_handler=SIG_DFL, sa_mask=[RT_11], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_12, {sa_handler=SIG_DFL, sa_mask=[RT_12], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_13, {sa_handler=SIG_DFL, sa_mask=[RT_13], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_14, {sa_handler=SIG_DFL, sa_mask=[RT_14], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_15, {sa_handler=SIG_DFL, sa_mask=[RT_15], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_16, {sa_handler=SIG_DFL, sa_mask=[RT_16], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_17, {sa_handler=SIG_DFL, sa_mask=[RT_17], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_18, {sa_handler=SIG_DFL, sa_mask=[RT_18], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_19, {sa_handler=SIG_DFL, sa_mask=[RT_19], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_20, {sa_handler=SIG_DFL, sa_mask=[RT_20], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_21, {sa_handler=SIG_DFL, sa_mask=[RT_21], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_22, {sa_handler=SIG_DFL, sa_mask=[RT_22], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_23, {sa_handler=SIG_DFL, sa_mask=[RT_23], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_24, {sa_handler=SIG_DFL, sa_mask=[RT_24], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_25, {sa_handler=SIG_DFL, sa_mask=[RT_25], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_26, {sa_handler=SIG_DFL, sa_mask=[RT_26], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_27, {sa_handler=SIG_DFL, sa_mask=[RT_27], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_28, {sa_handler=SIG_DFL, sa_mask=[RT_28], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_29, {sa_handler=SIG_DFL, sa_mask=[RT_29], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_30, {sa_handler=SIG_DFL, sa_mask=[RT_30], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_31, {sa_handler=SIG_DFL, sa_mask=[RT_31], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGRT_32, {sa_handler=SIG_DFL, sa_mask=[RT_32], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49265 execve("/bin/sh", [""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""..., ""..., ""..., ""...] <unfinished ...>
+49264 <... read resumed>, "", 8)        = 0
+49265 <... execve resumed>)             = 0
+49264 close(3<pipe:[85328]> <unfinished ...>
+49265 brk(NULL <unfinished ...>
+49264 <... close resumed>)              = 0
+49265 <... brk resumed>)                = 0xb0a798c36000
+49264 wait4(49265 <unfinished ...>
+49265 mprotect(0xb0a76b890000, 122880, PROT_READ|PROT_EXEC|0x10) = 0
+49265 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xff750ff35000
+49265 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+49265 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+49265 fstat(3</etc/ld.so.cache>, {st_dev=makedev(0xfd, 0x1), st_ino=8047, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=48, st_size=24051, st_atime=1792913991 /* 2026-10-25T07:39:51.783403556+0000 */, st_atime_nsec=783403556, st_mtime=1792913991 /* 2026-10-25T07:39:51.771403584+0000 */, st_mtime_nsec=771403584, st_ctime=1792913991 /* 2026-10-25T07:39:51.772403581+0000 */, st_ctime_nsec=772403581}) = 0
+49265 mmap(NULL, 24051, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0xff750ff2f000
+49265 close(3</etc/ld.so.cache>)        = 0
+49265 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libc.so.6>
+49265 read(3</usr/lib/aarch64-linux-gnu/libc.so.6>, ""..., 832) = 832
+49265 fstat(3</usr/lib/aarch64-linux-gnu/libc.so.6>, {st_dev=makedev(0xfd, 0x1), st_ino=5342, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=3496, st_size=1788240, st_atime=1792921630 /* 2026-10-25T09:47:10.280000000+0000 */, st_atime_nsec=280000000, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.511725777+0000 */, st_ctime_nsec=511725777}) = 0
+49265 mmap(NULL, 1957440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xff750fd21000
+49265 mmap(0xff750fd30000, 1891904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xff750fd30000
+49265 munmap(0xff750fd21000, 61440)     = 0
+49265 munmap(0xff750fefe000, 3648)      = 0
+49265 mprotect(0xff750fed9000, 81920, PROT_NONE) = 0
+49265 mmap(0xff750feed000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0x1ad000) = 0xff750feed000
+49265 mmap(0xff750fef2000, 48704, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xff750fef2000
+49265 mmap(0xff750fd30000, 1740800, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xff750fd30000
+49265 close(3</usr/lib/aarch64-linux-gnu/libc.so.6>) = 0
+49265 set_tid_address(0xff750ff363c8)   = 49265
+49265 set_robust_list(0xff750ff36080, 24) = 0
+49265 rseq(0xff750ff36780, 0x21, 0, 0xd428bc00) = 0
+49265 mprotect(0xff750feed000, 12288, PROT_READ) = 0
+49265 mprotect(0xb0a76b8be000, 8192, PROT_READ) = 0
+49265 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xff750ff2d000
+49265 mprotect(0xff750ff3d000, 8192, PROT_READ) = 0
+49265 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+49265 getrandom(""..., 8, GRND_NONBLOCK) = 8
+49265 munmap(0xff750ff2f000, 24051)     = 0
+49265 getuid()                          = 1000
+49265 getgid()                          = 1000
+49265 getpid()                          = 49265
+49265 rt_sigaction(SIGCHLD, {sa_handler=0xb0a76b8a3ca0, sa_mask=~[RTMIN RT_1], sa_flags=0}, NULL, 8) = 0
+49265 geteuid()                         = 1000
+49265 brk(NULL)                         = 0xb0a798c36000
+49265 brk(0xb0a798e00000)               = 0xb0a798e00000
+49265 getppid()                         = 49264
+49265 getcwd("/home/dev/r6-census/fixtures", 4096) = 29
+49265 geteuid()                         = 1000
+49265 getegid()                         = 1000
+49265 rt_sigaction(SIGINT, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGINT, {sa_handler=0xb0a76b8a3ca0, sa_mask=~[RTMIN RT_1], sa_flags=0}, NULL, 8) = 0
+49265 rt_sigaction(SIGQUIT, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=~[RTMIN RT_1], sa_flags=0}, NULL, 8) = 0
+49265 rt_sigaction(SIGTERM, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49265 rt_sigaction(SIGTERM, {sa_handler=SIG_DFL, sa_mask=~[RTMIN RT_1], sa_flags=0}, NULL, 8) = 0
+49265 write(1<pipe:[82719]>, ""..., 12) = 12
+49265 exit_group(0)                     = ?
+49264 <... wait4 resumed>, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 49265
+49264 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=49265, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+49264 exit_group(0)                     = ?

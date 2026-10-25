@@ -1,0 +1,374 @@
+49065 execve("/home/dev/r6-census/artifacts/pandoc/unpacked/pandoc-3.12.1/bin/pandoc", [""..., ""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49065 set_tid_address(0xad07c88)        = 49065
+49065 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, {tv_sec=0, tv_nsec=475125}) = 0
+49065 sysinfo({uptime=1225, loads=[65984, 60576, 38816], totalram=9341022208, freeram=4302073856, sharedram=1003520, bufferram=88141824, totalswap=0, freeswap=0, procs=184, totalhigh=0, freehigh=0, mem_unit=1}) = 0
+49065 brk(NULL)                         = 0x2ec2a000
+49065 brk(0x2ec2c000)                   = 0x2ec2c000
+49065 mmap(0x2ec2a000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x2ec2a000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e940c1000
+49065 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e940ba000
+49065 mmap(NULL, 2097172, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93eb9000
+49065 mmap(NULL, 2097172, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93cb8000
+49065 timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC) = 3<anon_inode:[timerfd]>
+49065 timerfd_settime(3<anon_inode:[timerfd]>, 0, {it_interval={tv_sec=0, tv_nsec=10000000}, it_value={tv_sec=0, tv_nsec=10000000}}, NULL) = 0
+49065 pipe2([4<pipe:[82532]>, 5<pipe:[82532]>], 0) = 0
+49065 rt_sigprocmask(SIG_SETMASK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49065 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+49065 mmap(NULL, 143360, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93c95000
+49065 mprotect(0xe79e93c97000, 135168, PROT_READ|PROT_WRITE) = 0
+49065 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], ~[KILL STOP RTMIN RT_1 RT_2], 8) = 0
+49065 clone(child_stack=0xe79e93cb7af0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[49066], tls=0xe79e93cb7be8, child_tidptr=0xad07c88) = 49066
+49065 rt_sigprocmask(SIG_SETMASK, ~[KILL STOP RTMIN RT_1 RT_2], NULL, 8) = 0
+49065 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49066 rt_sigprocmask(SIG_SETMASK, ~[KILL STOP RTMIN RT_1 RT_2] <unfinished ...>
+49065 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49066 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49065 sched_getaffinity(0, 128 <unfinished ...>
+49066 prctl(PR_SET_NAME, ""... <unfinished ...>
+49065 <... sched_getaffinity resumed>, [0 1 2 3 4 5]) = 8
+49066 <... prctl resumed>)              = 0
+49065 mmap(NULL, 360468, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+49066 ppoll([{fd=4<pipe:[82532]>, events=POLLIN}, {fd=3<anon_inode:[timerfd]>, events=POLLIN}], 2, NULL, NULL, 8 <unfinished ...>
+49065 <... mmap resumed>)               = 0xe79e93c3c000
+49065 mmap(NULL, 69632, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93c2b000
+49065 prlimit64(0, RLIMIT_AS, NULL, {rlim_cur=RLIM64_INFINITY, rlim_max=RLIM64_INFINITY}) = 0
+49065 mmap(0x4200000000, 1099512676352, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0x4200000000
+49065 madvise(0x4200000000, 1099512676352, MADV_DONTNEED) = 0
+49065 madvise(0x4200000000, 1099512676352, MADV_DONTDUMP) = 0
+49065 mmap(0x4200000000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200000000
+49065 madvise(0x4200000000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200000000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200100000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200100000
+49065 madvise(0x4200100000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200100000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200200000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200200000
+49065 madvise(0x4200200000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200200000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200300000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200300000
+49065 madvise(0x4200300000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200300000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200400000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200400000
+49065 madvise(0x4200400000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200400000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200500000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200500000
+49065 madvise(0x4200500000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200500000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200600000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200600000
+49065 madvise(0x4200600000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200600000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200700000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200700000
+49065 madvise(0x4200700000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200700000, 1048576, MADV_DODUMP) = 0
+49065 mmap(0x4200800000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200800000
+49065 madvise(0x4200800000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200800000, 1048576, MADV_DODUMP) = 0
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93c2a000
+49065 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93c28000
+49065 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93c21000
+49065 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93c1a000
+49065 rt_sigaction(SIGINT, {sa_handler=0x8a87a40, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49065 rt_sigaction(SIGPIPE, {sa_handler=0x8a87850, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49065 rt_sigaction(SIGQUIT, {sa_handler=0x8a87960, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49065 rt_sigaction(SIGTSTP, {sa_handler=0x8a87980, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, NULL, 8) = 0
+49065 epoll_create1(0)                  = 6<anon_inode:[eventpoll]>
+49065 fcntl(6<anon_inode:[eventpoll]>, F_SETFD, FD_CLOEXEC) = 0
+49065 mmap(0x4200900000, 1048576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x4200900000
+49065 madvise(0x4200900000, 1048576, MADV_WILLNEED) = 0
+49065 madvise(0x4200900000, 1048576, MADV_DODUMP) = 0
+49065 pipe2([7<pipe:[82533]>, 8<pipe:[82533]>], 0) = 0
+49065 fcntl(8<pipe:[82533]>, F_GETFL <unfinished ...>
+49066 <... ppoll resumed>)              = 1 ([{fd=3, revents=POLLIN}])
+49065 <... fcntl resumed>)              = 0x1 (flags O_WRONLY)
+49066 read(3<anon_inode:[timerfd]> <unfinished ...>
+49065 fcntl(8<pipe:[82533]>, F_SETFL, O_WRONLY|O_NONBLOCK|O_LARGEFILE <unfinished ...>
+49066 <... read resumed>, ""..., 8)     = 8
+49065 <... fcntl resumed>)              = 0
+49066 ppoll([{fd=4<pipe:[82532]>, events=POLLIN}, {fd=3<anon_inode:[timerfd]>, events=POLLIN}], 2, NULL, NULL, 8 <unfinished ...>
+49065 fcntl(7<pipe:[82533]>, F_SETFD, FD_CLOEXEC) = 0
+49065 fcntl(8<pipe:[82533]>, F_SETFD, FD_CLOEXEC) = 0
+49065 eventfd2(0, 0)                    = 9<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>
+49065 fcntl(9<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, F_GETFL) = 0x2 (flags O_RDWR)
+49065 fcntl(9<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, F_SETFL, O_RDWR|O_NONBLOCK|O_LARGEFILE) = 0
+49065 fcntl(9<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, F_SETFD, FD_CLOEXEC) = 0
+49065 epoll_ctl(6<anon_inode:[eventpoll]>, EPOLL_CTL_ADD, 7<pipe:[82533]>, {events=EPOLLIN, data=0x7}) = 0
+49065 epoll_ctl(6<anon_inode:[eventpoll]>, EPOLL_CTL_ADD, 9<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, {events=EPOLLIN, data=0x9}) = 0
+49065 pipe2([10<pipe:[82534]>, 11<pipe:[82534]>], 0) = 0
+49065 fcntl(11<pipe:[82534]>, F_GETFL)  = 0x1 (flags O_WRONLY)
+49065 fcntl(11<pipe:[82534]>, F_SETFL, O_WRONLY|O_NONBLOCK|O_LARGEFILE) = 0
+49065 fcntl(10<pipe:[82534]>, F_SETFD, FD_CLOEXEC) = 0
+49065 fcntl(11<pipe:[82534]>, F_SETFD, FD_CLOEXEC) = 0
+49065 eventfd2(0, 0)                    = 12<{eventfd-count=0, eventfd-id=18, eventfd-semaphore=0}>
+49065 fcntl(12<{eventfd-count=0, eventfd-id=18, eventfd-semaphore=0}>, F_GETFL) = 0x2 (flags O_RDWR)
+49065 fcntl(12<{eventfd-count=0, eventfd-id=18, eventfd-semaphore=0}>, F_SETFL, O_RDWR|O_NONBLOCK|O_LARGEFILE) = 0
+49065 fcntl(12<{eventfd-count=0, eventfd-id=18, eventfd-semaphore=0}>, F_SETFD, FD_CLOEXEC) = 0
+49065 mmap(NULL, 143360, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bf7000
+49065 mprotect(0xe79e93bf9000, 135168, PROT_READ|PROT_WRITE) = 0
+49065 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49065 clone(child_stack=0xe79e93c19af0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[49067], tls=0xe79e93c19be8, child_tidptr=0xad07c88) = 49067
+49067 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49065 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49067 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49065 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49067 prctl(PR_SET_NAME, ""... <unfinished ...>
+49065 futex(0xffffca09abf4, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49067 <... prctl resumed>)              = 0
+49067 epoll_pwait(6<anon_inode:[eventpoll]>, [], 64, 0, NULL, 8) = 0
+49067 futex(0xffffca09abf4, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49067 <... futex resumed>)              = 1
+49065 futex(0xe79e940c1a8c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49067 futex(0xe79e940c1a8c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49067 <... futex resumed>)              = 0
+49065 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49067 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49067 <... futex resumed>)              = 0
+49065 clock_gettime(CLOCK_PROCESS_CPUTIME_ID <unfinished ...>
+49067 epoll_pwait(6<anon_inode:[eventpoll]> <unfinished ...>
+49065 <... clock_gettime resumed>, {tv_sec=0, tv_nsec=5569330}) = 0
+49067 <... epoll_pwait resumed>, [], 64, 0, NULL, 8) = 0
+49065 futex(0xffffca09adc4, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49067 futex(0xffffca09adc4, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49065 futex(0xe79e940c1a8c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49067 <... futex resumed>)              = 0
+49067 futex(0xe79e940c1a8c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49067 <... futex resumed>)              = 1
+49065 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49067 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49067 <... futex resumed>)              = 0
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+49067 epoll_pwait(6<anon_inode:[eventpoll]> <unfinished ...>
+49065 <... mmap resumed>)               = 0xe79e93bf6000
+49065 mmap(NULL, 143360, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bd3000
+49065 mprotect(0xe79e93bd5000, 135168, PROT_READ|PROT_WRITE) = 0
+49065 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49065 clone(child_stack=0xe79e93bf5af0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[49069], tls=0xe79e93bf5be8, child_tidptr=0xad07c88) = 49069
+49069 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49065 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49069 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49065 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49069 prctl(PR_SET_NAME, ""... <unfinished ...>
+49065 futex(0xffffca09acd4, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49069 <... prctl resumed>)              = 0
+49069 futex(0xffffca09acd4, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49069 <... futex resumed>)              = 1
+49065 futex(0xe79e940c1a8c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49069 futex(0xe79e940c1a8c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49069 <... futex resumed>)              = 0
+49065 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49069 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49069 <... futex resumed>)              = 0
+49065 rt_sigprocmask(SIG_BLOCK, [INT] <unfinished ...>
+49069 ppoll([{fd=10<pipe:[82534]>, events=POLLIN}, {fd=12<{eventfd-count=0, eventfd-id=18, eventfd-semaphore=0}>, events=POLLIN}], 2, NULL, NULL, 8 <unfinished ...>
+49065 <... rt_sigprocmask resumed>, [], 8) = 0
+49065 rt_sigaction(SIGINT, {sa_handler=0x8a87854, sa_mask=[], sa_flags=SA_RESTORER|SA_RESETHAND|SA_SIGINFO|0xffffffff00000000, sa_restorer=0x8af2d44}, NULL, 8) = 0
+49065 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bd2000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bd1000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bd0000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bcf000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bce000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bcd000
+49065 munmap(0xe79e93bd2000, 4096)      = 0
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bd2000
+49065 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bcb000
+49065 mmap(NULL, 143360, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93ba8000
+49065 mprotect(0xe79e93baa000, 135168, PROT_READ|PROT_WRITE) = 0
+49065 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49065 clone(child_stack=0xe79e93bcaaf0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[49070], tls=0xe79e93bcabe8, child_tidptr=0xad07c88) = 49070
+49065 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49070 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49065 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49070 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49065 futex(0xffffca096b84, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49070 prctl(PR_SET_NAME, ""...)         = 0
+49070 futex(0xffffca096b84, FUTEX_WAKE_PRIVATE, 1) = 1
+49065 <... futex resumed>)              = 0
+49070 futex(0xe79e93bca934, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49065 munmap(0xe79e93bd2000, 4096)      = 0
+49065 munmap(0xe79e93bcf000, 4096)      = 0
+49065 munmap(0xe79e93bcd000, 4096)      = 0
+49065 munmap(0xe79e93bcb000, 8192)      = 0
+49065 munmap(0xe79e93bd0000, 4096)      = 0
+49065 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.local/share/pandoc" <unfinished ...>
+49066 <... ppoll resumed>)              = 1 ([{fd=3, revents=POLLIN}])
+49065 <... newfstatat resumed>, 0xffffca096bd0, 0) = -1 ENOENT (No such file or directory)
+49066 read(3<anon_inode:[timerfd]> <unfinished ...>
+49065 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.pandoc" <unfinished ...>
+49066 <... read resumed>, ""..., 8)     = 8
+49065 <... newfstatat resumed>, 0xffffca096bd0, 0) = -1 ENOENT (No such file or directory)
+49066 ppoll([{fd=4<pipe:[82532]>, events=POLLIN}, {fd=3<anon_inode:[timerfd]>, events=POLLIN}], 2, NULL, NULL, 8 <unfinished ...>
+49065 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.local/share/pandoc", 0xffffca096bd0, 0) = -1 ENOENT (No such file or directory)
+49065 ioctl(1<pipe:[85017]>, TIOCGWINSZ, 0xffffca096c38) = -1 ENOTTY (Inappropriate ioctl for device)
+49065 getcwd("/home/dev/r6-census/fixtures", 4096) = 29
+49065 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/doc.md", O_RDONLY|O_NOCTTY|O_NONBLOCK|O_LARGEFILE) = 13</home/dev/r6-census/fixtures/data/doc.md>
+49065 fstat(13</home/dev/r6-census/fixtures/data/doc.md>, {st_dev=makedev(0xfd, 0x1), st_ino=1310731, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=36, st_atime=1792922850 /* 2026-10-25T10:07:30.929167819+0000 */, st_atime_nsec=929167819, st_mtime=1792922850 /* 2026-10-25T10:07:30.928821026+0000 */, st_mtime_nsec=928821026, st_ctime=1792922850 /* 2026-10-25T10:07:30.928821026+0000 */, st_ctime_nsec=928821026}) = 0
+49065 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93ba1000
+49065 ioctl(13</home/dev/r6-census/fixtures/data/doc.md>, TIOCGWINSZ, 0xffffca096c48) = -1 ENOTTY (Inappropriate ioctl for device)
+49065 fstat(13</home/dev/r6-census/fixtures/data/doc.md>, {st_dev=makedev(0xfd, 0x1), st_ino=1310731, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=36, st_atime=1792922850 /* 2026-10-25T10:07:30.929167819+0000 */, st_atime_nsec=929167819, st_mtime=1792922850 /* 2026-10-25T10:07:30.928821026+0000 */, st_mtime_nsec=928821026, st_ctime=1792922850 /* 2026-10-25T10:07:30.928821026+0000 */, st_ctime_nsec=928821026}) = 0
+49065 ppoll([{fd=13</home/dev/r6-census/fixtures/data/doc.md>, events=POLLIN}], 1, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=13, revents=POLLIN}], left {tv_sec=0, tv_nsec=0})
+49065 read(13</home/dev/r6-census/fixtures/data/doc.md>, ""..., 8192) = 36
+49065 ppoll([{fd=13</home/dev/r6-census/fixtures/data/doc.md>, events=POLLIN}], 1, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=13, revents=POLLIN}], left {tv_sec=0, tv_nsec=0})
+49065 read(13</home/dev/r6-census/fixtures/data/doc.md>, "", 8192) = 0
+49065 close(13</home/dev/r6-census/fixtures/data/doc.md>) = 0
+49065 mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93b9c000
+49065 mmap(NULL, 53248, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93b8f000
+49065 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe79e93bd2000
+49065 munmap(0xe79e93b9c000, 20480)     = 0
+49065 munmap(0xe79e93b8f000, 53248)     = 0
+49065 munmap(0xe79e93bd2000, 4096)      = 0
+49065 mkdirat(AT_FDCWD</home/dev/r6-census/fixtures>, ".", 0777) = -1 EEXIST (File exists)
+49065 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, ".", {st_dev=makedev(0xfd, 0x1), st_ino=1310721, st_mode=S_IFDIR|0775, st_nlink=4, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_mtime_nsec=458819561, st_ctime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_ctime_nsec=458819561}, 0) = 0
+49065 ioctl(1<pipe:[85017]>, TIOCGWINSZ, 0xffffca096c48) = -1 ENOTTY (Inappropriate ioctl for device)
+49065 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, {tv_sec=0, tv_nsec=11974077}) = 0
+49065 ppoll([{fd=1<pipe:[85017]>, events=POLLOUT}], 1, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=1, revents=POLLOUT}], left {tv_sec=0, tv_nsec=0})
+49065 write(1<pipe:[85017]>, ""..., 78) = 78
+49065 write(11<pipe:[82534]>, ""..., 1) = 1
+49069 <... ppoll resumed>)              = 1 ([{fd=10, revents=POLLIN}])
+49065 write(8<pipe:[82533]>, ""..., 1 <unfinished ...>
+49069 read(10<pipe:[82534]> <unfinished ...>
+49065 <... write resumed>)              = 1
+49069 <... read resumed>, ""..., 1)     = 1
+49067 <... epoll_pwait resumed>, [{events=EPOLLIN, data=0x7}], 64, -1, NULL, 8) = 1
+49065 futex(0xffffca09ad64, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49069 close(10<pipe:[82534]> <unfinished ...>
+49067 futex(0xe79e93c157f4, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49069 <... close resumed>)              = 0
+49069 close(11<pipe:[82534]>)           = 0
+49069 close(12<{eventfd-count=0, eventfd-id=18, eventfd-semaphore=0}>) = 0
+49069 sched_getaffinity(0, 128, [0 1 2 3 4 5]) = 8
+49069 rt_sigprocmask(SIG_BLOCK, [INT], [], 8) = 0
+49069 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49069 futex(0xffffca09ad64, FUTEX_WAKE_PRIVATE, 1) = 1
+49065 <... futex resumed>)              = 0
+49069 futex(0xe79e93bf5934, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49065 futex(0xe79e93c157f4, FUTEX_WAKE_PRIVATE, 1) = 1
+49065 sched_yield()                     = 0
+49067 <... futex resumed>)              = 0
+49065 sched_yield( <unfinished ...>
+49067 read(7<pipe:[82533]> <unfinished ...>
+49065 <... sched_yield resumed>)        = 0
+49067 <... read resumed>, ""..., 1)     = 1
+49065 sched_yield( <unfinished ...>
+49067 close(6<anon_inode:[eventpoll]> <unfinished ...>
+49065 <... sched_yield resumed>)        = 0
+49067 <... close resumed>)              = 0
+49065 sched_yield( <unfinished ...>
+49067 close(7<pipe:[82533]> <unfinished ...>
+49066 <... ppoll resumed>)              = 1 ([{fd=3, revents=POLLIN}])
+49065 <... sched_yield resumed>)        = 0
+49067 <... close resumed>)              = 0
+49066 read(3<anon_inode:[timerfd]> <unfinished ...>
+49065 sched_yield( <unfinished ...>
+49067 close(8<pipe:[82533]> <unfinished ...>
+49066 <... read resumed>, ""..., 8)     = 8
+49065 <... sched_yield resumed>)        = 0
+49067 <... close resumed>)              = 0
+49066 ppoll([{fd=4<pipe:[82532]>, events=POLLIN}, {fd=3<anon_inode:[timerfd]>, events=POLLIN}], 2, NULL, NULL, 8 <unfinished ...>
+49065 sched_yield( <unfinished ...>
+49067 close(9<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}> <unfinished ...>
+49065 <... sched_yield resumed>)        = 0
+49065 sched_yield( <unfinished ...>
+49067 <... close resumed>)              = 0
+49065 <... sched_yield resumed>)        = 0
+49067 futex(0xe79e93bf5934, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49067 <... futex resumed>)              = 1
+49069 <... futex resumed>)              = 0
+49069 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49067 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49069 <... futex resumed>)              = 1
+49067 <... futex resumed>)              = 0
+49065 sched_yield( <unfinished ...>
+49069 futex(0xe79e93bca934, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49067 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2] <unfinished ...>
+49065 <... sched_yield resumed>)        = 0
+49069 <... futex resumed>)              = 1
+49070 <... futex resumed>)              = 0
+49067 <... rt_sigprocmask resumed>, [], 8) = 0
+49065 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49070 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49069 munmap(0xe79e93bf6000, 4096 <unfinished ...>
+49067 rt_sigprocmask(SIG_BLOCK, ~[] <unfinished ...>
+49069 <... munmap resumed>)             = 0
+49067 <... rt_sigprocmask resumed>, ~[KILL STOP RTMIN RT_1 RT_2], 8) = 0
+49069 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49067 munmap(0xe79e93bf7000, 143360 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49069 <... futex resumed>)              = 1
+49067 <... munmap resumed>)             = 0
+49065 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49069 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2] <unfinished ...>
+49067 exit(0 <unfinished ...>
+49065 <... futex resumed>)              = 1
+49070 <... futex resumed>)              = 0
+49069 <... rt_sigprocmask resumed>, [], 8) = 0
+49067 <... exit resumed>)               = ?
+49070 munmap(0xe79e93bd1000, 4096 <unfinished ...>
+49065 sched_yield()                     = 0
+49069 futex(0xad07c88, FUTEX_WAIT, 49067, NULL <unfinished ...>
+49070 <... munmap resumed>)             = 0
+49065 futex(0xad03c0c, FUTEX_WAIT_PRIVATE, 2147483664, NULL <unfinished ...>
+49070 munmap(0xe79e93bce000, 4096 <unfinished ...>
+49069 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+49070 <... munmap resumed>)             = 0
+49069 rt_sigprocmask(SIG_BLOCK, ~[] <unfinished ...>
+49070 futex(0xad03c0c, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49069 <... rt_sigprocmask resumed>, ~[KILL STOP RTMIN RT_1 RT_2], 8) = 0
+49070 <... futex resumed>)              = 1
+49069 munmap(0xe79e93bd3000, 143360 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49065 write(5<pipe:[82532]>, ""..., 5 <unfinished ...>
+49070 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2] <unfinished ...>
+49069 <... munmap resumed>)             = 0
+49065 <... write resumed>)              = 5
+49070 <... rt_sigprocmask resumed>, [], 8) = 0
+49069 exit(0 <unfinished ...>
+49065 futex(0xe79e93cb7b48, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49070 futex(0xad07c88, FUTEX_WAIT, 49069, NULL <unfinished ...>
+49069 <... exit resumed>)               = ?
+49066 <... ppoll resumed>)              = 1 ([{fd=4, revents=POLLIN}])
+49070 <... futex resumed>)              = 0
+49066 close(3<anon_inode:[timerfd]> <unfinished ...>
+49070 rt_sigprocmask(SIG_BLOCK, ~[] <unfinished ...>
+49066 <... close resumed>)              = 0
+49070 <... rt_sigprocmask resumed>, ~[KILL STOP RTMIN RT_1 RT_2], 8) = 0
+49066 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2] <unfinished ...>
+49070 munmap(0xe79e93ba8000, 143360 <unfinished ...>
+49066 <... rt_sigprocmask resumed>, ~[KILL STOP RTMIN RT_1 RT_2], 8) = 0
+49070 <... munmap resumed>)             = 0
+49066 futex(0xad07c88, FUTEX_WAIT, 49070, NULL <unfinished ...>
+49070 exit(0)                           = ?
+49066 <... futex resumed>)              = 0
+49066 futex(0xe79e93cb7b48, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49065 <... futex resumed>)              = 0
+49066 <... futex resumed>)              = 1
+49065 futex(0xad07c88, FUTEX_WAIT, 49066, NULL <unfinished ...>
+49066 exit(0)                           = ?
+49065 <... futex resumed>)              = 0
+49065 munmap(0xe79e93c95000, 143360)    = 0
+49065 close(4<pipe:[82532]>)            = 0
+49065 close(5<pipe:[82532]>)            = 0
+49065 rt_sigprocmask(SIG_BLOCK, [TTOU], [], 8) = 0
+49065 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49065 rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, NULL, 8) = 0
+49065 rt_sigaction(SIGPIPE, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, NULL, 8) = 0
+49065 rt_sigaction(SIGTSTP, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x8af2d44}, NULL, 8) = 0
+49065 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, {tv_sec=0, tv_nsec=16032203}) = 0
+49065 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49065 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49065 munmap(0xe79e93c2b000, 69632)     = 0
+49065 munmap(0xe79e93ba1000, 28672)     = 0
+49065 munmap(0xe79e93c1a000, 28672)     = 0
+49065 munmap(0xe79e93c21000, 28672)     = 0
+49065 munmap(0xe79e93c28000, 8192)      = 0
+49065 munmap(0xe79e93c2a000, 4096)      = 0
+49065 exit_group(0)                     = ?

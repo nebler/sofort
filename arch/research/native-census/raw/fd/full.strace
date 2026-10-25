@@ -1,0 +1,256 @@
+49019 execve("/home/dev/r6-census/artifacts/fd/unpacked/fd-v10.5.0-aarch64-unknown-linux-musl/fd", [""..., ""..., ""..., ""..., ""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49019 mmap(NULL, 408, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047f4000
+49019 set_tid_address(0x703750)         = 49019
+49019 ppoll([{fd=0<pipe:[80848]>, events=0}, {fd=1<pipe:[80849]>, events=0}, {fd=2<pipe:[80850]>, events=0}], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=0, revents=POLLHUP}], left {tv_sec=0, tv_nsec=0})
+49019 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x5fff5c}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49019 rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49019 sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+49019 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xf9c8047f0000
+49019 mprotect(0xf9c8047f0000, 4096, PROT_NONE) = 0
+49019 sigaltstack({ss_sp=0xf9c8047f1000, ss_flags=0, ss_size=12288}, NULL) = 0
+49019 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+49019 rt_sigaction(SIGSEGV, {sa_handler=0x5e2ff4, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x5fff5c}, NULL, 8) = 0
+49019 rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49019 rt_sigaction(SIGBUS, {sa_handler=0x5e2ff4, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x5fff5c}, NULL, 8) = 0
+49019 brk(NULL)                         = 0x34775000
+49019 brk(0x34777000)                   = 0x34777000
+49019 mmap(0x34775000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x34775000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ef000
+49019 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e9000
+49019 munmap(0xf9c8047ed000, 8192)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ee000
+49019 mmap(NULL, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e1000
+49019 munmap(0xf9c8047e9000, 16384)     = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047dc000
+49019 munmap(0xf9c8047e1000, 32768)     = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ec000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047eb000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ea000
+49019 mmap(NULL, 40960, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047d2000
+49019 munmap(0xf9c8047dc000, 20480)     = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e9000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e8000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e7000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e6000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e5000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e4000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e3000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e2000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e1000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e0000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047df000
+49019 munmap(0xf9c8047e2000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e2000
+49019 brk(0x34778000)                   = 0x34778000
+49019 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047dd000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047dc000
+49019 munmap(0xf9c8047dc000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047dc000
+49019 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047d0000
+49019 munmap(0xf9c8047df000, 4096)      = 0
+49019 munmap(0xf9c8047e8000, 4096)      = 0
+49019 munmap(0xf9c8047ea000, 4096)      = 0
+49019 munmap(0xf9c8047ee000, 4096)      = 0
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 munmap(0xf9c8047e9000, 4096)      = 0
+49019 munmap(0xf9c8047d2000, 40960)     = 0
+49019 munmap(0xf9c8047e4000, 4096)      = 0
+49019 munmap(0xf9c8047ef000, 4096)      = 0
+49019 munmap(0xf9c8047dc000, 4096)      = 0
+49019 munmap(0xf9c8047eb000, 4096)      = 0
+49019 munmap(0xf9c8047e7000, 4096)      = 0
+49019 munmap(0xf9c8047e5000, 4096)      = 0
+49019 munmap(0xf9c8047e3000, 4096)      = 0
+49019 munmap(0xf9c8047e6000, 4096)      = 0
+49019 munmap(0xf9c8047e0000, 4096)      = 0
+49019 munmap(0xf9c8047e1000, 4096)      = 0
+49019 munmap(0xf9c8047e2000, 4096)      = 0
+49019 munmap(0xf9c8047d0000, 8192)      = 0
+49019 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, 0) = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ef000
+49019 ioctl(1<pipe:[80849]>, TIOCGWINSZ, 0xffffd81d5cd8) = -1 ENOTTY (Inappropriate ioctl for device)
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ee000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047eb000
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 munmap(0xf9c8047eb000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047eb000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ea000
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 munmap(0xf9c8047eb000, 4096)      = 0
+49019 munmap(0xf9c8047ea000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ea000
+49019 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e6000
+49019 munmap(0xf9c8047ea000, 8192)      = 0
+49019 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047df000
+49019 munmap(0xf9c8047e6000, 16384)     = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ed000
+49019 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ea000
+49019 munmap(0xf9c8047df000, 28672)     = 0
+49019 munmap(0xf9c8047ee000, 4096)      = 0
+49019 mmap(NULL, 320020, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c80478e000
+49019 getrandom(""..., 16, GRND_INSECURE) = 16
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047ee000
+49019 munmap(0xf9c80478e000, 323584)    = 0
+49019 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e6000
+49019 munmap(0xf9c8047e6000, 16384)     = 0
+49019 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e8000
+49019 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8047e7000
+49019 getcwd("/home/dev/r6-census/fixtures", 512) = 29
+49019 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49019 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49019 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+49019 mmap(NULL, 2109440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c8045da000
+49019 mprotect(0xf9c8045dc000, 2101248, PROT_READ|PROT_WRITE) = 0
+49019 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49019 clone(child_stack=0xf9c8047dca30, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[49020], tls=0xf9c8047dcb30, child_tidptr=0x703750) = 49020
+49019 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49020 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49019 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49020 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49019 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data" <unfinished ...>
+49020 gettid( <unfinished ...>
+49019 <... newfstatat resumed>, {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, 0) = 0
+49020 <... gettid resumed>)             = 49020
+49019 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+49020 futex(0x703740, FUTEX_WAIT_PRIVATE, 2147483650, NULL <unfinished ...>
+49019 <... mmap resumed>)               = 0xf9c8047e0000
+49019 futex(0x703740, FUTEX_WAKE_PRIVATE, 1) = 1
+49020 <... futex resumed>)              = 0
+49019 futex(0x703740, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49020 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+49019 <... futex resumed>)              = 0
+49020 <... mmap resumed>)               = 0xf9c8047df000
+49019 futex(0x703740, FUTEX_WAIT_PRIVATE, 2147483650, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+49020 futex(0x703740, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49019 mmap(NULL, 2109440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+49020 <... futex resumed>)              = 0
+49019 <... mmap resumed>)               = 0xf9c8043d7000
+49020 sigaltstack(NULL <unfinished ...>
+49019 mprotect(0xf9c8043d9000, 2101248, PROT_READ|PROT_WRITE <unfinished ...>
+49020 <... sigaltstack resumed>, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+49019 <... mprotect resumed>)           = 0
+49020 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0 <unfinished ...>
+49019 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2] <unfinished ...>
+49020 <... mmap resumed>)               = 0xf9c8043d3000
+49019 <... rt_sigprocmask resumed>, [], 8) = 0
+49020 mprotect(0xf9c8043d3000, 4096, PROT_NONE <unfinished ...>
+49019 clone(child_stack=0xf9c8045d9a30, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000 <unfinished ...>
+49020 <... mprotect resumed>)           = 0
+49020 sigaltstack({ss_sp=0xf9c8043d4000, ss_flags=0, ss_size=12288} <unfinished ...>
+49019 <... clone resumed>, parent_tid=[49021], tls=0xf9c8045d9b30, child_tidptr=0x703750) = 49021
+49020 <... sigaltstack resumed>, NULL)  = 0
+49019 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49021 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+49020 clock_gettime(CLOCK_MONOTONIC <unfinished ...>
+49019 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49019 futex(0xf9c8045d9a90, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49021 <... rt_sigprocmask resumed>, NULL, 8) = 0
+49020 <... clock_gettime resumed>, {tv_sec=1224, tv_nsec=207118834}) = 0
+49021 gettid( <unfinished ...>
+49020 mmap(NULL, 272020, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+49021 <... gettid resumed>)             = 49021
+49020 <... mmap resumed>)               = 0xf9c804390000
+49021 sigaltstack(NULL <unfinished ...>
+49020 sched_yield( <unfinished ...>
+49021 <... sigaltstack resumed>, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+49020 <... sched_yield resumed>)        = 0
+49021 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0 <unfinished ...>
+49020 sched_yield( <unfinished ...>
+49021 <... mmap resumed>)               = 0xf9c80438c000
+49020 <... sched_yield resumed>)        = 0
+49021 mprotect(0xf9c80438c000, 4096, PROT_NONE <unfinished ...>
+49020 sched_yield( <unfinished ...>
+49021 <... mprotect resumed>)           = 0
+49020 <... sched_yield resumed>)        = 0
+49021 sigaltstack({ss_sp=0xf9c80438d000, ss_flags=0, ss_size=12288} <unfinished ...>
+49020 sched_yield( <unfinished ...>
+49021 <... sigaltstack resumed>, NULL)  = 0
+49020 <... sched_yield resumed>)        = 0
+49021 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", O_RDONLY|O_LARGEFILE|O_CLOEXEC|O_DIRECTORY <unfinished ...>
+49020 clock_gettime(CLOCK_MONOTONIC <unfinished ...>
+49021 <... openat resumed>)             = 3</home/dev/r6-census/fixtures/data>
+49020 <... clock_gettime resumed>, {tv_sec=1224, tv_nsec=208148670}) = 0
+49021 fcntl(3</home/dev/r6-census/fixtures/data>, F_SETFD, FD_CLOEXEC <unfinished ...>
+49020 clock_gettime(CLOCK_MONOTONIC <unfinished ...>
+49021 <... fcntl resumed>)              = 0
+49020 <... clock_gettime resumed>, {tv_sec=1224, tv_nsec=208336212}) = 0
+49021 getdents64(3</home/dev/r6-census/fixtures/data> <unfinished ...>
+49020 clock_gettime(CLOCK_MONOTONIC <unfinished ...>
+49021 <... getdents64 resumed>, [{d_ino=1310732, d_off=2580583060684913368, d_reclen=32, d_type=DT_REG, d_name="build.js"}, {d_ino=1310729, d_off=3337157013447283081, d_reclen=32, d_type=DT_REG, d_name="input.txt"}, {d_ino=1310728, d_off=3970028287153223573, d_reclen=32, d_type=DT_REG, d_name="input.csv"}, {d_ino=1310721, d_off=4000439746407683904, d_reclen=24, d_type=DT_DIR, d_name=".."}, {d_ino=1310723, d_off=4368210136039320747, d_reclen=24, d_type=DT_DIR, d_name="sub"}, {d_ino=1310733, d_off=4720532954232634353, d_reclen=32, d_type=DT_REG, d_name="demo.db"}, {d_ino=1310734, d_off=5094239232247251605, d_reclen=32, d_type=DT_REG, d_name="fixture.tar"}, {d_ino=1310731, d_off=6147942965075954142, d_reclen=32, d_type=DT_REG, d_name="doc.md"}, {d_ino=1317207, d_off=7311612040129970467, d_reclen=32, d_type=DT_REG, d_name="doc.pdf"}, {d_ino=1310727, d_off=8056736232295643257, d_reclen=32, d_type=DT_REG, d_name="input.yaml"}, {d_ino=1310726, d_off=8367573825314335666, d_reclen=32, d_type=DT_REG, d_name="input.json"}, {d_ino=1310722, d_off=8685406101398946860, d_reclen=24, d_type=DT_DIR, d_name="."}, {d_ino=1316912, d_off=9223372036854775807, d_reclen=32, d_type=DT_REG, d_name="tone.wav"}], 2048) = 392
+49020 <... clock_gettime resumed>, {tv_sec=1224, tv_nsec=208487379}) = 0
+49021 getdents64(3</home/dev/r6-census/fixtures/data> <unfinished ...>
+49020 futex(0xf9c8047ec288, FUTEX_WAIT_BITSET_PRIVATE, 4294967295, {tv_sec=1224, tv_nsec=307270001}, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+49021 <... getdents64 resumed>, [], 2048) = 0
+49021 close(3</home/dev/r6-census/fixtures/data>) = 0
+49021 getrandom(""..., 16, GRND_INSECURE) = 16
+49021 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf9c80438b000
+49021 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/sub", O_RDONLY|O_LARGEFILE|O_CLOEXEC|O_DIRECTORY) = 3</home/dev/r6-census/fixtures/data/sub>
+49021 fcntl(3</home/dev/r6-census/fixtures/data/sub>, F_SETFD, FD_CLOEXEC) = 0
+49021 getdents64(3</home/dev/r6-census/fixtures/data/sub>, [{d_ino=1310722, d_off=8187072234696954404, d_reclen=24, d_type=DT_DIR, d_name=".."}, {d_ino=1310730, d_off=8367573825314335666, d_reclen=32, d_type=DT_REG, d_name="notes.txt"}, {d_ino=1310723, d_off=9223372036854775807, d_reclen=24, d_type=DT_DIR, d_name="."}], 2048) = 80
+49021 getdents64(3</home/dev/r6-census/fixtures/data/sub>, [], 2048) = 0
+49021 close(3</home/dev/r6-census/fixtures/data/sub>) = 0
+49021 futex(0xf9c8047ec288, FUTEX_WAKE_PRIVATE, 1) = 1
+49020 <... futex resumed>)              = 0
+49021 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=12288} <unfinished ...>
+49020 sched_yield( <unfinished ...>
+49021 <... sigaltstack resumed>, NULL)  = 0
+49021 munmap(0xf9c80438c000, 16384 <unfinished ...>
+49020 <... sched_yield resumed>)        = 0
+49021 <... munmap resumed>)             = 0
+49020 sched_yield( <unfinished ...>
+49021 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2] <unfinished ...>
+49020 <... sched_yield resumed>)        = 0
+49021 <... rt_sigprocmask resumed>, [], 8) = 0
+49020 sched_yield( <unfinished ...>
+49021 futex(0xf9c8045d9a90, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49020 <... sched_yield resumed>)        = 0
+49021 <... futex resumed>)              = 1
+49020 sched_yield( <unfinished ...>
+49019 <... futex resumed>)              = 0
+49019 futex(0x703750, FUTEX_WAIT, 49021, NULL <unfinished ...>
+49021 exit(0 <unfinished ...>
+49020 <... sched_yield resumed>)        = 0
+49021 <... exit resumed>)               = ?
+49020 clock_gettime(CLOCK_MONOTONIC <unfinished ...>
+49019 <... futex resumed>)              = 0
+49020 <... clock_gettime resumed>, {tv_sec=1224, tv_nsec=210934260}) = 0
+49019 munmap(0xf9c8043d7000, 2109440 <unfinished ...>
+49020 clock_gettime(CLOCK_MONOTONIC <unfinished ...>
+49019 <... munmap resumed>)             = 0
+49020 <... clock_gettime resumed>, {tv_sec=1224, tv_nsec=211172636}) = 0
+49019 futex(0xf9c8047dca90, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+49020 munmap(0xf9c804390000, 274432)    = 0
+49020 write(1<pipe:[80849]>, ""..., 19) = 19
+49020 munmap(0xf9c8047e7000, 4096)      = 0
+49020 munmap(0xf9c8047e0000, 28672)     = 0
+49020 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=12288}, NULL) = 0
+49020 munmap(0xf9c8043d3000, 16384)     = 0
+49020 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+49020 futex(0xf9c8047dca90, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+49019 <... futex resumed>)              = 0
+49020 <... futex resumed>)              = 1
+49019 futex(0x703750, FUTEX_WAIT, 49020, NULL <unfinished ...>
+49020 exit(0)                           = ?
+49019 <... futex resumed>)              = 0
+49019 munmap(0xf9c8045da000, 2109440)   = 0
+49019 munmap(0xf9c8047ea000, 8192)      = 0
+49019 munmap(0xf9c8047ee000, 4096)      = 0
+49019 munmap(0xf9c80438b000, 4096)      = 0
+49019 munmap(0xf9c8047e8000, 8192)      = 0
+49019 munmap(0xf9c8047ed000, 4096)      = 0
+49019 munmap(0xf9c8047ef000, 4096)      = 0
+49019 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=12288}, NULL) = 0
+49019 munmap(0xf9c8047f0000, 16384)     = 0
+49019 exit_group(0)                     = ?

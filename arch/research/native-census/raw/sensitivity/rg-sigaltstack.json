@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "616c70686120320a616c70686120330a",
+  "stderr_hex": "",
+  "uptime": "2114.07 11596.50",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "rg",
+  "syscall": "sigaltstack",
+  "same_stdout": true,
+  "preserved": true,
+  "injected": true
+}

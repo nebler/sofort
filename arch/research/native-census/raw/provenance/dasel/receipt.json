@@ -1,0 +1,8 @@
+{
+  "name": "dasel",
+  "version": "v3.11.2",
+  "release_url": "https://github.com/TomWright/dasel/releases/tag/v3.11.2",
+  "asset_url": "https://github.com/TomWright/dasel/releases/download/v3.11.2/dasel_linux_arm64",
+  "asset_sha256": "df33920a792cd8ee5573cec3632a710cd2178d7bc4fc3892c6be78f35e7cbcc6",
+  "verified": true
+}

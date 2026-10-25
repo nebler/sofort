@@ -1,0 +1,176 @@
+{
+  "workload": {
+    "name": "duckdb-gnu",
+    "category": "database",
+    "binary": "/home/dev/r6-census/artifacts/duckdb-gnu/unpacked/duckdb",
+    "argv": [
+      "-batch",
+      "-csv",
+      "-c",
+      "SELECT sum(n) FROM read_csv('data/input.csv');"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "73756d286e290a370a"
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/duckdb-gnu/unpacked/duckdb",
+    "sha256": "f4c681bcf41a5c43dcf9a354703fe5bded9e2265282d1915d6d99637cd1e1f29",
+    "bytes": 75289208,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 12341504,
+    "headers": [
+      {
+        "type": 6,
+        "flags": 4,
+        "offset": 64,
+        "vaddr": 2097216,
+        "filesz": 672,
+        "memsz": 672,
+        "align": 8
+      },
+      {
+        "type": 3,
+        "flags": 4,
+        "offset": 736,
+        "vaddr": 2097888,
+        "filesz": 27,
+        "memsz": 27,
+        "align": 1
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 764,
+        "vaddr": 2097916,
+        "filesz": 68,
+        "memsz": 68,
+        "align": 4
+      },
+      {
+        "type": 1,
+        "flags": 4,
+        "offset": 0,
+        "vaddr": 2097152,
+        "filesz": 10172716,
+        "memsz": 10172716,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 10172716,
+        "vaddr": 12335404,
+        "filesz": 45799924,
+        "memsz": 45799924,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 55972640,
+        "vaddr": 58200864,
+        "filesz": 579512,
+        "memsz": 584928,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 56552152,
+        "vaddr": 58845912,
+        "filesz": 6024,
+        "memsz": 607763,
+        "align": 65536
+      },
+      {
+        "type": 7,
+        "flags": 4,
+        "offset": 55972640,
+        "vaddr": 58200864,
+        "filesz": 2704,
+        "memsz": 27584,
+        "align": 8
+      },
+      {
+        "type": 2,
+        "flags": 6,
+        "offset": 56516624,
+        "vaddr": 58744848,
+        "filesz": 560,
+        "memsz": 560,
+        "align": 8
+      },
+      {
+        "type": 1685382480,
+        "flags": 4,
+        "offset": 4578344,
+        "vaddr": 6675496,
+        "filesz": 587348,
+        "memsz": 587348,
+        "align": 4
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 1
+      },
+      {
+        "type": 1685382482,
+        "flags": 4,
+        "offset": 55972640,
+        "vaddr": 58200864,
+        "filesz": 579512,
+        "memsz": 584928,
+        "align": 1
+      }
+    ],
+    "interpreter": true,
+    "dynamic": true,
+    "tls": [
+      {
+        "type": 7,
+        "flags": 4,
+        "offset": 55972640,
+        "vaddr": 58200864,
+        "filesz": 2704,
+        "memsz": 27584,
+        "align": 8
+      }
+    ],
+    "pack_error": "dynamic ELF/interpreter forbidden",
+    "packed": null
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "73756d286e290a370a",
+      "stderr_hex": "",
+      "uptime": "1226.20 6549.30",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "73756d286e290a370a",
+      "stderr_hex": "",
+      "uptime": "1226.29 6549.63",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    }
+  ]
+}

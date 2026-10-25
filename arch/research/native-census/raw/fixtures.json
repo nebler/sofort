@@ -1,0 +1,50 @@
+{
+  "data/build.js": {
+    "bytes": 36,
+    "sha256": "3061da33605f87f28dba8e9d12b22b545f10ac8c77c3ef02bcd11700d6e40249"
+  },
+  "data/input.txt": {
+    "bytes": 23,
+    "sha256": "aebe5fe7719f4fef8543321bb1b210f63f5a2c540c52e37437c6d859bf35284a"
+  },
+  "data/input.csv": {
+    "bytes": 22,
+    "sha256": "d47664c7da3c47e81d8645da0a4b5d2781cb35b38b4a17d6e75f5bbc78e2ebff"
+  },
+  "data/demo.db": {
+    "bytes": 8192,
+    "sha256": "f3d4180cd07ad9eed5a674c7ff4e5f6d817eb517029c185f66af862a30eac059"
+  },
+  "data/fixture.tar": {
+    "bytes": 10240,
+    "sha256": "61c3a363320bd2ac9746dd507ce58cf2a1d556f2c3d3eb98e63ddd50394c6d56"
+  },
+  "data/doc.md": {
+    "bytes": 36,
+    "sha256": "fd442a5120ac15231d91c9ea658a484fe2ec3e8048b1f1b2dcc11ca6cea666de"
+  },
+  "data/doc.pdf": {
+    "bytes": 329,
+    "sha256": "1608478b971ed5190557ca977aeeea08b44fabdae1646252b5f4f6d21642335b"
+  },
+  "data/input.yaml": {
+    "bytes": 56,
+    "sha256": "e556139f8ef03bf4bb3cfbbf4c8c3d42d4f147f79b434f319433fb4e731dcb75"
+  },
+  "data/input.json": {
+    "bytes": 57,
+    "sha256": "56748426aaa98b51990e03ffebbc6089e0ecad11fa093d9d4762acbfcfe02eff"
+  },
+  "data/tone.wav": {
+    "bytes": 204,
+    "sha256": "ee177a5b3e9a876dfcbfca567cfef961ef64c47427e9bdc436e901d4dff0c8ce"
+  },
+  "dev/null": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data/sub/notes.txt": {
+    "bytes": 12,
+    "sha256": "9478fc97bd5114b4f84cedaa6d8a33c16868e7899589e80d62f1e0a056cb6b2b"
+  }
+}

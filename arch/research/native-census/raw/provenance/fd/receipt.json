@@ -1,0 +1,8 @@
+{
+  "name": "fd",
+  "version": "v10.5.0",
+  "release_url": "https://github.com/sharkdp/fd/releases/tag/v10.5.0",
+  "asset_url": "https://github.com/sharkdp/fd/releases/download/v10.5.0/fd-v10.5.0-aarch64-unknown-linux-musl.tar.gz",
+  "asset_sha256": "d76c4317f7d5dba69f8a2a15856c90c777e7f0dd4e85f0de8c76de6992c374d4",
+  "verified": true
+}

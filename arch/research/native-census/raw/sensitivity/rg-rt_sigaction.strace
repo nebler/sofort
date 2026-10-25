@@ -1,0 +1,35 @@
+52378 execve("/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg", [...], 0xfffffc1bcde8 /* 7 vars */) = 0
+52378 mmap(NULL, 2832, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf15c21c87000
+52378 set_tid_address(0x8de738)         = 52378
+52378 readlinkat(AT_FDCWD, "/etc/_rjem_malloc.conf", 0xffffe373cbb8, 4096) = -1 ENOENT (No such file or directory)
+52378 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf15c21c77000
+52378 madvise(0xf15c21c77000, 65536, MADV_DONTNEED) = 0
+52378 munmap(0xf15c21c77000, 65536)     = 0
+52378 openat(AT_FDCWD, "/proc/sys/vm/overcommit_memory", O_RDONLY|O_CLOEXEC) = 3
+52378 read(3, ""..., 1)                 = 1
+52378 close(3)                          = 0
+52378 openat(AT_FDCWD, "/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY) = 3
+52378 read(3, ""..., 24)                = 23
+52378 read(3, "", 1)                    = 0
+52378 close(3)                          = 0
+52378 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf15c21c77000
+52378 madvise(0xf15c21c77000, 65536, MADV_FREE) = 0
+52378 munmap(0xf15c21c77000, 65536)     = 0
+52378 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf15c21a00000
+52378 brk(NULL)                         = 0x84c9000
+52378 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2113, tv_nsec=885150845}) = 0
+52378 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=2113, tv_nsec=886150853}) = 0
+52378 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xf15c21800000
+52378 sched_getaffinity(0, 128, [0 1 2 3 4 5]) = 8
+52378 brk(NULL)                         = 0x84c9000
+52378 brk(0x84cb000)                    = 0x84cb000
+52378 mmap(0x84c9000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x84c9000
+52378 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf15c21c86000
+52378 ppoll([...], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([...], left {tv_sec=0, tv_nsec=0})
+52378 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x6f6344}, 0xffffe373f3d0, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+52378 write(2, ""..., 97)               = 97
+52378 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+52378 tkill(52378, SIGABRT)             = 0
+52378 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+52378 --- SIGABRT {si_signo=SIGABRT, si_code=SI_TKILL, si_pid=52378, si_uid=1000} ---
+52378 +++ killed by SIGABRT (core dumped) +++

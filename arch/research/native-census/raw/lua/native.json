@@ -1,0 +1,121 @@
+{
+  "workload": {
+    "name": "lua",
+    "category": "language",
+    "binary": "/home/dev/r6-census/lua-static",
+    "argv": [
+      "-e",
+      "local s=0; for l in io.lines(\"data/input.txt\") do s=s+tonumber(l:match(\"%d+\")) end; print(s)"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "31300a"
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/lua-static",
+    "sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+    "bytes": 395104,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 4195052,
+    "headers": [
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 4194304,
+        "filesz": 348128,
+        "memsz": 348128,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 392752,
+        "vaddr": 4652592,
+        "filesz": 1232,
+        "memsz": 5328,
+        "align": 65536
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 344,
+        "vaddr": 4194648,
+        "filesz": 36,
+        "memsz": 36,
+        "align": 4
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 16
+      },
+      {
+        "type": 1685382482,
+        "flags": 4,
+        "offset": 392752,
+        "vaddr": 4652592,
+        "filesz": 464,
+        "memsz": 464,
+        "align": 1
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [],
+    "pack_error": null,
+    "packed": {
+      "source_sha256": "6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929",
+      "flat_bytes": 466944,
+      "flat_sha256": "7c734a6738d9cf3d01f313b928e83961b08fd4ddbc7bee62c002d71244dc2e1f",
+      "physical_base": "0x80080000",
+      "segments": [
+        [
+          4194304,
+          4542432,
+          5
+        ],
+        [
+          4652592,
+          4657920,
+          6
+        ]
+      ],
+      "entry": 4195052,
+      "phdr": 4194368,
+      "phnum": 5
+    }
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "31300a",
+      "stderr_hex": "",
+      "uptime": "1224.53 6542.88",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "31300a",
+      "stderr_hex": "",
+      "uptime": "1224.53 6542.91",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    }
+  ]
+}

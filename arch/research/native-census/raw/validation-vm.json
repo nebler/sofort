@@ -1,0 +1,1173 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "check": "32 primary artifact/workload rows",
+      "pass": true
+    },
+    {
+      "check": "31 native workload oracles accepted; only musl DuckDB unavailable",
+      "pass": true
+    },
+    {
+      "check": "Git child exec stays in syscall inventory",
+      "pass": true
+    },
+    {
+      "check": "25 executable static reference rows",
+      "pass": true
+    },
+    {
+      "check": "15 current-kernel baseline runs",
+      "pass": true
+    },
+    {
+      "check": "9 exact-output guest successes",
+      "pass": true
+    },
+    {
+      "check": "bb-awk two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-awk full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-awk full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-awk count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-awk count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-awk no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-awk retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-awk recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-awk sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-awk output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "bb-awk retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-grep two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-grep full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-grep full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-grep count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-grep count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-grep no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-grep retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-grep recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-grep sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-grep output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "bb-grep retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-gzip retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-sed two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-sed full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-sed full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-sed count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-sed count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-sed no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-sed retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-sed recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-sed sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-sed output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "bb-sed retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-sort two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-sort full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-sort full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-sort count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-sort count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-sort no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-sort retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-sort recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-sort sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-sort output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "bb-sort retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-tar two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-tar full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-tar full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-tar count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-tar count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-tar no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-tar retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-tar recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-tar sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-tar output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "bb-tar retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-wc two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "bb-wc full trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-wc full no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-wc count trace exists",
+      "pass": true
+    },
+    {
+      "check": "bb-wc count no timeout",
+      "pass": true
+    },
+    {
+      "check": "bb-wc no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "bb-wc retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "bb-wc recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "bb-wc sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "bb-wc output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "bb-wc retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "curl two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "curl full trace exists",
+      "pass": true
+    },
+    {
+      "check": "curl full no timeout",
+      "pass": true
+    },
+    {
+      "check": "curl count trace exists",
+      "pass": true
+    },
+    {
+      "check": "curl count no timeout",
+      "pass": true
+    },
+    {
+      "check": "curl no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "curl retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "dasel two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "dasel full trace exists",
+      "pass": true
+    },
+    {
+      "check": "dasel full no timeout",
+      "pass": true
+    },
+    {
+      "check": "dasel count trace exists",
+      "pass": true
+    },
+    {
+      "check": "dasel count no timeout",
+      "pass": true
+    },
+    {
+      "check": "dasel no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "dasel retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "duckdb two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "duckdb full trace exists",
+      "pass": true
+    },
+    {
+      "check": "duckdb full no timeout",
+      "pass": true
+    },
+    {
+      "check": "duckdb count trace exists",
+      "pass": true
+    },
+    {
+      "check": "duckdb count no timeout",
+      "pass": true
+    },
+    {
+      "check": "duckdb no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "duckdb retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu full trace exists",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu full no timeout",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu count trace exists",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu count no timeout",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "duckdb-gnu retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "esbuild two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "esbuild full trace exists",
+      "pass": true
+    },
+    {
+      "check": "esbuild full no timeout",
+      "pass": true
+    },
+    {
+      "check": "esbuild count trace exists",
+      "pass": true
+    },
+    {
+      "check": "esbuild count no timeout",
+      "pass": true
+    },
+    {
+      "check": "esbuild no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "esbuild retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "fd two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "fd full trace exists",
+      "pass": true
+    },
+    {
+      "check": "fd full no timeout",
+      "pass": true
+    },
+    {
+      "check": "fd count trace exists",
+      "pass": true
+    },
+    {
+      "check": "fd count no timeout",
+      "pass": true
+    },
+    {
+      "check": "fd no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "fd retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg full trace exists",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg full no timeout",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg count trace exists",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg count no timeout",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "ffmpeg retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "git two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "git full trace exists",
+      "pass": true
+    },
+    {
+      "check": "git full no timeout",
+      "pass": true
+    },
+    {
+      "check": "git count trace exists",
+      "pass": true
+    },
+    {
+      "check": "git count no timeout",
+      "pass": true
+    },
+    {
+      "check": "git no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "git retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "git-shell two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "git-shell full trace exists",
+      "pass": true
+    },
+    {
+      "check": "git-shell full no timeout",
+      "pass": true
+    },
+    {
+      "check": "git-shell count trace exists",
+      "pass": true
+    },
+    {
+      "check": "git-shell count no timeout",
+      "pass": true
+    },
+    {
+      "check": "git-shell no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "git-shell retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "gojq two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "gojq full trace exists",
+      "pass": true
+    },
+    {
+      "check": "gojq full no timeout",
+      "pass": true
+    },
+    {
+      "check": "gojq count trace exists",
+      "pass": true
+    },
+    {
+      "check": "gojq count no timeout",
+      "pass": true
+    },
+    {
+      "check": "gojq no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "gojq retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "gron two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "gron full trace exists",
+      "pass": true
+    },
+    {
+      "check": "gron full no timeout",
+      "pass": true
+    },
+    {
+      "check": "gron count trace exists",
+      "pass": true
+    },
+    {
+      "check": "gron count no timeout",
+      "pass": true
+    },
+    {
+      "check": "gron no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "gron retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "jq two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "jq full trace exists",
+      "pass": true
+    },
+    {
+      "check": "jq full no timeout",
+      "pass": true
+    },
+    {
+      "check": "jq count trace exists",
+      "pass": true
+    },
+    {
+      "check": "jq count no timeout",
+      "pass": true
+    },
+    {
+      "check": "jq no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "jq retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "jq recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "jq sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "jq retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "jq-musl two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "jq-musl full trace exists",
+      "pass": true
+    },
+    {
+      "check": "jq-musl full no timeout",
+      "pass": true
+    },
+    {
+      "check": "jq-musl count trace exists",
+      "pass": true
+    },
+    {
+      "check": "jq-musl count no timeout",
+      "pass": true
+    },
+    {
+      "check": "jq-musl no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "jq-musl retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "jq-musl recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "jq-musl sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "jq-musl output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "jq-musl retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "lua two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "lua full trace exists",
+      "pass": true
+    },
+    {
+      "check": "lua full no timeout",
+      "pass": true
+    },
+    {
+      "check": "lua count trace exists",
+      "pass": true
+    },
+    {
+      "check": "lua count no timeout",
+      "pass": true
+    },
+    {
+      "check": "lua no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "lua retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "lua recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "lua sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "lua output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "lua retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "micropython two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "micropython full trace exists",
+      "pass": true
+    },
+    {
+      "check": "micropython full no timeout",
+      "pass": true
+    },
+    {
+      "check": "micropython count trace exists",
+      "pass": true
+    },
+    {
+      "check": "micropython count no timeout",
+      "pass": true
+    },
+    {
+      "check": "micropython no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "micropython retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "micropython recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "micropython sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "micropython output match and guest exit0",
+      "pass": true
+    },
+    {
+      "check": "micropython retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "miller two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "miller full trace exists",
+      "pass": true
+    },
+    {
+      "check": "miller full no timeout",
+      "pass": true
+    },
+    {
+      "check": "miller count trace exists",
+      "pass": true
+    },
+    {
+      "check": "miller count no timeout",
+      "pass": true
+    },
+    {
+      "check": "miller no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "miller retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "pandoc two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "pandoc full trace exists",
+      "pass": true
+    },
+    {
+      "check": "pandoc full no timeout",
+      "pass": true
+    },
+    {
+      "check": "pandoc count trace exists",
+      "pass": true
+    },
+    {
+      "check": "pandoc count no timeout",
+      "pass": true
+    },
+    {
+      "check": "pandoc no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "pandoc retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "qpdf two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "qpdf full trace exists",
+      "pass": true
+    },
+    {
+      "check": "qpdf full no timeout",
+      "pass": true
+    },
+    {
+      "check": "qpdf count trace exists",
+      "pass": true
+    },
+    {
+      "check": "qpdf count no timeout",
+      "pass": true
+    },
+    {
+      "check": "qpdf no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "qpdf retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "qsv two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "qsv full trace exists",
+      "pass": true
+    },
+    {
+      "check": "qsv full no timeout",
+      "pass": true
+    },
+    {
+      "check": "qsv count trace exists",
+      "pass": true
+    },
+    {
+      "check": "qsv count no timeout",
+      "pass": true
+    },
+    {
+      "check": "qsv no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "qsv retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "rg two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "rg full trace exists",
+      "pass": true
+    },
+    {
+      "check": "rg full no timeout",
+      "pass": true
+    },
+    {
+      "check": "rg count trace exists",
+      "pass": true
+    },
+    {
+      "check": "rg count no timeout",
+      "pass": true
+    },
+    {
+      "check": "rg no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "rg retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "sd two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "sd full trace exists",
+      "pass": true
+    },
+    {
+      "check": "sd full no timeout",
+      "pass": true
+    },
+    {
+      "check": "sd count trace exists",
+      "pass": true
+    },
+    {
+      "check": "sd count no timeout",
+      "pass": true
+    },
+    {
+      "check": "sd no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "sd retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "sd recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "sd sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "sd retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 full trace exists",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 full no timeout",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 count trace exists",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 count no timeout",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "sqlite3 retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "xz two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "xz full trace exists",
+      "pass": true
+    },
+    {
+      "check": "xz full no timeout",
+      "pass": true
+    },
+    {
+      "check": "xz count trace exists",
+      "pass": true
+    },
+    {
+      "check": "xz count no timeout",
+      "pass": true
+    },
+    {
+      "check": "xz no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "xz retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "xz recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "xz sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "xz retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "yq two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "yq full trace exists",
+      "pass": true
+    },
+    {
+      "check": "yq full no timeout",
+      "pass": true
+    },
+    {
+      "check": "yq count trace exists",
+      "pass": true
+    },
+    {
+      "check": "yq count no timeout",
+      "pass": true
+    },
+    {
+      "check": "yq no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "yq retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "zstd two trace-mode stdout match",
+      "pass": true
+    },
+    {
+      "check": "zstd full trace exists",
+      "pass": true
+    },
+    {
+      "check": "zstd full no timeout",
+      "pass": true
+    },
+    {
+      "check": "zstd count trace exists",
+      "pass": true
+    },
+    {
+      "check": "zstd count no timeout",
+      "pass": true
+    },
+    {
+      "check": "zstd no header counted as syscall",
+      "pass": true
+    },
+    {
+      "check": "zstd retained binary SHA256",
+      "pass": true
+    },
+    {
+      "check": "zstd recorded guest exit matches raw",
+      "pass": true
+    },
+    {
+      "check": "zstd sandbox ack",
+      "pass": true
+    },
+    {
+      "check": "zstd retained image SHA256",
+      "pass": true
+    },
+    {
+      "check": "36 real ENOSYS sensitivity injections",
+      "pass": true
+    },
+    {
+      "check": "injections bounded",
+      "pass": true
+    },
+    {
+      "check": "rg wide diagnostic really reaches Rust SIGPIPE assertion",
+      "pass": true
+    },
+    {
+      "check": "fd wide diagnostic really reaches Rust SIGPIPE assertion",
+      "pass": true
+    },
+    {
+      "check": "profiles/rg-mmap accepted native oracle",
+      "pass": true
+    },
+    {
+      "check": "profiles/rg-recursive accepted native oracle",
+      "pass": true
+    },
+    {
+      "check": "explicit rg MAP_SHARED file mapping",
+      "pass": true
+    },
+    {
+      "check": "copied source files unchanged from provenance",
+      "pass": true
+    }
+  ]
+}

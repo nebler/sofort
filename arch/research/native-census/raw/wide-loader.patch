@@ -1,0 +1,22 @@
+--- a/prepare.py
++++ b/prepare.py
+@@ -2,7 +2,7 @@
+ """Validate/pack a static little-endian AArch64 ELF; no guest ELF parsing."""
+ from pathlib import Path
+ import hashlib, json, os, stat, struct, sys
+-BASE, LIMIT, STACK = 0x400000, 0x680000, 0x1e00000
++BASE, LIMIT, STACK = 0x400000, 0xa00000, 0x1e00000
+ 
+ def archive(root):
+     """Read-only resource index: 16-byte header, 24-byte entries, names, data.
+--- a/src/user.rs
++++ b/src/user.rs
+@@ -61,7 +61,7 @@
+         }
+         m::flush();
+         // Publish data written through the kernel alias before executing user code.
+-        for va in (0x400000..0x650000).step_by(64) {
++        for va in (0x400000..0xa00000).step_by(64) {
+             asm!("dc cvau,{a}",a=in(reg) m::physical(va));
+         }
+         asm!("dsb ish", "ic iallu", "dsb ish", "isb");

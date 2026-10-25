@@ -1,0 +1,10 @@
+{
+  "name": "busybox",
+  "version": "1.37.0",
+  "source": "https://busybox.net/downloads/busybox-1.37.0.tar.bz2",
+  "source_sha256": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4",
+  "verified": true,
+  "config": "minimal applet config; raw/busybox.config",
+  "binary": "/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox",
+  "binary_sha256": "e6e0d9874eef980f1bf6ce107494bbaed97f37449815acb991f4dd0ed4eb5ec8"
+}

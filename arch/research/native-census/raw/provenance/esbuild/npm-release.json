@@ -1,0 +1,71 @@
+{
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "bugs": {
+    "url": "https://github.com/evanw/esbuild/issues"
+  },
+  "dist": {
+    "shasum": "1bdbc651cda9ba9995c53ed9c71ceaa65094762d",
+    "tarball": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz",
+    "fileCount": 3,
+    "integrity": "sha512-pW4AC0P3it8c7do9MVM4p51FzHzdM/TZrerurgRcHJ2WTa1VQ1CIq18xncfpBJw4ojkiZZrKW2yIBWBP92j6Ug==",
+    "signatures": [
+      {
+        "sig": "MEUCIQCHCNUKIrdyrZ3Oc80K5oqhYNbr9pWnY+iLL7wEAWTPRAIgRGvTZfsS9aOsQmEGaitWAoqtOwnSl+ZDoDAI8oQMiL4=",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      },
+      {
+        "sig": "MEYCIQCcR1ttQNGi11U5I2jLZ02MUfavyb7pan2y2QVSgvuzqgIhANi/or/aKsw3UupdtBfVlVFEo8BbpLzc0XSGH48Wli/X",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      }
+    ],
+    "attestations": {
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/@esbuild%2flinux-arm64@0.28.2",
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1"
+      }
+    },
+    "unpackedSize": 10289789
+  },
+  "name": "@esbuild/linux-arm64",
+  "engines": {
+    "node": ">=18"
+  },
+  "gitHead": "609683d892977362a0f99026cb74b96263d728a9",
+  "license": "MIT",
+  "_npmUser": {
+    "name": "GitHub Actions",
+    "email": "npm-oidc-no-reply@github.com",
+    "trustedPublisher": {
+      "id": "github",
+      "oidcConfigId": "oidc:93e1e6a1-7a84-459b-b481-76c4fac4c7b9"
+    }
+  },
+  "homepage": "https://github.com/evanw/esbuild#readme",
+  "repository": {
+    "url": "git+https://github.com/evanw/esbuild.git",
+    "type": "git"
+  },
+  "_npmVersion": "11.5.1",
+  "description": "The Linux ARM 64-bit binary for esbuild, a JavaScript bundler.",
+  "directories": {},
+  "maintainers": [
+    {
+      "name": "esbuild",
+      "email": "evan.exe+esbuild@gmail.com"
+    }
+  ],
+  "_nodeVersion": "24.18.0",
+  "_hasShrinkwrap": false,
+  "preferUnplugged": true,
+  "_npmOperationalInternal": {
+    "tmp": "tmp/linux-arm64_0.28.2_1786219089654_0.22029635922707747",
+    "host": "s3://npm-registry-packages-npm-production"
+  },
+  "_id": "@esbuild/linux-arm64@0.28.2",
+  "version": "0.28.2"
+}

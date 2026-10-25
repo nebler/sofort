@@ -1,0 +1,8 @@
+{
+  "name": "gojq",
+  "version": "v0.12.19",
+  "release_url": "https://github.com/itchyny/gojq/releases/tag/v0.12.19",
+  "asset_url": "https://github.com/itchyny/gojq/releases/download/v0.12.19/gojq_v0.12.19_linux_arm64.tar.gz",
+  "asset_sha256": "b22794b4bebad11c42af52550bda317c5cd7ee79aaa729eb6ec91a63f623d8b5",
+  "verified": true
+}

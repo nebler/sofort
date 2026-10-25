@@ -1,0 +1,99 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/sd/unpacked/sd-v1.1.0-aarch64-unknown-linux-musl/sd",
+  "sha256": "376d61e1f5e776a770ab832ec7be6d39a46cded8d0efdb119b458329295e7622",
+  "bytes": 2027704,
+  "elf_type": 2,
+  "machine": 183,
+  "entry": 4246952,
+  "headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 4194304,
+      "filesz": 1722108,
+      "memsz": 1722108,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 1724928,
+      "vaddr": 5984768,
+      "filesz": 301408,
+      "memsz": 307504,
+      "align": 65536
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "offset": 1869952,
+      "vaddr": 6129792,
+      "filesz": 32,
+      "memsz": 176,
+      "align": 8
+    },
+    {
+      "type": 1685382480,
+      "flags": 4,
+      "offset": 1659776,
+      "vaddr": 5854080,
+      "filesz": 19228,
+      "memsz": 19228,
+      "align": 4
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 1724928,
+      "vaddr": 5984768,
+      "filesz": 298496,
+      "memsz": 298496,
+      "align": 1
+    }
+  ],
+  "interpreter": false,
+  "dynamic": false,
+  "tls": [
+    {
+      "type": 7,
+      "flags": 4,
+      "offset": 1869952,
+      "vaddr": 6129792,
+      "filesz": 32,
+      "memsz": 176,
+      "align": 8
+    }
+  ],
+  "pack_error": null,
+  "packed": {
+    "source_sha256": "376d61e1f5e776a770ab832ec7be6d39a46cded8d0efdb119b458329295e7622",
+    "flat_bytes": 2101248,
+    "flat_sha256": "a6de8283e8266299fba2d61f3857bcc790bfab237fa3f4b5fa82b1991772207b",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        5916412,
+        5
+      ],
+      [
+        5984768,
+        6292272,
+        6
+      ]
+    ],
+    "entry": 4246952,
+    "phdr": 4194368,
+    "phnum": 6
+  }
+}

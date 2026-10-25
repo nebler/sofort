@@ -1,0 +1,60 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/esbuild/package/bin/esbuild",
+  "sha256": "90bd269553d258e80b19e3ccab4f98f0831f87442a2f056510ce24fd1b425fc2",
+  "bytes": 10289264,
+  "elf_type": 2,
+  "machine": 183,
+  "entry": 622080,
+  "headers": [
+    {
+      "type": 6,
+      "flags": 4,
+      "offset": 64,
+      "vaddr": 65600,
+      "filesz": 280,
+      "memsz": 280,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 65536,
+      "filesz": 4908324,
+      "memsz": 4908324,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "offset": 4915200,
+      "vaddr": 4980736,
+      "filesz": 4902176,
+      "memsz": 4902176,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 9830400,
+      "vaddr": 9895936,
+      "filesz": 435840,
+      "memsz": 34289632,
+      "align": 65536
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 8
+    }
+  ],
+  "interpreter": false,
+  "dynamic": false,
+  "tls": [],
+  "pack_error": "segment outside payload arena",
+  "packed": null
+}

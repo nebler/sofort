@@ -1,0 +1,132 @@
+{
+  "workload": {
+    "name": "jq-musl",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/jq-musl/jq-1.8.2/jq",
+    "argv": [
+      "-c",
+      "[.items[].n] | add",
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "370a"
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/jq-musl/jq-1.8.2/jq",
+    "sha256": "8d689ba1c53a9aed4311a2f4406a33e8c7bbb4d7a54f50a7c8e1d393807e3ff7",
+    "bytes": 1131552,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 4200560,
+    "headers": [
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 4194304,
+        "filesz": 934224,
+        "memsz": 934224,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 971104,
+        "vaddr": 5230944,
+        "filesz": 32792,
+        "memsz": 40448,
+        "align": 65536
+      },
+      {
+        "type": 7,
+        "flags": 4,
+        "offset": 971104,
+        "vaddr": 5230944,
+        "filesz": 0,
+        "memsz": 4,
+        "align": 8
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 16
+      },
+      {
+        "type": 1685382482,
+        "flags": 4,
+        "offset": 971104,
+        "vaddr": 5230944,
+        "filesz": 11936,
+        "memsz": 11936,
+        "align": 1
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [
+      {
+        "type": 7,
+        "flags": 4,
+        "offset": 971104,
+        "vaddr": 5230944,
+        "filesz": 0,
+        "memsz": 4,
+        "align": 8
+      }
+    ],
+    "pack_error": null,
+    "packed": {
+      "source_sha256": "8d689ba1c53a9aed4311a2f4406a33e8c7bbb4d7a54f50a7c8e1d393807e3ff7",
+      "flat_bytes": 1077248,
+      "flat_sha256": "7e098b5e2699e3ffbcc3d6c02d138f01a14454052621992bf542d8e48b7f09a4",
+      "physical_base": "0x80080000",
+      "segments": [
+        [
+          4194304,
+          5128528,
+          5
+        ],
+        [
+          5230944,
+          5271392,
+          6
+        ]
+      ],
+      "entry": 4200560,
+      "phdr": 4194368,
+      "phnum": 5
+    }
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "370a",
+      "stderr_hex": "",
+      "uptime": "1225.25 6545.69",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "370a",
+      "stderr_hex": "",
+      "uptime": "1225.33 6546.01",
+      "load": [
+        1.16650390625,
+        0.958984375,
+        0.60546875
+      ]
+    }
+  ]
+}

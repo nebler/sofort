@@ -1,0 +1,60 @@
+49037 execve("/home/dev/r6-census/sqlite3-static", [""..., ""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49037 set_tid_address(0x565530)         = 49037
+49037 ioctl(0<pipe:[80872]>, TIOCGWINSZ, 0xfffff11bb6d8) = -1 ENOTTY (Inappropriate ioctl for device)
+49037 ioctl(1<pipe:[80873]>, TIOCGWINSZ, 0xfffff11bb6d8) = -1 ENOTTY (Inappropriate ioctl for device)
+49037 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+49037 rt_sigaction(SIGINT, {sa_handler=0x411388, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x5092a4}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49037 brk(NULL)                         = 0x35c36000
+49037 brk(0x35c38000)                   = 0x35c38000
+49037 mmap(0x35c36000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x35c36000
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79ae000
+49037 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "file:data/demo.db?mode=ro&immutable=1", F_OK) = -1 ENOENT (No such file or directory)
+49037 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "dev/null", O_RDONLY|O_LARGEFILE) = 3</home/dev/r6-census/fixtures/dev/null>
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79ad000
+49037 read(3</home/dev/r6-census/fixtures/dev/null>, "", 1024) = 0
+49037 close(3</home/dev/r6-census/fixtures/dev/null>) = 0
+49037 munmap(0xe545c79ad000, 4096)      = 0
+49037 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "file:data/demo.db?mode=ro&immutable=1", O_RDONLY|O_LARGEFILE) = -1 ENOENT (No such file or directory)
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79ad000
+49037 getcwd("/home/dev/r6-census/fixtures", 4096) = 29
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home", {st_dev=makedev(0xfd, 0x1), st_ino=1668, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792168577 /* 2026-10-16T16:36:17.427225207+0000 */, st_atime_nsec=427225207, st_mtime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_mtime_nsec=560571544, st_ctime=1792834628 /* 2026-10-24T09:37:08.560571544+0000 */, st_ctime_nsec=560571544}, AT_SYMLINK_NOFOLLOW) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev", {st_dev=makedev(0xfd, 0x1), st_ino=262145, st_mode=S_IFDIR|0750, st_nlink=18, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792921735 /* 2026-10-25T09:48:55.271443788+0000 */, st_atime_nsec=271443788, st_mtime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_mtime_nsec=124644202, st_ctime=1792922121 /* 2026-10-25T09:55:21.124644202+0000 */, st_ctime_nsec=124644202}, AT_SYMLINK_NOFOLLOW) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census", {st_dev=makedev(0xfd, 0x1), st_ino=1048681, st_mode=S_IFDIR|0775, st_nlink=14, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922690 /* 2026-10-25T10:04:50.998775184+0000 */, st_atime_nsec=998775184, st_mtime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_mtime_nsec=524755380, st_ctime=1792922689 /* 2026-10-25T10:04:49.524755380+0000 */, st_ctime_nsec=524755380}, AT_SYMLINK_NOFOLLOW) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures", {st_dev=makedev(0xfd, 0x1), st_ino=1310721, st_mode=S_IFDIR|0775, st_nlink=4, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_mtime_nsec=458819561, st_ctime=1792922010 /* 2026-10-25T09:53:30.458819561+0000 */, st_ctime_nsec=458819561}, AT_SYMLINK_NOFOLLOW) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/data", {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, AT_SYMLINK_NOFOLLOW) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/data/demo.db", {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}, AT_SYMLINK_NOFOLLOW) = 0
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79ac000
+49037 munmap(0xe545c79ad000, 4096)      = 0
+49037 getpid()                          = 49037
+49037 getpid()                          = 49037
+49037 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/data/demo.db", O_RDONLY|O_LARGEFILE|O_NOFOLLOW|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/demo.db>
+49037 fcntl(3</home/dev/r6-census/fixtures/data/demo.db>, F_SETFD, FD_CLOEXEC) = 0
+49037 fstat(3</home/dev/r6-census/fixtures/data/demo.db>, {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}) = 0
+49037 fstat(3</home/dev/r6-census/fixtures/data/demo.db>, {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/data/demo.db", {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}, 0) = 0
+49037 fstat(3</home/dev/r6-census/fixtures/data/demo.db>, {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}) = 0
+49037 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79a8000
+49037 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79a6000
+49037 pread64(3</home/dev/r6-census/fixtures/data/demo.db>, ""..., 100, 0) = 100
+49037 mmap(NULL, 49152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c799a000
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c79ad000
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c7999000
+49037 mmap(NULL, 90112, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c7983000
+49037 pread64(3</home/dev/r6-census/fixtures/data/demo.db>, ""..., 4096, 0) = 4096
+49037 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe545c7982000
+49037 pread64(3</home/dev/r6-census/fixtures/data/demo.db>, ""..., 4096, 4096) = 4096
+49037 ioctl(1<pipe:[80873]>, TIOCGWINSZ, 0xfffff11bb298) = -1 ENOTTY (Inappropriate ioctl for device)
+49037 writev(1<pipe:[80873]>, [{iov_base=""..., iov_len=28}, {iov_base=""..., iov_len=1}], 2) = 29
+49037 fstat(3</home/dev/r6-census/fixtures/data/demo.db>, {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}) = 0
+49037 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/r6-census/fixtures/data/demo.db", {st_dev=makedev(0xfd, 0x1), st_ino=1310733, st_mode=S_IFREG|0644, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1792922010 /* 2026-10-25T09:53:30.490028434+0000 */, st_atime_nsec=490028434, st_mtime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_mtime_nsec=488819719, st_ctime=1792922010 /* 2026-10-25T09:53:30.488819719+0000 */, st_ctime_nsec=488819719}, 0) = 0
+49037 close(3</home/dev/r6-census/fixtures/data/demo.db>) = 0
+49037 munmap(0xe545c79a8000, 16384)     = 0
+49037 munmap(0xe545c7983000, 90112)     = 0
+49037 munmap(0xe545c79a6000, 8192)      = 0
+49037 munmap(0xe545c7982000, 4096)      = 0
+49037 munmap(0xe545c7999000, 4096)      = 0
+49037 munmap(0xe545c79ad000, 4096)      = 0
+49037 munmap(0xe545c79ac000, 4096)      = 0
+49037 munmap(0xe545c799a000, 49152)     = 0
+49037 munmap(0xe545c79ae000, 4096)      = 0
+49037 exit_group(0)                     = ?

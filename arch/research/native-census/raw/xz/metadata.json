@@ -1,0 +1,71 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/xz/xz-5.8.4/src/xz/xz",
+  "sha256": "77d0a2af37564d372ef9b85599babc653304177b17fb2d3a3cd1d6c28f423dd2",
+  "bytes": 321176,
+  "elf_type": 2,
+  "machine": 183,
+  "entry": 4195896,
+  "headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 4194304,
+      "filesz": 254152,
+      "memsz": 254152,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 256744,
+      "vaddr": 4516584,
+      "filesz": 6584,
+      "memsz": 29616,
+      "align": 65536
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 256744,
+      "vaddr": 4516584,
+      "filesz": 5400,
+      "memsz": 5400,
+      "align": 1
+    }
+  ],
+  "interpreter": false,
+  "dynamic": false,
+  "tls": [],
+  "pack_error": null,
+  "packed": {
+    "source_sha256": "77d0a2af37564d372ef9b85599babc653304177b17fb2d3a3cd1d6c28f423dd2",
+    "flat_bytes": 352256,
+    "flat_sha256": "ed799448d230a5864f920865a42d5f778d58ec0c3bf714523c15da9ca116dfd2",
+    "physical_base": "0x80080000",
+    "segments": [
+      [
+        4194304,
+        4448456,
+        5
+      ],
+      [
+        4516584,
+        4546200,
+        6
+      ]
+    ],
+    "entry": 4195896,
+    "phdr": 4194368,
+    "phnum": 4
+  }
+}

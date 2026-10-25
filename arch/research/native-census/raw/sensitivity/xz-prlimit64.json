@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "fd377a585a000004e6d6b4460200210116000000742fe5a3010016616c70686120320a6265746120350a616c70686120330a0000a0209d247176560d00012f17810849b11fb6f37d010000000004595a",
+  "stderr_hex": "",
+  "uptime": "2114.79 11600.03",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "xz",
+  "syscall": "prlimit64",
+  "same_stdout": true,
+  "preserved": true,
+  "injected": true
+}

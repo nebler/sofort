@@ -1,0 +1,614 @@
+[
+  {
+    "returncode": 127,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "3a206572726f72207768696c65206c6f6164696e6720736861726564206c69627261726965733a2063616e6e6f74206170706c79206164646974696f6e616c206d656d6f72792070726f74656374696f6e2061667465722072656c6f636174696f6e3a2046756e6374696f6e206e6f7420696d706c656d656e7465640a",
+    "uptime": "2113.39 11593.17",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "jq",
+    "syscall": "mprotect",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": -6,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "466174616c20676c696263206572726f723a2063616e6e6f742067657420656e74726f707920666f72206172633472616e646f6d0a",
+    "uptime": "2113.68 11594.58",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "jq",
+    "syscall": "getrandom",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "370a",
+    "stderr_hex": "",
+    "uptime": "2113.69 11594.65",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "jq",
+    "syscall": "set_robust_list",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "370a",
+    "stderr_hex": "",
+    "uptime": "2113.70 11594.70",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "jq",
+    "syscall": "rseq",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "370a",
+    "stderr_hex": "",
+    "uptime": "2113.71 11594.74",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "jq",
+    "syscall": "prlimit64",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "370a",
+    "stderr_hex": "",
+    "uptime": "2113.80 11595.20",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "jq-musl",
+    "syscall": "getrandom",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 1,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "4572726f723a20756e61626c6520746f206f70656e206461746162617365202266696c653a646174612f64656d6f2e64623f6d6f64653d726f26696d6d757461626c653d31223a206469736b20492f4f206572726f720a",
+    "uptime": "2113.81 11595.24",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sqlite3",
+    "syscall": "fstat",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 1,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "4572726f723a20756e61626c6520746f206f70656e206461746162617365202266696c653a646174612f64656d6f2e64623f6d6f64653d726f26696d6d757461626c653d31223a206469736b20492f4f206572726f720a",
+    "uptime": "2113.82 11595.30",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sqlite3",
+    "syscall": "pread64",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+    "stderr_hex": "",
+    "uptime": "2113.84 11595.37",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sqlite3",
+    "syscall": "faccessat",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+    "stderr_hex": "",
+    "uptime": "2113.85 11595.42",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sqlite3",
+    "syscall": "getpid",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+    "stderr_hex": "",
+    "uptime": "2113.86 11595.49",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sqlite3",
+    "syscall": "rt_sigaction",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "7b22636f756e74223a352c2273756d223a32332c226d6178223a397d0a",
+    "stderr_hex": "",
+    "uptime": "2113.87 11595.55",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sqlite3",
+    "syscall": "rt_sigprocmask",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": -6,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "666174616c2072756e74696d65206572726f723a20617373657274696f6e206661696c65643a207369676e616c286c6962633a3a534947504950452c2068616e646c65722920213d206c6962633a3a5349475f4552522c2061626f7274696e670a",
+    "uptime": "2114.06 11596.44",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "rt_sigaction",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "616c70686120320a616c70686120330a",
+    "stderr_hex": "",
+    "uptime": "2114.07 11596.50",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "sigaltstack",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": -6,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "0a74687265616420276d61696e2720283532333836292070616e69636b6564206174202f72757374632f326438313434623738383035393762366536643364666436336139613965666165336635333364332f6c6962726172792f7374642f7372632f7379732f70616c2f756e69782f737461636b5f6f766572666c6f772e72733a3234303a31333a0a6661696c656420746f2073657420757020616c7465726e617469766520737461636b20677561726420706167653a2046756e6374696f6e206e6f7420696d706c656d656e74656420286f73206572726f72203338290a6e6f74653a2072756e20776974682060525553545f4241434b54524143453d316020656e7669726f6e6d656e74207661726961626c6520746f20646973706c61792061206261636b74726163650a",
+    "uptime": "2114.26 11597.46",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "mprotect",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "",
+    "uptime": "2114.28 11597.54",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "fstat",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "616c70686120320a616c70686120330a",
+    "stderr_hex": "",
+    "uptime": "2114.29 11597.62",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "getrandom",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "616c70686120320a616c70686120330a",
+    "stderr_hex": "",
+    "uptime": "2114.31 11597.69",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "sched_getaffinity",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "616c70686120320a616c70686120330a",
+    "stderr_hex": "",
+    "uptime": "2114.32 11597.77",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "uname",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "616c70686120320a616c70686120330a",
+    "stderr_hex": "",
+    "uptime": "2114.34 11597.85",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "rg",
+    "syscall": "madvise",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": -6,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "666174616c2072756e74696d65206572726f723a20617373657274696f6e206661696c65643a207369676e616c286c6962633a3a534947504950452c2068616e646c65722920213d206c6962633a3a5349475f4552522c2061626f7274696e670a",
+    "uptime": "2114.53 11598.76",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sd",
+    "syscall": "rt_sigaction",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "6167656e7420320a6265746120350a",
+    "stderr_hex": "",
+    "uptime": "2114.54 11598.82",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sd",
+    "syscall": "sigaltstack",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": -6,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "0a74687265616420276d61696e2720283532343134292070616e69636b6564206174206c6962726172792f7374642f7372632f7379732f70616c2f756e69782f737461636b5f6f766572666c6f772e72733a3234303a31333a0a6661696c656420746f2073657420757020616c7465726e617469766520737461636b20677561726420706167653a2046756e6374696f6e206e6f7420696d706c656d656e74656420286f73206572726f72203338290a6e6f74653a2072756e20776974682060525553545f4241434b54524143453d316020656e7669726f6e6d656e74207661726961626c6520746f20646973706c61792061206261636b74726163650a666174616c2072756e74696d65206572726f723a20696e697469616c697a6174696f6e206f7220636c65616e7570206275672c2061626f7274696e670a",
+    "uptime": "2114.72 11599.68",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sd",
+    "syscall": "mprotect",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "6167656e7420320a6265746120350a",
+    "stderr_hex": "",
+    "uptime": "2114.73 11599.74",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "sd",
+    "syscall": "getrandom",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 1,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "2f686f6d652f6465762f72362d63656e7375732f6172746966616374732f787a2f787a2d352e382e342f7372632f787a2f787a3a204572726f72206372656174696e67206120706970653a2046756e6374696f6e206e6f7420696d706c656d656e7465640a",
+    "uptime": "2114.74 11599.78",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "pipe2",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "fd377a585a000004e6d6b4460200210116000000742fe5a3010016616c70686120320a6265746120350a616c70686120330a0000a0209d247176560d00012f17810849b11fb6f37d010000000004595a",
+    "stderr_hex": "",
+    "uptime": "2114.75 11599.85",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "geteuid",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 1,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "2f686f6d652f6465762f72362d63656e7375732f6172746966616374732f787a2f787a2d352e382e342f7372632f787a2f787a3a204661696c656420746f20656e61626c65207468652073616e64626f780a",
+    "uptime": "2114.76 11599.88",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "prctl",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "fd377a585a000004e6d6b4460200210116000000742fe5a3010016616c70686120320a6265746120350a616c70686120330a0000a0209d247176560d00012f17810849b11fb6f37d010000000004595a",
+    "stderr_hex": "",
+    "uptime": "2114.77 11599.96",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "landlock_create_ruleset",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "fd377a585a000004e6d6b4460200210116000000742fe5a3010016616c70686120320a6265746120350a616c70686120330a0000a0209d247176560d00012f17810849b11fb6f37d010000000004595a",
+    "stderr_hex": "",
+    "uptime": "2114.79 11600.03",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "prlimit64",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "fd377a585a000004e6d6b4460200210116000000742fe5a3010016616c70686120320a6265746120350a616c70686120330a0000a0209d247176560d00012f17810849b11fb6f37d010000000004595a",
+    "stderr_hex": "",
+    "uptime": "2114.80 11600.11",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "sysinfo",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 1,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "2f686f6d652f6465762f72362d63656e7375732f6172746966616374732f787a2f787a2d352e382e342f7372632f787a2f787a3a20646174612f696e7075742e7478743a2046756e6374696f6e206e6f7420696d706c656d656e7465640a",
+    "uptime": "2114.81 11600.17",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "fstat",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "fd377a585a000004e6d6b4460200210116000000742fe5a3010016616c70686120320a6265746120350a616c70686120330a0000a0209d247176560d00012f17810849b11fb6f37d010000000004595a",
+    "stderr_hex": "",
+    "uptime": "2114.83 11600.25",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "xz",
+    "syscall": "fadvise64",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "696e7075742e7478740a",
+    "stderr_hex": "",
+    "uptime": "2114.84 11600.30",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "bb-tar",
+    "syscall": "getuid",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": -6,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "666174616c2072756e74696d65206572726f723a20617373657274696f6e206661696c65643a207369676e616c286c6962633a3a534947504950452c2068616e646c65722920213d206c6962633a3a5349475f4552522c2061626f7274696e670a",
+    "uptime": "2115.01 11601.14",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "qsv",
+    "syscall": "rt_sigaction",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  },
+  {
+    "returncode": 0,
+    "timeout": false,
+    "stdout_hex": "6e616d650a616c7068610a626574610a",
+    "stderr_hex": "",
+    "uptime": "2115.14 11601.79",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "qsv",
+    "syscall": "fstat",
+    "same_stdout": true,
+    "preserved": true,
+    "injected": true
+  },
+  {
+    "returncode": 1,
+    "timeout": false,
+    "stdout_hex": "",
+    "stderr_hex": "466c6578694c6f67676572206572726f723a204f7574707574496f284f73207b20636f64653a2033382c206b696e643a20556e737570706f727465642c206d6573736167653a202246756e6374696f6e206e6f7420696d706c656d656e74656422207d290a",
+    "uptime": "2115.15 11601.83",
+    "load": [
+      0.0048828125,
+      0.1787109375,
+      0.3828125
+    ],
+    "name": "qsv",
+    "syscall": "mkdirat",
+    "same_stdout": false,
+    "preserved": false,
+    "injected": true
+  }
+]

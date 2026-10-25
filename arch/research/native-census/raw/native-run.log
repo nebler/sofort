@@ -1,0 +1,13 @@
+jq native 0 oracle True pack None
+gojq native 0 oracle True pack segment outside payload arena
+yq native 1 oracle False pack segment outside payload arena
+miller native 0 oracle True pack segment outside payload arena
+dasel native 80 oracle False pack segment outside payload arena
+qsv native 0 oracle True pack segment outside payload arena
+rg native 0 oracle True pack segment outside payload arena
+fd native 0 oracle True pack segment outside payload arena
+sd native 0 oracle True pack None
+sqlite3 native 0 oracle True pack None
+duckdb native 1 oracle False pack static ET_EXEC AArch64 required
+lua native 0 oracle True pack None
+pandoc native 0 oracle True pack segment outside payload arena

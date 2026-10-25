@@ -1,0 +1,17 @@
+{
+  "returncode": 1,
+  "timeout": false,
+  "stdout_hex": "",
+  "stderr_hex": "2f686f6d652f6465762f72362d63656e7375732f6172746966616374732f787a2f787a2d352e382e342f7372632f787a2f787a3a20646174612f696e7075742e7478743a2046756e6374696f6e206e6f7420696d706c656d656e7465640a",
+  "uptime": "2114.81 11600.17",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "xz",
+  "syscall": "fstat",
+  "same_stdout": false,
+  "preserved": false,
+  "injected": true
+}

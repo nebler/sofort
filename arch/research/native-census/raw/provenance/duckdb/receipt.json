@@ -1,0 +1,8 @@
+{
+  "name": "duckdb",
+  "version": "v2.0.0",
+  "release_url": "https://github.com/duckdb/duckdb/releases/tag/v2.0.0",
+  "asset_url": "https://github.com/duckdb/duckdb/releases/download/v2.0.0/duckdb-cli-linux-arm64-musl.tar.gz",
+  "asset_sha256": "59aee3049c335917307f5df1b3722af1335fef99199dc89e8064d1b2838620c7",
+  "verified": true
+}

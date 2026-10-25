@@ -1,0 +1,8 @@
+{
+  "name": "duckdb-gnu",
+  "version": "v2.0.0",
+  "source": "https://github.com/duckdb/duckdb/releases/download/v2.0.0/duckdb-cli-linux-arm64.tar.gz",
+  "source_sha256": "859e1875d2a9515fbb4bf8871061437a14af82320da68c753f094c4b776348fe",
+  "verified": true,
+  "binary": "/home/dev/r6-census/artifacts/duckdb-gnu/unpacked/duckdb"
+}

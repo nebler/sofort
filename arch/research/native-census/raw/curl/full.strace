@@ -1,0 +1,537 @@
+49190 execve("/home/dev/r6-census/artifacts/curl-distro/curl", [""..., ""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49190 brk(NULL)                         = 0xad3e20fd4000
+49190 mprotect(0xad3de3490000, 294912, PROT_READ|PROT_EXEC|0x10) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7555000
+49190 faccessat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+49190 fstat(3</etc/ld.so.cache>, {st_dev=makedev(0xfd, 0x1), st_ino=8047, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=48, st_size=24051, st_atime=1792913991 /* 2026-10-25T07:39:51.783403556+0000 */, st_atime_nsec=783403556, st_mtime=1792913991 /* 2026-10-25T07:39:51.771403584+0000 */, st_mtime_nsec=771403584, st_ctime=1792913991 /* 2026-10-25T07:39:51.772403581+0000 */, st_ctime_nsec=772403581}) = 0
+49190 mmap(NULL, 24051, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0xe2aef754f000
+49190 close(3</etc/ld.so.cache>)        = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libcurl.so.4", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>, {st_dev=makedev(0xfd, 0x1), st_ino=7438, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=1936, st_size=987608, st_atime=1792921794 /* 2026-10-25T09:49:54.483288581+0000 */, st_atime_nsec=483288581, st_mtime=1791892888 /* 2026-10-13T12:01:28+0000 */, st_mtime_nsec=0, st_ctime=1792168531 /* 2026-10-16T16:35:31.088731923+0000 */, st_ctime_nsec=88731923}) = 0
+49190 mmap(NULL, 1117536, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef740e000
+49190 mmap(0xe2aef7410000, 1052000, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>, 0) = 0xe2aef7410000
+49190 munmap(0xe2aef740e000, 8192)      = 0
+49190 munmap(0xe2aef7511000, 56672)     = 0
+49190 mprotect(0xe2aef74f2000, 94208, PROT_NONE) = 0
+49190 mmap(0xe2aef7509000, 32768, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>, 0xe9000) = 0xe2aef7509000
+49190 mmap(0xe2aef7410000, 925696, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>, 0) = 0xe2aef7410000
+49190 close(3</usr/lib/aarch64-linux-gnu/libcurl.so.4.8.0>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, {st_dev=makedev(0xfd, 0x1), st_ino=36577, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133544, st_atime=1792913935 /* 2026-10-25T07:38:55.347531658+0000 */, st_atime_nsec=347531658, st_mtime=1792616180 /* 2026-10-21T20:56:20+0000 */, st_mtime_nsec=0, st_ctime=1792913935 /* 2026-10-25T07:38:55.292531783+0000 */, st_ctime_nsec=292531783}) = 0
+49190 mmap(NULL, 262312, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef73cf000
+49190 mmap(0xe2aef73d0000, 196776, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, 0) = 0xe2aef73d0000
+49190 munmap(0xe2aef73cf000, 4096)      = 0
+49190 munmap(0xe2aef7401000, 57512)     = 0
+49190 mprotect(0xe2aef73ea000, 86016, PROT_NONE) = 0
+49190 mmap(0xe2aef73ff000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, 0x1f000) = 0xe2aef73ff000
+49190 mmap(0xe2aef73d0000, 106496, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>, 0) = 0xe2aef73d0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libz.so.1.3.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libc.so.6>
+49190 read(3</usr/lib/aarch64-linux-gnu/libc.so.6>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libc.so.6>, {st_dev=makedev(0xfd, 0x1), st_ino=5342, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=3496, st_size=1788240, st_atime=1792921630 /* 2026-10-25T09:47:10.280000000+0000 */, st_atime_nsec=280000000, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.511725777+0000 */, st_ctime_nsec=511725777}) = 0
+49190 mmap(NULL, 1957440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef71f2000
+49190 mmap(0xe2aef7200000, 1891904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xe2aef7200000
+49190 munmap(0xe2aef71f2000, 57344)     = 0
+49190 munmap(0xe2aef73ce000, 7744)      = 0
+49190 mprotect(0xe2aef73a9000, 81920, PROT_NONE) = 0
+49190 mmap(0xe2aef73bd000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0x1ad000) = 0xe2aef73bd000
+49190 mmap(0xe2aef73c2000, 48704, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xe2aef73c2000
+49190 mmap(0xe2aef7200000, 1740800, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libc.so.6>, 0) = 0xe2aef7200000
+49190 close(3</usr/lib/aarch64-linux-gnu/libc.so.6>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libnghttp2.so.14", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>
+49190 read(3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>, {st_dev=makedev(0xfd, 0x1), st_ino=6715, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=392, st_size=199040, st_atime=1792921794 /* 2026-10-25T09:49:54.485288554+0000 */, st_atime_nsec=485288554, st_mtime=1782837478 /* 2026-06-30T16:37:58+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.819729058+0000 */, st_ctime_nsec=819729058}) = 0
+49190 mmap(NULL, 328008, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef71af000
+49190 mmap(0xe2aef71b0000, 262472, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>, 0) = 0xe2aef71b0000
+49190 munmap(0xe2aef71af000, 4096)      = 0
+49190 munmap(0xe2aef71f1000, 57672)     = 0
+49190 mprotect(0xe2aef71d5000, 98304, PROT_NONE) = 0
+49190 mmap(0xe2aef71ed000, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>, 0x2d000) = 0xe2aef71ed000
+49190 mmap(0xe2aef71b0000, 151552, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>, 0) = 0xe2aef71b0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libnghttp2.so.14.29.2>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libidn2.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>, {st_dev=makedev(0xfd, 0x1), st_ino=6557, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133248, st_atime=1792921794 /* 2026-10-25T09:49:54.485288554+0000 */, st_atime_nsec=485288554, st_mtime=1770064626 /* 2026-02-02T20:37:06+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.775728589+0000 */, st_ctime_nsec=775728589}) = 0
+49190 mmap(NULL, 262160, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef716f000
+49190 mmap(0xe2aef7170000, 196624, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>, 0) = 0xe2aef7170000
+49190 munmap(0xe2aef716f000, 4096)      = 0
+49190 munmap(0xe2aef71a1000, 57360)     = 0
+49190 mprotect(0xe2aef718e000, 69632, PROT_NONE) = 0
+49190 mmap(0xe2aef719f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>, 0x1f000) = 0xe2aef719f000
+49190 mmap(0xe2aef7170000, 122880, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>, 0) = 0xe2aef7170000
+49190 close(3</usr/lib/aarch64-linux-gnu/libidn2.so.0.4.0>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/librtmp.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/librtmp.so.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/librtmp.so.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/librtmp.so.1>, {st_dev=makedev(0xfd, 0x1), st_ino=7046, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=134008, st_atime=1792921794 /* 2026-10-25T09:49:54.486288540+0000 */, st_atime_nsec=486288540, st_mtime=1755290886 /* 2025-08-15T20:48:06+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.927730208+0000 */, st_ctime_nsec=927730208}) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef754d000
+49190 mmap(NULL, 263088, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef712f000
+49190 mmap(0xe2aef7130000, 197552, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/librtmp.so.1>, 0) = 0xe2aef7130000
+49190 munmap(0xe2aef712f000, 4096)      = 0
+49190 munmap(0xe2aef7161000, 58288)     = 0
+49190 mprotect(0xe2aef714c000, 77824, PROT_NONE) = 0
+49190 mmap(0xe2aef715f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/librtmp.so.1>, 0x1f000) = 0xe2aef715f000
+49190 mmap(0xe2aef7130000, 114688, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/librtmp.so.1>, 0) = 0xe2aef7130000
+49190 close(3</usr/lib/aarch64-linux-gnu/librtmp.so.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libldap.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>
+49190 read(3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>, {st_dev=makedev(0xfd, 0x1), st_ino=7043, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=776, st_size=396816, st_atime=1792921794 /* 2026-10-25T09:49:54.487288527+0000 */, st_atime_nsec=487288527, st_mtime=1763983075 /* 2025-11-24T11:17:55+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.926730197+0000 */, st_ctime_nsec=926730197}) = 0
+49190 mmap(NULL, 535160, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef70ad000
+49190 mmap(0xe2aef70b0000, 469624, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>, 0) = 0xe2aef70b0000
+49190 munmap(0xe2aef70ad000, 12288)     = 0
+49190 munmap(0xe2aef7123000, 51832)     = 0
+49190 mprotect(0xe2aef710c000, 73728, PROT_NONE) = 0
+49190 mmap(0xe2aef711e000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>, 0x5e000) = 0xe2aef711e000
+49190 mmap(0xe2aef7121000, 6776, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xe2aef7121000
+49190 mmap(0xe2aef70b0000, 376832, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>, 0) = 0xe2aef70b0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libldap.so.2.0.200>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/liblber.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>
+49190 read(3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>, {st_dev=makedev(0xfd, 0x1), st_ino=7042, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67952, st_atime=1792921794 /* 2026-10-25T09:49:54.488288514+0000 */, st_atime_nsec=488288514, st_mtime=1763983075 /* 2025-11-24T11:17:55+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.926730197+0000 */, st_ctime_nsec=926730197}) = 0
+49190 mmap(NULL, 196912, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef707f000
+49190 mmap(0xe2aef7080000, 131376, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>, 0) = 0xe2aef7080000
+49190 munmap(0xe2aef707f000, 4096)      = 0
+49190 munmap(0xe2aef70a1000, 57648)     = 0
+49190 mprotect(0xe2aef708e000, 69632, PROT_NONE) = 0
+49190 mmap(0xe2aef709f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>, 0xf000) = 0xe2aef709f000
+49190 mmap(0xe2aef7080000, 57344, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>, 0) = 0xe2aef7080000
+49190 close(3</usr/lib/aarch64-linux-gnu/liblber.so.2.0.200>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libssh2.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>, {st_dev=makedev(0xfd, 0x1), st_ino=7047, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=648, st_size=330408, st_atime=1792921794 /* 2026-10-25T09:49:54.488288514+0000 */, st_atime_nsec=488288514, st_mtime=1788350037 /* 2026-09-02T11:53:57+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.927730208+0000 */, st_ctime_nsec=927730208}) = 0
+49190 mmap(NULL, 459336, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef700f000
+49190 mmap(0xe2aef7010000, 393800, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>, 0) = 0xe2aef7010000
+49190 munmap(0xe2aef700f000, 4096)      = 0
+49190 munmap(0xe2aef7071000, 57928)     = 0
+49190 mprotect(0xe2aef7058000, 90112, PROT_NONE) = 0
+49190 mmap(0xe2aef706e000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>, 0x4e000) = 0xe2aef706e000
+49190 mmap(0xe2aef7010000, 294912, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>, 0) = 0xe2aef7010000
+49190 close(3</usr/lib/aarch64-linux-gnu/libssh2.so.1.0.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libpsl.so.5", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>
+49190 read(3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>, {st_dev=makedev(0xfd, 0x1), st_ino=6684, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133048, st_atime=1792921794 /* 2026-10-25T09:49:54.489288500+0000 */, st_atime_nsec=489288500, st_mtime=1764593091 /* 2025-12-01T12:44:51+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.807728930+0000 */, st_ctime_nsec=807728930}) = 0
+49190 mmap(NULL, 262160, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef6fcf000
+49190 mmap(0xe2aef6fd0000, 196624, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>, 0) = 0xe2aef6fd0000
+49190 munmap(0xe2aef6fcf000, 4096)      = 0
+49190 munmap(0xe2aef7001000, 57360)     = 0
+49190 mprotect(0xe2aef6fe2000, 118784, PROT_NONE) = 0
+49190 mmap(0xe2aef6fff000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>, 0x1f000) = 0xe2aef6fff000
+49190 mmap(0xe2aef6fd0000, 73728, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>, 0) = 0xe2aef6fd0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libpsl.so.5.3.4>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libssl.so.3", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libssl.so.3>
+49190 read(3</usr/lib/aarch64-linux-gnu/libssl.so.3>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libssl.so.3>, {st_dev=makedev(0xfd, 0x1), st_ino=6449, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=2344, st_size=1196152, st_atime=1792921631 /* 2026-10-25T09:47:11.535000000+0000 */, st_atime_nsec=535000000, st_mtime=1790793990 /* 2026-09-30T18:46:30+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.732728131+0000 */, st_ctime_nsec=732728131}) = 0
+49190 mmap(NULL, 1259472, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef6e9c000
+49190 mmap(0xe2aef6ea0000, 1193936, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libssl.so.3>, 0) = 0xe2aef6ea0000
+49190 munmap(0xe2aef6e9c000, 16384)     = 0
+49190 munmap(0xe2aef6fc4000, 47056)     = 0
+49190 mprotect(0xe2aef6fb0000, 24576, PROT_NONE) = 0
+49190 mmap(0xe2aef6fb6000, 57344, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libssl.so.3>, 0x116000) = 0xe2aef6fb6000
+49190 mmap(0xe2aef6ea0000, 1114112, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libssl.so.3>, 0) = 0xe2aef6ea0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libssl.so.3>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libcrypto.so.3", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>
+49190 read(3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>, {st_dev=makedev(0xfd, 0x1), st_ino=6446, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=12312, st_size=6302840, st_atime=1792921630 /* 2026-10-25T09:47:10.287000000+0000 */, st_atime_nsec=287000000, st_mtime=1790793990 /* 2026-09-30T18:46:30+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.728728089+0000 */, st_ctime_nsec=728728089}) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef754b000
+49190 mmap(NULL, 6444208, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef687a000
+49190 mmap(0xe2aef6880000, 6378672, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>, 0) = 0xe2aef6880000
+49190 munmap(0xe2aef687a000, 24576)     = 0
+49190 munmap(0xe2aef6e96000, 38064)     = 0
+49190 mprotect(0xe2aef6e06000, 86016, PROT_NONE) = 0
+49190 mmap(0xe2aef6e1b000, 491520, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>, 0x58b000) = 0xe2aef6e1b000
+49190 mmap(0xe2aef6e93000, 9392, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xe2aef6e93000
+49190 mmap(0xe2aef6880000, 5791744, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>, 0) = 0xe2aef6880000
+49190 close(3</usr/lib/aarch64-linux-gnu/libcrypto.so.3>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>
+49190 read(3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>, {st_dev=makedev(0xfd, 0x1), st_ino=6482, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=656, st_size=334592, st_atime=1792921634 /* 2026-10-25T09:47:14.571009000+0000 */, st_atime_nsec=571009000, st_mtime=1784139776 /* 2026-07-15T18:22:56+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.749728312+0000 */, st_ctime_nsec=749728312}) = 0
+49190 mmap(NULL, 463720, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef680e000
+49190 mmap(0xe2aef6810000, 398184, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>, 0) = 0xe2aef6810000
+49190 munmap(0xe2aef680e000, 8192)      = 0
+49190 munmap(0xe2aef6872000, 54120)     = 0
+49190 mprotect(0xe2aef685f000, 61440, PROT_NONE) = 0
+49190 mmap(0xe2aef686e000, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>, 0x4e000) = 0xe2aef686e000
+49190 mmap(0xe2aef6810000, 323584, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>, 0) = 0xe2aef6810000
+49190 close(3</usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2.2>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libzstd.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>
+49190 read(3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>, {st_dev=makedev(0xfd, 0x1), st_ino=6476, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=1288, st_size=657512, st_atime=1792921630 /* 2026-10-25T09:47:10.295000000+0000 */, st_atime_nsec=295000000, st_mtime=1767619824 /* 2026-01-05T13:30:24+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.745728270+0000 */, st_ctime_nsec=745728270}) = 0
+49190 mmap(NULL, 786576, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef674f000
+49190 mmap(0xe2aef6750000, 721040, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>, 0) = 0xe2aef6750000
+49190 munmap(0xe2aef674f000, 4096)      = 0
+49190 munmap(0xe2aef6801000, 57488)     = 0
+49190 mprotect(0xe2aef67ef000, 65536, PROT_NONE) = 0
+49190 mmap(0xe2aef67ff000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>, 0x9f000) = 0xe2aef67ff000
+49190 mmap(0xe2aef6750000, 651264, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>, 0) = 0xe2aef6750000
+49190 close(3</usr/lib/aarch64-linux-gnu/libzstd.so.1.5.7>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libbrotlidec.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>, {st_dev=makedev(0xfd, 0x1), st_ino=7008, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67968, st_atime=1792921794 /* 2026-10-25T09:49:54.490288487+0000 */, st_atime_nsec=490288487, st_mtime=1774004504 /* 2026-03-20T11:01:44+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.920730134+0000 */, st_ctime_nsec=920730134}) = 0
+49190 mmap(NULL, 196728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef671f000
+49190 mmap(0xe2aef6720000, 131192, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>, 0) = 0xe2aef6720000
+49190 munmap(0xe2aef671f000, 4096)      = 0
+49190 munmap(0xe2aef6741000, 57464)     = 0
+49190 mprotect(0xe2aef672b000, 81920, PROT_NONE) = 0
+49190 mmap(0xe2aef673f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>, 0xf000) = 0xe2aef673f000
+49190 mmap(0xe2aef6720000, 45056, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>, 0) = 0xe2aef6720000
+49190 close(3</usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.2.0>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libunistring.so.5", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>, {st_dev=makedev(0xfd, 0x1), st_ino=6498, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=3848, st_size=1968328, st_atime=1792921794 /* 2026-10-25T09:49:54.490288487+0000 */, st_atime_nsec=490288487, st_mtime=1770064977 /* 2026-02-02T20:42:57+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.759728419+0000 */, st_ctime_nsec=759728419}) = 0
+49190 mmap(NULL, 2099376, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef651f000
+49190 mmap(0xe2aef6520000, 2033840, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>, 0) = 0xe2aef6520000
+49190 munmap(0xe2aef651f000, 4096)      = 0
+49190 munmap(0xe2aef6711000, 59568)     = 0
+49190 mprotect(0xe2aef66fc000, 65536, PROT_NONE) = 0
+49190 mmap(0xe2aef670c000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>, 0x1dc000) = 0xe2aef670c000
+49190 mmap(0xe2aef6520000, 1949696, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>, 0) = 0xe2aef6520000
+49190 close(3</usr/lib/aarch64-linux-gnu/libunistring.so.5.2.0>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libgnutls.so.30", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libgnutls.so.30.41.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/libgnutls.so.30.41.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libgnutls.so.30.41.1>, {st_dev=makedev(0xfd, 0x1), st_ino=6478, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4248, st_size=2172784, st_atime=1792921794 /* 2026-10-25T09:49:54.490288487+0000 */, st_atime_nsec=490288487, st_mtime=1778249491 /* 2026-05-08T14:11:31+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.747728291+0000 */, st_ctime_nsec=747728291}) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7549000
+49190 mmap(NULL, 2249528, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef62fa000
+49190 mmap(0xe2aef6300000, 2183992, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgnutls.so.30.41.1>, 0) = 0xe2aef6300000
+49190 munmap(0xe2aef62fa000, 24576)     = 0
+49190 munmap(0xe2aef6516000, 37688)     = 0
+49190 mprotect(0xe2aef64f3000, 53248, PROT_NONE) = 0
+49190 mmap(0xe2aef6500000, 73728, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgnutls.so.30.41.1>, 0x200000) = 0xe2aef6500000
+49190 mmap(0xe2aef6512000, 13112, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xe2aef6512000
+49190 close(3</usr/lib/aarch64-linux-gnu/libgnutls.so.30.41.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libhogweed.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>
+49190 read(3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>, {st_dev=makedev(0xfd, 0x1), st_ino=6555, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=648, st_size=329736, st_atime=1792921794 /* 2026-10-25T09:49:54.491288473+0000 */, st_atime_nsec=491288473, st_mtime=1758374068 /* 2025-09-20T13:14:28+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.774728578+0000 */, st_ctime_nsec=774728578}) = 0
+49190 mmap(NULL, 458768, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef628f000
+49190 mmap(0xe2aef6290000, 393232, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>, 0) = 0xe2aef6290000
+49190 munmap(0xe2aef628f000, 4096)      = 0
+49190 munmap(0xe2aef62f1000, 57360)     = 0
+49190 mprotect(0xe2aef62d7000, 94208, PROT_NONE) = 0
+49190 mmap(0xe2aef62ee000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>, 0x4e000) = 0xe2aef62ee000
+49190 mmap(0xe2aef6290000, 290816, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>, 0) = 0xe2aef6290000
+49190 close(3</usr/lib/aarch64-linux-gnu/libhogweed.so.6.11>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libnettle.so.8", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libnettle.so.8.11>
+49190 read(3</usr/lib/aarch64-linux-gnu/libnettle.so.8.11>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libnettle.so.8.11>, {st_dev=makedev(0xfd, 0x1), st_ino=6609, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=776, st_size=395272, st_atime=1792921632 /* 2026-10-25T09:47:12.887000113+0000 */, st_atime_nsec=887000113, st_mtime=1758374068 /* 2025-09-20T13:14:28+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.782728664+0000 */, st_ctime_nsec=782728664}) = 0
+49190 mmap(NULL, 458848, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef621f000
+49190 mmap(0xe2aef6220000, 393312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libnettle.so.8.11>, 0) = 0xe2aef6220000
+49190 munmap(0xe2aef621f000, 4096)      = 0
+49190 munmap(0xe2aef6281000, 57440)     = 0
+49190 mprotect(0xe2aef6270000, 57344, PROT_NONE) = 0
+49190 mmap(0xe2aef627e000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libnettle.so.8.11>, 0x5e000) = 0xe2aef627e000
+49190 close(3</usr/lib/aarch64-linux-gnu/libnettle.so.8.11>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libgmp.so.10", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libgmp.so.10.5.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libgmp.so.10.5.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libgmp.so.10.5.0>, {st_dev=makedev(0xfd, 0x1), st_ino=5625, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=1032, st_size=526824, st_atime=1792921632 /* 2026-10-25T09:47:12.592000001+0000 */, st_atime_nsec=592000001, st_mtime=1770409108 /* 2026-02-06T20:18:28+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.605726778+0000 */, st_ctime_nsec=605726778}) = 0
+49190 mmap(NULL, 655800, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef617f000
+49190 mmap(0xe2aef6180000, 590264, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgmp.so.10.5.0>, 0) = 0xe2aef6180000
+49190 munmap(0xe2aef617f000, 4096)      = 0
+49190 munmap(0xe2aef6211000, 57784)     = 0
+49190 mprotect(0xe2aef6200000, 61440, PROT_NONE) = 0
+49190 mmap(0xe2aef620f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libgmp.so.10.5.0>, 0x7f000) = 0xe2aef620f000
+49190 close(3</usr/lib/aarch64-linux-gnu/libgmp.so.10.5.0>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libsasl2.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>
+49190 read(3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>, {st_dev=makedev(0xfd, 0x1), st_ino=7038, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=134080, st_atime=1792921794 /* 2026-10-25T09:49:54.491288473+0000 */, st_atime_nsec=491288473, st_mtime=1771612989 /* 2026-02-20T18:43:09+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.924730176+0000 */, st_ctime_nsec=924730176}) = 0
+49190 mmap(NULL, 263104, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef613f000
+49190 mmap(0xe2aef6140000, 197568, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>, 0) = 0xe2aef6140000
+49190 munmap(0xe2aef613f000, 4096)      = 0
+49190 munmap(0xe2aef6171000, 58304)     = 0
+49190 mprotect(0xe2aef6157000, 98304, PROT_NONE) = 0
+49190 mmap(0xe2aef616f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>, 0x1f000) = 0xe2aef616f000
+49190 mmap(0xe2aef6140000, 94208, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>, 0) = 0xe2aef6140000
+49190 close(3</usr/lib/aarch64-linux-gnu/libsasl2.so.2.0.25>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libkrb5.so.3", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>
+49190 read(3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>, {st_dev=makedev(0xfd, 0x1), st_ino=6486, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=1688, st_size=860192, st_atime=1792921634 /* 2026-10-25T09:47:14.571009000+0000 */, st_atime_nsec=571009000, st_mtime=1784139776 /* 2026-07-15T18:22:56+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.750728323+0000 */, st_ctime_nsec=750728323}) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef751d000
+49190 mmap(NULL, 924080, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef605e000
+49190 mmap(0xe2aef6060000, 858544, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>, 0) = 0xe2aef6060000
+49190 munmap(0xe2aef605e000, 8192)      = 0
+49190 munmap(0xe2aef6132000, 55728)     = 0
+49190 mprotect(0xe2aef6120000, 20480, PROT_NONE) = 0
+49190 mmap(0xe2aef6125000, 53248, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>, 0xc5000) = 0xe2aef6125000
+49190 mmap(0xe2aef6060000, 786432, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>, 0) = 0xe2aef6060000
+49190 close(3</usr/lib/aarch64-linux-gnu/libkrb5.so.3.3>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libk5crypto.so.3", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>, {st_dev=makedev(0xfd, 0x1), st_ino=6480, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=392, st_size=199192, st_atime=1792921634 /* 2026-10-25T09:47:14.573009011+0000 */, st_atime_nsec=573009011, st_mtime=1784139776 /* 2026-07-15T18:22:56+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.748728302+0000 */, st_ctime_nsec=748728302}) = 0
+49190 mmap(NULL, 327960, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef600f000
+49190 mmap(0xe2aef6010000, 262424, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>, 0) = 0xe2aef6010000
+49190 munmap(0xe2aef600f000, 4096)      = 0
+49190 munmap(0xe2aef6051000, 57624)     = 0
+49190 mprotect(0xe2aef603a000, 86016, PROT_NONE) = 0
+49190 mmap(0xe2aef604f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>, 0x2f000) = 0xe2aef604f000
+49190 mmap(0xe2aef6010000, 172032, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>, 0) = 0xe2aef6010000
+49190 close(3</usr/lib/aarch64-linux-gnu/libk5crypto.so.3.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libcom_err.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>, {st_dev=makedev(0xfd, 0x1), st_ino=5327, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67712, st_atime=1792921631 /* 2026-10-25T09:47:11.650000001+0000 */, st_atime_nsec=650000001, st_mtime=1770985020 /* 2026-02-13T12:17:00+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.503725692+0000 */, st_ctime_nsec=503725692}) = 0
+49190 mmap(NULL, 196680, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5fdf000
+49190 mmap(0xe2aef5fe0000, 131144, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>, 0) = 0xe2aef5fe0000
+49190 munmap(0xe2aef5fdf000, 4096)      = 0
+49190 munmap(0xe2aef6001000, 57416)     = 0
+49190 mprotect(0xe2aef5fe3000, 114688, PROT_NONE) = 0
+49190 mmap(0xe2aef5fff000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>, 0xf000) = 0xe2aef5fff000
+49190 mmap(0xe2aef5fe0000, 12288, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>, 0) = 0xe2aef5fe0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libcom_err.so.2.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libkrb5support.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>
+49190 read(3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>, {st_dev=makedev(0xfd, 0x1), st_ino=6484, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=68456, st_atime=1792921634 /* 2026-10-25T09:47:14.574009016+0000 */, st_atime_nsec=574009016, st_mtime=1784139776 /* 2026-07-15T18:22:56+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.749728312+0000 */, st_ctime_nsec=749728312}) = 0
+49190 mmap(NULL, 197440, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5faf000
+49190 mmap(0xe2aef5fb0000, 131904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>, 0) = 0xe2aef5fb0000
+49190 munmap(0xe2aef5faf000, 4096)      = 0
+49190 munmap(0xe2aef5fd1000, 58176)     = 0
+49190 mprotect(0xe2aef5fbb000, 81920, PROT_NONE) = 0
+49190 mmap(0xe2aef5fcf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>, 0xf000) = 0xe2aef5fcf000
+49190 mmap(0xe2aef5fb0000, 45056, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>, 0) = 0xe2aef5fb0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libkrb5support.so.0.1>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>, {st_dev=makedev(0xfd, 0x1), st_ino=7007, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=392, st_size=199056, st_atime=1792921794 /* 2026-10-25T09:49:54.492288460+0000 */, st_atime_nsec=492288460, st_mtime=1774004504 /* 2026-03-20T11:01:44+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.919730123+0000 */, st_ctime_nsec=919730123}) = 0
+49190 mmap(NULL, 262208, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5f6f000
+49190 mmap(0xe2aef5f70000, 196672, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>, 0) = 0xe2aef5f70000
+49190 munmap(0xe2aef5f6f000, 4096)      = 0
+49190 munmap(0xe2aef5fa1000, 57408)     = 0
+49190 mprotect(0xe2aef5f90000, 61440, PROT_NONE) = 0
+49190 mmap(0xe2aef5f9f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>, 0x2f000) = 0xe2aef5f9f000
+49190 mmap(0xe2aef5f70000, 131072, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>, 0) = 0xe2aef5f70000
+49190 close(3</usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.2.0>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libp11-kit.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>
+49190 read(3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>, {st_dev=makedev(0xfd, 0x1), st_ino=6613, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4224, st_size=2158936, st_atime=1792921794 /* 2026-10-25T09:49:54.492288460+0000 */, st_atime_nsec=492288460, st_mtime=1771678733 /* 2026-02-21T12:58:53+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.784728685+0000 */, st_ctime_nsec=784728685}) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef751b000
+49190 mmap(NULL, 2224072, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5d51000
+49190 mmap(0xe2aef5d60000, 2158536, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>, 0) = 0xe2aef5d60000
+49190 munmap(0xe2aef5d51000, 61440)     = 0
+49190 munmap(0xe2aef5f6f000, 4040)      = 0
+49190 mprotect(0xe2aef5f40000, 57344, PROT_NONE) = 0
+49190 mmap(0xe2aef5f4e000, 135168, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>, 0x1ee000) = 0xe2aef5f4e000
+49190 mmap(0xe2aef5d60000, 1966080, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>, 0) = 0xe2aef5d60000
+49190 close(3</usr/lib/aarch64-linux-gnu/libp11-kit.so.0.4.8>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libtasn1.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>
+49190 read(3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>, {st_dev=makedev(0xfd, 0x1), st_ino=6625, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133208, st_atime=1792921794 /* 2026-10-25T09:49:54.492288460+0000 */, st_atime_nsec=492288460, st_mtime=1768740332 /* 2026-01-18T12:45:32+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.790728749+0000 */, st_ctime_nsec=790728749}) = 0
+49190 mmap(NULL, 262592, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5d1f000
+49190 mmap(0xe2aef5d20000, 197056, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>, 0) = 0xe2aef5d20000
+49190 munmap(0xe2aef5d1f000, 4096)      = 0
+49190 munmap(0xe2aef5d51000, 57792)     = 0
+49190 mprotect(0xe2aef5d34000, 110592, PROT_NONE) = 0
+49190 mmap(0xe2aef5d4f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>, 0x1f000) = 0xe2aef5d4f000
+49190 mmap(0xe2aef5d20000, 81920, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>, 0) = 0xe2aef5d20000
+49190 close(3</usr/lib/aarch64-linux-gnu/libtasn1.so.6.6.5>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libkeyutils.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>
+49190 read(3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>, {st_dev=makedev(0xfd, 0x1), st_ino=6561, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=67712, st_atime=1792921632 /* 2026-10-25T09:47:12.822561209+0000 */, st_atime_nsec=822561209, st_mtime=1770064132 /* 2026-02-02T20:28:52+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.776728600+0000 */, st_ctime_nsec=776728600}) = 0
+49190 mmap(NULL, 196624, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5cef000
+49190 mmap(0xe2aef5cf0000, 131088, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>, 0) = 0xe2aef5cf0000
+49190 munmap(0xe2aef5cef000, 4096)      = 0
+49190 munmap(0xe2aef5d11000, 57360)     = 0
+49190 mprotect(0xe2aef5cf4000, 110592, PROT_NONE) = 0
+49190 mmap(0xe2aef5d0f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>, 0xf000) = 0xe2aef5d0f000
+49190 mmap(0xe2aef5cf0000, 16384, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>, 0) = 0xe2aef5cf0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libkeyutils.so.1.10>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libresolv.so.2", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libresolv.so.2>
+49190 read(3</usr/lib/aarch64-linux-gnu/libresolv.so.2>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libresolv.so.2>, {st_dev=makedev(0xfd, 0x1), st_ino=5355, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=136, st_size=68000, st_atime=1792921632 /* 2026-10-25T09:47:12.366000001+0000 */, st_atime_nsec=366000001, st_mtime=1788444579 /* 2026-09-03T14:09:39+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.516725830+0000 */, st_ctime_nsec=516725830}) = 0
+49190 mmap(NULL, 206920, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5cbd000
+49190 mmap(0xe2aef5cc0000, 141384, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libresolv.so.2>, 0) = 0xe2aef5cc0000
+49190 munmap(0xe2aef5cbd000, 12288)     = 0
+49190 munmap(0xe2aef5ce3000, 51272)     = 0
+49190 mprotect(0xe2aef5ccc000, 77824, PROT_NONE) = 0
+49190 mmap(0xe2aef5cdf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libresolv.so.2>, 0xf000) = 0xe2aef5cdf000
+49190 mmap(0xe2aef5ce1000, 6216, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xe2aef5ce1000
+49190 mmap(0xe2aef5cc0000, 49152, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libresolv.so.2>, 0) = 0xe2aef5cc0000
+49190 close(3</usr/lib/aarch64-linux-gnu/libresolv.so.2>) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/aarch64-linux-gnu/libffi.so.8", O_RDONLY|O_CLOEXEC) = 3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>
+49190 read(3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>, ""..., 832) = 832
+49190 fstat(3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>, {st_dev=makedev(0xfd, 0x1), st_ino=6543, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=264, st_size=133800, st_atime=1792921631 /* 2026-10-25T09:47:11.771354917+0000 */, st_atime_nsec=771354917, st_mtime=1774599998 /* 2026-03-27T08:26:38+0000 */, st_mtime_nsec=0, st_ctime=1792168530 /* 2026-10-16T16:35:30.772728557+0000 */, st_ctime_nsec=772728557}) = 0
+49190 mmap(NULL, 263848, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_DENYWRITE, -1, 0) = 0xe2aef5c7f000
+49190 mmap(0xe2aef5c80000, 198312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>, 0) = 0xe2aef5c80000
+49190 munmap(0xe2aef5c7f000, 4096)      = 0
+49190 munmap(0xe2aef5cb1000, 59048)     = 0
+49190 mprotect(0xe2aef5c96000, 102400, PROT_NONE) = 0
+49190 mmap(0xe2aef5caf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>, 0x1f000) = 0xe2aef5caf000
+49190 mmap(0xe2aef5c80000, 90112, PROT_READ|PROT_EXEC|0x10, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>, 0) = 0xe2aef5c80000
+49190 close(3</usr/lib/aarch64-linux-gnu/libffi.so.8.2.0>) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7519000
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7517000
+49190 set_tid_address(0xe2aef7517c88)   = 49190
+49190 set_robust_list(0xe2aef7517940, 24) = 0
+49190 rseq(0xe2aef7518280, 0x21, 0, 0xd428bc00) = 0
+49190 mprotect(0xe2aef73bd000, 12288, PROT_READ) = 0
+49190 mprotect(0xe2aef5caf000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef5cdf000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef5d0f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef5d4f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef5f4e000, 73728, PROT_READ) = 0
+49190 mprotect(0xe2aef5f9f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef5fcf000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef5fff000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef604f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef6125000, 45056, PROT_READ) = 0
+49190 mprotect(0xe2aef73ff000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef67ff000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef6e1b000, 479232, PROT_READ) = 0
+49190 mprotect(0xe2aef616f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef620f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef627e000, 8192, PROT_READ) = 0
+49190 mprotect(0xe2aef62ee000, 8192, PROT_READ) = 0
+49190 mprotect(0xe2aef670c000, 16384, PROT_READ) = 0
+49190 mprotect(0xe2aef719f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef6500000, 65536, PROT_READ) = 0
+49190 mprotect(0xe2aef673f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef686e000, 8192, PROT_READ) = 0
+49190 mprotect(0xe2aef6fb6000, 40960, PROT_READ) = 0
+49190 mprotect(0xe2aef6fff000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef706e000, 8192, PROT_READ) = 0
+49190 mprotect(0xe2aef709f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef711e000, 8192, PROT_READ) = 0
+49190 mprotect(0xe2aef715f000, 4096, PROT_READ) = 0
+49190 mprotect(0xe2aef71ed000, 12288, PROT_READ) = 0
+49190 mprotect(0xe2aef7509000, 28672, PROT_READ) = 0
+49190 mprotect(0xad3de34eb000, 20480, PROT_READ) = 0
+49190 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7515000
+49190 mprotect(0xe2aef755d000, 8192, PROT_READ) = 0
+49190 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+49190 getrandom(""..., 8, GRND_NONBLOCK) = 8
+49190 munmap(0xe2aef754f000, 24051)     = 0
+49190 brk(NULL)                         = 0xad3e20fd4000
+49190 brk(0xad3e21000000)               = 0xad3e21000000
+49190 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+49190 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_DROPPABLE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7554000
+49190 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe2aef7553000
+49190 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+49190 getrandom(""..., 32, 0)           = 32
+49190 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/gnutls/config", {st_dev=makedev(0xfd, 0x1), st_ino=1360, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=119, st_atime=1792921794 /* 2026-10-25T09:49:54.494288433+0000 */, st_atime_nsec=494288433, st_mtime=1771447141 /* 2026-02-18T20:39:01+0000 */, st_mtime_nsec=0, st_ctime=1792168529 /* 2026-10-16T16:35:29.880719056+0000 */, st_ctime_nsec=880719056}, 0) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/gnutls/config", O_RDONLY|O_CLOEXEC) = 3</etc/gnutls/config>
+49190 fstat(3</etc/gnutls/config>, {st_dev=makedev(0xfd, 0x1), st_ino=1360, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=119, st_atime=1792921794 /* 2026-10-25T09:49:54.494288433+0000 */, st_atime_nsec=494288433, st_mtime=1771447141 /* 2026-02-18T20:39:01+0000 */, st_mtime_nsec=0, st_ctime=1792168529 /* 2026-10-16T16:35:29.880719056+0000 */, st_ctime_nsec=880719056}) = 0
+49190 read(3</etc/gnutls/config>, ""..., 4096) = 119
+49190 read(3</etc/gnutls/config>, "", 4096) = 0
+49190 lseek(3</etc/gnutls/config>, 0, SEEK_SET) = 0
+49190 read(3</etc/gnutls/config>, ""..., 4096) = 119
+49190 read(3</etc/gnutls/config>, "", 4096) = 0
+49190 close(3</etc/gnutls/config>)      = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/var/lib/crypto-config/profiles/current/gnutls.conf", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+49190 fcntl(0<pipe:[82671]>, F_GETFD)   = 0
+49190 fcntl(1<pipe:[82672]>, F_GETFD)   = 0
+49190 fcntl(2<pipe:[82673]>, F_GETFD)   = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49190 futex(0xe2aef6e92c50, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c08, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c0c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c10, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92d04, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c1c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c20, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92904, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/proc/sys/crypto/fips_enabled", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ubuntu-fips", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 futex(0xe2aef6e92794, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92434, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e928f0, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e926d0, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 brk(0xad3e21200000)               = 0xad3e21200000
+49190 madvise(0xad3e21000000, 2097152, MADV_HUGEPAGE) = 0
+49190 futex(0xe2aef6e92c4c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e925c0, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c14, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/usr/lib/ssl/openssl.cnf", O_RDONLY) = 3</etc/ssl/openssl.cnf>
+49190 fstat(3</etc/ssl/openssl.cnf>, {st_dev=makedev(0xfd, 0x1), st_ino=908, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=32, st_size=12509, st_atime=1792921631 /* 2026-10-25T09:47:11.512000000+0000 */, st_atime_nsec=512000000, st_mtime=1775563556 /* 2026-04-07T12:05:56+0000 */, st_mtime_nsec=0, st_ctime=1792168529 /* 2026-10-16T16:35:29.833718555+0000 */, st_ctime_nsec=833718555}) = 0
+49190 read(3</etc/ssl/openssl.cnf>, ""..., 4096) = 4096
+49190 read(3</etc/ssl/openssl.cnf>, ""..., 4096) = 4096
+49190 read(3</etc/ssl/openssl.cnf>, ""..., 4096) = 4096
+49190 read(3</etc/ssl/openssl.cnf>, ""..., 4096) = 221
+49190 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/var/lib/crypto-config/profiles/current/openssl.conf.d", 0xfffffa0d7240, 0) = -1 ENOENT (No such file or directory)
+49190 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/ssl/openssl.conf.d", 0xfffffa0d7240, 0) = -1 ENOENT (No such file or directory)
+49190 read(3</etc/ssl/openssl.cnf>, "", 4096) = 0
+49190 close(3</etc/ssl/openssl.cnf>)    = 0
+49190 futex(0xe2aef6e9245c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e924d8, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c30, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92470, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6e92c24, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 futex(0xe2aef6fc37c8, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.curlrc", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.config/curlrc", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 geteuid()                         = 1000
+49190 socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<UNIX-STREAM:[75949]>
+49190 connect(3<UNIX-STREAM:[75949]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+49190 close(3<UNIX-STREAM:[75949]>)     = 0
+49190 socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<UNIX-STREAM:[75950]>
+49190 connect(3<UNIX-STREAM:[75950]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+49190 close(3<UNIX-STREAM:[75950]>)     = 0
+49190 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/nsswitch.conf", {st_dev=makedev(0xfd, 0x1), st_ino=568, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=526, st_atime=1792921631 /* 2026-10-25T09:47:11.402000000+0000 */, st_atime_nsec=402000000, st_mtime=1792168243 /* 2026-10-16T16:30:43.724642235+0000 */, st_mtime_nsec=724642235, st_ctime=1792168610 /* 2026-10-16T16:36:50.486593996+0000 */, st_ctime_nsec=486593996}, 0) = 0
+49190 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/", {st_dev=makedev(0xfd, 0x1), st_ino=2, st_mode=S_IFDIR|0755, st_nlink=19, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792913949 /* 2026-10-25T07:39:09.828498789+0000 */, st_atime_nsec=828498789, st_mtime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_mtime_nsec=600000001, st_ctime=1792921632 /* 2026-10-25T09:47:12.600000001+0000 */, st_ctime_nsec=600000001}, 0) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+49190 fstat(3</etc/nsswitch.conf>, {st_dev=makedev(0xfd, 0x1), st_ino=568, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=526, st_atime=1792921631 /* 2026-10-25T09:47:11.402000000+0000 */, st_atime_nsec=402000000, st_mtime=1792168243 /* 2026-10-16T16:30:43.724642235+0000 */, st_mtime_nsec=724642235, st_ctime=1792168610 /* 2026-10-16T16:36:50.486593996+0000 */, st_ctime_nsec=486593996}) = 0
+49190 read(3</etc/nsswitch.conf>, ""..., 4096) = 526
+49190 read(3</etc/nsswitch.conf>, "", 4096) = 0
+49190 fstat(3</etc/nsswitch.conf>, {st_dev=makedev(0xfd, 0x1), st_ino=568, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=526, st_atime=1792921631 /* 2026-10-25T09:47:11.402000000+0000 */, st_atime_nsec=402000000, st_mtime=1792168243 /* 2026-10-16T16:30:43.724642235+0000 */, st_mtime_nsec=724642235, st_ctime=1792168610 /* 2026-10-16T16:36:50.486593996+0000 */, st_ctime_nsec=486593996}) = 0
+49190 close(3</etc/nsswitch.conf>)      = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+49190 fstat(3</etc/passwd>, {st_dev=makedev(0xfd, 0x1), st_ino=107962, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=1612, st_atime=1792921631 /* 2026-10-25T09:47:11.406000000+0000 */, st_atime_nsec=406000000, st_mtime=1792834628 /* 2026-10-24T09:37:08.552651877+0000 */, st_mtime_nsec=552651877, st_ctime=1792834628 /* 2026-10-24T09:37:08.553000002+0000 */, st_ctime_nsec=553000002}) = 0
+49190 lseek(3</etc/passwd>, 0, SEEK_SET) = 0
+49190 read(3</etc/passwd>, ""..., 4096) = 1612
+49190 close(3</etc/passwd>)             = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/.curlrc", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 ioctl(1<pipe:[82672]>, TCGETS2, 0xfffffa0d7278) = -1 ENOTTY (Inappropriate ioctl for device)
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.ssh/known_hosts", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 geteuid()                         = 1000
+49190 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/nsswitch.conf", {st_dev=makedev(0xfd, 0x1), st_ino=568, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=526, st_atime=1792921631 /* 2026-10-25T09:47:11.402000000+0000 */, st_atime_nsec=402000000, st_mtime=1792168243 /* 2026-10-16T16:30:43.724642235+0000 */, st_mtime_nsec=724642235, st_ctime=1792168610 /* 2026-10-16T16:36:50.486593996+0000 */, st_ctime_nsec=486593996}, 0) = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+49190 fstat(3</etc/passwd>, {st_dev=makedev(0xfd, 0x1), st_ino=107962, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=1612, st_atime=1792921631 /* 2026-10-25T09:47:11.406000000+0000 */, st_atime_nsec=406000000, st_mtime=1792834628 /* 2026-10-24T09:37:08.552651877+0000 */, st_mtime_nsec=552651877, st_ctime=1792834628 /* 2026-10-24T09:37:08.553000002+0000 */, st_ctime_nsec=553000002}) = 0
+49190 lseek(3</etc/passwd>, 0, SEEK_SET) = 0
+49190 read(3</etc/passwd>, ""..., 4096) = 1612
+49190 close(3</etc/passwd>)             = 0
+49190 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/home/dev/.ssh/known_hosts", O_RDONLY) = -1 ENOENT (No such file or directory)
+49190 ioctl(0<pipe:[82671]>, TIOCGWINSZ, 0xfffffa0d7290) = -1 ENOTTY (Inappropriate ioctl for device)
+49190 eventfd2(0, EFD_CLOEXEC|EFD_NONBLOCK) = 3<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 ppoll([{fd=3<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, events=POLLIN}], 1, {tv_sec=0, tv_nsec=0}, NULL, 0) = 0 (Timeout)
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, IPPROTO_TCP) = 4<TCP:[75951]>
+49190 fcntl(4<TCP:[75951]>, F_SETFD, FD_CLOEXEC) = 0
+49190 setsockopt(4<TCP:[75951]>, SOL_TCP, TCP_NODELAY, [1], 4) = 0
+49190 setsockopt(4<TCP:[75951]>, SOL_SOCKET, SO_KEEPALIVE, [1], 4) = 0
+49190 setsockopt(4<TCP:[75951]>, SOL_TCP, TCP_KEEPIDLE, [60], 4) = 0
+49190 setsockopt(4<TCP:[75951]>, SOL_TCP, TCP_KEEPINTVL, [60], 4) = 0
+49190 setsockopt(4<TCP:[75951]>, SOL_TCP, TCP_KEEPCNT, [9], 4) = 0
+49190 connect(4<TCP:[75951]>, {sa_family=AF_INET, sin_port=htons(18086), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+49190 getsockname(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, {sa_family=AF_INET, sin_port=htons(59892), sin_addr=inet_addr("127.0.0.1")}, [128 => 16]) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 ppoll([{fd=4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, events=POLLOUT}, {fd=3<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, events=POLLIN}], 2, {tv_sec=1, tv_nsec=0}, NULL, 0) = 1 ([{fd=4, revents=POLLOUT}], left {tv_sec=0, tv_nsec=999994500})
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 ppoll([{fd=4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, events=POLLPRI|POLLOUT|POLLWRNORM}], 1, {tv_sec=0, tv_nsec=0}, NULL, 0) = 1 ([{fd=4, revents=POLLOUT|POLLWRNORM}], left {tv_sec=0, tv_nsec=0})
+49190 getsockopt(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, SOL_SOCKET, SO_ERROR, [0], [4]) = 0
+49190 getsockname(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, {sa_family=AF_INET, sin_port=htons(59892), sin_addr=inet_addr("127.0.0.1")}, [128 => 16]) = 0
+49190 getsockname(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, {sa_family=AF_INET, sin_port=htons(59892), sin_addr=inet_addr("127.0.0.1")}, [128 => 16]) = 0
+49190 sendto(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, ""..., 94, MSG_NOSIGNAL, NULL, 0) = 94
+49190 recvfrom(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, 0xad3e2101a1f0, 102400, 0, NULL, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 ppoll([{fd=4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, events=POLLIN}, {fd=3<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>, events=POLLIN}], 2, {tv_sec=1, tv_nsec=0}, NULL, 0) = 1 ([{fd=4, revents=POLLIN}], left {tv_sec=0, tv_nsec=998106579})
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 recvfrom(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, ""..., 102400, 0, NULL, NULL) = 249
+49190 fstat(1<pipe:[82672]>, {st_dev=makedev(0, 0x10), st_ino=82672, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792922853 /* 2026-10-25T10:07:33.554300747+0000 */, st_atime_nsec=554300747, st_mtime=1792922853 /* 2026-10-25T10:07:33.554300747+0000 */, st_mtime_nsec=554300747, st_ctime=1792922853 /* 2026-10-25T10:07:33.554300747+0000 */, st_ctime_nsec=554300747}) = 0
+49190 fcntl(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, F_GETFL) = 0x802 (flags O_RDWR|O_NONBLOCK)
+49190 recvfrom(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>, "", 1024, 0, NULL, NULL) = 0
+49190 close(4<TCP:[127.0.0.1:59892->127.0.0.1:18086]>) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 write(1<pipe:[82672]>, ""..., 57) = 57
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 close(3<{eventfd-count=0, eventfd-id=17, eventfd-semaphore=0}>) = 0
+49190 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, NULL, 8) = 0
+49190 exit_group(0)                     = ?

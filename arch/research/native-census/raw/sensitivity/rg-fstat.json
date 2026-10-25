@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "",
+  "stderr_hex": "",
+  "uptime": "2114.28 11597.54",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "rg",
+  "syscall": "fstat",
+  "same_stdout": false,
+  "preserved": false,
+  "injected": true
+}

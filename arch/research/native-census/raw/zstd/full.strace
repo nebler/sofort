@@ -1,0 +1,45 @@
+49082 execve("/home/dev/r6-census/artifacts/zstd/zstd-1.5.7/programs/zstd", [""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49082 set_tid_address(0x5128e0)         = 49082
+49082 brk(NULL)                         = 0x149a5000
+49082 brk(0x149a7000)                   = 0x149a7000
+49082 mmap(0x149a5000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x149a5000
+49082 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e874000
+49082 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, AT_SYMLINK_NOFOLLOW) = 0
+49082 ioctl(1<pipe:[85052]>, TIOCGWINSZ, 0xffffeab75588) = -1 ENOTTY (Inappropriate ioctl for device)
+49082 ioctl(2<pipe:[85053]>, TIOCGWINSZ, 0xffffeab75588) = -1 ENOTTY (Inappropriate ioctl for device)
+49082 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+49082 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e870000
+49082 mmap(NULL, 131611, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e84f000
+49082 mmap(NULL, 131611, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e82e000
+49082 mmap(NULL, 131092, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e80d000
+49082 mmap(NULL, 131092, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e7ec000
+49082 mmap(NULL, 262164, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e7ab000
+49082 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+49082 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+49082 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", O_RDONLY|O_LARGEFILE) = 3</home/dev/r6-census/fixtures/data/input.txt>
+49082 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e7aa000
+49082 readv(3</home/dev/r6-census/fixtures/data/input.txt>, [{iov_base=""..., iov_len=131071}, {iov_base="", iov_len=1024}], 2) = 23
+49082 readv(3</home/dev/r6-census/fixtures/data/input.txt>, [{iov_base="", iov_len=131048}, {iov_base="", iov_len=1024}], 2) = 0
+49082 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/*stdout*\\", 0xffffeab74e40, 0) = -1 ENOENT (No such file or directory)
+49082 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1225, tv_nsec=32572715}) = 0
+49082 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, {tv_sec=0, tv_nsec=1222836}) = 0
+49082 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}, 0) = 0
+49082 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1225, tv_nsec=33060425}) = 0
+49082 mmap(NULL, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xee523e7a4000
+49082 ioctl(1<pipe:[85052]>, TIOCGWINSZ, 0xffffeab74e78) = -1 ENOTTY (Inappropriate ioctl for device)
+49082 writev(1<pipe:[85052]>, [{iov_base="", iov_len=0}, {iov_base=""..., iov_len=32}], 2) = 32
+49082 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, {tv_sec=0, tv_nsec=1496630}) = 0
+49082 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1225, tv_nsec=33873718}) = 0
+49082 writev(1<pipe:[85052]>, [{iov_base=""..., iov_len=4}, {iov_base=NULL, iov_len=0}], 2) = 4
+49082 close(1<pipe:[85052]>)            = 0
+49082 close(3</home/dev/r6-census/fixtures/data/input.txt>) = 0
+49082 munmap(0xee523e7aa000, 4096)      = 0
+49082 munmap(0xee523e84f000, 135168)    = 0
+49082 munmap(0xee523e82e000, 135168)    = 0
+49082 munmap(0xee523e80d000, 135168)    = 0
+49082 munmap(0xee523e7ec000, 135168)    = 0
+49082 munmap(0xee523e7ab000, 266240)    = 0
+49082 munmap(0xee523e7a4000, 24576)     = 0
+49082 munmap(0xee523e870000, 16384)     = 0
+49082 munmap(0xee523e874000, 4096)      = 0
+49082 exit_group(0)                     = ?

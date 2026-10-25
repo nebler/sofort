@@ -1,0 +1,11 @@
+52449 execve("/home/dev/r6-census/artifacts/qsv/unpacked/qsvlite", [...], 0xffffcd78b358 /* 7 vars */) = 0
+52449 mmap(NULL, 2304, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe1c38b5d6000
+52449 set_tid_address(0x153aeb0)        = 52449
+52449 ppoll([...], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([...], left {tv_sec=0, tv_nsec=0})
+52449 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x102a650}, 0xffffccac66c0, 8) = -1 ENOSYS (Function not implemented) (INJECTED)
+52449 write(2, ""..., 97)               = 97
+52449 rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1 RT_2], [], 8) = 0
+52449 tkill(52449, SIGABRT)             = 0
+52449 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+52449 --- SIGABRT {si_signo=SIGABRT, si_code=SI_TKILL, si_pid=52449, si_uid=1000} ---
+52449 +++ killed by SIGABRT (core dumped) +++

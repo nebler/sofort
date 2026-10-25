@@ -1,0 +1,57 @@
+libbb/hash_md5_sha.c: In function ‘sha1_end’:
+libbb/hash_md5_sha.c:1316:35: error: ‘sha1_process_block64_shaNI’ undeclared (first use in this function); did you mean ‘sha1_process_block64’?
+ 1316 |          || ctx->process_block == sha1_process_block64_shaNI
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                   sha1_process_block64
+libbb/hash_md5_sha.c:1316:35: note: each undeclared identifier is reported only once for each function it appears in
+make[1]: *** [scripts/Makefile.build:198: libbb/hash_md5_sha.o] Error 1
+make: *** [Makefile:744: libbb] Error 2
+make: *** Waiting for unfinished jobs....
+miscutils/i2c_tools.c: In function ‘list_i2c_busses_and_exit’:
+miscutils/i2c_tools.c:1152:46: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 236 [-Wformat-truncation=]
+ 1152 |                 snprintf(path, NAME_MAX, "%s/%s/name",
+      |                                              ^~
+miscutils/i2c_tools.c:1152:17: note: ‘snprintf’ output between 25 and 280 bytes into a destination of size 255
+ 1152 |                 snprintf(path, NAME_MAX, "%s/%s/name",
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1153 |                          i2cdev_path, de->d_name);
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~
+miscutils/i2c_tools.c:1157:38: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 236 [-Wformat-truncation=]
+ 1157 |                                  "%s/%s/device/name",
+      |                                      ^~
+miscutils/i2c_tools.c:1156:25: note: ‘snprintf’ output between 32 and 287 bytes into a destination of size 255
+ 1156 |                         snprintf(path, NAME_MAX,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~
+ 1157 |                                  "%s/%s/device/name",
+      |                                  ~~~~~~~~~~~~~~~~~~~~
+ 1158 |                                  i2cdev_path, de->d_name);
+      |                                  ~~~~~~~~~~~~~~~~~~~~~~~~
+miscutils/i2c_tools.c:1165:38: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 236 [-Wformat-truncation=]
+ 1165 |                                  "%s/%s/device/name",
+      |                                      ^~
+miscutils/i2c_tools.c:1164:25: note: ‘snprintf’ output between 32 and 287 bytes into a destination of size 255
+ 1164 |                         snprintf(path, NAME_MAX,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~
+ 1165 |                                  "%s/%s/device/name",
+      |                                  ~~~~~~~~~~~~~~~~~~~~
+ 1166 |                                  i2cdev_path, de->d_name);
+      |                                  ~~~~~~~~~~~~~~~~~~~~~~~~
+miscutils/i2c_tools.c:1177:54: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 236 [-Wformat-truncation=]
+ 1177 |                                                  "%s/%s/device/%s/name",
+      |                                                      ^~
+miscutils/i2c_tools.c:1176:41: note: ‘snprintf’ output between 33 and 543 bytes into a destination of size 255
+ 1176 |                                         snprintf(path, NAME_MAX,
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~
+ 1177 |                                                  "%s/%s/device/%s/name",
+      |                                                  ~~~~~~~~~~~~~~~~~~~~~~~
+ 1178 |                                                  i2cdev_path, de->d_name,
+      |                                                  ~~~~~~~~~~~~~~~~~~~~~~~~
+ 1179 |                                                  subde->d_name);
+      |                                                  ~~~~~~~~~~~~~~
+miscutils/nandwrite.c:52:10: fatal error: mtd/mtd-user.h: No such file or directory
+   52 | #include <mtd/mtd-user.h>
+      |          ^~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.build:197: miscutils/nandwrite.o] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:744: miscutils] Error 2

@@ -1,0 +1,17 @@
+49157 execve("/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox", [""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49157 set_tid_address(0x461904)         = 49157
+49157 brk(NULL)                         = 0x8442000
+49157 brk(0x8444000)                    = 0x8444000
+49157 mmap(0x8442000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x8442000
+49157 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5cf7b75c000
+49157 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5cf7b755000
+49157 mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5cf7b750000
+49157 mmap(NULL, 69632, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5cf7b73f000
+49157 mmap(NULL, 131092, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5cf7b71e000
+49157 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf5cf7b71d000
+49157 ioctl(0<pipe:[82637]>, TIOCGWINSZ, 0xfffff24a0988) = -1 ENOTTY (Inappropriate ioctl for device)
+49157 read(0<pipe:[82637]>, ""..., 65536) = 23
+49157 read(0<pipe:[82637]>, "", 65513)  = 0
+49157 write(1<pipe:[82638]>, ""..., 39) = 39
+49157 close(1<pipe:[82638]>)            = 0
+49157 exit_group(0)                     = ?

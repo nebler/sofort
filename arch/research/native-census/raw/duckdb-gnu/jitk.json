@@ -1,0 +1,4 @@
+{
+  "status": "loader-rejected",
+  "reason": "dynamic ELF/interpreter forbidden"
+}

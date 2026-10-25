@@ -1,0 +1,43 @@
+Package: libqpdf30
+Source: qpdf
+Priority: optional
+Section: libs
+Installed-Size: 2592
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: arm64
+Version: 12.3.2-1
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.3.1), libgnutls30t64 (>= 3.8.2), libjpeg8 (>= 8c), libstdc++6 (>= 14), zlib1g (>= 1:1.1.4)
+Filename: pool/main/q/qpdf/libqpdf30_12.3.2-1_arm64.deb
+Size: 816614
+MD5sum: ec11e509b36a354a5274ab48cad665f2
+SHA1: 964c0e1a850c2078990126ac2d2afd045e73b16b
+SHA256: 2d3716c30c3913b64aa23037e5f336d017f57af716cfbd9aeccdf70e7bec9f16
+SHA512: 907951cc949b9b30a1511d048013ad35a369d8df80bb99ce5072bea73ce35b87a8ac98b79ca2a864a2b28505e24bb27c6c604ff79501a9f1f6662ff2aebbe133
+Homepage: https://qpdf.sourceforge.io
+Description-en: runtime library for PDF transformation/inspection software
+ QPDF is a program that can be used to linearize (web-optimize),
+ encrypt (password-protect), decrypt, and inspect PDF files from the
+ command-line.  It does these and other structural, content-preserving
+ transformations on PDF files, reading a PDF file as input and
+ creating a new one as output.  It also provides many useful
+ capabilities to developers of PDF-producing software or for people
+ who just want to look at the innards of a PDF file to learn more
+ about how they work.
+ .
+ QPDF understands PDF files that use compressed object streams
+ (supported by newer PDF applications) and can convert such files into
+ those that can be read with older viewers.  It can also be used for
+ checking PDF files for structural errors, inspecting stream contents,
+ or extracting objects from PDF files.  QPDF is not PDF content
+ creation or viewing software -- it does not have the capability to
+ create PDF files from scratch or to display PDF files.
+ .
+ This package contains the qpdf runtime libraries required to run
+ programs that link with the qpdf library.
+Description-md5: 19ff93a4265247cdbdd76561d4f4b3a1
+Original-Maintainer: Jay Berkenbilt <qjb@debian.org>
+Multi-Arch: same
+Origin: Ubuntu
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Task: ubuntu-desktop-minimal, ubuntu-desktop, print-server, ubuntu-desktop-raspi, kubuntu-desktop, xubuntu-minimal, xubuntu-desktop, lubuntu-desktop-minimal, lubuntu-desktop, lubuntu-desktop, ubuntustudio-desktop, ubuntustudio-desktop-core, ubuntukylin-desktop, ubuntukylin-desktop-minimal, ubuntu-mate-core, ubuntu-mate-desktop, ubuntu-budgie-desktop-minimal, ubuntu-budgie-desktop, ubuntu-budgie-desktop-raspi, ubuntu-unity-desktop, edubuntu-desktop-gnome-minimal, edubuntu-desktop-gnome-raspi, ubuntucinnamon-desktop-minimal, ubuntucinnamon-desktop-raspi
+

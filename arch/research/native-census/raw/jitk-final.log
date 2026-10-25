@@ -1,0 +1,14 @@
+jq jitk 127 missing [99, 226, 261, 278, 293] ok False
+sd jitk None missing [130] ok False
+sqlite3 jitk 1 missing [48, 80, 172] ok False
+lua jitk 0 missing [] ok True
+micropython jitk 0 missing [] ok True
+zstd jitk None missing [] ok False
+jq-musl jitk 0 missing [172, 278] ok True
+bb-sed jitk 127 missing [] ok False
+bb-awk jitk 127 missing [] ok False
+bb-grep jitk 127 missing [] ok False
+bb-sort jitk 127 missing [] ok False
+bb-wc jitk 127 missing [] ok False
+bb-tar jitk 127 missing [] ok False
+bb-gzip jitk 127 missing [] ok False

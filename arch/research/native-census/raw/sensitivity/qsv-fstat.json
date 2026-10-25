@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "6e616d650a616c7068610a626574610a",
+  "stderr_hex": "",
+  "uptime": "2115.14 11601.79",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "qsv",
+  "syscall": "fstat",
+  "same_stdout": true,
+  "preserved": true,
+  "injected": true
+}

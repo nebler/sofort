@@ -1,0 +1,1 @@
+49044 execve("/home/dev/r6-census/artifacts/duckdb/unpacked/duckdb", [""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = -1 ENOENT (No such file or directory)

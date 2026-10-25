@@ -1,0 +1,19 @@
+52428 execve("/home/dev/r6-census/artifacts/xz/xz-5.8.4/src/xz/xz", [...], 0xffffe89b6e08 /* 7 vars */) = 0
+52428 set_tid_address(0x455e70)         = 52428
+52428 fcntl(0, F_GETFD)                 = 0
+52428 fcntl(1, F_GETFD)                 = 0
+52428 fcntl(2, F_GETFD)                 = 0
+52428 geteuid()                         = 1000
+52428 pipe2([...], 0)                   = 0
+52428 fcntl(3, F_GETFL)                 = 0 (flags O_RDONLY)
+52428 fcntl(3, F_SETFL, O_RDONLY|O_NONBLOCK|O_LARGEFILE) = 0
+52428 fcntl(4, F_GETFL)                 = 0x1 (flags O_WRONLY)
+52428 fcntl(4, F_SETFL, O_WRONLY|O_NONBLOCK|O_LARGEFILE) = 0
+52428 prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) = -1 ENOSYS (Function not implemented) (INJECTED)
+52428 landlock_create_ruleset(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION) = 8
+52428 landlock_create_ruleset({handled_access_fs=LANDLOCK_ACCESS_FS_EXECUTE|LANDLOCK_ACCESS_FS_REMOVE_DIR|LANDLOCK_ACCESS_FS_MAKE_CHAR|LANDLOCK_ACCESS_FS_MAKE_DIR|LANDLOCK_ACCESS_FS_MAKE_SOCK|LANDLOCK_ACCESS_FS_MAKE_FIFO|LANDLOCK_ACCESS_FS_MAKE_BLOCK|LANDLOCK_ACCESS_FS_MAKE_SYM|LANDLOCK_ACCESS_FS_REFER|LANDLOCK_ACCESS_FS_TRUNCATE|LANDLOCK_ACCESS_FS_IOCTL_DEV, handled_access_net=LANDLOCK_ACCESS_NET_BIND_TCP|LANDLOCK_ACCESS_NET_CONNECT_TCP, scoped=LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET|LANDLOCK_SCOPE_SIGNAL}, 24, 0) = 5
+52428 landlock_restrict_self(5, 0)      = -1 EPERM (Operation not permitted)
+52428 writev(2, [...], 2)               = 53
+52428 writev(2, [...], 2)               = 28
+52428 writev(2, [...], 2)               = 1
+52428 exit_group(1)                     = ?

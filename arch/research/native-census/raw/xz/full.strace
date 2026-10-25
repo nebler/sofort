@@ -1,0 +1,79 @@
+49089 execve("/home/dev/r6-census/artifacts/xz/xz-5.8.4/src/xz/xz", [""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49089 set_tid_address(0x455e70)         = 49089
+49089 fcntl(0<pipe:[75850]>, F_GETFD)   = 0
+49089 fcntl(1<pipe:[75851]>, F_GETFD)   = 0
+49089 fcntl(2<pipe:[75852]>, F_GETFD)   = 0
+49089 geteuid()                         = 1000
+49089 pipe2([3<pipe:[81870]>, 4<pipe:[81870]>], 0) = 0
+49089 fcntl(3<pipe:[81870]>, F_GETFL)   = 0 (flags O_RDONLY)
+49089 fcntl(3<pipe:[81870]>, F_SETFL, O_RDONLY|O_NONBLOCK|O_LARGEFILE) = 0
+49089 fcntl(4<pipe:[81870]>, F_GETFL)   = 0x1 (flags O_WRONLY)
+49089 fcntl(4<pipe:[81870]>, F_SETFL, O_WRONLY|O_NONBLOCK|O_LARGEFILE) = 0
+49089 prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) = 0
+49089 landlock_create_ruleset(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION) = 8
+49089 landlock_create_ruleset({handled_access_fs=LANDLOCK_ACCESS_FS_EXECUTE|LANDLOCK_ACCESS_FS_REMOVE_DIR|LANDLOCK_ACCESS_FS_MAKE_CHAR|LANDLOCK_ACCESS_FS_MAKE_DIR|LANDLOCK_ACCESS_FS_MAKE_SOCK|LANDLOCK_ACCESS_FS_MAKE_FIFO|LANDLOCK_ACCESS_FS_MAKE_BLOCK|LANDLOCK_ACCESS_FS_MAKE_SYM|LANDLOCK_ACCESS_FS_REFER|LANDLOCK_ACCESS_FS_TRUNCATE|LANDLOCK_ACCESS_FS_IOCTL_DEV, handled_access_net=LANDLOCK_ACCESS_NET_BIND_TCP|LANDLOCK_ACCESS_NET_CONNECT_TCP, scoped=LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET|LANDLOCK_SCOPE_SIGNAL}, 24, 0) = 5<anon_inode:[landlock-ruleset]>
+49089 landlock_restrict_self(5<anon_inode:[landlock-ruleset]>, 0) = 0
+49089 close(5<anon_inode:[landlock-ruleset]>) = 0
+49089 ioctl(2<pipe:[75852]>, TIOCGWINSZ, 0xfffff8440e48) = -1 ENOTTY (Inappropriate ioctl for device)
+49089 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+49089 rt_sigaction(SIGALRM, {sa_handler=0x404460, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGUSR1, {sa_handler=0x404460, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 sysinfo({uptime=1226, loads=[65984, 60576, 38816], totalram=9341022208, freeram=4298096640, sharedram=1003520, bufferram=88141824, totalswap=0, freeswap=0, procs=185, totalhigh=0, freehigh=0, mem_unit=1}) = 0
+49089 prlimit64(0, RLIMIT_DATA, NULL, {rlim_cur=RLIM64_INFINITY, rlim_max=RLIM64_INFINITY}) = 0
+49089 prlimit64(0, RLIMIT_AS, NULL, {rlim_cur=RLIM64_INFINITY, rlim_max=RLIM64_INFINITY}) = 0
+49089 ioctl(1<pipe:[75851]>, TIOCGWINSZ, 0xfffff8440ef8) = -1 ENOTTY (Inappropriate ioctl for device)
+49089 rt_sigaction(SIGINT, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGINT, {sa_handler=0x406fc0, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGTERM, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGTERM, {sa_handler=0x406fc0, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGHUP, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGHUP, {sa_handler=0x406fc0, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGPIPE, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGPIPE, {sa_handler=0x406fc0, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGXCPU, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGXCPU, {sa_handler=0x406fc0, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGXFSZ, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGXFSZ, {sa_handler=0x406fc0, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 rt_sigaction(SIGTSTP, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+49089 rt_sigaction(SIGTSTP, {sa_handler=0x406340, sa_mask=[HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], sa_flags=SA_RESTORER, sa_restorer=0x429d28}, NULL, 8) = 0
+49089 landlock_create_ruleset({handled_access_fs=LANDLOCK_ACCESS_FS_EXECUTE|LANDLOCK_ACCESS_FS_WRITE_FILE|LANDLOCK_ACCESS_FS_REMOVE_DIR|LANDLOCK_ACCESS_FS_REMOVE_FILE|LANDLOCK_ACCESS_FS_MAKE_CHAR|LANDLOCK_ACCESS_FS_MAKE_DIR|LANDLOCK_ACCESS_FS_MAKE_REG|LANDLOCK_ACCESS_FS_MAKE_SOCK|LANDLOCK_ACCESS_FS_MAKE_FIFO|LANDLOCK_ACCESS_FS_MAKE_BLOCK|LANDLOCK_ACCESS_FS_MAKE_SYM|LANDLOCK_ACCESS_FS_REFER|LANDLOCK_ACCESS_FS_TRUNCATE|LANDLOCK_ACCESS_FS_IOCTL_DEV, handled_access_net=LANDLOCK_ACCESS_NET_BIND_TCP|LANDLOCK_ACCESS_NET_CONNECT_TCP, scoped=LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET|LANDLOCK_SCOPE_SIGNAL}, 24, 0) = 5<anon_inode:[landlock-ruleset]>
+49089 landlock_restrict_self(5<anon_inode:[landlock-ruleset]>, 0) = 0
+49089 close(5<anon_inode:[landlock-ruleset]>) = 0
+49089 rt_sigprocmask(SIG_BLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", O_RDONLY|O_NOCTTY|O_NONBLOCK|O_LARGEFILE) = 5</home/dev/r6-census/fixtures/data/input.txt>
+49089 fstat(5</home/dev/r6-census/fixtures/data/input.txt>, {st_dev=makedev(0xfd, 0x1), st_ino=1310729, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=23, st_atime=1792922850 /* 2026-10-25T10:07:30.928927985+0000 */, st_atime_nsec=928927985, st_mtime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_mtime_nsec=928413942, st_ctime=1792922850 /* 2026-10-25T10:07:30.928413942+0000 */, st_ctime_nsec=928413942}) = 0
+49089 fadvise64(5</home/dev/r6-census/fixtures/data/input.txt>, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+49089 rt_sigprocmask(SIG_UNBLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 landlock_create_ruleset({handled_access_fs=LANDLOCK_ACCESS_FS_EXECUTE|LANDLOCK_ACCESS_FS_WRITE_FILE|LANDLOCK_ACCESS_FS_READ_FILE|LANDLOCK_ACCESS_FS_READ_DIR|LANDLOCK_ACCESS_FS_REMOVE_DIR|LANDLOCK_ACCESS_FS_REMOVE_FILE|LANDLOCK_ACCESS_FS_MAKE_CHAR|LANDLOCK_ACCESS_FS_MAKE_DIR|LANDLOCK_ACCESS_FS_MAKE_REG|LANDLOCK_ACCESS_FS_MAKE_SOCK|LANDLOCK_ACCESS_FS_MAKE_FIFO|LANDLOCK_ACCESS_FS_MAKE_BLOCK|LANDLOCK_ACCESS_FS_MAKE_SYM|LANDLOCK_ACCESS_FS_REFER|LANDLOCK_ACCESS_FS_TRUNCATE|LANDLOCK_ACCESS_FS_IOCTL_DEV, handled_access_net=LANDLOCK_ACCESS_NET_BIND_TCP|LANDLOCK_ACCESS_NET_CONNECT_TCP, scoped=LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET|LANDLOCK_SCOPE_SIGNAL}, 24, 0) = 6<anon_inode:[landlock-ruleset]>
+49089 landlock_restrict_self(6<anon_inode:[landlock-ruleset]>, 0) = 0
+49089 close(6<anon_inode:[landlock-ruleset]>) = 0
+49089 brk(NULL)                         = 0x305c000
+49089 brk(0x305e000)                    = 0x305e000
+49089 mmap(0x305c000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x305c000
+49089 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e7a205000
+49089 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e7a204000
+49089 mmap(NULL, 69632, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e7a1f3000
+49089 mmap(NULL, 249572, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e7a1b6000
+49089 mmap(NULL, 13119927, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e79532000
+49089 mmap(NULL, 17043476, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e784f0000
+49089 mmap(NULL, 67108892, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e744ef000
+49089 rt_sigprocmask(SIG_BLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 fcntl(1<pipe:[75851]>, F_GETFL)   = 0x1 (flags O_WRONLY)
+49089 fcntl(1<pipe:[75851]>, F_SETFL, O_WRONLY|O_NONBLOCK|O_LARGEFILE) = 0
+49089 fstat(1<pipe:[75851]>, {st_dev=makedev(0, 0x10), st_ino=75851, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792922852 /* 2026-10-25T10:07:32.801589380+0000 */, st_atime_nsec=801589380, st_mtime=1792922852 /* 2026-10-25T10:07:32.801589380+0000 */, st_mtime_nsec=801589380, st_ctime=1792922852 /* 2026-10-25T10:07:32.801589380+0000 */, st_ctime_nsec=801589380}) = 0
+49089 rt_sigprocmask(SIG_UNBLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 rt_sigprocmask(SIG_BLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1225, tv_nsec=60306951}) = 0
+49089 rt_sigprocmask(SIG_UNBLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 read(5</home/dev/r6-census/fixtures/data/input.txt>, ""..., 8192) = 23
+49089 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1225, tv_nsec=60680368}) = 0
+49089 read(5</home/dev/r6-census/fixtures/data/input.txt>, "", 8169) = 0
+49089 mmap(NULL, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xe73e744e8000
+49089 write(1<pipe:[75851]>, ""..., 80) = 80
+49089 rt_sigprocmask(SIG_BLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 fcntl(1<pipe:[75851]>, F_SETFL, O_WRONLY|O_LARGEFILE) = 0
+49089 close(5</home/dev/r6-census/fixtures/data/input.txt>) = 0
+49089 rt_sigprocmask(SIG_UNBLOCK, [HUP INT USR1 PIPE ALRM TERM TSTP XCPU XFSZ], NULL, 8) = 0
+49089 close(1<pipe:[75851]>)            = 0
+49089 close(2<pipe:[75852]>)            = 0
+49089 exit_group(0)                     = ?

@@ -1,0 +1,111 @@
+{
+  "workload": {
+    "name": "gojq",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/gojq/unpacked/gojq_v0.12.19_linux_arm64/gojq",
+    "argv": [
+      "-c",
+      "[.items[].n] | add",
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "370a"
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/gojq/unpacked/gojq_v0.12.19_linux_arm64/gojq",
+    "sha256": "2f8ae7d8204f8b4cf5960186a89357e2c5e71bf644de02e1120a46c1a4dc6d40",
+    "bytes": 4063394,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 596208,
+    "headers": [
+      {
+        "type": 6,
+        "flags": 4,
+        "offset": 64,
+        "vaddr": 65600,
+        "filesz": 336,
+        "memsz": 336,
+        "align": 65536
+      },
+      {
+        "type": 4,
+        "flags": 4,
+        "offset": 3960,
+        "vaddr": 69496,
+        "filesz": 100,
+        "memsz": 100,
+        "align": 4
+      },
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 65536,
+        "filesz": 1841700,
+        "memsz": 1841700,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 4,
+        "offset": 1900544,
+        "vaddr": 1966080,
+        "filesz": 1910968,
+        "memsz": 1910968,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 3866624,
+        "vaddr": 3932160,
+        "filesz": 168512,
+        "memsz": 418976,
+        "align": 65536
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 8
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [],
+    "pack_error": "segment outside payload arena",
+    "packed": null
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "370a",
+      "stderr_hex": "",
+      "uptime": "1223.30 6538.14",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "370a",
+      "stderr_hex": "",
+      "uptime": "1223.35 6538.31",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    }
+  ]
+}

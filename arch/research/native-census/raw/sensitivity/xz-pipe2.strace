@@ -1,0 +1,11 @@
+52422 execve("/home/dev/r6-census/artifacts/xz/xz-5.8.4/src/xz/xz", [...], 0xffffd986b798 /* 7 vars */) = 0
+52422 set_tid_address(0x455e70)         = 52422
+52422 fcntl(0, F_GETFD)                 = 0
+52422 fcntl(1, F_GETFD)                 = 0
+52422 fcntl(2, F_GETFD)                 = 0
+52422 geteuid()                         = 1000
+52422 pipe2(0x454908, 0)                = -1 ENOSYS (Function not implemented) (INJECTED)
+52422 writev(2, [...], 2)               = 53
+52422 writev(2, [...], 2)               = 47
+52422 writev(2, [...], 2)               = 1
+52422 exit_group(1)                     = ?

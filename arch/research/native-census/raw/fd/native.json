@@ -1,0 +1,126 @@
+{
+  "workload": {
+    "name": "fd",
+    "category": "search",
+    "binary": "/home/dev/r6-census/artifacts/fd/unpacked/fd-v10.5.0-aarch64-unknown-linux-musl/fd",
+    "argv": [
+      "--threads",
+      "1",
+      "--color",
+      "never",
+      "--no-ignore",
+      "--hidden",
+      "notes",
+      "data"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "646174612f7375622f6e6f7465732e7478740a"
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/fd/unpacked/fd-v10.5.0-aarch64-unknown-linux-musl/fd",
+    "sha256": "90dab774d92889926d75a85b47c4b2dc4c9adfa792cd3a6ccfcb98b0eabc9b94",
+    "bytes": 3080696,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 4285112,
+    "headers": [
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 4194304,
+        "filesz": 2897424,
+        "memsz": 2897424,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 2901072,
+        "vaddr": 7160912,
+        "filesz": 178256,
+        "memsz": 193288,
+        "align": 65536
+      },
+      {
+        "type": 7,
+        "flags": 4,
+        "offset": 2901072,
+        "vaddr": 7160912,
+        "filesz": 48,
+        "memsz": 168,
+        "align": 8
+      },
+      {
+        "type": 1685382480,
+        "flags": 4,
+        "offset": 2571664,
+        "vaddr": 6765968,
+        "filesz": 28228,
+        "memsz": 28228,
+        "align": 4
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 16
+      },
+      {
+        "type": 1685382482,
+        "flags": 4,
+        "offset": 2901072,
+        "vaddr": 7160912,
+        "filesz": 175024,
+        "memsz": 175024,
+        "align": 1
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [
+      {
+        "type": 7,
+        "flags": 4,
+        "offset": 2901072,
+        "vaddr": 7160912,
+        "filesz": 48,
+        "memsz": 168,
+        "align": 8
+      }
+    ],
+    "pack_error": "segment outside payload arena",
+    "packed": null
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "646174612f7375622f6e6f7465732e7478740a",
+      "stderr_hex": "",
+      "uptime": "1224.21 6541.64",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "646174612f7375622f6e6f7465732e7478740a",
+      "stderr_hex": "",
+      "uptime": "1224.24 6541.76",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    }
+  ]
+}

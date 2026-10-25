@@ -1,0 +1,179 @@
+50465 execve("/home/dev/r6-census/artifacts/rg/unpacked/ripgrep-15.2.0-aarch64-unknown-linux-musl/rg", [""..., ""..., ""..., ""..., ""..., ""..., ""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+50465 mmap(NULL, 2832, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfb18a4be9000
+50465 set_tid_address(0x8de738)         = 50465
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "/etc/_rjem_malloc.conf", 0xfffffae75058, 4096) = -1 ENOENT (No such file or directory)
+50465 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfb18a4bd9000
+50465 madvise(0xfb18a4bd9000, 65536, MADV_DONTNEED) = 0
+50465 munmap(0xfb18a4bd9000, 65536)     = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/proc/sys/vm/overcommit_memory", O_RDONLY|O_CLOEXEC) = 3</proc/sys/vm/overcommit_memory>
+50465 read(3</proc/sys/vm/overcommit_memory>, ""..., 1) = 1
+50465 close(3</proc/sys/vm/overcommit_memory>) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY) = 3</sys/kernel/mm/transparent_hugepage/enabled>
+50465 read(3</sys/kernel/mm/transparent_hugepage/enabled>, ""..., 24) = 23
+50465 read(3</sys/kernel/mm/transparent_hugepage/enabled>, "", 1) = 0
+50465 close(3</sys/kernel/mm/transparent_hugepage/enabled>) = 0
+50465 mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xfb18a4bd9000
+50465 madvise(0xfb18a4bd9000, 65536, MADV_FREE) = 0
+50465 munmap(0xfb18a4bd9000, 65536)     = 0
+50465 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xfb18a4800000
+50465 brk(NULL)                         = 0x19663000
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=863330375}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=863330375}) = 0
+50465 mmap(NULL, 2097152, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xfb18a4600000
+50465 sched_getaffinity(0, 128, [0 1 2 3 4 5]) = 8
+50465 brk(NULL)                         = 0x19663000
+50465 brk(0x19665000)                   = 0x19665000
+50465 mmap(0x19663000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x19663000
+50465 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfb18a4be8000
+50465 ppoll([{fd=0<pipe:[163274]>, events=0}, {fd=1<pipe:[163275]>, events=0}, {fd=2<pipe:[163276]>, events=0}], 3, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=0, revents=POLLHUP}], left {tv_sec=0, tv_nsec=0})
+50465 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x6f6344}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+50465 rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+50465 sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+50465 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xfb18a4be4000
+50465 mprotect(0xfb18a4be4000, 4096, PROT_NONE) = 0
+50465 sigaltstack({ss_sp=0xfb18a4be5000, ss_flags=0, ss_size=12288}, NULL) = 0
+50465 rt_sigprocmask(SIG_UNBLOCK, [RT_1 RT_2], NULL, 8) = 0
+50465 rt_sigaction(SIGSEGV, {sa_handler=0x662f7c, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x6f6344}, NULL, 8) = 0
+50465 rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+50465 rt_sigaction(SIGBUS, {sa_handler=0x662f7c, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_SIGINFO, sa_restorer=0x6f6344}, NULL, 8) = 0
+50465 mmap(NULL, 2621440, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xfb18a4380000
+50465 getrandom(""..., 16, GRND_INSECURE) = 16
+50465 getcwd("/home/dev/r6-census/fixtures", 512) = 29
+50465 ioctl(1<pipe:[163275]>, TIOCGWINSZ, 0xfffffae76538) = -1 ENOTTY (Inappropriate ioctl for device)
+50465 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, 0) = 0
+50465 uname({sysname="Linux", nodename="kvm-dev", release="7.0.0-38-generic", version="#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026", machine="aarch64", domainname="(none)"}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=866330383}) = 0
+50465 mmap(NULL, 3145728, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xfb18a4080000
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=866330383}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=866330383}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=868540471}) = 0
+50465 fstat(1<pipe:[163275]>, {st_dev=makedev(0, 0x10), st_ino=163275, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792923064 /* 2026-10-25T10:11:04.610590153+0000 */, st_atime_nsec=610590153, st_mtime=1792923064 /* 2026-10-25T10:11:04.610590153+0000 */, st_mtime_nsec=610590153, st_ctime=1792923064 /* 2026-10-25T10:11:04.610590153+0000 */, st_ctime_nsec=610590153}) = 0
+50465 fstat(1<pipe:[163275]>, {st_dev=makedev(0, 0x10), st_ino=163275, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792923064 /* 2026-10-25T10:11:04.610590153+0000 */, st_atime_nsec=610590153, st_mtime=1792923064 /* 2026-10-25T10:11:04.610590153+0000 */, st_mtime_nsec=610590153, st_ctime=1792923064 /* 2026-10-25T10:11:04.610590153+0000 */, st_ctime_nsec=610590153}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=868330388}) = 0
+50465 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, 0) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=869330390}) = 0
+50465 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, 0) = 0
+50465 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", {st_dev=makedev(0xfd, 0x1), st_ino=1310722, st_mode=S_IFDIR|0775, st_nlink=3, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1792922754 /* 2026-10-25T10:05:54.844633013+0000 */, st_atime_nsec=844633013, st_mtime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_mtime_nsec=16775426, st_ctime=1792922691 /* 2026-10-25T10:04:51.016775426+0000 */, st_ctime_nsec=16775426}, AT_SYMLINK_NOFOLLOW) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", O_RDONLY|O_LARGEFILE|O_CLOEXEC|O_DIRECTORY) = 3</home/dev/r6-census/fixtures/data>
+50465 fcntl(3</home/dev/r6-census/fixtures/data>, F_SETFD, FD_CLOEXEC) = 0
+50465 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfb18a4be2000
+50465 getdents64(3</home/dev/r6-census/fixtures/data>, [{d_ino=1310732, d_off=2580583060684913368, d_reclen=32, d_type=DT_REG, d_name="build.js"}, {d_ino=1310729, d_off=3337157013447283081, d_reclen=32, d_type=DT_REG, d_name="input.txt"}, {d_ino=1310728, d_off=3970028287153223573, d_reclen=32, d_type=DT_REG, d_name="input.csv"}, {d_ino=1310721, d_off=4000439746407683904, d_reclen=24, d_type=DT_DIR, d_name=".."}, {d_ino=1310723, d_off=4368210136039320747, d_reclen=24, d_type=DT_DIR, d_name="sub"}, {d_ino=1310733, d_off=4720532954232634353, d_reclen=32, d_type=DT_REG, d_name="demo.db"}, {d_ino=1310734, d_off=5094239232247251605, d_reclen=32, d_type=DT_REG, d_name="fixture.tar"}, {d_ino=1310731, d_off=6147942965075954142, d_reclen=32, d_type=DT_REG, d_name="doc.md"}, {d_ino=1317207, d_off=7311612040129970467, d_reclen=32, d_type=DT_REG, d_name="doc.pdf"}, {d_ino=1310727, d_off=8056736232295643257, d_reclen=32, d_type=DT_REG, d_name="input.yaml"}, {d_ino=1310726, d_off=8367573825314335666, d_reclen=32, d_type=DT_REG, d_name="input.json"}, {d_ino=1310722, d_off=8685406101398946860, d_reclen=24, d_type=DT_DIR, d_name="."}, {d_ino=1316912, d_off=9223372036854775807, d_reclen=32, d_type=DT_REG, d_name="tone.wav"}], 2048) = 392
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=870330393}) = 0
+50465 getdents64(3</home/dev/r6-census/fixtures/data>, [], 2048) = 0
+50465 close(3</home/dev/r6-census/fixtures/data>) = 0
+50465 munmap(0xfb18a4be2000, 8192)      = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=871162936}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/build.js", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/build.js>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/build.js>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=871620146}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/build.js>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/build.js>, ""..., 65533) = 33
+50465 read(3</home/dev/r6-census/fixtures/data/build.js>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/build.js>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=872439814}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/demo.db", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/demo.db>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/demo.db>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=872837107}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/demo.db>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/demo.db>, ""..., 65533) = 8189
+50465 close(3</home/dev/r6-census/fixtures/data/demo.db>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=873483109}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/doc.md", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/doc.md>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/doc.md>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=873899360}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/doc.md>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/doc.md>, ""..., 65533) = 33
+50465 read(3</home/dev/r6-census/fixtures/data/doc.md>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/doc.md>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=874646028}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/doc.pdf", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/doc.pdf>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/doc.pdf>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=875130988}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/doc.pdf>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/doc.pdf>, ""..., 65533) = 326
+50465 read(3</home/dev/r6-census/fixtures/data/doc.pdf>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/doc.pdf>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=875868031}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/fixture.tar", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/fixture.tar>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/fixture.tar>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=876304949}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/fixture.tar>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/fixture.tar>, ""..., 65533) = 10237
+50465 close(3</home/dev/r6-census/fixtures/data/fixture.tar>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=876934534}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.csv", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/input.csv>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/input.csv>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=877393868}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/input.csv>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/input.csv>, ""..., 65533) = 19
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", 0xfffffae73268, 4086) = -1 EINVAL (Invalid argument)
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.csv", 0xfffffae73268, 4096) = -1 EINVAL (Invalid argument)
+50465 getcwd("/home/dev/r6-census/fixtures", 4097) = 29
+50465 read(3</home/dev/r6-census/fixtures/data/input.csv>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/input.csv>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=878595205}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.json", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/input.json>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/input.json>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=879116456}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/input.json>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/input.json>, ""..., 65533) = 54
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", 0xfffffae73268, 4085) = -1 EINVAL (Invalid argument)
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.json", 0xfffffae73268, 4096) = -1 EINVAL (Invalid argument)
+50465 getcwd("/home/dev/r6-census/fixtures", 4097) = 29
+50465 read(3</home/dev/r6-census/fixtures/data/input.json>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/input.json>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=880375126}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/input.txt>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/input.txt>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=880674210}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/input.txt>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/input.txt>, ""..., 65533) = 20
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", 0xfffffae73268, 4086) = -1 EINVAL (Invalid argument)
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.txt", 0xfffffae73268, 4096) = -1 EINVAL (Invalid argument)
+50465 getcwd("/home/dev/r6-census/fixtures", 4097) = 29
+50465 read(3</home/dev/r6-census/fixtures/data/input.txt>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/input.txt>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=881532212}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.yaml", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/input.yaml>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/input.yaml>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=881809796}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/input.yaml>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/input.yaml>, ""..., 65533) = 53
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", 0xfffffae73268, 4085) = -1 EINVAL (Invalid argument)
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.yaml", 0xfffffae73268, 4096) = -1 EINVAL (Invalid argument)
+50465 getcwd("/home/dev/r6-census/fixtures", 4097) = 29
+50465 read(3</home/dev/r6-census/fixtures/data/input.yaml>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/input.yaml>) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/sub", O_RDONLY|O_LARGEFILE|O_CLOEXEC|O_DIRECTORY) = 3</home/dev/r6-census/fixtures/data/sub>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/sub>, F_SETFD, FD_CLOEXEC) = 0
+50465 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xfb18a4be2000
+50465 getdents64(3</home/dev/r6-census/fixtures/data/sub>, [{d_ino=1310722, d_off=8187072234696954404, d_reclen=24, d_type=DT_DIR, d_name=".."}, {d_ino=1310730, d_off=8367573825314335666, d_reclen=32, d_type=DT_REG, d_name="notes.txt"}, {d_ino=1310723, d_off=9223372036854775807, d_reclen=24, d_type=DT_DIR, d_name="."}], 2048) = 80
+50465 getdents64(3</home/dev/r6-census/fixtures/data/sub>, [], 2048) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/sub>) = 0
+50465 munmap(0xfb18a4be2000, 8192)      = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=883477259}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/sub/notes.txt", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/sub/notes.txt>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/sub/notes.txt>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=883791843}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/sub/notes.txt>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/sub/notes.txt>, ""..., 65533) = 9
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data", 0xfffffae73268, 4082) = -1 EINVAL (Invalid argument)
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/sub", 0xfffffae73268, 4086) = -1 EINVAL (Invalid argument)
+50465 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/sub/notes.txt", 0xfffffae73268, 4096) = -1 EINVAL (Invalid argument)
+50465 getcwd("/home/dev/r6-census/fixtures", 4097) = 29
+50465 read(3</home/dev/r6-census/fixtures/data/sub/notes.txt>, "", 65536) = 0
+50465 close(3</home/dev/r6-census/fixtures/data/sub/notes.txt>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=884674470}) = 0
+50465 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/tone.wav", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3</home/dev/r6-census/fixtures/data/tone.wav>
+50465 fcntl(3</home/dev/r6-census/fixtures/data/tone.wav>, F_SETFD, FD_CLOEXEC) = 0
+50465 clock_gettime(CLOCK_MONOTONIC, {tv_sec=1436, tv_nsec=884964971}) = 0
+50465 read(3</home/dev/r6-census/fixtures/data/tone.wav>, ""..., 3) = 3
+50465 read(3</home/dev/r6-census/fixtures/data/tone.wav>, ""..., 65533) = 201
+50465 close(3</home/dev/r6-census/fixtures/data/tone.wav>) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=884330427}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=884330427}) = 0
+50465 clock_gettime(CLOCK_MONOTONIC_COARSE, {tv_sec=1436, tv_nsec=884330427}) = 0
+50465 write(1<pipe:[163275]>, ""..., 205) = 205
+50465 sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=12288}, NULL) = 0
+50465 munmap(0xfb18a4be4000, 16384)     = 0
+50465 exit_group(0)                     = ?

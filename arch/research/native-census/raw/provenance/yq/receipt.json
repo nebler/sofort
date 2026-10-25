@@ -1,0 +1,8 @@
+{
+  "name": "yq",
+  "version": "v4.54.1",
+  "release_url": "https://github.com/mikefarah/yq/releases/tag/v4.54.1",
+  "asset_url": "https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_arm64.tar.gz",
+  "asset_sha256": "8c27f6e7476fb5acefb9352e3d30f6bc2dc93f1956eb92e8da727173fb7ec6d3",
+  "verified": true
+}

@@ -1,0 +1,17 @@
+49115 execve("/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox", [""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49115 set_tid_address(0x461904)         = 49115
+49115 brk(NULL)                         = 0x19d4f000
+49115 brk(0x19d51000)                   = 0x19d51000
+49115 mmap(0x19d4f000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x19d4f000
+49115 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf857eb82f000
+49115 mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf857eb82b000
+49115 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf857eb82a000
+49115 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xf857eb829000
+49115 munmap(0xf857eb82a000, 4096)      = 0
+49115 munmap(0xf857eb82b000, 16384)     = 0
+49115 read(0<pipe:[85087]>, ""..., 1024) = 23
+49115 ioctl(1<pipe:[85088]>, TIOCGWINSZ, 0xfffffe004d58) = -1 ENOTTY (Inappropriate ioctl for device)
+49115 writev(1<pipe:[85088]>, [{iov_base=""..., iov_len=7}, {iov_base=""..., iov_len=1}], 2) = 8
+49115 read(0<pipe:[85087]>, "", 1024)   = 0
+49115 writev(1<pipe:[85088]>, [{iov_base=""..., iov_len=15}, {iov_base=NULL, iov_len=0}], 2) = 15
+49115 exit_group(0)                     = ?

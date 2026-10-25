@@ -1,0 +1,8 @@
+{
+  "name": "gron",
+  "version": "v0.7.1",
+  "source": "https://github.com/tomnomnom/gron/tree/v0.7.1",
+  "verified": "Go module checksum database; see go.sum/module cache",
+  "binary": "/home/dev/r6-census/artifacts/gron/gron",
+  "binary_sha256": "61ebde143f649521b40281e294c50c2c73a3f19070472be23cf3a24de096dbba"
+}

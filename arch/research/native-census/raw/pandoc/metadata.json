@@ -1,0 +1,60 @@
+{
+  "binary": "/home/dev/r6-census/artifacts/pandoc/unpacked/pandoc-3.12.1/bin/pandoc",
+  "sha256": "4cbd8455add85a1ef26f6de91a606ec962cc7d064b06fc49bae31220aff0d77e",
+  "bytes": 177158224,
+  "elf_type": 2,
+  "machine": 183,
+  "entry": 4240664,
+  "headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "offset": 0,
+      "vaddr": 4194304,
+      "filesz": 161946520,
+      "memsz": 161946520,
+      "align": 65536
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "offset": 161984904,
+      "vaddr": 166244744,
+      "filesz": 15172144,
+      "memsz": 15190816,
+      "align": 65536
+    },
+    {
+      "type": 4,
+      "flags": 4,
+      "offset": 344,
+      "vaddr": 4194648,
+      "filesz": 36,
+      "memsz": 36,
+      "align": 4
+    },
+    {
+      "type": 1685382481,
+      "flags": 6,
+      "offset": 0,
+      "vaddr": 0,
+      "filesz": 0,
+      "memsz": 0,
+      "align": 16
+    },
+    {
+      "type": 1685382482,
+      "flags": 4,
+      "offset": 161984904,
+      "vaddr": 166244744,
+      "filesz": 85624,
+      "memsz": 85624,
+      "align": 1
+    }
+  ],
+  "interpreter": false,
+  "dynamic": false,
+  "tls": [],
+  "pack_error": "segment outside payload arena",
+  "packed": null
+}

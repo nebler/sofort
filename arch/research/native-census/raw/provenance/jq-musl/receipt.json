@@ -1,0 +1,10 @@
+{
+  "name": "jq-musl",
+  "version": "jq-1.8.2",
+  "source": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-1.8.2.tar.gz",
+  "source_sha256": "71b8d6e8f5fe81f6c6d0d110e3892251f6ce76ed095abd315e26e6e1193af3af",
+  "verified": true,
+  "config": "upstream source; musl all-static, builtin oniguruma",
+  "binary": "/home/dev/r6-census/artifacts/jq-musl/jq-1.8.2/jq",
+  "binary_sha256": "8d689ba1c53a9aed4311a2f4406a33e8c7bbb4d7a54f50a7c8e1d393807e3ff7"
+}

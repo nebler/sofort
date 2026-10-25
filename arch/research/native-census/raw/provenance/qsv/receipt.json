@@ -1,0 +1,8 @@
+{
+  "name": "qsv",
+  "version": "26.0.0",
+  "release_url": "https://github.com/dathere/qsv/releases/tag/26.0.0",
+  "asset_url": "https://github.com/dathere/qsv/releases/download/26.0.0/qsv-26.0.0-aarch64-unknown-linux-musl.zip",
+  "asset_sha256": "67b567cabfe2686bfc59febdfb7ae8fe10f323a97b8252da88867a61407bcdab",
+  "verified": true
+}

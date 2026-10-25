@@ -1,0 +1,20 @@
+[
+  {
+    "package": "qpdf",
+    "deb": "qpdf_12.3.2-1_arm64.deb",
+    "sha256": "71f2f72ae568df412df286a3901cf5ca15cf593c50bc0da519cc240e316cbea2",
+    "verified": true
+  },
+  {
+    "package": "libqpdf30",
+    "deb": "libqpdf30_12.3.2-1_arm64.deb",
+    "sha256": "2d3716c30c3913b64aa23037e5f336d017f57af716cfbd9aeccdf70e7bec9f16",
+    "verified": true
+  },
+  {
+    "package": "libjpeg-turbo8",
+    "deb": "libjpeg-turbo8_2.1.5-4ubuntu4_arm64.deb",
+    "sha256": "cd6cac6155d81d8d2e4a53693a7c91b42b26d1e84d018792d319c24cddaaf9d8",
+    "verified": true
+  }
+]

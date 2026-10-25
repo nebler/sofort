@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "timeout": false,
+  "stdout_hex": "696e7075742e7478740a",
+  "stderr_hex": "",
+  "uptime": "2114.84 11600.30",
+  "load": [
+    0.0048828125,
+    0.1787109375,
+    0.3828125
+  ],
+  "name": "bb-tar",
+  "syscall": "getuid",
+  "same_stdout": true,
+  "preserved": true,
+  "injected": true
+}

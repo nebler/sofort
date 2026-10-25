@@ -1,0 +1,42 @@
+48936 execve("/home/dev/r6-census/artifacts/jq/jq-linux-arm64", [""..., ""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+48936 brk(NULL)                         = 0x12089000
+48936 brk(0x12089af8)                   = 0x12089af8
+48936 set_tid_address(0x120890d0)       = 48936
+48936 set_robust_list(0x120890e0, 24)   = 0
+48936 rseq(0x12089720, 0x20, 0, 0xd428bc00) = 0
+48936 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+48936 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "/proc/self/exe", ""..., 4096) = 47
+48936 getrandom(""..., 8, GRND_NONBLOCK) = 8
+48936 brk(NULL)                         = 0x12089af8
+48936 brk(0x120aaaf8)                   = 0x120aaaf8
+48936 brk(0x120ab000)                   = 0x120ab000
+48936 mprotect(0x5b8000, 32768, PROT_READ) = 0
+48936 ioctl(1<pipe:[84114]>, TCGETS, 0xffffc9b13660) = -1 ENOTTY (Inappropriate ioctl for device)
+48936 getrandom(""..., 4, 0)            = 4
+48936 futex(0x5c6814, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+48936 getcwd("/home/dev/r6-census/fixtures", 1024) = 29
+48936 futex(0x5c681c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+48936 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent", 0xffffc9b12ea0, 1023) = -1 ENOENT (No such file or directory)
+48936 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent/.jq", 0xffffc9b133a8, 0) = -1 ENOENT (No such file or directory)
+48936 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent", 0xffffc9b12ea0, 1023) = -1 ENOENT (No such file or directory)
+48936 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent//jq/main.jq", 0xffffc9b133a8, 0) = -1 ENOENT (No such file or directory)
+48936 readlinkat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent", 0xffffc9b12ea0, 1023) = -1 ENOENT (No such file or directory)
+48936 newfstatat(AT_FDCWD</home/dev/r6-census/fixtures>, "/nonexistent//.jq", 0xffffc9b133a8, 0) = -1 ENOENT (No such file or directory)
+48936 futex(0x5c6810, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+48936 brk(0x120cc000)                   = 0x120cc000
+48936 brk(0x120ed000)                   = 0x120ed000
+48936 brk(0x1210e000)                   = 0x1210e000
+48936 brk(0x1212f000)                   = 0x1212f000
+48936 brk(0x12150000)                   = 0x12150000
+48936 brk(0x1214f000)                   = 0x1214f000
+48936 brk(0x1214e000)                   = 0x1214e000
+48936 openat(AT_FDCWD</home/dev/r6-census/fixtures>, "data/input.json", O_RDONLY) = 3</home/dev/r6-census/fixtures/data/input.json>
+48936 fstat(3</home/dev/r6-census/fixtures/data/input.json>, {st_dev=makedev(0xfd, 0x1), st_ino=1310726, st_mode=S_IFREG|0664, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=8, st_size=57, st_atime=1792922850 /* 2026-10-25T10:07:30.929167819+0000 */, st_atime_nsec=929167819, st_mtime=1792922850 /* 2026-10-25T10:07:30.928051483+0000 */, st_mtime_nsec=928051483, st_ctime=1792922850 /* 2026-10-25T10:07:30.928051483+0000 */, st_ctime_nsec=928051483}) = 0
+48936 read(3</home/dev/r6-census/fixtures/data/input.json>, ""..., 4096) = 57
+48936 futex(0x5c682c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+48936 fstat(1<pipe:[84114]>, {st_dev=makedev(0, 0x10), st_ino=84114, st_mode=S_IFIFO|0600, st_nlink=1, st_uid=1000, st_gid=1000, st_blksize=4096, st_blocks=0, st_size=0, st_atime=1792922850 /* 2026-10-25T10:07:30.955459467+0000 */, st_atime_nsec=955459467, st_mtime=1792922850 /* 2026-10-25T10:07:30.955459467+0000 */, st_mtime_nsec=955459467, st_ctime=1792922850 /* 2026-10-25T10:07:30.955459467+0000 */, st_ctime_nsec=955459467}) = 0
+48936 read(3</home/dev/r6-census/fixtures/data/input.json>, "", 4096) = 0
+48936 close(3</home/dev/r6-census/fixtures/data/input.json>) = 0
+48936 write(1<pipe:[84114]>, ""..., 2)  = 2
+48936 close(1<pipe:[84114]>)            = 0
+48936 exit_group(0)                     = ?

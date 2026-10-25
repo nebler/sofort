@@ -1,0 +1,45 @@
+[
+  {
+    "name": "git",
+    "category": "hard",
+    "binary": "/home/dev/r6-census/artifacts/git-distro/git",
+    "expected_returncode": 1,
+    "argv": [
+      "--no-pager",
+      "diff",
+      "--no-index",
+      "--",
+      "data/input.txt",
+      "data/sub/notes.txt"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  {
+    "name": "curl",
+    "category": "hard",
+    "binary": "/home/dev/r6-census/artifacts/curl-distro/curl",
+    "argv": [
+      "--silent",
+      "--show-error",
+      "--max-time",
+      "2",
+      "http://127.0.0.1:18086/data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "7b226974656d73223a5b7b226e616d65223a22616c706861222c226e223a327d2c7b226e616d65223a2262657461222c226e223a357d5d7d0a"
+  },
+  {
+    "name": "duckdb-gnu",
+    "category": "database",
+    "binary": "/home/dev/r6-census/artifacts/duckdb-gnu/unpacked/duckdb",
+    "argv": [
+      "-batch",
+      "-csv",
+      "-c",
+      "SELECT sum(n) FROM read_csv('data/input.csv');"
+    ],
+    "stdin_hex": "",
+    "expected_hex": "73756d286e290a370a"
+  }
+]

@@ -1,0 +1,7 @@
+49143 execve("/home/dev/r6-census/artifacts/busybox/busybox-1.37.0/busybox", [""..., ""..., ""...], [""..., ""..., ""..., ""..., ""..., ""..., ""...]) = 0
+49143 set_tid_address(0x461904)         = 49143
+49143 read(0<pipe:[75910]>, ""..., 1024) = 23
+49143 read(0<pipe:[75910]>, "", 1024)   = 0
+49143 ioctl(1<pipe:[75911]>, TIOCGWINSZ, 0xfffffb4ae088) = -1 ENOTTY (Inappropriate ioctl for device)
+49143 writev(1<pipe:[75911]>, [{iov_base=""..., iov_len=1}, {iov_base=""..., iov_len=1}], 2) = 2
+49143 exit_group(0)                     = ?

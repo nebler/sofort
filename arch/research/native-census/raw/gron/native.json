@@ -1,0 +1,100 @@
+{
+  "workload": {
+    "name": "gron",
+    "category": "data",
+    "binary": "/home/dev/r6-census/artifacts/gron/gron",
+    "argv": [
+      "data/input.json"
+    ],
+    "stdin_hex": "",
+    "expected_hex": null
+  },
+  "metadata": {
+    "binary": "/home/dev/r6-census/artifacts/gron/gron",
+    "sha256": "61ebde143f649521b40281e294c50c2c73a3f19070472be23cf3a24de096dbba",
+    "bytes": 6553724,
+    "elf_type": 2,
+    "machine": 183,
+    "entry": 617184,
+    "headers": [
+      {
+        "type": 6,
+        "flags": 4,
+        "offset": 64,
+        "vaddr": 65600,
+        "filesz": 280,
+        "memsz": 280,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 5,
+        "offset": 0,
+        "vaddr": 65536,
+        "filesz": 2846900,
+        "memsz": 2846900,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 4,
+        "offset": 2883584,
+        "vaddr": 2949120,
+        "filesz": 3234752,
+        "memsz": 3234752,
+        "align": 65536
+      },
+      {
+        "type": 1,
+        "flags": 6,
+        "offset": 6160384,
+        "vaddr": 6225920,
+        "filesz": 374656,
+        "memsz": 34229200,
+        "align": 65536
+      },
+      {
+        "type": 1685382481,
+        "flags": 6,
+        "offset": 0,
+        "vaddr": 0,
+        "filesz": 0,
+        "memsz": 0,
+        "align": 8
+      }
+    ],
+    "interpreter": false,
+    "dynamic": false,
+    "tls": [],
+    "pack_error": "segment outside payload arena",
+    "packed": null
+  },
+  "oracle_ok": true,
+  "stdout_same": true,
+  "results": [
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "6a736f6e203d207b7d3b0a6a736f6e2e6974656d73203d205b5d3b0a6a736f6e2e6974656d735b305d203d207b7d3b0a6a736f6e2e6974656d735b305d2e6e203d20323b0a6a736f6e2e6974656d735b305d2e6e616d65203d2022616c706861223b0a6a736f6e2e6974656d735b315d203d207b7d3b0a6a736f6e2e6974656d735b315d2e6e203d20353b0a6a736f6e2e6974656d735b315d2e6e616d65203d202262657461223b0a",
+      "stderr_hex": "",
+      "uptime": "1223.81 6540.05",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    },
+    {
+      "returncode": 0,
+      "timeout": false,
+      "stdout_hex": "6a736f6e203d207b7d3b0a6a736f6e2e6974656d73203d205b5d3b0a6a736f6e2e6974656d735b305d203d207b7d3b0a6a736f6e2e6974656d735b305d2e6e203d20323b0a6a736f6e2e6974656d735b305d2e6e616d65203d2022616c706861223b0a6a736f6e2e6974656d735b315d203d207b7d3b0a6a736f6e2e6974656d735b315d2e6e203d20353b0a6a736f6e2e6974656d735b315d2e6e616d65203d202262657461223b0a",
+      "stderr_hex": "",
+      "uptime": "1223.84 6540.19",
+      "load": [
+        1.0068359375,
+        0.92431640625,
+        0.59228515625
+      ]
+    }
+  ]
+}

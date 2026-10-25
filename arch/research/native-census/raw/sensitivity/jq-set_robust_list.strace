@@ -1,0 +1,42 @@
+52348 execve("/home/dev/r6-census/artifacts/jq/jq-linux-arm64", [...], 0xffffdf16b628 /* 7 vars */) = 0
+52348 brk(NULL)                         = 0x35b69000
+52348 brk(0x35b69af8)                   = 0x35b69af8
+52348 set_tid_address(0x35b690d0)       = 52348
+52348 set_robust_list(0x35b690e0, 24)   = -1 ENOSYS (Function not implemented) (INJECTED)
+52348 rseq(0x35b69720, 0x20, 0, 0xd428bc00) = 0
+52348 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+52348 readlinkat(AT_FDCWD, "/proc/self/exe", ""..., 4096) = 47
+52348 getrandom(""..., 8, GRND_NONBLOCK) = 8
+52348 brk(NULL)                         = 0x35b69af8
+52348 brk(0x35b8aaf8)                   = 0x35b8aaf8
+52348 brk(0x35b8b000)                   = 0x35b8b000
+52348 mprotect(0x5b8000, 32768, PROT_READ) = 0
+52348 ioctl(1, TCGETS, 0xffffcf509a00)  = -1 ENOTTY (Inappropriate ioctl for device)
+52348 getrandom(""..., 4, 0)            = 4
+52348 futex(0x5c6814, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+52348 getcwd("/home/dev/r6-census/fixtures", 1024) = 29
+52348 futex(0x5c681c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+52348 readlinkat(AT_FDCWD, "/nonexistent", 0xffffcf509240, 1023) = -1 ENOENT (No such file or directory)
+52348 newfstatat(AT_FDCWD, "/nonexistent/.jq", 0xffffcf509748, 0) = -1 ENOENT (No such file or directory)
+52348 readlinkat(AT_FDCWD, "/nonexistent", 0xffffcf509240, 1023) = -1 ENOENT (No such file or directory)
+52348 newfstatat(AT_FDCWD, "/nonexistent//jq/main.jq", 0xffffcf509748, 0) = -1 ENOENT (No such file or directory)
+52348 readlinkat(AT_FDCWD, "/nonexistent", 0xffffcf509240, 1023) = -1 ENOENT (No such file or directory)
+52348 newfstatat(AT_FDCWD, "/nonexistent//.jq", 0xffffcf509748, 0) = -1 ENOENT (No such file or directory)
+52348 futex(0x5c6810, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+52348 brk(0x35bac000)                   = 0x35bac000
+52348 brk(0x35bcd000)                   = 0x35bcd000
+52348 brk(0x35bee000)                   = 0x35bee000
+52348 brk(0x35c0f000)                   = 0x35c0f000
+52348 brk(0x35c30000)                   = 0x35c30000
+52348 brk(0x35c2f000)                   = 0x35c2f000
+52348 brk(0x35c2e000)                   = 0x35c2e000
+52348 openat(AT_FDCWD, "data/input.json", O_RDONLY) = 3
+52348 fstat(3, {st_mode=S_IFREG|0664, st_size=57, ...}) = 0
+52348 read(3, ""..., 4096)              = 57
+52348 futex(0x5c682c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+52348 fstat(1, {st_mode=S_IFIFO|0600, st_size=0, ...}) = 0
+52348 read(3, "", 4096)                 = 0
+52348 close(3)                          = 0
+52348 write(1, ""..., 2)                = 2
+52348 close(1)                          = 0
+52348 exit_group(0)                     = ?
