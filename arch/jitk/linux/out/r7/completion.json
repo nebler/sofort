@@ -1,0 +1,8 @@
+{
+  "aggregate_exit_status": 0,
+  "direct_delegate_exit_status": 0,
+  "full_post_probe_fix_passes": 2,
+  "full_pilot_passes": 1,
+  "worktree": "/Users/noah/.t3/worktrees/sofort/t3-c7592349",
+  "branch": "t3/diagnose-nested-test-stall"
+}

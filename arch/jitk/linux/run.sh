@@ -6,7 +6,12 @@ mkdir -p out
 python3 -c 'from pathlib import Path; Path(".READY").unlink(missing_ok=True)'
 if [[ ${1:-} == --nested ]]; then
  export JITK_WORK=${JITK_WORK:-$ROOT/.work}
- ./prepare-nested.sh
+ export JITK_NESTED_BACKEND=${JITK_NESTED_BACKEND:-ssh}
+ case $JITK_NESTED_BACKEND in
+  qemu) ./prepare-nested.sh ;;
+  ssh) mkdir -p "$JITK_WORK" ;;
+  *) echo 'JITK_NESTED_BACKEND must be ssh or qemu' >&2; exit 1 ;;
+ esac
  if [[ -n ${JITK_CANONICAL_VMM:-} ]]; then
   python3 stage-canonical.py "$JITK_CANONICAL_VMM" | tee out/build.log
   CC="${CC:-zig cc -target aarch64-linux-musl}" python3 build-probes.py

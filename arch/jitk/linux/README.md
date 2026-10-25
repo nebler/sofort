@@ -1,6 +1,7 @@
 # Linux/KVM fleet kit (owner 05)
 
-Functional run on the M4 Mac, using 07's QEMU HVF → Debian 6.12 → KVM harness:
+Functional run on the M4 Mac, using the existing **kvm-dev** VM over SSH
+(HVF → Ubuntu 7.0 → KVM; NESTED, non-performance):
 
 ```sh
 arch/jitk/linux/run.sh --nested
@@ -19,8 +20,22 @@ must match the binary and current patch hashes. This uses Zig to cross-build
 the small C helpers. Fault assembly is read from `../vmm/tests/fixtures/`;
 Linux keeps no copies. Paths derive from the script location, so a complete
 kit copy works regardless of its directory name.
-Requires QEMU with HVF nested virtualization, Docker, existing Rust 1.95.0 +
-aarch64-unknown-none, clang, ld.lld, llvm-objcopy, Python and cpio.
+Requires a running approved kvm-dev VM with passwordless sudo, cgroup v2
+memory+cpu controllers, Python and flock; Docker for a fresh VMM build; existing
+Rust 1.95.0 + aarch64-unknown-none, clang, ld.lld, llvm-objcopy and Python on
+the Mac. The runner finds `kvm-dev/ssh.sh` in the main Git checkout, including
+from worktrees. `JITK_NESTED_SSH=/absolute/path/to/ssh-wrapper` selects another
+existing equivalent VM; the wrapper accepts one remote shell command.
+It only creates a unique directory under `/home/dev/r7-suite/`, runs under
+`flock -w 600 /home/dev/bench.lock`, and removes that run directory after success.
+It never starts, stops, restarts or configures a VM. Failed-run scratch is retained
+for diagnosis. No files are copied into another agent's checkout.
+
+The former second-QEMU backend remains explicit:
+`JITK_NESTED_BACKEND=qemu arch/jitk/linux/run.sh --nested`. It additionally needs
+QEMU HVF and cpio. R7 reproduces an Apple Hypervisor assertion spin after 60 VM
+creations in that path, with either Debian 6.12 or Ubuntu 7.0 as outer kernel;
+see [RESULTS-R7-suite.md](RESULTS-R7-suite.md). Its host-side watchdog fails fast.
 Set `JITK_NESTED_BASE` to an existing directory containing `vmlinuz` and
 `base.cpio.gz` to reuse a Debian nested harness read-only; an invalid directory
 fails explicitly. Otherwise `prepare-nested.sh` creates one in the workdir.
@@ -31,9 +46,10 @@ The nested suite first tests parking on the same freshly built current kernel
 as all other gates: READY → 10 s idle VMM user+sys → 1000 sequential real tool
 exchanges, every 100th reply delayed 3 ms. It records vCPU wait state, stalls,
 process and high-resolution cgroup CPU, and all outer/inner load readings.
-The outer Debian uses **one vCPU** by default (`JITK_NESTED_VCPUS` overrides).
-A four-vCPU R3 repeat hit an outer Linux hard lockup (historical owner evidence).
-This is an unresolved nested-harness SMP issue, not a claim of metal stability.
+The SSH backend uses the existing VM's CPU/memory configuration without changing
+it (R7: 6 vCPU / 9 GiB). The optional second-QEMU backend uses **one vCPU**
+by default (`JITK_NESTED_VCPUS` overrides); increasing it did not fix the R7
+assertion spin. A four-vCPU R3 repeat also hit an outer Linux hard lockup.
 
 The remaining nested suite runs 100 qjs boots, 30 real tool calls, n=100 at each
 concurrency 1..8, density 1/32/64/128/256, 100 setup-only and bare-VM CPU controls,
@@ -41,6 +57,45 @@ concurrency 1..8, density 1/32/64/128/256, 100 setup-only and bare-VM CPU contro
 **NESTED, non-performance**, with both outer Mac uptime and inner Linux uptime.
 06's canonical benchmark is macOS-oriented; this is the separate E7 functional
 suite, with no claim to pass its quiet-host performance gate.
+
+Every gate emits start/end times and completed-work counters. The external
+watchdog runs on the Mac and, for SSH, independently inside the existing VM.
+Defaults: **90 s startup, 60 s without progress per gate, 300 s absolute per
+gate, 900 s entire suite**. SSH separately allows up to **600 s** for the shared
+bench lock (`JITK_LOCK_TIMEOUT_S`), reporting lock exhaustion explicitly; this
+queue allowance is added only to the Mac observer's startup/total limits.
+Once the remote monitor starts, normal gate deadlines apply. `JITK_STARTUP_TIMEOUT_S`, `JITK_GATE_TIMEOUT_S`,
+`JITK_GATE_DEADLINE_S`, and `JITK_NESTED_TIMEOUT` override those limits.
+The SSH observer allows 15 s extra for remote timeout diagnostics. Heartbeats
+and duplicate counters do not reset deadlines. Timeout messages name the gate,
+last completion count, limit and log. Only suite-owned process groups are killed;
+the tested VMMs retain their separate 30 s I/O and 3 s hostile-guest watchdogs.
+The remote watchdog also empties/removes the suite-PID cgroup subtree after a
+forced supervisor kill, covering helpers that deliberately use separate sessions.
+`out/run-timing.json` records the limits, gate events and observed suite wall time.
+Run watchdog failure-injection checks with `python3 nested/test-watch.py`.
+
+Coverage is identical on both backends (certification rejects reduced runs):
+
+| Gate/check | Before | SSH replacement |
+|---|---|---|
+| KVM API version/create and cgroup controllers | required | required |
+| Exact sandbox ack + guest READY, cgroup at birth, correct result/exit, reap | every normal VM | every normal VM |
+| Parking on the same current image | 10 s idle <2% process and cgroup CPU; 1,000 exchanges; 10 delayed 3 ms replies; wait state | same |
+| Smoke / tool smoke | 1 / 1 | same |
+| Sequential boots / real tool calls | 100 / 30 | same |
+| Concurrency 1,2,3,4,5,6,7,8 | 100 each | same; marker now requires 100, previously only 30 |
+| Density; idle CPU <2% per VM; PSS/cgroup memory; validate all parked results | 1,32,64,128,256; 3 s idle each; 256 results | same |
+| CPU controls | 100 setup-only (exit 70), 100 bare-VM (exit 0) | same |
+| Seccomp | 3 roles × 8 actions × 30 = 720 | same |
+| Hostile guests | 6 fixtures × 30 = 180; external 3 s kill explicit | same |
+| Cleanup / identity / load | zero owned children, artifact hashes, inner/outer load | same; source hashes and per-gate deadlines added |
+
+Seccomp roles: main, vCPU, console. Actions: exit, openat, socket, execve,
+KVM_CREATE_VM, KVM_RUN, executable mmap, kill. Only exit and vCPU KVM_RUN
+(with an invalid fd) are permitted; the other vectors must SIGSYS.
+Hostile fixtures: unknown-hvc, unknown-smc, mmio-halfword, bad-sysreg,
+console_avail_oob, rtc_oob_read. No fixture or repetition was removed.
 
 `spawn-cg.c` adapts 07's supervisor helper. Every VMM is born inside its own
 cgroup via `clone3(CLONE_INTO_CGROUP)`; placement is checked in `/proc/PID/cgroup`
@@ -57,7 +112,7 @@ not a second allowlist. It validates main/vCPU/console roles and KVM_RUN allowan
 with an invalid fd. It does not inject native host syscalls into the production
 VMM. The canonical VMM itself is used for every boot/tool/density/fault test.
 
-Results: `out/report.json` (raw samples, hashes, all gates), `out/nested.log`
+Results: `out/run-timing.json` (gate deadlines/events/wall time), `out/report.json` (raw samples, hashes, all gates), `out/nested.log`
 (serial transcript), `out/build.log`, `out/kernel-build.log`.
 `.READY` exists only after the full nested suite passes; its hashes identify
 the tested artifacts. A new source snapshot needs a new run.
@@ -90,8 +145,11 @@ No instance has been provisioned.
 ## CPU accounting
 
 Linux wait4 user includes guest CPU. Each batch samples L1 `/proc/stat` guest
-before/after (the outer Linux contains only this suite's KVM guests); subtract
-this from VMM user, then report VMM user, VMM system, guest, and their total.
+before/after and reports the residual after subtracting it from VMM user.
+**The shared SSH VM can contain foreign KVM workloads**, so this guest delta and
+the derived host-user residual are UNVERIFIED; only the VMM-specific wait4
+user+system totals are measured. Do not interpret these counters as an exact
+additive decomposition. The isolated legacy backend had closure problems too.
 Guest accounting is tick-quantized; the report includes a conservative
 CPU-count × tick/n resolution bound. The zombie's per-process guest ticks are
 retained as an audit, not used to pretend sub-tick individual accuracy.

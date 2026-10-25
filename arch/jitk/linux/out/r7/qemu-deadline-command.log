@@ -1,0 +1,11 @@
+JITK_TIMEOUT TimeoutError('gate boot: no completed-work progress for 15s (last completed=50)'); log=/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/out/nested.log
+Traceback (most recent call last):
+  File "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/nested/run-qemu.py", line 17, in <module>
+    sys.exit(run(command, log))
+             ~~~^^^^^^^^^^^^^^
+  File "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/nested/watch.py", line 79, in run
+    raise TimeoutError(f'gate {gate}: no completed-work progress for {idle_limit:g}s (last completed={completed})')
+TimeoutError: gate boot: no completed-work progress for 15s (last completed=50)
+real 36.08
+user 6.08
+sys 18.63

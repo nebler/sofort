@@ -1,0 +1,267 @@
+{
+  "allocated_sections_identical": true,
+  "binaries": [
+    {
+      "path": "arch/jitk/linux/.work/mac-suite/arch/jitk/linux/.work/seccomp-probe",
+      "sha256": "f6ecada0557d71477061b9ceab16b8d76c7abca35cad0e4b13e0b4d836fb4422",
+      "sections": [
+        {
+          "name": ".rodata",
+          "size": 152,
+          "sha256": "f508c4c09e1353b1879233539f1b074cada54d1e8623f6b857da0454f266d25a"
+        },
+        {
+          "name": ".text",
+          "size": 3648,
+          "sha256": "68091c9db4a8a6eeeb284802ee6595d77ce9ab7641f92d498b803ccd79c08398"
+        },
+        {
+          "name": ".data",
+          "size": 4,
+          "sha256": "313588ae36b23498c072b8718f9a3614d9e52b444cdcea74ecd49c93044741b3"
+        },
+        {
+          "name": ".bss",
+          "size": 536,
+          "sha256": null
+        },
+        {
+          "name": ".debug_loc",
+          "size": 617348,
+          "sha256": "839e37f88513608db306a6b4066b823ac92d0c6f379131de1a82298ffaffc370"
+        },
+        {
+          "name": ".debug_abbrev",
+          "size": 10522,
+          "sha256": "5d5b78a5f29c70b7880192dfd95be41953bec191140f495a7378565e944abd83"
+        },
+        {
+          "name": ".debug_info",
+          "size": 296818,
+          "sha256": "512a71507f2901bdcb10a5083e6fbf333848f0d8f3f1f107b6035c55ba72d759"
+        },
+        {
+          "name": ".debug_str",
+          "size": 67158,
+          "sha256": "bba1b8b7bfe3175fe9b81d373d1f40bbc5d11d16bcd05b382299a205add64e77"
+        },
+        {
+          "name": ".debug_frame",
+          "size": 2104,
+          "sha256": "6335d122975ea74d9e61d3517d1ad7bbc77c014f3b8d9bd936df7a5a3b914456"
+        },
+        {
+          "name": ".debug_line",
+          "size": 152429,
+          "sha256": "6adb245594f4d396e50cd984636ef07a5995e7f6f9aa5c7fb584554c8bd55673"
+        },
+        {
+          "name": ".debug_ranges",
+          "size": 77888,
+          "sha256": "c879a1462b2ce18d3793b62513ad8f76ca2c430bfd01bcd692546fba7dff35c3"
+        },
+        {
+          "name": ".debug_aranges",
+          "size": 96,
+          "sha256": "25f16f94a24822d7c88092c9012ba94a28e219ec9260b6e332a9ff39e63180dd"
+        },
+        {
+          "name": ".debug_pubnames",
+          "size": 33763,
+          "sha256": "9946708a1772e64cd3a1dc93fedad8fa7548e1de95fff0a4bc935cebd4c35802"
+        },
+        {
+          "name": ".debug_pubtypes",
+          "size": 8363,
+          "sha256": "38f57242dbcc2a24613cd4c5cab3fac39eaca00831014e2d88ccd02637caadc0"
+        }
+      ],
+      "allocated_sections": {
+        ".rodata": {
+          "type": 1,
+          "flags": 50,
+          "size": 152,
+          "sha256": "f508c4c09e1353b1879233539f1b074cada54d1e8623f6b857da0454f266d25a"
+        },
+        ".eh_frame_hdr": {
+          "type": 1,
+          "flags": 2,
+          "size": 52,
+          "sha256": "44d047bc6d6ca2854165acda0694f9ec0c1cee12aa5b39c857fdd51e7b9f71f1"
+        },
+        ".eh_frame": {
+          "type": 1,
+          "flags": 2,
+          "size": 256,
+          "sha256": "49669ccaa64d47c3f3787f31d8ec4110ed4177f82b0509c65105b6e3bbc2a2c8"
+        },
+        ".text": {
+          "type": 1,
+          "flags": 6,
+          "size": 3648,
+          "sha256": "68091c9db4a8a6eeeb284802ee6595d77ce9ab7641f92d498b803ccd79c08398"
+        },
+        ".got": {
+          "type": 1,
+          "flags": 3,
+          "size": 56,
+          "sha256": "e84fc8501b9f3accd6be62867a102207c690713e6f0854b4082c8a686763e069"
+        },
+        ".relro_padding": {
+          "type": 8,
+          "flags": 3,
+          "size": 3512,
+          "sha256": null
+        },
+        ".data": {
+          "type": 1,
+          "flags": 3,
+          "size": 4,
+          "sha256": "313588ae36b23498c072b8718f9a3614d9e52b444cdcea74ecd49c93044741b3"
+        },
+        ".bss": {
+          "type": 8,
+          "flags": 3,
+          "size": 536,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "path": "arch/jitk/linux/.work/seccomp-probe",
+      "sha256": "bebc47f2a0de92c4564b74d3ed396d533814145ee0cf0881fd42c7b2291f37ab",
+      "sections": [
+        {
+          "name": ".rodata",
+          "size": 152,
+          "sha256": "f508c4c09e1353b1879233539f1b074cada54d1e8623f6b857da0454f266d25a"
+        },
+        {
+          "name": ".text",
+          "size": 3648,
+          "sha256": "68091c9db4a8a6eeeb284802ee6595d77ce9ab7641f92d498b803ccd79c08398"
+        },
+        {
+          "name": ".data",
+          "size": 4,
+          "sha256": "313588ae36b23498c072b8718f9a3614d9e52b444cdcea74ecd49c93044741b3"
+        },
+        {
+          "name": ".bss",
+          "size": 536,
+          "sha256": null
+        },
+        {
+          "name": ".debug_loc",
+          "size": 617348,
+          "sha256": "839e37f88513608db306a6b4066b823ac92d0c6f379131de1a82298ffaffc370"
+        },
+        {
+          "name": ".debug_abbrev",
+          "size": 10522,
+          "sha256": "5d5b78a5f29c70b7880192dfd95be41953bec191140f495a7378565e944abd83"
+        },
+        {
+          "name": ".debug_info",
+          "size": 296818,
+          "sha256": "c88a12752fee6b7729f8847f1c700359119a33c9dc2135a321ec8ae361b40d13"
+        },
+        {
+          "name": ".debug_str",
+          "size": 67094,
+          "sha256": "1bfa72ecbaed1e4b755015c1a266566b4c8a9612ae79756e68c104437007c45d"
+        },
+        {
+          "name": ".debug_frame",
+          "size": 2104,
+          "sha256": "6335d122975ea74d9e61d3517d1ad7bbc77c014f3b8d9bd936df7a5a3b914456"
+        },
+        {
+          "name": ".debug_line",
+          "size": 152429,
+          "sha256": "6adb245594f4d396e50cd984636ef07a5995e7f6f9aa5c7fb584554c8bd55673"
+        },
+        {
+          "name": ".debug_ranges",
+          "size": 77888,
+          "sha256": "c879a1462b2ce18d3793b62513ad8f76ca2c430bfd01bcd692546fba7dff35c3"
+        },
+        {
+          "name": ".debug_aranges",
+          "size": 96,
+          "sha256": "25f16f94a24822d7c88092c9012ba94a28e219ec9260b6e332a9ff39e63180dd"
+        },
+        {
+          "name": ".debug_pubnames",
+          "size": 33763,
+          "sha256": "9946708a1772e64cd3a1dc93fedad8fa7548e1de95fff0a4bc935cebd4c35802"
+        },
+        {
+          "name": ".debug_pubtypes",
+          "size": 8363,
+          "sha256": "38f57242dbcc2a24613cd4c5cab3fac39eaca00831014e2d88ccd02637caadc0"
+        }
+      ],
+      "allocated_sections": {
+        ".rodata": {
+          "type": 1,
+          "flags": 50,
+          "size": 152,
+          "sha256": "f508c4c09e1353b1879233539f1b074cada54d1e8623f6b857da0454f266d25a"
+        },
+        ".eh_frame_hdr": {
+          "type": 1,
+          "flags": 2,
+          "size": 52,
+          "sha256": "44d047bc6d6ca2854165acda0694f9ec0c1cee12aa5b39c857fdd51e7b9f71f1"
+        },
+        ".eh_frame": {
+          "type": 1,
+          "flags": 2,
+          "size": 256,
+          "sha256": "49669ccaa64d47c3f3787f31d8ec4110ed4177f82b0509c65105b6e3bbc2a2c8"
+        },
+        ".text": {
+          "type": 1,
+          "flags": 6,
+          "size": 3648,
+          "sha256": "68091c9db4a8a6eeeb284802ee6595d77ce9ab7641f92d498b803ccd79c08398"
+        },
+        ".got": {
+          "type": 1,
+          "flags": 3,
+          "size": 56,
+          "sha256": "e84fc8501b9f3accd6be62867a102207c690713e6f0854b4082c8a686763e069"
+        },
+        ".relro_padding": {
+          "type": 8,
+          "flags": 3,
+          "size": 3512,
+          "sha256": null
+        },
+        ".data": {
+          "type": 1,
+          "flags": 3,
+          "size": 4,
+          "sha256": "313588ae36b23498c072b8718f9a3614d9e52b444cdcea74ecd49c93044741b3"
+        },
+        ".bss": {
+          "type": 8,
+          "flags": 3,
+          "size": 536,
+          "sha256": null
+        }
+      }
+    }
+  ],
+  "debug_string_differences": [
+    [
+      "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/linux",
+      "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/.work/mac-suite/arch/jitk/linux/seccomp-probe.c"
+    ],
+    [
+      "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux",
+      "/Users/noah/.t3/worktrees/sofort/t3-c7592349/arch/jitk/linux/seccomp-probe.c"
+    ]
+  ]
+}
