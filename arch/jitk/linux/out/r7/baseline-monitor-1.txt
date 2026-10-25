@@ -1,0 +1,2 @@
+QEMU 11.1.2 monitor - type 'help' for more information
+(qemu) i[K[Din[K[D[Dinf[K[D[D[Dinfo[K[D[D[D[Dinfo [K[D[D[D[D[Dinfo r[K[D[D[D[D[D[Dinfo re[K[D[D[D[D[D[D[Dinfo reg[K[D[D[D[D[D[D[D[Dinfo regi[K[D[D[D[D[D[D[D[D[Dinfo regis[K[D[D[D[D[D[D[D[D[D[Dinfo regist[K[D[D[D[D[D[D[D[D[D[D[Dinfo registe[K[D[D[D[D[D[D[D[D[D[D[D[Dinfo register[K[D[D[D[D[D[D[D[D[D[D[D[D[Dinfo registers[K
