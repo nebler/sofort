@@ -28,6 +28,24 @@ pub fn node(i: usize) -> Result<Node, isize> {
 }
 pub fn data(n: &Node) -> &'static [u8] { &archive()[n.a..n.a + n.b] }
 
+// AArch64 stat ABI, shared by pathname and descriptor metadata. Archive
+// metadata is deterministic; console descriptors describe anonymous pipes.
+pub fn stat(n: Option<Node>) -> [u8; 128] {
+    let mut st = [0u8; 128];
+    let (dev, ino, mode, size) = match n {
+        Some(n) => (1u64, n.ino as u64, if n.dir { 0o40555u32 } else { 0o100444 }, if n.dir { 0 } else { n.b as u64 }),
+        None => (0, 0, 0o10600, 0),
+    };
+    st[0..8].copy_from_slice(&dev.to_le_bytes());
+    st[8..16].copy_from_slice(&ino.to_le_bytes());
+    st[16..20].copy_from_slice(&mode.to_le_bytes());
+    st[20..24].copy_from_slice(&1u32.to_le_bytes());
+    st[48..56].copy_from_slice(&size.to_le_bytes());
+    st[56..60].copy_from_slice(&4096u32.to_le_bytes());
+    st[64..72].copy_from_slice(&((size + 511) / 512).to_le_bytes());
+    st
+}
+
 pub fn get(fd: usize) -> Result<&'static mut Open, isize> {
     unsafe { FDS.get_mut(fd).and_then(|f| f.as_mut()).ok_or(-9) }
 }

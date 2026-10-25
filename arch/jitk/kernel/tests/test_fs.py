@@ -24,6 +24,8 @@ mod syscalls {
 #[path = "SYS/getdents64.rs"] mod getdents64;
 #[path = "SYS/newfstatat.rs"] mod newfstatat;
 #[path = "SYS/lseek.rs"] mod lseek;
+#[path = "SYS/fstat.rs"] mod fstat;
+#[path = "SYS/pread64.rs"] mod pread64;
 const CWD: usize = -100isize as usize;
 fn s(p: &str) -> usize { unsafe { let b = p.as_bytes(); syscalls::MEM[..b.len()].copy_from_slice(b); syscalls::MEM[b.len()] = 0; syscalls::MEM.as_ptr() as usize } }
 fn buf() -> usize { unsafe { syscalls::MEM.as_ptr() as usize + 4096 } }
@@ -44,6 +46,47 @@ fn exercise() {
     let mut fsb = std::fs::read(std::env::var("ARCHIVE").unwrap()).unwrap();
     user::FS = fsb.as_ptr() as usize; user::FS_LEN = fsb.len();
     assert_eq!(open("/a.txt", 0), 3); assert_eq!(fs::read(3, buf(), 100), 2); assert_eq!(close::call(&[3]), 0);
+    // Independent full stat layout, including padding, block accounting,
+    // immutable identity and console type. No expected bytes from fs::stat.
+    assert_eq!(open("/a.txt", 0), 3);
+    let mut want = [0u8; 128];
+    for (at, bytes) in [(0, 1u64.to_le_bytes()), (8, 2u64.to_le_bytes()),
+                       (48, 2u64.to_le_bytes()), (64, 1u64.to_le_bytes())] {
+        want[at..at+8].copy_from_slice(&bytes);
+    }
+    want[16..20].copy_from_slice(&0o100444u32.to_le_bytes());
+    want[20..24].copy_from_slice(&1u32.to_le_bytes());
+    want[56..60].copy_from_slice(&4096u32.to_le_bytes());
+    assert_eq!(fstat::call(&[3, buf()]), 0);
+    assert_eq!(&syscalls::MEM[4096..4224], &want);
+    assert_eq!(fstat::call(&[999, 0]), -9);
+    assert_eq!(fstat::call(&[3, buf()+4090]), -14);
+    assert_eq!(fstat::call(&[3, usize::MAX-63]), -14);
+    assert_eq!(lseek::call(&[3, 1, 0]), 1);
+    assert_eq!(fstat::call(&[3, buf()]), 0);
+    assert_eq!(fs::get(3).unwrap().pos, 1);
+    assert_eq!(pread64::call(&[3, buf(), 1, 0]), 1);
+    assert_eq!(syscalls::MEM[4096], b'h');
+    assert_eq!(fs::get(3).unwrap().pos, 1);
+    assert_eq!(pread64::call(&[3, buf(), 8, 1]), 1);
+    assert_eq!(syscalls::MEM[4096], b'i');
+    assert_eq!(pread64::call(&[3, 0, 0, 0]), 0);
+    assert_eq!(pread64::call(&[3, 0, 8, 2]), 0);
+    assert_eq!(pread64::call(&[3, 0, 1, 0]), -14);
+    assert_eq!(pread64::call(&[3, buf(), 1, usize::MAX]), -22);
+    assert_eq!(pread64::call(&[999, 0, 0, usize::MAX]), -22);
+    assert_eq!(pread64::call(&[3, buf(), usize::MAX, 0]), -14);
+    assert_eq!(pread64::call(&[3, buf(), 8, i64::MAX as usize-1]), -22);
+    assert_eq!(fs::get(3).unwrap().pos, 1);
+    assert_eq!(fs::read(3, buf(), 1), 1); assert_eq!(syscalls::MEM[4096], b'i');
+    assert_eq!(close::call(&[3]), 0);
+    assert_eq!(fstat::call(&[3, buf()]), -9);
+    assert_eq!(pread64::call(&[3, buf(), 1, 0]), -9);
+    for fd in 0..3 {
+        assert_eq!(fstat::call(&[fd, buf()]), 0);
+        assert_eq!(u32::from_le_bytes(syscalls::MEM[4112..4116].try_into().unwrap()) & 0xf000, 0x1000);
+        assert_eq!(pread64::call(&[fd, buf(), 1, 0]), -29);
+    }
     assert_eq!(open("/b/../b/c/./z", 0), 3); assert_eq!(close::call(&[3]), 0);
     assert_eq!(open("/a.txt/", 0), -20); assert_eq!(open("/nope/x", 0x40), -2); assert_eq!(open("/new", 0x41), -30);
     assert_eq!(open("/../../a.txt", 1), -30); assert_eq!(open("/b", 1), -21); assert_eq!(open("", 0), -2);

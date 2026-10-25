@@ -171,7 +171,7 @@
     {
       "nr": 79,
       "name": "newfstatat",
-      "source_sha256": "b9cc758c6c38d0badac20d5fdd858dbdcac5d0fe5026ad2af3239659c8397b50",
+      "source_sha256": "ef3788da2e5827026c4279389f26184efd39d77585d44aa6515abf75308d1fcc",
       "status": "restricted",
       "domain": "read-only resource archive: mode/size compared; flags 0x100|0x800|0x1000; console AT_EMPTY_PATH EBADF",
       "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
