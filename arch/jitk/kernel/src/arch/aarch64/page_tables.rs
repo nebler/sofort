@@ -1,8 +1,17 @@
-//! Ring-only stage 1. All mutable backing lives in the stage-2 glue-2m arena.
+//! Ring-only stage 1. All mutable backing lives in the selected stage-2 arena.
 use core::arch::asm;
 
+#[cfg(not(ring_glue_8m))]
 pub const ARENA: usize = 0x81800000;
+#[cfg(ring_glue_8m)]
+pub const ARENA: usize = 0x81600000;
+#[cfg(not(any(ring_glue_4m, ring_glue_8m)))]
 pub const ARENA_BYTES: usize = 1_310_720;
+#[cfg(ring_glue_4m)]
+pub const ARENA_BYTES: usize = 2_621_440;
+#[cfg(ring_glue_8m)]
+pub const ARENA_BYTES: usize = 5_242_880;
+const ARENA_TABLES: usize = ARENA_BYTES.div_ceil(0x200000);
 const END: usize = ARENA + ARENA_BYTES;
 const STACK: usize = END - 4096 - 0x20000;
 const BRK_BYTES: usize = 0x10000;
@@ -17,7 +26,23 @@ const ADDRESS: u64 = 0x0000fffffffff000;
 // Also identifies the physical layout to the offline snapshot preparer.
 #[used]
 #[unsafe(link_section = ".rodata.arena")]
-static LAYOUT: [u64; 4] = [0x414e4552414b544a, ARENA as u64, ARENA_BYTES as u64, 81920];
+static LAYOUT: [u64; 9] = [
+    0x414e4552414b544a,
+    2,
+    if cfg!(ring_glue_8m) {
+        8
+    } else if cfg!(ring_glue_4m) {
+        4
+    } else {
+        2
+    },
+    ARENA as u64,
+    ARENA_BYTES as u64,
+    81920,
+    DATA_BYTES as u64,
+    BRK_BYTES as u64,
+    0x20000,
+];
 #[repr(C, align(4096))]
 #[derive(Clone, Copy)]
 struct Table([u64; 512]);
@@ -25,7 +50,7 @@ static mut ROOT: Table = Table([0; 512]);
 static mut LOW: Table = Table([0; 512]);
 static mut RAM: Table = Table([0; 512]);
 static mut KERNEL: Table = Table([0; 512]);
-static mut ARENA_TABLE: Table = Table([0; 512]);
+static mut ARENA_TABLE: [Table; ARENA_TABLES] = [Table([0; 512]); ARENA_TABLES];
 static mut DATA_VA: usize = 0;
 static mut USER: [Table; 16] = [Table([0; 512]); 16];
 unsafe extern "C" {
@@ -61,7 +86,7 @@ pub unsafe fn init() {
         assert_eq!(&raw const __rw_start as usize, ARENA);
         assert!(
             mmap_base() + 0x80000 <= STACK,
-            "glue-2m kernel leaves <512 KiB mmap"
+            "ring kernel leaves <512 KiB mmap"
         );
         ROOT.0[0] = table(&raw const LOW);
         ROOT.0[2] = table(&raw const RAM);
@@ -69,15 +94,25 @@ pub unsafe fn init() {
         // Immutable RAM is read-only even through the kernel's identity alias.
         for i in 0..16 {
             let pa = 0x80000000 + i as u64 * 0x200000;
-            let writable = pa == ARENA as u64 || pa == 0x81c00000;
+            let writable = (ARENA as u64..END as u64).contains(&pa) || pa == 0x81c00000;
             RAM.0[i] = pa | 1 | AF | SH | PXN | UXN | if writable { 0 } else { RO };
         }
-        RAM.0[0] = table(&raw const KERNEL);
-        RAM.0[12] = table(&raw const ARENA_TABLE);
-        for j in 0..512 {
-            ARENA_TABLE.0[j] = (ARENA + j * 4096) as u64 | 3 | AF | SH | PXN | UXN;
+        // Late-bound native archives have their own read-only stage-2 memslot
+        // immediately after RAM. Keep the entire admitted 4 MiB EL1-only/RO.
+        for i in 16..18 {
+            RAM.0[i] = (0x80000000 + i as u64 * 0x200000) | 1 | AF | SH | RO | PXN | UXN;
         }
-        ARENA_TABLE.0[(&raw const __guard_start as usize - ARENA) / 4096] = 0;
+        RAM.0[0] = table(&raw const KERNEL);
+        for i in 0..ARENA_TABLES {
+            RAM.0[(ARENA - 0x80000000) / 0x200000 + i] = table(&raw const ARENA_TABLE[i]);
+            for j in 0..512 {
+                let pa = ARENA + i * 0x200000 + j * 4096;
+                ARENA_TABLE[i].0[j] =
+                    pa as u64 | 3 | AF | SH | PXN | UXN | if pa < END { 0 } else { RO };
+            }
+        }
+        let guard = (&raw const __guard_start as usize - ARENA) / 4096;
+        ARENA_TABLE[guard / 512].0[guard % 512] = 0;
         let ro = &raw const __ro_start as u64;
         for j in 0..512 {
             let pa = 0x80000000 + j as u64 * 4096;

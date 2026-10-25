@@ -24,6 +24,11 @@ pub unsafe fn call(a: &[usize]) -> isize {
                     }
                 }
                 if base == 0 {
+                    #[cfg(feature = "transport-ring")]
+                    {
+                        c::print("arena mmap ENOMEM bytes="); c::hex(len);
+                        c::print(" capacity="); c::hex(limit - MMAP); c::print("\n");
+                    }
                     return -12;
                 }
                 let Some(end) = base.checked_add(len) else {

@@ -144,6 +144,16 @@ impl Receiver {
                     if self.log_bytes > 16384 {
                         return Err("LOG budget");
                     }
+                    if std::env::var_os("JITK_NATIVE_DIAGNOSTICS").is_some() {
+                        let decoded: Vec<u8> = msg
+                            .chunks_exact(6)
+                            .map(|c| {
+                                u8::from_str_radix(std::str::from_utf8(&c[4..]).unwrap(), 16)
+                                    .unwrap()
+                            })
+                            .collect();
+                        eprint!("{}", String::from_utf8_lossy(&decoded));
+                    }
                 }
                 _ => return Err("unnegotiated native record kind"),
             }

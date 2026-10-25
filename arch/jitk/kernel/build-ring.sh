@@ -14,7 +14,14 @@ if [ "${JITK_RING_NATIVE:-0}" = 1 ]; then
 else
   export JITK_SCRIPT="$(cat ring-bootstrap.js)"
 fi
-export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=--defsym=__ring_arena=0x81800000"
+arena=0x81800000
+case "${JITK_RING_CLASS:-glue-2m}" in
+  glue-2m) class_flags= ;;
+  glue-4m) class_flags='--cfg ring_glue_4m' ;;
+  glue-8m) class_flags='--cfg ring_glue_8m'; arena=0x81600000 ;;
+  *) echo "unsupported ring memory class: $JITK_RING_CLASS" >&2; exit 1 ;;
+esac
+export RUSTFLAGS="${RUSTFLAGS:-} --check-cfg=cfg(ring_glue_4m) --check-cfg=cfg(ring_glue_8m) $class_flags -C link-arg=--defsym=__ring_arena=$arena"
 mkdir -p dist/ring
 cargo build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}

@@ -69,6 +69,37 @@ queue, UTF-8 decoding of output, or per-run helper process exists.
 
 ## Prepared native entry and bind
 
+### Bounded layout identity (R7 integration)
+
+Every prepared `.layout` is exactly nine little-endian u64 words: magic
+`0x414e4552414b544a`, layout version **2**, admission class MiB (2/4/8), arena
+GPA, arena bytes, ring bytes (81,920), ELF writable-data reservation (65,536),
+brk reservation (65,536), and user stack bytes (131,072). The linked kernel
+contains the identical marker; restore checks the sidecar against that marker
+and the host's finite class catalogue. Legacy/unknown layouts and mismatched
+sidecars are rejected. Class selection is offline, never guest-negotiated.
+
+| Class | Arena GPA | Writable arena bytes | Prepared native profiles |
+|---|---|---:|---|
+| glue-2m | `0x81800000` | 1,310,720 | jq-musl, sqlite3, busybox, lua |
+| glue-4m | `0x81800000` | 2,621,440 | micropython |
+| glue-8m | `0x81600000` | 5,242,880 | zstd |
+
+`JITK_RING_CLASS` selects the linked layout; unset retains glue-2m for QuickJS.
+The native preparation harness selects the table above per pinned executable
+and records it in `profiles.json` and each snapshot. Five RAM memslots retain
+exactly the arena and 80-KiB transport as writable; all remaining RAM is both
+KVM-read-only and host-read-only. Input memslot 63 stays read-only and is mapped
+EL1-only/read-only in stage 1 across its full admitted 4 MiB. Input extent charges
+are additional to the writable class reservation.
+
+On the ring syscall path, after full range/page/permission validation,
+`user::access` returns the user virtual mapping with EL1 PAN cleared for the
+syscall. Hardware walks each page, so a buffer or iovec spanning relocated
+physical regions remains contiguous to its caller. Other kernel entry and the
+default libkrun access path are unchanged. The freestanding region probe checks
+byte buffers, split iovecs, RO copyout denial and unmapped tails against Linux.
+
 `JITK_RING_NATIVE=1 JITK_ELF=... sh kernel/build-ring.sh` builds a profile with
 argv marker `["@ring-native"]`, no packed resource directory and one static
 ET_EXEC. It does not change the default image. Each tool has one immutable
