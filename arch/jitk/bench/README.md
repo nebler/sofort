@@ -1,6 +1,9 @@
 # Canonical performance harness (owner 06)
 
-Run `python3 arch/jitk/bench/run.py --samples 30` from the repository root.
+Build with `make -C arch/jitk/bench build`, then run
+`make -C arch/jitk/bench bench BENCH_ARGS="--samples 30"` from the repository root.
+The Makefile holds `/usr/bin/lockf -k /tmp/sofort-bench.lock` for collection.
+Direct binary invocations must use the same lock.
 Defaults: load1 < 6, budget 10 s **per sample**, poll 1 s, fresh single-use VM,
 seeded randomized complete blocks (every case once per block). If the budget
 expires the sample runs and is flagged. Never interpret flagged data as quiet.
@@ -98,7 +101,7 @@ see `verification.json`. Numerical R3 result cells remain unchanged.
 
 ## v2 recertification
 
-`recertify.py --vmm V2 --baseline BASELINE --image IMAGE --scratch-dir SCRATCH
+`build/recertify --vmm V2 --baseline BASELINE --image IMAGE --scratch-dir SCRATCH
 --output OUTPUT` uses this controller's exact `sample`, load gate, assertions,
 resource accounting and watchdog. It runs cold return2, parked raw one_tool,
 parked raw promise10_5ms and parked memory, n=60/build/case. Each complete block
@@ -113,3 +116,45 @@ monitor spans setup and collection. Observing load1 < 6 triggers an additional
 n=60/build/case pass, separately labeled; its per-sample gates still determine
 whether quiet-host claims are supported. Otherwise the report states explicitly
 that no quiet pass was possible. All observations and cleanup state are retained.
+
+## TypeScript implementation
+
+Every former Python entrypoint is compiled by the locally pinned scriptc 0.4.5.
+`package.json` and `package-lock.json` pin the compiler; `make build` installs it
+with `npm ci` when needed. Native executables do not require Node or Python.
+The existing `executor.mjs` adapter still requires the explicitly selected Node.
+
+| Former entrypoint | Compiled entrypoint, relative to this directory |
+|---|---|
+| `run.py` | `build/run` |
+| `recertify.py` | `build/recertify` |
+| `watchdog.py` | `build/watchdog` |
+| `processes.py` (import-only) | `processes.ts` (import-only) |
+| `hyperlight/bench.py` | `build/hyperlight-bench` |
+| `hyperlight/analyze.py` | `build/hyperlight-analyze` |
+| `ledger/ledger.py` | `build/ledger` |
+| `ledger/report.py` | `build/ledger-report` |
+| `ledger/verify.py` | `build/ledger-verify` |
+| `ledger/waves.py` | `build/ledger-waves` |
+| `ledger/hvf_control.py` | `build/hvf-control` |
+
+Arguments, raw schema, assertions, exit codes, per-sample load gates, failure
+retention and statistical estimators are preserved. `build/gate [threshold
+[budget [poll]]]` exposes the controller's gate as JSON for callers which
+previously imported Python. Defaults are 6 / 10 s / 1 s. The historical `.READY`
+receipt remains unchanged: this port does not certify new performance numbers.
+
+`lib.ts` contains the generic process, hash, JSON, assertion, clock, numerical
+and seeded random helpers. `native.c` is a statically linked OS ABI bridge for
+pipes, select, wait4, libproc and read-only ledger calls, replacing ctypes.
+Timing uses integer monotonic nanoseconds. The watchdog remains a separate
+process, and EOF, deadlines, interrupts and detached descendants are tested.
+Recertification's independent 0.5 s load monitor spans setup and collection;
+it uses a separate compiled process so synchronous collection cannot stall it.
+
+`make test` replays recorded samples against original-Python parity digests,
+without running Python or modifying published evidence. Optional preserved
+memory collections can also be checked with
+`JITK_LEDGER_INPUTS=/absolute/ledger-collection make test`.
+See [PARITY.md](PARITY.md) for evidence and the sole formatting normalization,
+and [SCRIPTC-GAPS.md](SCRIPTC-GAPS.md) for compiler findings and minimal repros.

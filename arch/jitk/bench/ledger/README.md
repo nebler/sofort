@@ -1,6 +1,6 @@
 # Offline current-build ledger
 
-`ledger.py` collects process + host memory, validates READY / one_tool / done,
+`../build/ledger` collects process + host memory, validates READY / one_tool / done,
 keeps every process counter and every diagnostic output, and computes count slopes.
 On macOS it reads libproc and read-only `ledger(2)` entries; on Linux/Asahi it
 reads `/proc` (PSS/private dirty/swap, with no macOS footprint equivalence implied).
@@ -30,21 +30,21 @@ regenerate it if moving these inputs:
 artifacts/jitk-vmm --compile-profile "$PWD/artifacts/jitk.sbbin" --images "$PWD/artifacts"
 ```
 
-Run from this directory, with Node `/tmp/jitk-09/node-real` on this host:
+First run `make -C .. build`. Run from this directory, with Node `/tmp/jitk-09/node-real` on this host:
 
 ```sh
-/usr/bin/lockf -k /tmp/sofort-bench.lock python3 ledger.py memory --counts 0,1,16,64,256 --repeats 3
+/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/ledger memory --counts 0,1,16,64,256 --repeats 3
 /usr/bin/lockf -k /tmp/sofort-bench.lock /tmp/jitk-09/node-real ledger.mjs "$PWD/artifacts" "$PWD/cpu-raw.json" 30
-/usr/bin/lockf -k /tmp/sofort-bench.lock python3 ledger.py controls
-/usr/bin/lockf -k /tmp/sofort-bench.lock python3 ledger.py memory --variants current --counts 1,16 --repeats 3 --inline-sandbox --output inline-raw.json
-python3 ledger.py analyze memory-raw.json
-python3 ledger.py analyze-cpu cpu-raw.json
-python3 waves.py # supplemental N=60 cells, releasing the lock after each cell
+/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/ledger controls
+/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/ledger memory --variants current --counts 1,16 --repeats 3 --inline-sandbox --output inline-raw.json
+../build/ledger analyze memory-raw.json
+../build/ledger analyze-cpu cpu-raw.json
+../build/ledger-waves # supplemental N=60 cells, releasing the lock after each cell
 clang -O2 -framework Hypervisor hvf_control.c -o artifacts/hvf-control
 codesign --force --sign - --entitlements ../../vmm/hypervisor.entitlements artifacts/hvf-control
-/usr/bin/lockf -k /tmp/sofort-bench.lock python3 hvf_control.py
-python3 report.py
-python3 verify.py
+/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/hvf-control
+../build/ledger-report
+../build/ledger-verify
 ```
 
 The memory experiment freezes all N VMs after READY, then all N after emitting

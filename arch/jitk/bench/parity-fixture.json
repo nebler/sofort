@@ -1,0 +1,73 @@
+{
+  "reference": "Original Python 3.15.0 scripts from 377e3fdc; MT19937 unchanged; every numeric value compared exactly before deletion. No raw samples stored here.",
+  "sources": [
+    {
+      "path": "raw.json",
+      "sha256": "adc0aadaa3eee399af1985a80796ba2f2762dddf525ea36061e8d20903880033"
+    },
+    {
+      "path": "raw-quiet-2026-10-24.json",
+      "sha256": "b6d1b8d1215326f2847e607a9ae47bf81529c78ada346d7169e9c0f50eccb2fa"
+    },
+    {
+      "path": "raw-native-watchdog-2026-10-24.json",
+      "sha256": "3d6c28536f095b3e0bb4b9575ec23d4a78ffa54dcc55089300a98ebaa4735c9f"
+    },
+    {
+      "path": "hyperlight/results/raw.json",
+      "sha256": "0cf667760cc30056ccf0c29b5451ba661ca0b50624c105fdeac66e824a699956"
+    },
+    {
+      "path": "r4-raw.json",
+      "sha256": "0a0ff7e2654cb522ab3841f28e6ef76ca2f31b1f8551611cfcda7e27f0298d7b"
+    }
+  ],
+  "reports": [
+    {
+      "path": "raw.json.md",
+      "sha256": "5677b07bb33a637257ec09c2bde35ea602faeef78cf883748237dd3ca3c04a79"
+    },
+    {
+      "path": "raw-quiet-2026-10-24.json.md",
+      "sha256": "56c022a2fac314e8743ab2811032f62b29d6c5df6898cb5c0b52989f03bf19dd"
+    },
+    {
+      "path": "raw-native-watchdog-2026-10-24.json.md",
+      "sha256": "166de1e9ceda00309eba9c58516cdd5b51bc68c5d77ef8fb0b5bbf1c980c5d28"
+    },
+    {
+      "path": "hyperlight-results-raw.json.md",
+      "sha256": "606a0246809879d1bc2b3298476c340123258f63415fe3e625e78a20365f4518"
+    }
+  ],
+  "statistics_digest": "2749a7537db753fe49f4f7b31266a7f4ccf4128dab697f3aa8016948baeaf13c",
+  "analysis": {
+    "hyperlight": {
+      "input": "hyperlight/results/raw.json",
+      "sha256": "0cf667760cc30056ccf0c29b5451ba661ca0b50624c105fdeac66e824a699956",
+      "outputs": {
+        "verdict.json": "ed48aaaf45c74dceff7f6ea808a8d4083c2052c0f21fe2a44c49b9125cb96810",
+        "summary.json": "368be22521af864afa257db227e7bdd27f045289603347287323ceba0a17fc04",
+        "memory.json": "bf7a340b5db26770e365af3bc232235006aeada2f0ce4f6207c4c9090bb51d36"
+      }
+    },
+    "cpu": {
+      "input": "ledger/cpu-raw.json",
+      "sha256": "c0acce5957217131bd5199f71fe7cd40255405de70b5545d3cbd1dd3452293aa",
+      "digest": "5323a78e5115e2e1843f69d6e293df124a3b65e5b9a9d2cd84d09869aba2e0e8"
+    },
+    "memory": {
+      "sources": [
+        {
+          "path": "memory-raw.json",
+          "sha256": "8d6c87990dfd9b417ea74e5a236cb624c3f12912a9e10f643d06e36e6b854161"
+        },
+        {
+          "path": "memory-n60-raw.json",
+          "sha256": "35ee0342749bf74242ff569c7281bc76e522b70e099ad3109a42b56488236266"
+        }
+      ],
+      "digest": "37c89aa418362f95cdd58a46516268d97130555bd81bca8cbfa3b40bc972027f"
+    }
+  }
+}
