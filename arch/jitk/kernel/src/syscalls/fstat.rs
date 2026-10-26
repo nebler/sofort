@@ -2,10 +2,7 @@
 use crate::{fs, syscalls::copyout};
 pub fn call(a: &[usize]) -> isize {
     let fd = a[0] as u32 as usize;
-    #[cfg(feature = "transport-ring")]
-    let console = fd <= 2 && fs::get(fd).is_err();
-    #[cfg(not(feature = "transport-ring"))]
-    let console = fd <= 2;
+    let console = match fs::kind(fd) { Ok(kind) => kind == fs::FdKind::Console, Err(e) => return e };
     let n = if console { None } else {
         let f = match fs::get(fd) { Ok(f) => f, Err(e) => return e };
         match fs::node(f.node) { Ok(n) => Some(n), Err(e) => return e }

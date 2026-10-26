@@ -11,8 +11,8 @@ pub fn call(a: &[usize]) -> isize {
     let i = match fs::lookup(a[0], a[1], false, creat) { Ok(i) => i, Err(e) => return e };
     let n = match fs::node(i) { Ok(n) => n, Err(e) => return e };
     if creat && excl { return -17; }
-    if n.dir && (creat || write) { return -21; }
-    if dirflag && !n.dir { return -20; }
+    if n.is_dir() && (creat || write) { return -21; }
+    if dirflag && !n.is_dir() { return -20; }
     if write && (flags & 3 != 3 || trunc) { return -30; }
     fs::alloc(i, flags & 0x80000 != 0, flags & 3 != 3)
 }

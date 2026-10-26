@@ -4,13 +4,13 @@ use crate::{fs, syscalls::copyout};
 pub fn call(a: &[usize]) -> isize {
     fs::with_open(a[0] as u32 as usize, |f| {
     let dir = match fs::node(f.node) { Ok(n) => n, Err(e) => return e };
-    if !dir.dir { return -20; }
+    let children = match dir.children() { Some(children) => children, None => return -20 };
     let (count, mut off) = (a[2] as u32 as usize, 0);
-    while f.pos < dir.b + 2 {
+    while f.pos < children.len() + 2 {
         let (ino, kind, name) = match f.pos {
             0 => (dir.ino, 4u8, &b"."[..]),
             1 => (dir.parent + 1, 4, &b".."[..]),
-            i => match fs::node(dir.a + i - 2) { Ok(n) => (n.ino, if n.dir { 4 } else { 8 }, n.name), Err(e) => return e },
+            i => match fs::node(children.start + i - 2) { Ok(n) => (n.ino, if n.is_dir() { 4 } else { 8 }, n.name), Err(e) => return e },
         };
         let len = (19 + name.len() + 1 + 7) & !7;
         if off + len > count { return if off == 0 { -22 } else { off as isize }; }
