@@ -13,6 +13,12 @@ impl Class {
             Self::Glue4m => "glue-4m",
         }
     }
+    pub fn admission_bytes(self) -> u32 {
+        match self {
+            Self::Glue2m => 2 << 20,
+            Self::Glue4m => 4 << 20,
+        }
+    }
     pub fn bytes(self) -> usize {
         match self {
             Self::Glue2m => 1_310_720,

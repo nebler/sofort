@@ -59,6 +59,8 @@ struct Mapping {
 }
 impl Mapping {
     fn new(fd: &File, len: usize, flags: c_int) -> Self {
+        // SAFETY: fd is live and len comes from the verified snapshot geometry
+        // or KVM's run size. The returned mapping is checked before any access.
         let p = unsafe { mmap(ptr::null_mut(), len, 3, flags, fd.as_raw_fd(), 0) };
         assert_ne!(p as isize, -1, "mmap: {}", io::Error::last_os_error());
         // Avoid transparent huge-page CoW obscuring the K-page experiment.
@@ -66,16 +68,22 @@ impl Mapping {
         Self { ptr: p.cast(), len }
     }
     fn word(&self, off: usize) -> u64 {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: mmap is live, offset is aligned and in bounds. No Rust RAM
+        // reference escapes; the owner reads only after KVM_RUN has returned.
         unsafe { ptr::read_volatile(self.ptr.add(off).cast()) }
     }
     fn put(&self, off: usize, value: u64) {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: same owner-thread/alignment/range contract as word(); no
+        // borrowed guest bytes alias this store.
         unsafe { ptr::write_volatile(self.ptr.add(off).cast(), value) }
     }
 }
 impl Drop for Mapping {
     fn drop(&mut self) {
+        // SAFETY: this owns the original mapping, with no escaping RAM borrows;
+        // the owner has stopped KVM and will never reenter this slot.
         unsafe {
             munmap(self.ptr.cast(), self.len);
         }
@@ -120,42 +128,72 @@ pub struct Snapshot {
     pub class: arena::Class,
     regs: Vec<Register>,
 }
+fn read_metadata(reader: impl Read, limit: usize) -> io::Result<Vec<u8>> {
+    let mut bytes = Vec::new();
+    reader.take((limit + 1) as u64).read_to_end(&mut bytes)?;
+    if bytes.len() > limit {
+        return Err(snapshot_error("snapshot metadata size bound"));
+    }
+    Ok(bytes)
+}
+fn snapshot_error(message: &'static str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
+}
+fn parse_registers(b: &[u8]) -> io::Result<Vec<Register>> {
+    if b.get(..8) != Some(b"JTKREGS2") {
+        return Err(snapshot_error("snapshot register magic/truncated header"));
+    }
+    let mut remaining = &b[8..];
+    let mut regs = Vec::new();
+    let mut ids = std::collections::HashSet::new();
+    while !remaining.is_empty() {
+        let h = remaining
+            .get(..16)
+            .ok_or_else(|| snapshot_error("truncated register header"))?;
+        // Fixed-size checked header slices; these conversions cannot fail.
+        let id = u64::from_le_bytes(h[..8].try_into().unwrap());
+        let n = u64::from_le_bytes(h[8..].try_into().unwrap());
+        let width = 1u64 << ((id >> 52) & 15);
+        if width > 256 || n != width || id >> 56 != 0x60 || !ids.insert(id) || regs.len() >= 2048 {
+            return Err(snapshot_error("snapshot register width/identity/count"));
+        }
+        let data = remaining
+            .get(16..16 + n as usize)
+            .ok_or_else(|| snapshot_error("truncated register data"))?;
+        regs.push(Register {
+            id,
+            data: data.to_vec(),
+        });
+        remaining = &remaining[16 + n as usize..];
+    }
+    if regs.len() <= 68 {
+        return Err(snapshot_error("snapshot register count too small"));
+    }
+    Ok(regs)
+}
 impl Snapshot {
-    pub fn load(base: &str) -> Arc<Self> {
-        let memory = File::open(format!("{base}.mem")).unwrap();
-        assert_eq!(memory.metadata().unwrap().len(), RAM as u64);
-        let layout =
-            std::fs::read(format!("{base}.layout")).expect("prepare a versioned ring snapshot");
-        let class = arena::Class::from_layout(&layout).expect("unsupported ring snapshot layout");
+    pub fn load(base: &str) -> io::Result<Arc<Self>> {
+        let memory = File::open(format!("{base}.mem"))?;
+        if memory.metadata()?.len() != RAM as u64 {
+            return Err(snapshot_error("snapshot RAM length"));
+        }
+        let layout = read_metadata(File::open(format!("{base}.layout"))?, 72)?;
+        let class = arena::Class::from_layout(&layout)
+            .ok_or_else(|| snapshot_error("unsupported ring snapshot layout"))?;
         // The sidecar cannot select a different class than the linked image.
         use std::os::unix::fs::FileExt;
         let mut kernel = vec![0; 0x80000];
-        memory.read_exact_at(&mut kernel, 0).unwrap();
-        assert!(
-            kernel.windows(layout.len()).any(|b| b == layout),
-            "snapshot/layout mismatch"
-        );
-        let b = std::fs::read(format!("{base}.regs")).unwrap();
-        assert_eq!(&b[..8], b"JTKREGS2");
-        let mut at = 8;
-        let mut regs = Vec::new();
-        while at < b.len() {
-            let id = u64::from_le_bytes(b[at..at + 8].try_into().unwrap());
-            let n = u64::from_le_bytes(b[at + 8..at + 16].try_into().unwrap()) as usize;
-            at += 16;
-            assert!(n <= 256 && at + n <= b.len());
-            regs.push(Register {
-                id,
-                data: b[at..at + n].to_vec(),
-            });
-            at += n;
+        memory.read_exact_at(&mut kernel, 0)?;
+        if !kernel.windows(layout.len()).any(|b| b == layout) {
+            return Err(snapshot_error("snapshot/layout mismatch"));
         }
-        assert!(regs.len() > 68);
-        Arc::new(Self {
+        let b = read_metadata(File::open(format!("{base}.regs"))?, 8 + 2048 * (16 + 256))?;
+        let regs = parse_registers(&b)?;
+        Ok(Arc::new(Self {
             memory,
             regs,
             class,
-        })
+        }))
     }
 }
 pub struct Request {
@@ -166,6 +204,7 @@ pub struct Request {
 pub enum RunError {
     MemoryBound { address: u64 },
     GuestFatal,
+    GuestProtocol(&'static str),
     Deadline { deadline_ns: u64 },
 }
 impl std::fmt::Display for RunError {
@@ -175,6 +214,7 @@ impl std::fmt::Display for RunError {
                 write!(f, "memory_bound: write outside class arena at {address:#x}")
             }
             Self::Deadline { .. } => write!(f, "deadline_exceeded"),
+            Self::GuestProtocol(message) => write!(f, "guest_protocol: {message}"),
             Self::GuestFatal => write!(f, "guest_fatal: guest stopped without a completion"),
         }
     }
@@ -290,26 +330,47 @@ impl Slot {
         }
     }
     pub fn drain(&mut self) {
+        self.shutdown().expect("stopped vCPU MMIO drain");
+    }
+    /// Complete pending MMIO before teardown. The caller owns a stopped vCPU.
+    pub fn shutdown(&mut self) -> io::Result<()> {
         if self.pending_mmio {
+            // SAFETY: the live kvm_run mapping is owned here and no KVM_RUN is
+            // active. immediate_exit is the UAPI byte; the pointer cannot escape.
             unsafe {
                 self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(1);
             }
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
-            assert!(r < 0 && io::Error::last_os_error().raw_os_error() == Some(4));
+            let error = io::Error::last_os_error();
             unsafe {
                 self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(0);
+            }
+            if r >= 0 {
+                return Err(io::Error::other("MMIO drain did not return EINTR"));
+            }
+            if error.raw_os_error() != Some(4) {
+                return Err(error);
             }
             self.pending_mmio = false;
             self.drains += 1;
         }
+        Ok(())
     }
     pub fn reset(&mut self) -> u64 {
         let t = Instant::now();
         self.drain();
-        check(
-            unsafe { madvise(self.ram.ptr.cast(), RAM, 4) },
-            "MADV_DONTNEED",
-        );
+        // Only these verified, host-selected memslots can hold tenant writes.
+        // Immutable pages remain protected in both KVM and the host mapping.
+        for (start, end, writable) in self.snapshot.as_ref().unwrap().class.regions(RAM, CTRL) {
+            if writable {
+                // SAFETY: catalogue extents are page aligned and within this
+                // stopped slot's live MAP_PRIVATE mapping. No RAM borrow escapes.
+                check(
+                    unsafe { madvise(self.ram.ptr.add(start).cast(), end - start, 4) },
+                    "MADV_DONTNEED writable extent",
+                );
+            }
+        }
         unsafe {
             self.run
                 .ptr
@@ -354,6 +415,14 @@ impl Slot {
             .word(self.snapshot.as_ref().unwrap().class.canary())
     }
     fn atomic(&self, off: usize) -> &AtomicU64 {
+        assert!(
+            off.is_multiple_of(8)
+                && off
+                    .checked_add(8)
+                    .is_some_and(|end| end <= arena::RING_BYTES)
+        );
+        // SAFETY: mmap is page aligned; the checked control word is aligned and
+        // live. Only atomic host accesses are exposed, never a RAM slice.
         unsafe { &*self.ram.ptr.add(CTRL + off).cast() }
     }
     fn load(&self, off: usize) -> u64 {
@@ -362,12 +431,21 @@ impl Slot {
     fn store(&self, off: usize, v: u64) {
         self.atomic(off).store(v, Release);
     }
-    pub fn bytes(&self, off: usize, n: usize) -> &[u8] {
-        assert!(off + n <= RAM);
-        unsafe { std::slice::from_raw_parts(self.ram.ptr.add(off), n) }
+    /// Copy stopped guest RAM; callers never borrow the underlying mapping.
+    pub fn bytes(&self, off: usize, n: usize) -> Vec<u8> {
+        assert!(off.checked_add(n).is_some_and(|end| end <= RAM));
+        (off..off + n)
+            .map(|at| {
+                // SAFETY: range is checked above; Slot is owner-thread-only, KVM is
+                // stopped, and the returned Vec owns each copied byte.
+                unsafe { self.ram.ptr.add(at).read_volatile() }
+            })
+            .collect()
     }
     fn copy(&self, off: usize, b: &[u8]) {
-        assert!(off + b.len() <= RAM);
+        assert!(off.checked_add(b.len()).is_some_and(|end| end <= RAM));
+        // SAFETY: b owns/borrows host memory, never this mapping. Bounds are
+        // checked; only this stopped slot's owner writes its writable RAM.
         unsafe {
             ptr::copy_nonoverlapping(b.as_ptr(), self.ram.ptr.add(off), b.len());
         }
@@ -396,7 +474,15 @@ impl Slot {
     }
     fn ring_copy(&self, base: usize, cursor: usize, n: usize) -> Vec<u8> {
         (0..n)
-            .map(|i| self.bytes(base + (cursor + i) % 32768, 1)[0])
+            .map(|i| {
+                // SAFETY: fixed ring geometry is within RAM; KVM is stopped.
+                unsafe {
+                    self.ram
+                        .ptr
+                        .add(base + (cursor + i) % 32768)
+                        .read_volatile()
+                }
+            })
             .collect()
     }
     pub fn attack_arena(&mut self) {
@@ -414,10 +500,10 @@ impl Slot {
             0x80000000 + self.snapshot.as_ref().unwrap().class.canary() as u64,
         );
     }
-    pub fn exit(&mut self) -> Exit {
+    pub fn exit(&mut self) -> Result<Exit, RunError> {
         loop {
-            if let Some(e) = self.try_exit().unwrap_or_else(|e| panic!("{e}")) {
-                return e;
+            if let Some(e) = self.try_exit()? {
+                return Ok(e);
             }
         }
     }
@@ -439,12 +525,12 @@ impl Slot {
             return Ok(None);
         }
         {
-            if let Some(l) = &self.lease {
-                if l.expired() {
-                    return Err(RunError::Deadline {
-                        deadline_ns: l.deadline(),
-                    });
-                }
+            if let Some(l) = &self.lease
+                && l.expired()
+            {
+                return Err(RunError::Deadline {
+                    deadline_ns: l.deadline(),
+                });
             }
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
             if r < 0 && io::Error::last_os_error().raw_os_error() == Some(4) {
@@ -454,28 +540,41 @@ impl Slot {
         }
         self.pending_mmio = false;
         let reason = unsafe { self.run.ptr.add(EXIT_REASON).cast::<u32>().read_volatile() };
-        assert_eq!(reason as u64, KVM_EXIT_MMIO, "unexpected KVM exit {reason}");
+        if reason as u64 != KVM_EXIT_MMIO {
+            return Err(RunError::GuestProtocol("unexpected KVM exit"));
+        }
         self.pending_mmio = true;
         if self.run.word(MMIO_ADDR) != 0x10000000 {
             return Err(RunError::MemoryBound {
                 address: self.run.word(MMIO_ADDR),
             });
         }
-        assert_eq!(
-            unsafe { self.run.ptr.add(MMIO_LEN).cast::<u32>().read_volatile() },
-            4
-        );
-        assert_eq!(unsafe { self.run.ptr.add(MMIO_WRITE).read_volatile() }, 1);
+        // SAFETY: UAPI offsets identify aligned fields in the live kvm_run mapping;
+        // KVM_RUN has returned and the owner is the sole thread accessing this slot.
+        let len = unsafe { self.run.ptr.add(MMIO_LEN).cast::<u32>().read_volatile() };
+        let write = unsafe { self.run.ptr.add(MMIO_WRITE).read_volatile() };
+        if len != 4 || write != 1 {
+            return Err(RunError::GuestProtocol("invalid doorbell access"));
+        }
         let op = unsafe { self.run.ptr.add(MMIO_DATA).cast::<u32>().read_volatile() };
-        assert!((1..=5).contains(&op));
         self.pending_mmio = true;
         self.exits += 1;
+        self.decode_exit(op)
+    }
+    fn decode_exit(&mut self, op: u32) -> Result<Option<Exit>, RunError> {
+        if !(1..=5).contains(&op) {
+            return Err(RunError::GuestProtocol("unknown doorbell"));
+        }
         let prod = self.load(0x40) as usize;
-        assert!(prod >= self.tx && prod - self.tx <= 32768 && prod % 8 == 0);
+        if prod < self.tx || prod - self.tx > 32768 || !prod.is_multiple_of(8) {
+            return Err(RunError::GuestProtocol("TX cursor"));
+        }
         let mut requests = Vec::new();
         let mut finish = None;
         while self.tx < prod {
-            assert!(prod - self.tx >= 32);
+            if prod - self.tx < 32 {
+                return Err(RunError::GuestProtocol("truncated TX header"));
+            }
             let h = self.ring_copy(REQUEST, self.tx, 32);
             let len = u32::from_le_bytes(h[..4].try_into().unwrap()) as usize;
             let kind = u16::from_le_bytes(h[4..6].try_into().unwrap());
@@ -484,35 +583,53 @@ impl Slot {
             let id = u64::from_le_bytes(h[16..24].try_into().unwrap());
             let n = u32::from_le_bytes(h[24..28].try_into().unwrap()) as usize;
             let cap = u32::from_le_bytes(h[28..].try_into().unwrap());
-            assert!((32..=16384).contains(&len) && len % 8 == 0 && len <= prod - self.tx);
-            assert!(
-                n <= 16352
-                    && len == (32 + n + 7) & !7
-                    && flags == 1
-                    && generation == self.generation
-            );
+            // Header slices above have fixed, host-selected lengths. Their conversions
+            // cannot fail; guest values are validated before indexing the payload.
+            if !(32..=16384).contains(&len)
+                || !len.is_multiple_of(8)
+                || len > prod - self.tx
+                || n > 16352
+                || len != (32 + n + 7) & !7
+                || flags != 1
+                || generation != self.generation
+            {
+                return Err(RunError::GuestProtocol("TX record header"));
+            }
             // Copy once, then validate/use this owner-private copy.
             let mut payload = self.ring_copy(REQUEST, self.tx + 32, len - 32);
-            assert!(payload[n..].iter().all(|b| *b == 0));
+            if payload[n..].iter().any(|b| *b != 0) {
+                return Err(RunError::GuestProtocol("nonzero TX padding"));
+            }
             payload.truncate(n);
             match kind {
                 1 => {
-                    assert!(id >= 1 && id <= 32 && cap == 1 && n <= 1024);
-                    let bit = 1u32 << (id - 1);
-                    assert_eq!(self.seen & bit, 0);
-                    self.seen |= bit;
-                    let text = std::str::from_utf8(&payload).unwrap();
-                    assert!(text.starts_with('[') && text.ends_with(']'));
+                    if !(1..=32).contains(&id)
+                        || id != u64::from(self.seen.count_ones()) + 1
+                        || cap != 1
+                        || n > 1024
+                        || !crate::ipc_json::arguments(&payload)
+                    {
+                        return Err(RunError::GuestProtocol("call identity/schema"));
+                    }
+                    self.seen |= 1u32 << (id - 1);
                     requests.push(Request { id, bytes: payload });
                 }
                 5 => {
-                    assert!(id == 0 && cap == 0 && finish.is_none());
-                    finish = Some(String::from_utf8(payload).unwrap());
+                    if id != 0 || cap != 0 || finish.is_some() || op != 3 || self.tx + len != prod {
+                        return Err(RunError::GuestProtocol("completion identity/order"));
+                    }
+                    finish = Some(
+                        String::from_utf8(payload)
+                            .map_err(|_| RunError::GuestProtocol("completion UTF-8"))?,
+                    );
                 }
                 4 => {
+                    if id != 0 || cap != 0 {
+                        return Err(RunError::GuestProtocol("log identity"));
+                    }
                     eprintln!("guest: {}", String::from_utf8_lossy(&payload));
                 }
-                _ => panic!("unexpected TX kind {kind}"),
+                _ => return Err(RunError::GuestProtocol("unknown TX kind")),
             }
             self.tx += len;
         }
@@ -521,7 +638,9 @@ impl Slot {
             if finish.is_none() {
                 return Err(RunError::GuestFatal);
             }
-            assert_eq!(self.seen, self.replied);
+            if self.seen != self.replied || !requests.is_empty() {
+                return Err(RunError::GuestProtocol("completion with outstanding calls"));
+            }
         }
         Ok(Some(Exit {
             op,
@@ -529,13 +648,19 @@ impl Slot {
             finish,
         }))
     }
-    pub fn reply(&mut self, r: &Request) {
+    pub fn reply(&mut self, r: &Request) -> Result<(), RunError> {
         let cons = self.load(0x100) as usize;
-        assert!(cons >= self.rx_consumed && cons <= self.rx && cons % 8 == 0);
+        if cons < self.rx_consumed || cons > self.rx || !cons.is_multiple_of(8) {
+            return Err(RunError::GuestProtocol("RX consumer cursor"));
+        }
         self.rx_consumed = cons;
         let n = r.bytes.len();
         let len = (32 + n + 7) & !7;
-        assert!(self.rx - cons + len <= 32768 && r.id >= 1 && r.id <= 32);
+        if self.rx - cons + len > 32768 {
+            return Err(RunError::GuestProtocol("RX credit exhausted"));
+        }
+        // The trusted broker/fixture must answer a previously decoded request once.
+        assert!((1..=32).contains(&r.id) && n <= 1024);
         let bit = 1u32 << (r.id - 1);
         assert_eq!(self.replied & bit, 0);
         assert_ne!(self.seen & bit, 0);
@@ -554,8 +679,9 @@ impl Slot {
         self.rx += len;
         self.replied |= bit;
         self.store(0xc0, self.rx as u64);
-        self.store(0x180, self.load(0x180) + 1);
+        self.store(0x180, u64::from(self.replied.count_ones()));
         self.store(0x188, 1);
+        Ok(())
     }
     pub fn pause_after_repair(&self) {
         self.store(0x240, 1);
@@ -566,7 +692,7 @@ impl Slot {
 }
 impl Drop for Slot {
     fn drop(&mut self) {
-        self.drain();
+        let _ = self.shutdown();
     }
 }
 
@@ -618,7 +744,7 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     let mut entropy = File::open("/dev/urandom").unwrap();
     s.bind(1, "", &mut entropy);
     let t = Instant::now();
-    let e = s.exit();
+    let e = s.exit().expect("trusted checkpoint protocol");
     assert_eq!(e.op, 4, "real guest did not CHECKPOINT");
     assert!(e.requests.is_empty() && e.finish.is_none());
     s.drain();
@@ -629,7 +755,7 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
         .create_new(true)
         .open(format!("{base}.mem"))
         .unwrap();
-    out.write_all(s.bytes(0, RAM)).unwrap();
+    out.write_all(&s.bytes(0, RAM)).unwrap();
     out.sync_all().unwrap();
     let mut out = File::options()
         .write(true)
@@ -668,4 +794,263 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
     drop(s);
     drop(f);
     std::fs::remove_file(initial).unwrap();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn slot() -> Slot {
+        let f = File::open("/dev/zero").unwrap();
+        Slot {
+            run: Mapping::new(&f, 4096, 2),
+            ram: Mapping::new(&f, RAM, 2),
+            cpu: File::open("/dev/null").unwrap(),
+            _vm: File::open("/dev/null").unwrap(),
+            snapshot: None,
+            generation: 2,
+            tx: 0,
+            rx: 0,
+            rx_consumed: 0,
+            seen: 0,
+            replied: 0,
+            exits: 0,
+            drains: 0,
+            pending_mmio: false,
+            lease: None,
+        }
+    }
+    fn record(s: &Slot, kind: u16, id: u64, payload: &[u8]) {
+        let len = (32 + payload.len() + 7) & !7;
+        let mut b = vec![0; len];
+        b[..4].copy_from_slice(&(len as u32).to_le_bytes());
+        b[4..6].copy_from_slice(&kind.to_le_bytes());
+        b[6..8].copy_from_slice(&1u16.to_le_bytes());
+        b[8..16].copy_from_slice(&2u64.to_le_bytes());
+        b[16..24].copy_from_slice(&id.to_le_bytes());
+        b[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
+        b[28..32].copy_from_slice(&(if kind == 1 { 1u32 } else { 0 }).to_le_bytes());
+        b[32..32 + payload.len()].copy_from_slice(payload);
+        s.copy(REQUEST, &b);
+        s.store(0x40, len as u64);
+    }
+    fn test_snapshots() -> Vec<Arc<Snapshot>> {
+        let bases = std::env::var("JITK_SHARD_TEST_SNAPSHOTS").unwrap();
+        let snapshots: Vec<_> = bases
+            .split(':')
+            .map(|b| Snapshot::load(b).unwrap())
+            .collect();
+        for class in arena::Class::ALL {
+            assert!(snapshots.iter().any(|s| s.class == class));
+        }
+        snapshots
+    }
+    fn present(address: usize) -> bool {
+        use std::os::unix::fs::FileExt;
+        let mut entry = [0; 8];
+        File::open("/proc/self/pagemap")
+            .unwrap()
+            .read_exact_at(&mut entry, (address / 4096 * 8) as u64)
+            .unwrap();
+        u64::from_le_bytes(entry) & (1 << 63) != 0
+    }
+    #[test]
+    #[ignore = "requires KVM and both classes in JITK_SHARD_TEST_SNAPSHOTS; run under bench.lock"]
+    fn reset_cleans_every_writable_page_and_preserves_immutable_translations() {
+        let kvm = Kvm::new();
+        for snapshot in test_snapshots() {
+            let mut s = Slot::new(&kvm, snapshot.clone());
+            let mut pages = 0;
+            for (start, end, writable) in snapshot.class.regions(RAM, CTRL) {
+                if writable {
+                    for off in (start..end).step_by(4096) {
+                        s.copy(off, &[0xcc; 4096]);
+                        pages += 1;
+                    }
+                }
+            }
+            assert_eq!(pages * 4096, snapshot.class.bytes() + arena::RING_BYTES);
+            let saved = s.bytes(0, 4096);
+            assert!(present(s.ram.ptr as usize));
+            s.reset();
+            assert!(
+                present(s.ram.ptr as usize),
+                "immutable translation was discarded"
+            );
+            assert_eq!(s.bytes(0, 4096), saved);
+            assert!(s.pristine(), "every arena/ring page must be pristine");
+            s.shutdown().unwrap();
+        }
+    }
+    #[test]
+    #[ignore = "subprocess target for immutable_host_writes_fault"]
+    fn immutable_host_write_child() {
+        if std::env::var_os("JITK_IMMUTABLE_WRITE_CHILD").is_none() {
+            return;
+        }
+        // SAFETY: Linux RLIMIT_CORE accepts two u64 limits; zero prevents crash artifacts.
+        check(unsafe { setrlimit(4, &[0, 0]) }, "RLIMIT_CORE");
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let s = Slot::new(&Kvm::new(), snapshot);
+        s.copy(0, &[0xff]); // The host's immutable extent must fault, independent of KVM.
+        panic!("immutable RAM accepted a write");
+    }
+    #[test]
+    #[ignore = "requires KVM and both classes in JITK_SHARD_TEST_SNAPSHOTS; run under bench.lock"]
+    fn immutable_host_writes_fault() {
+        use std::os::unix::process::ExitStatusExt;
+        test_snapshots();
+        for base in std::env::var("JITK_SHARD_TEST_SNAPSHOTS")
+            .unwrap()
+            .split(':')
+        {
+            let status = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "kvm::tests::immutable_host_write_child",
+                    "--ignored",
+                ])
+                .env("JITK_IMMUTABLE_WRITE_CHILD", "1")
+                .env("JITK_SHARD_TEST_SNAPSHOT", base)
+                .output()
+                .unwrap()
+                .status;
+            assert_eq!(status.signal(), Some(11), "immutable write must SIGSEGV");
+        }
+    }
+    #[test]
+    fn drop_does_not_panic_when_mmio_drain_fails() {
+        let mut s = slot();
+        s.pending_mmio = true;
+        assert!(s.shutdown().is_err());
+        drop(s); // /dev/null rejects KVM_RUN: cleanup must not assert.
+    }
+    #[test]
+    fn snapshot_metadata_reads_are_bounded_before_allocation() {
+        struct Endless {
+            read: usize,
+        }
+        impl Read for Endless {
+            fn read(&mut self, out: &mut [u8]) -> io::Result<usize> {
+                assert!(self.read <= 73, "reader consumed beyond limit+1");
+                let n = out.len().min(1024);
+                out[..n].fill(0);
+                self.read += n;
+                Ok(n)
+            }
+        }
+        assert!(read_metadata(Endless { read: 0 }, 72).is_err());
+        assert_eq!(read_metadata(&b"abc"[..], 3).unwrap(), b"abc");
+        assert!(read_metadata(&b"abcd"[..], 3).is_err());
+    }
+    fn register_bytes() -> Vec<u8> {
+        let mut bytes = b"JTKREGS2".to_vec();
+        for i in 0..69u64 {
+            bytes.extend_from_slice(&(0x6030_0000_0010_0000 + i).to_le_bytes());
+            bytes.extend_from_slice(&8u64.to_le_bytes());
+            bytes.extend_from_slice(&0u64.to_le_bytes());
+        }
+        bytes
+    }
+    #[test]
+    fn snapshot_registers_reject_truncation_and_corrupt_widths() {
+        let good = register_bytes();
+        assert!(parse_registers(&good).is_ok());
+        for n in 0..good.len() {
+            assert!(parse_registers(&good[..n]).is_err(), "prefix {n}");
+        }
+        for width in [0, 1, 7, 9, 256, u64::MAX] {
+            let mut bad = good.clone();
+            bad[16..24].copy_from_slice(&width.to_le_bytes());
+            assert!(parse_registers(&bad).is_err());
+        }
+        let mut bad = good.clone();
+        bad[8..16].copy_from_slice(&0x6090_0000_0010_0000u64.to_le_bytes());
+        assert!(parse_registers(&bad).is_err());
+        let mut bad = good.clone();
+        bad.extend_from_slice(&good[8..32]);
+        assert!(parse_registers(&bad).is_err(), "duplicate id");
+        let mut bad = good;
+        bad[0] = 0;
+        assert!(parse_registers(&bad).is_err());
+    }
+    #[test]
+    fn guest_ram_reads_are_owned_copies() {
+        let s = slot();
+        s.copy(0, &[1, 2, 3, 4]);
+        let saved = s.bytes(0, 4);
+        s.copy(0, &[5, 6, 7, 8]);
+        assert_eq!(&saved[..], &[1, 2, 3, 4]);
+        assert_eq!(&s.bytes(0, 4)[..], &[5, 6, 7, 8]);
+    }
+    #[test]
+    fn malformed_guest_records_are_run_errors() {
+        for op in [0, 6, u32::MAX] {
+            assert!(matches!(
+                slot().decode_exit(op),
+                Err(RunError::GuestProtocol(_))
+            ));
+        }
+        let mut s = slot();
+        record(&s, 5, 0, b"\xff");
+        assert!(matches!(
+            s.decode_exit(3),
+            Err(RunError::GuestProtocol("completion UTF-8"))
+        ));
+        for cursor in [1, 8, 32776, u64::MAX] {
+            let mut s = slot();
+            s.store(0x40, cursor);
+            assert!(s.decode_exit(1).is_err());
+        }
+        for (kind, id, payload) in [
+            (1, 0, &b"[]"[..]),
+            (1, 33, &b"[]"[..]),
+            (1, 2, &b"[]"[..]),
+            (1, 1, &b"[bad]"[..]),
+            (1, 1, &b"[\xff]"[..]),
+            (5, 0, &b"\xff"[..]),
+            (99, 0, &b""[..]),
+        ] {
+            let mut s = slot();
+            record(&s, kind, id, payload);
+            assert!(s.decode_exit(1).is_err());
+        }
+        for (at, value) in [
+            (0, 0),
+            (0, 255),
+            (6, 2),
+            (8, 9),
+            (24, 255),
+            (28, 2),
+            (39, 1),
+        ] {
+            let mut s = slot();
+            record(&s, 1, 1, b"[]");
+            s.copy(REQUEST + at, &[value]);
+            assert!(s.decode_exit(1).is_err(), "header/padding byte {at}");
+        }
+    }
+    #[test]
+    fn reply_notifications_use_host_shadow_not_guest_counter() {
+        let mut s = slot();
+        s.seen = 1;
+        s.store(0x180, u64::MAX);
+        s.reply(&Request {
+            id: 1,
+            bytes: b"[]".to_vec(),
+        })
+        .unwrap();
+        assert_eq!(s.load(0x180), 1);
+    }
+    #[test]
+    fn guest_reply_credit_is_checked() {
+        let mut s = slot();
+        s.store(0x100, u64::MAX);
+        assert!(
+            s.reply(&Request {
+                id: 1,
+                bytes: b"[]".to_vec()
+            })
+            .is_err()
+        );
+    }
 }

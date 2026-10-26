@@ -50,6 +50,8 @@ struct Mapping {
 }
 impl Mapping {
     fn new(fd: &File, len: usize, flags: c_int) -> Self {
+        // SAFETY: fd is live and len comes from the verified snapshot geometry
+        // or KVM's run size. The returned mapping is checked before any access.
         let p = unsafe { mmap(ptr::null_mut(), len, 3, flags, fd.as_raw_fd(), 0) };
         assert_ne!(p as isize, -1, "mmap: {}", io::Error::last_os_error());
         // Avoid transparent huge-page CoW obscuring the K-page experiment.
@@ -57,16 +59,22 @@ impl Mapping {
         Self { ptr: p.cast(), len }
     }
     fn word(&self, off: usize) -> u64 {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: mmap is live, offset is aligned and in bounds. No Rust RAM
+        // reference escapes; the owner reads only after KVM_RUN has returned.
         unsafe { ptr::read_volatile(self.ptr.add(off).cast()) }
     }
     fn put(&self, off: usize, value: u64) {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: same owner-thread/alignment/range contract as word(); no
+        // borrowed guest bytes alias this store.
         unsafe { ptr::write_volatile(self.ptr.add(off).cast(), value) }
     }
 }
 impl Drop for Mapping {
     fn drop(&mut self) {
+        // SAFETY: this owns the original mapping, with no escaping RAM borrows;
+        // the owner has stopped KVM and will never reenter this slot.
         unsafe {
             munmap(self.ptr.cast(), self.len);
         }
@@ -186,20 +194,30 @@ impl Slot {
     // KVM's internal MMIO completion is not represented in the register image.
     // Re-enter with immediate_exit before resetting PC or discarding memory.
     pub fn drain(&mut self) {
+        self.shutdown().expect("stopped vCPU MMIO drain");
+    }
+    /// Complete pending MMIO before teardown. The caller owns a stopped vCPU.
+    pub fn shutdown(&mut self) -> io::Result<()> {
         if self.pending_mmio {
+            // SAFETY: the live kvm_run mapping is owned here and no KVM_RUN is
+            // active. immediate_exit is the UAPI byte; the pointer cannot escape.
             unsafe {
-                ptr::write_volatile(self.run.ptr.add(IMMEDIATE_EXIT), 1);
+                self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(1);
             }
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
-            assert!(
-                r < 0 && io::Error::last_os_error().raw_os_error() == Some(4),
-                "MMIO drain must return EINTR"
-            );
+            let error = io::Error::last_os_error();
             unsafe {
-                ptr::write_volatile(self.run.ptr.add(IMMEDIATE_EXIT), 0);
+                self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(0);
+            }
+            if r >= 0 {
+                return Err(io::Error::other("MMIO drain did not return EINTR"));
+            }
+            if error.raw_os_error() != Some(4) {
+                return Err(error);
             }
             self.pending_mmio = false;
         }
+        Ok(())
     }
     pub fn reset(&mut self) -> u64 {
         let t = Instant::now();
@@ -218,7 +236,12 @@ impl Slot {
         t.elapsed().as_nanos() as u64
     }
     pub fn pristine(&self, snapshot: &[u8]) -> bool {
-        unsafe { std::slice::from_raw_parts(self.ram.ptr, RAM) == snapshot }
+        snapshot.len() == RAM
+            && snapshot.iter().enumerate().all(|(off, byte)| {
+                // SAFETY: owner-thread-only stopped mapping; no Rust RAM slice is
+                // formed, and each read is within the live RAM allocation.
+                unsafe { self.ram.ptr.add(off).read_volatile() == *byte }
+            })
     }
     pub fn configure(&mut self, generation: u64, seed: u64, k: usize, calls: usize) {
         assert!(k <= 256 && calls <= 10);
@@ -342,6 +365,6 @@ impl Slot {
 }
 impl Drop for Slot {
     fn drop(&mut self) {
-        self.drain();
+        let _ = self.shutdown();
     }
 }

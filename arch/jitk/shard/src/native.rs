@@ -190,7 +190,7 @@ pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
         if vms.contains_key(name) {
             return Err("duplicate native profile".into());
         }
-        vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)));
+        vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)?));
     }
     let mut input = io::stdin().lock();
     let mut output = io::stdout().lock();
@@ -199,7 +199,12 @@ pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let mut head = [0; 4];
         match input.read(&mut head[..1])? {
-            0 => return Ok(()),
+            0 => {
+                for vm in vms.values_mut() {
+                    vm.slot.shutdown()?;
+                }
+                return Ok(());
+            }
             _ => input.read_exact(&mut head[1..])?,
         };
         let len = u32::from_le_bytes(head) as usize;
@@ -239,9 +244,10 @@ pub fn hold(
         "{{\"event\":\"environment\",\"pid\":{},\"threads\":1,\"nested\":true}}",
         std::process::id()
     );
-    let run = inputs::decode(&std::fs::read(request)?).map_err(io::Error::other)?;
+    let run = inputs::decode(&read_metadata(File::open(request)?, MAX_REQUEST)?)
+        .map_err(io::Error::other)?;
     let kvm = Kvm::new();
-    let snapshot = Snapshot::load(base);
+    let snapshot = Snapshot::load(base)?;
     let mut entropy = File::open("/dev/urandom")?;
     let mut vms = Vec::new();
     for i in 0..n {
@@ -255,5 +261,8 @@ pub fn hold(
     println!("{{\"event\":\"held\",\"n\":{n},\"threads\":1,\"native\":true}}");
     io::stdout().flush()?;
     std::thread::sleep(std::time::Duration::from_secs(seconds));
+    for vm in &mut vms {
+        vm.slot.shutdown()?;
+    }
     Ok(())
 }

@@ -42,11 +42,11 @@ fn expected(name: &str) -> &'static str {
 mod harness;
 #[path = "../owner.rs"]
 mod owner;
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let a: Vec<_> = std::env::args().collect();
     if a.get(1).map(String::as_str) == Some("watchdog") {
         lease::run(&a);
-        return;
+        return Ok(());
     }
     if a.get(1).map(String::as_str) == Some("ipc") {
         raise_fds();
@@ -55,32 +55,33 @@ fn main() {
             eprintln!("shard IPC: {e}");
             std::process::exit(1);
         }
-        return;
+        return Ok(());
     }
     if a.get(1).map(String::as_str) == Some("ipc-probe") {
         if let Err(e) = ipc_service::probe(&a[2]) {
             eprintln!("shard IPC probe: {e}");
             std::process::exit(1);
         }
-        return;
+        return Ok(());
     }
     assert!(
         a.len() >= 3,
         "prepare IMAGE BASE | bench/hold/hostile BASE FIXTURE N [SECONDS] | stress/deadlines BASE FIXTURE N | native-worker ARGS | native-hold ..."
     );
     if a[1] == "native-worker" {
-        kvm::native::worker(&a[2..]).unwrap();
-        return;
+        kvm::native::worker(&a[2..])?;
+        return Ok(());
     }
     if a[1] == "native-hold" {
-        kvm::native::hold(&a[2], &a[3], a[4].parse().unwrap(), a[5].parse().unwrap()).unwrap();
-        return;
+        kvm::native::hold(&a[2], &a[3], a[4].parse()?, a[5].parse()?)?;
+        return Ok(());
     }
     raise_fds();
     let kvm = Kvm::new();
     if a[1] == "prepare" {
         prepare(&kvm, &a[2], &a[3]);
-        return;
+        return Ok(());
     }
-    harness::run(kvm, Snapshot::load(&a[2]), &a, fixture, expected);
+    harness::run(kvm, Snapshot::load(&a[2])?, &a, fixture, expected);
+    Ok(())
 }
