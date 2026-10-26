@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "run": "arch/jitk/grow-ts/results/grow-ts-live-ppoll",
+  "mode": "live",
+  "targets": [
+    "ppoll"
+  ],
+  "samples": 30,
+  "mutants_rejected": 2,
+  "integration": "PASS",
+  "canonical_unchanged": true,
+  "host_sha256": "6b4b9d6a80cb972a7c8e2f4ebda27950435d3dbc2c55ac2252ffe76d3e7038f8",
+  "model": "gpt-6.1-sol",
+  "cli": "codex-cli 0.164.0",
+  "prompt_sha256": "7a32e12d4ca5570dafc982542331479a80b22d590a758f56c336ec1c48ea4529",
+  "proposal_sha256": "86d42750face9eff869d0d57eccb530f713ad996d2e25d36fb9dd481413bf694",
+  "source_sha256": "7a49b6494c6ac407f7653767ff0c6c490902148d13e9d0ebc1f22b0ff21ba708",
+  "oracle_image_id": "sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a",
+  "transaction_seconds": 30.510403999984263
+}

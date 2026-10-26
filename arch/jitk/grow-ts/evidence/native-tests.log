@@ -1,0 +1,36 @@
+mkdir -p build
+node_modules/.bin/scriptc build test.ts -o build/test
+/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow-ts/build/test
+build/test
+PASS discovery retains fatal output-protocol records
+PASS application prefixes are retained
+PASS registered ENOSYS and argument errors retain raw arguments
+PASS fatal and truncated output fail closed
+PASS fd2 bytes and guest exit are independently compared
+PASS every profile has semantic/error/state cases and distinct mutants
+PASS loader/build errors write failure receipt
+PASS all three complete Linux/guest differentials
+PASS missing syscall rejected by complete adapter
+PASS truncation rejected by complete adapter
+PASS buffer differences rejected
+PASS unknown syscall rejected
+PASS ENOSYS profile remains explicit
+PASS canonical source and aliases cannot be built
+PASS candidate escape tokens rejected
+PASS denied group signal falls back to child kill and reaps
+PASS installation patch applies; already applied is a no-op
+PASS Lua output matches Linux
+PASS canonical copy/delete/replay preserves canonical hashes
+PASS exact one-file schema enforced
+PASS live rails/private auth cleanup
+PASS live failure cleans auth with no replay
+PASS live source mutation rejected
+PASS heap size is retained while base address is normalized
+PASS mapping offsets retained
+PASS normalizer fails closed on truncation, threads, signals, missing terminal event
+PASS normalizer retains errno and binary bytes
+PASS raw 64-bit register JSON round trips exactly
+PASS trace observations preserve future raw record fields
+PASS bounded process capture drains both binary streams and reaps descendants
+PASS CLI validates targets, samples and pinned integration arguments
+31/31 passed
