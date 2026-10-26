@@ -35,3 +35,18 @@ build/oracle-profile: oracle-profile.ts lib.ts $(SCRIPTC) package-lock.json
 	PATH="$(dir $(ZIG)):$$PATH" SCRIPTC_TARGET=aarch64-linux-musl $(SCRIPTC) build oracle-profile.ts -o $@
 
 oracle: build/oracle-profile
+
+build/experiments: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build experiments-main.ts -o $@
+
+experiments: build/experiments
+	build/experiments $(ARGS)
+
+build/parity: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build parity-main.ts -o $@
+
+build/sqlite-checks: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build sqlite-checks.ts -o $@

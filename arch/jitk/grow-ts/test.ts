@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify } from './lib.ts';
-import { ASSETS, CANONICAL, SAFE_ENV, build, capture, cleanup, copyKernel, killChild, run, scratch, treeHashes } from './runtime.ts';
+import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify, csvDecode, csvEncode, sha } from './lib.ts';
+import { ASSETS, CANONICAL, ROOT, SAFE_ENV, build, capture, cleanup, copyKernel, killChild, run, scratch, treeHashes } from './runtime.ts';
 import { compare, guest, linux, type Differential } from './adapters.ts';
 import { discover, installationPatch, parseArgs, validateSource } from './loop.ts';
 import { hostHandlerTests } from './host-tests.ts';
@@ -11,6 +11,9 @@ import { feedback, retryTransaction } from './retries.ts';
 import { proposal, specification, auditResponse, validateProposal } from './agent.ts';
 import { observe, records, requireResult, type TraceRecord } from './observations.ts';
 import { PROFILES, mutations } from './profiles.ts';
+import { design, attemptRows, markers, type Metadata } from './experiment-run.ts';
+import { category, renderSummary, phase, verifyReceipts } from './experiment-audit.ts';
+import { canonical, normalizeReceipt } from './parity.ts';
 import { normalize } from './normalize.ts';
 
 const FIXTURES = join(ASSETS, 'tests/fixtures');
@@ -455,6 +458,78 @@ test('host harness accepts super imports without proposal-visible tests', async 
     writeFileSync(handler, readFileSync(handler, 'utf8').replace('use crate::{fs, syscalls::copyout};', 'use crate::fs; use super::{copyout,writable};'));
     assert.equal((await hostHandlerTests(work, out)).returncode, 0);
     assert.ok(!existsSync(join(work, 'tests')));
+  });
+});
+
+test('seeded E1 design matches every historical Python cell in order', async () => {
+  for (const phase of ['pilot', 'main']) {
+    const n = phase === 'pilot' ? 2 : 10;
+    const expected = readJSON<Metadata>(join(ASSETS, 'experiments', phase === 'pilot' ? 'E1-pilot.json' : 'E1.json')).design;
+    assert.ok(equal(design(phase, n), expected));
+  }
+});
+test('CSV quoting and diagnostic categories preserve failure accounting', async () => {
+  const rows = [{ a: 'hello, "world"', b: 'multi\nline' }];
+  assert.ok(equal(csvDecode(csvEncode(rows, ['a', 'b'])), rows));
+  assert.equal(category('build_candidate', 'unresolved import super::fs'), 'Rust module/helper import');
+  assert.equal(category('headless_cli', 'timeout'), 'CLI timeout');
+  const linux = Buffer.from('pread.fd-truncation=3\n').toString('hex');
+  const guest = Buffer.from('pread.fd-truncation=-9\n').toString('hex');
+  assert.equal(category('heldout_candidate', "{'linux': {'stdout_hex': '" + linux + "'}, 'jitk': {'stdout_hex': '" + guest + "'}}"), 'Held-out fd argument narrowing');
+  assert.equal(canonical(normalizeReceipt({ wall_s: 3, x: '/test/run/file' }, ['/test/run'], '/test')), '{"x":"<run>/file"}');
+});
+test('receipt audit detects changed CSV decisions and incomplete denominators', async () => {
+  const runId = 'unit-e1-' + process.pid;
+  const out = join(ROOT, 'results', runId);
+  const tools = join(ROOT, 'results', runId + '-experiment');
+  const cells = design('pilot', 1, runId + '-unused');
+  const selected = cells.findIndex((cell) => cell[1] === 'ppoll' && cell[2] === 'none' && cell[3] === 'new');
+  const first = cells[0];
+  cells[0] = cells[selected];
+  cells[selected] = first;
+  cells[0] = [runId, 'ppoll', 'none', 'new', 1];
+  const tx = join(out, 'tx-ppoll');
+  const dest = join(tx, 'attempt-1');
+  mkdirSync(dest, { recursive: true });
+  mkdirSync(tools);
+  try {
+    const pins = markers();
+    const meta: Metadata = { date: 'test', host: 'test', cli: 'test', source_commit: 'test', controller_sha256: {}, models: { old: 'gpt-6-sol', new: 'gpt-6.1-sol' }, protected_before: pins, oracle_image: 'test', vmm_sha256: 'test', design: cells, n_per_cell: 1 };
+    dump(join(tools, 'E1-pilot.json'), meta);
+    dump(join(out, 'source.json'), { files: treeHashes(CANONICAL) });
+    dump(join(out, 'report.json'), { gate: 'PASS' });
+    dump(join(out, 'experiment.json'), { wall_s: 1, returncode: 0, paused: false, accepted: true, command: ['grow', '--validate-only'], protected_after: pins, controller_sha256: {} });
+    dump(join(tx, 'report.json'), { accepted: true, acceptance_at_1: true, acceptance_at_3: true, cli_calls: 1, attempts: [{ attempt: 1, accepted: true, gate: 'PASS', wall_s: 1 }] });
+    const stages: Record<string, { passed: boolean }> = { heldout_candidate: { passed: true } };
+    for (let i = 0; i < 30; i += 1) {
+      stages['semantic_error_state_' + i] = { passed: true };
+    }
+    dump(join(dest, 'stages.json'), stages);
+    dump(join(dest, 'proposal.json'), { source: 'pub fn call(_: &[usize]) -> isize { 0 }' });
+    dump(join(dest, 'agent-mode.json'), { mode: 'live' });
+    dump(join(dest, 'mutations.json'), [{}, {}]);
+    dump(join(dest, 'acceptance.json'), { visible_pass: true, heldout_pass: true, mutations: [{ reasons: { visible: 'rejected', heldout: 'rejected' } }, { reasons: { visible: 'rejected', heldout: 'rejected' } }] });
+    const rows = attemptRows(cells[0], meta);
+    const columns = Object.keys(rows[0]);
+    writeFileSync(join(tools, 'E1-pilot.csv'), csvEncode(rows, columns));
+    assert.equal(verifyReceipts(join(tools, 'E1-pilot.json'), false).attempts, 1);
+    assert.equal(phase(join(tools, 'E1-pilot.json')).length, 1);
+    assert.throws(() => verifyReceipts(join(tools, 'E1-pilot.json'), true), /incomplete/);
+    rows[0].accepted = 0;
+    writeFileSync(join(tools, 'E1-pilot.csv'), csvEncode(rows, columns));
+    assert.throws(() => verifyReceipts(join(tools, 'E1-pilot.json'), false), /decision/);
+  } finally {
+    cleanup(out);
+    cleanup(tools);
+  }
+});
+test('summary renderer requires full measurements', async () => {
+  await temporary(async (path) => {
+    const source = join(ASSETS, 'experiments/summary.json');
+    renderSummary(source, join(path, 'summary.html'));
+    assert.match(readFileSync(join(path, 'summary.html'), 'utf8'), /27\/30/);
+    dump(join(path, 'incomplete.json'), { pilot: [], main: [] });
+    assert.throws(() => renderSummary(join(path, 'incomplete.json'), join(path, 'bad.html')), /incomplete/);
   });
 });
 

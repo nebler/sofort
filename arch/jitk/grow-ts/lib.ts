@@ -254,3 +254,144 @@ export function treeHashes(root: string): Record<string, string> {
   return hashes;
 }
 
+
+export function hashBytes(bytes: Buffer): string {
+  return createHash('sha256').update(bytes).digest('hex');
+}
+export function readOr<T>(path: string, fallback: T): T {
+  return existsSync(path) ? readJSON<T>(path) : fallback;
+}
+export function files(root: string): string[] {
+  if (!existsSync(root)) {
+    return [];
+  }
+  const result: string[] = [];
+  for (const name of readdirSync(root).sort()) {
+    const path = join(root, name);
+    const stat = lstatSync(path);
+    check(!stat.isSymbolicLink(), 'artifact symlink: ' + path);
+    if (stat.isDirectory()) {
+      result.push(...files(path));
+    } else if (stat.isFile()) {
+      result.push(path);
+    }
+  }
+  return result;
+}
+export async function diskSpace(): Promise<string> {
+  const result = await run(['df', '-k', '/System/Volumes/Data']);
+  const text = result.stdout.toString();
+  const fields = text.trim().split('\n').slice(-1)[0].split(/\s+/);
+  check(Number(fields[3]) * 1024 >= 15 * 1024 ** 3, 'STOP: less than 15 GiB free');
+  return text.trim();
+}
+
+// CPython integer-seeded MT19937 and getrandbits rejection sampling, for E1's
+// exact historical seed/order. Only positive u32 seeds are needed here.
+export class PythonRandom {
+  private state: number[] = [];
+  private index = 624;
+  constructor(seed: number) {
+    this.state.push(19650218);
+    for (let i = 1; i < 624; i += 1) {
+      this.state.push((Math.imul(1812433253, this.state[i - 1] ^ (this.state[i - 1] >>> 30)) + i) >>> 0);
+    }
+    let i = 1;
+    for (let k = 624; k > 0; k -= 1) {
+      this.state[i] = ((this.state[i] ^ Math.imul(this.state[i - 1] ^ (this.state[i - 1] >>> 30), 1664525)) + seed) >>> 0;
+      i += 1;
+      if (i >= 624) {
+        this.state[0] = this.state[623];
+        i = 1;
+      }
+    }
+    for (let k = 623; k > 0; k -= 1) {
+      this.state[i] = ((this.state[i] ^ Math.imul(this.state[i - 1] ^ (this.state[i - 1] >>> 30), 1566083941)) - i) >>> 0;
+      i += 1;
+      if (i >= 624) {
+        this.state[0] = this.state[623];
+        i = 1;
+      }
+    }
+    this.state[0] = 0x80000000;
+  }
+  next(): number {
+    if (this.index >= 624) {
+      for (let i = 0; i < 624; i += 1) {
+        const value = (this.state[i] & 0x80000000) | (this.state[(i + 1) % 624] & 0x7fffffff);
+        this.state[i] = (this.state[(i + 397) % 624] ^ (value >>> 1) ^ ((value & 1) ? 0x9908b0df : 0)) >>> 0;
+      }
+      this.index = 0;
+    }
+    let value = this.state[this.index++];
+    value ^= value >>> 11;
+    value ^= (value << 7) & 0x9d2c5680;
+    value ^= (value << 15) & 0xefc60000;
+    value ^= value >>> 18;
+    return value >>> 0;
+  }
+  below(n: number): number {
+    const bits = Math.floor(Math.log2(n)) + 1;
+    let value = this.next() >>> (32 - bits);
+    while (value >= n) {
+      value = this.next() >>> (32 - bits);
+    }
+    return value;
+  }
+}
+export function pythonShuffle<T>(items: T[], seed: number): void {
+  const random = new PythonRandom(seed);
+  for (let i = items.length - 1; i > 0; i -= 1) {
+    const j = random.below(i + 1);
+    const value = items[i];
+    items[i] = items[j];
+    items[j] = value;
+  }
+}
+export function csvEncode(rows: Record<string, unknown>[], fields: string[]): string {
+  function quote(value: unknown): string {
+    const text = value === undefined || value === null ? '' : String(value);
+    return /[",\r\n]/.test(text) ? '"' + text.replaceAll('"', '""') + '"' : text;
+  }
+  return fields.join(',') + '\n' + rows.map((row) => fields.map((field) => quote(row[field])).join(',')).join('\n') + (rows.length ? '\n' : '');
+}
+export function csvDecode(text: string): Record<string, string>[] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const c = text[i];
+    if (c === '"') {
+      if (quoted && text[i + 1] === '"') {
+        field += '"';
+        i += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (!quoted && (c === ',' || c === '\n')) {
+      row.push(field.replace(/\r$/, ''));
+      field = '';
+      if (c === '\n') {
+        rows.push(row);
+        row = [];
+      }
+    } else {
+      field += c;
+    }
+  }
+  check(!quoted, 'unterminated CSV field');
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  const header = rows.shift() || [];
+  return rows.map((values) => {
+    check(values.length === header.length, 'CSV column count');
+    const record: Record<string, string> = {};
+    for (let i = 0; i < header.length; i += 1) {
+      record[header[i]] = values[i];
+    }
+    return record;
+  });
+}
