@@ -49,6 +49,7 @@ export function files(root: string): string[] {
 export interface Result {
   stdout: Buffer;
   stderr: Buffer;
+  combined: Buffer;
   returncode: number;
   timeout: boolean;
 }
@@ -77,6 +78,7 @@ export async function capture(command: string[], options: Options = {}): Promise
       ? spawn('/usr/bin/env', childArgs, { cwd: options.cwd || process.cwd(), detached: true, stdio: 'inherit' })
       : spawn('/usr/bin/env', childArgs, { cwd: options.cwd || process.cwd(), detached: true, stdio: ['pipe', 'pipe', 'pipe'] });
     const stdout: Buffer[] = [];
+    const combined: Buffer[] = [];
     const stderr: Buffer[] = [];
     let timedOut = false;
     let failure: Error | undefined;
@@ -89,8 +91,8 @@ export async function capture(command: string[], options: Options = {}): Promise
       }
     }, (options.timeout ?? 1800) * 1000);
     if (!options.inherit) {
-      child.stdout!.on('data', (data: Buffer) => stdout.push(data));
-      child.stderr!.on('data', (data: Buffer) => stderr.push(data));
+      child.stdout!.on('data', (data: Buffer) => { stdout.push(data); combined.push(data); });
+      child.stderr!.on('data', (data: Buffer) => { stderr.push(data); combined.push(data); });
       child.stdin!.on('error', (error: Error) => {
         if (!error.message.includes('EPIPE')) {
           failure = error;
@@ -109,7 +111,7 @@ export async function capture(command: string[], options: Options = {}): Promise
       if (failure) {
         reject(failure);
       } else {
-        resolve({ stdout: Buffer.concat(stdout), stderr: Buffer.concat(stderr), returncode: code ?? (signal === 'SIGKILL' ? -9 : signal === 'SIGSYS' ? -31 : -1), timeout: timedOut });
+        resolve({ stdout: Buffer.concat(stdout), stderr: Buffer.concat(stderr), combined: Buffer.concat(combined), returncode: code ?? (signal === 'SIGKILL' ? -9 : signal === 'SIGSYS' ? -31 : -1), timeout: timedOut });
       }
     });
   });

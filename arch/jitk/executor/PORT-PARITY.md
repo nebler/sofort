@@ -30,3 +30,20 @@ The privileged cgroup ledger was compiled but not sampled on the shared VM.
 Its 2×4 scale loops, three samples, warm reads, cgroup charging, memory/smaps
 fields, TERM/reap and cleanup remain in TS. The final focused SSH outcome is
 recorded below after the single authorized run; it is not run twice for parity.
+
+## Final single SSH invocation
+
+After merging main (bench e487de60, grow 02a2bdaa), all local executor checks pass.
+The SSH upload/setup initially stopped before the suite because macOS tar added
+AppleDouble `._*.ts` entries. COPYFILE_DISABLE=1 now prevents this, discovery also
+excludes `._*`, and the fixed archive was checked locally (208 intended entries,
+including the static native fixture; no AppleDouble entries). Setup was resumed
+at the failed build step without repeating cargo tests/install or managing VMs.
+
+The one actual shard-check invocation then failed immediately at the existing
+prepared-snapshot identity guard: `/home/dev/r7-ipc/prepared` has a stale helper
+identity. No shared snapshot refresh and no second suite invocation. This is an
+external-input limitation, not fresh passing IPC integration evidence. The
+pre-suite transport/source checks completed before that constructor failure.
+All 15 peer modes (13 attacks, no-ready, backpressure) separately match Python
+in offline Linux-container parity, including exact queue bytes/credit behavior.

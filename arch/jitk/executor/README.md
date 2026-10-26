@@ -8,8 +8,9 @@ run concurrently on the trusted host; the guest receives only JSON results.
 
 Use a real **absolute Node >=24** executable. PATH `node` on this machine may
 be a Vite+ shim. Set `JITK_NODE=/absolute/path/to/node`. No command invokes PATH node.
-Requires Python 3 at `/usr/bin/python3` for the independent watchdog, plus the
-kernel/VMM build prerequisites documented in those subtrees.
+The independent watchdog and IPC tooling use scriptc native executables. Run
+`make tools` (scriptc 0.4.5 is pinned in `../docs/`), with the kernel/VMM build
+prerequisites documented in those subtrees.
 
 ```
 cd arch/jitk/executor

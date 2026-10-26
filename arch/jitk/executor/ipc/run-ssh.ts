@@ -1,11 +1,11 @@
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, resolve } from 'node:path';
 import { capture, check, dump, environment, output, run, sha } from '../lib.ts';
 const executor = resolve(import.meta.dirname, '..');
 const root = resolve(executor, '../../..');
 const common = output(['git', '-C', root, 'rev-parse', '--path-format=absolute', '--git-common-dir']).trim();
 const ssh = process.env.JITK_NESTED_SSH || join(dirname(common), 'kvm-dev/ssh.sh');
-check(existsSync(ssh) && lstatSync(ssh).isFile(), 'set JITK_NESTED_SSH to the existing kvm-dev ssh.sh wrapper');
+check(existsSync(ssh) && statSync(ssh).isFile(), 'set JITK_NESTED_SSH to the existing kvm-dev ssh.sh wrapper');
 const identity = sha(Buffer.from(root)).slice(0, 12);
 const remoteRoot = process.env.JITK_SHARD_REMOTE_ROOT || '/home/dev/r7-ipc';
 check(/^\/home\/dev\/r[0-9]+-[A-Za-z0-9_-]+$/.test(remoteRoot), 'remote scratch root must be /home/dev/r<round>-<agent>');
@@ -18,7 +18,7 @@ const ignored = new Set(['target', 'node_modules', 'build', 'dist', '__pycache__
 function sources(directory: string): string[] {
   const paths: string[] = [];
   for (const name of readdirSync(directory).sort()) {
-    if (ignored.has(name) || name.startsWith('raw')) {
+    if (ignored.has(name) || name.startsWith('raw') || name.startsWith('._')) {
       continue;
     }
     const path = join(directory, name);
@@ -47,7 +47,7 @@ mkdirSync(transfer, { recursive: true });
 const list = join(transfer, 'files');
 const archive = join(transfer, 'sources.tar');
 writeFileSync(list, files.map(path => relative(root, path)).join('\n') + '\n');
-await run(['tar', '-cf', archive, '--no-recursion', '-C', root, '-T', list]);
+await run(['tar', '-cf', archive, '--no-recursion', '-C', root, '-T', list], { env: { ...environment(), COPYFILE_DISABLE: '1' } });
 function quote(value: string): string {
   return "'" + value.replaceAll("'", "'\\''") + "'";
 }
@@ -81,7 +81,7 @@ mkdirSync(destination, { recursive: true });
 dump(join(destination, 'ssh-command.json'), receipt);
 console.log(`jitk: shard suite via ${ssh}; scratch=${remote}; lock wait <=${lockWait}s`);
 const result = await capture([ssh, commands], { timeout: lockWait + 300 });
-const log = Buffer.concat([result.stdout, result.stderr]).toString();
+const log = result.combined.toString();
 writeFileSync(join(destination, 'ssh-test.log'), log);
 if (benchmark && result.returncode === 0) {
   const measurements: string[] = [];
