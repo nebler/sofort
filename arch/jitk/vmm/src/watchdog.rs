@@ -279,18 +279,15 @@ pub fn run() -> ! {
                         Instant::now() + Duration::from_secs_f64((life / 1000.0).min(86_400.0));
                     let deadline = now_ms() + life;
                     #[cfg(target_os = "linux")]
-                    match os::track(pid) {
-                        Some(pidfd) => {
-                            vms.insert(
-                                pid,
-                                Entry {
-                                    end,
-                                    deadline,
-                                    pidfd,
-                                },
-                            );
-                        }
-                        None => {}
+                    if let Some(pidfd) = os::track(pid) {
+                        vms.insert(
+                            pid,
+                            Entry {
+                                end,
+                                deadline,
+                                pidfd,
+                            },
+                        );
                     }
                     #[cfg(target_os = "macos")]
                     if os::track(&w, pid) {

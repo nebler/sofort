@@ -19,6 +19,7 @@ use std::path::{Path, PathBuf};
 type E = Box<dyn std::error::Error>;
 
 /// Seatbelt source; compiled once by the supervisor (`jitk-vmm --compile-profile`).
+#[cfg(any(target_os = "macos", test))]
 pub const SEATBELT_PROFILE: &str = include_str!("jitk.sb");
 
 #[derive(Clone, Copy, PartialEq, Eq)]
