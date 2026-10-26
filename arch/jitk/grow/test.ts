@@ -16,6 +16,8 @@ import { category, renderSummary, phase, verifyReceipts, sealReceipts } from './
 import { canonical, normalizeReceipt } from './parity.ts';
 import { normalize } from './normalize.ts';
 import { lintProbeConstants, rustTokens } from './probe-lint.ts';
+import { collectCalls, generate as autoGenerate, source as autoSource, shape } from './autoprofile.ts';
+import { learn, normalizeAuto } from './auto-observe.ts';
 
 const FIXTURES = join(ASSETS, 'tests/fixtures');
 interface Test {
@@ -23,9 +25,7 @@ interface Test {
   body: () => Promise<void>;
 }
 const tests: Test[] = [];
-function test(name: string, body: () => Promise<void>): void {
-  tests.push({ name, body });
-}
+
 test('probe lint rejects fd, offset, size, bytes and constant aliases', async () => {
   for (const condition of ['fd == 999', 'a[0] == 3', 'a[3] == 4091', 'a[2] == 23', 'a[2] == 16', 'a[1] == 1', 'buf == b"AAAAA"', 'offset == 0x2328usize']) {
     assert.ok(lintProbeConstants('pread64', 'pub fn call(a: &[usize])->isize { if ' + condition + ' { 0 } else { -9 } }').length, condition);
@@ -43,6 +43,56 @@ test('probe lint permits ABI limits, layout indexing, comments and canonical han
   assert.throws(() => rustTokens('/* unclosed'), /unterminated/);
 });
 
+test('autoprofile parses nested trace shapes and ignores incomplete calls', async () => {
+  assert.equal(shape('3</data/file>').kind, 'fd');
+  assert.equal(shape('{st_size=8192, st_mode=0100444}').kind, 'opaque-output');
+  assert.equal(shape('"\\x00\\xff"').kind, 'bytes');
+  await temporary(async (path) => {
+    const trace = join(path, 'trace');
+    writeFileSync(trace, '15 ppoll([{fd=0<pipe:[7]>, events=0}, {fd=1<pipe:[8]>, events=4}], 2, {tv_sec=0, tv_nsec=0}, NULL, 8) = 1 ([{fd=1, revents=4}])\n15 ppoll( <unfinished ...>\n');
+    const calls = collectCalls('ppoll', [trace]);
+    assert.equal(calls.length, 1); assert.equal(calls[0].args.length, 5);
+    assert.equal(calls[0].args[0].kind, 'fd-array');
+    const profile = autoGenerate('ppoll', 73, [trace]);
+    assert.ok(profile.visible.length && profile.heldout.length);
+    const ids = profile.visible.concat(profile.heldout).map((c) => c.id);
+    assert.equal(ids.length, new Set(ids).size);
+    assert.ok(profile.visible.concat(profile.heldout).some((c) => c.category === 'state'));
+  });
+});
+
+test('autoprofile emits freestanding boundary/error/state probes without human expected values', async () => {
+  await temporary(async (path) => {
+    const trace = join(path, 'trace');
+    writeFileSync(trace, '7 unknown_leaf(3</file>, "abc", 3, 0) = 3\n');
+    const profile = autoGenerate('unknown_leaf', 999, [trace]);
+    const cases = profile.visible.concat(profile.heldout);
+    assert.ok(cases.some((c) => c.closed));
+    assert.ok(cases.some((c) => c.args.includes('-16L')));
+    assert.ok(cases.some((c) => c.args.includes('2147483647')));
+    assert.ok(cases.some((c) => c.category === 'semantic') && cases.some((c) => c.category === 'error'));
+    const code = autoSource(profile, cases);
+    assert.ok(code.includes('repeat-return') && code.includes('position'));
+    const c = join(path, 'generated.c'); writeFileSync(c, code);
+    await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-fno-builtin', '-c', c, '-o', join(path, 'probe.o')]);
+    await assert.rejects(async () => autoGenerate('missing', 1, [trace]), /no supported/);
+  });
+});
+
+test('Linux calibration relaxes only observed positive identity and byte variation', async () => {
+  const refs = ['return=11\ntouched=1\na1ff\nrepeat-memory=0\n', 'return=15\ntouched=1\nb2ee\nrepeat-memory=0\n'].map((s) => ({ stdout_hex: Buffer.from(s).toString('hex'), stderr_hex: '', exit: 0 }));
+  const learned = learn(refs);
+  assert.ok(normalizeAuto(Buffer.from('return=1\ntouched=1\n0abc\nrepeat-memory=0\n').toString('hex'), learned.rules) === learned.expected.stdout_hex);
+  assert.throws(() => normalizeAuto(Buffer.from('return=0\ntouched=1\n0abc\nrepeat-memory=0\n').toString('hex'), learned.rules), /positive/);
+  assert.throws(() => normalizeAuto(Buffer.from('return=1\ntouched=1\n0a\nrepeat-memory=0\n').toString('hex'), learned.rules), /extent/);
+  assert.throws(() => learn([refs[0], { stdout_hex: Buffer.from('changed\n').toString('hex'), stderr_hex: '', exit: 0 }]), /shape/);
+  const identity = learn(['return=10\nrepeat-return=10\n', 'return=15\nrepeat-return=15\n'].map((s) => ({ stdout_hex: Buffer.from(s).toString('hex'), stderr_hex: '', exit: 0 })));
+  assert.equal(normalizeAuto(Buffer.from('return=1\nrepeat-return=1\n').toString('hex'), identity.rules), identity.expected.stdout_hex);
+  assert.notEqual(normalizeAuto(Buffer.from('return=1\nrepeat-return=2\n').toString('hex'), identity.rules), identity.expected.stdout_hex);
+});
+function test(name: string, body: () => Promise<void>): void {
+  tests.push({ name, body });
+}
 async function temporary(body: (path: string) => Promise<void>): Promise<void> {
   const path = scratch('jitk-grow-test-');
   try {
