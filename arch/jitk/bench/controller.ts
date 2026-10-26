@@ -1,9 +1,9 @@
-import { readFileSync, existsSync, mkdirSync, mkdtempSync, realpathSync, copyFileSync, cpSync, readdirSync, statSync, symlinkSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, mkdtempSync, realpathSync, copyFileSync, cpSync, readdirSync, statSync, symlinkSync, lstatSync } from 'node:fs';
 import { resolve, join, dirname, relative, isAbsolute, basename, extname } from 'node:path';
 import { loadavg, tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { check, equal, now, readJSON, sha, command, median } from './lib.ts';
-import { start, poll, read, write, close, wait, sleep, usage, childrenCPU, type Child } from './native.ts';
+import { check, equal, now, clockNS, readJSON, sha, command, median } from './lib.ts';
+import { start, poll, read, write, close, wait, sleep, usage, childrenCPU, pollMany, type Child } from './native.ts';
 import { kill, killDescendants } from './processes.ts';
 
 // Paths are anchored to source, never the invocation directory or binary name.
@@ -67,7 +67,8 @@ export interface Frame {
   [key: string]: any;
 }
 export class Worker {
-  start = now();
+  startNS = clockNS();
+  start = Number(this.startNS) / 1e9;
   p: Child;
   pid: number;
   treeCleanup: boolean;
@@ -76,6 +77,7 @@ export class Worker {
   frames: string[] = [];
   records: string[] = [];
   closed = false;
+  strictProtocol = true;
   cpu_ms: number | null = null;
   returncode: number | null = null;
   constructor(argv: string[], env: Record<string, string> = {}, lifetime = 20) {
@@ -114,19 +116,20 @@ export class Worker {
       }
       if (channel === 2) {
         this.err = Buffer.concat([this.err, bytes]);
-        check(this.err.length <= 65536, 'stderr cap');
+        check(!this.strictProtocol || this.err.length <= 65536, 'stderr cap');
       } else {
         this.buf = Buffer.concat([this.buf, bytes]);
-        check(this.buf.length <= 2097152, 'stdout cap');
+        check(!this.strictProtocol || this.buf.length <= 2097152, 'stdout cap');
         while (this.buf.includes(10)) {
           const end = this.buf.indexOf(10);
           const line = this.buf.subarray(0, end);
           this.buf = this.buf.subarray(end + 1);
           if (line[0] === 30) {
+            check(!this.strictProtocol || line.every(byte => byte < 128), 'non-ASCII record');
             this.records.push(line.toString('ascii'));
             continue;
           }
-          check(line.every(byte => byte < 128), 'non-ASCII frame');
+          check(!this.strictProtocol || line.every(byte => byte < 128), 'non-ASCII frame');
           JSON.parse(line.toString());
           this.frames.push(line.toString());
         }
@@ -144,8 +147,8 @@ export class Worker {
     }
     return JSON.parse(this.frames.shift()!) as Frame;
   }
-  ready(ack = false): void {
-    const frame = this.recv();
+  ready(ack = false, timeout = 10): void {
+    const frame = this.recv(timeout);
     check(equal(frame, { t: 'ready', v: 1 }), JSON.stringify(frame));
     if (ack) {
       const end = now() + 10;
@@ -157,16 +160,16 @@ export class Worker {
   }
   run(caseName: string, cold = false): Frame {
     const c = CASES[caseName];
-    const before = now();
+    const before = clockNS();
     const loadStart = loadavg();
     this.send({ t: 'run', code: c.code, ns: { test: ['echo'] } });
-    const due: { at: number; id: number; value: unknown }[] = [];
+    const due: { at: bigint; id: number; value: unknown }[] = [];
     let calls = 0;
     let maxPending = 0;
     const stamps: number[] = [];
     const end = now() + 10;
     while (true) {
-      const current = now();
+      const current = clockNS();
       while (due.length && due[0].at <= current) {
         const item = due.shift()!;
         this.send({ t: 'ret', id: item.id, ok: item.value });
@@ -174,25 +177,25 @@ export class Worker {
       while (this.frames.length) {
         const m = JSON.parse(this.frames.shift()!) as Frame;
         if (m.t === 'done') {
-          const done = now();
+          const done = clockNS();
           check(equal(m, { t: 'done', ok: c.expected }), JSON.stringify(m));
           check(due.length === 0, 'unawaited tool calls');
           const expectedCalls = caseName === 'promise10_5ms' ? 10 : caseName.startsWith('one_tool') ? 1 : 0;
           check(calls === expectedCalls, 'tool call count');
-          return { latency_ms: (done - (cold ? this.start : before)) * 1000, run_ms: (done - before) * 1000, tool_calls: calls, max_pending: maxPending, call_stamps_ns: stamps, load_at_timing_start: loadStart, load_at_result: loadavg() };
+          return { latency_ms: Number(done - (cold ? this.startNS : before)) / 1e6, run_ms: Number(done - before) / 1e6, tool_calls: calls, max_pending: maxPending, call_stamps_ns: stamps, load_at_timing_start: loadStart, load_at_result: loadavg() };
         }
         if (m.t === 'log') {
           continue;
         }
         check(m.t === 'call' && m.id === calls + 1 && m.ns === 'test' && m.fn === 'echo' && m.args.length === 1, JSON.stringify(m));
         calls += 1;
-        stamps.push(Math.floor(now() * 1e9));
-        due.push({ at: now() + c.tool_delay_ms / 1000, id: m.id, value: m.args[0] });
-        due.sort((a, b) => a.at - b.at || a.id - b.id);
+        stamps.push(Number(clockNS()));
+        due.push({ at: clockNS() + BigInt(Math.trunc(c.tool_delay_ms * 1e6)), id: m.id, value: m.args[0] });
+        due.sort((a, b) => a.at < b.at ? -1 : a.at > b.at ? 1 : a.id - b.id);
         maxPending = Math.max(maxPending, due.length);
       }
       check(now() <= end && this.hasFDs, this.err.toString());
-      const timeout = due.length ? Math.max(0, due[0].at - now()) : 0.1;
+      const timeout = due.length ? Math.max(0, Number(due[0].at - clockNS()) / 1e9) : 0.1;
       this.pump(Math.min(0.1, timeout));
     }
   }
@@ -218,7 +221,7 @@ export class Worker {
     }
     check(reaped, 'missing reap');
     this.returncode = reaped.status;
-    this.cpu_ms = reaped.user_ms + reaped.system_ms;
+    this.cpu_ms = reaped.cpu_ms;
     watch('-' + this.pid);
     ACTIVE.delete(this.pid);
     close(this.p.stdin);
@@ -258,7 +261,9 @@ export function files(folder: string): string[] {
     }
     const path = join(folder, name);
     if (statSync(path).isDirectory()) {
-      result.push(...files(path));
+      if (!lstatSync(path).isSymbolicLink()) {
+        result.push(...files(path));
+      }
     } else {
       result.push(path);
     }
@@ -270,7 +275,17 @@ function artifact(value: string | null, env: string, candidates: string[], label
   check(path && existsSync(path) && statSync(path).isFile(), label + ' missing; build it inside ' + ROOT + ' or set ' + env + '/explicit CLI override');
   return realpathSync(path);
 }
-export function choose(args: Config): Frame {
+export interface SelectionConfig {
+  vmm: string | null;
+  image: string | null;
+  sandbox_profile: string | null;
+  scratch_dir: string | null;
+  hyperlight_adapter: string | null;
+  no_hyperlight: boolean;
+  executor_root: string | null;
+  node: string | null;
+}
+export function choose(args: SelectionConfig): Frame {
   const image = artifact(args.image, 'JITK_IMAGE', [join(ROOT, 'kernel/dist/kernel.bin'), join(ROOT, 'kernel/build/kernel.bin')], 'kernel image');
   const vmm = artifact(args.vmm, 'JITK_VMM_BINARY', [join(ROOT, 'vmm/build/jitk-vmm'), join(ROOT, 'vmm/target/release/jitk-vmm')], 'VMM');
   const selection: Frame = { kernel_source: args.image || process.env.JITK_IMAGE ? 'explicit override' : 'canonical kernel', vmm_source: args.vmm || process.env.JITK_VMM_BINARY ? 'explicit override' : 'canonical VMM' };
@@ -417,7 +432,7 @@ export function makeSpecs(s: Frame): Spec[] {
 function refill(s: Frame, concurrency: number): Frame {
   // Start c independent builders, replace each as it reaches READY and is reaped.
   const n = concurrency * 4;
-  const before = now();
+  const before = clockNS();
   const cpu0 = childrenCPU();
   const ready: number[] = [];
   const workers: { worker: Worker; index: number }[] = [];
@@ -434,7 +449,7 @@ function refill(s: Frame, concurrency: number): Frame {
         w.pump(0);
         if (w.frames.length && (!s.require_sandbox_ack || w.err.includes(Buffer.from('{"sandbox":"ok"}\n')))) {
           w.ready(Boolean(s.require_sandbox_ack));
-          ready[slot.index] = (now() - w.start) * 1000;
+          ready[slot.index] = Number(clockNS() - w.startNS) / 1e6;
           w.close();
           workers.splice(i, 1);
         } else {
@@ -442,7 +457,11 @@ function refill(s: Frame, concurrency: number): Frame {
         }
       }
       if (workers.length) {
-        sleep(0.001);
+        const fds: number[] = [];
+        for (const slot of workers) {
+          fds.push(slot.worker.p.stdout, slot.worker.p.stderr);
+        }
+        pollMany(fds, 0.1);
       }
     }
   } finally {
@@ -450,8 +469,8 @@ function refill(s: Frame, concurrency: number): Frame {
       slot.worker.close();
     }
   }
-  const elapsed = now() - before;
-  return { refill_vms_s: n / elapsed, cpu_ms_vm: (childrenCPU() - cpu0) / n, vms: n, wall_s: elapsed, ready_ms: ready };
+  const elapsed = Number(clockNS() - before) / 1e9;
+  return { refill_vms_s: n / elapsed, cpu_ms_vm: (childrenCPU() - cpu0) * 1000 / n, vms: n, wall_s: elapsed, ready_ms: ready };
 }
 export function sample(spec: Spec, s: Frame, clone: Worker | null): Frame {
   const mode = spec.mode;
@@ -511,6 +530,6 @@ export function sample(spec: Spec, s: Frame, clone: Worker | null): Frame {
     worker.close();
   }
   result.cpu_ms_vm = worker.cpu_ms;
-  result.through_reap_ms = (now() - worker.start) * 1000;
+  result.through_reap_ms = Number(clockNS() - worker.startNS) / 1e6;
   return result;
 }

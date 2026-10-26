@@ -4,6 +4,7 @@ import { kill } from './processes.ts';
 
 const owned = new Map<number, number>();
 let buffer = '';
+try {
 while (true) {
   const current = now();
   for (const [pid, deadline] of owned) {
@@ -12,15 +13,12 @@ while (true) {
       owned.delete(pid);
     }
   }
-  const timeout = Math.max(0, Math.min(1, Math.min(...owned.values(), current + 1) - current));
+  const timeout = Math.max(0, Math.min(1, Math.min(...Array.from(owned.values()), current + 1) - current));
   if (!poll(0, -1, timeout)) {
     continue;
   }
   const data = read(0);
   if (!data.length) {
-    for (const pid of owned.keys()) {
-      kill(pid);
-    }
     break;
   }
   buffer += data.toString();
@@ -34,5 +32,11 @@ while (true) {
     } else if (line.startsWith('-')) {
       owned.delete(Number(line.slice(1)));
     }
+  }
+}
+
+} finally {
+  for (const pid of owned.keys()) {
+    kill(pid);
   }
 }

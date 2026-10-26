@@ -72,6 +72,44 @@
         "mutable-bytes"
       ],
       "returns": "i32"
+    },
+    {
+      "name": "nativeTemplates",
+      "symbol": "bench_templates",
+      "params": [
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeLedgers",
+      "symbol": "bench_ledgers",
+      "params": [
+        "i32",
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeTimebase",
+      "symbol": "bench_timebase",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "nativePollMany",
+      "symbol": "bench_poll_many",
+      "params": [
+        "bytes",
+        "f64"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeInit",
+      "symbol": "bench_init",
+      "params": [],
+      "returns": "void"
     }
   ],
   "libraries": [

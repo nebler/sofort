@@ -1,7 +1,8 @@
+import { propagate, Interrupted } from './lib.ts';
 import { renameSync } from 'node:fs';
 import { join, parse } from 'node:path';
 import { cpus, platform, release, arch, loadavg } from 'node:os';
-import { check, detail, readJSON, dump, utc, command, Random, now } from './lib.ts';
+import { check, detail, readJSON, dump, utc, command, Random, clockNS, now } from './lib.ts';
 import { HERE, gate, choose, makeSpecs, Worker, cleanup, startWatch, type Config, type Frame } from './controller.ts';
 import { report } from './report.ts';
 import { test } from './test-suite.ts';
@@ -46,6 +47,7 @@ export function main(): void {
     check(args.smoke || args.test || args.report || args.samples >= 30, 'canonical run requires samples >= 30');
     check([args.gate_budget, args.gate_poll, args.load_threshold].every(Number.isFinite) && args.gate_budget >= 0 && args.gate_poll > 0 && args.load_threshold > 0 && args.max_extra_rounds >= 0, 'invalid gate configuration');
   } catch (error) {
+    propagate(error);
     console.error(detail(error));
     process.exit(2);
   }
@@ -68,16 +70,19 @@ export function main(): void {
     process.exit(2);
   }
   const raw = args.output || join(HERE, args.smoke ? 'smoke.json' : 'raw.json');
-  const data: Frame = { schema: 1, started_at: utc(), config: args, selection, specs, samples: [], statistics: { method: 'percentile IID bootstrap', draws: 2000, seed: 601, quantile: 'linear order-statistic interpolation', confidence: 0.95 }, raw_path: raw,
-    machine: { platform: `${platform()}-${release()}-${arch()}`, cpu_count: cpus().length, uptime: command(['/usr/bin/uptime']), sysctl: command(['/usr/sbin/sysctl', 'hw.model', 'hw.memsize', 'hw.ncpu', 'kern.hv.max_address_spaces']), vm_stat: command(['/usr/bin/vm_stat']), runtime: 'scriptc 0.4.5', timezone: [command(['/bin/date', '+%Z'])] }, missing: [] };
+  const samples: Frame[] = [];
+  const admissionRows: Frame[] = [];
+  const missing: string[] = [];
+  const data: Frame = { schema: 1, started_at: utc(), config: args, selection, specs, samples, statistics: { method: 'percentile IID bootstrap', draws: 2000, seed: 601, quantile: 'linear order-statistic interpolation', confidence: 0.95 }, raw_path: raw,
+    machine: { platform: `${platform()}-${release()}-${arch()}`, cpu_count: cpus().length, uptime: command(['/usr/bin/uptime']), sysctl: command(['/usr/sbin/sysctl', 'hw.model', 'hw.memsize', 'hw.ncpu', 'kern.hv.max_address_spaces']), vm_stat: command(['/usr/bin/vm_stat']), runtime: 'scriptc 0.4.5', timezone: [command(['/bin/date', '+%Z'])] }, missing };
   if (!selection.executor.integrated) {
-    data.missing.push('integrated executor READY');
+    missing.push('integrated executor READY');
   }
   if (!selection.sandbox_probe) {
-    data.missing.push('precompiled sandbox on/off');
+    missing.push('precompiled sandbox on/off');
   }
   if (!selection.hyperlight) {
-    data.missing.push('Hyperlight adapter');
+    missing.push('Hyperlight adapter');
   }
   const save = (): void => {
     const path = parse(raw);
@@ -102,18 +107,17 @@ export function main(): void {
           worker.ready(admission.label === 'jitk' && Boolean(selection.require_sandbox_ack));
           worker.run('one_tool');
           entry.status = 'PASS';
-          entry.ms = (now() - worker.start) * 1000;
+          entry.ms = Number(clockNS() - worker.startNS) / 1e6;
         } catch (error) {
+    propagate(error);
           entry.status = 'FAIL';
           entry.error = detail(error);
         } finally {
           if (worker) {
             worker.close();
           }
-          if (!data.admission) {
-            data.admission = [];
-          }
-          data.admission.push(entry);
+          admissionRows.push(entry);
+          data.admission = admissionRows;
           save();
         }
         if (entry.status === 'PASS') {
@@ -139,12 +143,13 @@ export function main(): void {
           Object.assign(row, sample(spec, selection, clone));
           row.status = 'PASS';
         } catch (error) {
+    propagate(error);
           row.status = 'FAIL';
           row.error = detail(error);
         }
         row.finished_at = utc();
         row.load_after = loadavg();
-        data.samples.push(row);
+        samples.push(row);
         save();
         console.log(JSON.stringify({ name: row.name, block, status: row.status, load_before: row.load_before }));
       }
@@ -174,6 +179,7 @@ import { sample } from './controller.ts';
 try {
   main();
 } catch (error) {
+
   console.error(detail(error));
-  process.exit(1);
+  process.exit(error instanceof Interrupted ? error.code : 1);
 }

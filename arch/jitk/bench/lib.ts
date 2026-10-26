@@ -28,7 +28,7 @@ export function utc(): string {
   return new Date().toISOString().replace(/(\.\d{3})Z$/, '$1000+00:00');
 }
 export function now(): number {
-  return performance.now() / 1000;
+  return Number(process.hrtime.bigint()) / 1e9;
 }
 export function command(argv: string[], timeout = 5): string {
   try {
@@ -181,4 +181,113 @@ export function stats(xs: number[], boot = 2000): Stats {
     return { value: quant(xs, q), ci95: [quant(values, 0.025), quant(values, 0.975)] };
   };
   return { n: xs.length, min: Math.min(...xs), max: Math.max(...xs), p50: estimate(0.5), p90: estimate(0.9), p99: estimate(0.99) };
+}
+
+export function options(argv: string[], defaults: Record<string, any>, positional: string[] = []): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const key of Object.keys(defaults)) {
+    result[key] = defaults[key];
+  }
+  let position = 0;
+  try {
+    for (let i = 0; i < argv.length; i += 1) {
+      const arg = argv[i];
+      if (arg === '--help' || arg === '-h') {
+        console.log('options: ' + Object.keys(defaults).map(k => '--' + k.replace(/_/g, '-')).join(' ') + ' ' + positional.join(' '));
+        process.exit(0);
+      }
+      if (!arg.startsWith('--')) {
+        check(position < positional.length, 'unrecognized argument ' + arg);
+        result[positional[position]] = arg;
+        position += 1;
+        continue;
+      }
+      const parts = arg.slice(2).split('=');
+      const key = parts[0].replace(/-/g, '_');
+      check(key in defaults, 'unrecognized argument ' + arg);
+      if (typeof defaults[key] === 'boolean') {
+        check(parts.length === 1, 'flag takes no value ' + arg);
+        result[key] = true;
+      } else {
+        const value = parts.length > 1 ? parts.slice(1).join('=') : argv[++i];
+        check(value !== undefined, 'missing value ' + arg);
+        result[key] = typeof defaults[key] === 'number' ? Number(value) : value;
+        if (typeof defaults[key] === 'number') {
+          check(Number.isFinite(result[key]), 'invalid number ' + arg);
+        }
+      }
+    }
+    return result;
+  } catch (error) {
+    console.error(detail(error));
+    process.exit(2);
+  }
+}
+
+// Python's fixed-point formatting uses ties-to-even on the exact binary float.
+// Number.toFixed chooses the other neighbor for exact halfway values.
+export function fixed(value: number, digits: number): string {
+  check(Number.isFinite(value), 'non-finite fixed point value');
+  const bytes = Buffer.alloc(8);
+  bytes.writeDoubleLE(value, 0);
+  const bits = bytes.readBigUInt64LE(0);
+  const negative = (bits >> 63n) !== 0n;
+  const exponent = Number((bits >> 52n) & 2047n);
+  const fraction = bits & 0xfffffffffffffn;
+  const mantissa = exponent ? fraction | 0x10000000000000n : fraction;
+  const shift = exponent ? exponent - 1075 : -1074;
+  let numerator = mantissa * (10n ** BigInt(digits));
+  let denominator = 1n;
+  if (shift >= 0) {
+    numerator <<= BigInt(shift);
+  } else {
+    denominator <<= BigInt(-shift);
+  }
+  let rounded = numerator / denominator;
+  const remainder = numerator % denominator;
+  if (remainder * 2n > denominator || (remainder * 2n === denominator && (rounded & 1n) !== 0n)) {
+    rounded += 1n;
+  }
+  let text = rounded.toString().padStart(digits + 1, '0');
+  if (digits) {
+    text = text.slice(0, -digits) + '.' + text.slice(-digits);
+  }
+  return (negative ? '-' : '') + text;
+}
+
+// CPython 3.12+ float sum: compensated running sum, with ordinary ordered terms.
+export function sum(values: number[]): number {
+  let high = 0;
+  let low = 0;
+  for (const value of values) {
+    const next = high + value;
+    if (Math.abs(high) >= Math.abs(value)) {
+      low += (high - next) + value;
+    } else {
+      low += (value - next) + high;
+    }
+    high = next;
+  }
+  return low !== 0 && Number.isFinite(low) ? high + low : high;
+}
+
+export class Interrupted extends Error {
+  code: number;
+  constructor(code: number) {
+    super('interrupted');
+    this.code = code;
+  }
+}
+export function propagate(error: unknown): void {
+  if (error instanceof Interrupted) {
+    throw error;
+  }
+}
+
+export function hashJSON(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+export function clockNS(): bigint {
+  return process.hrtime.bigint();
 }
