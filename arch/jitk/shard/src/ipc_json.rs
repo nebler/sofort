@@ -262,6 +262,10 @@ fn identifier(s: &str) -> bool {
             .is_some_and(|b| b.is_ascii_alphabetic() || b == b'_' || b == b'$')
         && bytes.all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'$')
 }
+/// Guest calls are JSON argument arrays; policy calls have a stricter envelope.
+pub fn arguments(bytes: &[u8]) -> bool {
+    matches!(parse(bytes), Ok(Value::Array(_)))
+}
 pub fn request(bytes: &[u8]) -> bool {
     let Ok(Value::Array(a)) = parse(bytes) else {
         return false;

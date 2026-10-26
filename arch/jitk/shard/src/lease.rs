@@ -223,7 +223,14 @@ impl Watchdog {
         for w in wakes {
             inherit(w.0.as_raw_fd(), true);
         }
-        let child = Command::new(std::env::current_exe().unwrap())
+        #[cfg(not(test))]
+        let executable = std::env::current_exe().unwrap();
+        #[cfg(test)]
+        let executable = std::path::PathBuf::from(
+            std::env::var("JITK_SHARD_TEST_BINARY")
+                .expect("KVM owner tests require a built real watchdog binary"),
+        );
+        let child = Command::new(executable)
             .args([
                 "watchdog",
                 &std::process::id().to_string(),

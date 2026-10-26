@@ -248,17 +248,27 @@ impl Managed {
             };
             self.metrics.calls += e.requests.len() as u64;
             if e.op == 3 {
-                assert!(self.cpu.repaired());
-                return Ok(Progress::Finished(e.finish.unwrap()));
+                if !self.cpu.repaired() {
+                    return Err(RunError::GuestProtocol("missing repair acknowledgement"));
+                }
+                return e
+                    .finish
+                    .map(Progress::Finished)
+                    .ok_or(RunError::GuestProtocol("missing completion"));
             }
-            if e.op == 5 {
-                assert!(self.cpu.repaired());
+            if (e.op == 5 && !self.cpu.repaired()) || !matches!(e.op, 1 | 2 | 5) {
+                return Err(RunError::GuestProtocol("unexpected checkpoint/repair"));
             }
-            assert!(e.op == 1 || e.op == 2 || e.op == 5);
             if e.op == 2 && self.waited.is_none() {
                 self.waited = Some(Instant::now());
             }
             if self.policy && (!e.requests.is_empty() || e.op == 2) {
+                if e.requests
+                    .iter()
+                    .any(|r| !crate::ipc_json::request(&r.bytes))
+                {
+                    return Err(RunError::GuestProtocol("policy call schema"));
+                }
                 let sent = kvm::monotonic_ns();
                 for r in &e.requests {
                     self.policy_sent[r.id as usize - 1] = sent;
@@ -280,17 +290,18 @@ impl Managed {
                 self.cpu.drain();
                 return Ok(Progress::Parked);
             }
-            self.reply(&e.requests);
+            self.reply(&e.requests)?;
         }
     }
-    fn reply(&mut self, requests: &[Request]) {
+    fn reply(&mut self, requests: &[Request]) -> Result<(), RunError> {
         let t = Instant::now();
         for r in requests.iter().rev() {
-            self.cpu.reply(r);
+            self.cpu.reply(r)?;
         }
         if !requests.is_empty() {
             self.metrics.tool_ns += t.elapsed().as_nanos() as u64;
         }
+        Ok(())
     }
     fn finish(&mut self, result: Result<String, RunError>, retain: bool) -> Completion {
         let stopped_ns = kvm::monotonic_ns();
@@ -401,7 +412,17 @@ fn worker(
                     };
                     s.pending.swap_remove(at);
                     let t = kvm::clock_ns(3);
-                    s.cpu.reply(&request);
+                    if let Err(e) = s.cpu.reply(&request) {
+                        let completion = s.finish(Err(e), false);
+                        events
+                            .send(Event::Done {
+                                slot: id,
+                                generation,
+                                completion,
+                            })
+                            .unwrap();
+                        continue;
+                    }
                     s.metrics.policy_round_trips.push(
                         kvm::monotonic_ns().saturating_sub(s.policy_sent[request.id as usize - 1]),
                     );
@@ -413,7 +434,17 @@ fn worker(
                     }
                     let t = kvm::clock_ns(3);
                     let pending = std::mem::take(&mut s.pending);
-                    s.reply(&pending);
+                    if let Err(e) = s.reply(&pending) {
+                        let completion = s.finish(Err(e), false);
+                        events
+                            .send(Event::Done {
+                                slot: id,
+                                generation,
+                                completion,
+                            })
+                            .unwrap();
+                        continue;
+                    }
                     s.metrics.cpu_ns += kvm::clock_ns(3) - t;
                 }
                 _ => unreachable!(),
@@ -501,5 +532,62 @@ impl Events {
             notify();
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn guest_protocol_error_resets_only_its_run() {
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap());
+        let mut pool = Pool::new(Kvm::new(), snapshot, 2, 2);
+        for (slot, source, mode) in [
+            (0, "return await tools.echo(41);", Mode::Policy),
+            (1, "return 2;", Mode::Run),
+        ] {
+            pool.start(
+                slot,
+                Job {
+                    generation: 2,
+                    source: source.into(),
+                    mode,
+                    deadline_ns: kvm::monotonic_ns() + 5_000_000_000,
+                    canary: true,
+                },
+            );
+        }
+        for _ in 0..2 {
+            let Event::Done {
+                slot, completion, ..
+            } = pool.recv()
+            else {
+                panic!("bad guest schema must complete as a run error");
+            };
+            if slot == 0 {
+                assert!(matches!(completion.result, Err(RunError::GuestProtocol(_))));
+                assert_ne!(completion.reset_done_ns, 0);
+            } else {
+                assert_eq!(completion.result.unwrap(), "{\"ok\":2}");
+            }
+        }
+        pool.reset(0);
+        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        pool.start(
+            0,
+            Job {
+                generation: 3,
+                source: "return 2;".into(),
+                mode: Mode::Run,
+                deadline_ns: kvm::monotonic_ns() + 5_000_000_000,
+                canary: true,
+            },
+        );
+        let Event::Done { completion, .. } = pool.recv() else {
+            panic!("clean reuse");
+        };
+        assert_eq!(completion.result.unwrap(), "{\"ok\":2}");
     }
 }
