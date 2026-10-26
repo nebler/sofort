@@ -1,0 +1,1 @@
+if(globalThis.__tenantCanary!==undefined)throw Error('leak');globalThis.__tenantCanary=$MARKER;if((await tools.echo($MARKER))[0]!==$MARKER)throw Error('cross-talk');

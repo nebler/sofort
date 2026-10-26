@@ -1,5 +1,18 @@
 # jitk-shard: device-free nested-KVM spike
 
+`jitk-shard` is a library with two CLI entry points. `snapshot`, `arena`,
+`inputs`, `ipc_json`, `streams` and `entropy` are portable; `kvm`, `owner`,
+`lease`, `clock`, `ipc` and `ipc_service` contain the Linux arm64 runtime. Shard-local
+layout and UAPI constants live in `constants`. Offline preparation, fixtures,
+probes and measurement drivers belong to the binaries under `src/bin/harness`
+and `src/synthetic`; they are not library modules.
+
+The pure library tests run on macOS without KVM, Linux headers or guest assembly:
+`cargo +1.95.0 test --locked --offline`. Run
+`cargo +1.95.0 clippy --locked --offline --all-targets -- -D warnings` and
+`cargo +1.95.0 fmt --check` there too. Linux-only tests and the native corpus
+still require the KVM gate below. Binary names and CLI commands are unchanged.
+
 **R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
 results, build/reproduce commands, and remaining gates are in
 [RESULTS-R6.md](RESULTS-R6.md); its versioned transport subset is specified in
@@ -64,8 +77,8 @@ a second generation-fenced CAS claims escalation and `pidfd_send_signal(SIGKILL)
 kills the shard. A reset cannot reuse a slot after escalation has claimed it.
 The receiving reactor fails the shard closed on unexpected watchdog exit;
 production supervision must also cover a stalled reactor/watchdog. No per-VM/call helper or
-waiting thread is added. The reactor queues are bounded harness commands/events;
-**Node shared-memory policy IPC remains unimplemented**.
+waiting thread is added. The reactor queues are bounded owner commands/events.
+`ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
 Real-guest commands (all emit JSONL):
 
@@ -196,7 +209,7 @@ this is not a complete reset implementation for the real kernel.
 
 ## Build and run
 
-Use the existing nested-KVM machine; do not build this Linux crate on macOS:
+Run the runtime binaries on the existing Linux arm64 nested-KVM machine:
 
 ```sh
 # From the repo on the Mac. All outputs/builds stay in our own remote directory.
@@ -206,9 +219,10 @@ scp -r -P 2222 -i kvm-dev/id_ed25519 arch/jitk/shard/* dev@127.0.0.1:/home/dev/w
 ./kvm-dev/ssh.sh 'cd /home/dev/w2-shard && sudo flock /home/dev/bench.lock ./target/release/jitk-shard selftest'
 ```
 
-Tool requirements: installed stable Rust, C compiler/Linux UAPI headers, clang,
-ld.lld; no network fetch or vendoring. The build compiles the stub with
-`clang --target=aarch64-unknown-none` and links a raw image with ld.lld.
+Crate build requirements: Rust 1.95 or newer, a C compiler/Linux UAPI headers,
+and the cached `libc` 0.2.186 crate used by the VMM kit. The build script extracts
+only Linux UAPI constants; each binary's fixture uses Rust's integrated assembler.
+The complete native test gate also needs the kernel/census build prerequisites.
 Run as root only to read `/proc/slabinfo`; `/dev/kvm` itself is available to dev.
 The process raises its own fd limit to 65,536; it changes no system settings.
 

@@ -157,7 +157,7 @@ fn archive(tree: &Tree<'_>) -> Result<Vec<u8>, &'static str> {
 }
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::decode;
     fn text(b: &mut Vec<u8>, s: &str) {
         b.extend_from_slice(&(s.len() as u16).to_le_bytes());
         b.extend_from_slice(s.as_bytes());

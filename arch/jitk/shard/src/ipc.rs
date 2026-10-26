@@ -1,7 +1,6 @@
 //! Node/shard SPSC queues. Fixed geometry, private cursor shadows and bounded
 //! copies: peer-owned metadata never supplies a pointer or allocation size.
 use std::{
-    ffi::c_void,
     fs::File,
     io,
     os::fd::{AsRawFd, FromRawFd},
@@ -12,44 +11,22 @@ use std::{
     },
 };
 
-pub const CAPACITY: u64 = 64;
-pub const PAYLOAD: usize = 16384;
-const RECORD: usize = 32 + PAYLOAD;
-const REGION: usize = CAPACITY as usize * RECORD;
-const BYTES: usize = 4096 + 2 * REGION;
-pub const START: u32 = 1;
-pub const REPLY: u32 = 2;
-pub const CANCEL: u32 = 3;
-pub const CALL: u32 = 16;
-pub const DONE: u32 = 17;
-pub const ERROR: u32 = 18;
-pub const RELEASED: u32 = 19;
-pub const READY: u32 = 20;
-pub const PING: u32 = 21; // offline IPC/policy latency probe; never a guest capability
+use crate::constants::ipc::{
+    BYTES, DATA, RECORD, REGION, RX_CONSUMER, RX_PRODUCER, TX_CONSUMER, TX_PRODUCER,
+};
+pub use crate::constants::ipc::{
+    CALL, CANCEL, CAPACITY, DONE, ERROR, PAYLOAD, PING, READY, RELEASED, REPLY, START,
+};
 
-unsafe extern "C" {
-    fn mmap(addr: *mut c_void, len: usize, prot: i32, flags: i32, fd: i32, off: i64)
-    -> *mut c_void;
-    fn munmap(addr: *mut c_void, len: usize) -> i32;
-    fn fcntl(fd: i32, cmd: i32, ...) -> i32;
-    fn read(fd: i32, data: *mut c_void, n: usize) -> isize;
-    fn write(fd: i32, data: *const c_void, n: usize) -> isize;
-    fn poll(fds: *mut PollFd, count: usize, timeout: i32) -> i32;
-}
-#[repr(C)]
-struct PollFd {
-    fd: i32,
-    events: i16,
-    revents: i16,
-}
+use libc::{fcntl, mmap, munmap, poll, pollfd as PollFd, read, write};
+
 fn invalid(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
 fn validate_memory(file: &File) -> io::Result<()> {
-    const F_GET_SEALS: i32 = 1034;
-    const REQUIRED_SEALS: i32 = 1 | 2 | 4; // SEAL, SHRINK, GROW; peer writes remain allowed.
+    const REQUIRED_SEALS: i32 = libc::F_SEAL_SEAL | libc::F_SEAL_SHRINK | libc::F_SEAL_GROW; // SEAL, SHRINK, GROW; peer writes remain allowed.
     // SAFETY: F_GET_SEALS takes no variadic argument and does not mutate the fd.
-    let seals = unsafe { fcntl(file.as_raw_fd(), F_GET_SEALS) };
+    let seals = unsafe { fcntl(file.as_raw_fd(), libc::F_GET_SEALS) };
     if seals < 0 {
         return Err(io::Error::last_os_error());
     }
@@ -102,13 +79,15 @@ impl Notify {
     pub fn signal(&self) {
         let one = 1u64.to_ne_bytes();
         loop {
+            // SAFETY: The eventfd is held live by Arc<File> and one is a
+            // readable eight-byte value for the duration of write.
             let n = unsafe { write(self.0.as_raw_fd(), one.as_ptr().cast(), 8) };
             if n == 8 {
                 return;
             }
             match io::Error::last_os_error().raw_os_error() {
-                Some(4) => continue,
-                Some(11) => return,
+                Some(libc::EINTR) => continue,
+                Some(libc::EAGAIN) => return,
                 e => panic!("IPC eventfd write: {e:?}"),
             }
         }
@@ -126,12 +105,35 @@ pub struct Endpoint {
 impl Endpoint {
     /// Takes ownership of inherited descriptors. The sealed size prevents SIGBUS
     /// even if the peer attempts to truncate its copy of the memfd.
+    ///
+    /// # Safety
+    /// Descriptors 3, 4 and 5 must be live and uniquely transferred to this
+    /// endpoint: a memfd, incoming eventfd and outgoing eventfd respectively.
+    /// Call once, before other code can adopt or close these descriptors.
     pub unsafe fn inherited() -> io::Result<Self> {
+        // SAFETY: The caller transfers unique ownership of live inherited
+        // descriptors 3/4/5. Mapping uses the exact validated, size-sealed memfd
+        // extent and is checked before access.
         let file = unsafe { File::from_raw_fd(3) };
+        // SAFETY: inherited() transfers the live incoming eventfd exactly once.
         let incoming = Notify(std::sync::Arc::new(unsafe { File::from_raw_fd(4) }));
+        // SAFETY: inherited() transfers the live outgoing eventfd exactly once.
         let outgoing = Notify(std::sync::Arc::new(unsafe { File::from_raw_fd(5) }));
         validate_memory(&file)?;
-        let memory = unsafe { mmap(ptr::null_mut(), BYTES, 3, 1, 3, 0).cast::<u8>() };
+        // SAFETY: The caller transfers unique ownership of live inherited
+        // descriptors 3/4/5. Mapping uses the exact validated, size-sealed memfd
+        // extent and is checked before access.
+        let memory = unsafe {
+            mmap(
+                ptr::null_mut(),
+                BYTES,
+                libc::PROT_READ | libc::PROT_WRITE,
+                libc::MAP_SHARED,
+                3,
+                0,
+            )
+            .cast::<u8>()
+        };
         if memory as isize == -1 {
             return Err(io::Error::last_os_error());
         }
@@ -146,13 +148,16 @@ impl Endpoint {
         })
     }
     fn cursor(&self, offset: usize) -> &AtomicU64 {
+        // SAFETY: Only the four fixed, aligned AtomicU64 control offsets are
+        // supplied. They lie in the live, size-sealed mapping and are accessed
+        // atomically by both peers.
         unsafe { &*self.memory.add(offset).cast() }
     }
     pub fn notifier(&self) -> Notify {
         self.incoming.clone()
     }
     pub fn receive(&mut self) -> io::Result<Option<Message>> {
-        let produced = self.cursor(64).load(Acquire);
+        let produced = self.cursor(RX_PRODUCER).load(Acquire);
         if produced < self.rx || produced - self.rx > CAPACITY {
             return Err(invalid("IPC producer cursor"));
         }
@@ -160,17 +165,20 @@ impl Endpoint {
             return Ok(None);
         }
         let mut copy = [0u8; RECORD];
+        // SAFETY: The host-selected ring index is within the fixed mapping, disjoint
+        // from copy. Acquire observed peer publication; this SPSC consumer returns
+        // credit only after the copy.
         unsafe {
             ptr::copy_nonoverlapping(
                 self.memory
-                    .add(4096 + (self.rx % CAPACITY) as usize * RECORD),
+                    .add(DATA + (self.rx % CAPACITY) as usize * RECORD),
                 copy.as_mut_ptr(),
                 RECORD,
             );
         }
         let message = Message::decode(&copy)?;
         self.rx += 1;
-        self.cursor(128).store(self.rx, Release);
+        self.cursor(RX_CONSUMER).store(self.rx, Release);
         self.outgoing.signal(); // return queue credit, even when no response is ready
         Ok(Some(message))
     }
@@ -178,7 +186,7 @@ impl Endpoint {
         if message.bytes.len() > PAYLOAD {
             return Err(invalid("IPC local payload bound"));
         }
-        let consumed = self.cursor(256).load(Acquire);
+        let consumed = self.cursor(TX_CONSUMER).load(Acquire);
         if consumed < self.peer
             || consumed > self.tx
             || self.tx - consumed > CAPACITY
@@ -196,7 +204,10 @@ impl Endpoint {
         header[8..16].copy_from_slice(&message.generation.to_le_bytes());
         header[16..20].copy_from_slice(&message.id.to_le_bytes());
         header[20..24].copy_from_slice(&(message.bytes.len() as u32).to_le_bytes());
-        let at = 4096 + REGION + (self.tx % CAPACITY) as usize * RECORD;
+        let at = DATA + REGION + (self.tx % CAPACITY) as usize * RECORD;
+        // SAFETY: The header and bounded payload are disjoint from the fixed mapped
+        // TX slot; checked consumer credit gives this SPSC producer ownership until
+        // release publication.
         unsafe {
             ptr::copy_nonoverlapping(header.as_ptr(), self.memory.add(at), 32);
             ptr::copy_nonoverlapping(
@@ -206,7 +217,7 @@ impl Endpoint {
             );
         }
         self.tx += 1;
-        self.cursor(192).store(self.tx, Release);
+        self.cursor(TX_PRODUCER).store(self.tx, Release);
         self.outgoing.signal();
         Ok(true)
     }
@@ -214,15 +225,19 @@ impl Endpoint {
         let fd = self.incoming.0.as_raw_fd();
         let mut p = PollFd {
             fd,
-            events: 1,
+            events: libc::POLLIN,
             revents: 0,
         };
         // A bounded liveness check also notices an unexpectedly dead watchdog.
+        // SAFETY: The pollfd and eight-byte eventfd buffer are live and writable for
+        // their respective calls; no pointer escapes.
         let n = unsafe { poll(&mut p, 1, 100) };
-        if n < 0 && io::Error::last_os_error().raw_os_error() != Some(4) {
+        if n < 0 && io::Error::last_os_error().raw_os_error() != Some(libc::EINTR) {
             return Err(io::Error::last_os_error());
         }
         let mut value = 0u64;
+        // SAFETY: The pollfd and eight-byte eventfd buffer are live and writable for
+        // their respective calls; no pointer escapes.
         unsafe {
             read(fd, (&mut value as *mut u64).cast(), 8);
         }
@@ -231,6 +246,8 @@ impl Endpoint {
 }
 impl Drop for Endpoint {
     fn drop(&mut self) {
+        // SAFETY: Endpoint exclusively owns this mapping; no reference into it
+        // escapes Endpoint, and it is unmapped once.
         unsafe {
             munmap(self.memory.cast(), BYTES);
         }
@@ -239,7 +256,18 @@ impl Drop for Endpoint {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{
+        BYTES, CAPACITY, DATA, Endpoint, Message, Notify, PAYLOAD, RECORD, REPLY, RX_CONSUMER,
+        RX_PRODUCER, START, TX_CONSUMER, validate_memory,
+    };
+    use libc::{eventfd, memfd_create};
+    use libc::{fcntl, mmap};
+    use std::{
+        fs::File,
+        os::fd::{AsRawFd, FromRawFd},
+        ptr,
+        sync::atomic::Ordering::{Acquire, Release},
+    };
     #[test]
     fn rejects_regular_files_and_missing_seals() {
         let path = std::env::current_dir()
@@ -257,11 +285,13 @@ mod tests {
             validate_memory(&file).is_err(),
             "regular files must never pass F_GET_SEALS"
         );
-        unsafe extern "C" {
-            fn memfd_create(name: *const u8, flags: u32) -> i32;
-        }
         // SAFETY: a static NUL-terminated name, and ownership of the new fd transfers to File.
-        let file = unsafe { File::from_raw_fd(memfd_create(c"jitk-seal-test".as_ptr().cast(), 3)) };
+        let file = unsafe {
+            File::from_raw_fd(memfd_create(
+                c"jitk-seal-test".as_ptr().cast(),
+                libc::MFD_CLOEXEC | libc::MFD_ALLOW_SEALING,
+            ))
+        };
         file.set_len(BYTES as u64).unwrap();
         assert!(validate_memory(&file).is_err());
         for seal in [1, 2, 4] {
@@ -271,21 +301,42 @@ mod tests {
                 2 => 4,
                 _ => 1,
             };
-            assert_eq!(unsafe { fcntl(file.as_raw_fd(), 1033, bit) }, 0);
+            assert_eq!(
+                // SAFETY: The memfd is live and uniquely owned; F_ADD_SEALS
+                // accepts the named scalar bit without retaining a pointer.
+                unsafe { fcntl(file.as_raw_fd(), libc::F_ADD_SEALS, bit) },
+                0
+            );
             assert_eq!(validate_memory(&file).is_ok(), seal == 4);
         }
     }
     fn endpoint() -> Endpoint {
-        unsafe extern "C" {
-            fn eventfd(init: u32, flags: i32) -> i32;
-        }
-        let memory = unsafe { mmap(ptr::null_mut(), BYTES, 3, 0x21, -1, 0).cast::<u8>() };
+        // SAFETY: The anonymous mapping is checked before access. eventfd returns
+        // fresh descriptors transferred once into File; these are local test
+        // endpoints with no competing owners.
+        let memory = unsafe {
+            mmap(
+                ptr::null_mut(),
+                BYTES,
+                libc::PROT_READ | libc::PROT_WRITE,
+                libc::MAP_SHARED | libc::MAP_ANONYMOUS,
+                -1,
+                0,
+            )
+            .cast::<u8>()
+        };
         assert_ne!(memory as isize, -1);
+        // SAFETY: The anonymous mapping is checked before access. eventfd returns
+        // fresh descriptors transferred once into File; these are local test
+        // endpoints with no competing owners.
         let incoming = Notify(std::sync::Arc::new(unsafe {
-            File::from_raw_fd(eventfd(0, 0x80000 | 0x800))
+            File::from_raw_fd(eventfd(0, libc::EFD_CLOEXEC | libc::EFD_NONBLOCK))
         }));
+        // SAFETY: The anonymous mapping is checked before access. eventfd returns
+        // fresh descriptors transferred once into File; these are local test
+        // endpoints with no competing owners.
         let outgoing = Notify(std::sync::Arc::new(unsafe {
-            File::from_raw_fd(eventfd(0, 0x80000 | 0x800))
+            File::from_raw_fd(eventfd(0, libc::EFD_CLOEXEC | libc::EFD_NONBLOCK))
         }));
         Endpoint {
             memory,
@@ -302,14 +353,14 @@ mod tests {
         let mut e = endpoint();
         assert!(e.receive().unwrap().is_none());
         for cursor in [CAPACITY + 1, u64::MAX] {
-            e.cursor(64).store(cursor, Release);
+            e.cursor(RX_PRODUCER).store(cursor, Release);
             assert!(e.receive().is_err());
         }
-        e.cursor(64).store(0, Release);
+        e.cursor(RX_PRODUCER).store(0, Release);
         let message = Message::new(REPLY, 0, 1, 1, vec![]);
-        e.cursor(256).store(1, Release);
+        e.cursor(TX_CONSUMER).store(1, Release);
         assert!(e.send(&message).is_err());
-        e.cursor(256).store(0, Release);
+        e.cursor(TX_CONSUMER).store(0, Release);
         e.tx = 2;
         e.peer = 1;
         assert!(e.send(&message).is_err());
@@ -320,18 +371,21 @@ mod tests {
             record[0..4].copy_from_slice(&START.to_le_bytes());
             record[8..16].copy_from_slice(&1u64.to_le_bytes());
             record[16..20].copy_from_slice(&(i as u32).to_le_bytes());
+            // SAFETY: The local test mapping contains the entire host-selected
+            // RX slot; the stack record is disjoint, and publication follows
+            // this copy.
             unsafe {
                 ptr::copy_nonoverlapping(
                     record.as_ptr(),
-                    e.memory.add(4096 + (i % CAPACITY) as usize * RECORD),
+                    e.memory.add(DATA + (i % CAPACITY) as usize * RECORD),
                     RECORD,
                 );
             }
-            e.cursor(64).store(i + 1, Release);
+            e.cursor(RX_PRODUCER).store(i + 1, Release);
             assert_eq!(e.receive().unwrap().unwrap().id, i as u32);
-            assert_eq!(e.cursor(128).load(Acquire), i + 1);
+            assert_eq!(e.cursor(RX_CONSUMER).load(Acquire), i + 1);
         }
-        e.cursor(64).store(127, Release);
+        e.cursor(RX_PRODUCER).store(127, Release);
         assert!(e.receive().is_err());
     }
     #[test]

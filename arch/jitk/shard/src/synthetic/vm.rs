@@ -1,48 +1,57 @@
+use jitk_shard::constants::kvm::*;
+use jitk_shard::constants::ring;
+pub use jitk_shard::constants::synthetic::{ARENA, CTRL, RAM, REPLY, REQUEST};
 use std::{
     fs::File,
     io,
     os::{
         fd::{AsRawFd, FromRawFd},
-        raw::{c_int, c_void},
+        raw::c_int,
     },
     ptr,
     sync::Arc,
     time::Instant,
 };
-#[allow(dead_code)]
-mod abi {
-    include!(concat!(env!("OUT_DIR"), "/abi.rs"));
+core::arch::global_asm!(include_str!("../../guest/stub.S"));
+pub fn stub() -> &'static [u8] {
+    // SAFETY: the included assembly exports these exact byte-address labels
+    // around its read-only payload; neither declaration gives Rust ownership.
+    unsafe extern "C" {
+        static jitk_stub_start: u8;
+        static jitk_stub_end: u8;
+    }
+    let start = std::ptr::addr_of!(jitk_stub_start);
+    let end = std::ptr::addr_of!(jitk_stub_end);
+    // SAFETY: both assembly labels enclose the fixture in one immutable,
+    // read-only section that lives for the entire binary lifetime.
+    unsafe { std::slice::from_raw_parts(start, end as usize - start as usize) }
 }
-use abi::*;
-pub const RAM: usize = 2 << 20;
-pub const CTRL: usize = 0x4000;
-pub const REQUEST: usize = 0x8000;
-pub const REPLY: usize = 0x10000;
-pub const ARENA: usize = 0x20000;
-pub const STUB: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/stub.bin"));
-unsafe extern "C" {
-    fn ioctl(fd: c_int, request: u64, ...) -> c_int;
-    fn mmap(
-        addr: *mut c_void,
-        len: usize,
-        prot: c_int,
-        flags: c_int,
-        fd: c_int,
-        off: i64,
-    ) -> *mut c_void;
-    fn munmap(addr: *mut c_void, len: usize) -> c_int;
-    fn madvise(addr: *mut c_void, len: usize, advice: c_int) -> c_int;
-    fn setrlimit(resource: c_int, value: *const [u64; 2]) -> c_int;
-}
+use libc::{ioctl, madvise, mmap, munmap, setrlimit};
+
 fn check(v: c_int, label: &str) -> c_int {
     assert!(v >= 0, "{label}: {}", io::Error::last_os_error());
     v
 }
 fn call(fd: &File, op: u64, arg: u64) -> c_int {
-    check(unsafe { ioctl(fd.as_raw_fd(), op, arg) }, "KVM ioctl")
+    // SAFETY: All local call sites select KVM UAPI operations with live, correctly sized
+    // scalar or C-layout arguments; no pointer is retained by ioctl.
+    check(unsafe { ioctl(fd.as_raw_fd(), op as _, arg) }, "KVM ioctl")
 }
 pub fn raise_fds() {
-    check(unsafe { setrlimit(7, &[65536, 65536]) }, "RLIMIT_NOFILE");
+    check(
+        // SAFETY: The initialized rlimit has the C layout and remains live while
+        // setrlimit reads it.
+        unsafe {
+            setrlimit(
+                libc::RLIMIT_NOFILE,
+                &libc::rlimit {
+                    rlim_cur: 65536,
+                    rlim_max: 65536,
+                },
+            )
+        },
+        "RLIMIT_NOFILE",
+    );
 }
 struct Mapping {
     ptr: *mut u8,
@@ -52,10 +61,25 @@ impl Mapping {
     fn new(fd: &File, len: usize, flags: c_int) -> Self {
         // SAFETY: fd is live and len comes from the verified snapshot geometry
         // or KVM's run size. The returned mapping is checked before any access.
-        let p = unsafe { mmap(ptr::null_mut(), len, 3, flags, fd.as_raw_fd(), 0) };
+        let p = unsafe {
+            mmap(
+                ptr::null_mut(),
+                len,
+                libc::PROT_READ | libc::PROT_WRITE,
+                flags,
+                fd.as_raw_fd(),
+                0,
+            )
+        };
         assert_ne!(p as isize, -1, "mmap: {}", io::Error::last_os_error());
         // Avoid transparent huge-page CoW obscuring the K-page experiment.
-        check(unsafe { madvise(p, len, 15) }, "MADV_NOHUGEPAGE");
+        check(
+            // SAFETY: fd is live and len is the fixed RAM or KVM run-map size.
+            // mmap success is checked before use; madvise addresses precisely
+            // that mapping.
+            unsafe { madvise(p, len, libc::MADV_NOHUGEPAGE) },
+            "MADV_NOHUGEPAGE",
+        );
         Self { ptr: p.cast(), len }
     }
     fn word(&self, off: usize) -> u64 {
@@ -128,22 +152,30 @@ pub struct Slot {
 }
 impl Slot {
     pub fn new(kvm: &Kvm, snapshot: &File, id: usize) -> Self {
+        // SAFETY: successful KVM_CREATE_VM returned a fresh descriptor adopted
+        // exactly once here; no other File owns it.
         let vm = unsafe { File::from_raw_fd(call(&kvm.fd, KVM_CREATE_VM, 0)) };
-        let ram = Mapping::new(snapshot, RAM, 2); // MAP_PRIVATE
+        let ram = Mapping::new(snapshot, RAM, libc::MAP_PRIVATE); // MAP_PRIVATE
         let region = Region {
             slot: 0,
             flags: 0,
-            gpa: 0x80000000,
+            gpa: ring::RAM_GPA,
             size: RAM as u64,
             addr: ram.ptr as u64,
         };
-        call(&vm, KVM_SET_USER_MEMORY_REGION, &region as *const _ as u64);
+        call(
+            &vm,
+            KVM_SET_USER_MEMORY_REGION as _,
+            &region as *const _ as u64,
+        );
+        // SAFETY: successful KVM_CREATE_VCPU returned a fresh descriptor adopted
+        // exactly once here; no other File owns it.
         let cpu = unsafe { File::from_raw_fd(call(&vm, KVM_CREATE_VCPU, 0)) };
         let mut init = [0u32; 8];
         call(&vm, KVM_ARM_PREFERRED_TARGET, init.as_mut_ptr() as u64);
         init[1] |= 1 << KVM_ARM_VCPU_PSCI_0_2;
         call(&cpu, KVM_ARM_VCPU_INIT, init.as_ptr() as u64);
-        let run = Mapping::new(&cpu, kvm.run_size, 1); // MAP_SHARED
+        let run = Mapping::new(&cpu, kvm.run_size, libc::MAP_SHARED); // MAP_SHARED
         let mut s = Self {
             id,
             run,
@@ -160,7 +192,7 @@ impl Slot {
             waiting: false,
             pending_mmio: false,
         };
-        s.set_reg(REG_PC, 0x80000000);
+        s.set_reg(REG_PC, ring::RAM_GPA);
         s.set_reg(REG_PSTATE, 0x3c5); // EL1h, DAIF masked
         // All GPRs + SP_EL0, PC, PSTATE. Stub never modifies system/FP regs.
         for i in 0..34 {
@@ -204,8 +236,11 @@ impl Slot {
             unsafe {
                 self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(1);
             }
-            let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
+            // SAFETY: the owner holds the stopped vCPU and live run mapping;
+            // KVM_RUN with immediate_exit set only drains its pending MMIO.
+            let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
             let error = io::Error::last_os_error();
+            // SAFETY: KVM_RUN has returned; this owner holds the live UAPI byte.
             unsafe {
                 self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(0);
             }
@@ -223,7 +258,9 @@ impl Slot {
         let t = Instant::now();
         self.drain();
         check(
-            unsafe { madvise(self.ram.ptr.cast(), RAM, 4) },
+            // SAFETY: The vCPU is stopped and owns this complete live
+            // MAP_PRIVATE RAM extent; no RAM references escape the mapping.
+            unsafe { madvise(self.ram.ptr.cast(), RAM, libc::MADV_DONTNEED) },
             "MADV_DONTNEED",
         );
         for &(id, value) in &self.regs {
@@ -248,7 +285,8 @@ impl Slot {
         self.generation = generation;
         self.seed = seed;
         self.calls = calls;
-        // The control+ring area is a real 80 KiB private allocation per active slot.
+        // SAFETY: this stopped owner exclusively owns RAM; the fixed 80-KiB
+        // control/ring extent lies within its live private mapping.
         unsafe {
             ptr::write_bytes(self.ram.ptr.add(CTRL), 0, 81920);
         }
@@ -266,27 +304,41 @@ impl Slot {
     }
     pub fn run_exit(&mut self) -> u32 {
         loop {
-            let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
+            // SAFETY: this owner holds live vCPU and run mappings; no RAM
+            // reference spans KVM_RUN, which takes a zero scalar argument.
+            let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
             if r < 0 && io::Error::last_os_error().raw_os_error() == Some(4) {
                 continue;
             }
             check(r, "KVM_RUN");
             self.pending_mmio = false;
+            // SAFETY: This owner holds the live vCPU and kvm_run mapping. UAPI
+            // fields are aligned, within run_size, and read only after KVM_RUN
+            // has returned.
             let reason = unsafe { ptr::read_volatile(self.run.ptr.add(EXIT_REASON).cast::<u32>()) };
             assert_eq!(
                 reason as u64, KVM_EXIT_MMIO,
                 "slot {} unexpected exit {reason}",
                 self.id
             );
-            assert_eq!(self.run.word(MMIO_ADDR), 0x10000000);
+            assert_eq!(self.run.word(MMIO_ADDR), ring::DOORBELL_GPA);
             assert_eq!(
+                // SAFETY: This owner holds the live vCPU and kvm_run
+                // mapping. UAPI fields are aligned, within run_size, and
+                // read only after KVM_RUN has returned.
                 unsafe { ptr::read_volatile(self.run.ptr.add(MMIO_LEN).cast::<u32>()) },
                 4
             );
             assert_eq!(
+                // SAFETY: This owner holds the live vCPU and kvm_run
+                // mapping. UAPI fields are aligned, within run_size, and
+                // read only after KVM_RUN has returned.
                 unsafe { ptr::read_volatile(self.run.ptr.add(MMIO_WRITE)) },
                 1
             );
+            // SAFETY: This owner holds the live vCPU and kvm_run mapping. UAPI
+            // fields are aligned, within run_size, and read only after KVM_RUN
+            // has returned.
             let op = unsafe { ptr::read_volatile(self.run.ptr.add(MMIO_DATA).cast::<u32>()) };
             assert!((1..=3).contains(&op));
             self.pending_mmio = true;

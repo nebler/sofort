@@ -1,0 +1,1 @@
+const a=[];for(let i=0;i<1024;i++){const b=new Uint8Array(65536);b.fill(85);a.push(b)}return a.length;
