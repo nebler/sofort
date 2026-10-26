@@ -1,7 +1,7 @@
 from pathlib import Path
 import subprocess,os,json,hashlib,sys
 p=Path(__file__).resolve().parents[1]
-evidence=Path(os.environ.get('JITK_TEST_OUTPUT',str(p/'test-results'))).resolve()
+evidence=Path(os.environ.get('JITK_TEST_OUTPUT',str(p/('test-results' if os.getenv('JITK_RECORD') == '1' else '.work/test-results')))).resolve()
 from scratch import workspace
 work = workspace('JITK_PROBE_WORK', 'probes')
 (evidence/'probes').mkdir(parents=True,exist_ok=True)

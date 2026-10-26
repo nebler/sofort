@@ -4,6 +4,8 @@ import {readFileSync,writeFileSync,existsSync,rmSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {selectBackend} from './build/select-backend.js';
+// Certification is an explicit recording action; its child checks refresh evidence.
+process.env.JITK_RECORD='1';
 const hash=p=>createHash('sha256').update(readFileSync(p)).digest('hex');
 rmSync('.READY',{force:true});
 const selected=selectBackend();assert(selected.integrated,'canonical VMM and kernel .READY required');

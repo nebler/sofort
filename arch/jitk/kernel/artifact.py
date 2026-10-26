@@ -1,5 +1,5 @@
 from pathlib import Path
-import sys,hashlib,json,subprocess
+import os,sys,hashlib,json,subprocess
 elf,out=map(Path,sys.argv[1:])
 # The executable's dependency file identifies the exact OUT_DIR (feature-specific).
 dep=elf.with_suffix('.d').read_text()
@@ -19,6 +19,10 @@ if verification.exists():
             assert hashlib.sha256(source.read_bytes()).hexdigest()==contract['source_sha256'], 'stale verification: '+contract['name']
     manifest['verification']=contracts
     manifest['verification_sha256']=hashlib.sha256(raw).hexdigest()
+# dist/*.json are recorded evidence. Refresh them only by explicit recording.
+if out.resolve() == (Path(__file__).resolve().parent/'dist') and os.getenv('JITK_RECORD') != '1':
+    out = out.parent/'.work/dist'
+out.mkdir(parents=True, exist_ok=True)
 (out/manifest['image']).write_bytes(b)
 (out/f'kernel-{sha}.json').write_text(json.dumps(manifest,indent=2)+'\n')
 (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

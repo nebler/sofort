@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
@@ -46,4 +47,4 @@ try{
  r=await run("await api.pure({q:'x'});return await api.pure({q:'y'})");check('none-read computation does not taint',!r.error);
  check('no credentials left live at end',live===0&&minted===revoked);
 }finally{await pool.close();}
-assert.equal(rows.length,22);writeFileSync('policy-check-results.json',JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('22 executor policy assertions passed (plus 22 security owner assertions)');
+assert.equal(rows.length,22);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('22 executor policy assertions passed (plus 22 security owner assertions)');

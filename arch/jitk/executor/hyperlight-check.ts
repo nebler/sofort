@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -21,4 +22,4 @@ try{
  }
  await p.drain();const r=await ex.execute('return await api.deny()',providers);assert.match(r.error!,/policy denied/);rows.push({name:'deny',ok:true});
 }finally{await p.close();}
-writeFileSync('hyperlight-check-results.json',JSON.stringify({artifacts,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows},null,2)+'\n');console.log('6/6 Hyperlight through canonical executor; kind hyperlight-js');
+writeFileSync(receiptPath('hyperlight-check-results.json'),JSON.stringify({artifacts,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows},null,2)+'\n');console.log('6/6 Hyperlight through canonical executor; kind hyperlight-js');

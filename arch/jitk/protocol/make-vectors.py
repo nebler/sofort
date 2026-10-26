@@ -1,4 +1,4 @@
-import json
+import json, os
 from pathlib import Path
 out=Path(__file__).parent
 ready={'t':'ready','v':1}
@@ -92,7 +92,7 @@ add('code cap',[g(ready),h({**run,'code':'x'*65537})],'SCHEMA')
 add('unicode code byte cap',[g(ready),h({**run,'code':'é'*32769})],'SCHEMA')
 add('unicode log byte cap',setup+[g({'t':'log','level':'info','msg':'é'*2049})],'SCHEMA')
 add('wire total',[{'repeat':4095,'step':raw('\x1e'+'x'*4096)}],'WIRE_LIMIT')
-(out/'vectors.json').write_text(json.dumps({'format':'jitk-v1-conformance-1','description':'steps in order; guest wire is UTF-8 bytes (including explicit LF); host frame is an object; repeat expands step; eof calls transport EOF. ACCEPT means no violation, not application success. Stop at first error. For chunk testing subdivide guest bytes arbitrarily.','cases':cases},indent=2)+'\n')
+v={'format':'jitk-v1-conformance-1','description':'steps in order; guest wire is UTF-8 bytes (including explicit LF); host frame is an object; repeat expands step; eof calls transport EOF. ACCEPT means no violation, not application success. Stop at first error. For chunk testing subdivide guest bytes arbitrarily.','cases':cases}
 print(len(cases),'cases')
 # Cases executable against the guest endpoint, not synthetic host decoder feeds.
 # run.code strings are async function bodies. Fatal means no done and guest exit;
@@ -110,7 +110,11 @@ guest_cases=[
  {'name':'Unicode scalar log clipping','code':"console.info('é'.repeat(2047)+'😀');console.info('\\ud800');return 8",'ok':8,'scalarLogs':True},
 ]
 p=out/'vectors.json'
-v=json.loads(p.read_text());v['guestCases']=guest_cases
+v['guestCases']=guest_cases
 v['guestDescription']='Fresh VM per guestCase. Host sends run with api echo/fail. reverse waits for all calls then returns args[0] descending; error returns DENIED; unknown sends id 4096; duplicate sends same ret twice before completion. input overrides run. fatal requires no done and natural guest termination before watchdog. logBudget verifies decoded UTF-8 totals.'
-p.write_text(json.dumps(v,indent=2)+'\n')
+generated=json.dumps(v,indent=2)+'\n'
+if os.getenv('JITK_RECORD') == '1':
+ p.write_text(generated)
+else:
+ assert p.read_text() == generated, 'stale vectors.json; review and run JITK_RECORD=1 python3 make-vectors.py'
 print(len(guest_cases),'real-guest cases')

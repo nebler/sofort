@@ -12,7 +12,7 @@ Worktree `/Users/noah/.t3/worktrees/sofort/t3-f2168179`; branch `t3/dead-code-sc
 | R17 | `c645021`: named Prepared/BeforeBuild/Confined/Failed states; success advances only after all fallible operations succeed; partial failure poisons the object. | Malformed profile regression **checked failing before**: old `after_build()` incorrectly succeeded after failed `before_build()`; now rejected. |
 | R15 | `8e8737f`: read compiled profiles through `Read::take(65537)` before validating the 64 KiB limit. | Boundary unit test; FIFO regression **checked failing before** against original VMM (`23ffc411…`, timeout after 3 s while writer withheld EOF); rebuilt VMM immediately rejects oversize with exit 70. |
 | R06, R16 | `14dd124`, `30c3816`, `70e432e`: `OwnedFd` for namespace/ruleset/path/pidfd/kqueue ownership, borrowed syscall handles, errno captured before destruction; narrow production unsafe blocks with SAFETY contracts; iterator-based BPF jump patching. One-shot escape harness's broad block is explicitly documented. | Strict Mac **and Linux** Rust 1.95.0 Clippy: **zero warnings**, including `-D clippy::undocumented_unsafe_blocks`. Sandbox units **11 Mac / 10 Linux** pass; watchdog/lifecycle, VMM faults and certification pass. The only added lint suppression covers the seccomp test probe’s imported launcher-only APIs. |
-| Reproduction | `728da2c`, `5c80316`: retained full-suite/certification driver and exact cached-rlib relinker beside this report. | Validation commands and environment below; no third-party source rebuild or shared checkout mutation on the Mac. |
+| Reproduction | `728da2c`, `5c80316`: retained reproduction tooling (R8-receipts later moved the relinker to `arch/jitk/vmm/relink.py` and replaced the suite driver with `make -C arch/jitk test`). | Validation commands and environment below; no third-party source rebuild or shared checkout mutation on the Mac. |
 
 Whole-file removals: **173 files / 28,796,917 bytes / 13,728 Git text lines** (`git diff --no-renames` from the base; binary lines excluded). D01–D03 alone: **168 files / 28,722,317 bytes**. These are gross deletions, excluding retained-file edits and formatting additions. Real fixtures, default `wait.rs` and D05/D06 wrappers remain; C01/C02 conditional retirements remain.
 
@@ -23,12 +23,12 @@ The VMM binary changed: Mac SHA-256 `23ffc4114cff036370bf30b10f727da7fbb23774e3f
 Reproduce using the receipt's `environment` map (absolute Node, VMM/image paths and enabled Hyperlight worker/snapshot). `JITK_VMM_BUILD/libkrun/target/release/deps` must contain the pinned existing patched rlibs; the relinker uses production flags and signs on macOS. Linux relinking/linting used a private Rust 1.95.0 toolchain under the assigned directory.
 
 ```sh
-python3 arch/review/fixes/R8-hygiene-relink.py
+python3 arch/jitk/vmm/relink.py
 python3 arch/jitk/vmm/lint.py
 cargo +1.95.0 fmt --manifest-path arch/jitk/vmm/Cargo.toml --check
 python3 arch/jitk/kernel/tests/test_scratch.py
 python3 arch/jitk/vmm/tests/profile-bound.py --binary "$JITK_VMM_BINARY" --image "$JITK_KERNEL_IMAGE"
-python3 arch/review/fixes/R8-hygiene-verify.py --certify
+make -C arch/jitk test  # suite driver replaced by the aggregate target in R8-receipts
 ```
 
 Raw local evidence: `.work/validation/*.log` and `certify-*`; `.work/linux-receipts/{report.json,nested.log,host-load.json,run-timing.json,nested-command.json}`; `.work/{stage-before,stage-after,profile-before,profile-after,manifest-before,generic-dispatch}.log`; `.work/linux-build-logs/`; `.work/vm-cleanup.log`. Final clean Mac run recorded uptime/load `6:16 … load averages: 6.79 6.43 6.21`; contended functional checks only. VM scratch observed at **1.3 GiB** (`du -sh`), then build, toolchain, copied sources and suite trees removed: **16 KiB of logs remain**. Mac retained scratch was 35 MiB before collecting the Linux report; transient trees are removed automatically.

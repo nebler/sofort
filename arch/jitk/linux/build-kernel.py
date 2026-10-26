@@ -6,7 +6,7 @@ root=Path(__file__).resolve().parent
 work=Path(os.getenv('JITK_WORK',str(root/'.work'))).resolve();work.mkdir(parents=True,exist_ok=True)
 source=root.parent/'kernel';dest=work/'kernel'
 if dest.exists():shutil.rmtree(dest)
-shutil.copytree(source,dest,ignore=shutil.ignore_patterns('dist','__pycache__','.READY'))
+shutil.copytree(source,dest,ignore=shutil.ignore_patterns('.work','target','target-ring','dist','__pycache__','.READY'))
 protocol=root.parent/'protocol/bootstrap.js'
 script=protocol.read_text()
 env={**os.environ,'JITK_SCRIPT':script,'CARGO_TARGET_DIR':str(work/'kernel-target'),'JITK_OUT_DIR':str(work)}
