@@ -50,6 +50,10 @@ build/sqlite-checks: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
 	$(SCRIPTC) build sqlite-checks.ts -o $@
 
+build/e2: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build e2.ts -o $@
+
 grow: build
 	build/grow --run-id run-$$(date +%Y%m%dT%H%M%S) --validate-only $(ARGS)
 

@@ -11,6 +11,7 @@ import { observe, requireResult, type Observations, type SyscallRecord } from '.
 import { PROFILES, mutations, resources, type Cases } from './profiles.ts';
 import { integration, type IntegrationResult } from './sqlite-profile.ts';
 import { oracle } from './oracle.ts';
+import { requireNoProbeBranches } from './probe-lint.ts';
 
 export const LUA_ARGV = ['lua', '-e', readFileSync(join(ASSETS, 'fixtures.lua'), 'utf8')];
 export const QJS_ARGV = ['qjs', '--std', '-e', 'os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print("reply:"+s)})'];
@@ -153,6 +154,7 @@ async function attempt(name: string, work: string, out: string, manifest: Manife
     validateSource(name, source);
     return source;
   });
+  await r.stage('probe_constant_lint', async () => { requireNoProbeBranches(name, source); return true; });
   const handler = join(work, 'src/syscalls', name + '.rs');
   check(!existsSync(handler) && !isSymlink(handler), 'handler already exists or is a symlink');
   writeFileSync(handler, source);

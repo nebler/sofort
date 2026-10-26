@@ -29,6 +29,8 @@ export function feedback(gate: string, error: unknown): { gate: string; message:
     message = detail(error).slice(-8000);
   } else if (gate === 'source_validation') {
     message = 'Proposal violates the one-file JSON/source contract: ' + detail(error).slice(0, 500);
+  } else if (gate === 'probe_constant_lint') {
+    message = 'Source lint rejected branching on visible fixture constants. Implement behavior from arguments and helper state.';
   } else if (gate === 'headless_cli') {
     message = 'CLI failed to return a valid proposal: ' + (error instanceof Error ? error.name : 'Error');
   } else {

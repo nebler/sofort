@@ -15,6 +15,7 @@ import { design, attemptRows, markers, type Metadata } from './experiment-run.ts
 import { category, renderSummary, phase, verifyReceipts, sealReceipts } from './experiment-audit.ts';
 import { canonical, normalizeReceipt } from './parity.ts';
 import { normalize } from './normalize.ts';
+import { lintProbeConstants, rustTokens } from './probe-lint.ts';
 
 const FIXTURES = join(ASSETS, 'tests/fixtures');
 interface Test {
@@ -25,6 +26,23 @@ const tests: Test[] = [];
 function test(name: string, body: () => Promise<void>): void {
   tests.push({ name, body });
 }
+test('probe lint rejects fd, offset, size, bytes and constant aliases', async () => {
+  for (const condition of ['fd == 999', 'a[0] == 3', 'a[3] == 4091', 'a[2] == 23', 'a[2] == 16', 'a[1] == 1', 'buf == b"AAAAA"', 'offset == 0x2328usize']) {
+    assert.ok(lintProbeConstants('pread64', 'pub fn call(a: &[usize])->isize { if ' + condition + ' { 0 } else { -9 } }').length, condition);
+  }
+  assert.ok(lintProbeConstants('pread64', 'const LEN: usize = 9000; let n = LEN; if size == n { return 0; }').length);
+  assert.ok(lintProbeConstants('ppoll', 'match fd { 9_99 => 1, _ => 0 }').length);
+});
+
+test('probe lint permits ABI limits, layout indexing, comments and canonical handlers', async () => {
+  assert.equal(lintProbeConstants('pread64', '// if fd == 999 {}\n/* nested /* if n == 9000 {} */ */\nif n == 0 { 0 } else { buf[17] as isize }').length, 0);
+  assert.equal(lintProbeConstants('ppoll', 'if nfds > 16 || nsec >= 1_000_000_000 { return -22; }').length, 0);
+  assert.equal(lintProbeConstants('ppoll', 'let nfds = a[1]; if nfds > 1024 { return -22; }').length, 0);
+  assert.equal(lintProbeConstants('pread64', 'let count = a[2]; if count > 0x7ffff000 { return -14; }').length, 0);
+  for (const name of ['ppoll', 'fstat', 'pread64']) assert.ok(lintProbeConstants(name, readFileSync(join(CANONICAL, 'src/syscalls/' + name + '.rs'), 'utf8')).length === 0);
+  assert.throws(() => rustTokens('/* unclosed'), /unterminated/);
+});
+
 async function temporary(body: (path: string) => Promise<void>): Promise<void> {
   const path = scratch('jitk-grow-test-');
   try {
