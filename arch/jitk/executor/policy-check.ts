@@ -3,7 +3,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {MicroVMExecutor,SandboxPool} from './executor.js';
-import {rules,policySource,type Tool,type Issuer} from './policy-adapter.js';
+import {policySource,type Tool,type Issuer} from './policy-adapter.js';
 import {selectBackend} from './select-backend.js';
 // Preserve all 22 assertions from the security owner against the exact imported module.
 const testPath=policySource.replace('policy.mjs','policy-test.mjs');

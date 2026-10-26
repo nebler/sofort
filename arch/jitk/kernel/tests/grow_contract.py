@@ -3,7 +3,8 @@ import os,sys,json,shutil,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 area=Path(os.environ.get('JITK_TEST_OUTPUT',str(root/'test-results'))).resolve();area.mkdir(parents=True,exist_ok=True)
-work=Path(os.environ.get('JITK_GROW_CONTRACT_WORK',str(root/'test-work/grow-contract'))).resolve();work.mkdir(parents=True,exist_ok=True)
+from scratch import workspace
+work = workspace('JITK_GROW_CONTRACT_WORK', 'grow-contract')
 copy=work/'kernel'
 shutil.copytree(root,copy,dirs_exist_ok=True,ignore=shutil.ignore_patterns('dist','target','test-results','test-work','__pycache__','.READY','.R4'))
 link=work/'probe.ld';link.write_text('''ENTRY(_start)

@@ -143,21 +143,6 @@ class Worker:
         for f in (self.p.stdin,self.p.stdout,self.p.stderr):f.close()
 
 
-def marker_path(directory,keys,defaults):
-    if not (directory/'.READY').exists():return None
-    raw=(directory/'.READY').read_text()
-    try:
-        d=json.loads(raw)
-        for key in keys:
-            if isinstance(d.get(key),str):
-                p=Path(d[key]);return str(p if p.is_absolute() else directory/p)
-    except (ValueError,AttributeError):pass
-    for key in keys:
-        m=re.search('^'+key+'=(.+)$',raw,re.M)
-        if m:
-            p=Path(m[1]);return str(p if p.is_absolute() else directory/p)
-    return next((str(p) for p in defaults if p.exists()),None)
-
 def choose(args):
     def artifact(value, env, candidates, label):
         path=value or os.environ.get(env) or next((str(p) for p in candidates if p.is_file()),None)

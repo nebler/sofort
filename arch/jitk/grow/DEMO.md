@@ -19,6 +19,6 @@ Lua startup syscall equivalence are unverified.
 
 Every preparation stage records wall time and uptime/load. The demo saves actual
 event times, both fresh VM receipts, outputs, kernel/VMM/Lua hashes, proposal
-mode, and reap status. `demo-release.json` points to that portable relative path.
+mode, and reap status in the fresh run’s `report.json` under `results/`.
 Fresh live preparation can take minutes; its duration includes real CLI calls
 and is recorded separately from the presentation time.

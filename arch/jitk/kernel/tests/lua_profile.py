@@ -4,7 +4,8 @@ import os,json,hashlib,subprocess,time
 from measure import quant,load_gate,ROOT
 kernel=Path(__file__).resolve().parents[1]
 grow=kernel.parent/'grow'
-work=Path(os.environ.get('JITK_LUA_PROFILE_WORK',str(kernel/'test-work/lua-profile'))).resolve();work.mkdir(parents=True,exist_ok=True)
+from scratch import workspace
+work = workspace('JITK_LUA_PROFILE_WORK', 'lua-profile')
 payload=grow/'payload/lua-static'
 assert hashlib.sha256(payload.read_bytes()).hexdigest()=='6d825f225d7beff5a9707ec10db63cf3347524dc3ba183b16d0f6d809d2f0929'
 argv=['lua','-e',(grow/'fixtures.lua').read_text()]

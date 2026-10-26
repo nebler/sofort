@@ -1,5 +1,6 @@
 //! Test-only forbidden host syscall after real KVM build and confinement.
 #[path = "../src/confinement.rs"]
+#[allow(dead_code)] // This probe uses confinement, not the launcher-only profile compiler.
 mod confinement;
 use krun::{ConsoleDevice, KernelFormat, MmioDeviceManager, Payload, VmmBuilder};
 use std::{io, os::fd::AsFd};
@@ -11,16 +12,26 @@ fn launch() -> Result<(), confinement::Error> {
     console.add_inout_port("jitk", Some(stdin.as_fd()), Some(stdout.as_fd()))?;
     let mut devices = MmioDeviceManager::new();
     devices.add(console.build()?);
-    let payload = Payload::load_external(image.to_str().ok_or("path")?, KernelFormat::Raw, None, "")?;
-    let builder = VmmBuilder::new().vcpus(1)?.ram_mib(32)?.payload(payload).devices(devices)
-        .nested_virt(false).shutdown_support(false);
+    let payload =
+        Payload::load_external(image.to_str().ok_or("path")?, KernelFormat::Raw, None, "")?;
+    let builder = VmmBuilder::new()
+        .vcpus(1)?
+        .ram_mib(32)?
+        .payload(payload)
+        .devices(devices)
+        .nested_virt(false)
+        .shutdown_support(false);
     sandbox.before_build()?;
     let _vm = builder.build()?;
     sandbox.after_build()?;
     eprintln!("SECCOMP-PROBE-CONFINED");
+    // SAFETY: socket takes scalar constants and no userspace pointers; confinement must kill it.
     unsafe { libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0) };
     Err("forbidden socket survived".into())
 }
 fn main() {
-    if let Err(e) = launch() { eprintln!("probe: {e}"); std::process::exit(70); }
+    if let Err(e) = launch() {
+        eprintln!("probe: {e}");
+        std::process::exit(70);
+    }
 }
