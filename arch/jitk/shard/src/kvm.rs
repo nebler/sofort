@@ -57,11 +57,15 @@ impl Mapping {
         Self { ptr: p.cast(), len }
     }
     fn word(&self, off: usize) -> u64 {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: mmap is live, offset is aligned and in bounds. No Rust RAM
+        // reference escapes; the owner reads only after KVM_RUN has returned.
         unsafe { ptr::read_volatile(self.ptr.add(off).cast()) }
     }
     fn put(&self, off: usize, value: u64) {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: same owner-thread/alignment/range contract as word(); no
+        // borrowed guest bytes alias this store.
         unsafe { ptr::write_volatile(self.ptr.add(off).cast(), value) }
     }
 }
@@ -218,7 +222,12 @@ impl Slot {
         t.elapsed().as_nanos() as u64
     }
     pub fn pristine(&self, snapshot: &[u8]) -> bool {
-        unsafe { std::slice::from_raw_parts(self.ram.ptr, RAM) == snapshot }
+        snapshot.len() == RAM
+            && snapshot.iter().enumerate().all(|(off, byte)| {
+                // SAFETY: owner-thread-only stopped mapping; no Rust RAM slice is
+                // formed, and each read is within the live RAM allocation.
+                unsafe { self.ram.ptr.add(off).read_volatile() == *byte }
+            })
     }
     pub fn configure(&mut self, generation: u64, seed: u64, k: usize, calls: usize) {
         assert!(k <= 256 && calls <= 10);

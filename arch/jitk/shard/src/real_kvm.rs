@@ -66,11 +66,15 @@ impl Mapping {
         Self { ptr: p.cast(), len }
     }
     fn word(&self, off: usize) -> u64 {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: mmap is live, offset is aligned and in bounds. No Rust RAM
+        // reference escapes; the owner reads only after KVM_RUN has returned.
         unsafe { ptr::read_volatile(self.ptr.add(off).cast()) }
     }
     fn put(&self, off: usize, value: u64) {
-        assert!(off + 8 <= self.len);
+        assert!(off.is_multiple_of(8) && off.checked_add(8).is_some_and(|end| end <= self.len));
+        // SAFETY: same owner-thread/alignment/range contract as word(); no
+        // borrowed guest bytes alias this store.
         unsafe { ptr::write_volatile(self.ptr.add(off).cast(), value) }
     }
 }
@@ -356,6 +360,14 @@ impl Slot {
             .word(self.snapshot.as_ref().unwrap().class.canary())
     }
     fn atomic(&self, off: usize) -> &AtomicU64 {
+        assert!(
+            off.is_multiple_of(8)
+                && off
+                    .checked_add(8)
+                    .is_some_and(|end| end <= arena::RING_BYTES)
+        );
+        // SAFETY: mmap is page aligned; the checked control word is aligned and
+        // live. Only atomic host accesses are exposed, never a RAM slice.
         unsafe { &*self.ram.ptr.add(CTRL + off).cast() }
     }
     fn load(&self, off: usize) -> u64 {
@@ -364,12 +376,21 @@ impl Slot {
     fn store(&self, off: usize, v: u64) {
         self.atomic(off).store(v, Release);
     }
-    pub fn bytes(&self, off: usize, n: usize) -> &[u8] {
-        assert!(off + n <= RAM);
-        unsafe { std::slice::from_raw_parts(self.ram.ptr.add(off), n) }
+    /// Copy stopped guest RAM; callers never borrow the underlying mapping.
+    pub fn bytes(&self, off: usize, n: usize) -> Vec<u8> {
+        assert!(off.checked_add(n).is_some_and(|end| end <= RAM));
+        (off..off + n)
+            .map(|at| {
+                // SAFETY: range is checked above; Slot is owner-thread-only, KVM is
+                // stopped, and the returned Vec owns each copied byte.
+                unsafe { self.ram.ptr.add(at).read_volatile() }
+            })
+            .collect()
     }
     fn copy(&self, off: usize, b: &[u8]) {
-        assert!(off + b.len() <= RAM);
+        assert!(off.checked_add(b.len()).is_some_and(|end| end <= RAM));
+        // SAFETY: b owns/borrows host memory, never this mapping. Bounds are
+        // checked; only this stopped slot's owner writes its writable RAM.
         unsafe {
             ptr::copy_nonoverlapping(b.as_ptr(), self.ram.ptr.add(off), b.len());
         }
@@ -398,7 +419,15 @@ impl Slot {
     }
     fn ring_copy(&self, base: usize, cursor: usize, n: usize) -> Vec<u8> {
         (0..n)
-            .map(|i| self.bytes(base + (cursor + i) % 32768, 1)[0])
+            .map(|i| {
+                // SAFETY: fixed ring geometry is within RAM; KVM is stopped.
+                unsafe {
+                    self.ram
+                        .ptr
+                        .add(base + (cursor + i) % 32768)
+                        .read_volatile()
+                }
+            })
             .collect()
     }
     pub fn attack_arena(&mut self) {
@@ -671,7 +700,7 @@ pub fn prepare(kvm: &Kvm, image: &str, base: &str) {
         .create_new(true)
         .open(format!("{base}.mem"))
         .unwrap();
-    out.write_all(s.bytes(0, RAM)).unwrap();
+    out.write_all(&s.bytes(0, RAM)).unwrap();
     out.sync_all().unwrap();
     let mut out = File::options()
         .write(true)
@@ -748,6 +777,15 @@ mod tests {
         b[32..32 + payload.len()].copy_from_slice(payload);
         s.copy(REQUEST, &b);
         s.store(0x40, len as u64);
+    }
+    #[test]
+    fn guest_ram_reads_are_owned_copies() {
+        let s = slot();
+        s.copy(0, &[1, 2, 3, 4]);
+        let saved = s.bytes(0, 4);
+        s.copy(0, &[5, 6, 7, 8]);
+        assert_eq!(&saved[..], &[1, 2, 3, 4]);
+        assert_eq!(&s.bytes(0, 4)[..], &[5, 6, 7, 8]);
     }
     #[test]
     fn malformed_guest_records_are_run_errors() {
