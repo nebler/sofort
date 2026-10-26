@@ -154,3 +154,50 @@ For Linux cross-linking, put Zig's directory on PATH and let scriptc select
 replacement, not an arbitrary Zig executable path. The Makefile's target and
 matching runtime pack produce a verified static aarch64 musl ELF, executed in
 the unchanged Alpine oracle image.
+
+## E2/E3 findings (0.4.5)
+
+In a nested worker closure, this inferred `allSettled` argument was refused
+with SC2020 (the result declaration then produced SC2004):
+
+```ts
+async function worker(): Promise<void> {}
+const results = await Promise.allSettled([worker(), worker()]);
+```
+
+Use an explicitly typed `Promise<void>[]`, push the worker promises, and pass
+that array. E1's runner already used this form. The generic `Receipt.stage`
+also cannot instantiate a local result with `void`; a lint stage returns `true`
+after its checks. Minimal shape:
+
+```ts
+async function stage<T>(fn: () => Promise<T>): Promise<T> {
+  const result = await fn(); return result;
+}
+await stage(async () => {}); // SC2004, T=void
+```
+
+A conditional selecting a missing dynamic `Record<string,string>` member can
+raise the existing runtime union error despite a subsequent truthiness check.
+Use `record[key] || ''` at the selection site. Native tests cover the lint's
+missing-role path. No child-process hang has been observed in these batches;
+spawn timeouts remain enabled. Nothing was filed upstream.
+
+A conditional whose branches are a spread of a `Record<string, string>` and an
+object literal, assigned to a `Record<string, unknown>`, keeps the spread
+source's string value type. A later non-string member fails at run time. In the
+E2 grader this surfaced as `TypeError: expected string at
+$.accepted_by_all_gates, got number`; the minimal form below exits with
+SIGSEGV (rc 139) when the spread branch is taken and works when it is not:
+
+```ts
+const rows: Record<string, string>[] = [{ a: 'x' }];
+const found = rows.find((row) => row.a === process.argv[2]);
+const value: Record<string, unknown> = found ? { ...found } : { a: 'y', n: 0 };
+value.n = 1; // `spread3 x` segfaults; `spread3 z` prints {"a":"y","n":1}
+```
+
+The unconditional `const value: Record<string, unknown> = { ...source }` works.
+`e2.ts` copies keys into a fresh `Record<string, unknown>` instead. The E2/E3
+batches (97 CLI calls plus the replay grader) showed no `scr_children_wait`
+hang.

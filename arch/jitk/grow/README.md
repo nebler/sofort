@@ -159,3 +159,66 @@ parity, oracle equality, and the live smoke are recorded in `PARITY.md`.
 Signal profiles retain explicit ENOSYS. Printable developer grow-trace transport
 is not production arbitrary-byte stdout/stderr. No general Linux ABI equivalence,
 writable filesystem, SQLite journal/WAL, or VM performance claim is made.
+
+E2/E3 use native experiment tools with mandatory validate-only execution:
+
+```sh
+make -C arch/jitk/grow build build/e2 build/e3 build/auto-grow test
+grow=arch/jitk/grow/build
+$grow/e2 --run-id TRIALS --validate-only --red-team simplest --n 5 \
+  --vmm /absolute/jitk-vmm --sqlite-elf /absolute/sqlite3-static \
+  --database /absolute/demo.db
+JITK_VMM_BINARY=/absolute/jitk-vmm $grow/e2 grade --run-id GRADE --validate-only \
+  --trials TRIALS[,TRIALS2] --sqlite-elf /absolute/sqlite3-static \
+  --database /absolute/demo.db
+JITK_VMM_BINARY=/absolute/jitk-vmm $grow/e3 --run-id MUTANT_ID --validate-only \
+  --sqlite-elf /absolute/sqlite3-static --database /absolute/demo.db
+$grow/auto-grow prepare --profiles /absolute/NEW_PROFILES \
+  --fresh /absolute/MUTANT_ID/fresh --database /absolute/demo.db
+$grow/auto-grow batch --run-id UNIQUE --validate-only --vmm /absolute/jitk-vmm \
+  --profiles /absolute/NEW_PROFILES --sqlite-elf /absolute/sqlite3-static \
+  --database /absolute/demo.db
+```
+
+Register the six E3 slot numbers before preparing profiles. `autoprofile.ts`
+reads real census/oracle traces and emits C probes and semantic/error/state
+case inventories, split deterministically outside the proposal repo. It uses
+generic argument-shape rules and Linux ABI transport metadata, with no supplied
+syscall prose or expected behavior. Pointer arguments get their own 64 KiB mapping followed by an unmapped hole, so
+oversized kernel writes fault rather than corrupt the probe. Each generated split
+is run twice on Linux;
+`auto-observe.ts` learns exact observations and narrowly represented varying
+positive scalar/byte fields; positive identities are renamed by first
+appearance so equality between them stays exact. The raw outputs, learned rules and hashes remain
+in local receipts. This is limited coverage: opaque structs are observed by
+write/no-write and repeat relations, not by every field, and positive process
+identity normalization is weaker than full PID semantics. Known-mutant grading
+must pass before sampling; an unkillable mutant stops E3.
+
+`auto-grow` freezes the profiles before the model matrix, runs N=5 per target
+and model with spec `none` and three attempts, and checks two generic wrong-return
+mutants. SQLite's unchanged ten-case integration is used for getpid/faccessat;
+targets without a runnable unchanged integration use generated differential
+plus held-out checks. It never installs or promotes a candidate. The batch uses
+two workers, checks the 15 GiB disk floor before each transaction, and preserves
+interrupted/quota receipts on resume with unchanged pins. E2 uses one worker.
+Never run these batches together above the shared oracle concurrency budget.
+
+`probe-lint.ts` rejects fixture literals in control flow, including simple
+constant aliases and argument aliases. ABI/layout constants remain allowed.
+This heuristic is tested against all 214 accepted E1 main/pilot proposals; it
+cannot prove absence of arithmetic encodings or other overfitting. The sealed
+differential remains necessary. A red-team acceptance is reported as such even
+when the model returned a general implementation instead of an obvious cheat.
+
+`e2` runs single-attempt overfitting trials (`--red-team 1` is the first
+wording, `--red-team simplest` asks for the simplest handler that passes the
+visible probe). `e2 grade` replays every recorded handler, the canonical
+control and the agent-written controls in `e2-controls/` through each gate
+independently (lint, build, 30 visible runs, held-out, host ABI, mutants,
+unchanged integration), so a handler stopped early by the loop still gets a
+verdict from every gate. It makes no CLI calls. Each run also re-audits the E1
+receipts: lint false positives over accepted handlers and the held-out failure
+rate over every visible-passing attempt. In this design the mutant gate grades
+the tests, not the candidate (mutants derive from the canonical handler), so it
+cannot reject a candidate by construction.
