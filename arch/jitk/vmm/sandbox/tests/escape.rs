@@ -25,6 +25,11 @@ fn verdict(name: &str, rc: i64) {
 }
 fn attack(name: &str) {
     let c = |s: &str| CString::new(s).unwrap();
+    // SAFETY: this one-shot attack harness passes live NUL-terminated CStrings and
+    // initialized repr(C) socket records with their exact lengths. mmap is never
+    // dereferenced, execv's argv is null-terminated, and the fork child only calls
+    // _exit. Returned descriptors/mappings live until this test process exits.
+    // The broad block intentionally groups the forbidden syscall probes, not runtime code.
     let rc: i64 = unsafe {
         match name {
             "read-etc-passwd" => libc::open(c("/etc/passwd").as_ptr(), libc::O_RDONLY) as i64,
