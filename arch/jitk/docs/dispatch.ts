@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readFileSync, realpathSync, unlinkSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, realpathSync, statSync, unlinkSync } from 'node:fs';
 import { isAbsolute, join, resolve, dirname, extname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { check, output, capture, environment } from './lib.ts';
@@ -15,7 +15,7 @@ export function gitSnapshot(root: string): string[] {
 
 function nodeBinary(): string {
   const node = process.env.JITK_NODE || '';
-  check(isAbsolute(node) && existsSync(node) && lstatSync(node).isFile(), 'jitk: set JITK_NODE to a verified absolute Node >=24 executable; see executor/README.md');
+  check(isAbsolute(node) && existsSync(node) && statSync(node).isFile(), 'jitk: set JITK_NODE to a verified absolute Node >=24 executable; see executor/README.md');
   return node;
 }
 
@@ -27,7 +27,7 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
   }
   const directory = join(root, subtree);
   const readme = join(directory, 'README.md');
-  check(existsSync(directory) && lstatSync(directory).isDirectory() && existsSync(readme), `jitk: ${subtree} is incomplete: missing ${readme}; owner must supply documented ${action} entrypoint`);
+  check(existsSync(directory) && statSync(directory).isDirectory() && existsSync(readme) && statSync(readme).isFile(), `jitk: ${subtree} is incomplete: missing ${readme}; owner must supply documented ${action} entrypoint`);
   const prerequisites = new Map<string, string[]>([
     ['executor/demo', ['kernel', 'vmm', 'vmm/sandbox', 'executor', 'executor/policy']],
     ['grow/grow', ['kernel', 'vmm', 'vmm/sandbox']],
@@ -36,7 +36,7 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
     ['linux/nested', ['kernel', 'vmm/sandbox']],
     ['linux/test', ['kernel', 'vmm/sandbox']]
   ]);
-  const missing = (prerequisites.get(subtree + '/' + action) || []).map(part => join(root, part, '.READY')).filter(path => !existsSync(path));
+  const missing = (prerequisites.get(subtree + '/' + action) || []).map(part => join(root, part, '.READY')).filter(path => !existsSync(path) || !statSync(path).isFile());
   check(missing.length === 0, `jitk: ${subtree}/${action} needs canonical ready inputs: ${missing.join(', ')}; see ${readme}`);
   let commands: string[][];
   if (subtree === 'vmm/sandbox' && action === 'test') {
