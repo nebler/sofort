@@ -2,11 +2,15 @@
 # Native, Node-free entrypoint. Cross-build Linux tools on the Mac before upload.
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+JITK_NATIVE_ROOT=${JITK_NATIVE_ROOT:-$(CDPATH= cd -- "$ROOT/../../.." && pwd)}
+export JITK_NATIVE_ROOT
+if [ "$(uname -s)" = Linux ]; then
+  JITK_TOOLS_DIR=${JITK_TOOLS_DIR:-$JITK_NATIVE_ROOT/arch/jitk/kernel/.work/linux}
+  export JITK_TOOLS_DIR
+fi
 if [ -n "${JITK_SHARD_TOOLS:-}" ]; then
   exec "$JITK_SHARD_TOOLS" "$@"
 fi
-JITK_NATIVE_ROOT=${JITK_NATIVE_ROOT:-$(CDPATH= cd -- "$ROOT/../../.." && pwd)}
-export JITK_NATIVE_ROOT
 case $(uname -s) in
   Darwin) make -s -C "$ROOT" build; binary=$ROOT/build/mac/shard-tools ;;
   Linux) binary=$ROOT/build/linux/shard-tools ;;

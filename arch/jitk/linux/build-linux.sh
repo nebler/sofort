@@ -6,7 +6,8 @@ WORK=${JITK_WORK:-$ROOT/.work}
 mkdir -p "$WORK"
 export JITK_VMM_BUILD="$WORK/vmm"
 [[ -f "$ROOT/../vmm/sandbox/.READY" ]] || { echo "canonical sandbox not READY" >&2; exit 1; }
-python3 "$ROOT/../vmm/build.py"
+export JITK_VMM_ROOT=${JITK_VMM_ROOT:-$ROOT/../vmm}
+"$JITK_VMM_ROOT/.work/linux/build"
 cp "$JITK_VMM_BUILD/jitk-vmm" "$WORK/jitk-vmm"
 cp "$JITK_VMM_BUILD/build.json" "$WORK/build.json"
 cc -O2 -Wall -Wextra -Werror "$ROOT/spawn-cg.c" -o "$WORK/spawn-cg"

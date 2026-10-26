@@ -12,7 +12,7 @@ else
  docker run --rm -v "$WORK:/out" debian:trixie sh -c '
  set -e
  apt-get update -qq
- apt-get install -y -qq --no-install-recommends linux-image-arm64 strace cpio gzip python3 util-linux >/dev/null
+ apt-get install -y -qq --no-install-recommends linux-image-arm64 strace cpio gzip util-linux >/dev/null
  cp /boot/vmlinuz-* /out/vmlinuz
  cd /
  find . -xdev \( -path ./proc -o -path ./sys -o -path ./out -o -path ./usr/share/doc -o -path ./usr/share/locale -o -path ./var/lib/apt -o -path ./var/cache \) -prune -o -print | cpio -o -H newc 2>/dev/null | gzip -1 > /out/base.cpio.gz'

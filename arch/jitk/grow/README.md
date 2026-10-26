@@ -61,8 +61,39 @@ stdout/stderr bytes and guest exit status against Linux pipes. Inputs are pinned
 - 8192-byte census DB SHA256 `f3d4180cd07ad9eed5a674c7ff4e5f6d817eb517029c185f66af862a30eac059`.
 
 The DB contains `n(v)` = 9,1,5,3,5. Pack `/demo.db` and empty regular `/dev/null`;
-use `file:/demo.db?mode=ro&immutable=1`. `sqlite-build.sh` verifies the original
-3.50.4 source recipe inside kvm-dev; its output does not replace the pinned ELF.
+use `file:/demo.db?mode=ro&immutable=1`. `sqlite-build.sh` extracts the pinned
+3.50.4 amalgamation with `unzip` (or BusyBox), verifies `sqlite3.c` with OpenSSL
+SHA3-256, builds with `JITK_MUSL_CC`, strips the ELF, and creates that DB. It
+checks both output SHA256s and fails on a mismatch; its private outputs never
+replace the pinned inputs. Run only in a fresh directory:
+
+```sh
+JITK_MUSL_CC=/home/dev/r6-census/toolchain/musl-install/bin/musl-gcc \
+  sh arch/jitk/grow/sqlite-build.sh /home/dev/r7-grow/NEW_REBUILD
+```
+
+Reproduction audit (2026-10-26, existing kvm-dev): the source SHA3-256 matches
+`9145255e83da6529e70121ee4d7a4c88fe83ca4511da0c9ed13d10842df36782`;
+the archive SHA256 is
+`1d3049dd0f830a025a53105fc79fd2ab9431aea99e137809d064d8ee8356b032`.
+The historical recipe does **not** reproduce the pinned ELF with the available
+musl 1.2.5 / Ubuntu GCC 15.2.0 toolchain: it produces SHA256
+`9738d764d61c212592212d0c3f493ba179b8caec6f08810f1d6520c38757f539`.
+The pinned ELF's `.comment` records **Alpine GCC 14.2.0** and its GNU build ID is
+`212b45f2be358ffe177af066dd0bed24bcde2c98`; the rebuilt ELF records Ubuntu
+GCC 15.2.0 and has no build ID. `PRAGMA compile_options` likewise reports
+`COMPILER=gcc-14.2.0` versus `gcc-15.2.0`. The script's compiler input does not
+pin the original compiler/linker/libc, so byte-identical ELF output cannot be
+claimed from that recipe.
+
+The recreated DB has SHA256
+`ec62b8d379697e99b5d94d2ced53be3bec6bfb1c4bd85bec6cfb764bb86cb2e3`.
+All 8192 bytes match the census DB except offsets 98 and 99 (zero-based): the
+four-byte big-endian writer-version header at offset 96 is `00 2e 8a 14`
+(SQLite 3.50.4), versus `00 2e 7a 71` (3.46.1) in the census DB. Schema,
+rows and all remaining bytes match. The recipe leaves that header intact and
+reports the checksum failure. Neither pinned artifact in use was changed.
+
 Local reproduction inputs used in `PARITY.md` are `/tmp/growos-inputs-20261026/sqlite3-static`
 and `results/r7-grow/demo.db`. `build/sqlite-checks --run-id ID --validate-only
 --sqlite-elf PATH --database PATH` runs causal before-state, ENOSYS, loader and
@@ -83,8 +114,8 @@ normal operation requires the already available pinned image.
 Prerequisites: Node/npm for the pinned compiler, Zig for the Linux binary,
 Rust 1.95.0 with aarch64-unknown-none, clang/ld.lld/LLVM objcopy, the existing
 Docker image and a confined VMM explicitly selected via `JITK_VMM_BINARY`.
-The current kernel build still uses its own Python tooling, owned by the kernel
-port; grow executes no Python. The independent Rust host assertions are preserved unchanged in trusted
+The kernel build uses its native scriptc tooling; grow executes no Python.
+The independent Rust host assertions are preserved unchanged in trusted
 `host-tests.rs`, checked against `host-tests-origin.json`, and compiled directly
 with the real `syscalls` module layout. The retired Python wrapper is not needed. `JITK_GROW_TMPDIR` selects a scratch parent. Rebuild
 native binaries after moving the checkout: scriptc embeds `import.meta.dirname`.

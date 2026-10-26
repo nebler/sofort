@@ -239,8 +239,12 @@ See [RESULTS.md](RESULTS.md) and `results/` for measurements and exact scope.
 ## Native TypeScript harness
 
 `make build build-linux` builds the pinned scriptc 0.4.5 tools for Mac and static
-Linux aarch64 musl. Set `ZIG` to override the linker installation. Upload
-`build/linux/shard-tools` with this source tree before running Linux tests;
+Linux aarch64 musl, including the kernel's `.work/linux/prepare` and
+`.work/linux/build-args` needed by the native image builds. Set `ZIG` to override
+the linker installation. Upload `build/linux/shard-tools` and both kernel Linux
+tools with this source tree before running Linux tests. On Linux, `tool.sh`
+automatically selects those kernel tools through `JITK_TOOLS_DIR` (an explicit
+override is still honored);
 Linux needs neither Node nor Python for this component. `./tool.sh NAME ARGS...`
 replaces each Python command using the basename without `.py` (for example
 `./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and

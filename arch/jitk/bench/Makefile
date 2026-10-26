@@ -2,7 +2,7 @@
 .PHONY: build test bench smoke clean
 SCRIPTC := node_modules/.bin/scriptc
 SOURCES := $(wildcard *.ts ledger/*.ts hyperlight/*.ts)
-PROGRAMS := analysis-test gate run watchdog test-child load-monitor recertify ledger ledger-report ledger-verify ledger-waves hvf-control hyperlight-analyze hyperlight-bench parity
+PROGRAMS := analysis-test gate run watchdog test-child load-monitor recertify ledger ledger-report ledger-verify ledger-waves hvf-control hyperlight-analyze hyperlight-bench hyperlight-build parity
 
 $(SCRIPTC): package.json package-lock.json
 	npm ci --no-audit --no-fund
@@ -54,6 +54,10 @@ build/hvf-control: ledger/hvf_control.ts $(SOURCES) ffi.json build/native.o $(SC
 
 build/hyperlight-bench: hyperlight/bench.ts $(SOURCES) ffi.json build/native.o $(SCRIPTC)
 	$(SCRIPTC) build $< --ffi ffi.json -o $@
+
+build/hyperlight-build: hyperlight/build.ts $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build $< -o $@
 
 build/parity: parity.ts $(SOURCES) ffi.json build/native.o $(SCRIPTC)
 	$(SCRIPTC) build $< --ffi ffi.json -o $@

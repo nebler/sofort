@@ -31,7 +31,7 @@ else
  mkdir -p "$JITK_WORK" "$JITK_LINUX_OUT"
  SUDO=(); [[ $EUID == 0 ]] || SUDO=(sudo)
  "${SUDO[@]}" apt-get update -qq
- "${SUDO[@]}" apt-get install -y -qq --no-install-recommends build-essential curl ca-certificates git clang llvm lld libclang-dev pkg-config libssl-dev python3
+ "${SUDO[@]}" apt-get install -y -qq --no-install-recommends build-essential curl ca-certificates git clang llvm lld libclang-dev pkg-config libssl-dev
  export CARGO_HOME="$JITK_WORK/cargo" RUSTUP_HOME="$JITK_WORK/rustup"
  export PATH="$CARGO_HOME/bin:$PATH"
  if [[ ! -x $CARGO_HOME/bin/rustup ]]; then
