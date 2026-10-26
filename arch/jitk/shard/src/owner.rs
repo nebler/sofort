@@ -7,6 +7,7 @@ use crate::{
 };
 use std::{
     fs::File,
+    io,
     sync::{
         Arc,
         mpsc::{self, Receiver, SyncSender},
@@ -87,7 +88,7 @@ impl Mailbox {
 }
 pub struct Pool {
     owners: Vec<Mailbox>,
-    joins: Vec<JoinHandle<()>>,
+    joins: Vec<JoinHandle<io::Result<()>>>,
     events: Receiver<Event>,
     watchdog: Watchdog,
     slots: usize,
@@ -143,6 +144,62 @@ impl Pool {
             slots,
         }
     }
+    pub fn shutdown(&mut self) -> io::Result<()> {
+        if self.joins.is_empty() {
+            return self.watchdog.shutdown();
+        }
+        let mut error = self.watchdog.request_stop().err();
+        for owner in &self.owners {
+            let mut command = Command::Stop;
+            loop {
+                match owner.tx.try_send(command) {
+                    Ok(()) => break,
+                    Err(mpsc::TrySendError::Full(c)) => {
+                        command = c;
+                        let _ = owner.wake.try_notify();
+                        let _ = self.events.recv_timeout(Duration::from_millis(10));
+                    }
+                    Err(mpsc::TrySendError::Disconnected(_)) => {
+                        error.get_or_insert_with(|| {
+                            io::Error::other("owner exited before shutdown")
+                        });
+                        break;
+                    }
+                }
+            }
+            if let Err(e) = owner.wake.try_notify() {
+                error.get_or_insert(e);
+            }
+        }
+        // Owners can be publishing bounded completion events as they stop.
+        // Keep consuming until every owner exits, then observe every join result.
+        while self.joins.iter().any(|j| !j.is_finished()) {
+            // A queued Start may arm its lease after the first stop request.
+            // Continue expediting leases until every owner has consumed Stop.
+            if let Err(e) = self.watchdog.request_stop() {
+                error.get_or_insert(e);
+            }
+            let _ = self.events.recv_timeout(Duration::from_millis(10));
+        }
+        for j in self.joins.drain(..) {
+            match j.join() {
+                Ok(Ok(())) => {}
+                Ok(Err(e)) => {
+                    error.get_or_insert(e);
+                }
+                Err(_) => {
+                    error.get_or_insert_with(|| io::Error::other("owner panicked"));
+                }
+            }
+        }
+        if let Err(e) = self.watchdog.shutdown() {
+            error.get_or_insert(e);
+        }
+        match error {
+            Some(e) => Err(e),
+            None => Ok(()),
+        }
+    }
     fn owner(&self, slot: usize) -> &Mailbox {
         assert!(slot < self.slots);
         &self.owners[slot % self.owners.len()]
@@ -180,12 +237,7 @@ impl Pool {
 }
 impl Drop for Pool {
     fn drop(&mut self) {
-        for o in &self.owners {
-            o.send(Command::Stop);
-        }
-        for j in self.joins.drain(..) {
-            j.join().unwrap();
-        }
+        let _ = self.shutdown();
     }
 }
 enum Progress {
@@ -349,7 +401,7 @@ fn worker(
     events: SyncSender<Event>,
     wake: Wake,
     notify: Option<Arc<dyn Fn() + Send + Sync>>,
-) {
+) -> io::Result<()> {
     let events = Events { tx: events, notify };
     let mut slots: Vec<Option<Managed>> = (0..leases.len()).map(|_| None).collect();
     let mut entropy = File::open("/dev/urandom").unwrap();
@@ -365,10 +417,16 @@ fn worker(
                 | Command::Reset(id)
                 | Command::Cancel(id) => (*id, None),
                 Command::Stop => {
-                    for s in slots.iter_mut().flatten() {
-                        s.reset();
+                    for mut s in slots.iter_mut().filter_map(Option::take) {
+                        s.cpu.shutdown()?;
+                        let lease = s.lease.clone();
+                        let active = s.active;
+                        drop(s); // Destroy this stopped VM before acknowledging its lease.
+                        if active {
+                            lease.acknowledge_reset();
+                        }
                     }
-                    return;
+                    return Ok(());
                 }
             };
             let i = id / owners;
@@ -541,6 +599,29 @@ mod tests {
 
     #[test]
     #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn shutdown_interrupts_queued_spins_and_is_idempotent() {
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let mut pool = Pool::new(Kvm::new(), snapshot, 1, 1);
+        pool.start(
+            0,
+            Job {
+                generation: 2,
+                source: "while(true){}".into(),
+                mode: Mode::Run,
+                deadline_ns: kvm::monotonic_ns() + 30_000_000_000,
+                canary: false,
+            },
+        );
+        let started = Instant::now();
+        pool.shutdown().unwrap();
+        assert!(
+            started.elapsed() < Duration::from_secs(2),
+            "shutdown waited for the original lease"
+        );
+        pool.shutdown().unwrap();
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
     fn guest_protocol_error_resets_only_its_run() {
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
         let mut pool = Pool::new(Kvm::new(), snapshot, 2, 2);
@@ -589,5 +670,6 @@ mod tests {
             panic!("clean reuse");
         };
         assert_eq!(completion.result.unwrap(), "{\"ok\":2}");
+        pool.shutdown().unwrap();
     }
 }

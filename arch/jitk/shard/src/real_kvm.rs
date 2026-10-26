@@ -326,18 +326,31 @@ impl Slot {
         }
     }
     pub fn drain(&mut self) {
+        self.shutdown().expect("stopped vCPU MMIO drain");
+    }
+    /// Complete pending MMIO before teardown. The caller owns a stopped vCPU.
+    pub fn shutdown(&mut self) -> io::Result<()> {
         if self.pending_mmio {
+            // SAFETY: the live kvm_run mapping is owned here and no KVM_RUN is
+            // active. immediate_exit is the UAPI byte; the pointer cannot escape.
             unsafe {
                 self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(1);
             }
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
-            assert!(r < 0 && io::Error::last_os_error().raw_os_error() == Some(4));
+            let error = io::Error::last_os_error();
             unsafe {
                 self.run.ptr.add(IMMEDIATE_EXIT).write_volatile(0);
+            }
+            if r >= 0 {
+                return Err(io::Error::other("MMIO drain did not return EINTR"));
+            }
+            if error.raw_os_error() != Some(4) {
+                return Err(error);
             }
             self.pending_mmio = false;
             self.drains += 1;
         }
+        Ok(())
     }
     pub fn reset(&mut self) -> u64 {
         let t = Instant::now();
@@ -667,7 +680,7 @@ impl Slot {
 }
 impl Drop for Slot {
     fn drop(&mut self) {
-        self.drain();
+        let _ = self.shutdown();
     }
 }
 
@@ -807,6 +820,13 @@ mod tests {
         b[32..32 + payload.len()].copy_from_slice(payload);
         s.copy(REQUEST, &b);
         s.store(0x40, len as u64);
+    }
+    #[test]
+    fn drop_does_not_panic_when_mmio_drain_fails() {
+        let mut s = slot();
+        s.pending_mmio = true;
+        assert!(s.shutdown().is_err());
+        drop(s); // /dev/null rejects KVM_RUN: cleanup must not assert.
     }
     #[test]
     fn snapshot_metadata_reads_are_bounded_before_allocation() {

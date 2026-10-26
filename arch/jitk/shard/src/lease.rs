@@ -89,7 +89,10 @@ impl Wake {
         Self(Arc::new(owned(unsafe { eventfd(0, 0x80000 | 0x800) })))
     }
     pub fn notify(&self) {
-        notify(self.0.as_raw_fd());
+        self.try_notify().expect("owner eventfd write");
+    }
+    pub fn try_notify(&self) -> io::Result<()> {
+        try_notify(self.0.as_raw_fd())
     }
     pub fn wait(&self) {
         let mut fd = PollFd {
@@ -110,15 +113,21 @@ impl Wake {
     }
 }
 fn notify(fd: RawFd) {
+    try_notify(fd).expect("eventfd write");
+}
+fn try_notify(fd: RawFd) -> io::Result<()> {
     loop {
-        let n = unsafe { write(fd, (&1u64 as *const u64).cast(), 8) };
+        let one = 1u64;
+        // SAFETY: one is a live eight-byte eventfd value; fd is owned by Wake.
+        let n = unsafe { write(fd, (&one as *const u64).cast(), 8) };
         if n == 8 {
-            return;
+            return Ok(());
         }
-        match io::Error::last_os_error().raw_os_error() {
+        let error = io::Error::last_os_error();
+        match error.raw_os_error() {
             Some(4) => continue,
-            Some(11) => return, // a saturated eventfd already has a wake queued
-            e => panic!("eventfd write: {e:?}"),
+            Some(11) => return Ok(()),
+            _ => return Err(error),
         }
     }
 }
@@ -262,6 +271,28 @@ impl Watchdog {
             generation: 0,
         }
     }
+    /// Expedite active leases while retaining independent reset escalation.
+    pub fn request_stop(&self) -> io::Result<()> {
+        for slot in 0..self.board.len {
+            let e = self.board.entry(slot);
+            if e.state.load(Acquire) & 3 == ARMED {
+                e.deadline.store(monotonic_ns(), Release);
+            }
+        }
+        self.board.changes.try_notify()
+    }
+    pub fn shutdown(&mut self) -> io::Result<()> {
+        if (0..self.board.len).any(|slot| self.board.entry(slot).state.load(Acquire) & 3 != 0) {
+            return Err(io::Error::other(
+                "watchdog shutdown before slot reset acknowledgement",
+            ));
+        }
+        if self.child.try_wait()?.is_none() {
+            self.child.kill()?;
+        }
+        self.child.wait()?;
+        Ok(())
+    }
     pub fn check(&mut self) {
         if let Some(status) = self.child.try_wait().unwrap() {
             eprintln!("watchdog exited unexpectedly: {status}");
@@ -271,11 +302,14 @@ impl Watchdog {
 }
 impl Drop for Watchdog {
     fn drop(&mut self) {
-        for slot in 0..self.board.len {
-            assert_eq!(self.board.entry(slot).state.load(Acquire) & 3, 0);
+        // Unreset leases must keep independent escalation alive if owners are
+        // still running. The child observes the shard pidfd and exits when it dies.
+        let idle =
+            (0..self.board.len).all(|slot| self.board.entry(slot).state.load(Acquire) & 3 == 0);
+        if idle {
+            let _ = self.child.kill();
+            let _ = self.child.wait();
         }
-        self.child.kill().unwrap();
-        self.child.wait().unwrap();
     }
 }
 thread_local! {
@@ -402,6 +436,17 @@ mod tests {
             slot: 0,
             generation: 0,
         }
+    }
+    #[test]
+    fn watchdog_drop_tolerates_unreset_leases_and_reaped_child() {
+        let lease = lease();
+        lease.board.entry(0).state.store(ARMED, Release);
+        let mut child = Command::new("true").spawn().unwrap();
+        child.wait().unwrap();
+        drop(Watchdog {
+            board: lease.board,
+            child,
+        });
     }
     #[test]
     fn kick_between_entries_yields_before_running_another_slot() {

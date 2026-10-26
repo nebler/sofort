@@ -199,7 +199,12 @@ pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let mut head = [0; 4];
         match input.read(&mut head[..1])? {
-            0 => return Ok(()),
+            0 => {
+                for vm in vms.values_mut() {
+                    vm.slot.shutdown()?;
+                }
+                return Ok(());
+            }
             _ => input.read_exact(&mut head[1..])?,
         };
         let len = u32::from_le_bytes(head) as usize;
@@ -256,5 +261,8 @@ pub fn hold(
     println!("{{\"event\":\"held\",\"n\":{n},\"threads\":1,\"native\":true}}");
     io::stdout().flush()?;
     std::thread::sleep(std::time::Duration::from_secs(seconds));
+    for vm in &mut vms {
+        vm.slot.shutdown()?;
+    }
     Ok(())
 }

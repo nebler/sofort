@@ -136,6 +136,12 @@ struct Owner {
     snapshot: Arc<File>,
 }
 impl Owner {
+    fn shutdown(&mut self) -> std::io::Result<()> {
+        for slot in self.slots.values_mut() {
+            slot.shutdown()?;
+        }
+        Ok(())
+    }
     fn handle(&mut self, cmd: Cmd, tx: &mpsc::Sender<Event>) {
         match cmd {
             Cmd::Create(ids, park) => {
@@ -185,7 +191,7 @@ impl Owner {
 struct Shard {
     local: Owner,
     senders: Vec<mpsc::Sender<Cmd>>,
-    joins: Vec<thread::JoinHandle<()>>,
+    joins: Vec<thread::JoinHandle<std::io::Result<()>>>,
     tx: mpsc::Sender<Event>,
     rx: mpsc::Receiver<Event>,
     w: usize,
@@ -216,6 +222,7 @@ impl Shard {
                             }
                             owner.handle(cmd, &et);
                         }
+                        owner.shutdown()
                     })
                     .unwrap(),
             );
@@ -276,14 +283,35 @@ impl Shard {
         self.acks();
     }
 }
-impl Drop for Shard {
-    fn drop(&mut self) {
-        for tx in &self.senders {
-            let _ = tx.send(Cmd::Stop);
+impl Shard {
+    fn shutdown(&mut self) -> std::io::Result<()> {
+        let mut error = None;
+        for tx in self.senders.drain(..) {
+            if tx.send(Cmd::Stop).is_err() {
+                error.get_or_insert_with(|| std::io::Error::other("fixture owner exited"));
+            }
         }
         for h in self.joins.drain(..) {
-            h.join().unwrap();
+            match h.join() {
+                Ok(Ok(())) => {}
+                Ok(Err(e)) => {
+                    error.get_or_insert(e);
+                }
+                Err(_) => {
+                    error.get_or_insert_with(|| std::io::Error::other("fixture owner panicked"));
+                }
+            }
         }
+        self.local.shutdown()?;
+        match error {
+            Some(e) => Err(e),
+            None => Ok(()),
+        }
+    }
+}
+impl Drop for Shard {
+    fn drop(&mut self) {
+        let _ = self.shutdown();
     }
 }
 
@@ -528,4 +556,5 @@ fn main() {
         "selftest" => selftest(&mut shard, &bytes),
         _ => panic!("use selftest | density [max] | reset [iterations] | wait [VMs]"),
     }
+    shard.shutdown().expect("fixture shutdown");
 }
