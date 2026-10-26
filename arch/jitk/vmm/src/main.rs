@@ -4,22 +4,24 @@ use confinement::{Error, Sandbox};
 use krun::{ConsoleDevice, KernelFormat, MmioDeviceManager, Payload, VmmBuilder};
 use std::{
     io::{self, Read, Write},
-    os::fd::AsFd,
+    os::fd::{AsFd, FromRawFd, OwnedFd},
     path::PathBuf,
     time::{SystemTime, UNIX_EPOCH},
 };
 
 fn counter() -> u64 {
     #[cfg(target_os = "macos")]
-    unsafe {
+    {
         unsafe extern "C" {
             fn mach_absolute_time() -> u64;
         }
-        mach_absolute_time()
+        // SAFETY: this macOS monotonic counter has no arguments or memory preconditions.
+        unsafe { mach_absolute_time() }
     }
     #[cfg(target_os = "linux")]
     {
         let ticks: u64;
+        // SAFETY: aarch64 userspace can read the virtual counter; no memory or stack is touched.
         unsafe { std::arch::asm!("mrs {}, cntvct_el0", out(reg) ticks) };
         ticks
     }
@@ -33,6 +35,7 @@ fn wait_go() -> Result<(), Error> {
             events: libc::POLLIN,
             revents: 0,
         };
+        // SAFETY: fd is one writable pollfd; -1 requests an unbounded wait.
         if unsafe { libc::poll(&mut fd, 1, -1) } < 0 {
             let e = io::Error::last_os_error();
             if e.kind() == io::ErrorKind::Interrupted {
@@ -40,6 +43,7 @@ fn wait_go() -> Result<(), Error> {
             }
             return Err(e.into());
         }
+        // SAFETY: go is writable for the single requested byte; no pointer escapes.
         match unsafe { libc::read(0, go.as_mut_ptr().cast(), 1) } {
             1 => return Ok(()),
             0 => return Err("EOF before go byte".into()),
@@ -155,6 +159,20 @@ fn launch() -> Result<(), Error> {
         .shutdown_support(false);
     let timing = std::env::var_os("JITK_VMM_TIMING").is_some();
     let started = std::time::Instant::now();
+    let netns = if let Some(fd) = netns {
+        if !cfg!(target_os = "linux") {
+            return Err("sandbox: --netns-fd is Linux-only".into());
+        }
+        // SAFETY: F_GETFD inspects a scalar fd without borrowing any userspace memory.
+        if unsafe { libc::fcntl(fd, libc::F_GETFD) } < 0 {
+            return Err(io::Error::last_os_error().into());
+        }
+        // SAFETY: the CLI transfers ownership of this inherited live fd to the launcher.
+        // Parsing is single-threaded; no other Rust owner exists for inherited fds.
+        Some(unsafe { OwnedFd::from_raw_fd(fd) })
+    } else {
+        None
+    };
     let mut sandbox = Sandbox::prepare(&image, profile.as_deref(), netns)?;
     let prepared = std::time::Instant::now();
     sandbox.before_build()?;

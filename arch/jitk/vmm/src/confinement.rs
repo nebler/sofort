@@ -13,7 +13,11 @@ pub use implementation::*;
 pub struct Sandbox;
 #[cfg(not(sandbox_ready))]
 impl Sandbox {
-    pub fn prepare(_: &Path, _: Option<&Path>, _: Option<i32>) -> Result<Self, Error> {
+    pub fn prepare(
+        _: &Path,
+        _: Option<&Path>,
+        _: Option<std::os::fd::OwnedFd>,
+    ) -> Result<Self, Error> {
         Err("area 07 sandbox module not ready; refusing unconfined launch".into())
     }
     pub fn before_build(&mut self) -> Result<(), Error> {

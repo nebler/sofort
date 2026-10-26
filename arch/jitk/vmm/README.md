@@ -142,3 +142,11 @@ recorded as `watchdog: true`, never a clean exit. The additional
 `bad-sysreg-handled` fixture uses the same instruction and requires an EC=0
 UNDEF exception before shutting down through PSCI. HVF instead reports the
 patched VMM guest-fault status 75 for the original fixture.
+
+Formatting/lint gate (R8): `cargo +1.95.0 fmt --check` from this directory;
+`python3 lint.py` runs strict offline Clippy against the exact cached patched
+libkrun artifacts selected by `JITK_VMM_BUILD` (same default as `build.py`).
+The Cargo manifest is for tooling; `build.py` remains the signed production build.
+Clippy and rustfmt components for Rust 1.95.0 are required. The gate includes
+`-D warnings -D clippy::undocumented_unsafe_blocks`; the seccomp-only probe
+allows unused launcher APIs locally because it intentionally excludes the CLI.

@@ -16,7 +16,7 @@ struct Entry {
     end: Instant,
     deadline: f64,
     #[cfg(target_os = "linux")]
-    pidfd: i32,
+    pidfd: std::os::fd::OwnedFd,
 }
 
 fn now_ms() -> f64 {
@@ -41,39 +41,49 @@ fn say(line: &str) {
 
 #[cfg(target_os = "linux")]
 mod os {
+    use std::os::fd::{AsRawFd, BorrowedFd, FromRawFd, OwnedFd};
     pub struct Waiter;
     pub fn new() -> Waiter {
         Waiter
     }
-    pub fn track(pid: i32) -> Option<i32> {
+    pub fn track(pid: i32) -> Option<OwnedFd> {
+        // SAFETY: pidfd_open takes scalar arguments and returns a new fd or -1.
         let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) } as i32;
-        (fd >= 0).then_some(fd)
+        if fd < 0 {
+            None
+        } else {
+            // SAFETY: fd was just created and has no other owner.
+            Some(unsafe { OwnedFd::from_raw_fd(fd) })
+        }
     }
-    pub fn kill(pid: i32, pidfd: i32) {
+    pub fn kill(pid: i32, pidfd: BorrowedFd<'_>) {
         let _ = pid;
+        // SAFETY: the borrowed pidfd stays live; null siginfo requests the kernel default.
         unsafe {
             libc::syscall(
                 libc::SYS_pidfd_send_signal,
-                pidfd,
+                pidfd.as_raw_fd(),
                 libc::SIGKILL,
                 std::ptr::null::<u8>(),
                 0,
             )
         };
     }
-    pub fn untrack(pidfd: i32) {
-        unsafe { libc::close(pidfd) };
-    }
     /// Waits for stdin or any VM exit. Returns (stdin_ready, exited pidfds).
-    pub fn wait(_w: &mut Waiter, pidfds: &[(i32, i32)], timeout_ms: i32) -> (bool, Vec<i32>) {
+    pub fn wait(
+        _w: &mut Waiter,
+        pidfds: &[(i32, BorrowedFd<'_>)],
+        timeout_ms: i32,
+    ) -> (bool, Vec<i32>) {
         let mut fds: Vec<libc::pollfd> = std::iter::once(0)
-            .chain(pidfds.iter().map(|p| p.1))
+            .chain(pidfds.iter().map(|p| p.1.as_raw_fd()))
             .map(|fd| libc::pollfd {
                 fd,
                 events: libc::POLLIN,
                 revents: 0,
             })
             .collect();
+        // SAFETY: fds contains len writable pollfds; all borrowed descriptors outlive poll.
         if unsafe { libc::poll(fds.as_mut_ptr(), fds.len() as _, timeout_ms) } <= 0 {
             return (false, vec![]);
         }
@@ -88,12 +98,16 @@ mod os {
 }
 #[cfg(target_os = "macos")]
 mod os {
+    use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
     pub struct Waiter {
-        kq: i32,
+        kq: OwnedFd,
     }
     pub fn new() -> Waiter {
+        // SAFETY: kqueue has no arguments and returns a new owned descriptor or -1.
         let kq = unsafe { libc::kqueue() };
         assert!(kq >= 0, "kqueue");
+        // SAFETY: the successful kqueue descriptor has no other owner.
+        let kq = unsafe { OwnedFd::from_raw_fd(kq) };
         let ev = libc::kevent {
             ident: 0,
             filter: libc::EVFILT_READ,
@@ -102,7 +116,17 @@ mod os {
             data: 0,
             udata: std::ptr::null_mut(),
         };
-        unsafe { libc::kevent(kq, &ev, 1, std::ptr::null_mut(), 0, std::ptr::null()) };
+        // SAFETY: kq is live, ev is one initialized kevent; null output requests no event copy.
+        unsafe {
+            libc::kevent(
+                kq.as_raw_fd(),
+                &ev,
+                1,
+                std::ptr::null_mut(),
+                0,
+                std::ptr::null(),
+            )
+        };
         Waiter { kq }
     }
     /// Registers exit notification; false if the pid is already gone.
@@ -115,10 +139,21 @@ mod os {
             data: 0,
             udata: std::ptr::null_mut(),
         };
-        unsafe { libc::kevent(w.kq, &ev, 1, std::ptr::null_mut(), 0, std::ptr::null()) == 0 }
+        // SAFETY: the borrowed Waiter keeps kq live; ev is one initialized process-exit request.
+        unsafe {
+            libc::kevent(
+                w.kq.as_raw_fd(),
+                &ev,
+                1,
+                std::ptr::null_mut(),
+                0,
+                std::ptr::null(),
+            ) == 0
+        }
     }
     // Detached VMMs lead their own process group; an exited-but-unreaped leader still pins the pgid.
     pub fn kill(pid: i32) {
+        // SAFETY: pid is a validated (>1) detached process-group leader; kill takes scalar args.
         unsafe { libc::kill(-pid, libc::SIGKILL) };
     }
     /// Waits for stdin or any VM exit. Returns (stdin_ready, exited pids).
@@ -127,10 +162,12 @@ mod os {
             tv_sec: (timeout_ms / 1000) as _,
             tv_nsec: ((timeout_ms % 1000) * 1_000_000) as _,
         };
+        // SAFETY: kevent is a C record containing only integers and a nullable opaque pointer.
         let mut evs: [libc::kevent; 32] = unsafe { std::mem::zeroed() };
+        // SAFETY: kq is live; evs has capacity 32; ts (when used) lives through the call.
         let n = unsafe {
             libc::kevent(
-                w.kq,
+                w.kq.as_raw_fd(),
                 std::ptr::null(),
                 0,
                 evs.as_mut_ptr(),
@@ -162,7 +199,7 @@ pub fn run() -> ! {
     let fail_closed = |vms: &mut HashMap<i32, Entry>| -> ! {
         for (pid, _e) in vms.drain() {
             #[cfg(target_os = "linux")]
-            os::kill(pid, _e.pidfd);
+            os::kill(pid, std::os::fd::AsFd::as_fd(&_e.pidfd));
             #[cfg(target_os = "macos")]
             os::kill(pid);
         }
@@ -181,8 +218,7 @@ pub fn run() -> ! {
             let fired = now_ms();
             #[cfg(target_os = "linux")]
             {
-                os::kill(pid, e.pidfd);
-                os::untrack(e.pidfd);
+                os::kill(pid, std::os::fd::AsFd::as_fd(&e.pidfd));
             }
             #[cfg(target_os = "macos")]
             os::kill(pid);
@@ -202,20 +238,21 @@ pub fn run() -> ! {
             });
         #[cfg(target_os = "linux")]
         let (input, exited) = {
-            let fds: Vec<(i32, i32)> = vms.iter().map(|(p, e)| (*p, e.pidfd)).collect();
+            let fds: Vec<_> = vms
+                .iter()
+                .map(|(p, e)| (*p, std::os::fd::AsFd::as_fd(&e.pidfd)))
+                .collect();
             os::wait(&mut w, &fds, timeout)
         };
         #[cfg(target_os = "macos")]
         let (input, exited) = os::wait(&mut w, timeout);
         for pid in exited {
-            if let Some(_e) = vms.remove(&pid) {
-                #[cfg(target_os = "linux")]
-                os::untrack(_e.pidfd);
-            }
+            vms.remove(&pid); // Dropping the entry closes its pidfd on Linux.
         }
         if !input {
             continue;
         }
+        // SAFETY: chunk is writable for chunk.len() bytes; read does not retain the pointer.
         let n = unsafe { libc::read(0, chunk.as_mut_ptr().cast(), chunk.len()) };
         if n < 0 && std::io::Error::last_os_error().kind() == std::io::ErrorKind::Interrupted {
             continue;
@@ -269,10 +306,7 @@ pub fn run() -> ! {
                     say(&format!("{{\"pid\":{pid},\"armed\":{deadline}}}"));
                 }
                 (Some("del"), Some(pid), None, 2) => {
-                    if let Some(_e) = vms.remove(&pid) {
-                        #[cfg(target_os = "linux")]
-                        os::untrack(_e.pidfd);
-                    }
+                    vms.remove(&pid);
                 }
                 _ => fail_closed(&mut vms),
             }

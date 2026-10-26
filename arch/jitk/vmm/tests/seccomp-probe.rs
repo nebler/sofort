@@ -1,5 +1,6 @@
 //! Test-only forbidden host syscall after real KVM build and confinement.
 #[path = "../src/confinement.rs"]
+#[allow(dead_code)] // This probe uses confinement, not the launcher-only profile compiler.
 mod confinement;
 use krun::{ConsoleDevice, KernelFormat, MmioDeviceManager, Payload, VmmBuilder};
 use std::{io, os::fd::AsFd};
@@ -24,6 +25,7 @@ fn launch() -> Result<(), confinement::Error> {
     let _vm = builder.build()?;
     sandbox.after_build()?;
     eprintln!("SECCOMP-PROBE-CONFINED");
+    // SAFETY: socket takes scalar constants and no userspace pointers; confinement must kill it.
     unsafe { libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0) };
     Err("forbidden socket survived".into())
 }

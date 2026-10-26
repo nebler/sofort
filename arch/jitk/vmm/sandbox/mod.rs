@@ -13,6 +13,7 @@
 //! Supervisor rule: send `run` only after `{"sandbox":"ok"}` on stderr AND guest READY.
 //! Linux: stderr must be a pipe (RLIMIT_FSIZE=0 makes writes to regular files raise SIGXFSZ).
 use std::io::Read;
+use std::os::fd::OwnedFd;
 use std::path::{Path, PathBuf};
 
 type E = Box<dyn std::error::Error>;
@@ -33,7 +34,7 @@ pub struct Sandbox {
     #[allow(dead_code)]
     profile: Option<Vec<u8>>,
     #[allow(dead_code)]
-    netns_fd: Option<i32>,
+    netns_fd: Option<OwnedFd>,
     stage: Stage,
 }
 
@@ -53,7 +54,11 @@ fn read_profile(reader: impl Read) -> Result<Vec<u8>, E> {
 impl Sandbox {
     /// `image`: canonical absolute path. `profile`: macOS compiled blob (None => compile
     /// in-process, ~5 ms, same policy). `netns_fd`: Linux, fd of a pre-created empty netns.
-    pub fn prepare(image: &Path, profile: Option<&Path>, netns_fd: Option<i32>) -> Result<Self, E> {
+    pub fn prepare(
+        image: &Path,
+        profile: Option<&Path>,
+        netns_fd: Option<OwnedFd>,
+    ) -> Result<Self, E> {
         // The profile/Landlock rule names the resolved path; a symlinked path (e.g. macOS
         // /tmp -> /private/tmp) would be denied at build() with a confusing EPERM.
         if std::fs::canonicalize(image)? != image {
@@ -93,9 +98,10 @@ impl Sandbox {
         #[cfg(target_os = "linux")]
         {
             linux::limits()?;
-            if let Some(fd) = self.netns_fd.take() {
-                linux::enter_netns(fd)?
+            if let Some(fd) = self.netns_fd.as_ref() {
+                linux::enter_netns(std::os::fd::AsFd::as_fd(fd))?;
             }
+            drop(self.netns_fd.take()); // Close before Landlock/seccomp, as in the original setup.
             linux::landlock(&self.image)?;
             let _ = utils::thread_hook::set(enter_thread); // false only if a test pre-registered
         }
@@ -205,37 +211,48 @@ mod macos {
                 .ok_or("sandbox: images path must be UTF-8")?,
         )?;
         let src = CString::new(super::SEATBELT_PROFILE)?;
-        unsafe {
-            let params = sandbox_create_params();
-            if params.is_null() {
-                return Err("sandbox: create_params failed".into());
-            }
-            sandbox_set_param(params, c"IMAGES".as_ptr(), dir.as_ptr());
-            let mut err = std::ptr::null_mut();
-            let prof = sandbox_compile_string(src.as_ptr(), params, &mut err);
-            sandbox_free_params(params);
-            if prof.is_null() {
-                let m = if err.is_null() {
-                    "unknown".into()
-                } else {
-                    CStr::from_ptr(err).to_string_lossy().into_owned()
-                };
-                if !err.is_null() {
-                    sandbox_free_error(err)
-                }
-                return Err(format!("sandbox: compile failed: {m}").into());
-            }
-            let blob = std::slice::from_raw_parts((*prof).data, (*prof).size).to_vec();
-            sandbox_free_profile(prof);
-            Ok(blob)
+        // SAFETY: no arguments; libsandbox returns a uniquely owned params object or null.
+        let params = unsafe { sandbox_create_params() };
+        if params.is_null() {
+            return Err("sandbox: create_params failed".into());
         }
+        // SAFETY: params is live; both NUL-terminated strings outlive this call.
+        unsafe { sandbox_set_param(params, c"IMAGES".as_ptr(), dir.as_ptr()) };
+        let mut err = std::ptr::null_mut();
+        // SAFETY: src/params are live and err is writable; returned objects are owned here.
+        let prof = unsafe { sandbox_compile_string(src.as_ptr(), params, &mut err) };
+        // SAFETY: compile has returned and params has exactly one owner.
+        unsafe { sandbox_free_params(params) };
+        if prof.is_null() {
+            let message = if err.is_null() {
+                "unknown".into()
+            } else {
+                // SAFETY: libsandbox returns a NUL-terminated error string valid until freed.
+                let message = unsafe { CStr::from_ptr(err) }
+                    .to_string_lossy()
+                    .into_owned();
+                // SAFETY: this error allocation is owned here and freed exactly once.
+                unsafe { sandbox_free_error(err) };
+                message
+            };
+            return Err(format!("sandbox: compile failed: {message}").into());
+        }
+        // SAFETY: successful compilation returned a live Profile, owned until free below.
+        let profile = unsafe { &*prof };
+        // SAFETY: libsandbox guarantees data points to size initialized bytes; copy before free.
+        let blob = unsafe { std::slice::from_raw_parts(profile.data, profile.size) }.to_vec();
+        // SAFETY: no borrowed data escapes; this profile is freed exactly once.
+        unsafe { sandbox_free_profile(prof) };
+        Ok(blob)
     }
+
     pub fn apply(blob: &[u8]) -> Result<(), E> {
         let p = Profile {
             builtin: std::ptr::null(),
             data: blob.as_ptr(),
             size: blob.len(),
         };
+        // SAFETY: p has the libsandbox C layout and borrows blob for the duration of apply.
         if unsafe { sandbox_apply(&p) } != 0 {
             return Err(
                 format!("sandbox: apply failed: {}", std::io::Error::last_os_error()).into(),
@@ -249,6 +266,7 @@ mod macos {
 mod linux {
     use super::E;
     use std::io::Error;
+    use std::os::fd::{AsRawFd, BorrowedFd, FromRawFd, OwnedFd};
     use std::os::unix::ffi::OsStrExt;
 
     pub fn limits() -> Result<(), E> {
@@ -261,6 +279,7 @@ mod linux {
                 rlim_cur: v,
                 rlim_max: v,
             };
+            // SAFETY: l is a live repr(C) rlimit; res is one of the named RLIMIT constants.
             if unsafe { libc::setrlimit(res, &l) } != 0 {
                 return Err(Error::last_os_error().into());
             }
@@ -270,6 +289,7 @@ mod linux {
             (libc::PR_SET_DUMPABLE, 0),
             (libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong),
         ] {
+            // SAFETY: these prctl operations take scalar arguments only; unused arguments are zero.
             if unsafe { libc::prctl(opt, arg, 0, 0, 0) } != 0 {
                 return Err(Error::last_os_error().into());
             }
@@ -277,10 +297,9 @@ mod linux {
         Ok(())
     }
 
-    pub fn enter_netns(fd: i32) -> Result<(), E> {
-        let rc = unsafe { libc::setns(fd, libc::CLONE_NEWNET) };
-        unsafe { libc::close(fd) };
-        if rc != 0 {
+    pub fn enter_netns(fd: BorrowedFd<'_>) -> Result<(), E> {
+        // SAFETY: fd stays live through setns; CLONE_NEWNET requests only the network namespace.
+        if unsafe { libc::setns(fd.as_raw_fd(), libc::CLONE_NEWNET) } != 0 {
             return Err(format!("sandbox: setns: {}", Error::last_os_error()).into());
         }
         Ok(())
@@ -307,6 +326,7 @@ mod linux {
     /// Handle every FS right (ABI>=4 required), TCP bind/connect, and (ABI>=6) abstract-unix +
     /// signal scopes. Allow only: read the image; read/write/ioctl /dev/kvm.
     pub fn landlock(image: &std::path::Path) -> Result<(), E> {
+        // SAFETY: VERSION query uses null attributes, size zero and the documented flag.
         let abi = unsafe { libc::syscall(CREATE, 0usize, 0usize, 1u32) };
         if abi < 4 {
             return Err(format!("sandbox: Landlock ABI {abi} < 4; refusing to run").into());
@@ -322,37 +342,38 @@ mod linux {
             scoped: if abi >= 6 { 0b11 } else { 0 },
         };
         let size: usize = if abi >= 6 { 24 } else { 16 };
+        // SAFETY: attr has the Landlock C layout; size selects only fields supported by this ABI.
         let rs = unsafe { libc::syscall(CREATE, &attr, size, 0u32) } as i32;
         if rs < 0 {
             return Err(Error::last_os_error().into());
         }
+        // SAFETY: successful create_ruleset returned a new descriptor exclusively owned here.
+        let rs = unsafe { OwnedFd::from_raw_fd(rs) };
         let add = |path: &[u8], allowed: u64| -> Result<(), E> {
             let c = std::ffi::CString::new(path)?;
+            // SAFETY: c is NUL-terminated; O_PATH does not require a variadic mode argument.
             let fd = unsafe { libc::open(c.as_ptr(), libc::O_PATH | libc::O_CLOEXEC) };
             if fd < 0 {
                 return Err(Error::last_os_error().into());
             }
+            // SAFETY: successful open returned a new descriptor exclusively owned here.
+            let fd = unsafe { OwnedFd::from_raw_fd(fd) };
             let pb = PathBeneath {
                 allowed: allowed & fs,
-                parent_fd: fd,
+                parent_fd: fd.as_raw_fd(),
             };
-            let rc = unsafe { libc::syscall(ADD, rs, 1u32, &pb, 0u32) };
-            unsafe { libc::close(fd) };
+            // SAFETY: rs/fd are live; packed pb matches landlock_path_beneath_attr and is read only.
+            let rc = unsafe { libc::syscall(ADD, rs.as_raw_fd(), 1u32, &pb, 0u32) };
             if rc != 0 {
                 return Err(Error::last_os_error().into());
             }
             Ok(())
         };
-        let r = add(image.as_os_str().as_bytes(), READ_FILE)
-            .and_then(|_| add(b"/dev/kvm", READ_FILE | WRITE_FILE | IOCTL_DEV));
-        let rc = if r.is_ok() {
-            unsafe { libc::syscall(RESTRICT, rs, 0u32) }
-        } else {
-            -1
-        };
-        unsafe { libc::close(rs) };
-        r?;
-        if rc != 0 {
+        add(image.as_os_str().as_bytes(), READ_FILE)?;
+        add(b"/dev/kvm", READ_FILE | WRITE_FILE | IOCTL_DEV)?;
+        // SAFETY: rs owns a valid ruleset; restriction has no pointer arguments.
+        if unsafe { libc::syscall(RESTRICT, rs.as_raw_fd(), 0u32) } != 0 {
+            // Capture errno before the OwnedFd destructor closes the ruleset.
             return Err(Error::last_os_error().into());
         }
         Ok(())
@@ -369,6 +390,7 @@ mod linux {
             filter: prog.as_ptr(),
         };
         let flags: libc::c_ulong = if tsync { 1 } else { 0 };
+        // SAFETY: f has sock_fprog's C layout and borrows a live BPF instruction slice.
         if unsafe { libc::syscall(libc::SYS_seccomp, 1 as libc::c_ulong, flags, &f) } != 0 {
             return Err(format!("sandbox: seccomp: {}", Error::last_os_error()).into());
         }
@@ -575,9 +597,9 @@ pub mod bpf {
                 }
                 blk.push(st(RET, rule.ret));
                 let n = blk.len();
-                for j in 0..n {
-                    if blk[j].code == JEQ {
-                        blk[j].jf = (n - j - 1) as u8
+                for (j, instruction) in blk.iter_mut().enumerate() {
+                    if instruction.code == JEQ {
+                        instruction.jf = (n - j - 1) as u8;
                     }
                 } // mismatch: next alt
                 body.extend(blk);
