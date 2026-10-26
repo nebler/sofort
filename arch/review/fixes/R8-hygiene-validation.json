@@ -1,0 +1,350 @@
+{
+  "mac": {
+    "head": "70e432edf1dc7c59659818e53daf9ddc1f24da2c",
+    "uptime": "6:16  up 2 days,  8:29, 1 user, load averages: 6.79 6.43 6.21",
+    "suites": {
+      "kernel": 0,
+      "vmm": 0,
+      "vmm/sandbox": 0,
+      "protocol": 0,
+      "executor": 0,
+      "executor/policy": 0,
+      "mcp": 0,
+      "grow": 0,
+      "bench": 0,
+      "bench/hyperlight": 0
+    },
+    "status_after": ""
+  },
+  "linux": {
+    "status": "PASS",
+    "children_remaining": 0,
+    "label": "NESTED",
+    "gates": {
+      "parking": {
+        "pass": true,
+        "exchanges": 1000
+      },
+      "smoke": {
+        "pass": true,
+        "completed": 1,
+        "n": 1
+      },
+      "tool_smoke": {
+        "pass": true,
+        "completed": 1,
+        "n": 1
+      },
+      "boot": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "one_tool": {
+        "pass": true,
+        "completed": 30,
+        "n": 30
+      },
+      "concurrency_1": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_2": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_3": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_4": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_5": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_6": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_7": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "concurrency_8": {
+        "pass": true,
+        "completed": 100,
+        "n": 100
+      },
+      "density": {
+        "pass": true,
+        "completed_after_park": 256
+      },
+      "cpu_controls": {
+        "pass": true
+      },
+      "seccomp_kill": {
+        "pass": true,
+        "completed": 720,
+        "n": 720
+      },
+      "fault_guests": {
+        "pass": true,
+        "completed": 180,
+        "n": 180
+      }
+    },
+    "hashes": {
+      "jitk-vmm": "601de56eb183904f46a307203c45c48db78dec9a84d425ba6a7b1f1a34b85f8c",
+      "spawn-cg": "d680dffb43db9953a8ff69ddc604c7b3a28626e969e74d036f54c51fd85fa455",
+      "kernel.bin": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732"
+    },
+    "run": {
+      "backend": "ssh",
+      "ssh_wrapper": "/Users/noah/code/sofort/kvm-dev/ssh.sh",
+      "remote_directory": "/home/dev/r8-hygiene/suites/c6c91534be4a-67600",
+      "started_unix": 1792991501.770537,
+      "source_sha256": {
+        "suite.py": "e434355e8097e36d6ca4323d33091d76c2621f282bde37e4e178069e70237af7",
+        "watch.py": "2cdcc90f968747a163e14de6479c1558619c33d3f7da5fda92857f101505038b",
+        "jitk-vmm": "601de56eb183904f46a307203c45c48db78dec9a84d425ba6a7b1f1a34b85f8c",
+        "spawn-cg": "d680dffb43db9953a8ff69ddc604c7b3a28626e969e74d036f54c51fd85fa455",
+        "kernel.bin": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732",
+        "seccomp-probe": "945c45fef8f0a6d6ab9189eb54bef7f405fec95cc87a2b72576c104110e4f042",
+        "kk.bin": "f82411ed394e499325633e638995efa60c70ab56bf74aaa8c68c701da8a11844",
+        "bad-sysreg.bin": "d86438502c6feaf9fc53b5981152d31a85abb7b3094d4f971a0da24467dacc04",
+        "console_avail_oob.bin": "a840ca761d97820769feda5757828e5fcfa0e87ee841594829941b63915e104f",
+        "mmio-halfword.bin": "dd47ecdd5529fe19bce7dab43a043ab2ecc0a9ad6dd16478fe9cf061f9c1fe8f",
+        "rtc_oob_read.bin": "a60a836108cd9f1d6fb121c39f242f6ca657adeb763b4a0fef37e00c5a065608",
+        "unknown-hvc.bin": "fd171655630d980f1bd11fcc56f7754916c35563036e30234e44c6165f4a72dc",
+        "unknown-smc.bin": "137833cac33f65902b07bb4dcff123826bbb51729424d7faa99c1eb20e995f07",
+        "main.bpf": "973d64ea5c9d44d8219a5d08f41383392e88dfda414860db1db04da0c6f967f4",
+        "vcpu.bpf": "8dfb59bd307b5e88988b147d6dc3d11677849c0e60a572da77799970859b8c70",
+        "console.bpf": "a4197b464f035a5091c673028236fabe828fad0ade9cf401ffffb7f86e52a0b1"
+      },
+      "command": [
+        "sudo",
+        "flock",
+        "-E",
+        "75",
+        "-w",
+        "600.0",
+        "/home/dev/bench.lock",
+        "env",
+        "JITK_BIN=/home/dev/r8-hygiene/suites/c6c91534be4a-67600",
+        "JITK_REPORT=/home/dev/r8-hygiene/suites/c6c91534be4a-67600/report.json",
+        "JITK_LABEL=NESTED",
+        "JITK_HOST_UPTIME=6:11  up 2 days,  8:25, 1 user, load averages: 5.57 5.76 5.93",
+        "sh",
+        "-c",
+        "ulimit -n 16384; exec \"$@\"",
+        "sh",
+        "python3",
+        "/home/dev/r8-hygiene/suites/c6c91534be4a-67600/watch.py",
+        "--log",
+        "/home/dev/r8-hygiene/suites/c6c91534be4a-67600/suite.log",
+        "--",
+        "python3",
+        "/home/dev/r8-hygiene/suites/c6c91534be4a-67600/suite.py"
+      ],
+      "lock_timeout_s": 600.0,
+      "vm_lifecycle_changes": false
+    },
+    "report_sha256": "51fb6458ae24f851357875c5c9e039848543d57c5ed99e8138be5b10a03ae37a"
+  },
+  "builds_and_certification": {
+    "mac_build": {
+      "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+      "patches_sha256": {
+        "raw-direct-load.diff": "187e748dc6e5324dfe34f4c57959068ad3e30266888e3778165068906e8e9163",
+        "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295",
+        "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+        "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+        "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54"
+      },
+      "panic": "abort",
+      "features": [],
+      "sandbox_ready": true,
+      "binary": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/jitk-vmm",
+      "binary_sha256": "af5ccbb372e00d44215cfcc9e5ec4adc9eb4f09bd38db6e01c62c30bebaf20b8",
+      "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "relink_command": [
+        "rustc",
+        "+1.95.0",
+        "--edition=2024",
+        "-O",
+        "-C",
+        "lto=fat",
+        "-C",
+        "panic=abort",
+        "--cfg",
+        "sandbox_ready",
+        "--extern",
+        "krun=/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/libkrun/target/release/deps/libkrun.rlib",
+        "-L",
+        "dependency=/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/libkrun/target/release/deps",
+        "--extern",
+        "libc=/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/libkrun/target/release/deps/liblibc-8d2f0ad1ff1872a2.rlib",
+        "--extern",
+        "utils=/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/libkrun/target/release/deps/libkrun_utils-bad1ceb124115d92.rlib"
+      ],
+      "source_sha256": {
+        "src/confinement.rs": "501f1bbfb5599e9c0ac8f680b6506dae00e895e1f1d4c3ac6e7fffe191e0f546",
+        "src/watchdog.rs": "db17edfddc81b1b0c5de9159a338c3b94dc4f24b2acf9e7a22593c55797de742",
+        "src/main.rs": "156f68b2ab0c5ace587cb6807e4646f30cfbee76975cd33865e8071c9128c7fd",
+        "sandbox/mod.rs": "6760ada67c2f2bd31b74ed5eb8706d6a334c431862bb8fc5631e0ef7804ae13c"
+      }
+    },
+    "linux_build": {
+      "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
+      "patches_sha256": {
+        "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
+        "raw-direct-load.diff": "187e748dc6e5324dfe34f4c57959068ad3e30266888e3778165068906e8e9163",
+        "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
+        "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
+        "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
+      },
+      "panic": "abort",
+      "features": [],
+      "sandbox_ready": true,
+      "binary": "/home/dev/r8-hygiene/build/jitk-vmm",
+      "binary_sha256": "601de56eb183904f46a307203c45c48db78dec9a84d425ba6a7b1f1a34b85f8c",
+      "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "relink_command": [
+        "rustc",
+        "+1.95.0",
+        "--edition=2024",
+        "-O",
+        "-C",
+        "lto=fat",
+        "-C",
+        "panic=abort",
+        "--cfg",
+        "sandbox_ready",
+        "--extern",
+        "krun=/home/dev/r8-hygiene/build/libkrun/target/release/deps/libkrun.rlib",
+        "-L",
+        "dependency=/home/dev/r8-hygiene/build/libkrun/target/release/deps",
+        "--extern",
+        "libc=/home/dev/r8-hygiene/build/libkrun/target/release/deps/liblibc-c1d82a31d37c5d1a.rlib",
+        "--extern",
+        "utils=/home/dev/r8-hygiene/build/libkrun/target/release/deps/libkrun_utils-fa33c7c9c58e41bc.rlib"
+      ],
+      "source_sha256": {
+        "src/confinement.rs": "501f1bbfb5599e9c0ac8f680b6506dae00e895e1f1d4c3ac6e7fffe191e0f546",
+        "src/main.rs": "156f68b2ab0c5ace587cb6807e4646f30cfbee76975cd33865e8071c9128c7fd",
+        "src/watchdog.rs": "db17edfddc81b1b0c5de9159a338c3b94dc4f24b2acf9e7a22593c55797de742",
+        "sandbox/mod.rs": "6760ada67c2f2bd31b74ed5eb8706d6a334c431862bb8fc5631e0ef7804ae13c"
+      }
+    },
+    "executor_certification": {
+      "status": "PASS",
+      "at": "2026-10-26T05:15:21.729Z",
+      "selection": "integrated jitk / confined VMM / current kernel",
+      "integrated": true,
+      "host": {
+        "path": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/jitk-vmm",
+        "sha256": "af5ccbb372e00d44215cfcc9e5ec4adc9eb4f09bd38db6e01c62c30bebaf20b8"
+      },
+      "image": {
+        "path": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
+        "sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732"
+      },
+      "gate": {
+        "idleCorePercent": 0,
+        "evidence": "/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-test-6d81iand/jitk/kernel/.READY: 1000/1000; idle CPU below ps resolution (rerun on this image)"
+      },
+      "vmmReady": true,
+      "kernelReady": true,
+      "inputs": {
+        "vendor/codemode.mjs": "79091b106e34cbf8fd972d43b7c46d3a3a0c5b732f1fbfbc6cab5191cdd241db",
+        "upstream.ts": "800ac7ee6433f1b1df8784476dbfb9918a2ac7af444ffc2b1c2ae6872de75cdf",
+        "codec.mjs": "731af9e407afbaf004de467ec7eb802036cb70e420818f8c155cad7f39a48b7e",
+        "code.ts": "9b6f31fcf859afb39f5d130f6133e5c9a25b61f9744d7b6e8e1875e414909760",
+        "policy-adapter.ts": "b50ea54e30561fe08afa379f8a41cac24cd75efc8cd0ce8091463182c91b632d",
+        "../protocol/dispatcher.ts": "0d072477d921ca5f79d436e217b147208f6cc2f7f2a916bf0fa7ec2f90eb901f",
+        "backend.ts": "89101ef30781ccd9bec356c77af9877d400967b7bc79ffff39dc847edd370055",
+        "pool.ts": "550d16732ac8632d6b0448b70b2f9cf04c4e313a0f5f604f214955d688341b77",
+        "shard-ipc.ts": "5fef0de74e2c42f23d76efa46bb144dbce4a282eacc0db6f4a78cc99fb6638d2",
+        "shard-backend.ts": "2e0a808bb7b3e597663b4ce26b791ab86d2fbd91d23f54feb2810fa049b311bf",
+        "../bench/hyperlight/backend.ts": "a24732f81f79e20273e5373d5539858a35f1a1291f2bcd9f0d6bf12cc7c13740",
+        "executor.ts": "551bdb2f74d9ea04b641764dce1d799f7f3228a0219c29d4b6cfc7d5a4cc0211",
+        "select-backend.ts": "d48e27da5b0140502bf08a32013e739643f951ff1282a20dc0dff450e6fb3629",
+        "api-check.ts": "d4c3f0140ee90c877be3343a0fb3091d451c4f1ddea034a7b725d4365f5d8088",
+        "breakdown.ts": "b706534560d1b766875ebcf0903993a29f266fc82c4b055b1c7f5c5d0eb0516e",
+        "hyperlight-check.ts": "767c57c9797e8fb6a1bf0239b498c0da666dc23be9211222ff9d430ee27ca718",
+        "policy-check.ts": "0fc896acf584a803429c425062c4b4074dd409e3ce16d2de67420c19d3af7f16",
+        "pool-check.ts": "ad0072016ddf1f67e8eb9f1efb2ea13ccbc636d715e0f7bb7bfd3fb37efe6ede",
+        "providers.ts": "56d51d5e9d8e8d52a3ddd91e4e3ecbbcb5a30898ed8c1c7d616dec318bfdc161",
+        "resolve-check.ts": "617bccb3714e3f12053a0495ffd43de782397e6976408fa4f9653fb1e481a240",
+        "sandbox-check.ts": "24863ae7f8ff7390e96666f41677770500382e7d457f4e4cacb3a830299d2159",
+        "shard-bench.ts": "f584f6fde5965f7d344f93cbeba01f4499b65a2617aa56056e99f78e7254c805",
+        "shard-ipc-check.ts": "3d10df81f57b0c434304748482e5eb01ebabd7ece0940af081f1dacefaf3e311",
+        "shard-source-check.ts": "41516119c3dc4a2e1afc76f7ca47ae99fabb6bb455c187b7f43783e1c90d4523",
+        "shard-check.ts": "d34d8c7de772d9e32b59c96462b430e3e16ecbb18826a9a147f02dde66244d70",
+        "transport-check.ts": "c0eac20c04ff45a50bdf61798c8f83b1aa35f1d9cbd51bd0727915200dfed2cc",
+        "verify.ts": "3d419ed3970a4316e4a30b3f190fa02b106370204bc54730055b2e0d3829729d",
+        "watchdog-check.ts": "8594e037329c962eea26c0469140af4f95e0330ef6ea919e548ea625da12a863",
+        "wrapper-conformance.ts": "4faa27a97ddccb58b6e85b66cef359971cec277ee9d8a0eef440b1b4bd0fd594",
+        "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/jitk-vmm": "af5ccbb372e00d44215cfcc9e5ec4adc9eb4f09bd38db6e01c62c30bebaf20b8",
+        "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732",
+        "../protocol/bootstrap.js": "60f121f1e3fb24ee971851f162c511188ca6a7256e91e7af47974b1f75afb280",
+        "policy/policy.mjs": "ca082e55f8cc8f2ea6944e5d18d95fd39f0d3ecebf02a780bfc0b055bce168a0",
+        "../vmm/src/watchdog.rs": "db17edfddc81b1b0c5de9159a338c3b94dc4f24b2acf9e7a22593c55797de742",
+        "policy/policy-test.mjs": "29e341d449ad9e8a1ebe18eab186ddb52a1bc6af234bc8958d9646221671a09c",
+        "fixtures/parking-gate.json": "89c7bea72b01262964c7b991999c7fe1a8654d33af953953b240f3215ccf8717"
+      },
+      "tests": "20 executor + Cloudflare/TanStack + 30x64 calls + 22 security policy + 22 executor policy + 6 Hyperlight + lifecycle/ack/hostile/watchdog",
+      "timings": "breakdown-results.json",
+      "n": 50
+    },
+    "certification_run": {
+      "head": "70e432edf1dc7c59659818e53daf9ddc1f24da2c",
+      "uptime": "6:15  up 2 days,  8:28, 1 user, load averages: 5.21 6.12 6.09",
+      "suites": {},
+      "certify": 0,
+      "status_after": ""
+    }
+  },
+  "format": "cargo +1.95.0 fmt --manifest-path arch/jitk/vmm/Cargo.toml --check: PASS; escape.rs explicit rustfmt check: PASS",
+  "clippy": "Mac and Linux, Rust 1.95.0, all targets: -D warnings -D clippy::undocumented_unsafe_blocks: PASS (zero warnings)",
+  "sandbox_units": {
+    "Mac": 11,
+    "Linux": 10
+  },
+  "removed_whole_files": {
+    "files": 173,
+    "bytes": 28796917,
+    "git_text_lines": 13728,
+    "scratch_bytes": 28722317,
+    "scratch_files": 168
+  },
+  "environment": {
+    "JITK_NODE": "/tmp/jitk-09/node-real",
+    "JITK_NPM_CLI": "/Users/noah/.local/share/fnm/node-versions/v24.22.0/installation/lib/node_modules/npm/bin/npm-cli.js",
+    "JITK_VMM_BUILD": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac",
+    "JITK_VMM_BINARY": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-mac/jitk-vmm",
+    "JITK_KERNEL_IMAGE": "/Users/noah/code/sofort/arch/jitk/kernel/dist/kernel.bin",
+    "JITK_KERNEL_CARGO_TARGET_DIR": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/kernel-target",
+    "JITK_TEST_IMAGES": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/test-images",
+    "JITK_WORK": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/linux",
+    "JITK_NESTED_SSH": "/Users/noah/code/sofort/kvm-dev/ssh.sh",
+    "JITK_NESTED_SSH_DIR": "/home/dev/r8-hygiene/suites",
+    "JITK_CANONICAL_VMM": "/Users/noah/.t3/worktrees/sofort/t3-f2168179/.work/vmm-linux/jitk-vmm",
+    "HYPERLIGHT_JS_SRC": "/tmp/jitk-09/hyperlight-js",
+    "HYPERLIGHT_WORKER": "/tmp/jitk-09/adapter-target/release/r2-worker",
+    "HYPERLIGHT_SNAPSHOT": "/tmp/jitk-09/r3-snapshot",
+    "CARGO_BUILD_JOBS": "4",
+    "CC": "/opt/homebrew/bin/zig cc -target aarch64-linux-musl"
+  },
+  "status_after_all_suites": ""
+}
