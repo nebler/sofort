@@ -4,7 +4,7 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shlex
 import subprocess
 import sys
@@ -28,8 +28,11 @@ if not ssh.is_file():
 
 # One private run per invocation/worktree. Never rsync --delete into shared code.
 identity = hashlib.sha256(str(root).encode()).hexdigest()[:12]
-remote = f'/home/dev/jitk-suite/{identity}-{os.getpid()}'
-subprocess.run([str(ssh), f'mkdir -p {remote}'], check=True, timeout=20)
+remote_root = PurePosixPath(os.getenv('JITK_NESTED_SSH_DIR', '/home/dev/jitk-suite'))
+if not remote_root.is_absolute() or '..' in remote_root.parts:
+    sys.exit('JITK_NESTED_SSH_DIR must be an absolute remote scratch directory')
+remote = str(remote_root / f'{identity}-{os.getpid()}')
+subprocess.run([str(ssh), f'mkdir -p {shlex.quote(remote)}'], check=True, timeout=20)
 files = [(root / 'suite.py', 'suite.py'), (root / 'nested/watch.py', 'watch.py')]
 files += [(work / name, name) for name in ['jitk-vmm', 'spawn-cg', 'kernel.bin', 'seccomp-probe']]
 files += [(work / (name + '.bin'), name + '.bin') for name in
@@ -40,7 +43,7 @@ payload = io.BytesIO()
 with tarfile.open(fileobj=payload, mode='w') as archive:
     for source, name in files:
         archive.add(source, arcname=name, recursive=False)
-subprocess.run([str(ssh), f'cd {remote} && tar xf -'], input=payload.getvalue(),
+subprocess.run([str(ssh), f'cd {shlex.quote(remote)} && tar xf -'], input=payload.getvalue(),
                check=True, timeout=30)
 env = {'JITK_BIN': remote, 'JITK_REPORT': remote + '/report.json', 'JITK_LABEL': 'NESTED',
        'JITK_HOST_UPTIME': subprocess.check_output(['uptime'], text=True).strip()}
@@ -77,5 +80,5 @@ if status:
         print(messages[-1][:1000], file=sys.stderr, flush=True)
     print(f'jitk: nested suite failed (exit {status}); log={log}', file=sys.stderr, flush=True)
 if status == 0:
-    subprocess.run([str(ssh), f'sudo rm -rf -- {remote}'], check=True, timeout=20)
+    subprocess.run([str(ssh), f'sudo rm -rf -- {shlex.quote(remote)}'], check=True, timeout=20)
 sys.exit(status)
