@@ -107,7 +107,8 @@ def main():
                 return status
         return 0
 
-    if action == "test":
+    # Every test action (test, test-shard, ...) is guarded, not only `test`.
+    if action.startswith("test"):
         if subtree == "linux" and not env.get("JITK_NESTED_SSH"):
             common = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse",
                                               "--path-format=absolute", "--git-common-dir"], text=True).strip()
@@ -116,7 +117,7 @@ def main():
         status = execute()
         after = git_snapshot()
         if before != after:
-            print(f"jitk: {subtree}/test changed Git state under {ROOT}; "
+            print(f"jitk: {subtree}/{action} changed Git state under {ROOT}; "
                   "put test output in .work/ and record evidence explicitly", file=sys.stderr)
             print(after[0].decode(errors="replace").replace("\0", "\n"), file=sys.stderr)
             return status or 1

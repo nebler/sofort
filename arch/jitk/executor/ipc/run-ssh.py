@@ -75,8 +75,10 @@ flock -w {lock_wait} /home/dev/bench.lock sh -c {q(run_suite)}
 receipt = {'backend': 'ssh', 'remote': remote, 'node': node, 'snapshot': snapshot,
            'source_sha256': {name: hashlib.sha256(source.read_bytes()).hexdigest() for source, name in files},
            'command': commands, 'started_unix': time.time(), 'benchmark': benchmark, 'vm_lifecycle_changes': False}
-output = Path(os.environ.get('JITK_SHARD_OUTPUT', str(executor / 'raw-r7-ipc')))
-output.mkdir(exist_ok=True)
+# raw-r7-ipc/ is recorded evidence; refresh it only with JITK_RECORD=1.
+default_output = executor / ('raw-r7-ipc' if os.environ.get('JITK_RECORD') == '1' else '.work/ipc-ssh')
+output = Path(os.environ.get('JITK_SHARD_OUTPUT', str(default_output)))
+output.mkdir(parents=True, exist_ok=True)
 (output / 'ssh-command.json').write_text(json.dumps(receipt, indent=2) + '\n')
 print(f'jitk: shard suite via {ssh}; scratch={remote}; lock wait <={lock_wait}s', flush=True)
 with (output / 'ssh-test.log').open('w') as log:
