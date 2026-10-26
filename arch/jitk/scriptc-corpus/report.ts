@@ -14,7 +14,12 @@ interface Row { name: string; held: boolean; build: string; diagnostic: string; 
 const root = resolve(import.meta.dirname);
 const s = readJSON<Summary>(join(root, 'summary.json'));
 check(s.complete && s.completed === s.total, 'refuse to publish incomplete results');
-const rows = readFileSync(join(root, '.work/full.jsonl'), 'utf8').trim().split('\n').map(t => JSON.parse(t) as Row);
+const latest = new Map<string, Row>();
+for (const line of readFileSync(join(root, '.work/full.jsonl'), 'utf8').trim().split('\n')) {
+  const row = JSON.parse(line) as Row;
+  latest.set(row.name, row);
+}
+const rows = Array.from(latest.values());
 check(rows.length === s.total, 'journal count differs');
 const lines: string[] = [];
 function add(text: string): void { lines.push(text); }
@@ -59,7 +64,7 @@ add('## Reproduction and disk\n');
 add('Run `make -C arch/jitk/scriptc-corpus census` (or `run`); `make ... test` checks parser/tier/split invariants. Native binaries, manifests, journals, injection hashes and private mismatch snippets live only under ignored `.work/`. Per-program ELF/LLVM/trace/image artifacts are removed after sealing receipts. No raw output is committed. `summary.json` is aggregate evidence; `census.csv` includes only visible program status/call names.\n');
 add(`The private seeded held-out subset contains **${s.heldout}** entries. Its seed and raw results stay outside proposer inputs. Use \`--selection visible\` and \`--selection heldout\` with separate run IDs; see README.md.\n`);
 add('Disk before:\n```text\n' + s.diskBefore + '\n```\n\nDisk after:\n```text\n' + s.diskAfter + '\n```\n');
-add('Disk is checked every 200 completions; the runner stops below 15 GiB. Neither Docker image was rebuilt/retagged, no Docker prune ran, no kernel/grow files changed and no syscalls were grown.\n');
+add('Disk is checked every 100 completions; the runner stops below 15 GiB. Containers use init-based orphan reaping and are recycled after each 100-program batch. Neither Docker image was rebuilt/retagged, no Docker prune ran, no kernel/grow files changed and no syscalls were grown.\n');
 add('Aggregate Makefile recipe needed (not added): `+@$(MAKE) -C "$(ROOT)/scriptc-corpus" census` under a dedicated `scriptc-corpus: tools` target.\n');
 writeFileSync(join(root, 'RESULTS.md'), lines.join('\n'));
 console.log('wrote RESULTS.md');

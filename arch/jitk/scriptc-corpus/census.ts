@@ -39,6 +39,7 @@ let runId = 'full';
 let JOURNAL = '';
 let diskBefore = '';
 let toolsReady: Promise<void> | undefined;
+let infrastructureFailure = false;
 
 async function kernelTools(): Promise<void> {
   if (toolsReady) return toolsReady;
@@ -255,6 +256,7 @@ async function program(name: string): Promise<void> {
   } catch (e) {
     row.diagnostic = row.diagnostic || String(e).slice(0, 1000);
     if (row.build === 'compiled' && !row.linux) row.node = 'oracle-error';
+    if (String(e).includes('oracle-driver-failure')) infrastructureFailure = true;
   } finally {
     dump(join(dir, 'receipt.json'), row);
     // Retain small hashes and results, never thousands of ELFs/traces/outputs.
@@ -369,18 +371,28 @@ async function main(): Promise<void> {
   if (existsSync(diskPath)) diskBefore = readFileSync(diskPath, 'utf8');
   else writeFileSync(diskPath, diskBefore);
   JOURNAL = join(WORK, runId + '.jsonl');
-  if (existsSync(JOURNAL)) rows = readFileSync(JOURNAL, 'utf8').trim().split('\n').filter(Boolean).map(line => JSON.parse(line) as Row);
+  if (existsSync(JOURNAL)) {
+    const latest = new Map<string, Row>();
+    for (const line of readFileSync(JOURNAL, 'utf8').trim().split('\n').filter(Boolean)) {
+      const row = JSON.parse(line) as Row;
+      latest.set(row.name, row);
+    }
+    rows = Array.from(latest.values()).filter(r => r.node !== 'oracle-error');
+  }
   const completed = new Set(rows.map(r => r.name));
   const todo = selected.filter(n => !completed.has(n));
   console.log('corpus=' + selected.length + ' remaining=' + todo.length + ' workers=' + workers);
   if (mode === 'report') { await summarize(selected.length); return; }
-  const common = ['--platform', 'linux/arm64', '--network', 'none', '--read-only', '--cap-drop', 'ALL',
-    '--security-opt', 'no-new-privileges', '--pids-limit', '128', '--memory', '1g', '--cpus', '2',
+  const common = ['--init', '--platform', 'linux/arm64', '--network', 'none', '--read-only', '--cap-drop', 'ALL',
+    '--security-opt', 'no-new-privileges', '--pids-limit', '256', '--memory', '1g', '--cpus', '2',
     '--user', '65534:65534', '--tmpfs', '/tmp:rw,nosuid,size=128m',
     '-v', WORK + ':' + WORK + ':rw', '-v', SOURCE + ':' + SOURCE + ':ro'];
+  for (let start = 0; start < todo.length; start += 100) {
+  const batch = todo.slice(start, start + 100);
+  let next = 0;
+  try {
   await run(['docker', 'run', '-d', '--name', ORACLE_CONTAINER, ...common,
     '-v', join(ROOT, '.work/bin/oracle') + ':/driver:ro', '--entrypoint', '/bin/sleep', IMAGE, 'infinity'], { timeout: 15 });
-  try {
   const dependencyRoot = resolve(realpathSync(join(SOURCE, 'node_modules')), '..');
   await run(['docker', 'run', '-d', '--name', NODE_CONTAINER, ...common,
     '-v', dependencyRoot + ':' + dependencyRoot + ':ro', '-v', join(ROOT, 'node-reference.ts') + ':' + join(ROOT, 'node-reference.ts') + ':ro',
@@ -389,17 +401,21 @@ async function main(): Promise<void> {
   // needed in the rare case the unchanged upstream ELF passes the packer.
   const tasks: Promise<void>[] = [];
   for (let w = 0; w < workers; w++) tasks.push((async () => {
-    while (index < todo.length) {
-      const n = index++;
-      await program(todo[n]);
+    while (next < batch.length && !infrastructureFailure) {
+      const n = next++;
+      await program(batch[n]);
       if (rows.length % 25 === 0) console.log('completed=' + rows.length + '/' + selected.length);
-      if (rows.length % 200 === 0) { await disk(); console.log('disk guard checked'); }
     }
   })());
-  await Promise.all(tasks);
-  await summarize(selected.length);
+  const results = await Promise.allSettled(tasks);
+  for (const result of results) check(result.status === 'fulfilled', 'worker failed');
+  check(!infrastructureFailure, 'oracle infrastructure failed; resume to retry failed rows');
   } finally {
     await capture(['docker', 'rm', '-f', ORACLE_CONTAINER, NODE_CONTAINER], { timeout: 10 });
   }
+  await disk();
+  console.log('disk guard checked; containers recycled');
+  }
+  await summarize(selected.length);
 }
 main().catch((e: unknown) => { console.error(String(e)); process.exitCode = 1; });
