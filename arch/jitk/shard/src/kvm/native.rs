@@ -1,10 +1,22 @@
 //! Persistent Linux native worker; this child module is the only Slot adapter.
-use super::*;
-#[path = "inputs.rs"]
-mod inputs;
-#[path = "streams.rs"]
-mod streams;
+use super::abi::{
+    EXIT_REASON, KVM_EXIT_MMIO, KVM_RUN, KVM_SET_USER_MEMORY_REGION, MMIO_ADDR, MMIO_DATA,
+    MMIO_LEN, MMIO_WRITE,
+};
+use super::{CTRL, Kvm, REQUEST, Region, Slot, Snapshot, monotonic_ns, read_metadata};
+use super::{ioctl, mmap, munmap};
+use crate::{inputs, streams};
 use inputs::{MAX_ARCHIVE, MAX_REQUEST, Run};
+use std::{
+    fs::File,
+    io::{self, Read, Write},
+    os::{
+        fd::{AsRawFd, FromRawFd},
+        raw::{c_int, c_void},
+    },
+    ptr,
+    sync::Arc,
+};
 use streams::{Output, Receiver};
 const INPUT_SLOT: u32 = 63;
 use std::collections::BTreeMap;

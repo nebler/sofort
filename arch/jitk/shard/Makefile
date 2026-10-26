@@ -9,4 +9,4 @@ test:
 test-kvm:
 	@test -n "$(JITK_SHARD_TEST_SNAPSHOT)" -a -n "$(JITK_SHARD_TEST_SNAPSHOTS)"
 	cargo +stable build --release --locked --offline --bin real
-	JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" cargo +stable test --locked --offline --bin real -- --ignored
+	JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" cargo +stable test --locked --offline --lib -- --ignored

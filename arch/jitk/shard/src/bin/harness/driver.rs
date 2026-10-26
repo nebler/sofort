@@ -1,5 +1,5 @@
 //! Offline fixture driver. Runtime scheduling lives in owner.rs; no Node policy is implemented here.
-use crate::{
+use jitk_shard::{
     entropy,
     kvm::{self, Kvm, RunError, Snapshot},
     owner::{Completion, Event, Job, Mode, Pool},
@@ -323,7 +323,9 @@ fn stress(
             let generation = (first + slot + 2) as u64;
             let marker = format!("slot{slot}gen{generation}");
             let source = format!(
-                "if(globalThis.__tenantCanary!==undefined)throw Error('leak');globalThis.__tenantCanary={marker:?};if((await tools.echo({marker:?}))[0]!=={marker:?})throw Error('cross-talk');{}",
+                "{}{}",
+                include_str!("../../../fixtures/stress.js")
+                    .replace("$MARKER", &format!("{marker:?}")),
                 fixture(names[(first + slot) % names.len()])
             );
             pool.start(

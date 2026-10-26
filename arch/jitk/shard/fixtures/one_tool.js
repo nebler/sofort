@@ -1,0 +1,1 @@
+return (await tools.echo(41))[0]+1;

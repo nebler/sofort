@@ -1,0 +1,1 @@
+if(globalThis.__tenantCanary!==undefined)throw Error('leak');globalThis.__tenantCanary=run.entropy;const a=Math.random(),b=preparedRandom();if(os.read(101,new ArrayBuffer(32),0,32)!==-9)throw Error('seed exposed');let denied=false;try{os.snapshotCheckpoint()}catch(e){denied=true}if(!denied)throw Error('second checkpoint');return [run.generation,run.entropy,a,run.libcEntropy,b];

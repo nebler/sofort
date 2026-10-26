@@ -1,0 +1,1 @@
+return (await Promise.all(Array.from({length:10},(_,i)=>tools.echo(i)))).reduce((s,x)=>s+x[0],0);
