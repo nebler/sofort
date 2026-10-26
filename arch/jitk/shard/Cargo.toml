@@ -2,10 +2,11 @@
 name = "jitk-shard"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.95"
 build = "build.rs"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-libc = "0.2.186"
+libc = "=0.2.186"
 
 [profile.release]
 debug = 0

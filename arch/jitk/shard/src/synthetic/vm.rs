@@ -14,6 +14,8 @@ use std::{
 };
 core::arch::global_asm!(include_str!("../../guest/stub.S"));
 pub fn stub() -> &'static [u8] {
+    // SAFETY: the included assembly exports these exact byte-address labels
+    // around its read-only payload; neither declaration gives Rust ownership.
     unsafe extern "C" {
         static jitk_stub_start: u8;
         static jitk_stub_end: u8;
@@ -302,11 +304,8 @@ impl Slot {
     }
     pub fn run_exit(&mut self) -> u32 {
         loop {
-            // SAFETY: This owner holds the live vCPU and kvm_run mapping. UAPI
-            // fields are aligned, within run_size, and read only after KVM_RUN
-            // has returned.
-            // SAFETY: the owner holds the stopped vCPU and live run mapping;
-            // KVM_RUN with immediate_exit set only drains its pending MMIO.
+            // SAFETY: this owner holds live vCPU and run mappings; no RAM
+            // reference spans KVM_RUN, which takes a zero scalar argument.
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
             if r < 0 && io::Error::last_os_error().raw_os_error() == Some(4) {
                 continue;

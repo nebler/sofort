@@ -1,7 +1,8 @@
 //! Linux arm64 shard: verified snapshots, owner-thread VM lifecycle and bounded IPC.
 //!
-#![deny(clippy::undocumented_unsafe_blocks)]
 //! The two CLI binaries own all fixture, attack and measurement orchestration.
+#![deny(clippy::undocumented_unsafe_blocks)]
+
 pub mod arena;
 pub mod constants;
 pub mod entropy;

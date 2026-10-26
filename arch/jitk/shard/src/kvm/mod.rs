@@ -77,9 +77,8 @@ pub struct Slot {
 }
 impl Slot {
     fn create(kvm: &Kvm, file: &File, class: Option<arena::Class>) -> Self {
-        // SAFETY: KVM_CREATE_VM/VCPU returns a fresh descriptor exclusively owned
-        // here. Memory regions cover checked page-aligned extents in the live RAM
-        // mapping; mprotect only changes those extents while the vCPU is stopped.
+        // SAFETY: successful KVM_CREATE_VM returns a new descriptor, checked
+        // by call(), and transferred exactly once to this File.
         let vm = unsafe { File::from_raw_fd(call(&kvm.fd, KVM_CREATE_VM, 0)) };
         let ram = Mapping::new(file, RAM, libc::MAP_PRIVATE);
         let regions = if let Some(class) = class {
@@ -102,19 +101,15 @@ impl Slot {
             );
             if !writable {
                 check(
-                    // SAFETY: KVM_CREATE_VM/VCPU returns a fresh
-                    // descriptor exclusively owned here. Memory regions
-                    // cover checked page-aligned extents in the live RAM
-                    // mapping; mprotect only changes those extents while
-                    // the vCPU is stopped.
+                    // SAFETY: the catalogue selects a page-aligned extent within this
+                    // live RAM mapping; the owner has not started the vCPU.
                     unsafe { mprotect(ram.ptr.add(start).cast(), end - start, libc::PROT_READ) },
                     "mprotect immutable RAM",
                 );
             }
         }
-        // SAFETY: KVM_CREATE_VM/VCPU returns a fresh descriptor exclusively owned
-        // here. Memory regions cover checked page-aligned extents in the live RAM
-        // mapping; mprotect only changes those extents while the vCPU is stopped.
+        // SAFETY: successful KVM_CREATE_VCPU returns a new descriptor, checked
+        // by call(), and transferred exactly once to this File.
         let cpu = unsafe { File::from_raw_fd(call(&vm, KVM_CREATE_VCPU, 0)) };
         let mut init = [0u32; 8];
         call(&vm, KVM_ARM_PREFERRED_TARGET, init.as_mut_ptr() as u64);

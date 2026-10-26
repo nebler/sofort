@@ -81,6 +81,8 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 
 core::arch::global_asm!(include_str!("../../../guest/arena-attack.S"));
 fn arena_attack() -> &'static [u8] {
+    // SAFETY: the included assembly exports these exact byte-address labels
+    // around its read-only payload; neither declaration gives Rust ownership.
     unsafe extern "C" {
         static jitk_arena_attack_start: u8;
         static jitk_arena_attack_end: u8;

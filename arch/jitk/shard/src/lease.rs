@@ -244,9 +244,8 @@ pub(crate) struct Watchdog {
 impl Watchdog {
     pub fn start(slots: usize, wakes: &[Wake], grace_ms: u64) -> Self {
         assert!(slots > 0 && !wakes.is_empty() && grace_ms > 0);
-        // SAFETY: kick has the signal-handler ABI and remains live for the process.
-        // memfd_create receives a static NUL-terminated name and returns a fresh
-        // descriptor adopted once.
+        // SAFETY: kick has the signal-handler ABI and remains live for the
+        // process. It only updates this thread's registered atomic/TLS state.
         unsafe {
             libc::signal(SIGNAL, kick as *const () as libc::sighandler_t);
         }
@@ -386,21 +385,70 @@ impl Drop for Running<'_> {
     }
 }
 
+struct Stopping {
+    slot: usize,
+    key: u64,
+    fired: u64,
+}
+fn escalate(
+    board: &Board,
+    pid: i32,
+    pidfd: &File,
+    stopping: &mut Vec<Stopping>,
+    now: u64,
+    grace_ns: u64,
+) -> u64 {
+    let mut next = u64::MAX;
+    stopping.retain(|&Stopping { slot, key, fired }| {
+        let entry = board.entry(slot);
+        if entry.state.load(Acquire) != key {
+            return false;
+        }
+        if now.saturating_sub(fired) >= grace_ns {
+            if entry
+                .state
+                .compare_exchange(key, key + 1, AcqRel, Acquire)
+                .is_ok()
+            {
+                let generation = key >> 2;
+                eprintln!(
+                    "watchdog escalation: shard={pid} slot={slot} generation={generation} grace_ns={grace_ns}"
+                );
+                // SAFETY: pidfd is live and identifies the tracked shard; null
+                // siginfo requests the kernel default, with scalar signal/flags.
+                let result = unsafe {
+                    syscall(
+                        libc::SYS_pidfd_send_signal,
+                        pidfd.as_raw_fd(),
+                        libc::SIGKILL,
+                        ptr::null::<u8>(),
+                        0,
+                    )
+                };
+                assert_eq!(result, 0, "pidfd_send_signal");
+            }
+            false
+        } else {
+            next = next.min(fired + grace_ns);
+            true
+        }
+    });
+    next
+}
+
 pub fn run(a: &[String]) {
     let pid: i32 = a[2].parse().unwrap();
     let fd: i32 = a[3].parse().unwrap();
     let len: usize = a[4].parse().unwrap();
     let grace_ns = a[5].parse::<u64>().unwrap() * 1_000_000;
     let wakes: Vec<i32> = a[6].split(',').map(|s| s.parse().unwrap()).collect();
-    // SAFETY: The private watchdog CLI transfers unique inherited descriptors.
-    // pidfd_open/tgkill/pidfd_send_signal use scalar IDs and a null siginfo; poll
-    // borrows initialized entries for its call only.
+    // SAFETY: the private watchdog CLI transfers its live change-eventfd
+    // exactly once; this process has no other File owner for it.
     let changes = Wake(Arc::new(unsafe {
         File::from_raw_fd(a[7].parse().unwrap())
     }));
-    // SAFETY: The private watchdog CLI transfers unique inherited descriptors.
-    // pidfd_open/tgkill/pidfd_send_signal use scalar IDs and a null siginfo; poll
-    // borrows initialized entries for its call only.
+    // SAFETY: the private watchdog CLI transfers its live board memfd
+    // exactly once; this process has no other File owner for it.
     let board = Board::map(unsafe { File::from_raw_fd(fd) }, len, changes);
     // SAFETY: pidfd_open takes scalar arguments and returns a fresh owned fd.
     let pidfd = owned(unsafe { syscall(libc::SYS_pidfd_open, pid, 0) } as i32); // pidfd_open
@@ -416,12 +464,11 @@ pub fn run(a: &[String]) {
             revents: 0,
         },
     ];
-    let mut stopping = Vec::<(usize, u64, u64)>::new();
+    let mut stopping = Vec::<Stopping>::new();
     let mut timeout = -1;
     loop {
-        // SAFETY: The private watchdog CLI transfers unique inherited descriptors.
-        // pidfd_open/tgkill/pidfd_send_signal use scalar IDs and a null siginfo;
-        // poll borrows initialized entries for its call only.
+        // SAFETY: fds contains two initialized writable pollfds; the board
+        // and pidfd owners keep both descriptors live for this call.
         let n = unsafe { poll(fds.as_mut_ptr(), fds.len() as libc::nfds_t, timeout) };
         if n < 0 {
             assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EINTR));
@@ -450,34 +497,20 @@ pub fn run(a: &[String]) {
                 .compare_exchange(key, key + 1, AcqRel, Acquire)
                 .is_ok()
             {
-                stopping.push((slot, key + 1, now));
-                // A stale kick only yields the owner's currently running vCPU.
-                // SAFETY: The private watchdog CLI transfers unique
-                // inherited descriptors. pidfd_open/tgkill/pidfd_send_signal
-                // use scalar IDs and a null siginfo; poll borrows
-                // initialized entries for its call only.
+                stopping.push(Stopping {
+                    slot,
+                    key: key + 1,
+                    fired: now,
+                });
+                // SAFETY: tgkill takes scalar process/thread IDs and a signal number;
+                // the generation-fenced lease supplies the owner thread ID.
                 unsafe {
                     syscall(libc::SYS_tgkill, pid, e.tid.load(Relaxed) as i32, SIGNAL);
                 }
                 notify(wakes[slot % wakes.len()]);
             }
         }
-        stopping.retain(|&(slot, key, fired)| {
-            let e=board.entry(slot);
-            if e.state.load(Acquire) != key { return false; }
-            if now.saturating_sub(fired) >= grace_ns {
-                if e.state.compare_exchange(key, key+1, AcqRel, Acquire).is_ok() {
-                    eprintln!("watchdog escalation: shard={pid} slot={slot} generation={} grace_ns={grace_ns}",key>>2);
-                    // SAFETY: The private watchdog CLI transfers unique
-                    // inherited descriptors.
-                    // pidfd_open/tgkill/pidfd_send_signal use scalar IDs
-                    // and a null siginfo; poll borrows initialized
-                    // entries for its call only.
-                    assert_eq!(unsafe { syscall(libc::SYS_pidfd_send_signal, pidfd.as_raw_fd(), libc::SIGKILL, ptr::null::<u8>(), 0) },0,"pidfd_send_signal");
-                }
-                false
-            } else { next=next.min(fired+grace_ns); true }
-        });
+        next = next.min(escalate(&board, pid, &pidfd, &mut stopping, now, grace_ns));
         // Lease updates wake this poll; idle shards incur no periodic watchdog work.
         timeout = if next == u64::MAX {
             -1

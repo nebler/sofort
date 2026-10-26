@@ -32,10 +32,8 @@ impl Input {
         if bytes.len() > MAX_ARCHIVE {
             return Err(io::Error::other("input extent budget"));
         }
-        // SAFETY: The NUL-terminated name lives through memfd_create. The fresh
-        // descriptor is checked before unique File adoption; mmap uses its
-        // initialized, sealed extent and the returned address is checked before
-        // access.
+        // SAFETY: the static NUL-terminated name lives through memfd_create;
+        // its flags are scalar and its result is checked before adoption.
         let fd = unsafe {
             memfd_create(
                 c"jitk-input".as_ptr().cast(),
@@ -45,19 +43,14 @@ impl Input {
         if fd < 0 {
             return Err(io::Error::last_os_error());
         }
-        // SAFETY: The NUL-terminated name lives through memfd_create. The fresh
-        // descriptor is checked before unique File adoption; mmap uses its
-        // initialized, sealed extent and the returned address is checked before
-        // access.
+        // SAFETY: fd was just created, checked nonnegative, and has no other
+        // Rust owner. File assumes sole ownership here.
         let mut file = unsafe { File::from_raw_fd(fd) };
         let len = (bytes.len() + 4095) & !4095;
         file.set_len(len as u64)?;
         file.write_all(bytes)?;
-        // Seal against writes, shrink, growth, and further seal changes.
-        // SAFETY: The NUL-terminated name lives through memfd_create. The fresh
-        // descriptor is checked before unique File adoption; mmap uses its
-        // initialized, sealed extent and the returned address is checked before
-        // access.
+        // SAFETY: File keeps fd live; F_ADD_SEALS takes scalar seal bits and
+        // does not retain a pointer into Rust memory.
         if unsafe {
             fcntl(
                 fd,
@@ -68,10 +61,8 @@ impl Input {
         {
             return Err(io::Error::last_os_error());
         }
-        // SAFETY: The NUL-terminated name lives through memfd_create. The fresh
-        // descriptor is checked before unique File adoption; mmap uses its
-        // initialized, sealed extent and the returned address is checked before
-        // access.
+        // SAFETY: fd owns len initialized, sealed bytes. mmap uses that exact
+        // extent and checks its returned address before any dereference.
         let ptr = unsafe {
             mmap(
                 ptr::null_mut(),
@@ -199,9 +190,8 @@ impl NativeVm {
             let op = s.run.u32(MMIO_DATA);
             rx.drain(s.load(ring::TX_PRODUCER), |cursor, dst| {
                 for (i, b) in dst.iter_mut().enumerate() {
-                    // SAFETY: The owner holds live VM/vCPU mappings and
-                    // has no outstanding guest RAM borrows; KVM_RUN
-                    // retains no userspace argument pointer.
+                    // SAFETY: the modulo index stays in the fixed TX ring within this
+                    // live RAM mapping; the owner reads only after KVM_RUN returned.
                     *b = unsafe {
                         s.ram
                             .ptr

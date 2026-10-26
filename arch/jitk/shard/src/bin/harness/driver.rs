@@ -112,143 +112,178 @@ pub fn run(
             stress(&mut pool, n, slots, fixture, expected);
             return;
         }
-        let source = fixture(name);
-        if mode == "hold" {
-            let run_mode = match name.as_str() {
-                "ready" => Mode::Ready,
-                "wait" => Mode::Wait,
-                "attack_hold" => Mode::RetainAttack,
-                _ => Mode::Run,
-            };
-            for slot in 0..n {
-                pool.start(
-                    slot,
-                    job(
-                        slot as u64 + 2,
-                        &source,
-                        run_mode,
-                        kvm::monotonic_ns() + 3_600_000_000_000,
-                        false,
-                    ),
-                );
+        let scenario = Scenario {
+            name,
+            n,
+            owners,
+            source: fixture(name),
+            expected,
+        };
+        match mode {
+            "hold" => scenario.hold(&mut pool, a.get(5).map(String::as_str)),
+            "hostile" => scenario.hostile(&mut pool),
+            _ => {
+                assert_eq!(mode, "bench");
+                scenario.bench(&mut pool);
             }
-            let mut seen = HashSet::new();
+        }
+    })();
+    pool.shutdown().expect("owner pool shutdown");
+}
+struct Scenario<'a> {
+    name: &'a str,
+    n: usize,
+    owners: usize,
+    source: String,
+    expected: fn(&str) -> &'static str,
+}
+impl Scenario<'_> {
+    fn hold(&self, pool: &mut Pool, seconds: Option<&str>) {
+        let name = self.name;
+        let n = self.n;
+        let source = self.source.as_str();
+        let expected = self.expected;
+        let owners = self.owners;
+        let run_mode = match name {
+            "ready" => Mode::Ready,
+            "wait" => Mode::Wait,
+            "attack_hold" => Mode::RetainAttack,
+            _ => Mode::Run,
+        };
+        for slot in 0..n {
+            pool.start(
+                slot,
+                job(
+                    slot as u64 + 2,
+                    source,
+                    run_mode,
+                    kvm::monotonic_ns() + 3_600_000_000_000,
+                    false,
+                ),
+            );
+        }
+        let mut seen = HashSet::new();
+        for _ in 0..n {
+            match pool.recv() {
+                Event::Parked { slot, generation } => {
+                    assert_eq!(generation, slot as u64 + 2);
+                    assert!(seen.insert(slot));
+                }
+                Event::Done {
+                    slot,
+                    generation,
+                    completion,
+                } => {
+                    assert_eq!(generation, slot as u64 + 2);
+                    assert!(seen.insert(slot));
+                    if name == "attack_hold" {
+                        assert!(matches!(
+                            completion.result,
+                            Err(RunError::MemoryBound { .. })
+                        ));
+                    } else if name == "json64k" || name == "bomb" {
+                        assert!(completion.result.as_ref().unwrap().contains("\"err\""));
+                    } else {
+                        assert_eq!(completion.result.unwrap(), expected(name));
+                    }
+                }
+                _ => panic!("unexpected reset"),
+            }
+        }
+        println!(
+            "{{\"event\":\"held\",\"n\":{n},\"fixture\":{name:?},\"threads\":{},\"owners\":{owners}}}",
+            owners + 1
+        );
+        io::stdout().flush().unwrap();
+        let seconds = seconds.map(|s| s.parse().unwrap()).unwrap_or(30);
+        thread::sleep(Duration::from_secs(seconds));
+        if name == "wait" {
+            for slot in 0..n {
+                pool.resume(slot, slot as u64 + 2);
+            }
+            let mut released = HashSet::new();
             for _ in 0..n {
                 match pool.recv() {
-                    Event::Parked { slot, generation } => {
-                        assert_eq!(generation, slot as u64 + 2);
-                        assert!(seen.insert(slot));
-                    }
                     Event::Done {
                         slot,
                         generation,
                         completion,
                     } => {
                         assert_eq!(generation, slot as u64 + 2);
-                        assert!(seen.insert(slot));
-                        if name == "attack_hold" {
-                            assert!(matches!(
-                                completion.result,
-                                Err(RunError::MemoryBound { .. })
-                            ));
-                        } else if name == "json64k" || name == "bomb" {
-                            assert!(completion.result.as_ref().unwrap().contains("\"err\""));
-                        } else {
-                            assert_eq!(completion.result.unwrap(), expected(name));
-                        }
+                        assert!(released.insert(slot));
+                        assert_eq!(completion.result.unwrap(), expected(name));
                     }
-                    _ => panic!("unexpected reset"),
+                    _ => panic!("expected WAIT completion"),
                 }
             }
-            println!(
-                "{{\"event\":\"held\",\"n\":{n},\"fixture\":{name:?},\"threads\":{},\"owners\":{owners}}}",
-                owners + 1
-            );
-            io::stdout().flush().unwrap();
-            let seconds = a.get(5).map(|s| s.parse().unwrap()).unwrap_or(30);
-            thread::sleep(Duration::from_secs(seconds));
-            if name == "wait" {
-                for slot in 0..n {
-                    pool.resume(slot, slot as u64 + 2);
-                }
-                let mut released = HashSet::new();
-                for _ in 0..n {
-                    match pool.recv() {
-                        Event::Done {
-                            slot,
-                            generation,
-                            completion,
-                        } => {
-                            assert_eq!(generation, slot as u64 + 2);
-                            assert!(released.insert(slot));
-                            assert_eq!(completion.result.unwrap(), expected(name));
-                        }
-                        _ => panic!("expected WAIT completion"),
-                    }
-                }
-            }
-            println!(
-                "{{\"event\":\"released\",\"n\":{n},\"threads\":{},\"lost\":0}}",
-                owners + 1
-            );
-            return;
         }
-        if mode == "hostile" {
-            for i in 0..n {
-                let run_mode = if name == "arena_attack" {
-                    Mode::Attack
-                } else {
-                    Mode::Run
-                };
-                pool.start(
-                    0,
-                    job(
-                        2 * i as u64 + 2,
-                        &source,
-                        run_mode,
-                        kvm::monotonic_ns() + 2_000_000_000,
-                        true,
-                    ),
-                );
-                let c = done(&mut pool, 0, 2 * i as u64 + 2);
-                let run_ns = c.metrics.run_ns;
-                match c.result {
-                    Err(e @ RunError::MemoryBound { .. }) if name == "arena_attack" => println!(
-                        "{{\"event\":\"contained\",\"i\":{i},\"run_ns\":{run_ns},\"error\":{:?}}}",
-                        e.to_string()
-                    ),
-                    Err(e) => panic!("unexpected hostile outcome: {e}"),
-                    Ok(r) => {
-                        assert!(name == "bomb" || name == "json64k");
-                        assert_eq!(
-                            r,
-                            "{\"err\":{\"name\":\"InternalError\",\"message\":\"out of memory\"}}"
-                        );
-                        println!(
-                            "{{\"event\":\"contained\",\"i\":{i},\"run_ns\":{run_ns},\"result\":{r}}}"
-                        );
-                    }
+        println!(
+            "{{\"event\":\"released\",\"n\":{n},\"threads\":{},\"lost\":0}}",
+            owners + 1
+        );
+    }
+    fn hostile(&self, pool: &mut Pool) {
+        let name = self.name;
+        let n = self.n;
+        let source = self.source.as_str();
+        for i in 0..n {
+            let run_mode = if name == "arena_attack" {
+                Mode::Attack
+            } else {
+                Mode::Run
+            };
+            pool.start(
+                0,
+                job(
+                    2 * i as u64 + 2,
+                    source,
+                    run_mode,
+                    kvm::monotonic_ns() + 2_000_000_000,
+                    true,
+                ),
+            );
+            let c = done(pool, 0, 2 * i as u64 + 2);
+            let run_ns = c.metrics.run_ns;
+            match c.result {
+                Err(e @ RunError::MemoryBound { .. }) if name == "arena_attack" => println!(
+                    "{{\"event\":\"contained\",\"i\":{i},\"run_ns\":{run_ns},\"error\":{:?}}}",
+                    e.to_string()
+                ),
+                Err(e) => panic!("unexpected hostile outcome: {e}"),
+                Ok(r) => {
+                    assert!(name == "bomb" || name == "json64k");
+                    assert_eq!(
+                        r,
+                        "{\"err\":{\"name\":\"InternalError\",\"message\":\"out of memory\"}}"
+                    );
+                    println!(
+                        "{{\"event\":\"contained\",\"i\":{i},\"run_ns\":{run_ns},\"result\":{r}}}"
+                    );
                 }
-                verify_reset(&mut pool, 0);
-                pool.start(
-                    0,
-                    job(
-                        2 * i as u64 + 3,
-                        include_str!("../../../fixtures/return2.js"),
-                        Mode::Run,
-                        kvm::monotonic_ns() + 2_000_000_000,
-                        true,
-                    ),
-                );
-                assert_eq!(
-                    done(&mut pool, 0, 2 * i as u64 + 3).result.unwrap(),
-                    "{\"ok\":2}"
-                );
             }
-            verify_reset(&mut pool, 0);
-            return;
+            verify_reset(pool, 0);
+            pool.start(
+                0,
+                job(
+                    2 * i as u64 + 3,
+                    include_str!("../../../fixtures/return2.js"),
+                    Mode::Run,
+                    kvm::monotonic_ns() + 2_000_000_000,
+                    true,
+                ),
+            );
+            assert_eq!(
+                done(pool, 0, 2 * i as u64 + 3).result.unwrap(),
+                "{\"ok\":2}"
+            );
         }
-        assert_eq!(mode, "bench");
+        verify_reset(pool, 0);
+    }
+    fn bench(&self, pool: &mut Pool) {
+        let name = self.name;
+        let n = self.n;
+        let source = self.source.as_str();
+        let expected = self.expected;
         let mut resets = Vec::new();
         let mut runs = Vec::new();
         let mut tools = Vec::new();
@@ -259,7 +294,7 @@ pub fn run(
         let mut seeds = HashSet::new();
         let mut randoms = HashSet::new();
         let mut libc_randoms = HashSet::new();
-        verify_reset(&mut pool, 0);
+        verify_reset(pool, 0);
         for i in 0..n {
             let t = Instant::now();
             let generation = i as u64 + 2;
@@ -267,13 +302,13 @@ pub fn run(
                 0,
                 job(
                     generation,
-                    &source,
+                    source,
                     Mode::Run,
                     kvm::monotonic_ns() + 2_000_000_000,
                     true,
                 ),
             );
-            let c = done(&mut pool, 0, generation);
+            let c = done(pool, 0, generation);
             let r = c.result.unwrap();
             assert!(seeds.insert(c.seed));
             if name == "canary" {
@@ -319,9 +354,8 @@ pub fn run(
             randoms.len(),
             libc_randoms.len()
         );
-        verify_reset(&mut pool, 0);
-    })();
-    pool.shutdown().expect("owner pool shutdown");
+        verify_reset(pool, 0);
+    }
 }
 fn stress(
     pool: &mut Pool,
