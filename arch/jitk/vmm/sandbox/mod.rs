@@ -19,13 +19,21 @@ type E = Box<dyn std::error::Error>;
 /// Seatbelt source; compiled once by the supervisor (`jitk-vmm --compile-profile`).
 pub const SEATBELT_PROFILE: &str = include_str!("jitk.sb");
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Stage {
+    Prepared,
+    BeforeBuild,
+    Confined,
+    Failed,
+}
+
 pub struct Sandbox {
     image: PathBuf,
     #[allow(dead_code)]
     profile: Option<Vec<u8>>,
     #[allow(dead_code)]
     netns_fd: Option<i32>,
-    stage: u8,
+    stage: Stage,
 }
 
 impl Sandbox {
@@ -57,15 +65,16 @@ impl Sandbox {
             image: image.to_path_buf(),
             profile,
             netns_fd,
-            stage: 0,
+            stage: Stage::Prepared,
         })
     }
 
     pub fn before_build(&mut self) -> Result<(), E> {
-        if self.stage != 0 {
+        if self.stage != Stage::Prepared {
             return Err("sandbox: before_build called twice".into());
         }
-        self.stage = 1;
+        // A partial confinement failure is terminal; never authorize the next step.
+        self.stage = Stage::Failed;
         #[cfg(target_os = "macos")]
         {
             match &self.profile {
@@ -85,14 +94,15 @@ impl Sandbox {
         if cfg!(not(any(target_os = "macos", target_os = "linux"))) {
             return Err("sandbox: unsupported OS; refusing unconfined launch".into());
         }
+        self.stage = Stage::BeforeBuild;
         Ok(())
     }
 
     pub fn after_build(&mut self) -> Result<(), E> {
-        if self.stage != 1 {
+        if self.stage != Stage::BeforeBuild {
             return Err("sandbox: after_build without before_build".into());
         }
-        self.stage = 2;
+        self.stage = Stage::Failed;
         #[cfg(target_os = "linux")]
         {
             use std::sync::atomic::Ordering;
@@ -108,6 +118,7 @@ impl Sandbox {
                 )?;
             }
         }
+        self.stage = Stage::Confined;
         Ok(())
     }
 }
@@ -618,6 +629,18 @@ pub mod bpf {
 #[cfg(test)]
 mod tests {
     use super::bpf::{self, *};
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn failed_before_build_does_not_authorize_after_build() {
+        let mut sandbox = super::Sandbox {
+            image: std::path::PathBuf::from("/invalid/image"),
+            profile: Some(vec![0]),
+            netns_fd: None,
+            stage: super::Stage::Prepared,
+        };
+        assert!(sandbox.before_build().is_err());
+        assert!(sandbox.after_build().is_err());
+    }
     fn run(sets: &[&[Rule]], nr: u32, args: [u64; 6]) -> u32 {
         eval(&compile_insns(sets), AUDIT_ARCH_AARCH64, nr, args)
     }

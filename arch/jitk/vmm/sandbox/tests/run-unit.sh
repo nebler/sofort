@@ -3,6 +3,7 @@
 # Linux compiles the seccomp/rlimit paths, which need the VMM build's libc and libkrun utils rlibs.
 # Those are panic=abort, so the Linux test binary is too (test-only use of -Zpanic_abort_tests).
 set -e; out=${TMPDIR:-/tmp}/jitk-sandbox-unit.$$
+trap 'rm -f "$out"' EXIT HUP INT TERM
 if [ "$(uname -s)" = Linux ]; then
  deps=${JITK_VMM_BUILD:-/tmp/jitk-01/r3/linux}/libkrun/target/release/deps
  l=$(ls "$deps"/liblibc-*.rlib 2>/dev/null) && u=$(ls "$deps"/libkrun_utils-*.rlib 2>/dev/null) || { echo "run-unit: build the VMM first (missing rlibs in $deps; set JITK_VMM_BUILD)" >&2; exit 1; }
