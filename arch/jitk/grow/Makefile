@@ -6,7 +6,20 @@ ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
 $(SCRIPTC): package.json package-lock.json
 	npm ci --no-audit --no-fund
 
-build: build/grow build/oracle-profile build/experiments build/parity build/sqlite-checks
+build: kernel-tools build/grow build/oracle-profile build/experiments build/parity build/sqlite-checks
+
+.PHONY: kernel-tools
+kernel-tools: build/kernel-tools/prepare build/kernel-tools/build-args build/kernel-tools/artifact
+
+build/kernel-tools/native.o: ../kernel/native.c
+	mkdir -p build/kernel-tools
+	clang -c $< -o $@
+
+build/kernel-tools/ffi.json: ../kernel/native-ffi.json build/kernel-tools/native.o
+	node -e 'const fs=require("fs"),p=require("path"),v=JSON.parse(fs.readFileSync("../kernel/native-ffi.json"));v.libraries=[p.resolve("build/kernel-tools/native.o")];fs.writeFileSync("$@",JSON.stringify(v))'
+
+build/kernel-tools/%: ../kernel/%.ts $(wildcard ../kernel/*.ts) build/kernel-tools/ffi.json $(SCRIPTC)
+	$(SCRIPTC) build $< --ffi build/kernel-tools/ffi.json -o $@
 
 build/grow: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
@@ -36,6 +49,18 @@ build/parity: $(SOURCES) $(SCRIPTC)
 build/sqlite-checks: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
 	$(SCRIPTC) build sqlite-checks.ts -o $@
+
+build/e2: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build e2.ts -o $@
+
+build/e3: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build e3.ts -o $@
+
+build/auto-grow: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build auto-grow.ts -o $@
 
 grow: build
 	build/grow --run-id run-$$(date +%Y%m%dT%H%M%S) --validate-only $(ARGS)

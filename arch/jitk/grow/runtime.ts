@@ -85,6 +85,9 @@ export async function build(work: string, out: string, elf: string, argv: string
   check(work !== canonical && !work.startsWith(canonical + sep), 'cannot build canonical source');
   check(existsSync(join(work, 'build.sh')), 'canonical kernel build.sh is required');
   const env: Record<string, string> = { ...SAFE_ENV, JITK_OUT_DIR: out, CARGO_TARGET_DIR: join(dirname(work), 'target'), JITK_ELF: elf, JITK_ARGV_JSON: JSON.stringify(argv) };
+  // Kernel's scriptc tools are trusted build inputs, outside proposer access.
+  // Isolated copies have no sibling docs/ compiler package or Makefile include.
+  env.JITK_TOOLS_DIR = join(ROOT, 'build/kernel-tools');
   if (resources !== undefined) {
     env.JITK_RESOURCES = resources;
   }

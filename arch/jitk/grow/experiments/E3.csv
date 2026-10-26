@@ -1,0 +1,80 @@
+run_id,date,host,model,cli,spec_level,target,attempt,accepted,rejecting_gate,visible_pass,heldout_pass,mutants_rejected,integration_pass,wall_s,cli_calls,human_minutes,handler_lines,human_lines
+e3-mutants-v2-20261026-ppoll-canonical,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,ppoll,0,1,survived_generated_profile,1,1,,not_applicable_mutant_grade,4.449527999997139,0,0,90,0
+e3-mutants-v2-20261026-ppoll-false-success,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,ppoll,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.06966400000453,0,0,1,0
+e3-mutants-v2-20261026-ppoll-wrong-errno,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,ppoll,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.0151189999878407,0,0,1,0
+e3-mutants-v2-20261026-fstat-canonical,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,fstat,0,1,survived_generated_profile,1,1,,not_applicable_mutant_grade,2.6964390000104905,0,0,25,0
+e3-mutants-v2-20261026-fstat-wrong-size,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,fstat,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.0907699999809264,0,0,6,0
+e3-mutants-v2-20261026-fstat-false-success,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,fstat,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.0428180000185967,0,0,1,0
+e3-mutants-v2-20261026-fstat-wrong-errno,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,fstat,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.288726999998093,0,0,25,0
+e3-mutants-v2-20261026-pread64-canonical,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,pread64,0,1,survived_generated_profile,1,1,,not_applicable_mutant_grade,3.0927069999873638,0,0,47,0
+e3-mutants-v2-20261026-pread64-wrong-page,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,pread64,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.576180999994278,0,0,47,0
+e3-mutants-v2-20261026-pread64-moves-offset,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,pread64,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.57359399998188,0,0,47,0
+e3-mutants-v2-20261026-pread64-wrong-errno,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,pread64,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.9342430000007154,0,0,47,0
+e3-mutants-v2-20261026-pread64-false-success,2026-10-26T21:20:12.205Z,macOS/HVF,none-mutant-grade,none,none,pread64,0,0,generated_profile_differential,0,0,1,not_applicable_mutant_grade,2.5626800000071523,0,0,1,0
+e3-grow-20261026-madvise-new-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,17.237259999990464,1,0,19,0
+e3-grow-20261026-getpid-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,28.846694000005723,1,0,4,0
+e3-grow-20261026-uname-new-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,14.88445900002122,1,0,25,0
+e3-grow-20261026-sched_getaffinity-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,18.048118999987842,1,0,19,0
+e3-grow-20261026-madvise-new-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,21.349586999982595,1,0,23,0
+e3-grow-20261026-sched_getaffinity-new-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,13.80798299998045,1,0,19,0
+e3-grow-20261026-madvise-new-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,17.026807999998333,1,0,22,0
+e3-grow-20261026-getrandom-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getrandom,1,0,semantic_error_state_0,0,not_reached,0,not_reached,19.95215799999237,1,0,37,0
+e3-grow-20261026-getrandom-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getrandom,2,1,,1,1,2,not_available,21.809909999996425,1,0,37,0
+e3-grow-20261026-sched_getaffinity-old-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,21.321668000012636,1,0,17,0
+e3-grow-20261026-sched_getaffinity-old-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,24.7899469999969,1,0,17,0
+e3-grow-20261026-madvise-new-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,22.050375999987125,1,0,23,0
+e3-grow-20261026-uname-new-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,16.749513000011444,1,0,25,0
+e3-grow-20261026-uname-new-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,15.606738000005484,1,0,25,0
+e3-grow-20261026-madvise-old-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,18.08997799998522,1,0,14,0
+e3-grow-20261026-faccessat-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,43.78755500000715,1,0,38,0
+e3-grow-20261026-getpid-old-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,26.3704469999969,1,0,3,0
+e3-grow-20261026-uname-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,17.000590000003577,1,0,19,0
+e3-grow-20261026-faccessat-old-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,39.35308599999547,1,0,21,0
+e3-grow-20261026-getrandom-old-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,37.07327100002766,1,0,42,0
+e3-grow-20261026-sched_getaffinity-new-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,16.747335000008345,1,0,19,0
+e3-grow-20261026-uname-old-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,15.353451000005007,1,0,19,0
+e3-grow-20261026-faccessat-new-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,35.191456999987366,1,0,30,0
+e3-grow-20261026-uname-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,17.163951999992133,1,0,25,0
+e3-grow-20261026-faccessat-new-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,43.88634800001979,1,0,41,0
+e3-grow-20261026-getrandom-new-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,30.030322000026704,1,0,46,0
+e3-grow-20261026-getrandom-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,1,0,semantic_error_state_8,0,not_reached,0,not_reached,18.026733000010253,1,0,43,0
+e3-grow-20261026-getrandom-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,2,1,,1,1,2,not_available,21.943551000028847,1,0,44,0
+e3-grow-20261026-getpid-old-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,26.70801399999857,1,0,3,0
+e3-grow-20261026-faccessat-new-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,42.383561999976635,1,0,37,0
+e3-grow-20261026-madvise-new-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,17.32437999999523,1,0,20,0
+e3-grow-20261026-getrandom-old-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,30.798415000021457,1,0,40,0
+e3-grow-20261026-faccessat-old-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,51.30011000001431,1,0,40,0
+e3-grow-20261026-getpid-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,36.367851000010965,1,0,3,0
+e3-grow-20261026-getpid-new-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,36.27782600000501,1,0,4,0
+e3-grow-20261026-getpid-new-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,29.15481400001049,1,0,4,0
+e3-grow-20261026-sched_getaffinity-new-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,18.57361399999261,1,0,19,0
+e3-grow-20261026-uname-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,uname,1,0,semantic_error_state_0,0,not_reached,0,not_reached,11.79807000002265,1,0,13,0
+e3-grow-20261026-uname-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,uname,2,1,,1,1,2,not_available,19.379207000017168,1,0,13,0
+e3-grow-20261026-getrandom-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,34.96763899999857,1,0,36,0
+e3-grow-20261026-sched_getaffinity-old-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,42.3514959999919,1,0,19,0
+e3-grow-20261026-faccessat-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,70.64234000000357,1,0,35,0
+e3-grow-20261026-madvise-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,23.67481700000167,1,0,9,0
+e3-grow-20261026-uname-new-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,13.833064999997616,1,0,25,0
+e3-grow-20261026-getpid-new-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,27.12485799998045,1,0,4,0
+e3-grow-20261026-uname-old-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,23.42790799999237,1,0,24,0
+e3-grow-20261026-sched_getaffinity-new-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,sched_getaffinity,1,1,,1,1,2,not_available,38.35032999998331,1,0,20,0
+e3-grow-20261026-sched_getaffinity-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,1,0,heldout_candidate,1,0,0,not_reached,15.663230999976397,1,0,17,0
+e3-grow-20261026-sched_getaffinity-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,2,0,heldout_candidate,1,0,0,not_reached,48.41660499998927,1,0,17,0
+e3-grow-20261026-sched_getaffinity-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,3,0,heldout_candidate,1,0,0,not_reached,34.1719090000093,1,0,17,0
+e3-grow-20261026-faccessat-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,42.06406400001049,1,0,22,0
+e3-grow-20261026-faccessat-old-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,45.881374000012876,1,0,25,0
+e3-grow-20261026-getpid-new-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,30.3364469999969,1,0,4,0
+e3-grow-20261026-madvise-old-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,24.496619000017642,1,0,22,0
+e3-grow-20261026-getrandom-old-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,27.89996399998665,1,0,40,0
+e3-grow-20261026-getrandom-new-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,27.25859499999881,1,0,45,0
+e3-grow-20261026-getpid-old-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,27.526194999992846,1,0,3,0
+e3-grow-20261026-getpid-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,29.474518000006675,1,0,3,0
+e3-grow-20261026-faccessat-new-1,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,40.78702099999786,1,0,36,0
+e3-grow-20261026-madvise-old-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,16.128386999994515,1,0,12,0
+e3-grow-20261026-getrandom-new-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,23.469969999998806,1,0,42,0
+e3-grow-20261026-uname-old-5,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,not_available,13.75963299998641,1,0,21,0
+e3-grow-20261026-madvise-old-2,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,madvise,1,1,,1,1,2,not_available,29.08743299999833,1,0,23,0
+e3-grow-20261026-getrandom-new-3,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,not_available,25.164204000025986,1,0,44,0
+e3-grow-20261026-sched_getaffinity-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,1,0,heldout_candidate,1,0,0,not_reached,24.657488000005483,1,0,17,0
+e3-grow-20261026-sched_getaffinity-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,2,0,heldout_candidate,1,0,0,not_reached,26.650767999976875,1,0,17,0
+e3-grow-20261026-sched_getaffinity-old-4,2026-10-26T21:22:15.916Z,macOS/HVF,gpt-6-sol,codex-cli 0.164.0,none,sched_getaffinity,3,0,heldout_candidate,1,0,0,not_reached,34.710305999994276,1,0,20,0
