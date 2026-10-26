@@ -45,6 +45,19 @@ struct PollFd {
 fn invalid(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
+fn validate_memory(file: &File) -> io::Result<()> {
+    const F_GET_SEALS: i32 = 1034;
+    const REQUIRED_SEALS: i32 = 1 | 2 | 4; // SEAL, SHRINK, GROW; peer writes remain allowed.
+    // SAFETY: F_GET_SEALS takes no variadic argument and does not mutate the fd.
+    let seals = unsafe { fcntl(file.as_raw_fd(), F_GET_SEALS) };
+    if seals < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if file.metadata()?.len() != BYTES as u64 || seals & REQUIRED_SEALS != REQUIRED_SEALS {
+        return Err(invalid("IPC requires exact sealed memfd geometry"));
+    }
+    Ok(())
+}
 pub fn u32_at(b: &[u8], at: usize) -> u32 {
     u32::from_le_bytes(b[at..at + 4].try_into().unwrap())
 }
@@ -117,9 +130,7 @@ impl Endpoint {
         let file = unsafe { File::from_raw_fd(3) };
         let incoming = Notify(std::sync::Arc::new(unsafe { File::from_raw_fd(4) }));
         let outgoing = Notify(std::sync::Arc::new(unsafe { File::from_raw_fd(5) }));
-        if file.metadata()?.len() != BYTES as u64 || unsafe { fcntl(3, 1034) } & 7 != 7 {
-            return Err(invalid("IPC requires exact sealed memfd geometry"));
-        }
+        validate_memory(&file)?;
         let memory = unsafe { mmap(ptr::null_mut(), BYTES, 3, 1, 3, 0).cast::<u8>() };
         if memory as isize == -1 {
             return Err(io::Error::last_os_error());
@@ -229,6 +240,41 @@ impl Drop for Endpoint {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn rejects_regular_files_and_missing_seals() {
+        let path = std::env::current_dir()
+            .unwrap()
+            .join(format!("jitk-seals-{}", std::process::id()));
+        let file = File::options()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(&path)
+            .unwrap();
+        std::fs::remove_file(path).unwrap();
+        file.set_len(BYTES as u64).unwrap();
+        assert!(
+            validate_memory(&file).is_err(),
+            "regular files must never pass F_GET_SEALS"
+        );
+        unsafe extern "C" {
+            fn memfd_create(name: *const u8, flags: u32) -> i32;
+        }
+        // SAFETY: a static NUL-terminated name, and ownership of the new fd transfers to File.
+        let file = unsafe { File::from_raw_fd(memfd_create(c"jitk-seal-test".as_ptr().cast(), 3)) };
+        file.set_len(BYTES as u64).unwrap();
+        assert!(validate_memory(&file).is_err());
+        for seal in [1, 2, 4] {
+            // Add SEAL last, so the intermediate missing-seal cases stay testable.
+            let bit = match seal {
+                1 => 2,
+                2 => 4,
+                _ => 1,
+            };
+            assert_eq!(unsafe { fcntl(file.as_raw_fd(), 1033, bit) }, 0);
+            assert_eq!(validate_memory(&file).is_ok(), seal == 4);
+        }
+    }
     fn endpoint() -> Endpoint {
         unsafe extern "C" {
             fn eventfd(init: u32, flags: i32) -> i32;
