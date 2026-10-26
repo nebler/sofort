@@ -51,7 +51,7 @@ impl Receiver {
         let available = produced
             .checked_sub(self.consumed)
             .ok_or("cursor reversal")?;
-        if available > RING_BYTES as u64 || produced % 8 != 0 {
+        if available > RING_BYTES as u64 || !produced.is_multiple_of(8) {
             return Err("invalid TX cursor");
         }
         while self.consumed < produced {
@@ -69,7 +69,7 @@ impl Receiver {
             let n = u32::from_le_bytes(h[24..28].try_into().unwrap()) as usize;
             let cap = u32::from_le_bytes(h[28..32].try_into().unwrap());
             if !(32..=MAX_RECORD).contains(&len)
-                || len % 8 != 0
+                || !len.is_multiple_of(8)
                 || len as u64 > remaining
                 || n > MAX_RECORD - 32
                 || len != (32 + n + 7) & !7
@@ -133,7 +133,7 @@ impl Receiver {
                     }
                     let msg = &b[PREFIX.len()..b.len() - 2];
                     if msg.len() > 256 * 6
-                        || msg.len() % 6 != 0
+                        || !msg.len().is_multiple_of(6)
                         || msg.chunks(6).any(|c| {
                             &c[..4] != b"\\u00" || !c[4..].iter().all(u8::is_ascii_hexdigit)
                         })
@@ -146,7 +146,9 @@ impl Receiver {
                     }
                     if std::env::var_os("JITK_NATIVE_DIAGNOSTICS").is_some() {
                         let decoded: Vec<u8> = msg
-                            .chunks_exact(6)
+                            .as_chunks::<6>()
+                            .0
+                            .iter()
                             .map(|c| {
                                 u8::from_str_radix(std::str::from_utf8(&c[4..]).unwrap(), 16)
                                     .unwrap()

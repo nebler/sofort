@@ -59,6 +59,8 @@ struct Mapping {
 }
 impl Mapping {
     fn new(fd: &File, len: usize, flags: c_int) -> Self {
+        // SAFETY: fd is live and len comes from the verified snapshot geometry
+        // or KVM's run size. The returned mapping is checked before any access.
         let p = unsafe { mmap(ptr::null_mut(), len, 3, flags, fd.as_raw_fd(), 0) };
         assert_ne!(p as isize, -1, "mmap: {}", io::Error::last_os_error());
         // Avoid transparent huge-page CoW obscuring the K-page experiment.
@@ -80,6 +82,8 @@ impl Mapping {
 }
 impl Drop for Mapping {
     fn drop(&mut self) {
+        // SAFETY: this owns the original mapping, with no escaping RAM borrows;
+        // the owner has stopped KVM and will never reenter this slot.
         unsafe {
             munmap(self.ptr.cast(), self.len);
         }
@@ -521,12 +525,12 @@ impl Slot {
             return Ok(None);
         }
         {
-            if let Some(l) = &self.lease {
-                if l.expired() {
-                    return Err(RunError::Deadline {
-                        deadline_ns: l.deadline(),
-                    });
-                }
+            if let Some(l) = &self.lease
+                && l.expired()
+            {
+                return Err(RunError::Deadline {
+                    deadline_ns: l.deadline(),
+                });
             }
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN, 0u64) };
             if r < 0 && io::Error::last_os_error().raw_os_error() == Some(4) {

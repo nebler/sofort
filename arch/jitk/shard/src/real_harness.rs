@@ -447,7 +447,7 @@ fn deadlines(pool: &mut Pool, n: usize) {
 }
 
 fn staggered(pool: &mut Pool, n: usize) {
-    assert!(n >= 2 && n % 2 == 0);
+    assert!(n >= 2 && n.is_multiple_of(2));
     let early = kvm::monotonic_ns() + 1_000_000_000;
     let late = early + 600_000_000;
     for slot in 0..n {

@@ -131,7 +131,17 @@ impl Pool {
             joins.push(
                 thread::Builder::new()
                     .name(format!("jitk-owner-{owner}"))
-                    .spawn(move || worker(owner, owners, kvm, snapshot, leases, rx, tx, w, notify))
+                    .spawn(move || {
+                        worker(
+                            (owner, owners),
+                            kvm,
+                            snapshot,
+                            leases,
+                            rx,
+                            Events { tx, notify },
+                            w,
+                        )
+                    })
                     .unwrap(),
             );
             mailboxes.push(Mailbox { tx: cmd, wake });
@@ -392,17 +402,14 @@ impl Managed {
     }
 }
 fn worker(
-    owner: usize,
-    owners: usize,
+    (owner, owners): (usize, usize),
     kvm: Arc<Kvm>,
     snapshot: Arc<Snapshot>,
     leases: Vec<Lease>,
     commands: Receiver<Command>,
-    events: SyncSender<Event>,
+    events: Events,
     wake: Wake,
-    notify: Option<Arc<dyn Fn() + Send + Sync>>,
 ) -> io::Result<()> {
-    let events = Events { tx: events, notify };
     let mut slots: Vec<Option<Managed>> = (0..leases.len()).map(|_| None).collect();
     let mut entropy = File::open("/dev/urandom").unwrap();
     loop {
@@ -559,22 +566,23 @@ fn worker(
 
 fn expire(slots: &mut [Option<Managed>], owner: usize, owners: usize, events: &Events) {
     for (i, s) in slots.iter_mut().enumerate() {
-        if let Some(s) = s {
-            if s.active && s.lease.expired() {
-                let completion = s.finish(
-                    Err(RunError::Deadline {
-                        deadline_ns: s.lease.deadline(),
-                    }),
-                    false,
-                );
-                events
-                    .send(Event::Done {
-                        slot: owner + i * owners,
-                        generation: s.cpu.generation,
-                        completion,
-                    })
-                    .unwrap();
-            }
+        if let Some(s) = s
+            && s.active
+            && s.lease.expired()
+        {
+            let completion = s.finish(
+                Err(RunError::Deadline {
+                    deadline_ns: s.lease.deadline(),
+                }),
+                false,
+            );
+            events
+                .send(Event::Done {
+                    slot: owner + i * owners,
+                    generation: s.cpu.generation,
+                    completion,
+                })
+                .unwrap();
         }
     }
 }
@@ -584,8 +592,10 @@ struct Events {
     notify: Option<Arc<dyn Fn() + Send + Sync>>,
 }
 impl Events {
-    fn send(&self, event: Event) -> Result<(), mpsc::SendError<Event>> {
-        self.tx.send(event)?;
+    fn send(&self, event: Event) -> io::Result<()> {
+        self.tx
+            .send(event)
+            .map_err(|_| io::Error::new(io::ErrorKind::BrokenPipe, "reactor exited"))?;
         if let Some(notify) = &self.notify {
             notify();
         }
