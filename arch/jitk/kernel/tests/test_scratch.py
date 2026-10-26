@@ -49,12 +49,21 @@ root = workspace('JITK_SCRATCH_REGRESSION', 'regression')
             owner = root / 'kernel'
             owner.mkdir(parents=True)
             (owner / 'README.md').write_text('test owner')
-            (owner / 'Makefile').write_text('test:\n\tprintf fresh > receipt.json\n')
+            (owner / 'Makefile').write_text('test:\n\tprintf fresh > receipt.json\n'
+                                           '\tprintf fresh > dist/manifest.json\n'
+                                           '\tprintf binary > dist/kernel.bin\n')
+            (owner / 'dist').mkdir()
+            manifest = owner / 'dist/manifest.json'
+            manifest.write_text('historical manifest')
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            subprocess.run(['git', '-C', str(root), 'add', 'kernel/dist/manifest.json'], check=True)
             receipt = owner / 'receipt.json'
             receipt.write_text('historical')
             with patch.object(delegate, 'ROOT', root), patch.object(sys, 'argv', ['delegate', 'kernel', 'test']):
                 self.assertEqual(delegate.main(), 0)
             self.assertEqual(receipt.read_text(), 'historical')
+            self.assertEqual(manifest.read_text(), 'historical manifest')
+            self.assertEqual((owner / 'dist/kernel.bin').read_text(), 'binary')
 
 
 if __name__ == '__main__':

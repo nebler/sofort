@@ -132,8 +132,14 @@ def main():
             # Later suites consume these ignored build products. Receipts stay disposable.
             output = {"kernel": "dist", "executor": "build"}.get(subtree)
             if status == 0 and output and (root / subtree / output).is_dir():
+                tracked = set(subprocess.check_output(
+                    ["git", "-C", str(ROOT), "ls-files", "-z", "--", f"{subtree}/{output}"],
+                    text=True).split("\0"))
+                def keep_receipts(directory, names):
+                    return [name for name in names
+                            if str((Path(directory) / name).relative_to(root)) in tracked]
                 shutil.copytree(root / subtree / output, ROOT / subtree / output,
-                                dirs_exist_ok=True)
+                                dirs_exist_ok=True, ignore=keep_receipts)
             return status
     return execute(ROOT)
 
