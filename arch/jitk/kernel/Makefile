@@ -11,6 +11,7 @@ test: build
 	python3 tests/test_fs.py
 	python3 tests/regression.py
 	python3 tests/fs_diff.py
+	"$${NODE:-node}" tests/ring-bootstrap-check.mjs
 
 .PHONY: fmt check
 fmt:

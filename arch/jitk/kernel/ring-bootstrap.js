@@ -18,12 +18,19 @@ function finish(ok,value) {
   if(os.write(102,b.buffer,0,b.length)!==b.length) throw Error('FINISH failed');
 }
 function echo(...args) {
+  // Check every local limit before taking a call ID, so a rejected call
+  // cannot shift the ID (and fd) of the next one.
   if(next>32) return Promise.reject(Error('call budget'));
-  const id=next++, b=encode(args);
+  const b=encode(args);
   if(b.length>1024) return Promise.reject(Error('call bytes'));
+  const id=next++;
   return new Promise((resolve,reject)=>{
     pending.set(id,{resolve,reject,buffer:new ArrayBuffer(1024)});
-    if(os.write(128+id,b.buffer,0,b.length)!==b.length) throw Error('CALL failed');
+    // A failed write keeps its ID consumed: the host may have seen part of it.
+    if(os.write(128+id,b.buffer,0,b.length)!==b.length) {
+      pending.delete(id);
+      reject(Error('CALL failed'));
+    }
   });
 }
 os.setReadHandler(0,()=>{
