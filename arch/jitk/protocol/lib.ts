@@ -1,7 +1,7 @@
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, readdirSync, lstatSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, writeFileSync, readdirSync, lstatSync, mkdirSync } from 'node:fs';
+import { join, dirname } from 'node:path';
 
 export function check(condition: unknown, message = 'assertion failed'): asserts condition {
   if (!condition) {
@@ -130,4 +130,10 @@ export function environment(): Record<string, string> {
     }
   }
   return env;
+}
+
+export function receiptPath(name: string): string {
+  const path = join(import.meta.dirname, process.env.JITK_RECORD === '1' ? '' : '.work', name);
+  mkdirSync(dirname(path), { recursive: true });
+  return path;
 }

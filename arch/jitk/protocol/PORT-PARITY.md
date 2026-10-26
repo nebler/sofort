@@ -20,3 +20,8 @@ watchdog. Report defaults to the historical report destination, with an output
 override for offline parity checks. No historical report was changed.
 
 See ../docs/SCRIPTC-GAPS.md for shared compiler workarounds.
+
+After merging main (bench e487de60, grow 02a2bdaa), full native-watchdog VM and
+hostile runs pass: 10 guest cases ×30 = 300/300 and 19 hostile cases ×30 = 570/570.
+Both controllers now keep normal receipts in .work; JITK_RECORD=1 explicitly
+selects their original recorded destinations.
