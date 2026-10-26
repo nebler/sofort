@@ -73,7 +73,7 @@ the tested VMMs retain their separate 30 s I/O and 3 s hostile-guest watchdogs.
 The remote watchdog also empties/removes the suite-PID cgroup subtree after a
 forced supervisor kill, covering helpers that deliberately use separate sessions.
 `out/run-timing.json` records the limits, gate events and observed suite wall time.
-Run watchdog failure-injection checks with `python3 nested/test-watch.py`.
+Run watchdog failure-injection checks with `./tool.sh test-watch`.
 
 Coverage is identical on both backends (certification rejects reduced runs):
 
@@ -107,7 +107,7 @@ cgroup, then reaps owned children. Parent death kills the VMM. One port, one
 vCPU, 32 MiB. Each parked guest must return the right result after density.
 
 `seccomp-probe.c` is 07's standalone syscall probe, extended with exec/mmap/kill.
-`build-probes.py` compiles filters from the **exact canonical sandbox BPF module**,
+`./tool.sh build-probes` compiles filters from the **exact canonical sandbox BPF module**,
 not a second allowlist. It validates main/vCPU/console roles and KVM_RUN allowance
 with an invalid fd. It does not inject native host syscalls into the production
 VMM. The canonical VMM itself is used for every boot/tool/density/fault test.
@@ -166,3 +166,16 @@ measured VMM counters; guest figures are estimates and precise additive
 host-user/guest attribution remains **UNVERIFIED**. Nominal tick resolution is
 not a complete error bound. See area 05's R3.md for the measured cost buckets,
 proposed fixes and transfer limits. The metal 5 CPU-ms criterion is unpassed.
+
+## Native TypeScript tools
+
+`make build build-linux` installs the locked scriptc 0.4.5 compiler and builds
+native Mac and static aarch64 Linux musl tools. Set `ZIG` if zig is elsewhere.
+`./tool.sh NAME [ARGS...]` replaces `python3 NAME.py [ARGS...]`; nested and
+historical commands use their original basename (for example `run-ssh`,
+`parking-check`, `analyze-r7`). The Linux artifact needs no Node or Python.
+The SSH runner uploads it with the canonical VMM, images and BPF filters.
+`make test` runs the full nested profile from Mac; on Linux it uses the prebuilt
+artifact with `JITK_BIN` pointing at the staged VM inputs (run as root for cgroups).
+Evidence still defaults to `.work/out/`; `JITK_RECORD=1` retains its original
+explicit recording behavior. See `PORT-PARITY.md` and `SCRIPTC-GAPS.md`.

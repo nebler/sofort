@@ -10,4 +10,4 @@ python3 "$ROOT/../vmm/build.py"
 cp "$JITK_VMM_BUILD/jitk-vmm" "$WORK/jitk-vmm"
 cp "$JITK_VMM_BUILD/build.json" "$WORK/build.json"
 cc -O2 -Wall -Wextra -Werror "$ROOT/spawn-cg.c" -o "$WORK/spawn-cg"
-python3 "$ROOT/build-probes.py"
+"$ROOT/tool.sh" build-probes

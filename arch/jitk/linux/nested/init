@@ -6,7 +6,7 @@ ulimit -n 16384
 cd /work
 export JITK_BIN=/work JITK_LABEL=NESTED JITK_REPORT=/tmp/report.json
 . ./env.sh
-python3 suite.py 2>&1
+./linux-tools suite 2>&1
 rc=$?
 echo "JITK_EXIT=$rc"
 echo o > /proc/sysrq-trigger
