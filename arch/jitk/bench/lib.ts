@@ -45,7 +45,15 @@ export interface SpawnResult {
 }
 export async function capture(argv: string[], options: { cwd?: string; env?: Record<string, string>; timeout?: number } = {}): Promise<SpawnResult> {
   return await new Promise<SpawnResult>((resolveResult, reject) => {
-    const child = spawn(argv[0], argv.slice(1), { cwd: options.cwd, env: options.env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    const env: Record<string, string> = {};
+    const source = options.env === undefined ? process.env : options.env;
+    for (const key of Object.keys(source)) {
+      const value = source[key];
+      if (value !== undefined) {
+        env[key] = value;
+      }
+    }
+    const child = spawn(argv[0], argv.slice(1), { cwd: options.cwd || process.cwd(), env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
     const stdout: Buffer[] = [];
     const stderr: Buffer[] = [];
     let timedOut = false;

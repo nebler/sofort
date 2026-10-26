@@ -16,7 +16,9 @@ macOS/arm64, the source checkout's build prerequisites and cached Cargo crates.
 
 Set `CARGO` and `RUSTC` to verified absolute executables from Rust nightly
 2026-10-20, and make the checkout's required LLVM tools available. Never select
-an unverified PATH launcher. `make build` stages the adapter crate beside a
+an unverified PATH launcher. `make build` compiles `build.ts` with the bench
+package's pinned scriptc 0.4.5, then runs the native `../build/hyperlight-build`.
+It stages the adapter crate beside a
 symlink to `HYPERLIGHT_JS_SRC`, builds offline/locked, signs with canonical
 `../../vmm/hypervisor.entitlements`, then creates a tenant-free snapshot.
 
