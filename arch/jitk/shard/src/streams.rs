@@ -1,8 +1,6 @@
 //! Negotiated R7 native TX decoder. All cursors and budgets are host shadows.
-pub const FEATURES: u64 = 7;
-pub const RING_BYTES: usize = 32768;
-pub const MAX_RECORD: usize = 16384;
-pub const OUTPUT_LIMIT: usize = 1024 * 1024;
+use crate::constants::ring;
+pub use ring::{MAX_RECORD, NATIVE_FEATURES as FEATURES, OUTPUT_LIMIT, RING_BYTES};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Output {
@@ -90,7 +88,7 @@ impl Receiver {
             }
             b.truncate(n);
             match kind {
-                6 | 7 => {
+                ring::STDOUT | ring::STDERR => {
                     if flags != 0 || n == 0 {
                         return Err("invalid byte record");
                     }
@@ -98,7 +96,7 @@ impl Receiver {
                     if n > self.limit - used {
                         return Err("native output budget");
                     }
-                    let dst = if kind == 6 {
+                    let dst = if kind == ring::STDOUT {
                         &mut self.stdout
                     } else {
                         &mut self.stderr
@@ -108,7 +106,7 @@ impl Receiver {
                     }
                     dst.extend_from_slice(&b);
                 }
-                8 => {
+                ring::NATIVE_EXIT => {
                     if flags != 0 || offset != 0 || n != 24 {
                         return Err("invalid native completion");
                     }
@@ -125,7 +123,7 @@ impl Receiver {
                     }
                     self.completion = Some((status, limited == 1));
                 }
-                4 => {
+                ring::LOG => {
                     // The diagnostic subset is canonical JSON, bounded separately.
                     const PREFIX: &[u8] = b"{\"level\":\"debug\",\"msg\":\"";
                     if flags != 1 || offset != 0 || !b.starts_with(PREFIX) || !b.ends_with(b"\"}") {
@@ -164,7 +162,7 @@ impl Receiver {
         Ok(())
     }
     pub fn finish(&mut self, op: u32) -> Result<Option<Output>, &'static str> {
-        if (op == 3) != self.completion.is_some() {
+        if (op == ring::FINISH) != self.completion.is_some() {
             return Err("completion/doorbell mismatch");
         }
         if !matches!(op, 1..=3) {
@@ -181,7 +179,7 @@ impl Receiver {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{MAX_RECORD, Output, RING_BYTES, Receiver};
     fn record(kind: u16, offset: u64, b: &[u8]) -> Vec<u8> {
         let mut v = vec![0; (32 + b.len() + 7) & !7];
         let len = v.len() as u32;

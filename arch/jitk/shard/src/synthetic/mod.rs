@@ -7,7 +7,7 @@ use std::{
     thread,
     time::{Duration, Instant},
 };
-use vm::{ARENA, CTRL, Kvm, RAM, STUB, Slot, raise_fds};
+use vm::{CTRL, Kvm, RAM, Slot, raise_fds, stub};
 
 fn quote(s: &str) -> String {
     let mut o = String::from("\"");
@@ -529,7 +529,7 @@ pub fn run() {
     assert!((1..=6).contains(&w));
     raise_fds();
     let mut bytes = vec![0xa5; RAM];
-    bytes[..STUB.len()].copy_from_slice(STUB);
+    bytes[..stub().len()].copy_from_slice(stub());
     bytes[CTRL..CTRL + 81920].fill(0);
     let mut f = File::create("snapshot.bin").unwrap();
     f.write_all(&bytes).unwrap();
@@ -540,7 +540,7 @@ pub fn run() {
     println!(
         "{{\"event\":\"environment\",\"mode\":{},\"threads_total\":{w},\"owners\":{w},\"nested\":true,\"page_size\":4096,\"ram_bytes\":{RAM},\"transport_bytes\":81920,\"guest_bytes\":{},\"kvm_run_bytes\":{},\"kernel\":{},\"loadavg\":{},\"cpuinfo\":{},\"dependencies\":\"none; raw Linux UAPI ioctls\"}}",
         quote(mode),
-        STUB.len(),
+        stub().len(),
         kvm.run_size,
         quote(&read("/proc/version")),
         quote(&read("/proc/loadavg")),

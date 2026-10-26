@@ -1,5 +1,6 @@
 //! Versioned physical contracts for ring-only images. No unbounded restore class.
-pub const RING_BYTES: usize = 81_920;
+use crate::constants::ring;
+pub const RING_BYTES: usize = ring::TRANSPORT_BYTES;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Class {
     Glue2m,
@@ -26,7 +27,7 @@ impl Class {
         }
     }
     pub fn start(self) -> usize {
-        0x1800000
+        ring::ARENA_OFFSET
     }
     pub fn end(self) -> usize {
         self.start() + self.bytes()
@@ -43,7 +44,7 @@ impl Class {
             0x414e4552414b544au64,
             2,
             mib,
-            0x80000000 + self.start() as u64,
+            ring::RAM_GPA + self.start() as u64,
             self.bytes() as u64,
             RING_BYTES as u64,
             65536,
@@ -73,7 +74,7 @@ impl Class {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{Class, RING_BYTES};
 
     #[test]
     fn only_the_class_arena_and_rings_are_writable() {

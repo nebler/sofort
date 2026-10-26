@@ -2,6 +2,7 @@
 //! Waiting slots retain no execution stack. The reactor sends bounded commands;
 //! the watchdog shares only generation-fenced leases and eventfd wakeups.
 use crate::{
+    constants::ring,
     kvm::{self, Kvm, Request, RunError, Slot, Snapshot},
     lease::{Lease, Wake, Watchdog},
 };
@@ -20,8 +21,7 @@ pub enum Mode {
     Run,
     Wait,
     Ready,
-    Attack,
-    RetainAttack,
+    Retain,
     Policy,
 }
 pub struct Job {
@@ -30,6 +30,8 @@ pub struct Job {
     pub mode: Mode,
     pub deadline_ns: u64,
     pub canary: bool,
+    /// Optional stopped-slot entry bytes supplied by an offline caller.
+    pub entry: Option<&'static [u8]>,
 }
 #[derive(Default)]
 pub struct Metrics {
@@ -132,15 +134,17 @@ impl Pool {
                 thread::Builder::new()
                     .name(format!("jitk-owner-{owner}"))
                     .spawn(move || {
-                        worker(
-                            (owner, owners),
+                        Worker {
+                            owner,
+                            owners,
                             kvm,
                             snapshot,
                             leases,
-                            rx,
-                            Events { tx, notify },
-                            w,
-                        )
+                            commands: rx,
+                            events: Events { tx, notify },
+                            wake: w,
+                        }
+                        .run()
                     })
                     .unwrap(),
             );
@@ -256,60 +260,80 @@ enum Progress {
     Finished(String),
     Interrupted,
 }
+#[derive(Clone, Copy, PartialEq)]
+enum Activity {
+    Idle,
+    Running,
+}
+struct Behavior {
+    mode: Mode,
+    canary: bool,
+}
+#[derive(Clone, Copy, PartialEq)]
+enum DriveUntil {
+    Completion,
+    Wait,
+}
+#[derive(Clone, Copy, PartialEq)]
+enum Retention {
+    ResetErrors,
+    KeepStopped,
+}
 struct Managed {
     cpu: Slot,
     lease: Lease,
-    active: bool,
+    activity: Activity,
     pending: Vec<Request>,
     seed: [u8; 16],
     metrics: Metrics,
     started: Instant,
     waited: Option<Instant>,
-    canary: bool,
-    policy: bool,
+    behavior: Behavior,
     policy_sent: [u64; 32],
 }
 impl Managed {
     fn reset(&mut self) -> u64 {
         let reset = self.cpu.reset();
-        if self.active {
+        if self.activity == Activity::Running {
             self.lease.acknowledge_reset();
         }
-        self.active = false;
+        self.activity = Activity::Idle;
         self.pending.clear();
         reset
     }
     fn begin(&mut self, job: Job, entropy: &mut File) {
-        let cpu_start = kvm::clock_ns(3); // CLOCK_THREAD_CPUTIME_ID; no parallel-owner double count
+        let cpu_start = kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID); // No parallel-owner double count.
         let reset_ns = self.reset();
         assert_eq!(self.cpu.canary(), 0, "stale RAM canary");
         self.seed = self.cpu.bind(job.generation, &job.source, entropy);
         self.lease = self.lease.arm(job.generation, job.deadline_ns);
         self.cpu.lease = Some(self.lease.clone());
-        self.active = true;
+        self.activity = Activity::Running;
         self.started = Instant::now();
         self.waited = None;
-        self.canary = job.canary;
-        self.policy = job.mode == Mode::Policy;
+        self.behavior = Behavior {
+            mode: job.mode,
+            canary: job.canary,
+        };
         self.metrics = Metrics {
             reset_ns,
-            cpu_ns: kvm::clock_ns(3) - cpu_start,
+            cpu_ns: kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - cpu_start,
             ..Metrics::default()
         };
         if job.mode == Mode::Ready {
             self.cpu.pause_after_repair();
         }
-        if matches!(job.mode, Mode::Attack | Mode::RetainAttack) {
-            self.cpu.attack_arena();
+        if let Some(entry) = job.entry {
+            self.cpu.redirect_entry(entry);
         }
     }
-    fn drive(&mut self, hold: bool) -> Result<Progress, RunError> {
+    fn drive(&mut self, until: DriveUntil) -> Result<Progress, RunError> {
         loop {
             let Some(e) = self.cpu.try_exit()? else {
                 return Ok(Progress::Interrupted);
             };
             self.metrics.calls += e.requests.len() as u64;
-            if e.op == 3 {
+            if e.op == ring::FINISH {
                 if !self.cpu.repaired() {
                     return Err(RunError::GuestProtocol("missing repair acknowledgement"));
                 }
@@ -318,13 +342,16 @@ impl Managed {
                     .map(Progress::Finished)
                     .ok_or(RunError::GuestProtocol("missing completion"));
             }
-            if (e.op == 5 && !self.cpu.repaired()) || !matches!(e.op, 1 | 2 | 5) {
+            if (e.op == ring::REPAIRED_READY && !self.cpu.repaired())
+                || !matches!(e.op, ring::SUBMIT | ring::WAIT | ring::REPAIRED_READY)
+            {
                 return Err(RunError::GuestProtocol("unexpected checkpoint/repair"));
             }
-            if e.op == 2 && self.waited.is_none() {
+            if e.op == ring::WAIT && self.waited.is_none() {
                 self.waited = Some(Instant::now());
             }
-            if self.policy && (!e.requests.is_empty() || e.op == 2) {
+            if self.behavior.mode == Mode::Policy && (!e.requests.is_empty() || e.op == ring::WAIT)
+            {
                 if e.requests
                     .iter()
                     .any(|r| !crate::ipc_json::request(&r.bytes))
@@ -347,7 +374,7 @@ impl Managed {
                 self.cpu.drain();
                 return Ok(Progress::Calls(calls));
             }
-            if hold && (e.op == 2 || e.op == 5) {
+            if until == DriveUntil::Wait && (e.op == ring::WAIT || e.op == ring::REPAIRED_READY) {
                 self.pending = e.requests;
                 self.cpu.drain();
                 return Ok(Progress::Parked);
@@ -365,7 +392,61 @@ impl Managed {
         }
         Ok(())
     }
-    fn finish(&mut self, result: Result<String, RunError>, retain: bool) -> Completion {
+    fn command(&mut self, cmd: Command, entropy: &mut File, id: usize, events: &Events) -> bool {
+        match cmd {
+            Command::Start(_, job) => {
+                assert!(self.activity == Activity::Idle);
+                self.begin(job, entropy);
+            }
+            Command::Reply(_, generation, request) => {
+                if self.activity == Activity::Idle || generation != self.cpu.generation {
+                    return false;
+                }
+                let Some(at) = self.pending.iter().position(|r| r.id == request.id) else {
+                    return false;
+                };
+                self.pending.swap_remove(at);
+                let t = kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID);
+                if let Err(e) = self.cpu.reply(&request) {
+                    let completion = self.finish(Err(e), Retention::ResetErrors);
+                    events
+                        .send(Event::Done {
+                            slot: id,
+                            generation,
+                            completion,
+                        })
+                        .unwrap();
+                    return false;
+                }
+                self.metrics.policy_round_trips.push(
+                    kvm::monotonic_ns().saturating_sub(self.policy_sent[request.id as usize - 1]),
+                );
+                self.metrics.cpu_ns += kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - t;
+            }
+            Command::Resume(_, generation) => {
+                if self.activity == Activity::Idle || generation != self.cpu.generation {
+                    return false;
+                }
+                let t = kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID);
+                let pending = std::mem::take(&mut self.pending);
+                if let Err(e) = self.reply(&pending) {
+                    let completion = self.finish(Err(e), Retention::ResetErrors);
+                    events
+                        .send(Event::Done {
+                            slot: id,
+                            generation,
+                            completion,
+                        })
+                        .unwrap();
+                    return false;
+                }
+                self.metrics.cpu_ns += kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - t;
+            }
+            _ => unreachable!(),
+        }
+        true
+    }
+    fn finish(&mut self, result: Result<String, RunError>, retention: Retention) -> Completion {
         let stopped_ns = kvm::monotonic_ns();
         let timely = stopped_ns < self.lease.deadline();
         let result = if self.lease.complete() && timely {
@@ -378,17 +459,18 @@ impl Managed {
         self.metrics.run_ns = self.started.elapsed().as_nanos() as u64;
         self.metrics.exits = self.cpu.exits;
         self.metrics.wait_to_finish_ns = self.waited.map_or(0, |t| t.elapsed().as_nanos() as u64);
-        let retain = retain && !matches!(result, Err(RunError::Deadline { .. }));
+        let retain = retention == Retention::KeepStopped
+            && !matches!(result, Err(RunError::Deadline { .. }));
         let mut reset_done_ns = 0;
         if result.is_err() && !retain {
             self.cpu.reset(); // includes MMIO completion, discard, registers, clearing immediate_exit
             self.lease.acknowledge_reset();
-            self.active = false;
+            self.activity = Activity::Idle;
             reset_done_ns = kvm::monotonic_ns();
         } else {
             // complete() disarmed this stopped slot. Retained dirty pages are measurement-only.
-            self.active = false;
-            if self.canary {
+            self.activity = Activity::Idle;
+            if self.behavior.canary {
                 self.cpu.corrupt_canary(self.cpu.generation);
             }
         }
@@ -401,163 +483,135 @@ impl Managed {
         }
     }
 }
-fn worker(
-    (owner, owners): (usize, usize),
+struct Worker {
+    owner: usize,
+    owners: usize,
     kvm: Arc<Kvm>,
     snapshot: Arc<Snapshot>,
     leases: Vec<Lease>,
     commands: Receiver<Command>,
     events: Events,
     wake: Wake,
-) -> io::Result<()> {
-    let mut slots: Vec<Option<Managed>> = (0..leases.len()).map(|_| None).collect();
-    let mut entropy = File::open("/dev/urandom").unwrap();
-    loop {
-        wake.wait();
-        expire(&mut slots, owner, owners, &events);
-        while let Ok(cmd) = commands.try_recv() {
-            expire(&mut slots, owner, owners, &events);
-            let (id, mode) = match &cmd {
-                Command::Start(id, job) => (*id, Some(job.mode)),
-                Command::Resume(id, _)
-                | Command::Reply(id, _, _)
-                | Command::Reset(id)
-                | Command::Cancel(id) => (*id, None),
-                Command::Stop => {
-                    for mut s in slots.iter_mut().filter_map(Option::take) {
-                        s.cpu.shutdown()?;
-                        let lease = s.lease.clone();
-                        let active = s.active;
-                        drop(s); // Destroy this stopped VM before acknowledging its lease.
-                        if active {
-                            lease.acknowledge_reset();
+}
+impl Worker {
+    fn run(self) -> io::Result<()> {
+        let mut slots: Vec<Option<Managed>> = (0..self.leases.len()).map(|_| None).collect();
+        let mut entropy = File::open("/dev/urandom").unwrap();
+        loop {
+            self.wake.wait();
+            expire(&mut slots, self.owner, self.owners, &self.events);
+            while let Ok(cmd) = self.commands.try_recv() {
+                expire(&mut slots, self.owner, self.owners, &self.events);
+                let (id, mode) = match &cmd {
+                    Command::Start(id, job) => (*id, Some(job.mode)),
+                    Command::Resume(id, _)
+                    | Command::Reply(id, _, _)
+                    | Command::Reset(id)
+                    | Command::Cancel(id) => (*id, None),
+                    Command::Stop => {
+                        for mut s in slots.iter_mut().filter_map(Option::take) {
+                            s.cpu.shutdown()?;
+                            let lease = s.lease.clone();
+                            let activity = s.activity;
+                            drop(s); // Destroy this stopped VM before acknowledging its lease.
+                            if activity == Activity::Running {
+                                lease.acknowledge_reset();
+                            }
                         }
+                        return Ok(());
                     }
-                    return Ok(());
+                };
+                let i = id / self.owners;
+                assert_eq!(id % self.owners, self.owner);
+                if slots[i].is_none() {
+                    let cpu = Slot::new(&self.kvm, self.snapshot.clone());
+                    slots[i] = Some(Managed {
+                        cpu,
+                        lease: self.leases[i].clone(),
+                        activity: Activity::Idle,
+                        pending: Vec::new(),
+                        seed: [0; 16],
+                        metrics: Metrics::default(),
+                        started: Instant::now(),
+                        waited: None,
+                        behavior: Behavior {
+                            mode: Mode::Run,
+                            canary: false,
+                        },
+                        policy_sent: [0; 32],
+                    });
                 }
-            };
-            let i = id / owners;
-            assert_eq!(id % owners, owner);
-            if slots[i].is_none() {
-                let cpu = Slot::new(&kvm, snapshot.clone());
-                slots[i] = Some(Managed {
-                    cpu,
-                    lease: leases[i].clone(),
-                    active: false,
-                    pending: Vec::new(),
-                    seed: [0; 16],
-                    metrics: Metrics::default(),
-                    started: Instant::now(),
-                    waited: None,
-                    canary: false,
-                    policy: false,
-                    policy_sent: [0; 32],
-                });
-            }
-            let s = slots[i].as_mut().unwrap();
-            if matches!(cmd, Command::Reset(_) | Command::Cancel(_)) {
-                s.reset();
-                if matches!(cmd, Command::Reset(_)) {
-                    assert!(s.cpu.pristine());
-                }
-                events.send(Event::Reset { slot: id }).unwrap();
-                continue;
-            }
-            match cmd {
-                Command::Start(_, job) => {
-                    assert!(!s.active);
-                    s.begin(job, &mut entropy);
-                }
-                Command::Reply(_, generation, request) => {
-                    if !s.active || generation != s.cpu.generation {
-                        continue;
-                    }
-                    let Some(at) = s.pending.iter().position(|r| r.id == request.id) else {
-                        continue;
-                    };
-                    s.pending.swap_remove(at);
-                    let t = kvm::clock_ns(3);
-                    if let Err(e) = s.cpu.reply(&request) {
-                        let completion = s.finish(Err(e), false);
-                        events
-                            .send(Event::Done {
-                                slot: id,
-                                generation,
-                                completion,
-                            })
-                            .unwrap();
-                        continue;
-                    }
-                    s.metrics.policy_round_trips.push(
-                        kvm::monotonic_ns().saturating_sub(s.policy_sent[request.id as usize - 1]),
-                    );
-                    s.metrics.cpu_ns += kvm::clock_ns(3) - t;
-                }
-                Command::Resume(_, generation) => {
-                    if !s.active || generation != s.cpu.generation {
-                        continue;
-                    }
-                    let t = kvm::clock_ns(3);
-                    let pending = std::mem::take(&mut s.pending);
-                    if let Err(e) = s.reply(&pending) {
-                        let completion = s.finish(Err(e), false);
-                        events
-                            .send(Event::Done {
-                                slot: id,
-                                generation,
-                                completion,
-                            })
-                            .unwrap();
-                        continue;
-                    }
-                    s.metrics.cpu_ns += kvm::clock_ns(3) - t;
-                }
-                _ => unreachable!(),
-            }
-            loop {
                 let s = slots[i].as_mut().unwrap();
-                if !s.active {
+                if matches!(cmd, Command::Reset(_) | Command::Cancel(_)) {
+                    s.reset();
+                    if matches!(cmd, Command::Reset(_)) {
+                        assert!(s.cpu.pristine());
+                    }
+                    self.events.send(Event::Reset { slot: id }).unwrap();
+                    continue;
+                }
+                if !s.command(cmd, &mut entropy, id, &self.events) {
+                    continue;
+                }
+                self.drive(&mut slots, i, id, mode);
+            }
+        }
+    }
+    fn drive(&self, slots: &mut [Option<Managed>], i: usize, id: usize, mode: Option<Mode>) {
+        loop {
+            let s = slots[i].as_mut().unwrap();
+            if s.activity == Activity::Idle {
+                break;
+            } // expiry sweep already reported this run
+            let t = kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID);
+            let until = match mode {
+                Some(Mode::Wait | Mode::Ready) => DriveUntil::Wait,
+                _ => DriveUntil::Completion,
+            };
+            let result = s.drive(until);
+            s.metrics.cpu_ns += kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - t;
+            match result {
+                Ok(Progress::Interrupted) => expire(slots, self.owner, self.owners, &self.events),
+                Ok(Progress::Calls(requests)) => {
+                    self.events
+                        .send(Event::Calls {
+                            slot: id,
+                            generation: s.cpu.generation,
+                            requests,
+                        })
+                        .unwrap();
                     break;
-                } // expiry sweep already reported this run
-                let t = kvm::clock_ns(3);
-                let result = s.drive(mode == Some(Mode::Wait) || mode == Some(Mode::Ready));
-                s.metrics.cpu_ns += kvm::clock_ns(3) - t;
-                match result {
-                    Ok(Progress::Interrupted) => expire(&mut slots, owner, owners, &events),
-                    Ok(Progress::Calls(requests)) => {
-                        events
-                            .send(Event::Calls {
-                                slot: id,
-                                generation: s.cpu.generation,
-                                requests,
-                            })
-                            .unwrap();
-                        break;
-                    }
-                    Ok(Progress::Parked) => {
-                        events
-                            .send(Event::Parked {
-                                slot: id,
-                                generation: s.cpu.generation,
-                            })
-                            .unwrap();
-                        break;
-                    }
-                    result => {
-                        let result = result.map(|p| match p {
-                            Progress::Finished(s) => s,
-                            _ => unreachable!(),
-                        });
-                        let completion = s.finish(result, mode == Some(Mode::RetainAttack));
-                        events
-                            .send(Event::Done {
-                                slot: id,
-                                generation: s.cpu.generation,
-                                completion,
-                            })
-                            .unwrap();
-                        break;
-                    }
+                }
+                Ok(Progress::Parked) => {
+                    self.events
+                        .send(Event::Parked {
+                            slot: id,
+                            generation: s.cpu.generation,
+                        })
+                        .unwrap();
+                    break;
+                }
+                result => {
+                    let result = result.map(|p| match p {
+                        Progress::Finished(s) => s,
+                        _ => unreachable!(),
+                    });
+                    let completion = s.finish(
+                        result,
+                        if mode == Some(Mode::Retain) {
+                            Retention::KeepStopped
+                        } else {
+                            Retention::ResetErrors
+                        },
+                    );
+                    self.events
+                        .send(Event::Done {
+                            slot: id,
+                            generation: s.cpu.generation,
+                            completion,
+                        })
+                        .unwrap();
+                    break;
                 }
             }
         }
@@ -567,14 +621,14 @@ fn worker(
 fn expire(slots: &mut [Option<Managed>], owner: usize, owners: usize, events: &Events) {
     for (i, s) in slots.iter_mut().enumerate() {
         if let Some(s) = s
-            && s.active
+            && s.activity == Activity::Running
             && s.lease.expired()
         {
             let completion = s.finish(
                 Err(RunError::Deadline {
                     deadline_ns: s.lease.deadline(),
                 }),
-                false,
+                Retention::ResetErrors,
             );
             events
                 .send(Event::Done {
@@ -605,7 +659,9 @@ impl Events {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{Event, Job, Mode, Pool};
+    use crate::kvm::{self, Kvm, RunError, Snapshot};
+    use std::time::{Duration, Instant};
 
     #[test]
     #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
@@ -616,10 +672,11 @@ mod tests {
             0,
             Job {
                 generation: 2,
-                source: "while(true){}".into(),
+                source: include_str!("../fixtures/spin.js").into(),
                 mode: Mode::Run,
                 deadline_ns: kvm::monotonic_ns() + 30_000_000_000,
                 canary: false,
+                entry: None,
             },
         );
         let started = Instant::now();
@@ -636,8 +693,8 @@ mod tests {
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
         let mut pool = Pool::new(Kvm::new(), snapshot, 2, 2);
         for (slot, source, mode) in [
-            (0, "return await tools.echo(41);", Mode::Policy),
-            (1, "return 2;", Mode::Run),
+            (0, include_str!("../fixtures/policy_call.js"), Mode::Policy),
+            (1, include_str!("../fixtures/return2.js"), Mode::Run),
         ] {
             pool.start(
                 slot,
@@ -647,6 +704,7 @@ mod tests {
                     mode,
                     deadline_ns: kvm::monotonic_ns() + 5_000_000_000,
                     canary: true,
+                    entry: None,
                 },
             );
         }
@@ -670,10 +728,11 @@ mod tests {
             0,
             Job {
                 generation: 3,
-                source: "return 2;".into(),
+                source: include_str!("../fixtures/return2.js").into(),
                 mode: Mode::Run,
                 deadline_ns: kvm::monotonic_ns() + 5_000_000_000,
                 canary: true,
+                entry: None,
             },
         );
         let Event::Done { completion, .. } = pool.recv() else {

@@ -1,8 +1,8 @@
 // EL1, MMU/cache/timer off, no stack, no interrupts, no HVC, no devices.
 // Control and fixed 64-byte ring records are documented in README.md.
-.section .text
-.global _start
-_start:
+.section .rodata.jitk_stub,"a",%progbits
+.global jitk_stub_start
+jitk_stub_start:
     mov x19, #0x80000000
     add x19, x19, #0x4000
     mov x22, #0x10000000
@@ -112,3 +112,6 @@ fail:
     mov x0, #1
     str x0, [x19, #64]
     b finish
+
+.global jitk_stub_end
+jitk_stub_end:

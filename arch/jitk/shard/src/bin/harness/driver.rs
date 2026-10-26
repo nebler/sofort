@@ -2,7 +2,7 @@
 use jitk_shard::{
     entropy,
     kvm::{self, Kvm, RunError, Snapshot},
-    owner::{Completion, Event, Job, Mode, Pool},
+    owner::{Completion, Event, Job, Mode as RuntimeMode, Pool},
 };
 use std::{
     collections::HashSet,
@@ -12,6 +12,14 @@ use std::{
     thread,
     time::{Duration, Instant},
 };
+#[derive(Clone, Copy)]
+enum Mode {
+    Run,
+    Wait,
+    Ready,
+    Attack,
+    RetainAttack,
+}
 fn stats(v: &[u64]) -> String {
     let mut s = v.to_vec();
     s.sort_unstable();
@@ -29,9 +37,18 @@ fn job(generation: u64, source: &str, mode: Mode, deadline: u64, canary: bool) -
     Job {
         generation,
         source: source.into(),
-        mode,
+        mode: match mode {
+            Mode::Run | Mode::Attack => RuntimeMode::Run,
+            Mode::Wait => RuntimeMode::Wait,
+            Mode::Ready => RuntimeMode::Ready,
+            Mode::RetainAttack => RuntimeMode::Retain,
+        },
         deadline_ns: deadline,
         canary,
+        entry: match mode {
+            Mode::Attack | Mode::RetainAttack => Some(super::arena_attack()),
+            _ => None,
+        },
     }
 }
 fn done(pool: &mut Pool, slot: usize, generation: u64) -> Completion {
@@ -217,7 +234,7 @@ pub fn run(
                     0,
                     job(
                         2 * i as u64 + 3,
-                        "return 2;",
+                        include_str!("../../../fixtures/return2.js"),
                         Mode::Run,
                         kvm::monotonic_ns() + 2_000_000_000,
                         true,
@@ -381,7 +398,16 @@ fn stress(
 fn deadlines(pool: &mut Pool, n: usize) {
     let deadline = kvm::monotonic_ns() + 3_000_000_000;
     for slot in 0..n {
-        pool.start(slot, job(2, "while(true){}", Mode::Ready, deadline, false));
+        pool.start(
+            slot,
+            job(
+                2,
+                include_str!("../../../fixtures/spin.js"),
+                Mode::Ready,
+                deadline,
+                false,
+            ),
+        );
     }
     for _ in 0..n {
         assert!(matches!(pool.recv(), Event::Parked { generation: 2, .. }));
@@ -423,7 +449,7 @@ fn deadlines(pool: &mut Pool, n: usize) {
             slot,
             job(
                 3,
-                "return 2;",
+                include_str!("../../../fixtures/return2.js"),
                 Mode::Run,
                 kvm::monotonic_ns() + 5_000_000_000,
                 true,
@@ -457,7 +483,7 @@ fn staggered(pool: &mut Pool, n: usize) {
             slot,
             job(
                 2,
-                "while(true){}",
+                include_str!("../../../fixtures/spin.js"),
                 Mode::Ready,
                 if slot < n / 2 { early } else { late },
                 false,

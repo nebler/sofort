@@ -1,7 +1,7 @@
 // EL1 fixture: MMU disabled; read all RAM, dirty every class arena/ring page, then RO write.
-.text
-.global _start
-_start:
+.section .rodata.jitk_arena_attack,"a",%progbits
+.global jitk_arena_attack_start
+jitk_arena_attack_start:
     mov x0, #0x80000000
     mov x1, #0x82000000
 0:  ldr x3, [x0]
@@ -25,3 +25,6 @@ _start:
     mov x0, #0x80000000
     str x2, [x0]
 3:  b 3b
+
+.global jitk_arena_attack_end
+jitk_arena_attack_end:

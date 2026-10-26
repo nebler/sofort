@@ -1,8 +1,11 @@
 //! Offline fixtures and CLI dispatch, compiled only into the real binary.
 mod driver;
+mod native_hold;
+mod prepare;
+mod probe;
 use jitk_shard::{
     ipc_service,
-    kvm::{self, Kvm, Snapshot, prepare, raise_fds},
+    kvm::{self, Kvm, Snapshot, raise_fds},
     lease,
 };
 fn fixture(name: &str) -> String {
@@ -48,7 +51,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     if a.get(1).map(String::as_str) == Some("ipc-probe") {
-        if let Err(e) = ipc_service::probe(&a[2]) {
+        if let Err(e) = probe::run(&a[2]) {
             eprintln!("shard IPC probe: {e}");
             std::process::exit(1);
         }
@@ -63,15 +66,28 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     if a[1] == "native-hold" {
-        kvm::native::hold(&a[2], &a[3], a[4].parse()?, a[5].parse()?)?;
+        native_hold::run(&a[2], &a[3], a[4].parse()?, a[5].parse()?)?;
         return Ok(());
     }
     raise_fds();
     let kvm = Kvm::new();
     if a[1] == "prepare" {
-        prepare(&kvm, &a[2], &a[3]);
+        prepare::run(&kvm, &a[2], &a[3]);
         return Ok(());
     }
     driver::run(kvm, Snapshot::load(&a[2])?, &a, fixture, expected);
     Ok(())
+}
+
+core::arch::global_asm!(include_str!("../../../guest/arena-attack.S"));
+fn arena_attack() -> &'static [u8] {
+    unsafe extern "C" {
+        static jitk_arena_attack_start: u8;
+        static jitk_arena_attack_end: u8;
+    }
+    let start = std::ptr::addr_of!(jitk_arena_attack_start);
+    let end = std::ptr::addr_of!(jitk_arena_attack_end);
+    // SAFETY: the assembler labels enclose exactly the immutable fixture bytes
+    // in one read-only section. Both labels live for this binary's lifetime.
+    unsafe { std::slice::from_raw_parts(start, end as usize - start as usize) }
 }

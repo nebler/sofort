@@ -2,7 +2,7 @@
 //! never a grant or policy decision. Node remains the only policy authority.
 use std::collections::BTreeMap;
 #[derive(Debug)]
-pub enum Value {
+enum Value {
     Null,
     Bool,
     Number,
@@ -210,7 +210,7 @@ impl Parser<'_> {
         }
     }
 }
-pub fn parse(bytes: &[u8]) -> Result<Value, ()> {
+fn parse(bytes: &[u8]) -> Result<Value, ()> {
     if bytes.is_empty() || bytes.len() > 16384 || bytes.iter().any(|b| *b < 32 || *b > 126) {
         return Err(());
     }
@@ -285,7 +285,7 @@ pub fn request(bytes: &[u8]) -> bool {
 }
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{reply, request};
     #[test]
     fn malformed_json_and_envelopes() {
         for b in [

@@ -9,7 +9,7 @@ use crate::{
 use std::{collections::VecDeque, io, sync::Arc};
 const MAX_SLOTS: usize = 64;
 const OUTBOUND: usize = MAX_SLOTS * 35 + 1;
-pub const STATS: u32 = 22;
+pub use crate::constants::ipc::STATS;
 #[derive(Clone, Copy, PartialEq)]
 enum Phase {
     Idle,
@@ -81,222 +81,46 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
         return Err(invalid("IPC shard capacity"));
     }
     // PR_SET_PDEATHSIG closes the Node death window without a helper process.
-    unsafe extern "C" {
-        fn prctl(option: i32, ...) -> i32;
-        fn getppid() -> i32;
+    // SAFETY: getppid and PR_SET_PDEATHSIG take scalar arguments, retain no
+    // pointers, and are called before any owner threads are started.
+    let parent = unsafe { libc::getppid() };
+    if parent == 1 {
+        return Err(invalid("IPC parent unavailable"));
     }
-    let parent = unsafe { getppid() };
-    if parent == 1 || unsafe { prctl(1, 9) } != 0 || unsafe { getppid() } != parent {
+    // SAFETY: PR_SET_PDEATHSIG takes SIGKILL as its integer second argument.
+    let armed = unsafe { libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) };
+    if armed != 0 {
+        return Err(invalid("IPC parent unavailable"));
+    }
+    // SAFETY: getppid has no pointer or lifetime preconditions.
+    let current_parent = unsafe { libc::getppid() };
+    if current_parent != parent {
         return Err(invalid("IPC parent unavailable"));
     }
     let snapshot = Snapshot::load(base)?;
     let charge = ipc_charge(snapshot.class)?;
+    // SAFETY: this binary startup path uniquely adopts the Node-supplied
+    // memfd and eventfds 3/4/5 before any owner threads are started.
     let mut endpoint = unsafe { Endpoint::inherited()? };
     let wake = endpoint.notifier();
-    let mut pool = Pool::notified(
+    let pool = Pool::notified(
         Kvm::new(),
         snapshot,
         slots,
         owners,
         Some(Arc::new(move || wake.signal())),
     );
-    let mut states: Vec<State> = (0..slots).map(|_| State::default()).collect();
-    let mut outbound = VecDeque::new();
-    enqueue(&mut outbound, Message::new(ipc::READY, 0, 0, 0, Vec::new()))?;
-    let result = (|| -> io::Result<()> {
-        loop {
-            let mut progress = false;
-            for _ in 0..ipc::CAPACITY {
-                let Some(m) = endpoint.receive()? else {
-                    break;
-                };
-                progress = true;
-                let id = m.slot as usize;
-                if id >= slots || m.generation == 0 || m.generation >= u64::MAX >> 2 {
-                    return Err(invalid("IPC slot/generation"));
-                }
-                let s = &mut states[id];
-                match m.kind {
-                    ipc::START => {
-                        if s.phase != Phase::Idle || m.generation != s.generation + 1 {
-                            return Err(invalid("IPC admission generation/state"));
-                        }
-                        let (deadline, source) = admission(&m, kvm::monotonic_ns(), charge)?;
-                        *s = State {
-                            generation: m.generation,
-                            phase: Phase::Running,
-                            ..State::default()
-                        };
-                        pool.start(
-                            id,
-                            Job {
-                                generation: m.generation,
-                                source,
-                                mode: Mode::Policy,
-                                deadline_ns: deadline,
-                                canary: false,
-                            },
-                        );
-                    }
-                    ipc::REPLY => {
-                        // A reply already in flight may arrive after a watchdog result.
-                        // Its generation must still match; it can never target a reused slot.
-                        if m.generation != s.generation
-                            || m.id == 0
-                            || m.id > 32
-                            || m.bytes.len() > 1024
-                            || !ipc_json::reply(&m.bytes)
-                        {
-                            return Err(invalid("IPC reply schema/generation"));
-                        }
-                        let bit = 1u32 << (m.id - 1);
-                        if s.pending & bit == 0 {
-                            return Err(invalid("IPC duplicate/unknown reply"));
-                        }
-                        s.pending &= !bit;
-                        if s.phase == Phase::Running {
-                            pool.reply(
-                                id,
-                                m.generation,
-                                Request {
-                                    id: m.id as u64,
-                                    bytes: m.bytes,
-                                },
-                            );
-                        }
-                    }
-                    ipc::CANCEL => {
-                        if m.id != 0 || !m.bytes.is_empty() {
-                            return Err(invalid("IPC cancel schema"));
-                        }
-                        if s.phase == Phase::Idle && m.generation == s.generation + 1 {
-                            s.generation = m.generation;
-                            enqueue(
-                                &mut outbound,
-                                Message::new(ipc::RELEASED, id, s.generation, 0, Vec::new()),
-                            )?;
-                        } else if m.generation == s.generation
-                            && matches!(s.phase, Phase::Running | Phase::Done)
-                        {
-                            s.phase = Phase::Resetting;
-                            pool.cancel(id);
-                        } else {
-                            return Err(invalid("IPC cancel generation/state"));
-                        }
-                    }
-                    _ => return Err(invalid("IPC message direction/kind")),
-                }
-            }
-            while let Some(event) = pool.try_recv() {
-                progress = true;
-                match event {
-                    Event::Calls {
-                        slot,
-                        generation,
-                        requests,
-                    } => {
-                        let s = &mut states[slot];
-                        if generation != s.generation {
-                            return Err(invalid("IPC owner generation"));
-                        }
-                        if s.phase == Phase::Resetting {
-                            continue;
-                        }
-                        if s.phase != Phase::Running {
-                            return Err(invalid("IPC owner call state"));
-                        }
-                        for request in requests {
-                            if request.id != s.next
-                                || request.id > 32
-                                || request.bytes.len() > 1024
-                                || !ipc_json::request(&request.bytes)
-                            {
-                                return Err(invalid("IPC guest call schema/id"));
-                            }
-                            s.next += 1;
-                            s.pending |= 1u32 << (request.id - 1);
-                            enqueue(
-                                &mut outbound,
-                                Message::new(
-                                    ipc::CALL,
-                                    slot,
-                                    generation,
-                                    request.id,
-                                    request.bytes,
-                                ),
-                            )?;
-                        }
-                    }
-                    Event::Done {
-                        slot,
-                        generation,
-                        completion,
-                    } => {
-                        let s = &mut states[slot];
-                        if generation != s.generation {
-                            return Err(invalid("IPC owner completion generation"));
-                        }
-                        if s.phase == Phase::Resetting {
-                            continue;
-                        }
-                        if s.phase != Phase::Running {
-                            return Err(invalid("IPC duplicate completion"));
-                        }
-                        s.phase = Phase::Done;
-                        let mut metrics = Vec::with_capacity(
-                            32 + 8 * completion.metrics.policy_round_trips.len(),
-                        );
-                        for n in [
-                            completion.metrics.cpu_ns,
-                            completion.stopped_ns,
-                            completion.reset_done_ns,
-                            completion.metrics.policy_round_trips.len() as u64,
-                        ] {
-                            metrics.extend_from_slice(&n.to_le_bytes());
-                        }
-                        for n in &completion.metrics.policy_round_trips {
-                            metrics.extend_from_slice(&n.to_le_bytes());
-                        }
-                        enqueue(
-                            &mut outbound,
-                            Message::new(STATS, slot, generation, 0, metrics),
-                        )?;
-                        let (kind, bytes) = match completion.result {
-                            Ok(text) => (ipc::DONE, text.into_bytes()),
-                            Err(e) => (ipc::ERROR, e.to_string().into_bytes()),
-                        };
-                        enqueue(
-                            &mut outbound,
-                            Message::new(kind, slot, generation, 0, bytes),
-                        )?;
-                    }
-                    Event::Reset { slot } => {
-                        let s = &mut states[slot];
-                        if s.phase != Phase::Resetting {
-                            return Err(invalid("IPC unexpected reset"));
-                        }
-                        s.phase = Phase::Idle;
-                        s.pending = 0;
-                        enqueue(
-                            &mut outbound,
-                            Message::new(ipc::RELEASED, slot, s.generation, 0, Vec::new()),
-                        )?;
-                    }
-                    Event::Parked { .. } => return Err(invalid("IPC fixture event in service")),
-                }
-            }
-            while let Some(m) = outbound.front() {
-                if !endpoint.send(m)? {
-                    break;
-                }
-                outbound.pop_front();
-                progress = true;
-            }
-            if !progress {
-                endpoint.wait()?;
-            }
-        }
-    })();
+    let mut reactor = Reactor {
+        pool,
+        states: (0..slots).map(|_| State::default()).collect(),
+        outbound: VecDeque::new(),
+        charge,
+    };
+    enqueue(
+        &mut reactor.outbound,
+        Message::new(ipc::READY, 0, 0, 0, Vec::new()),
+    )?;
+    let result = reactor.run(&mut endpoint);
     if let Err(e) = &result {
         // Fail closed immediately; do not wait behind a malicious busy vCPU
         // in Pool::drop. The independent watchdog observes the shard pidfd.
@@ -305,38 +129,214 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
     }
     result
 }
-/// Offline shared-memory echo/hostile peer. No KVM or watchdog is started.
-pub fn probe(mode: &str) -> io::Result<()> {
-    let mut endpoint = unsafe { Endpoint::inherited()? };
-    let mut out = VecDeque::from([Message::new(ipc::READY, 0, 0, 0, Vec::new())]);
-    loop {
-        while let Some(m) = endpoint.receive()? {
-            if mode != "echo" {
-                return Err(invalid("unknown IPC probe mode"));
+struct Reactor {
+    pool: Pool,
+    states: Vec<State>,
+    outbound: VecDeque<Message>,
+    charge: u32,
+}
+impl Reactor {
+    fn run(&mut self, endpoint: &mut Endpoint) -> io::Result<()> {
+        loop {
+            let mut progress = false;
+            for _ in 0..ipc::CAPACITY {
+                let Some(message) = endpoint.receive()? else {
+                    break;
+                };
+                progress = true;
+                self.message(message)?;
             }
-            if m.kind != ipc::PING || m.slot != 0 || m.generation != 0 || m.bytes.len() > 1024 {
-                return Err(invalid("IPC probe frame"));
+            while let Some(event) = self.pool.try_recv() {
+                progress = true;
+                self.event(event)?;
             }
-            enqueue(
-                &mut out,
-                Message {
-                    kind: ipc::PING,
-                    ..m
-                },
-            )?;
+            while let Some(message) = self.outbound.front() {
+                if !endpoint.send(message)? {
+                    break;
+                }
+                self.outbound.pop_front();
+                progress = true;
+            }
+            if !progress {
+                endpoint.wait()?;
+            }
         }
-        while let Some(m) = out.front() {
-            if !endpoint.send(m)? {
-                break;
-            }
-            out.pop_front();
+    }
+    fn message(&mut self, m: Message) -> io::Result<()> {
+        let id = m.slot as usize;
+        if id >= self.states.len() || m.generation == 0 || m.generation >= u64::MAX >> 2 {
+            return Err(invalid("IPC slot/generation"));
         }
-        endpoint.wait()?;
+        let s = &mut self.states[id];
+        match m.kind {
+            ipc::START => {
+                if s.phase != Phase::Idle || m.generation != s.generation + 1 {
+                    return Err(invalid("IPC admission generation/state"));
+                }
+                let (deadline, source) = admission(&m, kvm::monotonic_ns(), self.charge)?;
+                *s = State {
+                    generation: m.generation,
+                    phase: Phase::Running,
+                    ..State::default()
+                };
+                self.pool.start(
+                    id,
+                    Job {
+                        generation: m.generation,
+                        source,
+                        mode: Mode::Policy,
+                        deadline_ns: deadline,
+                        canary: false,
+                        entry: None,
+                    },
+                );
+            }
+            ipc::REPLY => {
+                // A reply already in flight may arrive after a watchdog result.
+                // Its generation must still match; it can never target a reused slot.
+                if m.generation != s.generation
+                    || m.id == 0
+                    || m.id > 32
+                    || m.bytes.len() > 1024
+                    || !ipc_json::reply(&m.bytes)
+                {
+                    return Err(invalid("IPC reply schema/generation"));
+                }
+                let bit = 1u32 << (m.id - 1);
+                if s.pending & bit == 0 {
+                    return Err(invalid("IPC duplicate/unknown reply"));
+                }
+                s.pending &= !bit;
+                if s.phase == Phase::Running {
+                    self.pool.reply(
+                        id,
+                        m.generation,
+                        Request {
+                            id: m.id as u64,
+                            bytes: m.bytes,
+                        },
+                    );
+                }
+            }
+            ipc::CANCEL => {
+                if m.id != 0 || !m.bytes.is_empty() {
+                    return Err(invalid("IPC cancel schema"));
+                }
+                if s.phase == Phase::Idle && m.generation == s.generation + 1 {
+                    s.generation = m.generation;
+                    enqueue(
+                        &mut self.outbound,
+                        Message::new(ipc::RELEASED, id, s.generation, 0, Vec::new()),
+                    )?;
+                } else if m.generation == s.generation
+                    && matches!(s.phase, Phase::Running | Phase::Done)
+                {
+                    s.phase = Phase::Resetting;
+                    self.pool.cancel(id);
+                } else {
+                    return Err(invalid("IPC cancel generation/state"));
+                }
+            }
+            _ => return Err(invalid("IPC message direction/kind")),
+        }
+        Ok(())
+    }
+    fn event(&mut self, event: Event) -> io::Result<()> {
+        match event {
+            Event::Calls {
+                slot,
+                generation,
+                requests,
+            } => {
+                let s = &mut self.states[slot];
+                if generation != s.generation {
+                    return Err(invalid("IPC owner generation"));
+                }
+                if s.phase == Phase::Resetting {
+                    return Ok(());
+                }
+                if s.phase != Phase::Running {
+                    return Err(invalid("IPC owner call state"));
+                }
+                for request in requests {
+                    if request.id != s.next
+                        || request.id > 32
+                        || request.bytes.len() > 1024
+                        || !ipc_json::request(&request.bytes)
+                    {
+                        return Err(invalid("IPC guest call schema/id"));
+                    }
+                    s.next += 1;
+                    s.pending |= 1u32 << (request.id - 1);
+                    enqueue(
+                        &mut self.outbound,
+                        Message::new(ipc::CALL, slot, generation, request.id, request.bytes),
+                    )?;
+                }
+            }
+            Event::Done {
+                slot,
+                generation,
+                completion,
+            } => {
+                let s = &mut self.states[slot];
+                if generation != s.generation {
+                    return Err(invalid("IPC owner completion generation"));
+                }
+                if s.phase == Phase::Resetting {
+                    return Ok(());
+                }
+                if s.phase != Phase::Running {
+                    return Err(invalid("IPC duplicate completion"));
+                }
+                s.phase = Phase::Done;
+                let mut metrics =
+                    Vec::with_capacity(32 + 8 * completion.metrics.policy_round_trips.len());
+                for n in [
+                    completion.metrics.cpu_ns,
+                    completion.stopped_ns,
+                    completion.reset_done_ns,
+                    completion.metrics.policy_round_trips.len() as u64,
+                ] {
+                    metrics.extend_from_slice(&n.to_le_bytes());
+                }
+                for n in &completion.metrics.policy_round_trips {
+                    metrics.extend_from_slice(&n.to_le_bytes());
+                }
+                enqueue(
+                    &mut self.outbound,
+                    Message::new(STATS, slot, generation, 0, metrics),
+                )?;
+                let (kind, bytes) = match completion.result {
+                    Ok(text) => (ipc::DONE, text.into_bytes()),
+                    Err(e) => (ipc::ERROR, e.to_string().into_bytes()),
+                };
+                enqueue(
+                    &mut self.outbound,
+                    Message::new(kind, slot, generation, 0, bytes),
+                )?;
+            }
+            Event::Reset { slot } => {
+                let s = &mut self.states[slot];
+                if s.phase != Phase::Resetting {
+                    return Err(invalid("IPC unexpected reset"));
+                }
+                s.phase = Phase::Idle;
+                s.pending = 0;
+                enqueue(
+                    &mut self.outbound,
+                    Message::new(ipc::RELEASED, slot, s.generation, 0, Vec::new()),
+                )?;
+            }
+            Event::Parked { .. } => return Err(invalid("IPC fixture event in service")),
+        }
+        Ok(())
     }
 }
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{admission, ipc_charge};
+    use crate::ipc::{self, Message};
     #[test]
     fn ipc_rejects_unsupported_snapshot_classes() {
         assert_eq!(ipc_charge(crate::arena::Class::Glue2m).unwrap(), 2 << 20);
