@@ -1,10 +1,12 @@
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync, copyFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync, copyFileSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
-import { check, detail, dump, equal, GateError, readJSON } from './io.ts';
+import { check, detail, dump, equal, GateError, readJSON } from './lib.ts';
 import { ASSETS, CANONICAL, ROOT, build, capture, checkHost, cleanup, copyKernel, distribution, host, hostCommand, load, probeSource, processGuest, run, scratch, selectGate, selectHost, sha, treeHashes, type GuestInfo } from './runtime.ts';
 import { compare, guest, linux } from './adapters.ts';
-import { proposal, validateProposal } from './agent.ts';
+import { hostHandlerTests } from './host-tests.ts';
+import { retryTransaction, type Feedback, type TransactionReport } from './retries.ts';
+import { proposal, validateProposal, type SpecLevel } from './agent.ts';
 import { observe, requireResult, type Observations, type SyscallRecord } from './observations.ts';
 import { PROFILES, mutations, resources, type Cases } from './profiles.ts';
 import { integration, type IntegrationResult } from './sqlite-profile.ts';
@@ -16,6 +18,7 @@ const LUA_OUTPUT = Buffer.from('{"count":5,"sum":23,"max":9}\n');
 const SLOTS = readJSON<Record<string, string>>(join(CANONICAL, 'slots.json'));
 
 interface Stage {
+  passed: boolean;
   seconds: number;
   uptime_before: string;
   uptime_after: string;
@@ -34,23 +37,26 @@ export class Receipt {
   async stage<T>(label: string, fn: () => Promise<T>): Promise<T> {
     const before = load();
     const started = performance.now();
+    let passed = false;
     try {
-      return await fn();
+      const result = await fn();
+      passed = true;
+      return result;
     } finally {
-      this.stages[label] = { seconds: (performance.now() - started) / 1000, uptime_before: before, uptime_after: load() };
+      this.stages[label] = { passed, seconds: (performance.now() - started) / 1000, uptime_before: before, uptime_after: load() };
       dump(join(this.path, 'stages.json'), this.stages);
       console.log(label, this.stages[label].seconds.toFixed(3), 's');
     }
   }
 }
 
-export async function probe(name: string, out: string): Promise<string> {
+export async function probe(name: string, out: string, source = probeSource(name)): Promise<string> {
   const obj = join(out, name + '.o');
   const elf = join(out, name + '.elf');
   const nr = Object.keys(SLOTS).find((n) => SLOTS[n] === name);
   check(nr, 'missing kernel slot');
-  const options = name === 'fstat' || name === 'pread64' ? ['-ffreestanding', '-fno-builtin', '-fno-stack-protector', '-O1', '-DTARGET=' + nr] : [];
-  await run(['clang', '--target=aarch64-none-elf', ...options, '-c', probeSource(name), '-o', obj]);
+  const options = source.endsWith('.c') ? ['-ffreestanding', '-fno-builtin', '-fno-stack-protector', '-O1', '-DTARGET=' + nr] : [];
+  await run(['clang', '--target=aarch64-none-elf', ...options, '-c', source, '-o', obj]);
   await run(['/opt/homebrew/bin/ld.lld', '-T', join(ASSETS, 'probe.ld'), obj, '-o', elf]);
   return elf;
 }
@@ -91,11 +97,13 @@ export function validateSource(name: string, source: string): void {
 interface MutationRejection {
   name: string;
   rejected: boolean;
-  reason: string;
+  reasons: Record<string, string>;
   source_sha256: string;
 }
 interface Acceptance {
   cases: Cases;
+  visible_pass: boolean;
+  heldout_pass: boolean | null;
   mutations: MutationRejection[];
   unchanged_integration: string;
   n: number;
@@ -106,13 +114,17 @@ interface Contract {
   name: string;
   [key: string]: unknown;
 }
-interface Manifest {
+export interface Manifest {
   version: number;
   contracts: Contract[];
   [key: string]: unknown;
 }
 
-export async function transaction(name: string, work: string, out: string, manifest: Manifest, samples: number, discovery: unknown, live = false, sqliteElf?: string, database?: string): Promise<unknown> {
+export async function transaction(name: string, work: string, out: string, manifest: Manifest, samples: number, discovery: unknown, live = false, sqliteElf?: string, database?: string, spec: SpecLevel = 'full', attempts = 3): Promise<TransactionReport> {
+  return await retryTransaction(name, work, out, manifest, live ? attempts : 1, (dest, history) => attempt(name, work, dest, manifest, samples, discovery, live, sqliteElf, database, spec, history));
+}
+
+async function attempt(name: string, work: string, out: string, manifest: Manifest, samples: number, discovery: unknown, live: boolean, sqliteElf: string | undefined, database: string | undefined, spec: SpecLevel, feedback: Feedback[]): Promise<TransactionReport> {
   const profile = PROFILES[name];
   const r = new Receipt(out);
   check(['semantic', 'error', 'state'].every((key) => profile.cases[key as keyof Cases].length > 0), 'independent cases required');
@@ -123,9 +135,24 @@ export async function transaction(name: string, work: string, out: string, manif
   const refs = await r.stage('linux_oracle', () => oracle(fixture, [name], join(out, 'oracle'), profile.expected, { injections, resources: tree }));
   const reference = refs[0];
   const native = tree ? undefined : linux(readFileSync(join(out, 'oracle/linux-00.strace'), 'utf8'), Buffer.from(reference.stdout_hex, 'hex'), Buffer.alloc(0), 0);
-  const value = await r.stage(live ? 'headless_cli' : 'recorded_proposal', () => proposal(name, work, out, discovery, live));
-  const source = validateProposal(name, value);
-  validateSource(name, source);
+  let hidden: { fixture: string; tree: string; reference: typeof reference } | undefined;
+  if (profile.heldout) {
+    const h = join(out, 'heldout');
+    mkdirSync(h);
+    check(!resolve(h).startsWith(resolve(work) + '/'), 'held-out probes must stay outside proposal repo');
+    const source = profile.heldout;
+    const fixture = await r.stage('assemble_heldout', () => probe(name, h, source));
+    const tree = resources(h, true);
+    const refs = await r.stage('heldout_linux_oracle', () => oracle(fixture, [name], join(h, 'oracle'), null, { resources: tree }));
+    dump(join(h, 'sealed.json'), { source_sha256: sha(source), elf_sha256: sha(fixture), resource_sha256: treeHashes(tree), reference_sha256: sha(join(h, 'oracle/linux-summary.json')) });
+    hidden = { fixture, tree, reference: refs[0] };
+  }
+  const value = await r.stage(live ? 'headless_cli' : 'recorded_proposal', () => proposal(name, work, out, discovery, live, spec, feedback));
+  const source = await r.stage('source_validation', async () => {
+    const source = validateProposal(name, value);
+    validateSource(name, source);
+    return source;
+  });
   const handler = join(work, 'src/syscalls', name + '.rs');
   check(!existsSync(handler) && !isSymlink(handler), 'handler already exists or is a symlink');
   writeFileSync(handler, source);
@@ -135,51 +162,67 @@ export async function transaction(name: string, work: string, out: string, manif
   }
   check(signalLines <= 350, 'signal handler line budget');
   dump(join(out, 'proposal.json'), { path: `src/syscalls/${name}.rs`, source, mode: live ? 'live' : 'replay' });
-  if (tree) {
-    const checks = await r.stage('independent_full_stat_and_state', () => run(['python3', join(work, 'tests/test_fs.py')]));
-    writeFileSync(join(out, 'host-handler-tests.log'), Buffer.concat([checks.stdout, checks.stderr]));
-  }
   const image = await r.stage('build_candidate', () => build(work, join(out, 'build'), fixture, [name], tree));
-  async function verify(image: string, dest: string): Promise<GuestInfo> {
+  async function verify(image: string, dest: string, expected: typeof reference, nativeExpected: typeof native | null): Promise<GuestInfo> {
     const result = await processGuest(hostCommand(image), dest);
     const observed = observe(result.raw);
     dump(dest + '.observations.json', observed);
     checkHost(result.info, result.err);
-    requireResult(observed, reference);
-    if (native !== undefined) {
-      compare(native, guest(result.raw));
+    requireResult(observed, expected);
+    if (nativeExpected !== undefined && nativeExpected !== null) {
+      compare(nativeExpected, guest(result.raw));
     }
     return result.info;
   }
   const times: number[] = [];
   for (let i = 0; i < samples; i += 1) {
-    const info = await r.stage('semantic_error_state_' + i, () => verify(image, join(out, `vm-${String(i).padStart(2, '0')}`)));
+    const info = await r.stage('semantic_error_state_' + i, () => verify(image, join(out, `vm-${String(i).padStart(2, '0')}`), reference, native));
     times.push(info.seconds * 1000);
   }
+  async function verifyHidden(label: string): Promise<GuestInfo> {
+    check(hidden, 'held-out fixture required');
+    const h = hidden;
+    const image = await r.stage('build_heldout_' + label, () => build(work, join(out, 'heldout', label), h.fixture, [name], h.tree));
+    return await r.stage('heldout_' + label, () => verify(image, join(out, 'heldout', 'vm-' + label), h.reference, null));
+  }
+  if (hidden) {
+    await verifyHidden('candidate');
+  }
+  if (tree) {
+    const checks = await r.stage('independent_full_stat_and_state', () => hostHandlerTests(work, out));
+    writeFileSync(join(out, 'host-handler-tests.log'), Buffer.concat([checks.stdout, checks.stderr]));
+  }
   const rejected: MutationRejection[] = [];
-  for (const label of Object.keys(mutations(name, source))) {
-    const broken = mutations(name, source)[label];
+  const variants = mutations(name, source);
+  for (const label of Object.keys(variants)) {
+    const broken = variants[label];
     check(broken !== source, 'mutation must alter source');
     try {
       writeFileSync(handler, broken);
-      // Compilation failure is outside the rejection catch and cannot count.
       const mutant = await r.stage('build_mutant_' + label, () => build(work, join(out, 'mutant-' + label), fixture, [name], tree));
-      let rejectedSemantically = false;
-      try {
-        await verify(mutant, join(out, 'mutation-' + label));
-      } catch (error) {
-        if (!(error instanceof GateError)) {
-          throw error;
+      const reasons: Record<string, string> = {};
+      for (const gate of hidden ? ['visible', 'heldout'] : ['visible']) {
+        const dest = gate === 'visible' ? join(out, 'mutation-' + label) : join(out, 'heldout', 'vm-' + label);
+        try {
+          if (gate === 'visible') {
+            await verify(mutant, dest, reference, native);
+          } else {
+            await verifyHidden(label);
+          }
+        } catch (error) {
+          if (!(error instanceof GateError)) {
+            throw error;
+          }
+          const observed = readJSON<Observations>(dest + '.observations.json');
+          const hostInfo = readJSON<GuestInfo>(dest + '.json');
+          checkHost(hostInfo, readFileSync(dest + '.stderr'));
+          check(!hostInfo.timeout && observed.trace_complete, 'crash/protocol failure is not semantic mutation evidence');
+          reasons[gate] = detail(error);
         }
-        const observed = readJSON<Observations>(join(out, 'mutation-' + label + '.observations.json'));
-        const hostInfo = readJSON<GuestInfo>(join(out, 'mutation-' + label + '.json'));
-        const hostStderr = readFileSync(join(out, 'mutation-' + label + '.stderr'));
-        checkHost(hostInfo, hostStderr);
-        check(!hostInfo.timeout && observed.trace_complete, 'crash/protocol failure is not semantic mutation evidence');
-        rejected.push({ name: label, rejected: true, reason: detail(error), source_sha256: sha(handler) });
-        rejectedSemantically = true;
       }
-      check(rejectedSemantically, 'mutation survived: ' + label);
+      check(Object.hasOwn(reasons, 'visible'), 'mutation survived visible probe: ' + label);
+      check(!hidden || Object.hasOwn(reasons, 'heldout'), 'mutation survived held-out probe: ' + label);
+      rejected.push({ name: label, rejected: true, reasons, source_sha256: sha(handler) });
     } finally {
       writeFileSync(handler, source);
     }
@@ -206,7 +249,7 @@ export async function transaction(name: string, work: string, out: string, manif
   }
   manifest.version += 1;
   manifest.contracts = manifest.contracts.filter((contract) => contract.name !== name);
-  const evidence: Acceptance = { cases: profile.cases, mutations: rejected, unchanged_integration: app.status, n: samples, pass: samples, repeat_counts_are_not_acceptance: true };
+  const evidence: Acceptance = { cases: profile.cases, visible_pass: true, heldout_pass: hidden ? true : null, mutations: rejected, unchanged_integration: app.status, n: samples, pass: samples, repeat_counts_are_not_acceptance: true };
   manifest.contracts.push({ nr: profile.nr, name, source_sha256: sha(handler), status: injections.length ? 'profile-enosys' : 'restricted', oracle: 'native Linux' + (injections.length ? ' with explicit ENOSYS injection' : ''), full_linux_abi_equivalence: false, gate: evidence });
   dump(join(out, 'acceptance.json'), evidence);
   dump(join(work, 'syscalls.manifest.json'), manifest);
@@ -250,6 +293,8 @@ export async function installationPatch(base: string, updated: string, names: st
 export interface Arguments {
   runId: string;
   samples: number;
+  spec: SpecLevel;
+  attempts: number;
   target: string[];
   sqliteElf?: string;
   database?: string;
@@ -258,7 +303,7 @@ export interface Arguments {
 }
 
 export function parseArgs(argv: string[]): Arguments {
-  const result: Arguments = { runId: '', samples: 30, target: [], validateOnly: false, live: false };
+  const result: Arguments = { runId: '', samples: 30, spec: 'full', attempts: 3, target: [], validateOnly: false, live: false };
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i];
     if (flag === '--validate-only') {
@@ -268,13 +313,19 @@ export function parseArgs(argv: string[]): Arguments {
     } else if (flag === '--fast') {
       // Retained for compatibility with the Python demo; no artificial pauses.
     } else {
-      check(['--run-id', '--samples', '--target', '--sqlite-elf', '--database'].includes(flag), 'unknown argument: ' + flag);
+      check(['--run-id', '--samples', '--target', '--sqlite-elf', '--database', '--spec', '--attempts'].includes(flag), 'unknown argument: ' + flag);
       check(i + 1 < argv.length, 'missing argument: ' + flag);
       const value = argv[++i];
       if (flag === '--run-id') {
         result.runId = value;
       } else if (flag === '--samples') {
         result.samples = Number(value);
+      } else if (flag === '--spec') {
+        check(['full', 'terse', 'none'].includes(value), 'invalid spec');
+        result.spec = value as SpecLevel;
+      } else if (flag === '--attempts') {
+        result.attempts = Number(value);
+        check([1, 2, 3].includes(result.attempts), 'attempts must be 1..3');
       } else if (flag === '--target') {
         check(Object.hasOwn(PROFILES, value), 'unsupported target: ' + value);
         result.target.push(value);
@@ -297,6 +348,7 @@ export async function execute(args: Arguments, temporary: string): Promise<void>
   const out = r.path;
   const work = join(temporary, 'kernel');
   const copied = await r.stage('copy_kernel', async () => copyKernel(work));
+  rmSync(join(work, 'tests'), { recursive: true, force: true });
   selectHost();
   selectGate();
   const hostHash = sha(host());
@@ -327,7 +379,7 @@ export async function execute(args: Arguments, temporary: string): Promise<void>
       check(discovered.nr === PROFILES[name].nr, 'unexpected discovered target');
       request = discovered;
     }
-    transactions.push(await transaction(name, work, join(out, 'tx-' + name), manifest, args.samples, request, args.live, args.sqliteElf, args.database));
+    transactions.push(await transaction(name, work, join(out, 'tx-' + name), manifest, args.samples, request, args.live, args.sqliteElf, args.database, args.spec, args.attempts));
   }
   const names = [...targets.map((name) => `src/syscalls/${name}.rs`), 'syscalls.manifest.json'];
   writeFileSync(join(out, 'owner.patch'), await installationPatch(copied.source, work, names));
@@ -351,7 +403,7 @@ export async function execute(args: Arguments, temporary: string): Promise<void>
 
 export async function main(argv: string[]): Promise<void> {
   if (argv.includes('--help')) {
-    console.log('grow --run-id ID --validate-only [--live] [--target NAME ...] [--samples N] [--sqlite-elf PATH --database PATH] [--fast]');
+    console.log('grow --run-id ID --validate-only [--live] [--target NAME ...] [--samples N] [--spec full|terse|none] [--attempts 1|2|3] [--sqlite-elf PATH --database PATH] [--fast]');
     return;
   }
   const args = parseArgs(argv);

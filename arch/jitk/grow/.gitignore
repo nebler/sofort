@@ -17,3 +17,5 @@ __pycache__/
 /results/split-*/
 /experiments/e[01]-*.log
 /experiments/E1*-driver*.log
+# All new transaction directories and logs are local. Existing history stays tracked.
+/results/*/

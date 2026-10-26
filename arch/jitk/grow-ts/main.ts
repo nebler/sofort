@@ -1,4 +1,4 @@
-import { detail } from './io.ts';
+import { detail } from './lib.ts';
 import { main } from './loop.ts';
 
 main(process.argv.slice(2)).catch((error: unknown) => {

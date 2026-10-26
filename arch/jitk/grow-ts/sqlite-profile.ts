@@ -1,6 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { check, dump, readJSON } from './io.ts';
+import { check, dump, readJSON } from './lib.ts';
 import { ASSETS, build, checkHost, hostCommand, processGuest, sha } from './runtime.ts';
 import { observe, outcome, requireResult, type Observations } from './observations.ts';
 import { type Oracle } from './oracle.ts';

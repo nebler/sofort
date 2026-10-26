@@ -1,4 +1,4 @@
-import { check, equal, hexBytes, numeric, parseJSON, signed, stringify } from './io.ts';
+import { check, equal, hexBytes, numeric, parseJSON, signed, stringify } from './lib.ts';
 import { type Outcome, type TraceRecord, type SyscallRecord, entry } from './observations.ts';
 import { splitArgs } from './normalize.ts';
 

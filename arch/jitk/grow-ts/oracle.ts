@@ -1,6 +1,6 @@
 import { mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { dump, readJSON } from './io.ts';
+import { dump, readJSON } from './lib.ts';
 import { ASSETS, capture, run } from './runtime.ts';
 import { type Outcome } from './observations.ts';
 

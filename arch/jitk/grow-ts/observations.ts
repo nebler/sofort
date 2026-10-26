@@ -1,4 +1,4 @@
-import { check, detail, equal, hexBytes, parseJSON, stringify, type Register } from './io.ts';
+import { check, detail, equal, hexBytes, parseJSON, stringify, type Register } from './lib.ts';
 
 export interface TraceRecord {
   [key: string]: unknown;

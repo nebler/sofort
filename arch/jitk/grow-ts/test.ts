@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify } from './io.ts';
+import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify } from './lib.ts';
 import { ASSETS, CANONICAL, SAFE_ENV, build, capture, cleanup, copyKernel, killChild, run, scratch, treeHashes } from './runtime.ts';
 import { compare, guest, linux, type Differential } from './adapters.ts';
 import { discover, installationPatch, parseArgs, validateSource } from './loop.ts';
-import { proposal, validateProposal } from './agent.ts';
+import { hostHandlerTests } from './host-tests.ts';
+import { feedback, retryTransaction } from './retries.ts';
+import { proposal, specification, auditResponse, validateProposal } from './agent.ts';
 import { observe, records, requireResult, type TraceRecord } from './observations.ts';
 import { PROFILES, mutations } from './profiles.ts';
 import { normalize } from './normalize.ts';
@@ -223,13 +225,30 @@ async function liveFixture(path: string, mode: string): Promise<void> {
   const auth = join(path, 'original-auth');
   mkdirSync(auth);
   writeFileSync(join(auth, 'auth.json'), '{"fixture":"private-test-value"}');
+  writeFileSync(join(auth, '.credentials.json'), '{"fixture":"private-test-value"}');
   const oldAuth = process.env.CODEX_HOME;
   const oldCli = process.env.JITK_GROW_CLI;
+  const oldClaude = process.env.CLAUDE_CONFIG_DIR;
   process.env.CODEX_HOME = auth;
   process.env.JITK_GROW_CLI = resolve(String(process.argv[1]));
+  if (mode === 'claude') {
+    const cli = join(path, 'claude-fixture');
+    symlinkSync(resolve(String(process.argv[1])), cli);
+    process.env.JITK_GROW_CLI = cli;
+    process.env.CLAUDE_CONFIG_DIR = auth;
+  }
   try {
-    if (mode === 'success') {
-      validateProposal('rt_sigaction', await proposal('rt_sigaction', work, out, {}, true));
+    if (mode === 'success' || mode === 'claude') {
+      validateProposal('rt_sigaction', await proposal('rt_sigaction', work, out, {}, true, 'none'));
+      const prompt = readFileSync(join(out, 'agent-prompt.txt'), 'utf8');
+      assert.match(prompt, /Syscall: rt_sigaction/);
+      assert.ok(!prompt.includes('always return -38'));
+      assert.ok(!prompt.includes(readFileSync(join(ASSETS, 'heldout-probe.c'), 'utf8')));
+    } else if (mode === 'timeout') {
+      process.env.JITK_GROW_CLI_TIMEOUT = '0.1';
+      await assert.rejects(() => proposal('rt_sigaction', work, out, {}, true), /timeout/);
+      delete process.env.JITK_GROW_CLI_TIMEOUT;
+      assert.match(readFileSync(join(out, 'agent.log'), 'utf8'), /partial progress/);
     } else {
       await assert.rejects(() => proposal('rt_sigaction', work, out, {}, true), mode === 'failure' ? /CLI failed/ : /mutated source/);
       if (mode === 'failure') {
@@ -240,6 +259,11 @@ async function liveFixture(path: string, mode: string): Promise<void> {
     const privatePath = readFileSync(join(out, 'private-path.txt'), 'utf8');
     assert.ok(!existsSync(privatePath));
   } finally {
+    if (oldClaude === undefined) {
+      delete process.env.CLAUDE_CONFIG_DIR;
+    } else {
+      process.env.CLAUDE_CONFIG_DIR = oldClaude;
+    }
     if (oldAuth === undefined) {
       delete process.env.CODEX_HOME;
     } else {
@@ -309,7 +333,7 @@ test('CLI validates targets, samples and pinned integration arguments', async ()
   }
 });
 
-function fakeCli(): void {
+async function fakeCli(): Promise<void> {
   const args = process.argv.slice(2);
   for (const flag of ['--ephemeral', '--ignore-user-config', '--skip-git-repo-check', '--output-schema']) {
     check(args.includes(flag), flag);
@@ -326,6 +350,10 @@ function fakeCli(): void {
   writeFileSync(join(out, 'private-path.txt'), privatePath);
   const schema = readJSON<{ additionalProperties: boolean; properties: { path: { enum: string[] } } }>(args[args.indexOf('--output-schema') + 1]);
   check(schema.additionalProperties === false && equal(schema.properties.path.enum, ['src/syscalls/rt_sigaction.rs']), 'schema');
+  if (out.endsWith('/timeout')) {
+    console.log('partial progress');
+    await new Promise<void>((done) => setTimeout(done, 30000));
+  }
   if (out.endsWith('/failure')) {
     console.error('CLI failed');
     process.exitCode = 17;
@@ -337,9 +365,115 @@ function fakeCli(): void {
   }
 }
 
+
+test('E1 spec ablation retains only the selected public specification', async () => {
+  assert.equal(specification('ppoll', 'none'), 'Syscall: ppoll.');
+  assert.equal(specification('fstat', 'terse'), 'Implement fstat for immutable archive files and console descriptors.');
+  assert.match(specification('pread64'), /Negative signed offset/);
+  assert.equal(parseArgs(['--run-id', 'e1', '--spec', 'none', '--attempts', '2']).attempts, 2);
+  assert.throws(() => parseArgs(['--run-id', 'e1', '--spec', 'secret']));
+  assert.throws(() => parseArgs(['--run-id', 'e1', '--attempts', '4']));
+});
+test('held-out gates sanitize diagnostics and mutants ignore candidate formatting', async () => {
+  for (const gate of ['assemble_heldout', 'heldout_candidate', 'build_heldout_candidate', 'independent_full_stat_and_state', 'mutation_gate', 'unchanged_sqlite']) {
+    assert.ok(!JSON.stringify(feedback(gate, new Error('SECRET'))).includes('SECRET'));
+  }
+  for (const name of ['ppoll', 'fstat', 'pread64']) {
+    assert.ok(PROFILES[name].visible === (name === 'ppoll' ? join(CANONICAL, 'tests/fixtures/grow/ppoll.S') : join(ASSETS, 'fs-probe.c')));
+    assert.ok(PROFILES[name].heldout === join(ASSETS, 'heldout-probe.c'));
+  }
+  assert.ok(equal(mutations('pread64', 'arbitrary formatting'), mutations('pread64', 'another formatting')));
+});
+test('retry restores state, retains diagnostics and only supplies public feedback', async () => {
+  await temporary(async (path) => {
+    const work = join(path, 'work');
+    mkdirSync(join(work, 'src/syscalls'), { recursive: true });
+    const manifest = { version: 0 };
+    const out = join(path, 'out');
+    const report = await retryTransaction('ppoll', work, out, manifest, 3, async (dest, history) => {
+      mkdirSync(dest);
+      if (!history.length) {
+        dump(join(dest, 'stages.json'), { heldout_candidate: { passed: false } });
+        dump(join(dest, 'proposal.json'), { source: 'previous public candidate' });
+        manifest.version = 999;
+        writeFileSync(join(work, 'src/syscalls/ppoll.rs'), 'candidate');
+        throw new Error('SECRET_TEST_INPUT');
+      }
+      assert.equal(manifest.version, 0);
+      assert.ok(!existsSync(join(work, 'src/syscalls/ppoll.rs')));
+      assert.ok(!JSON.stringify(history).includes('SECRET'));
+      assert.match(JSON.stringify(history), /previous public candidate/);
+      return { name: 'ppoll', gate: 'PASS' };
+    });
+    assert.ok(report.accepted === true && report.acceptance_at_1 === false);
+    assert.match(readFileSync(join(out, 'attempt-1/rejection.json'), 'utf8'), /SECRET_TEST/);
+  });
+});
+test('three rejecting attempts persist and quota pauses immediately', async () => {
+  await temporary(async (path) => {
+    const work = join(path, 'work');
+    mkdirSync(join(work, 'src/syscalls'), { recursive: true });
+    for (const quota of [false, true]) {
+      const out = join(path, quota ? 'quota' : 'three');
+      let calls = 0;
+      await assert.rejects(() => retryTransaction('ppoll', work, out, {}, 3, async (dest) => {
+        calls += 1;
+        mkdirSync(dest);
+        dump(join(dest, 'stages.json'), { heldout_candidate: { passed: false } });
+        if (quota) {
+          writeFileSync(join(dest, 'agent.log'), 'rate limit');
+        }
+        throw new Error('SECRET');
+      }));
+      assert.equal(calls, quota ? 1 : 3);
+      assert.ok(!readFileSync(join(out, 'report.json'), 'utf8').includes('SECRET'));
+      assert.equal(existsSync(join(out, 'paused.json')), quota);
+    }
+  });
+});
+test('CLI usage is retained and tool events or bad Claude envelopes fail closed', async () => {
+  await temporary(async (path) => {
+    auditResponse('{"type":"turn.completed","usage":{"input_tokens":12}}\n', false, path);
+    assert.match(readFileSync(join(path, 'agent-usage.json'), 'utf8'), /12/);
+    assert.throws(() => auditResponse('{"item":{"type":"command_execution"}}', false, path));
+    auditResponse('{"is_error":false,"structured_output":{"path":"p","source":"s"},"usage":{"output_tokens":9}}', true, path);
+    assert.equal(readJSON<{ source: string }>(join(path, 'agent.json')).source, 's');
+    assert.throws(() => auditResponse('{"is_error":true}', true, path));
+    assert.throws(() => auditResponse('{"structured_output":{},"content":[{"type":"tool_use"}]}', true, path));
+  });
+});
+test('Claude adapter isolates flags, credentials and structured output', async () => temporary((path) => liveFixture(path, 'claude')));
+test('CLI timeout retains partial output and removes private auth', async () => temporary((path) => liveFixture(path, 'timeout')));
+test('host harness accepts super imports without proposal-visible tests', async () => {
+  await temporary(async (path) => {
+    const work = join(path, 'kernel');
+    const out = join(path, 'receipt');
+    mkdirSync(out);
+    copyKernel(work);
+    rmSync(join(work, 'tests'), { recursive: true });
+    const handler = join(work, 'src/syscalls/pread64.rs');
+    writeFileSync(handler, readFileSync(handler, 'utf8').replace('use crate::{fs, syscalls::copyout};', 'use crate::fs; use super::{copyout,writable};'));
+    assert.equal((await hostHandlerTests(work, out)).returncode, 0);
+    assert.ok(!existsSync(join(work, 'tests')));
+  });
+});
+
 async function main(): Promise<void> {
+  if (process.argv[2] === '--print') {
+    const args = process.argv.slice(2);
+    for (const flag of ['--safe-mode', '--restricted', '--no-session-persistence', '--strict-mcp-config']) {
+      check(args.includes(flag), flag);
+    }
+    check(args[args.indexOf('--tools') + 1] === '', 'tools disabled');
+    check(!args.includes('exec') && !args.includes('--sandbox'), 'Claude own flags');
+    const privatePath = String(process.env.CLAUDE_CONFIG_DIR);
+    check(existsSync(join(privatePath, '.credentials.json')) && !existsSync(join(privatePath, 'auth.json')), 'Claude own auth');
+    writeFileSync(join(dirname(process.cwd()), 'claude/private-path.txt'), privatePath);
+    console.log(JSON.stringify({ is_error: false, structured_output: { path: 'src/syscalls/rt_sigaction.rs', source: 'pub fn call(_: &[usize]) -> isize { -38 }' }, usage: { output_tokens: 7 } }));
+    return;
+  }
   if (process.argv[2] === 'exec') {
-    fakeCli();
+    await fakeCli();
     return;
   }
   let passed = 0;

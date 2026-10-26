@@ -1,6 +1,8 @@
 import { chmodSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { check } from './io.ts';
+import { readFileSync } from 'node:fs';
+import { ASSETS, CANONICAL, probeSource } from './runtime.ts';
+import { check } from './lib.ts';
 
 export interface Cases {
   semantic: string[];
@@ -9,6 +11,8 @@ export interface Cases {
 }
 export interface Profile {
   nr: number;
+  visible?: string;
+  heldout?: string;
   expected: Buffer | null;
   cases: Cases;
   mutations?: Record<string, string>;
@@ -36,10 +40,16 @@ export const PROFILES: Record<string, Profile> = {
   },
 };
 
+for (const name of Object.keys(PROFILES)) {
+  PROFILES[name].visible = probeSource(name);
+  PROFILES[name].heldout = ['ppoll', 'fstat', 'pread64'].includes(name) ? join(ASSETS, 'heldout-probe.c') : undefined;
+}
+
 export function mutations(name: string, source: string): Record<string, string> {
   if (name !== 'fstat' && name !== 'pread64') {
     return PROFILES[name].mutations!;
   }
+  source = readFileSync(join(CANONICAL, `src/syscalls/${name}.rs`), 'utf8');
   if (name === 'fstat') {
     return {
       'wrong-size': 'use crate::{fs, syscalls::copyout};\npub fn call(a: &[usize]) -> isize {\n' +
@@ -61,10 +71,10 @@ export function mutations(name: string, source: string): Record<string, string> 
   };
 }
 
-export function resources(out: string): string {
+export function resources(out: string, heldout = false): string {
   const root = join(out, 'resources');
   mkdirSync(root);
-  const bytes = Buffer.alloc(9000);
+  const bytes = Buffer.alloc(heldout ? 10241 : 9000);
   for (let i = 0; i < bytes.length; i += 1) {
     bytes[i] = (i * 7 + Math.floor(i / 251)) & 255;
   }

@@ -1,4 +1,4 @@
-import { check } from './io.ts';
+import { check } from './lib.ts';
 
 export function splitArgs(text: string): string[] {
   const out: string[] = [];
