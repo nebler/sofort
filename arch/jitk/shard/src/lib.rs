@@ -4,6 +4,8 @@
 #![deny(clippy::undocumented_unsafe_blocks)]
 
 pub mod arena;
+#[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+pub mod clock;
 pub mod constants;
 pub mod entropy;
 pub mod inputs;

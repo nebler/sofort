@@ -1,4 +1,5 @@
 pub mod native;
+pub use crate::clock::{clock_ns, monotonic_ns};
 use crate::snapshot::Register;
 pub use crate::snapshot::Snapshot;
 use crate::{
@@ -551,22 +552,6 @@ impl Drop for Slot {
     fn drop(&mut self) {
         let _ = self.shutdown();
     }
-}
-
-pub fn clock_ns(clock: libc::clockid_t) -> u64 {
-    let mut t = libc::timespec {
-        tv_sec: 0,
-        tv_nsec: 0,
-    };
-    // SAFETY: t is a live writable timespec; clock is a named host clock ID.
-    check(
-        unsafe { libc::clock_gettime(clock, &mut t) },
-        "clock_gettime",
-    );
-    t.tv_sec as u64 * 1_000_000_000 + t.tv_nsec as u64
-}
-pub fn monotonic_ns() -> u64 {
-    clock_ns(libc::CLOCK_MONOTONIC)
 }
 
 #[cfg(test)]

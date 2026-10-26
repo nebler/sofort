@@ -1,6 +1,6 @@
 //! A separate process owns deadline enforcement. Shared entries are generation-fenced;
 //! only a stopped/reset owner acknowledges expiry. No guest mapping includes this board.
-use crate::kvm::monotonic_ns;
+use crate::clock::monotonic_ns;
 use std::{
     cell::Cell,
     fs::File,
