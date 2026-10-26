@@ -19,6 +19,7 @@ $(SCRIPTC): package.json package-lock.json
 	npm ci --no-audit --no-fund
 build: build/mac/shard-tools
 build-linux: build/linux/shard-tools
+	$(MAKE) -C ../kernel .work/linux/prepare .work/linux/build-args
 build/mac/shard-tools: $(SOURCES) $(SCRIPTC)
 	mkdir -p $(@D)
 	$(SCRIPTC) build main.ts -o $@
