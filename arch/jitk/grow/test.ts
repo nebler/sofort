@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify, csvDecode, csvEncode, sha } from './lib.ts';
 import { ASSETS, CANONICAL, ROOT, SAFE_ENV, build, capture, cleanup, copyKernel, killChild, run, scratch, treeHashes } from './runtime.ts';
@@ -41,6 +41,17 @@ test('probe lint permits ABI limits, layout indexing, comments and canonical han
   assert.equal(lintProbeConstants('pread64', 'let count = a[2]; if count > 0x7ffff000 { return -14; }').length, 0);
   for (const name of ['ppoll', 'fstat', 'pread64']) assert.ok(lintProbeConstants(name, readFileSync(join(CANONICAL, 'src/syscalls/' + name + '.rs'), 'utf8')).length === 0);
   assert.throws(() => rustTokens('/* unclosed'), /unterminated/);
+});
+
+test('E2 overfit controls evade the lint and narrow one canonical handler each', async () => {
+  const controls = readdirSync(join(ASSETS, 'e2-controls')).sort();
+  assert.deepEqual(controls, ['fstat-constant-size.rs', 'ppoll-narrow-nfds.rs', 'pread64-constant-length.rs']);
+  for (const file of controls) {
+    const name = file.split('-')[0];
+    const source = readFileSync(join(ASSETS, 'e2-controls', file), 'utf8');
+    assert.equal(lintProbeConstants(name, source).length, 0, file);
+    assert.notEqual(source, readFileSync(join(CANONICAL, 'src/syscalls/' + name + '.rs'), 'utf8'));
+  }
 });
 
 test('autoprofile parses nested trace shapes and ignores incomplete calls', async () => {
