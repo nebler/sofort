@@ -1,0 +1,41 @@
+jitk: delegating mcp/test (see /Users/noah/.t3/worktrees/sofort/t3-1246344a/arch/jitk/mcp/README.md)
+"/tmp/jitk-09/node-real" native-test.mjs
+native MCP framing/validation: 13 cases passed
+"/tmp/jitk-09/node-real" test.mjs
+jitk-mcp: integrated jitk / confined VMM / current kernel; warm=2
+ok - execute return 1+1 == 2
+ok - guest->host tool round-trip
+ok - kv set/get round-trip
+ok - Promise.all over 10 tool calls
+ok - timeout -> TIMEOUT
+ok - schema denial -> POLICY
+ok - taint rule (private read then write, no approver) -> POLICY
+ok - guest throw -> GUEST_ERROR
+ok - text content mirrors structuredContent
+ok - native run without Linux profiles returns UNSUPPORTED
+ok - resources/list
+ok - resources/read
+ok - resource path traversal rejected
+ok - invalid params rejected as JSON-RPC errors
+ok - server alive after rejected requests
+ok - tools/list describes guest tools
+ok - client close -> server exits
+ok - stdio close: no VMM/watchdog left (5 pids checked)
+jitk-mcp: integrated jitk / confined VMM / current kernel; warm=2
+jitk-mcp: Unexpected token 'h', "this is not json" is not valid JSON
+jitk-mcp: Unexpected end of JSON input
+jitk-mcp: Unexpected end of JSON input
+ok - initialize after garbage
+jitk-mcp: [ { "code": "invalid_union", "errors": [ [ { "expected": "object", "code": "invalid_type", "path": [], "message": "Invalid input: expected object, received array" } ], [ { "expected": "object", "code"
+ok - malformed requests answered with JSON-RPC errors
+ok - execute after malformed input
+ok - stdin EOF -> exit 0
+ok - stdin EOF: no VMM/watchdog left (3 pids checked)
+jitk-mcp: integrated jitk / confined VMM / current kernel; warm=2
+jitk-mcp: http://127.0.0.1:59600/mcp
+ok - streamable HTTP execute
+jitk-mcp: Invalid Host header: evil.example
+ok - HTTP rejects foreign Host (DNS rebinding)
+ok - SIGTERM -> exit 0
+ok - SIGTERM: no VMM/watchdog left (3 pids checked)
+mcp: 27 checks passed

@@ -1,0 +1,18 @@
+{
+  "removed": [
+    "/home/dev/r8-helpers/helper-kernel-target",
+    "/home/dev/r8-helpers/arch/jitk/shard/target",
+    "/home/dev/r8-helpers/arch/jitk/executor/build",
+    "/home/dev/r8-helpers/baseline",
+    "/home/dev/r8-helpers/test-52faae109d34",
+    "/home/dev/r8-helpers/helpers.identity",
+    "/home/dev/r8-helpers/helpers.bin",
+    "/home/dev/r8-helpers/helpers.mem",
+    "/home/dev/r8-helpers/helpers.layout",
+    "/home/dev/r8-helpers/helpers.bootstrap.js",
+    "/home/dev/r8-helpers/helpers.regs",
+    "/home/dev/r8-helpers/prepared.regs",
+    "/home/dev/r8-helpers/prepared.mem",
+    "/home/dev/r8-helpers/prepared.layout"
+  ]
+}

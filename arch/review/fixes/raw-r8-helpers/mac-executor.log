@@ -1,0 +1,207 @@
+jitk: delegating executor/test (see /Users/noah/.t3/worktrees/sofort/t3-1246344a/arch/jitk/executor/README.md)
+./run.sh test
+{"suite":"prepared","status":"PASS","checks":14,"sourceBytes":250,"legacyBodyBytes":2340,"helperHash":"8a0593880c660a44fe8cadd8d5c78f6bff2f390ef07c8cdff1665980b4077e87"}
+{
+  "loadBefore": "6:04  up 2 days,  8:18, 1 user, load averages: 6.52 6.96 6.24",
+  "loadAfter": "6:04  up 2 days,  8:18, 1 user, load averages: 6.52 6.96 6.24",
+  "rows": [
+    {
+      "name": "G1 denies missing / >=2% idle evidence",
+      "ok": true
+    },
+    {
+      "name": "capacity held until reap",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 1,
+        "maxCreating": 1,
+        "closed": true
+      }
+    },
+    {
+      "name": "single-use / refill concurrency=2 / close reaps all",
+      "ok": true,
+      "maxStarts": 2,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 4,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "close aborts in-flight launches",
+      "ok": true,
+      "snapshot": {
+        "tokens": 0,
+        "creating": 0,
+        "parked": 0,
+        "live": 0,
+        "maxTokens": 2,
+        "maxCreating": 2,
+        "closed": true
+      }
+    },
+    {
+      "name": "ceil(lambda * refill_p99) + burst, capped",
+      "ok": true
+    }
+  ]
+}
+PASS resolve before kill/reap; VMM AND watchdog hold token
+PASS host-only ack AND ready, fragmented ack, missing/guest-forged ack rejected
+{
+  loadBefore: '6:04  up 2 days,  8:18, 1 user, load averages: 6.96 7.04 6.28',
+  loadAfter: '6:04  up 2 days,  8:18, 1 user, load averages: 6.96 7.04 6.28',
+  rows: [
+    { mode: 'badready', result: [Object], effects: 0, policies: 0 },
+    { mode: 'del', result: [Object], effects: 0, policies: 0 },
+    { mode: 'trailing', result: [Object], effects: 0, policies: 0 },
+    { mode: 'duplicate', result: [Object], effects: 0, policies: 0 },
+    { mode: 'unknown', result: [Object], effects: 0, policies: 0 },
+    { mode: 'replay', result: [Object], effects: 1, policies: 1 }
+  ]
+}
+{
+  receipt: {
+    pid: 56157,
+    timeout: true,
+    deadline: 1792991087687,
+    firedAt: 1792991087688.235,
+    killAt: 1792991087688.245
+  },
+  killOvershootMs: 1.2451171875,
+  loadBefore: '6:04  up 2 days,  8:18, 1 user, load averages: 6.96 7.04 6.28',
+  loadAfter: '6:04  up 2 days,  8:18, 1 user, load averages: 6.96 7.04 6.28',
+  watchdogDeadlineMs: 250,
+  hostEventLoopBlockedMs: 1500,
+  observedReapAfterHostUnblockMs: 1507.130625,
+  reaped: true
+}
+integrated jitk / confined VMM / current kernel
+PASS exact requested demo
+PASS binary codec roundtrip
+PASS async fanout and UTF8
+PASS capture console + provider prelude closure
+PASS deny has no side effect
+PASS approval is fail closed
+PASS approved call executes once
+PASS provenance accumulates across calls
+PASS CPU infinite loop SIGKILL
+PASS AbortSignal kills awaiting guest
+PASS tool that never settles cannot defeat deadline
+PASS fresh process per execute
+PASS unknown inherited method denied
+PASS sanitized names and collisions
+PASS generated types + host validation
+PASS TanStack driver on actual stripped body
+PASS TanStack memory mismatch fails explicitly
+PASS TanStack createCodeModeTool integration
+PASS bounded log capture (v1 truncates/drops)
+PASS warm pool capacity and single use
+20 checks passed
+PASS Cloudflare wrapper github
+PASS Cloudflare wrapper binary
+{
+  "selection": "integrated jitk / confined VMM / current kernel",
+  "loadBefore": "6:04  up 2 days,  8:18, 1 user, load averages: 6.96 7.04 6.28",
+  "loadAfter": "6:04  up 2 days,  8:18, 1 user, load averages: 6.96 7.04 6.28",
+  "pool": {
+    "tokens": 0,
+    "creating": 0,
+    "parked": 0,
+    "live": 0,
+    "maxTokens": 2,
+    "maxCreating": 1,
+    "closed": true
+  },
+  "rows": [
+    {
+      "name": "64 calls admitted before any reply; reverse completion order",
+      "n": 30,
+      "calls": 1920,
+      "maxOutstanding": 64,
+      "executeMs": {
+        "median": 8.158375000000035,
+        "p90": 10.542834,
+        "p99": 13.451292000000002
+      },
+      "samples": [
+        13.451292000000002,
+        10.542834,
+        9.620624999999997,
+        10.566958,
+        9.598875000000007,
+        9.509041999999994,
+        12.191915999999992,
+        8.326417000000006,
+        8.523291999999998,
+        8.375166000000007,
+        8.307083000000006,
+        7.847749999999991,
+        7.693250000000006,
+        8.035124999999994,
+        7.755875000000003,
+        8.01320800000002,
+        9.71908400000001,
+        8.998999999999995,
+        7.850416999999993,
+        8.128457999999995,
+        8.583957999999996,
+        8.3065,
+        7.8614579999999705,
+        7.69562499999995,
+        7.471667000000025,
+        7.449041999999963,
+        7.476832999999999,
+        8.158375000000035,
+        7.366624999999999,
+        7.757624999999962
+      ]
+    },
+    {
+      "name": "undefined final becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "undefined tool becomes null",
+      "result": {
+        "result": null,
+        "logs": []
+      }
+    },
+    {
+      "name": "variadic args preserved",
+      "result": {
+        "result": [
+          1,
+          "two",
+          {
+            "three": 3
+          }
+        ],
+        "logs": []
+      }
+    },
+    {
+      "name": "caught tool error continues",
+      "result": {
+        "result": "Error: expected failure",
+        "logs": []
+      }
+    }
+  ]
+}
+22 policy assertions passed
+22 executor policy assertions passed (plus 22 security owner assertions)
+6/6 Hyperlight through canonical executor; kind hyperlight-js
