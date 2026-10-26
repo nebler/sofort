@@ -153,7 +153,7 @@ export function summarize(directory: string): void {
           const generation = calls * 100 + num(r, "round") + 1;
           const delays: number[] = [];
           for (let i = 0; i < calls; i++) {
-            delays.push(Number(mix(BigInt(i ^ generation)) % 100000000n));
+            delays.push(Number(mix(BigInt(i) ^ BigInt(generation)) % 100000000n));
           }
           row.planned_max_delay_ms = Math.max(...delays) / 1e6;
           row.planned_sum_delay_ms = delays.reduce((a, b) => a + b, 0) / 1e6;

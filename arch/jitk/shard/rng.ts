@@ -9,11 +9,15 @@ interface Summary {
   n: number;
   fresh_entropy_count: number;
   math_random_distinct: number;
-  libc_random_distinct: number;
+  libc_random_distinct?: number;
 }
 export function checkRng(path: string): void {
-  const samples = read(path).split("\n")
-    .filter((s) => s.length > 0 && (JSON.parse(s) as {event: string}).event === "sample")
+  const samples = read(path)
+    .split("\n")
+    .filter(
+      (s) =>
+        s.length > 0 && (JSON.parse(s) as { event: string }).event === "sample",
+    )
     .map((s) => JSON.parse(s) as Sample);
   const summaryText = read(path)
     .split("\n")
@@ -28,7 +32,9 @@ export function checkRng(path: string): void {
   const summary = JSON.parse(summaryText) as Summary;
   const canary = summary.fixture === "canary";
   const values = samples.map((r) =>
-    canary ? Number((r.result.ok as (number | string)[])[2]) : Number(r.result.ok),
+    canary
+      ? Number((r.result.ok as (number | string)[])[2])
+      : Number(r.result.ok),
   );
   const n = values.length;
   const ordered = values.slice().sort((a, b) => a - b);
@@ -75,14 +81,15 @@ export function checkRng(path: string): void {
       ["generations_distinct", "0"],
     ]) {
       checks[pair[0]] =
-        new Set(samples.map((r) => {
-          const value = (r.result.ok as (number | string)[])[Number(pair[1])];
-          if (value === undefined) {
-            throw new Error("short canary result");
-          }
-          return JSON.stringify(value);
-        }))
-          .size === n;
+        new Set(
+          samples.map((r) => {
+            const value = (r.result.ok as (number | string)[])[Number(pair[1])];
+            if (value === undefined) {
+              throw new Error("short canary result");
+            }
+            return JSON.stringify(value);
+          }),
+        ).size === n;
     }
     checks.libc_summary = summary.libc_random_distinct === n;
   }

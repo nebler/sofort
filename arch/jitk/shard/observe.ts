@@ -20,10 +20,10 @@ import {
 
 interface Event {
   event: string;
-  pid: number;
-  threads: number;
-  lost: number;
-  deadline_ns: number;
+  pid?: number;
+  threads?: number;
+  lost?: number;
+  deadline_ns?: number;
   [key: string]: unknown;
 }
 
@@ -177,6 +177,11 @@ export async function ledger(native: boolean): Promise<void> {
       }
       try {
         await p.wait(15);
+      } catch {
+        const killFile = join(batch, "cgroup.kill");
+        if (existsSync(killFile)) {
+          writeFileSync(killFile, "1");
+        }
       } finally {
         await p.cleanup();
         writeFileSync(stem + ".stderr", Buffer.concat(p.stderr));

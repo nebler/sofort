@@ -22,9 +22,9 @@ import {
 } from "./lib.ts";
 interface Event {
   event: string;
-  pid: number;
-  n: number;
-  lost: number;
+  pid?: number;
+  n?: number;
+  lost?: number;
   [key: string]: unknown;
 }
 export async function waitDeadlineR6(): Promise<void> {
@@ -41,7 +41,7 @@ export async function waitDeadlineR6(): Promise<void> {
       const row = JSON.parse(await p.line(120)) as Event;
       events.push(row);
       if (row.event === "environment") {
-        pid = row.pid;
+        pid = Number(row.pid);
       }
       if (row.event === "held") {
         break;
