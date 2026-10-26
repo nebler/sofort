@@ -1,9 +1,11 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadavg, release } from 'node:os';
 import { capture, check, output, run, same, sleep } from '../lib.ts';
 import { VM, quant } from '../tests/measure.ts';
-const root = import.meta.dirname;
+const root = process.env.JITK_FS_LINUX_ROOT || import.meta.dirname;
+const diagnostics = join(root, process.env.JITK_RECORD === '1' ? '' : '.work');
+mkdirSync(diagnostics, { recursive: true });
 const patched = process.argv[2];
 const stock = process.argv[3];
 const result: Record<string, unknown> = { uname: release(), load_start: loadavg() };
@@ -19,7 +21,7 @@ try {
     const expected = readFileSync(join(root, name + '.docker.out'));
     result['native_' + name] = { identical_to_docker: child.stdout.equals(expected), rc: child.returncode, stderr: child.stderr.toString().slice(0, 200) };
     if (!child.stdout.equals(expected)) {
-      writeFileSync(join(root, name + '.native.out'), child.stdout);
+      writeFileSync(join(diagnostics, name + '.native.out'), child.stdout);
     }
   }
 } finally {
@@ -37,7 +39,7 @@ for (const name of ['probe', 'lua', 'qjs']) {
         valid += 1;
       }
       if (app !== expected.toString()) {
-        writeFileSync(join(root, name + '.' + label + '.jitk.out'), app);
+        writeFileSync(join(diagnostics, name + '.' + label + '.jitk.out'), app);
       }
     }
     result['jitk_' + name + '_' + label] = valid + '/' + count;

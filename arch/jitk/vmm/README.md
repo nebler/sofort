@@ -59,7 +59,7 @@ both dependency and executable. The build emits `build.json` with hashes.
 macOS aarch64 (Hypervisor entitlement is ad-hoc signed by the build):
 
 ```
-python3 build.py
+.work/bin/build
 /tmp/jitk-01/r3/darwin/jitk-vmm --compile-profile /tmp/jitk-01/r3/jitk.sbbin --images /absolute/images
 /tmp/jitk-01/r3/darwin/jitk-vmm --image /absolute/images/kernel.bin --sandbox-profile /tmp/jitk-01/r3/jitk.sbbin
 ```
@@ -72,13 +72,13 @@ the same policy inside the worker; production supervisors pass a profile to
 avoid that per-VM cost. `JITK_VMM_TIMING=1` adds stderr setup timing on macOS;
 it never disables confinement or changes stdout.
 
-Linux aarch64: run `python3 build.py` natively with `/dev/kvm` available for
+Linux aarch64: run `.work/bin/build` natively with `/dev/kvm` available for
 execution (compilation alone needs no KVM). A Docker build and nested-KVM
 verification use the same pinned patch build:
 
 ```
 sh build-linux.sh
-python3 tests/nested-kvm.py
+.work/bin/tests/nested-kvm
 ```
 
 Docker uses `rust:1.95-slim` for `linux/arm64`; its writable mounts are confined
@@ -110,11 +110,11 @@ that `Vec` stayed dirty in libmalloc and doubled the per-VM image cost (−2.8 M
 footprint per VM; see `../kernel/RESULTS-fs.md`). Load behavior is otherwise unchanged. No experiment instrumentation ships.
 
 ## Tests
-`make test` runs the 12 CLI checks plus 6 fault guests ×30. `tests/console-abuse.py` runs 07's hostile console
+`make test` runs the 12 CLI checks plus 6 fault guests ×30. `tests/console-abuse.ts` runs 07's hostile console
 guests (`fixtures/console-abuse.c`, modes 1–9: bad port ids, PORT_OPEN repeat/spam, TX outside/straddling RAM,
 looping chain, host EOF, unusable RX chains) ×30 and records the reaped CPU time of every VMM. Every mode must
 print `ALIVE <n>` and exit 0. The exception is mode 7 (host EOF; the guest idles in WFI), which must be stopped by the external
-deadline with near-zero host CPU. `python3 tests/nested-kvm.py` runs the CLI checks, the fault guests, console-abuse
+deadline with near-zero host CPU. `.work/bin/tests/nested-kvm` runs the CLI checks, the fault guests, console-abuse
 and the seccomp probe under nested KVM, and asserts CHECKS-PASS, CONSOLE-PASS, SECCOMP-PASS and INIT-DONE.
 
 **Outcome classes.** *clean exit* (0 SYSTEM_OFF, 75 HVF guest fault) and *contained by external watchdog* (SIGKILL
@@ -123,10 +123,10 @@ at the deadline, with the sandbox ack already seen) are distinct. Both count as 
 is the clean-exit variant.
 
 ```
-python3 tests/build-guests.py
+.work/bin/tests/build-guests
 "/tmp/jitk-01/r3/darwin/jitk-vmm" --compile-profile /tmp/jitk-01/r3/jitk.sbbin --images /tmp/jitk-01/r3/images
-python3 tests/check.py
-python3 tests/sandbox-bench.py
+.work/bin/tests/check
+.work/bin/tests/sandbox-bench
 ```
 
 All test child processes have external timeouts and are reaped. Evidence is
@@ -144,9 +144,13 @@ UNDEF exception before shutting down through PSCI. HVF instead reports the
 patched VMM guest-fault status 75 for the original fixture.
 
 Formatting/lint gate (R8): `cargo +1.95.0 fmt --check` from this directory;
-`python3 lint.py` runs strict offline Clippy against the exact cached patched
-libkrun artifacts selected by `JITK_VMM_BUILD` (same default as `build.py`).
-The Cargo manifest is for tooling; `build.py` remains the signed production build.
+`.work/bin/lint` runs strict offline Clippy against the exact cached patched
+libkrun artifacts selected by `JITK_VMM_BUILD` (same default as `build.ts`).
+The Cargo manifest is for tooling; `build.ts` remains the signed production build.
 Clippy and rustfmt components for Rust 1.95.0 are required. The gate includes
 `-D warnings -D clippy::undocumented_unsafe_blocks`; the seccomp-only probe
 allows unused launcher APIs locally because it intentionally excludes the CLI.
+
+Native tooling is pinned to scriptc 0.4.5 in `../docs/package.json`. Run
+`make tools` to compile the tools under `.work/bin/`. See `PORT-PARITY.md`
+and `SCRIPTC-GAPS.md` for parity coverage and platform details.

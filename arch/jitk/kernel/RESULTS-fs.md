@@ -4,7 +4,7 @@ Raw data: `results-fs/`. Contended developer Mac (HVF), not a quiet-host claim.
 The Linux numbers are nested (QEMU HVF → Linux 7.0 KVM): use them for function and memory only.
 
 ## Correctness
-- `tests/fs_diff.py`: Linux oracle (Docker `jitk-oracle:08`, ro bind mount)
+- `tests/fs_diff.ts`: Linux oracle (Docker `jitk-oracle:08`, ro bind mount)
   versus 30 fresh jitk VMs each: raw-syscall probe 148 lines, Lua 13 lines,
   QuickJS 14 lines. Stdout was byte-identical 30/30 in each case, with no `missing`
   records. The bootstrap path (`std.loadFile`, `os.readdir`, write → EROFS) passed 3/3.
@@ -12,7 +12,7 @@ The Linux numbers are nested (QEMU HVF → Linux 7.0 KVM): use them for function
   output identical to Docker for all three. Under the Linux VMM, jitk was 10/10 identical
   (patched) and 2/2 (stock). See `results-fs/linux-kvm-check.json`.
 - Isolation probes `fs-user-read` (EL0 translation fault) and `fs-alias-write`
-  (EL1 permission fault) pass. `tests/test_fs.py` ran 8 values × every index word of the
+  (EL1 permission fault) pass. `tests/test_fs.ts` ran 8 values × every index word of the
   archive. Every case returned an errno, with no panics.
 
 Syscalls actually used (grow-trace sys.enter, archive-relevant):

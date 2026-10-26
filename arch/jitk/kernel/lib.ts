@@ -166,8 +166,9 @@ export function writable(root: string): void {
 }
 export function workspace(variable: string, name: string): string {
   const override = process.env[variable];
-  const root = override ? resolve(override) : realpathSync(mkdtempSync(join(tmpdir(), 'jitk-' + name + '-')));
-  mkdirSync(root, { recursive: true });
+  const requested = override ? resolve(override) : mkdtempSync(join(tmpdir(), 'jitk-' + name + '-'));
+  mkdirSync(requested, { recursive: true });
+  const root = realpathSync(requested);
   const cleanup = (): void => {
     if (existsSync(root)) {
       writable(root);

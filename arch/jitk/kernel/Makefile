@@ -36,3 +36,12 @@ include ../docs/scriptc.mk
 .PHONY: bench-gate
 bench-gate:
 	$(MAKE) -C ../bench build/gate
+
+.PHONY: linux-tools
+linux-tools: .work/linux/results-fs/linux-kvm-check .work/linux/payload/ring-rng/patch
+.work/native-linux.o: native.c
+	mkdir -p .work
+	/Users/noah/.local/share/zig-0.16.0/zig cc -target aarch64-linux-musl -c $< -o $@
+.work/linux/%: %.ts $(TS_SOURCES) $(SCRIPTC) .work/native-linux.o
+	mkdir -p $(@D)
+	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(TOOLS_PACKAGE)/node_modules/@scriptc/runtime-linux-arm64-musl SCRIPTC_LINKER=$(CURDIR)/zig-cc.sh $(SCRIPTC) build $< --ffi native-linux-ffi.json -o $@

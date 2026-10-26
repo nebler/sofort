@@ -47,3 +47,8 @@ verification manifest/recorded receipt. Output/toolchain dirs are excluded from
 its source snapshot. A full recording refresh was intentionally not performed.
 The Linux-only results-fs checker requires privileged fixture staging on kvm-dev;
 its Mac build was verified, but that privileged diagnostic was not run here.
+
+Final Makefile test was rerun after merging main e487de60 (including grow
+02a2bdaa), with the merged native bench gate. The working tree stayed unchanged.
+`make linux-tools` additionally cross-compiles the Linux diagnostic and ring-rng
+patcher as static aarch64 musl; JITK_FS_LINUX_ROOT supplies the staged Linux root.

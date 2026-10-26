@@ -41,7 +41,7 @@ names immutable image contents; `kernel.bin` and `manifest.json` select latest.
 `make test` runs packer regression, handler tests and real-VM regressions; the
 integrated vmm launcher must be built first (set `JITK_VMM_BINARY` to its executable;
 the default is `../vmm/dist/jitk-vmm`;
-`JITK_TEST_HOST` selects a legacy positional-image test host). The full G1/G2 harness is `python3 tests/measure.py park 0` and `... integration`.
+`JITK_TEST_HOST` selects a legacy positional-image test host). The full G1/G2 harness is `.work/bin/tests/measure park 0` and `... integration`.
 `.READY` identifies the tested artifact; rebuilding with changed inputs does not
 certify that artifact. Tests use bounded controller deadlines and kill/reap all VMs.
 Build cache defaults to `target/`; test outputs and scratch default to
@@ -136,7 +136,7 @@ Security integration is owned by vmm/sandbox and executor/policy; this subtree
 only enforces EL0 isolation, pointer checking, W^X and stdout framing.
 
 Lua profile verification after applying the owner patch:
-`python3 tests/lua_profile.py` builds an isolated alternate-ELF image and checks
+`.work/bin/tests/lua_profile` builds an isolated alternate-ELF image and checks
 30 fresh VMs against grow's normal-Linux reference. It requires the grow payload
 and fixture and uses the same test host settings as the other VM checks. It
 asserts both signal numbers return ENOSYS without missing records. Lua has no
@@ -146,7 +146,7 @@ signal installation, masking state, delivery or threads in this kernel.
 
 A purpose-built image is grown kernel + static binary + resources:
 `sh build.sh --resources DIR` (or `JITK_RESOURCES=DIR`) packs DIR as the guest's
-`/`. Without it, `/` is an empty directory. `prepare.py` appends one archive to
+`/`. Without it, `/` is an empty directory. `prepare.ts` appends one archive to
 `payload.flat`, directly after the executable (VA `0x400000+flat`). brk starts at
 `HEAP = max(0x680000, page_align(archive end))`, and mmap starts at `HEAP+1.5 MiB`. With no
 or small resources the layout is unchanged. Resources consume the 32 MiB guest RAM
@@ -161,7 +161,7 @@ Directories are breadth-first so children are contiguous and byte-sorted
 binary search per path component; getdents64 is a slice walk. cpio newc would need
 a linear scan of ASCII-hex headers on every open and prefix scans for directory
 listing. This index needs no boot-time parse, and every field is bounds-checked
-on use (corruption returns EIO, never panics: `tests/test_fs.py`).
+on use (corruption returns EIO, never panics: `tests/test_fs.ts`).
 
 Isolation: archive pages are never mapped at EL0 (`fs-user-read` probe:
 translation fault). Their kernel alias is read-only (`fs-alias-write` probe:
@@ -203,11 +203,20 @@ developer grow-trace/libkrun demonstration with printable stdout; production
 native streams and stderr are separate ring work. faccessat/getpid remain
 tolerated missing compatibility probes; the signal handlers remain ENOSYS.
 
-Gates: `tests/test_fs.py` (host-compiled real handlers + index corruption),
-`tests/fs_diff.py` (Docker `jitk-oracle:08` with the tree bind-mounted `:ro` and
+Gates: `tests/test_fs.ts` (host-compiled real handlers + index corruption),
+`tests/fs_diff.ts` (Docker `jitk-oracle:08` with the tree bind-mounted `:ro` and
 `ulimit -n 64`, versus 30 fresh VMs each for a 148-line raw-syscall probe
 (`tests/fixtures/fs/probe.c`), Lua stdlib and QuickJS std/os workloads. Stdout
 must be byte-identical with no `missing` records. It also covers the protocol bootstrap.
 QuickJS's bootstrap already exposes `std`/`os` (`qjs --std`), so submitted
 code can read resources with `std.loadFile`. No guest API was added or widened.
-`tests/fs_bench.py` measures size/boot/footprint. See `RESULTS-fs.md`.
+`tests/fs_bench.ts` measures size/boot/footprint. See `RESULTS-fs.md`.
+
+Native tooling is pinned to scriptc 0.4.5 in `../docs/package.json`. Run
+`make tools` to compile the tools under `.work/bin/`. See `PORT-PARITY.md`
+and `SCRIPTC-GAPS.md` for parity coverage and platform details.
+
+`make linux-tools` cross-compiles static aarch64 musl executables for the
+Linux-only filesystem diagnostic and ring-rng source patcher. Set
+`JITK_FS_LINUX_ROOT` to the staged filesystem fixtures on Linux, or
+`JITK_RING_PATCH_TOOL` to the cross-compiled patcher when running its build recipe.

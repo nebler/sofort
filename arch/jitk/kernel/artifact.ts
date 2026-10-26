@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, realpathSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve, extname } from 'node:path';
 import { check, dump, readJSON, sha } from './lib.ts';
 
@@ -34,7 +34,7 @@ if (existsSync(verification)) {
   manifest.verification = JSON.parse(raw.toString()) as unknown;
   manifest.verification_sha256 = sha(raw);
 }
-if (resolve(out) === join(root, 'dist') && process.env.JITK_RECORD !== '1') {
+if (realpathSync(out) === join(realpathSync(root), 'dist') && process.env.JITK_RECORD !== '1') {
   out = join(dirname(out), '.work/dist');
 }
 mkdirSync(out, { recursive: true });
