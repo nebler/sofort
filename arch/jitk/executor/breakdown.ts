@@ -1,3 +1,4 @@
+import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -16,9 +17,7 @@ try{
   // Refill wait is recorded separately and excluded from execute latency.
   const waitStart=performance.now();await pool.warm();const refillWaitMs=performance.now()-waitStart;
   const load=uptime();
-  const gate=JSON.parse(execFileSync('/usr/bin/python3',['-B','-c',
-    'import importlib.util,json,sys; s=importlib.util.spec_from_file_location("jitk_bench",sys.argv[1]); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); print(json.dumps(m.gate(6,0)))',
-    new URL('../../bench/run.py',import.meta.url).pathname],{encoding:'utf8'}));
+  const gate=JSON.parse(execFileSync(fileURLToPath(new URL('../../bench/build/gate',import.meta.url)),['6','0'],{encoding:'utf8'}));
   const marks:Partial<Record<TimingEvent|'callerResolve',number>>={};lifecycle={};
   const r=await ex.execute('return await api.echo(2)',[{name:'api',fns:{echo:async x=>x}}],{onTiming:(event,at)=>marks[event]=at});
   marks.callerResolve=performance.now();assert.equal(r.result,2);assert(!r.error);

@@ -88,8 +88,8 @@ function peerSnapshot(mode:string) {
   writeFileSync(base+'.identity',JSON.stringify({version:1,helperSha256:helperHash,files:Object.fromEntries(['mem','regs','layout'].map(ext=>[ext,fileHash(base+'.'+ext)]))}));
   return base;
 }
-const fixture=fileURLToPath(new URL('../fixtures/shard-peer.py',import.meta.url));
-writeFileSync(peer,`#!/bin/sh\nexec /usr/bin/python3 '${fixture.replaceAll("'","'\\''")}' "$@"\n`,{mode:0o755});
+const fixture=fileURLToPath(new URL('../.work/bin/fixtures/shard-peer',import.meta.url));
+writeFileSync(peer,`#!/bin/sh\nexec '${fixture.replaceAll("'","'\\''")}' "$@"\n`,{mode:0o755});
 try {
   const startup=new ShardBackend({binary:peer,snapshot:peerSnapshot('no-ready'),slots:1,owners:1});
   const startupPool=new SandboxPool(startup,0,1);
