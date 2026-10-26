@@ -16,8 +16,12 @@ impl Sandbox {
     pub fn prepare(_: &Path, _: Option<&Path>, _: Option<i32>) -> Result<Self, Error> {
         Err("area 07 sandbox module not ready; refusing unconfined launch".into())
     }
-    pub fn before_build(&mut self) -> Result<(), Error> { Ok(()) }
-    pub fn after_build(&mut self) -> Result<(), Error> { Ok(()) }
+    pub fn before_build(&mut self) -> Result<(), Error> {
+        Ok(())
+    }
+    pub fn after_build(&mut self) -> Result<(), Error> {
+        Ok(())
+    }
 }
 #[cfg(not(sandbox_ready))]
 pub fn compile_profile(_: &Path, _: &Path) -> Result<(), Error> {
