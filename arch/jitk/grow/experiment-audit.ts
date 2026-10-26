@@ -92,10 +92,9 @@ export function failureAnalysis(metaPaths: string[], output: string): void {
 export async function sealReceipts(metaPath: string, artifacts: boolean): Promise<void> {
   const meta = readJSON<Metadata>(metaPath);
   const repo = (await run(['git', 'rev-parse', '--show-toplevel'])).stdout.toString().trim();
-  const sourceNames = ['heldout-probe.c', 'profiles.ts', 'sqlite-profile.ts', 'sqlite-corpus.json', 'host-tests.ts', 'fs-probe.c', 'probe.ld', 'oracle-profile.ts', 'lib.ts'];
+  const sourceNames = ['heldout-probe.c', 'profiles.ts', 'sqlite-profile.ts', 'sqlite-corpus.json', 'host-tests.ts', 'host-tests.rs', 'host-tests-origin.json', 'fs-probe.c', 'probe.ld', 'oracle-profile.ts', 'lib.ts'];
   const sources: Record<string, string> = {};
   const sourcePaths = sourceNames.map((name) => join(ROOT, name));
-  sourcePaths.push(join(CANONICAL, 'tests/test_fs.py'));
   for (const source of sourcePaths) {
     const path = relative(repo, source);
     sources[path] = hashBytes((await run(['git', 'show', meta.source_commit + ':' + path])).stdout);

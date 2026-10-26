@@ -539,7 +539,7 @@ test('sealing pins trusted Git inputs and inventories artifact bytes', async () 
     dump(path, meta);
     await sealReceipts(path, true);
     const sealed = readJSON<{ trusted_sources_sha256: Record<string, string> }>(join(out, 'sealed-inputs.json'));
-    assert.ok(Object.keys(sealed.trusted_sources_sha256).some((name) => name.endsWith('kernel/tests/test_fs.py')));
+    assert.ok(Object.keys(sealed.trusted_sources_sha256).some((name) => name.endsWith('grow/host-tests.rs')));
     const artifacts = readJSON<Record<string, { sha256: string }>>(join(out, 'artifacts.json'));
     assert.equal(artifacts['experiment.json'].sha256, sha(join(out, 'experiment.json')));
     dump(join(out, 'oracle-image.json'), { Id: 'changed-image' });

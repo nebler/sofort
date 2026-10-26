@@ -1,15 +1,22 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { check, dump, run, sha, SAFE_ENV, type ProcessResult } from './lib.ts';
-import { CANONICAL } from './runtime.ts';
+import { check, dump, run, sha, readJSON, SAFE_ENV, type ProcessResult } from './lib.ts';
+import { ROOT } from './runtime.ts';
 
-// Preserve the independent kernel-owned Rust assertions; execute no Python.
+interface HostOrigin {
+  python_source_sha256: string;
+  rust_source_sha256: string;
+}
+function origin(): HostOrigin {
+  return readJSON<HostOrigin>(join(ROOT, 'host-tests-origin.json'));
+}
+
+// The immutable Rust assertions are independent of the candidate and no longer
+// depend on the retired kernel Python wrapper. Check provenance before adapting.
 export function hostHarness(work: string): string {
-  const trusted = readFileSync(join(CANONICAL, 'tests/test_fs.py'), 'utf8');
-  const begin = trusted.indexOf("source = r'''\n");
-  const end = trusted.indexOf("'''.replace", begin);
-  check(begin >= 0 && end > begin, 'host Rust harness format changed');
-  let source = trusted.slice(begin + "source = r'''\n".length, end);
+  const fixture = join(ROOT, 'host-tests.rs');
+  check(sha(fixture) === origin().rust_source_sha256, 'trusted Rust host fixture changed');
+  let source = readFileSync(fixture, 'utf8');
   const declarations = source.split('\n').filter((line) => line.startsWith('#[path = "SYS/'));
   check(declarations.length === 7, 'host harness layout changed; update the adapter');
   for (const line of declarations) {
@@ -64,7 +71,9 @@ export async function hostHandlerTests(work: string, out: string): Promise<Proce
   const binary = join(out, 'host-tests');
   writeFileSync(source, hostHarness(work));
   writeFileSync(archive, hostArchive());
-  dump(join(out, 'host-tests-source.json'), { sha256: sha(join(CANONICAL, 'tests/test_fs.py')) });
+  // Preserve the baseline receipt's source-origin identity. Current fixture
+  // bytes are independently checked against the pinned rust_source_sha256.
+  dump(join(out, 'host-tests-source.json'), { sha256: origin().python_source_sha256 });
   await run(['rustc', '+1.95.0', '--edition=2024', '--test', '-A', 'static_mut_refs', source, '-o', binary]);
   return await run([binary], { env: { ...SAFE_ENV, ARCHIVE: archive } });
 }

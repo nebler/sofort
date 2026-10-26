@@ -19,9 +19,11 @@ including the E1 delta from `f5f9f562`. The separate `grow-ts/` tree is removed.
 
 Generic helpers are in `lib.ts`. No interpreter implements controller, oracle,
 retry or experiment decisions. The external kernel build remains a dependency;
-its Python removal belongs to the kernel agent. The independent filesystem
-Rust assertions are currently read from kernel-owned test_fs.py as text and
-compiled directly, without invoking its Python wrapper. The adapter nests
+its Python removal belongs to the kernel agent. The independent filesystem Rust assertions are preserved unchanged in
+`host-tests.rs`, checked against their pinned extraction hash, and compiled
+directly. `host-tests-origin.json` records the retired Python wrapper provenance;
+legacy host-tests-source receipts retain that origin identity. No Python source
+file is needed for the host assertions. The adapter nests
 handlers under syscalls, matching the real kernel and supporting super imports.
 
 Native JSON preserves unsigned 64-bit register tokens and dynamic trace fields.

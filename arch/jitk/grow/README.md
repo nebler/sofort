@@ -84,9 +84,9 @@ Prerequisites: Node/npm for the pinned compiler, Zig for the Linux binary,
 Rust 1.95.0 with aarch64-unknown-none, clang/ld.lld/LLVM objcopy, the existing
 Docker image and a confined VMM explicitly selected via `JITK_VMM_BINARY`.
 The current kernel build still uses its own Python tooling, owned by the kernel
-port; grow executes no Python. The independent Rust host assertions are extracted
-as text from kernel-owned `tests/test_fs.py` and compiled directly with the real
-`syscalls` module layout. `JITK_GROW_TMPDIR` selects a scratch parent. Rebuild
+port; grow executes no Python. The independent Rust host assertions are preserved unchanged in trusted
+`host-tests.rs`, checked against `host-tests-origin.json`, and compiled directly
+with the real `syscalls` module layout. The retired Python wrapper is not needed. `JITK_GROW_TMPDIR` selects a scratch parent. Rebuild
 native binaries after moving the checkout: scriptc embeds `import.meta.dirname`.
 
 Experiment scripts are native subcommands:

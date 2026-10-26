@@ -108,8 +108,12 @@ The ported native SQLite diagnostic tool also passes causal missing-handler
 states, Linux injected ENOSYS, combined tolerated ENOSYS, real ET_DYN loader
 rejection and fatal output protocol detection. The external kernel build still
 uses kernel-owned Python tools; no grow/oracle/experiment decision runs Python.
-Independent host Rust assertions are read from kernel-owned `test_fs.py` as
-text and compiled directly. Historical ignored Python-run evidence may retain
+Independent host Rust assertions are preserved unchanged as trusted
+`host-tests.rs` and compiled directly. Their extracted-body hash is checked
+before every use; the legacy host-tests-source receipt retains the retired
+Python wrapper origin hash, recorded in `host-tests-origin.json`. Native input
+sealing includes the Rust fixture and origin metadata. No Python file is needed
+for host assertions. Historical ignored Python-run evidence may retain
 generated wrapper scripts; no `.py` implementation is tracked in grow.
 
 | Local native binary | Bytes |
