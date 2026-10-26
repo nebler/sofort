@@ -36,7 +36,13 @@ impl Default for State {
 fn invalid(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
-fn admission(m: &Message, now: u64) -> io::Result<(u64, String)> {
+fn ipc_charge(class: crate::arena::Class) -> io::Result<u32> {
+    if class != crate::arena::Class::Glue2m {
+        return Err(invalid("IPC supports only verified glue-2m snapshots"));
+    }
+    Ok(class.admission_bytes())
+}
+fn admission(m: &Message, now: u64, charge: u32) -> io::Result<(u64, String)> {
     let b = &m.bytes;
     if m.id != 0 || b.len() < 24 {
         return Err(invalid("IPC admission header"));
@@ -45,7 +51,7 @@ fn admission(m: &Message, now: u64) -> io::Result<(u64, String)> {
     if deadline > now.saturating_add(60_000_000_000)
         || ipc::u32_at(b, 8) != 32
         || ipc::u32_at(b, 12) != 1024
-        || ipc::u32_at(b, 20) != 2 * 1024 * 1024
+        || ipc::u32_at(b, 20) != charge
     {
         return Err(invalid("IPC admission limits/deadline"));
     }
@@ -83,11 +89,13 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
     if parent == 1 || unsafe { prctl(1, 9) } != 0 || unsafe { getppid() } != parent {
         return Err(invalid("IPC parent unavailable"));
     }
+    let snapshot = Snapshot::load(base);
+    let charge = ipc_charge(snapshot.class)?;
     let mut endpoint = unsafe { Endpoint::inherited()? };
     let wake = endpoint.notifier();
     let mut pool = Pool::notified(
         Kvm::new(),
-        Snapshot::load(base),
+        snapshot,
         slots,
         owners,
         Some(Arc::new(move || wake.signal())),
@@ -113,7 +121,7 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
                         if s.phase != Phase::Idle || m.generation != s.generation + 1 {
                             return Err(invalid("IPC admission generation/state"));
                         }
-                        let (deadline, source) = admission(&m, kvm::monotonic_ns())?;
+                        let (deadline, source) = admission(&m, kvm::monotonic_ns(), charge)?;
                         *s = State {
                             generation: m.generation,
                             phase: Phase::Running,
@@ -330,18 +338,23 @@ pub fn probe(mode: &str) -> io::Result<()> {
 mod tests {
     use super::*;
     #[test]
+    fn ipc_rejects_unsupported_snapshot_classes() {
+        assert_eq!(ipc_charge(crate::arena::Class::Glue2m).unwrap(), 2 << 20);
+        assert!(ipc_charge(crate::arena::Class::Glue4m).is_err());
+    }
+    #[test]
     fn malformed_admissions() {
         let mut m = Message::new(ipc::START, 0, 1, 0, vec![0; 24]);
-        assert!(admission(&m, 0).is_err());
+        assert!(admission(&m, 0, 2 << 20).is_err());
         m.bytes[0..8].copy_from_slice(&1u64.to_le_bytes());
         m.bytes[8..12].copy_from_slice(&32u32.to_le_bytes());
         m.bytes[12..16].copy_from_slice(&1024u32.to_le_bytes());
         m.bytes[20..24].copy_from_slice(&(2u32 * 1024 * 1024).to_le_bytes());
-        assert!(admission(&m, 0).is_ok());
+        assert!(admission(&m, 0, 2 << 20).is_ok());
         m.bytes[16..20].copy_from_slice(&u32::MAX.to_le_bytes());
-        assert!(admission(&m, 0).is_err());
+        assert!(admission(&m, 0, 2 << 20).is_err());
         m.bytes[16..20].fill(0);
         m.id = 1;
-        assert!(admission(&m, 0).is_err());
+        assert!(admission(&m, 0, 2 << 20).is_err());
     }
 }
