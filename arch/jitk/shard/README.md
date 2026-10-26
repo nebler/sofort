@@ -97,8 +97,8 @@ real deadlines SNAPSHOT_BASE staggered 8   # 2W slots; parked expiry interrupts 
 arena pages and 20 ring pages, then write immutable RAM; retain its stopped
 private pages for cgroup accounting. Ordinary `arena_attack` errors reset first.
 The existing R6 ledger harness works with the configured thread count and also
-records cgroup `memory.peak`. `analyze-r7-shard.py`, `wait-r7.py` and
-`escalation-r7.py` are offline observers, never runtime helper processes.
+records cgroup `memory.peak`. `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
+`./tool.sh escalation-r7` are offline observers, never runtime helper processes.
 
 The assembly-only baseline below retains its separate ABI and implementation.
 
@@ -235,3 +235,16 @@ WAIT runs three rounds each with 1 and 10 calls per VM, holding all VMs idle for
 two seconds before completing requests in deterministic random order/delays.
 
 See [RESULTS.md](RESULTS.md) and `results/` for measurements and exact scope.
+
+## Native TypeScript harness
+
+`make build build-linux` builds the pinned scriptc 0.4.5 tools for Mac and static
+Linux aarch64 musl. Set `ZIG` to override the linker installation. Upload
+`build/linux/shard-tools` with this source tree before running Linux tests;
+Linux needs neither Node nor Python for this component. `./tool.sh NAME ARGS...`
+replaces each Python command using the basename without `.py` (for example
+`./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and
+lock composition live in `lib.ts`. `make test` still takes its own measurement
+locks; never put another bench.lock around it. `test-kvm` still expects the
+caller to hold that lock and supply the snapshot environment variables.
+See `PORT-PARITY.md` and `SCRIPTC-GAPS.md` for comparisons and compiler workarounds.

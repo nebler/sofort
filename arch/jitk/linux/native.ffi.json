@@ -1,0 +1,42 @@
+{
+  "ffi_format": 1,
+  "functions": [
+    {
+      "name": "nativeIgnoreHup",
+      "symbol": "jitk_ignore_hup",
+      "params": [],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeUsage",
+      "symbol": "jitk_usage",
+      "params": [
+        "i32",
+        "i32"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "nativeClockTicks",
+      "symbol": "jitk_clock_ticks",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "nativeKvmProbe",
+      "symbol": "jitk_kvm_probe",
+      "params": [],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeStdoutWritable",
+      "symbol": "jitk_stdout_writable",
+      "params": [],
+      "returns": "i32"
+    }
+  ],
+  "libraries": [
+    "native.o"
+  ],
+  "system_libraries": []
+}
