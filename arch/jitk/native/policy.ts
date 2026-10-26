@@ -46,8 +46,9 @@ function decide1(run:Run,f:any):Decision {
   if(!NAME.test(f.ns)||!NAME.test(f.fn))throw new Violation('name');
   if(++run.calls>run.limits.calls)throw new Violation('call budget');
   if(run.outstanding>=run.limits.outstanding)throw new Violation('outstanding');
+  if(!Object.hasOwn(run.tools,f.ns))throw new Violation('unknown tool');
   const ns=run.tools[f.ns];
-  if(!Object.hasOwn(run.tools,f.ns)||!Object.hasOwn(ns,f.fn))throw new Violation('unknown tool');
+  if(!Object.hasOwn(ns,f.fn))throw new Violation('unknown tool');
   const tool=ns[f.fn];
   const deny=(reason:string):Decision=>{
     if(++run.denials>run.limits.denials)throw new Violation('denial budget');
