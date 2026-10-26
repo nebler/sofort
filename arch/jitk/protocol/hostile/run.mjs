@@ -1,3 +1,4 @@
+import {receiptPath} from '../lib.ts';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {cases} from './cases.mjs';
@@ -32,5 +33,5 @@ for(const c of cases.filter(c=>!process.env.JITK_CASE||new RegExp(process.env.JI
  const row={name:c.name,pass:samples.length,fail:n-samples.length,loadBefore,loadAfter:uptime(),totalMs:samples.length?stats(samples):null,samples,errors:[...new Set(errors)],outcomes};
  result.cases.push(row);console.log(c.name,`${row.pass}/${n}`,errors[0]||'');
 }
-writeFileSync(here+'hostile/results.json',JSON.stringify(result,null,2)+'\n');
+writeFileSync(receiptPath('hostile/results.json'),JSON.stringify(result,null,2)+'\n');
 if(result.cases.some(c=>c.fail))process.exitCode=1;

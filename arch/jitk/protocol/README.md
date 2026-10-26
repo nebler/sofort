@@ -10,7 +10,8 @@ Use a verified absolute Node >=24 executable, e.g. `/tmp/jitk-09/node-real`:
 
 ```sh
 NODE=/tmp/jitk-09/node-real
-python3 arch/jitk/protocol/make-vectors.py
+make -C arch/jitk/protocol .work/bin/make-vectors
+arch/jitk/protocol/.work/bin/make-vectors
 "$NODE" arch/jitk/protocol/build.mjs
 "$NODE" arch/jitk/protocol/test.mjs
 "$NODE" arch/jitk/protocol/import-check.mjs
@@ -39,3 +40,6 @@ never loads provider credentials or invokes external tools. All children have an
 independent watchdog and are killed/reaped in `finally`. A watchdog firing is a
 failure in this suite; rejection must come from the dispatcher or kernel/EL0.
 `.READY` covers canonical build plus host conformance; VM evidence is separate.
+
+Native tooling uses scriptc 0.4.5 pinned in `../docs/package.json`; run
+`make tools` to compile it. See `PORT-PARITY.md` and `../docs/SCRIPTC-GAPS.md`.

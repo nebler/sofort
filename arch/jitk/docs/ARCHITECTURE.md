@@ -46,7 +46,7 @@ memory or noncooperative tools. [Configuration/test evidence](CLAIMS.md).
 
 Measured R4 using the unchanged R3 counter, load1 45.50. Physical lines include
 comments/blanks, tests, build code and selected configuration. Vendor, generated
-code, data and output are excluded. [Counter](count-loc.py), [frozen inventory](../../10-minimalist-critic/r4/frozen/review/loc-final.json).
+code, data and output are excluded. [Counter](count-loc.ts), [frozen inventory](../../10-minimalist-critic/r4/frozen/review/loc-final.json).
 
 | Component | LOC |
 |---|---:|

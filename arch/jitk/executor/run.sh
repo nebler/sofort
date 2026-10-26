@@ -24,13 +24,13 @@ case "${1:-test}" in
   "$TASK_NODE" build/policy-check.js
   "$TASK_NODE" build/hyperlight-check.js
   if [ "${JITK_SHARD_TEST:-}" = ssh ]; then
-    python3 ipc/run-ssh.py
+    make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh
   elif [ "$(uname -s)" = Linux ] && [ -n "${JITK_SHARD_SNAPSHOT:-}" ]; then
     "$TASK_NODE" build/shard-check.js
   fi
   ;;
  shard-test)
-  if [ "${JITK_SHARD_TEST:-}" = ssh ]; then python3 ipc/run-ssh.py; else "$TASK_NODE" build/shard-check.js; fi
+  if [ "${JITK_SHARD_TEST:-}" = ssh ]; then make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh; else "$TASK_NODE" build/shard-check.js; fi
   ;;
  certify) "$TASK_NODE" certify.mjs ;;
  demo) "$TASK_NODE" build/demo.js ;;

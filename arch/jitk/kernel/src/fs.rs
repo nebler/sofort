@@ -1,4 +1,4 @@
-// Read-only resource archive packed by prepare.py after the executable. There is
+// Read-only resource archive packed by prepare.ts after the executable. There is
 // no write path: the bytes are never user-mapped, and their kernel alias is RO.
 // Every index field is bounds-checked on use (EIO), so no boot-time parse exists.
 use crate::syscalls::{copyin, copyout};

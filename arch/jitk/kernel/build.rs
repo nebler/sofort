@@ -14,8 +14,11 @@ fn main() {
     for file in [
         "src/syscalls",
         "slots.json",
-        "prepare.py",
-        "generate.py",
+        "prepare.ts",
+        "packer.ts",
+        "generate.ts",
+        "build-args.ts",
+        "lib.ts",
         "../protocol/bootstrap.js",
         "ring-bootstrap.js",
         "link.ld",
@@ -32,35 +35,24 @@ fn main() {
     if let Ok(dir) = env::var("JITK_RESOURCES") {
         println!("cargo:rerun-if-changed={dir}");
     }
+    let tools = env::var_os("JITK_TOOLS_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| base.join(".work/bin"));
+    println!("cargo:rerun-if-env-changed=JITK_TOOLS_DIR");
+    for tool in ["prepare", "build-args"] {
+        println!("cargo:rerun-if-changed={}", tools.join(tool).display());
+    }
     assert!(
-        Command::new("python3")
-            .arg(base.join("prepare.py"))
+        Command::new(tools.join("prepare"))
             .arg(&elf)
             .arg(&out)
             .status()
             .unwrap()
             .success()
     );
-    // One strict JSON parse drives both the manifest and the Rust dispatcher.
-    let script = r#"import os,json,pathlib,sys
-sys.path.insert(0, sys.argv[2])
-from generate import generate
-p=pathlib.Path(sys.argv[1]); root=pathlib.Path(sys.argv[2])
-bootstrap='ring-bootstrap.js' if 'CARGO_FEATURE_TRANSPORT_RING' in os.environ else '../protocol/bootstrap.js'
-args=json.loads(os.environ['JITK_ARGV_JSON']) if 'JITK_ARGV_JSON' in os.environ else ['qjs','--std','--memory-limit','16777216','-e',os.environ.get('JITK_SCRIPT') or (root/bootstrap).read_text()]
-assert isinstance(args,list) and 0<len(args)<=32 and all(isinstance(a,str) and '\0' not in a for a in args)
-assert sum(len(a.encode())+1 for a in args)<30000
-with (p/'packed.rs').open('a') as f:
- if 'JITK_ARGV_JSON' not in os.environ and 'JITK_SCRIPT' not in os.environ and 'CARGO_FEATURE_TRANSPORT_RING' not in os.environ:
-  f.write('pub const ARGV: &[&str] = &["qjs","--std","--memory-limit","16777216","-e",include_str!(concat!(env!("CARGO_MANIFEST_DIR"),"/../protocol/bootstrap.js"))];\n')
- else:f.write('pub const ARGV: &[&str] = &'+json.dumps(args,ensure_ascii=False).replace('\\b','\\u{8}').replace('\\f','\\u{c}')+';\n')
-generate(root, p)
-(p/'features.json').write_text(json.dumps(sorted(k[14:].lower().replace('_','-') for k in os.environ if k.startswith('CARGO_FEATURE_')))+'\n')
-(p/'argv.json').write_text(json.dumps(args,ensure_ascii=True)+'\n')
-"#;
+    // The native generator parses slots once for the manifest and dispatcher.
     assert!(
-        Command::new("python3")
-            .args(["-c", script])
+        Command::new(tools.join("build-args"))
             .arg(&out)
             .arg(&base)
             .status()

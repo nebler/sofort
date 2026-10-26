@@ -40,7 +40,7 @@ export async function vm(config,act) {
  child.on('error',e=>{error=e;kill();});child.stdin.on('error',()=>{});
  child.stderr.on('data',b=>{stderr=(stderr+b).slice(0,8192);});
  if(child.pid) {
-  watchdog=spawn('/usr/bin/python3',[here+'watchdog.py',String(child.pid),String(config.timeout||process.env.JITK_VM_TIMEOUT||15)],{stdio:'pipe'});
+  watchdog=spawn(here+'.work/bin/watchdog',[String(child.pid),String(config.timeout||process.env.JITK_VM_TIMEOUT||15)],{stdio:'pipe'});
   watchdog.stdin.on('error',()=>{});watchdog.stderr.resume();
   watchdog.stdout.on('data',b=>{if(b.includes('WATCHDOG'))watchdogFired=true;});
   watchdog.on('error',e=>{error=e;kill();});

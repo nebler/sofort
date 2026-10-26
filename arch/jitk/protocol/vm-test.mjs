@@ -1,3 +1,4 @@
+import {receiptPath} from './lib.ts';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {setTimeout as delay} from 'node:timers/promises';
@@ -46,5 +47,5 @@ for(const c of cases.filter(c=>!process.env.JITK_CASE||new RegExp(process.env.JI
  result.cases.push({name:c.name,pass:samples.length,fail:n-samples.length,loadBefore,loadAfter:uptime(),totalMs:samples.length?stats(samples):null,samples,errors:[...new Set(errors)]});
  console.log(c.name,`${samples.length}/${n}`,errors[0]||'');
 }
-writeFileSync(here+'vm-results.json',JSON.stringify(result,null,2)+'\n');
+writeFileSync(receiptPath('vm-results.json'),JSON.stringify(result,null,2)+'\n');
 if(result.cases.some(c=>c.fail))process.exitCode=1;
