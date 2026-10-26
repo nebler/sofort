@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-26T17:51:10.711504+01:00",
+  "host": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "disk_before": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   330Gi    87Gi    80%     23M  913M    2%   /System/Volumes/Data",
+  "uptime_before": "17:51  up 2 days, 20:04, 1 user, load averages: 4.26 3.45 3.26",
+  "oracle_image": "sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a",
+  "vmm": "/tmp/jitk-01/r3/darwin/jitk-vmm",
+  "vmm_sha256": "57eb07f4438aff7c4b6df19bf49dc30cdbcdefcbd4fdbfb41a863f54c0798075",
+  "cli": "codex-cli 0.164.0",
+  "model": "gpt-6.1-sol",
+  "git_head": "793d2c3c29beabb369a53dbf103fb8c30a397b7c",
+  "protected_before": {
+    "release.json": "dfe2b3b906417d04bb2a1cf6a0c02ef6a95d5a2bb1f99fdc11b47544b19a5496",
+    ".READY": "66400c8fedc715d57190e0b4ddcf277b6529ac3ad03a2ff40dc42a2cd436282b"
+  },
+  "baseline_tests": "make -C arch/jitk/grow test: 22 grow + 4 oracle PASS",
+  "disk_after": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   330Gi    87Gi    80%     23M  907M    2%   /System/Volumes/Data",
+  "uptime_after": "18:06  up 2 days, 20:19, 1 user, load averages: 5.72 4.93 4.36",
+  "protected_after": {
+    "release.json": "dfe2b3b906417d04bb2a1cf6a0c02ef6a95d5a2bb1f99fdc11b47544b19a5496",
+    ".READY": "66400c8fedc715d57190e0b4ddcf277b6529ac3ad03a2ff40dc42a2cd436282b"
+  }
+}

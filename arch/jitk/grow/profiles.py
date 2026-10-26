@@ -29,9 +29,17 @@ for name in ('fstat', 'pread64'):
                               'state': ['pathname/reopen metadata and offset' if name == 'fstat' else 'seek position after success/errors and independent opens']}
 
 
+# Prompt transport consumes visible only; held-out sources stay controller-side.
+for name, profile in PROFILES.items():
+    profile['visible'] = probe_source(name)
+    profile['heldout'] = ROOT/'heldout-probe.c' if name in ('ppoll', 'fstat', 'pread64') else None
+
+
 def mutations(name, source):
     if name not in ('fstat', 'pread64'):
         return PROFILES[name]['mutations']
+    # Mutants describe independent known bugs, not candidate source formatting.
+    source = (CANONICAL/f'src/syscalls/{name}.rs').read_text()
     if name == 'fstat':
         return {
             'wrong-size': 'use crate::{fs, syscalls::copyout};\npub fn call(a: &[usize]) -> isize {\n'
@@ -52,10 +60,10 @@ def mutations(name, source):
     }
 
 
-def resources(out):
+def resources(out, heldout=False):
     root = out/'resources'
     root.mkdir()
-    (root/'data.bin').write_bytes(bytes((i*7+i//251)&255 for i in range(9000)))
+    (root/'data.bin').write_bytes(bytes((i*7+i//251)&255 for i in range(10241 if heldout else 9000)))
     (root/'data.bin').chmod(0o444)
     root.chmod(0o555)
     return root

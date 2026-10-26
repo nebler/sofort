@@ -1,6 +1,19 @@
 __pycache__/
+/results/e[01]-*/**/*.bin
+/results/e[01]-*/**/*.elf
+/results/e[01]-*/**/*.o
+/results/e[01]-*/**/accepted.bundle
 /results/r7-*/**/*.bin
 /results/r7-*/**/sqlite3-static
 /results/r7-*/**/accepted.bundle
 /results/r7-*/**/*.elf
 /results/r7-*/**/*.o
+/results/split-*/**/*.bin
+/results/split-*/**/*.elf
+/results/split-*/**/*.o
+/results/split-*/**/accepted.bundle
+# E0/E1 run receipts and per-run logs stay local (~/sofort-local-evidence/growos-e0-e1-2026-10-26/)
+/results/e[01]-*/
+/results/split-*/
+/experiments/e[01]-*.log
+/experiments/E1*-driver*.log

@@ -1,0 +1,28 @@
+{
+  "model": "gpt-6.1-sol",
+  "cli": "codex-cli 0.164.0",
+  "command": [
+    "codex",
+    "exec",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "-c",
+    "approval_policy=\"never\"",
+    "--json",
+    "--output-schema",
+    "/Users/noah/.t3/worktrees/sofort/t3-25f83e2b/arch/jitk/grow/experiments/model-check/gpt-6.1-sol/schema.json",
+    "--output-last-message",
+    "/Users/noah/.t3/worktrees/sofort/t3-25f83e2b/arch/jitk/grow/experiments/model-check/gpt-6.1-sol/answer.json",
+    "--model",
+    "gpt-6.1-sol",
+    "-"
+  ],
+  "returncode": 0,
+  "timeout": false,
+  "wall_s": 7.273766416998114,
+  "uptime_before": "18:11  up 2 days, 20:25, 1 user, load averages: 3.06 3.87 4.05",
+  "uptime_after": "18:11  up 2 days, 20:25, 1 user, load averages: 2.97 3.82 4.03"
+}

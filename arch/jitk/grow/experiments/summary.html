@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;background:transparent;color:var(--foreground);font-family:var(--font-sans,system-ui);font-size:14px}
+p{margin:0 0 14px;line-height:1.5}table{border-collapse:collapse;width:100%;table-layout:fixed;font-variant-numeric:tabular-nums}
+caption{text-align:left;font-weight:500;margin-bottom:10px}th,td{padding:10px 3px;border-bottom:1px solid var(--border);text-align:right;overflow-wrap:anywhere}
+th{font-weight:500}th:first-child,td:nth-child(2){text-align:left}thead th{text-align:center}thead th:first-child{width:25%;text-align:left}thead th:nth-child(2){width:12%;text-align:left}
+.note{color:var(--muted-foreground);margin-top:12px;font-size:12px}
+</style></head><body>
+<p>E0: <strong>4/5</strong> complete live runs accepted. Existing mutants: <strong>13/13</strong> rejected.</p>
+<table aria-label="Pilot and main acceptance by model and spec, pooling ppoll fstat and pread64">
+<caption>E1 acceptance · ppoll, fstat and pread64 pooled</caption>
+<thead><tr><th rowspan="2" scope="col">Model</th><th rowspan="2" scope="col">Spec</th><th colspan="2" scope="colgroup">Pilot</th><th colspan="2" scope="colgroup">Main</th></tr>
+<tr><th scope="col">@1</th><th scope="col">@3</th><th scope="col">@1</th><th scope="col">@3</th></tr></thead>
+<tbody><tr><th scope="row">gpt-6-sol</th><td>full</td><td>3/6</td><td>6/6</td><td>21/30</td><td>29/30</td></tr><tr><th scope="row">gpt-6-sol</th><td>terse</td><td>5/6</td><td>6/6</td><td>18/30</td><td>30/30</td></tr><tr><th scope="row">gpt-6-sol</th><td>none</td><td>4/6</td><td>6/6</td><td>25/30</td><td>29/30</td></tr><tr><th scope="row">gpt-6.1-sol</th><td>full</td><td>4/6</td><td>6/6</td><td>21/30</td><td>30/30</td></tr><tr><th scope="row">gpt-6.1-sol</th><td>terse</td><td>6/6</td><td>6/6</td><td>27/30</td><td>30/30</td></tr><tr><th scope="row">gpt-6.1-sol</th><td>none</td><td>5/6</td><td>6/6</td><td>26/30</td><td>30/30</td></tr></tbody></table>
+<p class="note">@1: first attempt. @3: within three attempts, including all gates and held-out Linux cases. N=2 per pilot cell; N=10 per main cell. Functional runs only.</p>
+</body></html>
