@@ -13,3 +13,4 @@ copyFileSync('codec.mjs','build/codec.mjs');
 
 
 for(const name of ['prepared-helpers.mjs','shard-helpers.js'])copyFileSync(name,'build/'+name);
+copyFileSync('../kernel/ring-bootstrap.js','build/ring-bootstrap.js');

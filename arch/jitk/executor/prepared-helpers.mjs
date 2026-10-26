@@ -3,10 +3,10 @@ import {createHash} from 'node:crypto';
 // Keep source composition identical in the executor and offline preparer.
 export const helperSource='(()=>{\n'+readFileSync(new URL('./codec.mjs',import.meta.url),'utf8').replaceAll('export function ','function ')+'\n'+readFileSync(new URL('./shard-helpers.js',import.meta.url),'utf8')+'\n})();\n';
 // The identity also covers the ring bootstrap the helpers are spliced into, so a
-// snapshot prepared from an older bootstrap is refused too. Source tree: ../kernel;
-// executor/build: ../../kernel.
-const bootstrapUrl=['../kernel/ring-bootstrap.js','../../kernel/ring-bootstrap.js'].map(p=>new URL(p,import.meta.url)).find(u=>existsSync(u));
-if(!bootstrapUrl)throw Error('kernel/ring-bootstrap.js not found next to the executor');
+// snapshot prepared from an older bootstrap is refused too. build.mjs copies it
+// next to the bundle; the offline preparer reads it from the source tree.
+const bootstrapUrl=['./ring-bootstrap.js','../kernel/ring-bootstrap.js'].map(p=>new URL(p,import.meta.url)).find(u=>existsSync(u));
+if(!bootstrapUrl)throw Error('ring-bootstrap.js not found next to the executor');
 export const bootstrapSource=readFileSync(bootstrapUrl,'utf8');
 export const helperHash=createHash('sha256').update(helperSource).update('\0').update(bootstrapSource).digest('hex');
 export function fileHash(path) {

@@ -45,6 +45,8 @@ for part in ['arch/jitk/shard', 'arch/jitk/executor', 'arch/jitk/protocol', 'arc
         if source.stat().st_size > 1048576:
             continue
         files.append((source, str(source.relative_to(root))))
+# The executor build copies the ring bootstrap into its prepared-helper identity.
+files.append((root/'arch/jitk/kernel/ring-bootstrap.js', 'arch/jitk/kernel/ring-bootstrap.js'))
 archive = io.BytesIO()
 with tarfile.open(fileobj=archive, mode='w') as tar:
     for source, name in files:
