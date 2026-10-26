@@ -12,6 +12,12 @@ function error(id:any,code:number,message:string):any{return {jsonrpc:'2.0',id,e
 async function handle(wire:string,scope:string):Promise<string>{
   let m:any=null;try{m=JSON.parse(wire);}catch{return JSON.stringify(error(null,-32700,'Parse error'));}
   const hasId=object(m)&&Object.hasOwn(m,'id');
+  // Responses to unknown server request IDs carry no request to answer.
+  if(object(m)&&m.jsonrpc==='2.0'&&hasId&&m.method===undefined&&
+    (typeof m.id==='string'||(typeof m.id==='number'&&Number.isSafeInteger(m.id)))){
+    const result=Object.hasOwn(m,'result'),fault=Object.hasOwn(m,'error');
+    if(result!==fault&&((result&&object(m.result))||(fault&&object(m.error)&&Number.isInteger(m.error.code)&&typeof m.error.message==='string')))return '';
+  }
   if(!object(m)||m.jsonrpc!=='2.0'||typeof m.method!=='string'||(hasId&&typeof m.id!=='string'&&!(typeof m.id==='number'&&Number.isSafeInteger(m.id))))return JSON.stringify(error(null,-32600,'Invalid Request'));
   if(m.params!==undefined&&!object(m.params))return hasId?JSON.stringify(error(m.id,-32602,'Invalid params')):'';
   if(!hasId){
@@ -50,12 +56,12 @@ if(http===-1){
     if(req.method!=='POST'){res.setHeader('allow','POST');reply(res,405,'');return;}
     const accept=req.headers['accept']??'';
     if(!accept.includes('application/json')||!accept.includes('text/event-stream')){reply(res,406,JSON.stringify(error(null,-32000,'Accept application/json and text/event-stream required')));return;}
-    if(!(req.headers['content-type']??'').startsWith('application/json')){reply(res,415,'');return;}
+    if((req.headers['content-type']??'').split(';')[0].trim().toLowerCase()!=='application/json'){reply(res,415,'');return;}
     const version=req.headers['mcp-protocol-version'];
     if(version!==undefined&&!['2025-11-25','2025-06-18','2025-03-26','2024-11-05','2024-10-07'].includes(version)){reply(res,400,JSON.stringify(error(null,-32000,'Unsupported protocol version')));return;}
     let body='',size=0,over=false;const decoder=new StringDecoder('utf8');
     req.on('data',(b:Buffer)=>{size+=b.length;if(size>1<<20){if(!over){over=true;reply(res,413,'');}return;}body+=decoder.write(b);});
-    req.on('end',()=>{if(over)return;body+=decoder.end();void handle(body,'http:').then(out=>reply(res,out?200:202,out));});
+    req.on('end',()=>{if(over)return;body+=decoder.end();void handle(body,'http:').then(out=>{let status=out?200:202;if(out){const m:any=JSON.parse(out);if(m.error&&(m.error.code===-32700||m.error.code===-32600))status=400;}reply(res,status,out);});});
     req.on('error',()=>res.destroy());
   }).listen(port,'127.0.0.1',()=>process.stderr.write('jitk-mcp: http://127.0.0.1:'+port+'/mcp\n'));
 }
