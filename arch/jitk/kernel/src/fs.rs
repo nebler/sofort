@@ -5,10 +5,82 @@ use crate::syscalls::{copyin, copyout};
 #[derive(Clone, Copy)]
 pub struct Node { pub ino: usize, pub name: &'static [u8], pub parent: usize, pub dir: bool, pub a: usize, pub b: usize }
 #[derive(Clone, Copy)]
-pub struct Open { pub node: usize, pub pos: usize, pub cloexec: bool, pub read: bool }
+pub struct Open { pub node: usize, pub pos: usize, pub read: bool }
 pub const MAX_FDS: usize = 64;
-#[cfg(not(feature = "transport-ring"))]
-static mut FDS: [Option<Open>; MAX_FDS] = [None; MAX_FDS];
+
+// The atomic guard makes exclusive access real even for nested callbacks. No
+// reference into this singleton may escape; copied metadata can outlive a call.
+use core::{cell::UnsafeCell, sync::atomic::{AtomicBool, Ordering}};
+#[derive(Clone, Copy)]
+struct Fd { open: usize, cloexec: bool }
+struct FdTable {
+    descriptions: [Option<Open>; MAX_FDS],
+    fds: [Option<Fd>; MAX_FDS],
+}
+struct GlobalTable { busy: AtomicBool, value: UnsafeCell<FdTable> }
+// SAFETY: all access to value holds the atomic exclusive guard below. The
+// higher-ranked callback cannot return references into the protected table.
+unsafe impl Sync for GlobalTable {}
+static TABLE: GlobalTable = GlobalTable {
+    busy: AtomicBool::new(false),
+    value: UnsafeCell::new(FdTable { descriptions: [None; MAX_FDS], fds: [None; MAX_FDS] }),
+};
+struct ReleaseTable;
+impl Drop for ReleaseTable {
+    fn drop(&mut self) { TABLE.busy.store(false, Ordering::Release); }
+}
+fn with_table<R>(f: impl FnOnce(&mut FdTable) -> R) -> Result<R, isize> {
+    if TABLE.busy.compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed).is_err() {
+        return Err(-16);
+    }
+    let _guard = ReleaseTable;
+    // SAFETY: the guard excludes every other table access, including reentry;
+    // callback borrows end before the guard releases and cannot escape as R.
+    Ok(f(unsafe { &mut *TABLE.value.get() }))
+}
+impl FdTable {
+    fn open(&mut self, fd: usize) -> Result<&mut Open, isize> {
+        let f = self.fds.get(fd).and_then(|f| *f).ok_or(-9isize)?;
+        self.descriptions[f.open].as_mut().ok_or(-9)
+    }
+    fn close(&mut self, fd: usize) -> isize {
+        let Some(f) = self.fds.get_mut(fd).and_then(Option::take) else { return -9; };
+        if !self.fds.iter().flatten().any(|other| other.open == f.open) {
+            self.descriptions[f.open] = None;
+        }
+        0
+    }
+}
+pub fn with_open<R>(fd: usize, f: impl FnOnce(&mut Open) -> R) -> Result<R, isize> {
+    with_table(|t| t.open(fd).map(f))?
+}
+pub fn get(fd: usize) -> Result<Open, isize> { with_open(fd, |o| *o) }
+pub fn alloc(node: usize, cloexec: bool, read: bool) -> isize {
+    with_table(|t| {
+        let Some(fd) = (3..MAX_FDS).find(|&fd| t.fds[fd].is_none()) else { return -24; };
+        let Some(open) = t.descriptions.iter().position(Option::is_none) else { return -24; };
+        t.descriptions[open] = Some(Open { node, pos: 0, read });
+        t.fds[fd] = Some(Fd { open, cloexec });
+        fd as isize
+    }).unwrap_or_else(|e| e)
+}
+pub fn close(fd: usize) -> isize { with_table(|t| t.close(fd)).unwrap_or_else(|e| e) }
+#[cfg(feature = "transport-ring")]
+pub fn dup_stdin(old: usize, flags: usize) -> isize {
+    if old == 0 || flags & !0x80000 != 0 { return -22; }
+    with_table(|t| {
+        let Some(f) = t.fds.get(old).and_then(|f| *f) else { return -9; };
+        t.close(0);
+        t.fds[0] = Some(Fd { open: f.open, cloexec: flags != 0 });
+        0
+    }).unwrap_or_else(|e| e)
+}
+pub fn fd_flags(fd: usize, set: Option<usize>) -> isize {
+    with_table(|t| {
+        let Some(f) = t.fds.get_mut(fd).and_then(Option::as_mut) else { return -9; };
+        match set { Some(value) => { f.cloexec = value & 1 != 0; 0 }, None => f.cloexec as isize }
+    }).unwrap_or_else(|e| e)
+}
 
 fn archive() -> &'static [u8] {
     #[cfg(feature = "transport-ring")]
@@ -53,24 +125,6 @@ pub fn stat(n: Option<Node>) -> [u8; 128] {
     st[56..60].copy_from_slice(&4096u32.to_le_bytes());
     st[64..72].copy_from_slice(&((size + 511) / 512).to_le_bytes());
     st
-}
-
-#[cfg(not(feature = "transport-ring"))]
-pub fn get(fd: usize) -> Result<&'static mut Open, isize> {
-    unsafe { FDS.get_mut(fd).and_then(|f| f.as_mut()).ok_or(-9) }
-}
-#[cfg(not(feature = "transport-ring"))]
-pub fn alloc(node: usize, cloexec: bool, read: bool) -> isize {
-    unsafe {
-        match (3..MAX_FDS).find(|&fd| FDS[fd].is_none()) {
-            Some(fd) => { FDS[fd] = Some(Open { node, pos: 0, cloexec, read }); fd as isize }
-            None => -24,
-        }
-    }
-}
-#[cfg(not(feature = "transport-ring"))]
-pub fn close(fd: usize) -> isize {
-    unsafe { match FDS.get_mut(fd).and_then(|f| f.take()) { Some(_) => 0, None => -9 } }
 }
 
 // Copy a NUL-terminated user path one page at a time (PATH_MAX 4096 incl. NUL).
@@ -125,7 +179,8 @@ pub fn lookup(dirfd: usize, addr: usize, empty: bool, create: bool) -> Result<us
     Ok(cur)
 }
 pub fn read(fd: usize, buf: usize, len: usize) -> isize {
-    let f = match get(fd) { Ok(f) if f.read => f, Ok(_) => return -9, Err(e) => return e };
+    with_open(fd, |f| {
+    if !f.read { return -9; }
     let n = match node(f.node) { Ok(n) => n, Err(e) => return e };
     if n.dir { return -21; }
     let d = data(&n);
@@ -135,54 +190,5 @@ pub fn read(fd: usize, buf: usize, len: usize) -> isize {
     if let Err(e) = copyout(buf, &d[start..start + count]) { return e; }
     f.pos += count;
     count as isize
+    }).unwrap_or_else(|e| e)
 }
-
-// Ring-only open-description table. dup3(file, stdin) keeps the offset shared
-// even after the original descriptor closes; flags belong to descriptors.
-#[cfg(feature = "transport-ring")]
-mod ring_fds {
-    use super::{MAX_FDS, Open};
-    #[derive(Clone, Copy)]
-    struct Fd { open: usize, cloexec: bool }
-    static mut DESCRIPTIONS: [Option<Open>; MAX_FDS] = [None; MAX_FDS];
-    static mut FDS: [Option<Fd>; MAX_FDS] = [None; MAX_FDS];
-    pub fn get(fd: usize) -> Result<&'static mut Open, isize> {
-        unsafe {
-            let f = FDS.get(fd).and_then(|f| *f).ok_or(-9isize)?;
-            DESCRIPTIONS[f.open].as_mut().ok_or(-9)
-        }
-    }
-    pub fn alloc(node: usize, cloexec: bool, read: bool) -> isize {
-        unsafe {
-            let Some(fd) = (3..MAX_FDS).find(|&fd| FDS[fd].is_none()) else { return -24; };
-            let Some(open) = DESCRIPTIONS.iter().position(Option::is_none) else { return -24; };
-            DESCRIPTIONS[open] = Some(Open { node, pos: 0, cloexec, read });
-            FDS[fd] = Some(Fd { open, cloexec });
-            fd as isize
-        }
-    }
-    pub fn close(fd: usize) -> isize {
-        unsafe {
-            let Some(f) = FDS.get_mut(fd).and_then(Option::take) else { return -9; };
-            if !FDS.iter().flatten().any(|other| other.open == f.open) { DESCRIPTIONS[f.open] = None; }
-            0
-        }
-    }
-    pub fn dup_stdin(old: usize, flags: usize) -> isize {
-        if old == 0 || flags & !0x80000 != 0 { return -22; }
-        unsafe {
-            let Some(f) = FDS.get(old).and_then(|f| *f) else { return -9; };
-            let _ = close(0);
-            FDS[0] = Some(Fd { open: f.open, cloexec: flags != 0 });
-        }
-        0
-    }
-    pub fn fd_flags(fd: usize, set: Option<usize>) -> isize {
-        unsafe {
-            let Some(f) = FDS.get_mut(fd).and_then(Option::as_mut) else { return -9; };
-            match set { Some(value) => { f.cloexec = value & 1 != 0; 0 }, None => f.cloexec as isize }
-        }
-    }
-}
-#[cfg(feature = "transport-ring")]
-pub use ring_fds::{alloc, close, dup_stdin, fd_flags, get};

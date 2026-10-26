@@ -41,5 +41,49 @@ class Slots(unittest.TestCase):
                     self.assertNotEqual(generate(invalid).returncode, 0)
 
 
+class Borrowing(unittest.TestCase):
+    def test_mutable_open_cannot_escape(self):
+        with tempfile.TemporaryDirectory(prefix='jitk-borrow-check-') as tmp:
+            root = Path(tmp)
+            source = (ROOT / 'src/fs.rs').read_text()
+            # Old API accepts two live mutable references. The replacement must
+            # reject returning a mutable reference from the scoped callback.
+            if "Result<&'static mut Open" in source:
+                body = 'let a = fs::get(3).unwrap(); let b = fs::get(3).unwrap(); a.pos = 1; b.pos = 2;'
+            else:
+                body = 'let _a = fs::with_open(3, |o| o);'
+            harness = r"""
+#![allow(dead_code, static_mut_refs)]
+mod syscalls {
+    pub fn copyin(_:usize,_:&mut [u8])->Result<(),isize>{Ok(())}
+    pub fn copyout(_:usize,_:&[u8])->Result<(),isize>{Ok(())}
+}
+mod mmu {pub fn physical(n:usize)->usize{n}}
+mod user {pub const FS:usize=0;pub const FS_LEN:usize=0;}
+""" + f'#[path={json.dumps(str(ROOT / "src/fs.rs"))}] mod fs;\nfn main(){{ {body} }}'
+            (root / 'check.rs').write_text(harness)
+            result = subprocess.run(['rustc', '--edition=2024', str(root / 'check.rs'), '-o', str(root / 'check')], capture_output=True)
+            self.assertNotEqual(result.returncode, 0, 'mutable Open escaped the safe API')
+            self.assertIn(b'lifetime may not live long enough', result.stderr)
+
+    def test_scoped_descriptor_state(self):
+        with tempfile.TemporaryDirectory(prefix='jitk-fd-check-') as tmp:
+            root = Path(tmp)
+            harness = r"""
+#![allow(dead_code)]
+mod syscalls {
+    pub fn copyin(_:usize,_:&mut [u8])->Result<(),isize>{Ok(())}
+    pub fn copyout(_:usize,_:&[u8])->Result<(),isize>{Ok(())}
+}
+mod mmu {pub fn physical(n:usize)->usize{n}}
+mod user {pub const FS:usize=0;pub const FS_LEN:usize=0;}
+mod console {pub unsafe fn native()->bool{false}pub unsafe fn load(_:usize)->u64{0}}
+""" + f'#[path={json.dumps(str(ROOT / "src/fs.rs"))}] mod fs;' + f'#[path={json.dumps(str(ROOT / "src/fs_checks.rs"))}] mod checks;'
+            (root / 'check.rs').write_text(harness)
+            for features in [[], ['--cfg', 'feature="transport-ring"']]:
+                subprocess.run(['rustc', '--edition=2024', '--test', *features, str(root / 'check.rs'), '-o', str(root / 'check')], check=True)
+                subprocess.run([str(root / 'check')], check=True)
+
+
 if __name__ == '__main__':
     unittest.main()

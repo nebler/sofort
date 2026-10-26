@@ -5,11 +5,11 @@ pub fn call(a: &[usize]) -> isize {
     if crate::fs::get(fd).is_ok() && (a[1] == 1 || a[1] == 2) {
         return crate::fs::fd_flags(fd, if a[1] == 2 { Some(a[2]) } else { None });
     }
-    let f = if fd <= 2 { None } else { match crate::fs::get(fd) { Ok(f) => Some(f), Err(e) => return e } };
-    match (a[1] as u32, f) {
-        (1, Some(f)) => f.cloexec as isize,
-        (2, Some(f)) => { f.cloexec = a[2] & 1 != 0; 0 }
-        (1 | 2, None) => 0,
+    if fd <= 2 { return if a[1] == 1 || a[1] == 2 { 0 } else { -22 }; }
+    if crate::fs::get(fd).is_err() { return -9; }
+    match a[1] as u32 {
+        1 => crate::fs::fd_flags(fd, None),
+        2 => crate::fs::fd_flags(fd, Some(a[2])),
         _ => -22,
     }
 }

@@ -2,7 +2,7 @@
 // The fd offset is the next entry index (also reported as d_off).
 use crate::{fs, syscalls::copyout};
 pub fn call(a: &[usize]) -> isize {
-    let f = match fs::get(a[0] as u32 as usize) { Ok(f) => f, Err(e) => return e };
+    fs::with_open(a[0] as u32 as usize, |f| {
     let dir = match fs::node(f.node) { Ok(n) => n, Err(e) => return e };
     if !dir.dir { return -20; }
     let (count, mut off) = (a[2] as u32 as usize, 0);
@@ -25,4 +25,5 @@ pub fn call(a: &[usize]) -> isize {
         f.pos += 1;
     }
     off as isize
+    }).unwrap_or_else(|e| e)
 }
