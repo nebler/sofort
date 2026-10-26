@@ -7,7 +7,7 @@ Functional run on the M4 Mac, using the existing **kvm-dev** VM over SSH
 arch/jitk/linux/run.sh --nested
 ```
 
-Builds **01's canonical `vmm/build.py` and source**, pinned libkrun
+Builds **01's canonical native TypeScript VMM builder and source**, pinned libkrun
 `a1d8616765da03980f3be1bb8714bfdd3842f33c`, all patches in its series,
 minimal native rlib, panic=abort. Uses 07's integrated sandbox module; the build
 fails closed until its `.READY` exists. Builds 02's integrated kernel in an
@@ -21,9 +21,12 @@ the small C helpers. Fault assembly is read from `../vmm/tests/fixtures/`;
 Linux keeps no copies. Paths derive from the script location, so a complete
 kit copy works regardless of its directory name.
 Requires a running approved kvm-dev VM with passwordless sudo, cgroup v2
-memory+cpu controllers, Python and flock; Docker for a fresh VMM build; existing
-Rust 1.95.0 + aarch64-unknown-none, clang, ld.lld, llvm-objcopy and Python on
-the Mac. The runner finds `kvm-dev/ssh.sh` in the main Git checkout, including
+memory+cpu controllers and flock; Docker for a fresh VMM build; existing
+Rust 1.95.0 + aarch64-unknown-none, clang, ld.lld, llvm-objcopy, Node/npm for
+scriptc 0.4.5 and Zig on the Mac. `docker-build.sh` first cross-compiles
+`vmm/.work/linux/build` as static aarch64 musl, then mounts the VMM tree
+read-only and runs that tool in `rust:1.95-slim`. Neither the build container
+nor either guest harness requires Python. The runner finds `kvm-dev/ssh.sh` in the main Git checkout, including
 from worktrees. `JITK_NESTED_SSH=/absolute/path/to/ssh-wrapper` selects another
 existing equivalent VM; the wrapper accepts one remote shell command.
 It only creates a unique directory under `/home/dev/jitk-suite/`, runs under
@@ -39,8 +42,7 @@ see [RESULTS-R7-suite.md](RESULTS-R7-suite.md). Its host-side watchdog fails fas
 Set `JITK_NESTED_BASE` to an existing directory containing `vmlinuz` and
 `base.cpio.gz` to reuse a Debian nested harness read-only; an invalid directory
 fails explicitly. Otherwise `prepare-nested.sh` creates one in the workdir.
-Its minimal Python base is augmented with Debian’s full standard-library
-package for the measurement harness.
+The guest measurement harness is the static `build/linux/linux-tools` binary.
 
 The nested suite first tests parking on the same freshly built current kernel
 as all other gates: READY → 10 s idle VMM user+sys → 1000 sequential real tool
