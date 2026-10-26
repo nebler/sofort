@@ -8,7 +8,8 @@ pub fn call(a: &[usize]) -> isize {
     #[cfg(not(feature = "transport-ring"))]
     let console = fd <= 2;
     if console { return -29; }
-    let f = match fs::get(fd) { Ok(f) if f.read => f, Ok(_) => return -9, Err(e) => return e };
+    fs::with_open(fd, |f| {
+    if !f.read { return -9; }
     if a[2] > isize::MAX as usize || a[1].checked_add(a[2]).is_none() { return -14; }
     if a[3].checked_add(a[2]).is_none_or(|end| end > i64::MAX as usize) { return -22; }
     let n = match fs::node(f.node) { Ok(n) => n, Err(e) => return e };
@@ -18,4 +19,5 @@ pub fn call(a: &[usize]) -> isize {
     let count = a[2].min(d.len() - start);
     if count == 0 { return 0; }
     match copyout(a[1], &d[start..start + count]) { Ok(()) => count as isize, Err(e) => e }
+    }).unwrap_or_else(|e| e)
 }
