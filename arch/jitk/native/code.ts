@@ -1,4 +1,3 @@
-import {readFileSync} from 'node:fs';
 import type {Provider} from './types.js';
 // Acorn was used only to accept alternate source forms, never to enforce policy.
 // MCP documents an async function body. Whole arrow functions are recognized
