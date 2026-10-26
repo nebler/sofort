@@ -7,7 +7,8 @@ import os, sys, json, shutil, hashlib, subprocess
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from measure import ROOT, VM, quant
 kernel = Path(__file__).resolve().parents[1]; fixtures = kernel / 'tests/fixtures/fs'
-work = Path(os.environ.get('JITK_FS_WORK', str(kernel / 'test-work/fs'))).resolve(); work.mkdir(parents=True, exist_ok=True)
+from scratch import workspace
+work = workspace('JITK_FS_WORK', 'fs')
 host = os.environ.get('JITK_TEST_HOST', str(Path(__file__).resolve().parent / 'host.sh'))
 N = int(os.environ.get('JITK_FS_SAMPLES', '30'))
 LUA = kernel.parent / 'grow/payload/lua-static'; QJS = kernel / 'payload/qjs'

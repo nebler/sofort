@@ -2,7 +2,8 @@ from pathlib import Path
 import subprocess,os,json,hashlib,sys
 p=Path(__file__).resolve().parents[1]
 evidence=Path(os.environ.get('JITK_TEST_OUTPUT',str(p/'test-results'))).resolve()
-work=Path(os.environ.get('JITK_PROBE_WORK',str(p/'test-work/probes'))).resolve();work.mkdir(parents=True,exist_ok=True)
+from scratch import workspace
+work = workspace('JITK_PROBE_WORK', 'probes')
 (evidence/'probes').mkdir(parents=True,exist_ok=True)
 cases={'kernel-write':'mov x0,#0x80000000\nstr xzr,[x0]', 'text-write':'mov x0,#0x400000\nstr xzr,[x0]', 'heap-exec':'mov x0,#0x800000\nmov x1,#4096\nmov x8,#214\nsvc #0\nmov x0,#0x680000\nbr x0', 'privileged':'msr sctlr_el1,xzr', 'el0-hvc':'hvc #0', 'bad-pointer':'mov x0,#1\nmov x1,#0x80000000\nmov x2,#16\nmov x8,#64\nsvc #0\ncmn x0,#14\nb.ne fail', 'pan':'mov x8,#12345\nsvc #0'}
 # heap is allocated through brk (query/grow to 0x681000) before execute.

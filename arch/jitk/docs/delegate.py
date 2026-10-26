@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Delegate top-level commands; all implementation stays with subtree owners."""
 import os
+from contextlib import contextmanager
 from pathlib import Path
 import shutil
 import subprocess
@@ -8,6 +9,30 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@contextmanager
+def test_tree():
+    """Owner suites may overwrite receipts: run them in a disposable source copy."""
+    with tempfile.TemporaryDirectory(prefix="jitk-test-") as temporary:
+        root = Path(temporary) / "jitk"
+        excluded = {".git", ".work", "target", "target-ring", "node_modules", "__pycache__", "test-work"}
+        def ignore(directory, names):
+            return [name for name in names if name in excluded and (Path(directory) / name).is_dir()]
+        shutil.copytree(ROOT, root, symlinks=True, ignore=ignore)
+        for owner in ("executor", "mcp"):
+            modules = ROOT / owner / "node_modules"
+            if modules.exists():
+                (root / owner / "node_modules").symlink_to(modules.resolve(), target_is_directory=True)
+        print(f"jitk: disposable test tree {root}", flush=True)
+        try:
+            yield root
+        finally:
+            # Some filesystem tests intentionally remove all directory write bits.
+            for directory, dirs, files in os.walk(root):
+                for path in [Path(directory), *(Path(directory) / name for name in files)]:
+                    if not path.is_symlink():
+                        path.chmod(path.stat().st_mode | 0o700)
 
 
 def node_binary():
@@ -89,11 +114,22 @@ def main():
         env["NODE"] = env["JITK_NODE"]
     if subtree == "kernel" and env.get("JITK_KERNEL_CARGO_TARGET_DIR"):
         env["CARGO_TARGET_DIR"] = env["JITK_KERNEL_CARGO_TARGET_DIR"]
-    for item in commands or [command]:
-        status = subprocess.call(item, cwd=directory, env=env)
-        if status:
-            return status
-    return 0
+    def execute(base):
+        for item in commands or [command]:
+            rewritten = [part.replace(str(ROOT), str(base)) for part in item]
+            status = subprocess.call(rewritten, cwd=base / subtree, env=env)
+            if status:
+                return status
+        return 0
+
+    if action == "test":
+        if subtree == "linux" and not env.get("JITK_NESTED_SSH"):
+            common = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse",
+                                              "--path-format=absolute", "--git-common-dir"], text=True).strip()
+            env["JITK_NESTED_SSH"] = str(Path(common).parent / "kvm-dev/ssh.sh")
+        with test_tree() as root:
+            return execute(root)
+    return execute(ROOT)
 
 
 if __name__ == "__main__":

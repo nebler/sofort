@@ -9,7 +9,8 @@ from measure import ROOT, VM, quant, load_gate
 kernel = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('bench06', kernel.parent / 'bench/run.py')
 bench = importlib.util.module_from_spec(spec); spec.loader.exec_module(bench)
-work = Path(os.environ.get('JITK_FS_BENCH_WORK', str(kernel / 'test-work/fs-bench'))).resolve()
+from scratch import workspace
+work = workspace('JITK_FS_BENCH_WORK', 'fs-bench')
 N = int(os.environ.get('JITK_FS_SAMPLES', '30'))
 images = {}
 for mib in (0, 1, 8):

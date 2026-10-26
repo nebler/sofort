@@ -68,3 +68,8 @@ kvm-dev/qemu.pid
 /arch/jitk/shard/raw-r6/canary-10000.jsonl
 /arch/research/native-census/raw/musl-build.log
 /arch/viz/explainer/SofortExplained.mp4
+
+# Disposable test/build workspaces (real fixtures remain tracked)
+.work/
+arch/jitk/kernel/test-work/
+arch/jitk/executor/cloudflare-*.generated.mjs
