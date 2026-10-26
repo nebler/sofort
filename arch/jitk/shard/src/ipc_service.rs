@@ -89,7 +89,7 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
     if parent == 1 || unsafe { prctl(1, 9) } != 0 || unsafe { getppid() } != parent {
         return Err(invalid("IPC parent unavailable"));
     }
-    let snapshot = Snapshot::load(base);
+    let snapshot = Snapshot::load(base)?;
     let charge = ipc_charge(snapshot.class)?;
     let mut endpoint = unsafe { Endpoint::inherited()? };
     let wake = endpoint.notifier();

@@ -190,7 +190,7 @@ pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
         if vms.contains_key(name) {
             return Err("duplicate native profile".into());
         }
-        vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)));
+        vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)?));
     }
     let mut input = io::stdin().lock();
     let mut output = io::stdout().lock();
@@ -241,7 +241,7 @@ pub fn hold(
     );
     let run = inputs::decode(&std::fs::read(request)?).map_err(io::Error::other)?;
     let kvm = Kvm::new();
-    let snapshot = Snapshot::load(base);
+    let snapshot = Snapshot::load(base)?;
     let mut entropy = File::open("/dev/urandom")?;
     let mut vms = Vec::new();
     for i in 0..n {

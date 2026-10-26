@@ -542,7 +542,7 @@ mod tests {
     #[test]
     #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
     fn guest_protocol_error_resets_only_its_run() {
-        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap());
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
         let mut pool = Pool::new(Kvm::new(), snapshot, 2, 2);
         for (slot, source, mode) in [
             (0, "return await tools.echo(41);", Mode::Policy),

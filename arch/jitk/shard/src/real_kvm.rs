@@ -124,42 +124,64 @@ pub struct Snapshot {
     pub class: arena::Class,
     regs: Vec<Register>,
 }
+fn snapshot_error(message: &'static str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
+}
+fn parse_registers(b: &[u8]) -> io::Result<Vec<Register>> {
+    if b.get(..8) != Some(b"JTKREGS2") {
+        return Err(snapshot_error("snapshot register magic/truncated header"));
+    }
+    let mut remaining = &b[8..];
+    let mut regs = Vec::new();
+    let mut ids = std::collections::HashSet::new();
+    while !remaining.is_empty() {
+        let h = remaining
+            .get(..16)
+            .ok_or_else(|| snapshot_error("truncated register header"))?;
+        // Fixed-size checked header slices; these conversions cannot fail.
+        let id = u64::from_le_bytes(h[..8].try_into().unwrap());
+        let n = u64::from_le_bytes(h[8..].try_into().unwrap());
+        let width = 1u64 << ((id >> 52) & 15);
+        if width > 256 || n != width || id >> 56 != 0x60 || !ids.insert(id) || regs.len() >= 2048 {
+            return Err(snapshot_error("snapshot register width/identity/count"));
+        }
+        let data = remaining
+            .get(16..16 + n as usize)
+            .ok_or_else(|| snapshot_error("truncated register data"))?;
+        regs.push(Register {
+            id,
+            data: data.to_vec(),
+        });
+        remaining = &remaining[16 + n as usize..];
+    }
+    if regs.len() <= 68 {
+        return Err(snapshot_error("snapshot register count too small"));
+    }
+    Ok(regs)
+}
 impl Snapshot {
-    pub fn load(base: &str) -> Arc<Self> {
-        let memory = File::open(format!("{base}.mem")).unwrap();
-        assert_eq!(memory.metadata().unwrap().len(), RAM as u64);
-        let layout =
-            std::fs::read(format!("{base}.layout")).expect("prepare a versioned ring snapshot");
-        let class = arena::Class::from_layout(&layout).expect("unsupported ring snapshot layout");
+    pub fn load(base: &str) -> io::Result<Arc<Self>> {
+        let memory = File::open(format!("{base}.mem"))?;
+        if memory.metadata()?.len() != RAM as u64 {
+            return Err(snapshot_error("snapshot RAM length"));
+        }
+        let layout = std::fs::read(format!("{base}.layout"))?;
+        let class = arena::Class::from_layout(&layout)
+            .ok_or_else(|| snapshot_error("unsupported ring snapshot layout"))?;
         // The sidecar cannot select a different class than the linked image.
         use std::os::unix::fs::FileExt;
         let mut kernel = vec![0; 0x80000];
-        memory.read_exact_at(&mut kernel, 0).unwrap();
-        assert!(
-            kernel.windows(layout.len()).any(|b| b == layout),
-            "snapshot/layout mismatch"
-        );
-        let b = std::fs::read(format!("{base}.regs")).unwrap();
-        assert_eq!(&b[..8], b"JTKREGS2");
-        let mut at = 8;
-        let mut regs = Vec::new();
-        while at < b.len() {
-            let id = u64::from_le_bytes(b[at..at + 8].try_into().unwrap());
-            let n = u64::from_le_bytes(b[at + 8..at + 16].try_into().unwrap()) as usize;
-            at += 16;
-            assert!(n <= 256 && at + n <= b.len());
-            regs.push(Register {
-                id,
-                data: b[at..at + n].to_vec(),
-            });
-            at += n;
+        memory.read_exact_at(&mut kernel, 0)?;
+        if !kernel.windows(layout.len()).any(|b| b == layout) {
+            return Err(snapshot_error("snapshot/layout mismatch"));
         }
-        assert!(regs.len() > 68);
-        Arc::new(Self {
+        let b = std::fs::read(format!("{base}.regs"))?;
+        let regs = parse_registers(&b)?;
+        Ok(Arc::new(Self {
             memory,
             regs,
             class,
-        })
+        }))
     }
 }
 pub struct Request {
@@ -777,6 +799,37 @@ mod tests {
         b[32..32 + payload.len()].copy_from_slice(payload);
         s.copy(REQUEST, &b);
         s.store(0x40, len as u64);
+    }
+    fn register_bytes() -> Vec<u8> {
+        let mut bytes = b"JTKREGS2".to_vec();
+        for i in 0..69u64 {
+            bytes.extend_from_slice(&(0x6030_0000_0010_0000 + i).to_le_bytes());
+            bytes.extend_from_slice(&8u64.to_le_bytes());
+            bytes.extend_from_slice(&0u64.to_le_bytes());
+        }
+        bytes
+    }
+    #[test]
+    fn snapshot_registers_reject_truncation_and_corrupt_widths() {
+        let good = register_bytes();
+        assert!(parse_registers(&good).is_ok());
+        for n in 0..good.len() {
+            assert!(parse_registers(&good[..n]).is_err(), "prefix {n}");
+        }
+        for width in [0, 1, 7, 9, 256, u64::MAX] {
+            let mut bad = good.clone();
+            bad[16..24].copy_from_slice(&width.to_le_bytes());
+            assert!(parse_registers(&bad).is_err());
+        }
+        let mut bad = good.clone();
+        bad[8..16].copy_from_slice(&0x6090_0000_0010_0000u64.to_le_bytes());
+        assert!(parse_registers(&bad).is_err());
+        let mut bad = good.clone();
+        bad.extend_from_slice(&good[8..32]);
+        assert!(parse_registers(&bad).is_err(), "duplicate id");
+        let mut bad = good;
+        bad[0] = 0;
+        assert!(parse_registers(&bad).is_err());
     }
     #[test]
     fn guest_ram_reads_are_owned_copies() {
