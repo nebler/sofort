@@ -11,7 +11,7 @@ import type { ProcessResult } from './lib.ts';
 import { load } from './lib.ts';
 
 export const ROOT = resolve(import.meta.dirname);
-export const ASSETS = resolve(ROOT, '../grow');
+export const ASSETS = ROOT;
 export const CANONICAL = resolve(ROOT, '../kernel');
 let canonicalGate = false;
 export function selectGate(): void {

@@ -26,6 +26,7 @@ export async function integration(work: string, out: string, elf: string, databa
   writeFileSync(join(resources, 'dev/null'), Buffer.alloc(0));
   const rows: unknown[] = [];
   for (const testCase of readJSON<{ name: string; sql: string }[]>(join(ASSETS, 'sqlite-corpus.json'))) {
+    check(testCase, 'missing SQLite corpus case');
     const dest = join(out, testCase.name);
     mkdirSync(dest);
     const argv = ['sqlite3', '-batch', '-init', '/dev/null', 'file:/demo.db?mode=ro&immutable=1', testCase.sql];
@@ -41,7 +42,7 @@ export async function integration(work: string, out: string, elf: string, databa
       requireResult(value, reference, [48, 172]);
     }
     check(value, 'integration requires samples');
-    rows.push({ ...testCase, status: 'PASS', n: samples, ...outcome(reference), missing: numbers(value.missing.map((r) => r.nr)), registered_enosys: numbers(value.registered_enosys.map((r) => r.nr)), syscalls: numbers(value.events.map((r) => r.nr)) });
+    rows.push({ name: testCase.name, sql: testCase.sql, status: 'PASS', n: samples, ...outcome(reference), missing: numbers(value.missing.map((r) => r.nr)), registered_enosys: numbers(value.registered_enosys.map((r) => r.nr)), syscalls: numbers(value.events.map((r) => r.nr)) });
   }
   const result: IntegrationResult = { status: 'PASS', binary_sha256: sha(elf), database_sha256: sha(database), method: 'exact stdout bytes, reconstructed fd2 log bytes, guest done exit vs Linux pipes', transport: 'developer grow-trace on libkrun, printable stdout corpus; production fd2 remains dropped', cases: rows };
   dump(join(out, 'report.json'), result);

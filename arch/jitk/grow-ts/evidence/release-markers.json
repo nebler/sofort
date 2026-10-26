@@ -1,9 +1,0 @@
-{
-  "status": "PASS",
-  "unchanged": {
-    "/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow-ts/release.json": null,
-    "/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow-ts/.READY": null,
-    "/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow/release.json": "dfe2b3b906417d04bb2a1cf6a0c02ef6a95d5a2bb1f99fdc11b47544b19a5496",
-    "/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow/.READY": "66400c8fedc715d57190e0b4ddcf277b6529ac3ad03a2ff40dc42a2cd436282b"
-  }
-}

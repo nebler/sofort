@@ -76,3 +76,80 @@ process.env.TEST_CLI = process.argv[1]!;
 Still treated as `string | undefined` by lowering despite the non-null assertion.
 Use `String(process.argv[1])` after validating the argument. Encountered in the
 native test fixture, not in production credential handling.
+
+## E1/cutover findings (0.4.5)
+
+No blocking gap remains. These are compiler/runtime restrictions encountered
+while porting E1 and rebuilding after the canonical-directory move. No upstream
+report was filed.
+
+Optional `cwd` explicitly passed as undefined compiled but failed at runtime with
+`TypeError: undefined is not representable in the target union`:
+
+```ts
+import { spawn } from 'node:child_process';
+const cwd: string | undefined = undefined;
+spawn('/bin/pwd', [], { cwd });
+```
+
+`capture` supplies `options.cwd || process.cwd()` instead.
+
+Deleting a fixed-layout field through a dynamic record raises
+`Cannot delete property 'version' of #<Object>`:
+
+```ts
+const value = { version: 0 };
+const record = value as Record<string, unknown>;
+delete record.version;
+```
+
+Retry rollback overwrites original fixed fields and deletes only added overflow
+keys. The native retry regression test exercises mutation and restoration.
+
+Mutating a nested heterogeneous tuple triggered SC9001
+`recordSet receiver: expected record, got union`:
+
+```ts
+const cells: [string, number][] = [['first', 1]];
+cells[0][0] = 'second';
+```
+
+The fixture replaces the complete tuple. Production seeded design is tested
+against every cell/order in both historical Python metadata files.
+
+A nested async function with defaulted captured arguments was rejected with
+SC1090 (`functions with optional or defaulted parameters as values ...`):
+
+```ts
+async function outer(): Promise<void> {
+  const reference = 'visible';
+  async function verify(expected = reference): Promise<string> {
+    return expected;
+  }
+  await verify();
+}
+```
+
+The verifier uses explicit required reference/adapter arguments, including null
+for the hidden adapter. Hidden tests cannot accidentally inherit the visible
+adapter through default parameters.
+
+A corpus-loop record spread was inferred as optional after the directory move
+and rejected with SC1090, even following a controller assertion:
+
+```ts
+const cases = JSON.parse('[{"name":"x","sql":"select 1"}]') as { name: string; sql: string }[];
+for (const item of cases) {
+  const row = { ...item, status: 'PASS' };
+  console.log(row);
+}
+```
+
+Explicit `name: item.name, sql: item.sql` fields avoid that lowering restriction.
+
+For Linux cross-linking, put Zig's directory on PATH and let scriptc select
+`zig cc`. Setting `SCRIPTC_LINKER` to the bare zig executable caused
+`error: unknown command: -target`; that variable selects a compiler-driver
+replacement, not an arbitrary Zig executable path. The Makefile's target and
+matching runtime pack produce a verified static aarch64 musl ELF, executed in
+the unchanged Alpine oracle image.

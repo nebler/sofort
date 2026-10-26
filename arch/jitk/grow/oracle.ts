@@ -1,6 +1,6 @@
-import { mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, statSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { dump, readJSON } from './lib.ts';
+import { check, dump, readJSON } from './lib.ts';
 import { ASSETS, ROOT, capture, run } from './runtime.ts';
 import { type Outcome } from './observations.ts';
 
@@ -13,6 +13,7 @@ export interface OracleOptions {
 export type Oracle = (elf: string, argv: string[], out: string, expected: Buffer | null, options?: OracleOptions) => Promise<Outcome[]>;
 
 export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => {
+  check(existsSync(join(ROOT, 'build/oracle-profile')) && statSync(join(ROOT, 'build/oracle-profile')).isFile(), 'build the native oracle driver with make build');
   out = resolve(out);
   mkdirSync(out, { recursive: true });
   dump(join(out, 'oracle-config.json'), { argv, expected_hex: expected === null ? null : expected.toString('hex'), stdin_hex: (options.data ?? Buffer.from('ping\n')).toString('hex'), samples: options.samples ?? 1, injections: options.injections || [] });

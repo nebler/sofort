@@ -19,3 +19,7 @@ __pycache__/
 /experiments/E1*-driver*.log
 # All new transaction directories and logs are local. Existing history stays tracked.
 /results/*/
+/build/
+/node_modules/
+/.scriptc/
+/results/*.log
