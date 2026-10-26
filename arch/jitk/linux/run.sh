@@ -2,6 +2,9 @@
 set -Eeuo pipefail
 ROOT=$(cd "$(dirname "$0")" && pwd)
 cd "$ROOT"
+if [[ $(uname -s) == Darwin ]]; then
+ make -s -C "$ROOT" build build-linux
+fi
 source "$ROOT/output.sh"
 rm -f "$JITK_LINUX_READY"
 if [[ ${1:-} == --nested ]]; then

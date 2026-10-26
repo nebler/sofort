@@ -1,3 +1,4 @@
+.DEFAULT_GOAL := build
 SCRIPTC := node_modules/.bin/scriptc
 ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
 SOURCES := $(wildcard *.ts) $(wildcard nested/*.ts)

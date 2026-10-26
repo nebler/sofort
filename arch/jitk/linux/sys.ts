@@ -16,3 +16,8 @@ export function clockTicks(): number {
 export function kvmProbe(): number {
   return nativeKvmProbe();
 }
+
+declare function nativeStdoutWritable(): number;
+export function stdoutWritable(): boolean {
+  return nativeStdoutWritable() !== 0;
+}

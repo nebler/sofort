@@ -35,3 +35,19 @@ Indexed optional Buffers also require explicit undefined narrowing before writes
 
 The general async process, JSON, hashing and assertion helpers are in `lib.ts`,
 copied locally from the shard component rather than importing across components.
+
+## SIGPIPE bypasses finally
+
+```ts
+console.log('ready');
+setInterval(() => console.log('heartbeat'), 10);
+```
+
+Piping a compiled program to a reader which closes early terminates it with
+SIGPIPE (exit -13), bypassing JS cleanup; CPython ignores SIGPIPE and reports
+BrokenPipeError. The static bridge now ignores SIGPIPE and checks the relay fd
+with poll before writes. The watchdog throws a controlled BrokenPipeError,
+cleans owned groups, writes its receipt and returns Python's observed exit 120.
+Paired closed-stream injection passed on Mac and static Linux. Independently,
+forced-timeout injection killed escaped sessions and removed their cgroups in
+both implementations. No upstream issue filed.

@@ -17,7 +17,7 @@ outside Git. `JITK_RECORD=1` and output.sh's READY/evidence rules are unchanged.
 | cpu-analysis | PASS | Same report input | Parsed JSON identical, including negative residuals |
 | summarize | PASS | Same report input | report.md byte-identical |
 | out/r7 analyzer | PASS | Historical final-1/final-2 inputs | Parsed summary identical; all original validation gates retained |
-| watchdog injection | 5 tests / 16 assertions PASS | Static binary build verified | Stalls, duplicate progress, absolute gate/suite limits, silent startup, exits 0/7 |
+| watchdog injection | 5 tests / 16 assertions PASS | 5 tests / 16 assertions PASS | Stalls, duplicate progress, absolute gate/suite limits, silent startup, exits 0/7 |
 | full SSH profile, Python vs TS | PASS | 17/17 gates each | Identical artifact hashes, gate order, counts and pass states; 0 children |
 
 The paired full runs used the same existing staged inputs (kernel 75b2abe2…,
@@ -27,8 +27,9 @@ concurrency 1–8; density 1/32/64/128/256 and 256 validated after parking;
 100 setup-only and 100 bare-VM controls; 720 seccomp probes; 180 hostile guests
 with 30 external watchdog kills. Each left zero owned children/cgroups.
 
-The final in-place `make test` rebuilds the kernel from current sources and uses
-the e3d774eb… image. Its result is recorded below after completion.
+The in-place `make test` passed all 17 gates after Python removal, rebuilding
+the current e3d774eb… kernel. The same full profile is rerun after the SIGPIPE
+cleanup fix; the final result is recorded below.
 
 ## Formats and normalization
 
@@ -59,3 +60,31 @@ overlay is removed; nested/init runs the static binary.
 build script still invokes its owner's artifact.py. Those files are outside
 this port's allowed scope and must be switched by their owners. The aggregate
 arch/jitk/Makefile and docs/delegate entrypoint were intentionally not edited.
+
+## Additional live checks
+
+- Preflight: Python and static TS both passed 25 cases in a private mount namespace;
+  parsed rows/exit statuses match (uptime normalized).
+- Escaped-child forced stall: both returned 124 and removed every victim PID and
+  the owned cgroup subtree. No remaining children.
+- Broken output stream: Python and TS returned 120, wrote timing receipts and
+  reaped the child on both Mac and Linux. The initial scriptc SIGPIPE difference
+  was caught and corrected before finalization.
+- QEMU backend: exact command JSON and exit 0 compared using a fake QEMU emitting
+  real gate events. No second live QEMU was started; live validation uses SSH.
+- Invalid watchdog deadline: both return 124. Negative/duplicate RNG checks are
+  documented with the shard component.
+
+The archival churn reproducer remains a diagnostic; the full profile exercises
+its underlying VM ready/run/close path thousands of times. No archival mutation
+or VM lifecycle experiment was replayed.
+
+Aggregate integration needed: the docs owner must replace the aggregate
+`DELEGATE = python3 .../docs/delegate.py` and the `loc` Python command with its
+native TypeScript entrypoints. Existing linux test/nested routing continues to
+work through run.sh; both component Makefiles expose build/build-linux directly.
+
+Final post-SIGPIPE-fix in-place `make test`: **PASS, 17/17 gates, zero children**,
+with kernel e3d774eb844f2cca9f1ba2b28c5b732c7ebc659e01dbafb0505d0d0f1d08b1f6.
+The static Linux watchdog also passes all 5 tests / 16 assertions and the
+broken-stream cleanup probe. Git-tracked evidence remains unchanged.

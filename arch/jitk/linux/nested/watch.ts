@@ -1,4 +1,4 @@
-import { ignoreHup } from "../sys.ts";
+import { ignoreHup, stdoutWritable } from "../sys.ts";
 import {
   existsSync,
   mkdirSync,
@@ -32,6 +32,7 @@ export interface WatchOptions {
   suiteCgroups?: boolean;
 }
 export class DeadlineError extends Error {}
+export class BrokenPipeError extends Error {}
 function now(): number {
   return performance.now() / 1000;
 }
@@ -60,10 +61,9 @@ export async function watchRun(
       Number(process.env.JITK_NESTED_TIMEOUT || 900) +
       (options.suiteAllowance || 0),
   };
-  check(
-    Object.values(limits).every((value) => value > 0),
-    "watchdog deadlines must be positive",
-  );
+  if (!Object.values(limits).every((value) => value > 0)) {
+    throw new DeadlineError("watchdog deadlines must be positive");
+  }
   mkdirSync(dirname(log), { recursive: true });
   const started = now();
   let lastProgress = started;
@@ -89,6 +89,9 @@ export async function watchRun(
   };
   process.on("SIGTERM", signalHandler);
   function flush(): void {
+    if (options.relay && !stdoutWritable()) {
+      throw new BrokenPipeError("[Errno 32] Broken pipe");
+    }
     for (; written < p.stdout.length; written++) {
       if (options.relay) {
         const chunk = p.stdout[written];
@@ -170,7 +173,13 @@ export async function watchRun(
     return await p.wait(5);
   } catch (exc) {
     const message = exc instanceof Error ? exc.message : String(exc);
-    error = "TimeoutError(" + JSON.stringify(message) + ")";
+    const kind =
+      exc instanceof DeadlineError
+        ? "TimeoutError"
+        : exc instanceof BrokenPipeError
+          ? "BrokenPipeError"
+          : "Error";
+    error = kind + "(" + JSON.stringify(message) + ")";
     console.error("JITK_TIMEOUT " + error + "; log=" + log);
     throw exc;
   } finally {
@@ -183,7 +192,8 @@ export async function watchRun(
         await p.cleanup();
       }
     }
-    flush();
+    // A closed SSH stream must not prevent owned-cgroup cleanup or receipts.
+    writeFileSync(log, Buffer.concat(p.stdout));
     const group = "/sys/fs/cgroup/jitk-05-" + p.child.pid;
     if (options.suiteCgroups && existsSync(group)) {
       writeFileSync(join(group, "cgroup.kill"), "1");
@@ -225,6 +235,8 @@ export async function watchCli(args: string[]): Promise<void> {
   } catch (error) {
     if (error instanceof DeadlineError) {
       process.exitCode = 124;
+    } else if (error instanceof BrokenPipeError) {
+      process.exitCode = 120;
     } else {
       throw error;
     }

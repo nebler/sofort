@@ -1,5 +1,6 @@
 /* Narrow POSIX bridge for APIs absent from scriptc's Node compatibility layer. */
 #include <signal.h>
+#include <poll.h>
 #include <sys/resource.h>
 #include <unistd.h>
 #ifdef __linux__
@@ -7,7 +8,8 @@
 #include <sys/ioctl.h>
 #endif
 int jitk_ignore_hup(void) {
-    return signal(SIGHUP, SIG_IGN) == SIG_ERR ? -1 : 0;
+    if (signal(SIGHUP, SIG_IGN) == SIG_ERR) return -1;
+    return signal(SIGPIPE, SIG_IGN) == SIG_ERR ? -1 : 0;
 }
 double jitk_usage(int children, int system) {
     struct rusage usage;
@@ -30,4 +32,10 @@ int jitk_kvm_probe(void) {
 #else
     return -1;
 #endif
+}
+
+int jitk_stdout_writable(void) {
+    struct pollfd output = { .fd = STDOUT_FILENO, .events = POLLOUT };
+    if (poll(&output, 1, 0) < 0) return 1;
+    return !(output.revents & (POLLERR | POLLHUP | POLLNVAL));
 }
