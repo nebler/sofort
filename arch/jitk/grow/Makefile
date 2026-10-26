@@ -58,6 +58,10 @@ build/e3: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
 	$(SCRIPTC) build e3.ts -o $@
 
+build/auto-grow: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build auto-grow.ts -o $@
+
 grow: build
 	build/grow --run-id run-$$(date +%Y%m%dT%H%M%S) --validate-only $(ARGS)
 
