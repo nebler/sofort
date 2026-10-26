@@ -3,8 +3,8 @@
 TypeScript compiled with **scriptc 0.4.5** is the sole grow-loop implementation.
 `../kernel/` remains the only kernel source. The controller requires its `.READY`,
 copies it into a disposable Git repository, removes independent tests before
-proposal generation, and removes that repository/Cargo cache on exit. No Python
-source remains in grow. Generic process, hashing, JSON and assertion helpers live
+proposal generation, and removes that repository/Cargo cache on exit. No Python implementation
+source is tracked in grow. Generic process, hashing, JSON and assertion helpers live
 in `lib.ts` for later consolidation with the other TypeScript ports.
 
 ```sh
@@ -97,7 +97,8 @@ arch/jitk/grow/build/experiments run-e1 --phase pilot --workers 3 --prefix fresh
   --vmm /absolute/jitk-vmm --sqlite-elf /absolute/sqlite3-static --database /absolute/demo.db
 arch/jitk/grow/build/experiments verify-receipts --meta /absolute/E1-pilot.json --require-complete
 arch/jitk/grow/build/experiments seal-receipts --meta /absolute/E1-pilot.json --artifacts
-arch/jitk/grow/build/experiments summarize --meta /absolute/E1-pilot.json --meta /absolute/E1.json
+arch/jitk/grow/build/experiments summarize --meta /absolute/E0-environment.json \
+  --meta /absolute/E1-pilot.json --meta /absolute/E1.json
 arch/jitk/grow/build/experiments failure-analysis --meta /absolute/E1.json
 arch/jitk/grow/build/experiments render-summary --meta /absolute/summary.json
 ```

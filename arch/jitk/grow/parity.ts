@@ -6,7 +6,7 @@ import { observe } from './observations.ts';
 const TIMING = new Set(['seconds', 'wall_s', 'uptime', 'uptime_before', 'uptime_after', 'benchmark', 'load_gate', 'commit', 'controller_sha256']);
 export function canonical(value: unknown): string {
   if (Array.isArray(value)) {
-    return '[' + value.map((item) => canonical(item)).join(',') + ']';
+    return '[' + value.map((item: unknown) => canonical(item)).join(',') + ']';
   }
   if (value !== null && typeof value === 'object') {
     const record = value as Record<string, unknown>;
@@ -16,7 +16,7 @@ export function canonical(value: unknown): string {
 }
 export function normalizeReceipt(value: unknown, roots: string[], repo: string): unknown {
   if (Array.isArray(value)) {
-    return value.map((item) => normalizeReceipt(item, roots, repo));
+    return value.map((item: unknown) => normalizeReceipt(item, roots, repo));
   }
   if (value !== null && typeof value === 'object') {
     const record = value as Record<string, unknown>;

@@ -94,8 +94,10 @@ export async function sealReceipts(metaPath: string, artifacts: boolean): Promis
   const repo = (await run(['git', 'rev-parse', '--show-toplevel'])).stdout.toString().trim();
   const sourceNames = ['heldout-probe.c', 'profiles.ts', 'sqlite-profile.ts', 'sqlite-corpus.json', 'host-tests.ts', 'fs-probe.c', 'probe.ld', 'oracle-profile.ts', 'lib.ts'];
   const sources: Record<string, string> = {};
-  for (const name of sourceNames) {
-    const path = relative(repo, join(ROOT, name));
+  const sourcePaths = sourceNames.map((name) => join(ROOT, name));
+  sourcePaths.push(join(CANONICAL, 'tests/test_fs.py'));
+  for (const source of sourcePaths) {
+    const path = relative(repo, source);
     sources[path] = hashBytes((await run(['git', 'show', meta.source_commit + ':' + path])).stdout);
     check(sha(join(repo, path)) === sources[path], 'trusted source changed: ' + path);
   }
@@ -151,6 +153,13 @@ export function verifyReceipts(metaPath: string, complete: boolean): { transacti
     check(report.accepted === attempts.some((item) => item.accepted), 'acceptance mismatch');
     check(report.acceptance_at_1 === attempts[0].accepted && report.acceptance_at_3 === report.accepted, 'acceptance-at-k mismatch');
     const run = readJSON<Experiment>(join(out, 'experiment.json'));
+    const finalReport = readOr<{ host_sha256?: string }>(join(out, 'report.json'), {});
+    if (report.accepted) {
+      check(finalReport.host_sha256 === meta.vmm_sha256, 'VMM pin mismatch');
+    }
+    for (const path of files(out).filter((path) => path.endsWith('/oracle-image.json'))) {
+      check(readJSON<{ Id: string }>(path).Id === meta.oracle_image, 'oracle image pin mismatch');
+    }
     if (report.accepted) {
       check(run.returncode === 0 && readJSON<{ gate: string }>(join(out, 'report.json')).gate === 'PASS', 'final immutable-source/VMM gate failed');
     }
@@ -186,11 +195,30 @@ export function verifyReceipts(metaPath: string, complete: boolean): { transacti
 }
 export function summarize(metaPaths: string[], output: string): void {
   const result: Record<string, Transaction[]> = {};
+  const e0: Record<string, string>[] = [];
   for (const path of metaPaths) {
-    result[basename(path).includes('pilot') ? 'pilot' : 'main'] = phase(path);
+    if (basename(path) === 'E0-environment.json') {
+      e0.push(...csvDecode(readFileSync(join(dirname(path), 'E0.csv'), 'utf8')));
+    } else {
+      result[basename(path).includes('pilot') ? 'pilot' : 'main'] = phase(path);
+    }
   }
-  dump(output, result);
+  const saved: Record<string, unknown> = {};
+  for (const key of Object.keys(result)) {
+    saved[key] = result[key];
+  }
+  if (e0.length) {
+    saved.e0 = e0;
+  }
+  dump(output, saved);
   const parts = ['# Grow experiment summary', 'Functional results only. Transaction wall times include CLI latency; no VM performance claim is made.'];
+  if (e0.length) {
+    parts.push('| E0 run | Target | Accepted | Rejecting gate | CLI calls | Wall s |\n|---|---|---:|---|---:|---:|');
+    for (const row of e0) {
+      parts.push(`| ${row.run_id} | ${row.target} | ${row.accepted} | ${row.rejecting_gate} | ${row.cli_calls} | ${row.wall_s} |`);
+    }
+    parts.push('E0 human preparation time was not measured. Failed and not-reached targets remain in the table.');
+  }
   for (const key of Object.keys(result)) {
     const transactions = result[key];
     parts.push(`${key}: ${transactions.length} completed, ${transactions.filter((tx) => tx.accepted).length} accepted.`);
@@ -201,6 +229,13 @@ export function summarize(metaPaths: string[], output: string): void {
           const rows = transactions.filter((tx) => tx.model === model && tx.target === target && tx.spec === spec);
           parts.push(`| ${model} | ${target} | ${spec} | ${rows.length} | ${rows.filter((r) => r.at1).length} | ${rows.filter((r) => r.accepted).length} | ${rows.reduce((n, r) => n + r.calls, 0)} | ${rows.reduce((n, r) => n + r.seconds, 0).toFixed(1)} |`);
         }
+      }
+    }
+    parts.push('| Model | Spec (targets pooled) | N | Accepted @1 | Accepted @3 |\n|---|---|---:|---:|---:|');
+    for (const model of ['old', 'new']) {
+      for (const spec of ['full', 'terse', 'none']) {
+        const rows = transactions.filter((tx) => tx.model === model && tx.spec === spec);
+        parts.push(`| ${model} | ${spec} | ${rows.length} | ${rows.filter((tx) => tx.at1).length} | ${rows.filter((tx) => tx.accepted).length} |`);
       }
     }
     const gates: Record<string, number> = {};
@@ -236,7 +271,10 @@ export function summarize(metaPaths: string[], output: string): void {
     const old = main.filter((tx) => tx.model === 'old' && tx.accepted).length;
     const newer = main.filter((tx) => tx.model === 'new' && tx.accepted).length;
     const terse = main.filter((tx) => tx.model === 'new' && tx.spec === 'terse');
-    const passed = terse.filter((tx) => tx.accepted).length * 2 >= terse.length && newer > old;
+    const terseAccepted = terse.filter((tx) => tx.accepted).length;
+    const oldTerse = main.filter((tx) => tx.model === 'old' && tx.spec === 'terse' && tx.accepted).length;
+    parts.push(`Terse-only new ${terseAccepted}/${terse.length}; old ${oldTerse}/30. Strictly higher at terse only: ${terseAccepted > oldTerse ? 'PASS' : 'FAIL'}.`);
+    const passed = terseAccepted * 2 >= terse.length && newer > old;
     parts.push(`E1 all-spec pooled predicate: ${passed ? 'PASS' : 'NOT MET'}. New ${newer}/90; old ${old}/90. E2/E3 are untested; no statistically resolved amplifier claim follows.`);
   } else {
     parts.push('E1 incomplete; no decision-table outcome established.');

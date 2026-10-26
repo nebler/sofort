@@ -12,7 +12,7 @@ import { proposal, specification, auditResponse, validateProposal } from './agen
 import { observe, records, requireResult, type TraceRecord } from './observations.ts';
 import { PROFILES, mutations } from './profiles.ts';
 import { design, attemptRows, markers, type Metadata } from './experiment-run.ts';
-import { category, renderSummary, phase, verifyReceipts } from './experiment-audit.ts';
+import { category, renderSummary, phase, verifyReceipts, sealReceipts } from './experiment-audit.ts';
 import { canonical, normalizeReceipt } from './parity.ts';
 import { normalize } from './normalize.ts';
 
@@ -497,7 +497,7 @@ test('receipt audit detects changed CSV decisions and incomplete denominators', 
     const meta: Metadata = { date: 'test', host: 'test', cli: 'test', source_commit: 'test', controller_sha256: {}, models: { old: 'gpt-6-sol', new: 'gpt-6.1-sol' }, protected_before: pins, oracle_image: 'test', vmm_sha256: 'test', design: cells, n_per_cell: 1 };
     dump(join(tools, 'E1-pilot.json'), meta);
     dump(join(out, 'source.json'), { files: treeHashes(CANONICAL) });
-    dump(join(out, 'report.json'), { gate: 'PASS' });
+    dump(join(out, 'report.json'), { gate: 'PASS', host_sha256: 'test' });
     dump(join(out, 'experiment.json'), { wall_s: 1, returncode: 0, paused: false, accepted: true, command: ['grow', '--validate-only'], protected_after: pins, controller_sha256: {} });
     dump(join(tx, 'report.json'), { accepted: true, acceptance_at_1: true, acceptance_at_3: true, cli_calls: 1, attempts: [{ attempt: 1, accepted: true, gate: 'PASS', wall_s: 1 }] });
     const stages: Record<string, { passed: boolean }> = { heldout_candidate: { passed: true } };
@@ -523,6 +523,33 @@ test('receipt audit detects changed CSV decisions and incomplete denominators', 
     cleanup(tools);
   }
 });
+test('sealing pins trusted Git inputs and inventories artifact bytes', async () => {
+  const runId = 'unit-seal-' + process.pid;
+  const out = join(ROOT, 'results', runId);
+  const tools = join(ROOT, 'results', runId + '-experiment');
+  mkdirSync(join(out, 'tx-ppoll/attempt-1/heldout'), { recursive: true });
+  mkdirSync(tools);
+  try {
+    const commit = (await run(['git', 'rev-parse', 'HEAD'], { cwd: ROOT })).stdout.toString().trim();
+    dump(join(out, 'experiment.json'), {});
+    dump(join(out, 'oracle-image.json'), { Id: 'fixture-image' });
+    dump(join(out, 'tx-ppoll/attempt-1/heldout/sealed.json'), { source_sha256: sha(join(ROOT, 'heldout-probe.c')) });
+    const meta: Metadata = { date: 'test', host: 'test', cli: 'test', source_commit: commit, controller_sha256: {}, models: {}, protected_before: markers(), oracle_image: 'fixture-image', vmm_sha256: 'test', design: [[runId, 'ppoll', 'none', 'new', 1]], n_per_cell: 1 };
+    const path = join(tools, 'E1-pilot.json');
+    dump(path, meta);
+    await sealReceipts(path, true);
+    const sealed = readJSON<{ trusted_sources_sha256: Record<string, string> }>(join(out, 'sealed-inputs.json'));
+    assert.ok(Object.keys(sealed.trusted_sources_sha256).some((name) => name.endsWith('kernel/tests/test_fs.py')));
+    const artifacts = readJSON<Record<string, { sha256: string }>>(join(out, 'artifacts.json'));
+    assert.equal(artifacts['experiment.json'].sha256, sha(join(out, 'experiment.json')));
+    dump(join(out, 'oracle-image.json'), { Id: 'changed-image' });
+    await assert.rejects(() => sealReceipts(path, false), /oracle image changed/);
+  } finally {
+    cleanup(out);
+    cleanup(tools);
+  }
+});
+
 test('summary renderer requires full measurements', async () => {
   await temporary(async (path) => {
     const source = join(ASSETS, 'experiments/summary.json');

@@ -82,7 +82,7 @@ export function attemptRows(cell: Cell, metadata: Metadata): Record<string, unkn
   });
 }
 export async function textCommand(command: string[]): Promise<string> {
-  return (await run(command)).stdout.toString().trim();
+  return (await run(command, { cwd: ROOT })).stdout.toString().trim();
 }
 export interface RunOptions {
   phase: string;
