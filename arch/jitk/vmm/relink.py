@@ -7,7 +7,7 @@ from pathlib import Path
 import platform
 import subprocess
 
-root = Path(__file__).resolve().parents[3] / 'arch/jitk/vmm'
+root = Path(__file__).resolve().parent
 out = Path(os.environ['JITK_VMM_BUILD']).resolve()
 out.mkdir(parents=True, exist_ok=True)
 deps = out / 'libkrun/target/release/deps'

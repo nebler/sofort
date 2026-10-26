@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Delegate top-level commands; all implementation stays with subtree owners."""
 import os
-from contextlib import contextmanager
 from pathlib import Path
 import shutil
 import subprocess
@@ -11,28 +10,15 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@contextmanager
-def test_tree():
-    """Owner suites may overwrite receipts: run them in a disposable source copy."""
-    with tempfile.TemporaryDirectory(prefix="jitk-test-") as temporary:
-        root = Path(temporary) / "jitk"
-        excluded = {".git", ".work", "target", "target-ring", "node_modules", "__pycache__", "test-work"}
-        def ignore(directory, names):
-            return [name for name in names if name in excluded and (Path(directory) / name).is_dir()]
-        shutil.copytree(ROOT, root, symlinks=True, ignore=ignore)
-        for owner in ("executor", "mcp"):
-            modules = ROOT / owner / "node_modules"
-            if modules.exists():
-                (root / owner / "node_modules").symlink_to(modules.resolve(), target_is_directory=True)
-        print(f"jitk: disposable test tree {root}", flush=True)
-        try:
-            yield root
-        finally:
-            # Some filesystem tests intentionally remove all directory write bits.
-            for directory, dirs, files in os.walk(root):
-                for path in [Path(directory), *(Path(directory) / name for name in files)]:
-                    if not path.is_symlink():
-                        path.chmod(path.stat().st_mode | 0o700)
+def git_snapshot():
+    """Include diffs so rewriting an already-dirty receipt cannot evade status."""
+    commands = [
+        ['status', '--porcelain=v1', '-z', '--untracked-files=all', '--', '.'],
+        ['diff', '--binary', '--', '.'],
+        ['diff', '--cached', '--binary', '--', '.'],
+    ]
+    return tuple(subprocess.check_output(['git', '-C', str(ROOT), *args])
+                 for args in commands)
 
 
 def node_binary():
@@ -114,10 +100,9 @@ def main():
         env["NODE"] = env["JITK_NODE"]
     if subtree == "kernel" and env.get("JITK_KERNEL_CARGO_TARGET_DIR"):
         env["CARGO_TARGET_DIR"] = env["JITK_KERNEL_CARGO_TARGET_DIR"]
-    def execute(base):
+    def execute():
         for item in commands or [command]:
-            rewritten = [part.replace(str(ROOT), str(base)) for part in item]
-            status = subprocess.call(rewritten, cwd=base / subtree, env=env)
+            status = subprocess.call(item, cwd=directory, env=env)
             if status:
                 return status
         return 0
@@ -127,21 +112,16 @@ def main():
             common = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse",
                                               "--path-format=absolute", "--git-common-dir"], text=True).strip()
             env["JITK_NESTED_SSH"] = str(Path(common).parent / "kvm-dev/ssh.sh")
-        with test_tree() as root:
-            status = execute(root)
-            # Later suites consume these ignored build products. Receipts stay disposable.
-            output = {"kernel": "dist", "executor": "build"}.get(subtree)
-            if status == 0 and output and (root / subtree / output).is_dir():
-                tracked = set(subprocess.check_output(
-                    ["git", "-C", str(ROOT), "ls-files", "-z", "--", f"{subtree}/{output}"],
-                    text=True).split("\0"))
-                def keep_receipts(directory, names):
-                    return [name for name in names
-                            if str((Path(directory) / name).relative_to(root)) in tracked]
-                shutil.copytree(root / subtree / output, ROOT / subtree / output,
-                                dirs_exist_ok=True, ignore=keep_receipts)
-            return status
-    return execute(ROOT)
+        before = git_snapshot()
+        status = execute()
+        after = git_snapshot()
+        if before != after:
+            print(f"jitk: {subtree}/test changed Git state under {ROOT}; "
+                  "put test output in .work/ and record evidence explicitly", file=sys.stderr)
+            print(after[0].decode(errors="replace").replace("\0", "\n"), file=sys.stderr)
+            return status or 1
+        return status
+    return execute()
 
 
 if __name__ == "__main__":

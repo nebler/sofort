@@ -5,6 +5,7 @@ build:
 ring:
 	sh build-ring.sh
 test: build
+	python3 ../docs/test_delegate.py
 	python3 ../docs/test_receipts.py
 	python3 tests/test_packer.py
 	python3 tests/test_handlers.py
