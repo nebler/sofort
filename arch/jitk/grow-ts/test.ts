@@ -56,7 +56,8 @@ test('registered ENOSYS and argument errors retain raw arguments', async () => {
   assert.equal(value.registered_enosys[0].nr, 134);
   assert.ok(value.registered_enosys[0].ret === -38);
   assert.equal(value.registered_enosys[0].args.length, 6);
-  assert.deepEqual(value.argument_errors, value.registered_enosys);
+  assert.ok(value.registered_enosys[0].pc === 4194504);
+  assert.ok(equal(value.argument_errors, value.registered_enosys));
 });
 
 test('fatal and truncated output fail closed', async () => {
@@ -286,6 +287,11 @@ test('raw 64-bit register JSON round trips exactly', async () => {
   const value = parseJSON(raw) as { args: (number | string)[] };
   assert.equal(signed(value.args[0]), -1);
   assert.equal(stringify(parseJSON(raw), 0), raw);
+});
+
+test('trace observations preserve future raw record fields', async () => {
+  const raw = Buffer.from(fixture('rt_sigaction').toString().replace('\"pc\":4194504', '\"future\":42,\"pc\":4194504'));
+  assert.ok(observe(raw).events[0].future === 42);
 });
 
 test('bounded process capture drains both binary streams and reaps descendants', async () => {

@@ -48,3 +48,13 @@ To bring E1 across: change `Arguments`/`parseArgs` and `transaction` in `loop.ts
 these functions; do not weaken `validateProposal`, the source/hash checks or
 semantic-only mutation accounting. Rerun native tests and `parity.py` against
 the matching Python revision after that update.
+
+Receipt compatibility found during parity: raw trace records need an index
+signature and explicit key copying for native scriptc to preserve unknown fields.
+The JSON integer-key ordering rule changes serialized manifest checksums even
+when parsed content is identical; parity verifies each checksum against its own
+bytes before comparing a canonical-content checksum. Discovery captures may end
+at different chunks after the first missing entry; parity first verifies the
+entire saved observation against its raw stream, then compares through that same
+first-miss boundary. Normal completion vs expected SIGKILL after discovery is
+recorded but does not indicate a different missing-syscall decision.

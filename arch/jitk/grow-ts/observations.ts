@@ -1,10 +1,12 @@
 import { check, detail, equal, hexBytes, parseJSON, stringify, type Register } from './io.ts';
 
 export interface TraceRecord {
+  [key: string]: unknown;
   v: number;
   kind: string;
   seq?: number;
   nr?: number;
+  pc?: number;
   args?: Register[];
   input?: string | null;
   timeout?: string | null;
@@ -76,7 +78,9 @@ export function observe(raw: Buffer): Observations {
       } else if (r.kind === 'sys.exit') {
         check(pending && r.seq === pending.seq, 'exit without matching entry');
         check(typeof r.ret === 'number', 'missing return value');
-        const event: SyscallRecord = { ...pending, ret: r.ret, output: r.output ?? null };
+        const event = copyRecord(pending);
+        event.ret = r.ret;
+        event.output = r.output ?? null;
         events.push(event);
         if (r.ret < 0) {
           errors.push(event);
@@ -93,7 +97,9 @@ export function observe(raw: Buffer): Observations {
         check(r.seq === pending.seq && r.code === pending.args[0], 'done seq/code');
         check(done === null && typeof r.code === 'number', 'duplicate/missing done code');
         done = r.code;
-        events.push({ ...pending, ret: null });
+        const event = copyRecord(pending);
+        event.ret = null;
+        events.push(event);
         pending = undefined;
       } else {
         fatal.push(r);
@@ -133,4 +139,12 @@ export function records(raw: Buffer): { records: TraceRecord[]; app: Buffer } {
 
 function outcomeDescription(value: Outcome): string {
   return "{'stdout_hex': '" + value.stdout_hex + "', 'stderr_hex': '" + value.stderr_hex + "', 'exit': " + (value.exit === null ? 'None' : String(value.exit)) + '}';
+}
+
+function copyRecord(record: SyscallRecord): SyscallRecord {
+  const copy: Record<string, unknown> = {};
+  for (const key of Object.keys(record)) {
+    copy[key] = record[key];
+  }
+  return copy as unknown as SyscallRecord;
 }
