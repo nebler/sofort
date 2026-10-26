@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync} from 'node:fs';
+import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {Dispatcher,ProtocolError,LIMIT,encode,parseFrame,schema} from './dispatcher.ts';
@@ -91,4 +91,6 @@ function fuzz() {
  return {mutations:25000,chunkDifferentialRuns:50000,accepted,rejected,seed:'0x3c0ffee'};
 }
 const result={node:process.execPath,version:process.version,uptime:execFileSync('/usr/bin/uptime',{encoding:'utf8'}).trim(),corpus:corpus(),boundaries:boundaries(),fuzz:fuzz()};
-writeFileSync(here+'test-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+const output=here+(process.env.JITK_RECORD==='1'?'':'.work/');
+mkdirSync(output,{recursive:true});
+writeFileSync(output+'test-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

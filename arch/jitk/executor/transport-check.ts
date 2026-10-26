@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 import {writeFileSync} from 'node:fs';
@@ -16,4 +17,4 @@ for(const mode of ['badready','del','trailing','duplicate','unknown','replay']) 
  }finally{await pool.close();assert.equal(pool.snapshot().tokens,0);}
 }
 const result={loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows};
-writeFileSync('transport-check-results.json',JSON.stringify(result,null,2)+'\n');console.log(result);
+writeFileSync(receiptPath('transport-check-results.json'),JSON.stringify(result,null,2)+'\n');console.log(result);

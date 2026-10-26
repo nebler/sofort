@@ -5,7 +5,7 @@ import importlib.util
 _spec=importlib.util.spec_from_file_location('bench06',Path(__file__).resolve().parents[2]/'bench/run.py')
 _bench=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(_bench)
 def load_gate():return _bench.gate(6,.25,.1)
-ROOT=Path(os.environ.get('JITK_TEST_OUTPUT',str(Path(__file__).resolve().parents[1]/'test-results'))).resolve()
+ROOT=Path(os.environ.get('JITK_TEST_OUTPUT',str(Path(__file__).resolve().parents[1]/('test-results' if os.getenv('JITK_RECORD') == '1' else '.work/test-results')))).resolve()
 ROOT.mkdir(parents=True,exist_ok=True)
 HOST=os.environ.get('JITK_TEST_HOST',str(Path(__file__).resolve().parent/'host.sh')); KERNEL=os.environ.get('JITK_TEST_KERNEL',str(Path(__file__).resolve().parents[1]/'dist/kernel.bin'))
 def quant(a):

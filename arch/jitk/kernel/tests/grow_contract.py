@@ -2,11 +2,11 @@
 import os,sys,json,shutil,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
-area=Path(os.environ.get('JITK_TEST_OUTPUT',str(root/'test-results'))).resolve();area.mkdir(parents=True,exist_ok=True)
+area=Path(os.environ.get('JITK_TEST_OUTPUT',str(root/('test-results' if os.getenv('JITK_RECORD') == '1' else '.work/test-results')))).resolve();area.mkdir(parents=True,exist_ok=True)
 from scratch import workspace
 work = workspace('JITK_GROW_CONTRACT_WORK', 'grow-contract')
 copy=work/'kernel'
-shutil.copytree(root,copy,dirs_exist_ok=True,ignore=shutil.ignore_patterns('dist','target','test-results','test-work','__pycache__','.READY','.R4'))
+shutil.copytree(root,copy,dirs_exist_ok=True,ignore=shutil.ignore_patterns('.work','dist','target','test-results','test-work','__pycache__','.READY','.R4'))
 link=work/'probe.ld';link.write_text('''ENTRY(_start)
 PHDRS { text PT_LOAD FILEHDR PHDRS FLAGS(5); data PT_LOAD FLAGS(6); }
 SECTIONS { . = 0x400000 + SIZEOF_HEADERS;

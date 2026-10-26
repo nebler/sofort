@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
@@ -24,7 +25,7 @@ try {
     runInNewContext(region+'\nglobalThis.Captured=DynamicWorkerExecutor;',context);
     const loader={load(config:any){source=config.modules['executor.js'];return {getEntrypoint(){return {evaluate:async()=>({result:0})};}};}};
     await new context.Captured({loader,timeout:1000}).execute(code,[{name:'github',fns:{listIssues:async()=>[],echo:async()=>null}}]);
-    writeFileSync(`cloudflare-${name}.generated.mjs`,source);
+    writeFileSync(receiptPath(`cloudflare-${name}.generated.mjs`),source);
     // Module linkage only: substitute Workers import with a lexical class shim
     // and export-default with return. The emitted class/method body is unchanged.
     // Guest has no virtual filesystem/module loader. Give the wrapper its own
@@ -36,4 +37,4 @@ try {
     console.log('PASS Cloudflare wrapper '+name);
   }
 }finally{await pool.close();}
-writeFileSync('wrapper-conformance-results.json',JSON.stringify({selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),results},null,2)+'\n');
+writeFileSync(receiptPath('wrapper-conformance-results.json'),JSON.stringify({selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),results},null,2)+'\n');

@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -52,4 +53,4 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
 assert.equal(recommendedWarmCount(100,.015,2,8),4);assert.equal(recommendedWarmCount(1000,.015,2,8),8);
 rows.push({name:'ceil(lambda * refill_p99) + burst, capped',ok:true});
 const result={loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows};
-writeFileSync('pool-check-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+writeFileSync(receiptPath('pool-check-results.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

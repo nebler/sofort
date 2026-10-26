@@ -2,8 +2,9 @@
 set -Eeuo pipefail
 ROOT=$(cd "$(dirname "$0")" && pwd)
 WORK=${JITK_WORK:-$ROOT/.work}
-python3 -c 'from pathlib import Path; import sys; (Path(sys.argv[1])/".READY").unlink(missing_ok=True)' "$ROOT"
-rm -f "$ROOT/out/report.json" "$ROOT/out/report.md"
+source "$ROOT/output.sh"
+python3 -c 'from pathlib import Path; import sys; Path(sys.argv[1]).unlink(missing_ok=True)' "$JITK_LINUX_READY"
+rm -f "$JITK_LINUX_OUT/report.json" "$JITK_LINUX_OUT/report.md"
 [[ -s $WORK/kernel.bin && -s $WORK/jitk-vmm ]]
 BACKEND=${JITK_NESTED_BACKEND:-ssh}
 if [[ $BACKEND == qemu ]]; then
@@ -20,13 +21,13 @@ cp "$WORK/seccomp-probe" "$WORK/"*.bpf "$WORK/stage/work/"
 # macOS ships cpio; use it directly rather than installing a packer in another VM.
 (cd "$WORK/stage"; find . | cpio -o -H newc 2>/dev/null | gzip -1) > "$WORK/overlay.cpio.gz"
 cat "$WORK/base.cpio.gz" "$WORK/overlay.cpio.gz" > "$WORK/test.cpio.gz"
-python3 "$ROOT/nested/run-qemu.py" "$WORK" "$ROOT/out/nested.log"
+python3 "$ROOT/nested/run-qemu.py" "$WORK" "$JITK_LINUX_OUT/nested.log"
 elif [[ $BACKEND == ssh ]]; then
- python3 "$ROOT/nested/run-ssh.py" "$WORK" "$ROOT/out/nested.log"
+ python3 "$ROOT/nested/run-ssh.py" "$WORK" "$JITK_LINUX_OUT/nested.log"
 else
  echo 'JITK_NESTED_BACKEND must be ssh or qemu' >&2; exit 1
 fi
-python3 - "$ROOT/out" <<'PY'
+python3 - "$JITK_LINUX_OUT" <<'PY'
 import json,sys
 from pathlib import Path
 out=Path(sys.argv[1]);s=(out/'nested.log').read_text(errors='replace');reports=[l[len('JITK_REPORT '):] for l in s.splitlines() if l.startswith('JITK_REPORT ')]
@@ -42,12 +43,12 @@ for gate in d['gates'].values():
 assert d['status']=='PASS',d.get('error')
 PY
 
-python3 "$ROOT/cpu-analysis.py" > "$ROOT/out/cpu-analysis.log"
+python3 "$ROOT/cpu-analysis.py" > "$JITK_LINUX_OUT/cpu-analysis.log"
 python3 "$ROOT/summarize.py"
 python3 - "$ROOT" "$WORK" <<'PYREADY'
 from pathlib import Path
-import datetime,hashlib,json,sys
-root=Path(sys.argv[1]);w=Path(sys.argv[2]);r=json.loads((root/'out/report.json').read_text())
+import datetime,hashlib,json,os,sys
+root=Path(sys.argv[1]);w=Path(sys.argv[2]);out=Path(os.environ['JITK_LINUX_OUT']);r=json.loads((out/'report.json').read_text())
 assert r['status']=='PASS' and r['children_remaining']==0
 assert r['gates']['boot']['completed']>=100
 assert r['gates']['one_tool']['completed']>=30
@@ -59,5 +60,5 @@ assert r['gates']['seccomp_kill']['completed']==720
 assert r['gates']['fault_guests']['completed']==180
 assert r['gates']['parking']['pass'] and r['gates']['parking']['exchanges']==1000
 assert r['gates']['seccomp_kill']['pass'] and r['gates']['fault_guests']['pass']
-(root/'.READY').write_text(json.dumps({'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'label':'NESTED','performance':False,'backend':__import__('os').environ.get('JITK_NESTED_BACKEND','ssh'),'outer_linux_vcpus':r['online_cpus'],'parking_image_sha256':r['gates']['parking']['image_sha256'],'limitations':['nested non-performance only','second QEMU/HVF assertion spin remains; SSH replacement used by default','shared VM guest CPU attribution unverified; see out/cpu-analysis.json'],'report':'out/report.json','report_sha256':hashlib.sha256((root/'out/report.json').read_bytes()).hexdigest(),'artifacts':r['hashes'],'canonical_build':json.loads((w/'build.json').read_text())},indent=2)+'\n')
+Path(os.environ['JITK_LINUX_READY']).write_text(json.dumps({'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'label':'NESTED','performance':False,'backend':__import__('os').environ.get('JITK_NESTED_BACKEND','ssh'),'outer_linux_vcpus':r['online_cpus'],'parking_image_sha256':r['gates']['parking']['image_sha256'],'limitations':['nested non-performance only','second QEMU/HVF assertion spin remains; SSH replacement used by default','shared VM guest CPU attribution unverified; see cpu-analysis.json beside report'],'report':str(out/'report.json'),'report_sha256':hashlib.sha256((out/'report.json').read_bytes()).hexdigest(),'artifacts':r['hashes'],'canonical_build':json.loads((w/'build.json').read_text())},indent=2)+'\n')
 PYREADY

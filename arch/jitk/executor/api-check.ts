@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -29,4 +30,4 @@ try {
  }
 }finally{await pool.close();}
 const result={selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),pool:pool.snapshot(),rows};
-writeFileSync('api-check-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+writeFileSync(receiptPath('api-check-results.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

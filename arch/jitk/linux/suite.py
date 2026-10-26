@@ -12,7 +12,7 @@ LIVE=set(); LOCK=threading.Lock(); SERIAL=0
 ACTIVE_GATE=None
 LABEL=os.getenv('JITK_LABEL','METAL')
 REPORT={'label':LABEL,'performance_claim':LABEL!='NESTED','status':'STARTED','gates':{},'host_uptime':os.getenv('JITK_HOST_UPTIME','UNVERIFIED')}
-OUT=Path(os.getenv('JITK_REPORT',str(ROOT/'out/report.json')))
+OUT=Path(os.getenv('JITK_REPORT',str(ROOT/('.work/out/report.json' if os.getenv('JITK_RECORD') != '1' else 'out/report.json'))))
 def uptime():
  try:return subprocess.check_output(['uptime'],text=True).strip()
  except FileNotFoundError:return 'uptime_seconds='+Path('/proc/uptime').read_text().strip()+' loadavg='+Path('/proc/loadavg').read_text().strip()

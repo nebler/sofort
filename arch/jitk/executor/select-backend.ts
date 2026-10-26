@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -51,6 +52,6 @@ export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:str
   if(!gate&&g1&&g1.idle<2&&Number(g1.n)>=1000&&g1.n===g1.m)gate={idleCorePercent:g1.idle,evidence:jitk+'kernel/.READY: '+g1s};
   const integrated=vmmReady&&kernelReady;
   const selection=`${integrated?'integrated':'built'} jitk / confined VMM / current kernel`;
-  writeFileSync(here+'integration-selection.json',JSON.stringify({selection,integrated,host,image,gate,vmmReady,kernelReady},null,2)+'\n');
+  writeFileSync(receiptPath('integration-selection.json'),JSON.stringify({selection,integrated,host,image,gate,vmmReady,kernelReady},null,2)+'\n');
   return {backend:new JitkBackend(host.path,{launcher:'01-vmm',image:image.path,requireSandboxAck:true}),gate,selection,integrated};
 }

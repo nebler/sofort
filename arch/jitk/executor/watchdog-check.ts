@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 import {writeFileSync} from 'node:fs';
@@ -19,5 +20,5 @@ try {
   assert(s.deadlineReceipt,'external watchdog must report its own kill timestamp');
   assert.equal(s.deadlineReceipt.deadline,deadline);
   const result={receipt:s.deadlineReceipt,killOvershootMs:s.deadlineReceipt.killAt-deadline,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),watchdogDeadlineMs:250,hostEventLoopBlockedMs:1500,observedReapAfterHostUnblockMs:performance.now()-start,reaped};
-  writeFileSync('watchdog-check-results.json',JSON.stringify(result,null,2)+'\n');console.log(result);
+  writeFileSync(receiptPath('watchdog-check-results.json'),JSON.stringify(result,null,2)+'\n');console.log(result);
 }finally{s.kill();await s.exited;}
