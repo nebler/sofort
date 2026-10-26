@@ -1,9 +1,0 @@
-{
-  "name": "sofort-grow",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "devDependencies": {
-    "scriptc": "0.4.5"
-  }
-}

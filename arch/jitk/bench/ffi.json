@@ -1,0 +1,118 @@
+{
+  "ffi_format": 6,
+  "functions": [
+    {
+      "name": "nativeSpawn",
+      "symbol": "bench_spawn",
+      "params": [
+        "string",
+        "string",
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativePoll",
+      "symbol": "bench_poll",
+      "params": [
+        "i32",
+        "i32",
+        "f64"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeRead",
+      "symbol": "bench_read",
+      "params": [
+        "i32",
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeWrite",
+      "symbol": "bench_write",
+      "params": [
+        "i32",
+        "bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeClose",
+      "symbol": "bench_close",
+      "params": [
+        "i32"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeWait",
+      "symbol": "bench_wait",
+      "params": [
+        "i32",
+        "i32",
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeChildrenCPU",
+      "symbol": "bench_children_cpu",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "nativeUsage",
+      "symbol": "bench_usage",
+      "params": [
+        "i32",
+        "i32",
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeTemplates",
+      "symbol": "bench_templates",
+      "params": [
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeLedgers",
+      "symbol": "bench_ledgers",
+      "params": [
+        "i32",
+        "mutable-bytes"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeTimebase",
+      "symbol": "bench_timebase",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "nativePollMany",
+      "symbol": "bench_poll_many",
+      "params": [
+        "bytes",
+        "f64"
+      ],
+      "returns": "i32"
+    },
+    {
+      "name": "nativeInit",
+      "symbol": "bench_init",
+      "params": [],
+      "returns": "void"
+    }
+  ],
+  "libraries": [
+    "build/native.o"
+  ]
+}
