@@ -1,0 +1,10 @@
+{
+  "ffi_format": 1,
+  "functions": [
+    {"name": "nativeRealtimeMs", "symbol": "jitk_realtime_ms", "params": [], "returns": "f64"},
+    {"name": "nativeCounterMs", "symbol": "jitk_counter_ms", "params": [], "returns": "f64"},
+    {"name": "nativeUsage", "symbol": "jitk_usage", "params": ["i32", "i32"], "returns": "f64"}
+  ],
+  "libraries": [".work/native.o"],
+  "system_libraries": []
+}

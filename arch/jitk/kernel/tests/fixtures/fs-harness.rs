@@ -1,11 +1,4 @@
-"""Host-compile the real fs.rs + archive handlers against mock user memory.
-Checks path walking, fd bounds, and that every corrupted index word yields an
-errno (never a panic/out-of-bounds access)."""
-from pathlib import Path
-import os, sys, subprocess, tempfile
-root = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(root)); from prepare import archive
-source = r'''
+
 #![allow(static_mut_refs, dead_code, unused_imports)]
 mod user { pub static mut FS: usize = 0; pub static mut FS_LEN: usize = 0; }
 mod mmu { pub fn physical(va: usize) -> usize { va } }
@@ -108,10 +101,3 @@ fn exercise() {
         }
     }
 }}
-'''.replace('FS"', str(root / 'src/fs.rs') + '"').replace('SYS/', str(root / 'src/syscalls') + '/')
-with tempfile.TemporaryDirectory(prefix='jitk-fs-') as d:
-    p = Path(d); tree = p / 'tree'; (tree / 'b/c').mkdir(parents=True)
-    (tree / 'a.txt').write_bytes(b'hi'); (tree / 'b/c/z').write_bytes(b'zz'); (tree / 'b/y').write_bytes(b'')
-    (p / 'fs.bin').write_bytes(archive(str(tree))[0]); (p / 'test.rs').write_text(source)
-    subprocess.run(['rustc', '+1.95.0', '--edition=2024', '--test', '-A', 'static_mut_refs', str(p / 'test.rs'), '-o', str(p / 'test')], check=True)
-    subprocess.run([str(p / 'test')], check=True, env={**os.environ, 'ARCHIVE': str(p / 'fs.bin')})

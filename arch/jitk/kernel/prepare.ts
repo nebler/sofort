@@ -1,0 +1,21 @@
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { archive, pack, BASE, LIMIT, STACK } from './packer.ts';
+import { check, dump, sha } from './lib.ts';
+
+const source = process.argv[2];
+const out = process.argv[3];
+mkdirSync(out, { recursive: true });
+const { flat, meta } = pack(readFileSync(source));
+const resources = process.env.JITK_RESOURCES || null;
+const fs = archive(resources);
+const va = BASE + flat.length;
+const heap = Math.max(LIMIT, Math.ceil((va + fs.bytes.length) / 4096) * 4096);
+check(heap + 0x180000 + 0x400000 <= STACK, 'resources leave <4 MiB mmap arena');
+meta.resources = { dir: resources, sha256: sha(fs.bytes), bytes: fs.bytes.length, entries: fs.count, va: '0x' + va.toString(16), heap: '0x' + heap.toString(16) };
+writeFileSync(join(out, 'payload.flat'), Buffer.concat([flat, fs.bytes]));
+let rust = `pub const FS: usize = ${va};\npub const FS_LEN: usize = ${fs.bytes.length};\npub const HEAP: usize = ${heap};\n`;
+rust += `pub const ENTRY: usize = ${meta.entry};\npub const PHDR: usize = ${meta.phdr};\npub const PHNUM: usize = ${meta.phnum};\n`;
+rust += 'pub const SEGMENTS: &[(usize,usize,bool,bool)] = &[' + meta.segments.map(segment => `(${segment[0]},${segment[1]},${Boolean(segment[2] & 2)},${Boolean(segment[2] & 1)})`).join(',') + '];\n';
+writeFileSync(join(out, 'packed.rs'), rust);
+dump(join(out, 'packed.json'), meta);

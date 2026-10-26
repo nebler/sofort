@@ -1,8 +1,4 @@
-"""Compile actual safe candidate modules with deterministic checked helper fixtures."""
-from pathlib import Path
-import subprocess,tempfile
-root=Path(__file__).resolve().parents[1]
-source=r'''
+
 #[path="IOCTL"] mod ioctl;
 #[path="PPOLL"] mod ppoll;
 static mut MEMORY: [u8;256] = [0;256];
@@ -37,8 +33,3 @@ fn park_poll(d:Option<u64>,_:bool){unsafe{PARKS+=1; NOW=d.unwrap_or(10);}}
  MEMORY[ts..ts+8].copy_from_slice(&i64::MAX.to_le_bytes());
  assert_eq!(ppoll::call(&[0,0,ts,0,8]),-22);
  }}
-'''.replace('IOCTL',str(root/'src/syscalls/ioctl.rs')).replace('PPOLL',str(root/'src/syscalls/ppoll.rs'))
-with tempfile.TemporaryDirectory(prefix='jitk-handlers-') as d:
-    p=Path(d);(p/'test.rs').write_text(source)
-    subprocess.run(['rustc','+1.95.0','--edition=2021','--test','-A','static_mut_refs',str(p/'test.rs'),'-o',str(p/'test')],check=True)
-    subprocess.run([str(p/'test')],check=True)

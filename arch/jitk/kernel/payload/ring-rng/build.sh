@@ -27,26 +27,10 @@ test "$(cat "$qjs/VERSION")" = 2026-06-04
 test "$(cat "$musl/VERSION")" = 1.2.5
 cat "$recipe/musl-reseed.inc" >>"$musl/src/malloc/mallocng/malloc.c"
 cp "$recipe/checkpoint.h" "$recipe/chacha.h" "$qjs/"
-python3 - "$qjs" <<'PY'
-from pathlib import Path
-import sys
-p=Path(sys.argv[1])
-f=p/'quickjs.c';s=f.read_text()
-marker='static void js_random_init(JSContext *ctx)'
-assert s.count(marker)==1
-s=s.replace(marker,'''/* R7: overwrite the existing context, including saved Math.random references. */
-void JS_SetSnapshotRandomSeed(JSContext *ctx, uint64_t seed)
-{
-    ctx->random_state = seed ? seed : 1;
-}
+patcher=${JITK_RING_PATCH_TOOL:-$recipe/../../.work/bin/payload/ring-rng/patch}
+if [ ! -x "$patcher" ]; then make -C "$recipe/../.." .work/bin/payload/ring-rng/patch; fi
+"$patcher" "$qjs"
 
-'''+marker);f.write_text(s)
-f=p/'quickjs-libc.c';s=f.read_text()
-marker='static const JSCFunctionListEntry js_os_funcs[] = {'
-assert s.count(marker)==1
-s=s.replace(marker,'#include "checkpoint.h"\n\n'+marker+'\n    JS_CFUNC_DEF("snapshotCheckpoint", 0, js_os_snapshot_checkpoint ),')
-f.write_text(s)
-PY
 (
  cd "$musl"
  CFLAGS='-O2 -fno-stack-protector' ./configure --prefix="$work/musl-install" --disable-shared
