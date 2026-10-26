@@ -83,5 +83,7 @@
         }
       ]
     }
-  ]
+  ],
+  "grow_binary_sha256": "825b34964b15e91fca3ff1f673d9767f642a655854de94922a8fce3f3ac2c2be",
+  "note": "Recorded before the final handoff extraction of byte-identical Rust host assertions into host-tests.rs. Final native replay rechecked all five targets and all 670 receipts after that extraction."
 }

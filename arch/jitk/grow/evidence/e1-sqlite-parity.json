@@ -1,7 +1,7 @@
 {
   "status": "PASS",
   "python": "/Users/noah/.t3/worktrees/sofort/t3-6d00d0cd/arch/jitk/grow/results/ts-e1-python-sqlite",
-  "typescript": "/Users/noah/.t3/worktrees/sofort/t3-6d00d0cd/arch/jitk/grow/results/ts-final-native-sqlite",
+  "typescript": "/Users/noah/.t3/worktrees/sofort/t3-6d00d0cd/arch/jitk/grow/results/ts-handoff-native-sqlite",
   "json_receipts_compared": 368,
   "differences": [],
   "normalized_sha256": {

@@ -11,16 +11,16 @@
   "protected_markers_unchanged": true,
   "binaries": {
     "grow": {
-      "bytes": 1815032,
-      "sha256": "825b34964b15e91fca3ff1f673d9767f642a655854de94922a8fce3f3ac2c2be"
+      "bytes": 1815432,
+      "sha256": "2cd48ce9c117ed8139c5b5d9ac4a9b9af60af776841d83a5202ed6bbff513ff2"
     },
     "oracle-profile": {
       "bytes": 2954320,
       "sha256": "8af9e8d69efdaff45b909c699876c37665acba5ebedea7498114481bfc3ade54"
     },
     "experiments": {
-      "bytes": 1365064,
-      "sha256": "4533087e93e8f4d4adab3bde7f80297c7aa327f792012d5e03bf44d688771586"
+      "bytes": 1365112,
+      "sha256": "4e249c3e4e0b58f14eb9f8090e3899cf0ca407ee3fc659ce58f49377df1bf439"
     },
     "parity": {
       "bytes": 1014280,
@@ -31,8 +31,8 @@
       "sha256": "fe5ec1841baf057e177dff5e7c797927d100e5db38bc5da759e4a677b445626a"
     },
     "test": {
-      "bytes": 2014808,
-      "sha256": "f182cd2f4ef78382554ef5aa56acc4e3703fc9a5838aeab628f73c99bf356db6"
+      "bytes": 2015208,
+      "sha256": "fb97f39552199e7f50b4f59d90e13755907e4752eb777b7f0dfd7d65306aecc8"
     }
   }
 }

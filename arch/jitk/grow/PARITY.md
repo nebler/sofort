@@ -30,7 +30,7 @@ No Python comparison implementation remains.
 Local raw evidence (not tracked):
 
 - Python: `results/ts-e1-python-original-v2/`, `results/ts-e1-python-sqlite/`.
-- Final native: `results/ts-final-native-original/`, `results/ts-final-native-sqlite/`.
+- Final native: `results/ts-handoff-native-original/`, `results/ts-handoff-native-sqlite/`.
 - Live: `results/ts-final-live-none/`.
 - Native causal diagnostics: `results/ts-final-diagnostics/`.
 
@@ -104,6 +104,12 @@ imports, exact historical seeded E1 ordering, CSV denominators and decisions,
 trusted Git input sealing, artifact inventories and incomplete-summary refusal.
 Claude is unit tested only; no live Claude claim is made.
 
+The live smoke preceded the final extraction of byte-identical Rust host
+assertions into a grow-owned fixture; its actual binary hash is recorded in the
+smoke summary. Fresh final native replays after the extraction again matched all
+five targets and all 670 receipts. `evidence/host-fixture-equality.json` proves
+exact Rust-assertion byte equality against the pinned original Git source.
+
 The ported native SQLite diagnostic tool also passes causal missing-handler
 states, Linux injected ENOSYS, combined tolerated ENOSYS, real ET_DYN loader
 rejection and fatal output protocol detection. The external kernel build still
@@ -118,16 +124,16 @@ generated wrapper scripts; no `.py` implementation is tracked in grow.
 
 | Local native binary | Bytes |
 | --- | ---: |
-| grow (macOS arm64, libSystem only) | 1,815,032 |
+| grow (macOS arm64, libSystem only) | 1,815,432 |
 | oracle-profile (static aarch64 Linux musl) | 2,954,320 |
-| experiments | 1,365,064 |
+| experiments | 1,365,112 |
 | parity | 1,014,280 |
 | sqlite-checks | 1,129,456 |
-| test | 2,014,808 |
+| test | 2,015,208 |
 
 Hashes and build facts are in `evidence/native-build.json`. Binaries are ignored,
 not committed. No newly committed file exceeds 1 MiB. Disk checks remained above
-the 15 GiB stop threshold; final check was about 59 GiB available. No push or
+the 15 GiB stop threshold; final check was about 52 GiB available. No push or
 promotion was performed. Compiler restrictions and minimal repros are recorded
 in `SCRIPTC-GAPS.md`; no blocking gap remains and nothing was filed upstream.
 
@@ -138,10 +144,10 @@ make -C arch/jitk/grow build test
 export JITK_VMM_BINARY=/tmp/jitk-01/r3/darwin/jitk-vmm
 arch/jitk/grow/build/parity \
   arch/jitk/grow/results/ts-e1-python-original-v2 \
-  arch/jitk/grow/results/ts-final-native-original /tmp/original-parity.json
+  arch/jitk/grow/results/ts-handoff-native-original /tmp/original-parity.json
 arch/jitk/grow/build/parity \
   arch/jitk/grow/results/ts-e1-python-sqlite \
-  arch/jitk/grow/results/ts-final-native-sqlite /tmp/sqlite-parity.json
+  arch/jitk/grow/results/ts-handoff-native-sqlite /tmp/sqlite-parity.json
 ```
 
 For a new baseline reproduction, restore the baseline revision into a separate
