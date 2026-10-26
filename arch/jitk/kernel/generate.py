@@ -36,14 +36,15 @@ def generate(root, out):
             if name not in emitted:
                 modules.append(f'#[path={json.dumps(str(path))}] mod {name};')
                 emitted.add(name)
-            arms.append(f'{nr} => unsafe {{ {name}::call(a) }},')
+            arms.append(f'{nr} => {name}::call(a),')
             present.append(nr)
         else:
             arms.append(f'{nr} => -38,')
-    dispatch = '#[allow(unused_imports, unused_variables, unused_unsafe)]\nmod handlers {\n'
-    dispatch += '\n'.join(modules) + '\nuse super::*;\n'
+    dispatch = 'mod handlers {\n'
+    dispatch += '\n'.join(modules) + '\n'
+    dispatch += '#[allow(unused_imports, reason="Candidate handlers may be deleted by the grow gate.")]\nuse super::{copyin, copyout, now_ns, park_poll, poll_fd, writable};\n' 
     dispatch += f'pub fn registered(n:usize)->bool {{ matches!(n, {" | ".join(present) or "_ if false"}) }}\n'
-    dispatch += 'pub unsafe fn dispatch(n:usize,a:&[usize])->isize { match n {\n'
+    dispatch += 'pub fn dispatch(n:usize,a:&[usize; 6])->isize { match n {\n'
     dispatch += '\n'.join(arms) + '\n_=>-38\n}}\n}\npub use handlers::{registered,dispatch};\n'
     (out / 'dispatch.rs').write_text(dispatch)
     (out / 'syscalls.json').write_text(json.dumps(rows, indent=2) + '\n')

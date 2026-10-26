@@ -2,6 +2,8 @@ use core::arch::asm;
 static mut TICK: u64 = 0;
 pub fn ticks() -> u64 {
     let n;
+    // SAFETY: CNTVCT_EL0 is readable at guest EL1; the asm only returns the counter and
+    // lends no memory references.
     unsafe {
         asm!("mrs {n},cntvct_el0",n=out(reg)n);
     }
@@ -9,6 +11,7 @@ pub fn ticks() -> u64 {
 }
 pub fn ticks_ns(n: u64) -> u64 {
     let hz: u64;
+    // SAFETY: CNTFRQ_EL0 is readable at guest EL1 and the VMM supplies a nonzero frequency.
     unsafe {
         asm!("mrs {h},cntfrq_el0",h=out(reg)hz);
     }
@@ -17,22 +20,37 @@ pub fn ticks_ns(n: u64) -> u64 {
 pub fn now_ns() -> u64 {
     ticks_ns(ticks())
 }
+/// # Safety
+/// a is an aligned, mapped writable GIC register supplied by the validated boot configuration.
 unsafe fn wr(a: usize, v: u32) {
+    // SAFETY: a is an aligned, mapped writable GIC register supplied by the validated boot
+    // configuration.
     unsafe {
         asm!("str {v:w},[{a}]",v=in(reg)v,a=in(reg)a);
     }
 }
+/// # Safety
+/// a is an aligned, mapped readable GIC register supplied by the validated boot configuration.
 unsafe fn rd(a: usize) -> u32 {
     let v;
+    // SAFETY: a is an aligned, mapped readable GIC register supplied by the validated boot
+    // configuration.
     unsafe {
         asm!("ldr {v:w},[{a}]",v=out(reg)v,a=in(reg)a);
     }
     v
 }
+/// # Safety
+/// Called once at EL1 before EL0 with DAIF masked. d/r and irq identify the mapped GIC and
+/// console SPI; tick is the VMM fallback interval.
 pub unsafe fn init(d: usize, r: usize, irq: u32, tick: u64) {
+    // SAFETY: Called once at EL1 before EL0 with DAIF masked. d/r and irq identify the
+    // mapped GIC and console SPI; tick is the VMM fallback interval.
     unsafe {
         TICK = tick;
-        if tick != 0 {return;} // Isolated CNTV fallback needs no GIC.
+        if tick != 0 {
+            return;
+        } // Isolated CNTV fallback needs no GIC.
         // GICD: nonsecure affinity routing, group 1; GICR wake and PPI group.
         wr(d, 0);
         wr(r + 0x14, rd(r + 0x14) & !2);
@@ -56,9 +74,16 @@ pub unsafe fn init(d: usize, r: usize, irq: u32, tick: u64) {
         asm!("msr icc_sre_el1,{one}","isb","msr icc_pmr_el1,{mask}","msr icc_bpr1_el1,xzr","msr icc_ctlr_el1,xzr","msr icc_igrpen1_el1,{one}","isb",one=in(reg)1u64,mask=in(reg)255u64);
     }
 }
+/// # Safety
+/// Called at EL1 with DAIF masked after init. Only this vCPU acknowledges its group-1 interrupt
+/// state.
 pub unsafe fn ack() {
+    // SAFETY: Called at EL1 with DAIF masked after init. Only this vCPU acknowledges its
+    // group-1 interrupt state.
     unsafe {
-        if TICK != 0 {return;}
+        if TICK != 0 {
+            return;
+        }
         // Bounded because a broken level-triggered device must not lock the kernel.
         for _ in 0..32 {
             let id: u64;
@@ -70,8 +95,22 @@ pub unsafe fn ack() {
         }
     }
 }
-pub unsafe fn park(deadline: u64) { unsafe { park_for(deadline, true); } }
+/// # Safety
+/// Called at EL1 with DAIF masked after console/GIC initialization; no queue or device-state
+/// borrow spans this wait.
+pub unsafe fn park(deadline: u64) {
+    // SAFETY: Called at EL1 with DAIF masked after console/GIC initialization; no queue or
+    // device-state borrow spans this wait.
+    unsafe {
+        park_for(deadline, true);
+    }
+}
+/// # Safety
+/// DAIF stays masked on the sole EL1 vCPU. No console-state references span service/WFI; init
+/// established the GIC and nonzero counter frequency.
 pub unsafe fn park_for(deadline: u64, input: bool) {
+    // SAFETY: DAIF stays masked on the sole EL1 vCPU. No console-state references span
+    // service/WFI; init established the GIC and nonzero counter frequency.
     unsafe {
         // DAIF stays masked: pending interrupts wake WFI but cannot enter vectors.
         ack();

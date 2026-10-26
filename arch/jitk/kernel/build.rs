@@ -1,18 +1,46 @@
 use std::{env, path::PathBuf, process::Command};
 fn main() {
+    println!("cargo::rustc-check-cfg=cfg(ring_glue_4m)");
     let base = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let out = PathBuf::from(env::var("OUT_DIR").unwrap());
-    for key in ["JITK_ELF", "JITK_SCRIPT", "JITK_ARGV_JSON", "JITK_RESOURCES"] {
+    for key in [
+        "JITK_ELF",
+        "JITK_SCRIPT",
+        "JITK_ARGV_JSON",
+        "JITK_RESOURCES",
+    ] {
         println!("cargo:rerun-if-env-changed={key}");
     }
-    for file in ["src/syscalls", "slots.json", "prepare.py", "generate.py", "../protocol/bootstrap.js", "ring-bootstrap.js", "link.ld"] {
+    for file in [
+        "src/syscalls",
+        "slots.json",
+        "prepare.py",
+        "generate.py",
+        "../protocol/bootstrap.js",
+        "ring-bootstrap.js",
+        "link.ld",
+    ] {
         println!("cargo:rerun-if-changed={file}");
     }
-    let payload = if env::var_os("CARGO_FEATURE_TRANSPORT_RING").is_some() { "payload/qjs-ring" } else { "payload/qjs" };
+    let payload = if env::var_os("CARGO_FEATURE_TRANSPORT_RING").is_some() {
+        "payload/qjs-ring"
+    } else {
+        "payload/qjs"
+    };
     let elf = env::var("JITK_ELF").unwrap_or(base.join(payload).display().to_string());
     println!("cargo:rerun-if-changed={elf}");
-    if let Ok(dir) = env::var("JITK_RESOURCES") { println!("cargo:rerun-if-changed={dir}"); }
-    assert!(Command::new("python3").arg(base.join("prepare.py")).arg(&elf).arg(&out).status().unwrap().success());
+    if let Ok(dir) = env::var("JITK_RESOURCES") {
+        println!("cargo:rerun-if-changed={dir}");
+    }
+    assert!(
+        Command::new("python3")
+            .arg(base.join("prepare.py"))
+            .arg(&elf)
+            .arg(&out)
+            .status()
+            .unwrap()
+            .success()
+    );
     // One strict JSON parse drives both the manifest and the Rust dispatcher.
     let script = r#"import os,json,pathlib,sys
 sys.path.insert(0, sys.argv[2])
@@ -30,6 +58,14 @@ generate(root, p)
 (p/'features.json').write_text(json.dumps(sorted(k[14:].lower().replace('_','-') for k in os.environ if k.startswith('CARGO_FEATURE_')))+'\n')
 (p/'argv.json').write_text(json.dumps(args,ensure_ascii=True)+'\n')
 "#;
-    assert!(Command::new("python3").args(["-c", script]).arg(&out).arg(&base).status().unwrap().success());
+    assert!(
+        Command::new("python3")
+            .args(["-c", script])
+            .arg(&out)
+            .arg(&base)
+            .status()
+            .unwrap()
+            .success()
+    );
     println!("cargo:rustc-link-arg=-T{}", base.join("link.ld").display());
 }

@@ -1,4 +1,4 @@
-use super::{copyin, copyout, writable, now_ns, poll_fd, park_poll};
+use super::{copyin, copyout, now_ns, park_poll, poll_fd, writable};
 
 pub fn call(a: &[usize]) -> isize {
     if a.len() < 5 {
@@ -22,14 +22,12 @@ pub fn call(a: &[usize]) -> isize {
             return -14;
         }
         let sec = i64::from_le_bytes([
-            buf[0], buf[1], buf[2], buf[3],
-            buf[4], buf[5], buf[6], buf[7],
+            buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7],
         ]);
         let nsec = i64::from_le_bytes([
-            buf[8], buf[9], buf[10], buf[11],
-            buf[12], buf[13], buf[14], buf[15],
+            buf[8], buf[9], buf[10], buf[11], buf[12], buf[13], buf[14], buf[15],
         ]);
-        if sec < 0 || nsec < 0 || nsec >= 1_000_000_000 {
+        if sec < 0 || !(0..1_000_000_000).contains(&nsec) {
             return -22;
         }
         let duration = match (sec as u64)
@@ -60,16 +58,14 @@ pub fn call(a: &[usize]) -> isize {
 
     let input = (0..nfds).any(|i| {
         let p = i * 8;
-        i32::from_le_bytes(buf[p..p+4].try_into().unwrap()) == 0
-            && i16::from_le_bytes(buf[p+4..p+6].try_into().unwrap()) & 1 != 0
+        i32::from_le_bytes(buf[p..p + 4].try_into().unwrap()) == 0
+            && i16::from_le_bytes(buf[p + 4..p + 6].try_into().unwrap()) & 1 != 0
     });
     loop {
         let mut ready = 0isize;
         for i in 0..nfds {
             let p = i * 8;
-            let fd = i32::from_le_bytes([
-                buf[p], buf[p + 1], buf[p + 2], buf[p + 3],
-            ]);
+            let fd = i32::from_le_bytes([buf[p], buf[p + 1], buf[p + 2], buf[p + 3]]);
             let events = i16::from_le_bytes([buf[p + 4], buf[p + 5]]);
             let revents = if fd < 0 { 0 } else { poll_fd(fd, events) };
             let bytes = revents.to_le_bytes();

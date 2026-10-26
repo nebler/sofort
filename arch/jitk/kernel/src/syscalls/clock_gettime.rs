@@ -1,20 +1,22 @@
-use crate::{console as c, mmu as m, user::*};
-use core::ptr::{copy_nonoverlapping, write_bytes};
-pub unsafe fn call(a: &[usize]) -> isize {
-    unsafe {
-
-                let ns = crate::wait::now_ns() + if a[0] == 0 { crate::EPOCH_OFFSET } else { 0 };
-                if a[0] != 0 && a[0] != 1 {
-                    return -22;
-                }
-                if let Some(pa) = access(a[1], 16, true) {
-                    let t = pa as *mut u64;
-                    t.write_unaligned(ns / 1_000_000_000);
-                    t.add(1).write_unaligned(ns % 1_000_000_000);
-                    0
-                } else {
-                    -14
-                }
-            
+use crate::syscalls::{copyout, now_ns};
+pub fn call(a: &[usize; 6]) -> isize {
+    if a[0] != 0 && a[0] != 1 {
+        return -22;
+    }
+    // SAFETY: boot initializes the epoch before EL0; it is immutable in a run.
+    let offset = if a[0] == 0 {
+        // SAFETY: Boot initializes EPOCH_OFFSET before EL0; the offset remains immutable
+        // throughout this run.
+        unsafe { crate::EPOCH_OFFSET }
+    } else {
+        0
+    };
+    let ns = now_ns() + offset;
+    let mut out = [0u8; 16];
+    out[..8].copy_from_slice(&(ns / 1_000_000_000).to_le_bytes());
+    out[8..].copy_from_slice(&(ns % 1_000_000_000).to_le_bytes());
+    match copyout(a[1], &out) {
+        Ok(()) => 0,
+        Err(e) => e,
     }
 }
