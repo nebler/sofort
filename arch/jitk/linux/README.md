@@ -12,6 +12,10 @@ Builds **01's canonical native TypeScript VMM builder and source**, pinned libkr
 minimal native rlib, panic=abort. Uses 07's integrated sandbox module; the build
 fails closed until its `.READY` exists. Builds 02's integrated kernel in an
 area-05 work copy with 03's integrated bootstrap. No second VMM implementation.
+The work copy runs the canonical kernel's host tools (`.work/bin` on Mac,
+`.work/linux` on Linux), or an explicit `JITK_TOOLS_DIR`; the Mac builds these
+tools before use. A Node-free Linux host must receive those three kernel tools
+(`prepare`, `build-args`, `artifact`) along with the Linux harness binary.
 The compiler/toolchain, extracted guest, overlays and binaries live under
 `linux/.work` by default; `JITK_WORK` selects another absolute work directory.
 No global toolchain installation. For a verified existing canonical Linux build,
