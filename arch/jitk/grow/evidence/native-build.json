@@ -1,0 +1,38 @@
+{
+  "scriptc": "0.4.5",
+  "runtime_pack": "@scriptc/runtime-linux-arm64-musl@0.4.5",
+  "host_target": "aarch64-apple-darwin",
+  "oracle_target": "aarch64-linux-musl",
+  "oracle_static": true,
+  "oracle_no_PT_INTERP_or_PT_DYNAMIC": true,
+  "zig": "/Users/noah/.local/share/zig-0.16.0/zig",
+  "native_tests": "44/44 PASS",
+  "sqlite_diagnostics": "PASS",
+  "protected_markers_unchanged": true,
+  "binaries": {
+    "grow": {
+      "bytes": 1815032,
+      "sha256": "825b34964b15e91fca3ff1f673d9767f642a655854de94922a8fce3f3ac2c2be"
+    },
+    "oracle-profile": {
+      "bytes": 2954320,
+      "sha256": "8af9e8d69efdaff45b909c699876c37665acba5ebedea7498114481bfc3ade54"
+    },
+    "experiments": {
+      "bytes": 1365064,
+      "sha256": "4533087e93e8f4d4adab3bde7f80297c7aa327f792012d5e03bf44d688771586"
+    },
+    "parity": {
+      "bytes": 1014280,
+      "sha256": "2483d80fdf097939f90588d339c2152aefbbaf86bfecff69a80c9da5ad558af0"
+    },
+    "sqlite-checks": {
+      "bytes": 1129456,
+      "sha256": "fe5ec1841baf057e177dff5e7c797927d100e5db38bc5da759e4a677b445626a"
+    },
+    "test": {
+      "bytes": 2014808,
+      "sha256": "f182cd2f4ef78382554ef5aa56acc4e3703fc9a5838aeab628f73c99bf356db6"
+    }
+  }
+}

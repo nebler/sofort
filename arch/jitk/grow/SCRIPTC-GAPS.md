@@ -42,8 +42,9 @@ are checked from the captured status/timeout and spawn error event.
 
 ## Spike
 
-`spike/main.ts`, `spike/result.json` and `spike/build.log` contain the successful
-native repro and result. Initial path comparison failed under both Node and scriptc
+The original successful spike is archived in Git history; its process/JSON/
+filesystem checks now run in canonical `test.ts`. Current results are summarized
+in `evidence/native-build.json`. Initial path comparison failed under both Node and scriptc
 because macOS `/var` resolves to `/private/var`; fixed with `realpathSync` (not a
 compiler gap). `fork` and library mode are unused; their documented restrictions
 are irrelevant to this executable. Filesystem/crypto/JSON/argv all passed.
