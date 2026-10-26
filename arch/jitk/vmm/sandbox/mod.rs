@@ -12,6 +12,7 @@
 //!        hook did not run, one union filter on all threads (TSYNC).
 //! Supervisor rule: send `run` only after `{"sandbox":"ok"}` on stderr AND guest READY.
 //! Linux: stderr must be a pipe (RLIMIT_FSIZE=0 makes writes to regular files raise SIGXFSZ).
+use std::io::Read;
 use std::path::{Path, PathBuf};
 
 type E = Box<dyn std::error::Error>;
@@ -36,6 +37,19 @@ pub struct Sandbox {
     stage: Stage,
 }
 
+const MAX_PROFILE_BYTES: usize = 1 << 16;
+
+fn read_profile(reader: impl Read) -> Result<Vec<u8>, E> {
+    let mut blob = Vec::new();
+    reader
+        .take((MAX_PROFILE_BYTES + 1) as u64)
+        .read_to_end(&mut blob)?;
+    if blob.is_empty() || blob.len() > MAX_PROFILE_BYTES {
+        return Err("sandbox: bad compiled profile".into());
+    }
+    Ok(blob)
+}
+
 impl Sandbox {
     /// `image`: canonical absolute path. `profile`: macOS compiled blob (None => compile
     /// in-process, ~5 ms, same policy). `netns_fd`: Linux, fd of a pre-created empty netns.
@@ -52,13 +66,7 @@ impl Sandbox {
             return Err("sandbox: --sandbox-profile is macOS-only".into());
         }
         let profile = match profile {
-            Some(p) => {
-                let blob = std::fs::read(p)?;
-                if blob.is_empty() || blob.len() > 1 << 16 {
-                    return Err("sandbox: bad compiled profile".into());
-                }
-                Some(blob)
-            }
+            Some(p) => Some(read_profile(std::fs::File::open(p)?)?),
             None => None,
         };
         Ok(Sandbox {
@@ -640,6 +648,20 @@ mod tests {
         };
         assert!(sandbox.before_build().is_err());
         assert!(sandbox.after_build().is_err());
+    }
+    #[test]
+    fn compiled_profile_bounds() {
+        use super::{MAX_PROFILE_BYTES, read_profile};
+        assert!(read_profile(&b""[..]).is_err());
+        let data = vec![1; MAX_PROFILE_BYTES + 100];
+        assert_eq!(read_profile(&data[..1]).unwrap(), [1]);
+        assert_eq!(
+            read_profile(&data[..MAX_PROFILE_BYTES]).unwrap().len(),
+            MAX_PROFILE_BYTES
+        );
+        let mut reader = std::io::Cursor::new(data);
+        assert!(read_profile(&mut reader).is_err());
+        assert_eq!(reader.position(), (MAX_PROFILE_BYTES + 1) as u64);
     }
     fn run(sets: &[&[Rule]], nr: u32, args: [u64; 6]) -> u32 {
         eval(&compile_insns(sets), AUDIT_ARCH_AARCH64, nr, args)
