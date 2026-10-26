@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { dump, readJSON } from './lib.ts';
-import { ASSETS, capture, run } from './runtime.ts';
+import { ASSETS, ROOT, capture, run } from './runtime.ts';
 import { type Outcome } from './observations.ts';
 
 export interface OracleOptions {
@@ -25,7 +25,7 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
       command.push('-v', `${realpathSync(join(options.resources, child))}:/${child}:ro`);
     }
   }
-  command.push('--entrypoint', 'python3', 'jitk-oracle:08', '-B', '/oracle/run_profile.py');
+  command.push('-v', `${ROOT}/build/oracle-profile:/oracle-profile:ro`, '--entrypoint', '/oracle-profile', 'jitk-oracle:08');
   try {
     const result = await run(command, { timeout: 90 });
     writeFileSync(join(out, 'driver.stdout'), result.stdout);

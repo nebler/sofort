@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "devDependencies": {
+    "@scriptc/runtime-linux-arm64-musl": "0.4.5",
     "scriptc": "0.4.5"
   }
 }

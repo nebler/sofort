@@ -5,7 +5,7 @@ SOURCES := $(wildcard *.ts)
 node_modules/.bin/scriptc: package.json package-lock.json
 	npm ci --no-audit --no-fund
 
-build: build/grow
+build: build/grow build/oracle-profile
 
 build/grow: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
@@ -28,3 +28,10 @@ grow: build
 
 clean:
 	rm -rf build .scriptc
+
+ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
+build/oracle-profile: oracle-profile.ts lib.ts $(SCRIPTC) package-lock.json
+	mkdir -p build
+	PATH="$(dir $(ZIG)):$$PATH" SCRIPTC_TARGET=aarch64-linux-musl $(SCRIPTC) build oracle-profile.ts -o $@
+
+oracle: build/oracle-profile
