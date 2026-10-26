@@ -120,9 +120,21 @@ async function linux(elf: string, dir: string): Promise<void> {
     expectedExit: nodeStatus.exit, referenceValid: nodeStatus.exit !== null && !nodeStatus.error,
     expectedOut: existsSync(join(parent, 'node.stdout')) ? sha(readFileSync(join(parent, 'node.stdout'))) : '',
     expectedErr: existsSync(join(parent, 'node.stderr')) ? sha(readFileSync(join(parent, 'node.stderr'))) : '' });
-    const result = await capture(['docker', 'exec', '-i', ORACLE_CONTAINER, '/driver', dir], { timeout: 300 });
+  const container = ORACLE_CONTAINER + '-' + hash(dir).slice(0, 10);
+  try {
+    const result = await capture(['docker', 'run', '--rm', '--init', '-i', '--name', container,
+      '--platform', 'linux/arm64', '--network', 'none', '--read-only', '--cap-drop', 'ALL',
+      '--security-opt', 'no-new-privileges', '--pids-limit', '256', '--memory', '1g', '--cpus', '1',
+      '--user', '65534:65534', '--tmpfs', '/tmp:rw,nosuid,size=128m',
+      '-v', WORK + ':' + WORK + ':rw', '-v', SOURCE + ':' + SOURCE + ':ro',
+      '-v', join(ROOT, '.work/bin/oracle') + ':/driver:ro', '--entrypoint', '/driver', IMAGE, dir], { timeout: 300 });
     writeFileSync(join(dir, 'driver.stderr'), result.stderr);
-    check(!result.timeout && result.returncode === 0 && existsSync(join(dir, 'status.json')), 'oracle-driver-failure ' + result.stderr.toString());
+    dump(join(dir, 'driver-status.json'), { exit: result.returncode, timeout: result.timeout });
+    // Injected getpid/kill/execve can make the tracee signal its own harness.
+    // The already sealed baseline remains valid; missing injection legs are
+    // explicitly unresolved and cannot count as causal blockers.
+    check(existsSync(join(dir, 'status.json')), 'oracle-driver-failure rc=' + result.returncode + ' timeout=' + result.timeout + ' ' + result.stderr.toString());
+  } finally { await capture(['docker', 'rm', '-f', container], { timeout: 10 }); }
 }
 function resetCwd(dir: string): void {
   const cwd = join(dir, 'cwd');
@@ -239,6 +251,11 @@ async function program(name: string): Promise<void> {
           continue;
         }
         const injectionDir = join(dir, 'linux', syscall);
+        if (!existsSync(join(injectionDir, 'status.json')) || !existsSync(join(injectionDir, 'trace'))) {
+          row.limitations.push('probe-interrupted:' + syscall);
+          if (syscall === 'clone') row.injection = 'probe-interrupted';
+          continue;
+        }
         const injected = readJSON<Status>(join(injectionDir, 'status.json'));
         const injectedTrace = readFileSync(join(injectionDir, 'trace'), 'utf8');
         const outcome = !injectedTrace.includes('(INJECTED)') ? 'not-exercised' :
@@ -391,8 +408,6 @@ async function main(): Promise<void> {
   const batch = todo.slice(start, start + 100);
   let next = 0;
   try {
-  await run(['docker', 'run', '-d', '--name', ORACLE_CONTAINER, ...common,
-    '-v', join(ROOT, '.work/bin/oracle') + ':/driver:ro', '--entrypoint', '/bin/sleep', IMAGE, 'infinity'], { timeout: 15 });
   const dependencyRoot = resolve(realpathSync(join(SOURCE, 'node_modules')), '..');
   await run(['docker', 'run', '-d', '--name', NODE_CONTAINER, ...common,
     '-v', dependencyRoot + ':' + dependencyRoot + ':ro', '-v', join(ROOT, 'node-reference.ts') + ':' + join(ROOT, 'node-reference.ts') + ':ro',
@@ -411,7 +426,7 @@ async function main(): Promise<void> {
   for (const result of results) check(result.status === 'fulfilled', 'worker failed');
   check(!infrastructureFailure, 'oracle infrastructure failed; resume to retry failed rows');
   } finally {
-    await capture(['docker', 'rm', '-f', ORACLE_CONTAINER, NODE_CONTAINER], { timeout: 10 });
+    await capture(['docker', 'rm', '-f', NODE_CONTAINER], { timeout: 10 });
   }
   await disk();
   console.log('disk guard checked; containers recycled');

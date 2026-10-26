@@ -37,8 +37,12 @@ and a fresh writable working directory, with read-only links to corpus fixtures.
 Networking is disabled. External network tests can therefore fail for environmental
 reasons; they are not automatically compiler findings.
 
-Two workers share one oracle container and one Node container, with init-based
-orphan reaping and recycling after each 100-program batch. At most
+Two workers use a fresh init-enabled oracle container for each program and share
+one Node container, recycled after each 100-program batch. This matters because
+ENOSYS injection into process/signal calls can make a tracee signal its harness;
+per-program PID namespaces prevent it from corrupting another program's run.
+An interrupted injection leg is marked unresolved; its already sealed ordinary
+Linux baseline is retained. At most
 two payload/Node runs are active in total, reserving an oracle slot for the other
 grow agent. Each program is isolated by its fresh cwd; runtime temp files live
 in container tmpfs. Process creation is bounded, timed-out host tools are sampled
@@ -107,6 +111,12 @@ legs in one Docker exec; it never executes more than one payload at a time per
 worker. Every local
 receipt records source/ELF/output/trace hashes; raw per-program artifacts are
 pruned, with bounded mismatch snippets retained privately for triage.
+
+After the corpus, `census`/`run` also execute a separate `allocator-probe.ts`
+diagnostic. It keeps 400,000 small objects alive to cross the runtime's allocator
+pre-fault threshold, verifies the ordinary Linux result against Node, and checks
+the clone=ENOSYS run. `make fallback` reruns only that probe. It is excluded from
+all corpus counts; its small hash-only result is `fallback-summary.json`.
 
 All large artifacts, logs, receipts and private selections are ignored in
 `.work/`. `df -h /System/Volumes/Data` is logged at startup, every 100 completed
