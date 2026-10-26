@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {helperHash,fileHash} from './prepared-helpers.mjs';
 import {ShardBackend,type ShardMetrics} from './shard-backend.js';
 import {SharedChannel,IPC,monotonicNs,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
@@ -41,6 +42,10 @@ try {
   r=await execute('return await codemode.large()',{large:async()=> 'x'.repeat(2000)});check(!!r.error&&r.error.includes('shard tool reply limit'),'bounded oversized reply is an explicit error');
   r=await execute('return await Promise.all(Array.from({length:33},()=>codemode.echo()))',{echo:async()=>0});check(!!r.error&&r.error.includes('call budget'),'32-call ring budget');
   r=await execute('const a='+JSON.stringify('x'.repeat(8000))+';return a.length');check(!!r.error&&r.error.includes('shard source limit'),'source admission bound');
+  r=await execute('globalThis.__jitkPrepared.codec.marker=42;globalThis.btoa=()=>"poison";globalThis.helperCanary=42;return 1');
+  check(!r.error&&r.result===1,'tenant can mutate prepared helper/global');
+  r=await execute('return [globalThis.__jitkPrepared.codec.marker===undefined,btoa("a"),typeof globalThis.helperCanary]');
+  check(!r.error&&JSON.stringify(r.result)==='[true,"YQ==","undefined"]','next generation restores pristine helper/global');
   const randoms=new Set();
   for(let i=0;i<5;i++){r=await execute('if(globalThis.tenant)throw Error("leak");globalThis.tenant=1;return Math.random()');check(!r.error&&typeof r.result==='number','fresh restore');randoms.add(r.result);}
   check(randoms.size===5,'distinct restored Math.random');
@@ -75,14 +80,22 @@ try {
 // generations, schemas, direction and duplicate identity must all fail closed.
 const scratch=mkdtempSync(join(tmpdir(),'jitk-ipc-test-'));
 const peer=join(scratch,'peer');
+// Hostile peers have dummy but internally consistent offline identities. This
+// keeps real snapshot validation enabled on every ShardBackend construction.
+function peerSnapshot(mode:string) {
+  const base=join(scratch,mode);
+  for(const ext of ['mem','regs','layout'])writeFileSync(base+'.'+ext,'fixture');
+  writeFileSync(base+'.identity',JSON.stringify({version:1,helperSha256:helperHash,files:Object.fromEntries(['mem','regs','layout'].map(ext=>[ext,fileHash(base+'.'+ext)]))}));
+  return base;
+}
 const fixture=fileURLToPath(new URL('../fixtures/shard-peer.py',import.meta.url));
 writeFileSync(peer,`#!/bin/sh\nexec /usr/bin/python3 '${fixture.replaceAll("'","'\\''")}' "$@"\n`,{mode:0o755});
 try {
-  const startup=new ShardBackend({binary:peer,snapshot:'no-ready',slots:1,owners:1});
+  const startup=new ShardBackend({binary:peer,snapshot:peerSnapshot('no-ready'),slots:1,owners:1});
   const startupPool=new SandboxPool(startup,0,1);
   try{const r=await new MicroVMExecutor(startupPool,()=> 'allow',20).execute('return 1',{});check(r.error==='Execution aborted or timed out','abort escapes stalled shard startup');}
   finally{await startupPool.close();}
-  const stalled=new ShardBackend({binary:peer,snapshot:'backpressure',slots:1,owners:1});
+  const stalled=new ShardBackend({binary:peer,snapshot:peerSnapshot('backpressure'),slots:1,owners:1});
   const stalledPool=new SandboxPool(stalled,0,1);
   const stalledExecutor=new MicroVMExecutor(stalledPool,()=> 'allow',100);
   try {
@@ -90,7 +103,7 @@ try {
     const r=await stalledExecutor.execute('return 1',{});check(r.error==='Execution aborted or timed out','abort escapes blocked admission write');
   } finally {await stalledPool.close();}
   for(const mode of ['producer','consumer','length','reserved','slot','generation','kind','identity','duplicate','json','nonascii','completion','stats']) {
-    const hostile=new ShardBackend({binary:peer,snapshot:mode,slots:1,owners:1});
+    const hostile=new ShardBackend({binary:peer,snapshot:peerSnapshot(mode),slots:1,owners:1});
     try {
       const started=performance.now();
       const s=await hostile.park();await s.armDeadline!(Date.now()+3000);await s.send({t:'run',code:'return 1',ns:{tools:['echo']}});

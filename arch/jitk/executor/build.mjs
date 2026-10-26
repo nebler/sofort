@@ -11,3 +11,5 @@ writeFileSync('build/inputs.json',JSON.stringify(result.metafile.inputs,null,2)+
 await build({...options,entryPoints:{demo:'examples/demo.ts'}});
 copyFileSync('codec.mjs','build/codec.mjs');
 
+
+for(const name of ['prepared-helpers.mjs','shard-helpers.js'])copyFileSync(name,'build/'+name);

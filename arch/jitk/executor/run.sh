@@ -12,6 +12,7 @@ fi
 case "${1:-test}" in
  build) ;;
  test|check)
+  "$TASK_NODE" build/prepared-check.js
   "$TASK_NODE" build/pool-check.js
   "$TASK_NODE" build/resolve-check.js
   "$TASK_NODE" build/sandbox-check.js

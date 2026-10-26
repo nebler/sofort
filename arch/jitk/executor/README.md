@@ -155,9 +155,20 @@ export JITK_SHARD_SNAPSHOT=/absolute/path/to/prepared-base
 ```
 
 Build the Rust `real` executable with `cargo build --release --bin real` in
-`../shard`, build the ring image with `../kernel/build-ring.sh`, then run
-`real prepare KERNEL_IMAGE PREPARED_BASE` once, offline. The snapshot must be
-from the current QuickJS ring/glue-2m profile, including its `.layout` sidecar.
+`../shard`, and build the ring-only QuickJS payload as described there. Prepare
+an executor profile once, offline, in a new output location:
+
+```sh
+node ../shard/harness/prepare-helpers.mjs /absolute/path/to/real /absolute/new/base
+```
+
+The preparer uses the existing kernel `JITK_SCRIPT` build input to evaluate the
+codec and carrier helpers before CHECKPOINT, producing a separate ring image.
+Each run sends only user code, provider descriptors/preludes and a small binding.
+The `.identity` sidecar binds the helper-source SHA-256 and `.mem/.regs/.layout`
+hashes. The executor checks it before spawning a shard; old snapshots or changed
+helpers fail with a clear reprepare error. Never replace active snapshot files.
+Helper objects and globals are guest memory restored on every generation.
 No image or libkrun default changes. MCP reads the same `JITK_BACKEND` selection;
 use `"warm":0` for this experimental backend (a new parking receipt is not yet
 certified). Call `pool.close()` to reap the one shard and its independent watchdog.
@@ -186,7 +197,8 @@ JITK_SHARD_TEST=ssh make test
 
 SSH uses `JITK_NESTED_SSH` or the project's `kvm-dev/ssh.sh`. Install a verified
 Node with headers under `/home/dev/r7-ipc/` and prepare the ring snapshot there
-first. Defaults are `/home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/bin/node`
+first. Set `JITK_SHARD_REMOTE_ROOT=/home/dev/r8-helpers` to stage/test in a
+different round-specific scratch root, and `JITK_SHARD_OUTPUT` for local receipts. Defaults are `/home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/bin/node`
 and `/home/dev/r7-ipc/prepared`; override `JITK_SHARD_REMOTE_NODE` and
 `JITK_SHARD_REMOTE_SNAPSHOT` within that private root. The runner stages sources,
 builds Rust, installs the exact JS lockfile with scripts disabled, builds the
