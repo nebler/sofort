@@ -1,0 +1,17 @@
+Linux kvm-dev 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026 aarch64 GNU/Linux
+ 05:07:17 up 19:20,  1 user,  load average: 0.34, 0.28, 0.11
+6
+MemTotal:        9122092 kB
+MemFree:         1101224 kB
+MemAvailable:    8464644 kB
+Buffers:          159856 kB
+Cached:          6979100 kB
+5ecd4cc387cc8af218e7bcf38a5a3f5b09e0328bda8c99ff51b449c6343493cd  arch/jitk/shard/target/release/real
+63f23567b4101f1233a1f38b2335fbb55399d5ba15ef2ccba3783c1fcc6866d8  prepared.mem
+f7a0621fcb7f8d06490edacf92c77c32e821cb214f834a4460c74d8f89d01325  prepared.regs
+8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af  prepared.layout
+86c029d7361ace3ddb7ea12f860d7db89339a75d36400e499115533d7cff222f  helpers.mem
+de70b2548498d2ecd2d708565f7f8dc7c7d6e592aef0675524a9039a4a4e7b39  helpers.regs
+8301b7a07996ce8c260db1f0e9f031de0d8614e42192d1492b7a75a98d5345af  helpers.layout
+6d55c2d8f7f5100e626eaae3b3581a32b47c5eaa523e059cde8b4d00e01173a6  helpers.identity
+545M	.

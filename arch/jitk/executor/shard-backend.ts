@@ -1,3 +1,4 @@
+import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
 import {Dispatcher,encode,parseFrame,type Frame} from '../protocol/dispatcher.js';
 import type {Backend,Sandbox} from './backend.js';
@@ -6,22 +7,11 @@ import {IPC,SharedChannel,monotonicNs,type Message} from './shard-ipc.js';
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;onMetrics?:(m:ShardMetrics)=>void};
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
-/** Adapt the existing executor body to the prepared ring profile's single raw
- * transport capability. The provider registry, policy and credentials stay in Node. */
+/** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(frame:Frame):string {
   const names=Object.keys(frame.ns as object);
-  let prefix='__jitk_ring_';while(names.some(name=>name.startsWith(prefix)))prefix+='_';
-  const providers=names.map(name=>`const ${name}=new Proxy(Object.create(null),{get:(_t,k)=>k==='then'?undefined:(...a)=>${prefix}call(${JSON.stringify(name)},k,a)});`).join('\n');
-  const source=`return await(async(${prefix}transport)=>{
-const ${prefix}logs=[],${prefix}pending=new Set();
-const ${prefix}call=(ns,fn,args)=>{const p=${prefix}transport.echo('call',ns,fn,args).then(r=>{if(Object.hasOwn(r,'err')){const e=new Error(r.err.message);e.code=r.err.code;throw e;}return r.ok;});${prefix}pending.add(p);p.then(()=>${prefix}pending.delete(p),()=>${prefix}pending.delete(p));return p;};
-const console=Object.fromEntries(['log','info','warn','error','debug'].map(level=>[level,(...a)=>{const p=${prefix}transport.echo('log',level,a.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' '));p.catch(()=>{});${prefix}logs.push(p);}]));
-${providers}
-let ${prefix}result;try{${prefix}result=await(async()=>{${frame.code}\n})();if(${prefix}pending.size)throw Error('unawaited calls at completion');}catch(e){throw {name:String(e&&e.name||'Error').slice(0,128),message:String(e&&e.message||e).slice(0,4096)};}finally{await Promise.allSettled([...${prefix}pending]);await Promise.all(${prefix}logs);}return ${prefix}result;
-})(tools);`;
-  // Encode source as a JSON string, then parse its original Unicode in the
-  // guest. Escaping source tokens directly would change String.raw/RegExp.source.
-  const wire=`return await(new(Object.getPrototypeOf(async function(){}).constructor)('tools','run',${ascii(JSON.stringify(source))}))(tools,run);`;
+  // Only JSON string data is ASCII escaped: preserve raw templates/regex tokens.
+  const wire=`return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(frame.code))},${JSON.stringify(names)});`;
   if(Buffer.byteLength(wire)>8192)throw Error('shard source limit including trusted adapters (8192 bytes)');
   return wire;
 }
@@ -43,6 +33,7 @@ export class ShardBackend implements Backend {
   private readonly onExit=()=>this.child.kill('SIGKILL');
   constructor(readonly options:ShardOptions) {
     if(process.platform!=='linux')throw Error('shard backend requires Linux');
+    verifyPreparedSnapshot(options.snapshot);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
     this.generations=Array<bigint>(slots).fill(0n);

@@ -9,7 +9,7 @@ import sys
 CAP, RECORD = 64, 16416
 REGION = CAP * RECORD
 memory = mmap.mmap(3, 4096 + 2 * REGION)
-mode = sys.argv[2]
+mode = os.path.basename(sys.argv[2])
 produced = 0
 
 def notify():

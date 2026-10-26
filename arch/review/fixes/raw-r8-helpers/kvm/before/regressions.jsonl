@@ -1,0 +1,2 @@
+{"name":"stale helper identity rejected at load","status":"FAIL","error":"AssertionError [ERR_ASSERTION]: Missing expected exception."}
+{"name":"same slot restores mutated helper and global","status":"FAIL","error":"AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ \"Error: TypeError: cannot read property 'codec' of undefined\"\n- undefined\n"}

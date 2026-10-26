@@ -8,6 +8,7 @@ import hashlib
 import io
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import subprocess
@@ -22,11 +23,14 @@ ssh = Path(os.environ.get('JITK_NESTED_SSH', str(common.parent / 'kvm-dev/ssh.sh
 if not ssh.is_file():
     raise SystemExit('set JITK_NESTED_SSH to the existing kvm-dev ssh.sh wrapper')
 identity = hashlib.sha256(str(root).encode()).hexdigest()[:12]
-remote = f'/home/dev/r7-ipc/test-{identity}'
+remote_root = os.environ.get('JITK_SHARD_REMOTE_ROOT', '/home/dev/r7-ipc')
+if not re.fullmatch(r'/home/dev/r[0-9]+-[A-Za-z0-9_-]+', remote_root):
+    raise SystemExit('remote scratch root must be /home/dev/r<round>-<agent>')
+remote = f'{remote_root}/test-{identity}'
 node = os.environ.get('JITK_SHARD_REMOTE_NODE', '/home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/bin/node')
 snapshot = os.environ.get('JITK_SHARD_REMOTE_SNAPSHOT', '/home/dev/r7-ipc/prepared')
-if not node.startswith('/home/dev/r7-ipc/') or not snapshot.startswith('/home/dev/r7-ipc/'):
-    raise SystemExit('remote Node and prepared base must be inside /home/dev/r7-ipc/')
+if not node.startswith('/home/dev/r7-ipc/') or not snapshot.startswith(remote_root+'/'):
+    raise SystemExit('remote Node must be inside /home/dev/r7-ipc/ and snapshot inside remote scratch root')
 files = []
 for part in ['arch/jitk/shard', 'arch/jitk/executor', 'arch/jitk/protocol', 'arch/jitk/bench/hyperlight', 'arch/jitk/mcp']:
     directory = root / part
@@ -69,7 +73,7 @@ flock -w {lock_wait} /home/dev/bench.lock sh -c {q(run_suite)}
 receipt = {'backend': 'ssh', 'remote': remote, 'node': node, 'snapshot': snapshot,
            'source_sha256': {name: hashlib.sha256(source.read_bytes()).hexdigest() for source, name in files},
            'command': commands, 'started_unix': time.time(), 'benchmark': benchmark, 'vm_lifecycle_changes': False}
-output = executor / 'raw-r7-ipc'
+output = Path(os.environ.get('JITK_SHARD_OUTPUT', str(executor / 'raw-r7-ipc')))
 output.mkdir(exist_ok=True)
 (output / 'ssh-command.json').write_text(json.dumps(receipt, indent=2) + '\n')
 print(f'jitk: shard suite via {ssh}; scratch={remote}; lock wait <={lock_wait}s', flush=True)

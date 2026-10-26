@@ -1,0 +1,2 @@
+{"name":"stale helper identity rejected at load","status":"PASS"}
+{"name":"same slot restores mutated helper and global","status":"PASS"}

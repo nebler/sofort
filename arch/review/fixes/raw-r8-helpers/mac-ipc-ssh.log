@@ -1,0 +1,131 @@
+jitk: delegating executor/test-shard (see /Users/noah/.t3/worktrees/sofort/t3-1246344a/arch/jitk/executor/README.md)
+./run.sh shard-test
+jitk: shard suite via /Users/noah/code/sofort/kvm-dev/ssh.sh; scratch=/home/dev/r8-helpers/test-52faae109d34; lock wait <=600s
+   Compiling jitk-shard v0.1.0 (/home/dev/r8-helpers/test-52faae109d34/arch/jitk/shard)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+     Running unittests src/bin/real.rs (target/debug/deps/real-9c73b479be233539)
+
+running 19 tests
+test arena::tests::only_the_class_arena_and_rings_are_writable ... ok
+test entropy::chacha_zero_key_counter_one ... ok
+test ipc::tests::hostile_lengths_and_reserved_fields ... ok
+test arena::tests::layouts_reject_legacy_unknown_and_modified_bounds ... ok
+test ipc_service::tests::malformed_admissions ... ok
+test kvm::native::inputs::tests::hostile_inputs ... ok
+test ipc_json::tests::malformed_json_and_envelopes ... ok
+test kvm::native::streams::tests::arbitrary_bytes_streams_and_status ... ok
+test kvm::native::inputs::tests::bounded_tree_and_binary_data ... ok
+test kvm::native::streams::tests::hostile_headers_and_cursors ... ok
+test kvm::native::streams::tests::stream_budgets_duplicates_and_terminal_order ... ok
+test ipc::tests::private_cursor_shadows_and_wrapped_records ... ok
+test lease::tests::escalation_claim_loses_to_reset_and_new_generation ... ok
+test kvm::native::streams::tests::completion_and_log_contracts ... ok
+test lease::tests::expiry_requires_reset_acknowledgement_before_reuse ... ok
+test lease::tests::stale_generation_cannot_expire_or_disarm_reused_slot ... ok
+test lease::tests::kick_between_entries_yields_before_running_another_slot ... ok
+test kvm::native::streams::tests::wraps_and_repeated_credit ... ok
+test kvm::native::streams::tests::header_fuzz_never_reads_past_a_committed_record ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Compiling jitk-shard v0.1.0 (/home/dev/r8-helpers/test-52faae109d34/arch/jitk/shard)
+    Finished `release` profile [optimized] target(s) in 0.96s
+
+added 48 packages in 2s
+npm notice
+npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+npm notice To update run: npm install -g npm@11.21.1
+npm notice
+{"event":"check","name":"return2"}
+{"event":"check","name":"Node provider reply replaces synthetic echo"}
+{"event":"check","name":"provider namespace tools"}
+{"event":"check","name":"provider namespace run"}
+{"event":"check","name":"provider namespace __jitk_ring_custom"}
+{"event":"check","name":"primitive thrown values"}
+{"event":"check","name":"unawaited calls cannot return success"}
+{"event":"check","name":"out-of-order concurrent tool replies"}
+{"event":"check","name":"scalar Unicode"}
+{"event":"check","name":"raw Unicode source semantics"}
+{"event":"check","name":"codemode binary round trip"}
+{"event":"check","name":"structured tool errors"}
+{"event":"check","name":"policy denial delivered to guest"}
+{"event":"check","name":"console logs"}
+{"event":"check","name":"bounded oversized reply is an explicit error"}
+{"event":"check","name":"32-call ring budget"}
+{"event":"check","name":"source admission bound"}
+{"event":"check","name":"tenant can mutate prepared helper/global"}
+{"event":"check","name":"next generation restores pristine helper/global"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"fresh restore"}
+{"event":"check","name":"distinct restored Math.random"}
+{"event":"check","name":"eight concurrent generations"}
+{"event":"check","name":"canonical policy owns issuance/revocation"}
+{"event":"check","name":"shard has no inherited credentials/environment"}
+{"event":"check","name":"watchdog reset receipt while Node was blocked"}
+{"event":"check","name":"responsive-owner deadline reset within 50 ms (nested)"}
+{"event":"check","name":"clean reuse after expiry"}
+{"event":"check","name":"JITK_BACKEND=shard through MCP core"}
+{"event":"check","name":"abort escapes stalled shard startup"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"hostile peer fills TX credits"}
+{"event":"check","name":"abort escapes blocked admission write"}
+{"event":"check","name":"Node promptly rejects hostile producer"}
+{"event":"check","name":"Node promptly rejects hostile consumer"}
+{"event":"check","name":"Node promptly rejects hostile length"}
+{"event":"check","name":"Node promptly rejects hostile reserved"}
+{"event":"check","name":"Node promptly rejects hostile slot"}
+{"event":"check","name":"Node promptly rejects hostile generation"}
+{"event":"check","name":"Node promptly rejects hostile kind"}
+{"event":"check","name":"Node promptly rejects hostile identity"}
+{"event":"check","name":"Node promptly rejects hostile duplicate"}
+{"event":"check","name":"Node promptly rejects hostile json"}
+{"event":"check","name":"Node promptly rejects hostile nonascii"}
+{"event":"check","name":"Node promptly rejects hostile completion"}
+{"event":"check","name":"Node promptly rejects hostile stats"}
+{"event":"check","name":"Rust rejects malformed kind"}
+{"event":"check","name":"Rust rejects malformed slot"}
+{"event":"check","name":"Rust rejects malformed generation"}
+{"event":"check","name":"Rust rejects malformed source-length"}
+{"event":"check","name":"Rust rejects malformed source-encoding"}
+{"event":"check","name":"Rust rejects malformed calls"}
+{"event":"check","name":"Rust rejects malformed memory"}
+{"event":"check","name":"Rust rejects malformed deadline"}
+{"event":"check","name":"Rust rejects malformed reply"}
+{"event":"check","name":"Rust rejects malformed cancel"}
+{"event":"check","name":"Rust rejects malformed replay"}
+{"event":"check","name":"shared-memory wrap and backpressure"}
+{"suite":"shard","assertions":121,"metrics":34,"status":"PASS"}

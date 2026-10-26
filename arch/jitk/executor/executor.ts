@@ -76,7 +76,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       if(expired())abort();
       if(ctx.signal.aborted)throw new Error('aborted');
       await s.armDeadline?.(deadline);
-      const body=executionBody(code,providers);
+      const body=executionBody(code,providers,this.pool.backend.kind==='shard');
       if(body.length>LIMIT.code)throw Error('code limit including trusted adapters');
       await s.send({t:'run',code:body,ns:Object.fromEntries(providers.map(p=>[p.name,Object.keys(p.fns)]))});
       mark('runSent');
