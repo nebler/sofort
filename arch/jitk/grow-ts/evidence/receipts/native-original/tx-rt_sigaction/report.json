@@ -1,0 +1,270 @@
+{
+  "name": "rt_sigaction",
+  "mode": "replay",
+  "gate": "PASS",
+  "acceptance": {
+    "cases": {
+      "semantic": [
+        "explicit injected ENOSYS"
+      ],
+      "error": [
+        "inaccessible pointers still ENOSYS"
+      ],
+      "state": [
+        "query after attempted set",
+        "output canary unchanged"
+      ]
+    },
+    "mutations": [
+      {
+        "name": "false-success",
+        "rejected": true,
+        "reason": "{'linux': {'stdout_hex': '7369676e616c733a6f6b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+        "source_sha256": "da41f1e637d9c260251cc3aae0ab0c9be337ba7fd2eec2233604718b1a5726a3"
+      },
+      {
+        "name": "pointer-sensitive",
+        "rejected": true,
+        "reason": "{'linux': {'stdout_hex': '7369676e616c733a6f6b0a', 'stderr_hex': '', 'exit': 0}, 'jitk': {'stdout_hex': '', 'stderr_hex': '', 'exit': 1}}",
+        "source_sha256": "1bb6237883d4c4edf939027edd42cb42ca7f61e598d2b8ec905ad7f78c60b9d1"
+      }
+    ],
+    "unchanged_integration": "PASS",
+    "n": 30,
+    "pass": 30,
+    "repeat_counts_are_not_acceptance": true
+  },
+  "seconds": 6.085014000028372,
+  "stages": {
+    "assemble_probe": {
+      "seconds": 0.06460600000619889,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20"
+    },
+    "linux_oracle": {
+      "seconds": 0.2983729999959469,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20"
+    },
+    "recorded_proposal": {
+      "seconds": 0.00043299999833106993,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20"
+    },
+    "build_candidate": {
+      "seconds": 1.0525349999964237,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 3.74 4.53 4.20",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_0": {
+      "seconds": 0.022631999999284745,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_1": {
+      "seconds": 0.020970999985933304,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_2": {
+      "seconds": 0.0244549999833107,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_3": {
+      "seconds": 0.02171399998664856,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_4": {
+      "seconds": 0.02057499998807907,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_5": {
+      "seconds": 0.02009799998998642,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_6": {
+      "seconds": 0.020541999995708465,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_7": {
+      "seconds": 0.02055400002002716,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_8": {
+      "seconds": 0.02078600001335144,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_9": {
+      "seconds": 0.020064999997615813,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_10": {
+      "seconds": 0.020483999997377395,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_11": {
+      "seconds": 0.02061999997496605,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_12": {
+      "seconds": 0.021787000000476838,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_13": {
+      "seconds": 0.02221799999475479,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_14": {
+      "seconds": 0.022115000009536742,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_15": {
+      "seconds": 0.023134999990463256,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_16": {
+      "seconds": 0.022574000000953675,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_17": {
+      "seconds": 0.020902999997138978,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_18": {
+      "seconds": 0.023848999977111818,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_19": {
+      "seconds": 0.0225460000038147,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_20": {
+      "seconds": 0.023499000012874603,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_21": {
+      "seconds": 0.02096299999952316,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_22": {
+      "seconds": 0.022288000017404556,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_23": {
+      "seconds": 0.024374000012874604,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_24": {
+      "seconds": 0.023625,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_25": {
+      "seconds": 0.024064000010490416,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_26": {
+      "seconds": 0.023479000002145766,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_27": {
+      "seconds": 0.025216999977827073,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_28": {
+      "seconds": 0.02560199999809265,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "semantic_error_state_29": {
+      "seconds": 0.02165999999642372,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "build_mutant_false-success": {
+      "seconds": 1.0258400000035763,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "build_mutant_pointer-sensitive": {
+      "seconds": 1.017997999995947,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "integration_linux": {
+      "seconds": 0.3391399999856949,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    },
+    "integration_build": {
+      "seconds": 1.1186410000026226,
+      "uptime_before": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25",
+      "uptime_after": "18:05  up 2 days, 20:19, 1 user, load averages: 4.40 4.65 4.25"
+    }
+  },
+  "benchmark": {
+    "n": 30,
+    "unit": "ms",
+    "median": 12.640499994158745,
+    "p90": 13.962999999523163,
+    "p99": 15.643999993801117,
+    "samples": [
+      12.712999999523163,
+      12.111000001430511,
+      12.382999986410141,
+      12.456999987363815,
+      11.863999992609024,
+      12.11599999666214,
+      12.026999980211258,
+      11.802000015974045,
+      12.087000012397766,
+      11.700999975204468,
+      11.814000010490417,
+      12.065999984741211,
+      12.742000013589859,
+      12.935999989509583,
+      13.581000000238419,
+      13.532999992370605,
+      13.483999997377396,
+      11.956999987363815,
+      13.06700000166893,
+      12.768999993801117,
+      12.973999977111816,
+      11.65200001001358,
+      12.567999988794327,
+      13.242000013589859,
+      13.962999999523163,
+      14.400000005960464,
+      13.68299999833107,
+      15.643999993801117,
+      13.982999980449677,
+      12.267000019550323
+    ]
+  },
+  "commit": "04f66d5b255a01ec49848166ba9d524126ab56bf"
+}

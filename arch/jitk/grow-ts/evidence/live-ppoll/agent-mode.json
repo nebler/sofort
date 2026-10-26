@@ -1,0 +1,21 @@
+{
+  "mode": "live",
+  "cli": "/opt/homebrew/bin/codex",
+  "command": [
+    "/opt/homebrew/bin/codex",
+    "exec",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "-c",
+    "approval_policy=\"never\"",
+    "--output-schema",
+    "/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow-ts/results/grow-ts-live-ppoll/tx-ppoll/agent.schema.json",
+    "--output-last-message",
+    "/Users/noah/.t3/worktrees/sofort/t3-6c868ba1/arch/jitk/grow-ts/results/grow-ts-live-ppoll/tx-ppoll/agent.json",
+    "-"
+  ],
+  "auth": "private ephemeral CODEX_HOME; never included in receipts"
+}
