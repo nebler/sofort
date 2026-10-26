@@ -9,25 +9,16 @@ import {Dispatcher, LIMIT, type Frame} from './protocol.js';
 import type {Sandbox,Backend} from './types.js';
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
   /** jitk-vmm binary providing `--watchdog`; defaults to JITK_WATCHDOG, then JITK_VMM_BINARY. */ watchdog?:string};
-/** One shared native deadline watchdog per binary (vmm/src/watchdog.rs): a separate process, so it
+/** One shared native deadline watchdog per backend (vmm/src/watchdog.rs): a separate process, so it
  *  still fires while a trusted tool blocks Node's event loop, spawned once instead of per VM. */
 class Watchdog {
-  private static readonly shared=new Map<string,Watchdog>();
-  static for(bin:string):Watchdog {
-    let w=Watchdog.shared.get(bin);
-    if(!w||w.dead){w=new Watchdog(bin);Watchdog.shared.set(bin,w);}
-    return w;
-  }
   readonly ready:Promise<void>;
   readonly exited:Promise<void>;
-  static async closeAll():Promise<void> {
-    const all:Promise<void>[]=[];for(const w of Watchdog.shared.values()){w.proc.stdin!.end();all.push(w.exited);}
-    Watchdog.shared.clear();await Promise.all(all);
-  }
+  async close():Promise<void>{this.proc.stdin!.end();await this.exited;}
   dead?:Error;
   private readonly proc:ChildProcess;
   private readonly vms=new Map<number,{timeout:(m:any)=>void;fail:(e:Error)=>void;armed?:{deadline:number;resolve:()=>void;reject:(e:Error)=>void}}>();
-  private constructor(bin:string) {
+  constructor(bin:string) {
     // EOF on its stdin (including executor death) kills every registered VM.
     this.proc=spawn(bin,['--watchdog'],{stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
     
@@ -76,8 +67,6 @@ class Watchdog {
     this.write(`del ${pid}\n`,()=>{});
   }
 }
-// glibc's malloc THP backs the VMM heap with huge pages: -5.99 MiB/VM on Linux (research/perf/linux-ledger).
-const LINUX_MALLOC_ENV:Record<string,string>=process.platform==='linux'?{GLIBC_TUNABLES:'glibc.malloc.hugetlb=0'}:{};
 function watchdogBinary(options:ProcessOptions):string {
   const bin=options.watchdog??process.env.JITK_WATCHDOG??process.env.JITK_VMM_BINARY;
   if(!bin)throw Error('watchdog: set ProcessOptions.watchdog, JITK_WATCHDOG or JITK_VMM_BINARY to a jitk-vmm binary');
@@ -86,30 +75,34 @@ function watchdogBinary(options:ProcessOptions):string {
 export class ProcessBackend implements Backend {
   constructor(readonly kind:Backend['kind'],readonly command:string,readonly argv:string[],
     readonly memoryLimitMB=32,readonly options:ProcessOptions={}) {}
-  async close():Promise<void>{await Watchdog.closeAll();}
+  private watchdog:Watchdog|undefined;
+  private owners=0;
+  retain():void{this.owners++;}
+  async close():Promise<void>{
+    if(this.owners>0)this.owners--;
+    if(this.owners>0)return;
+    if(this.watchdog)await this.watchdog.close();this.watchdog=undefined;
+  }
   async park(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
     if(signal?.aborted)throw Error('aborted');
     const args:string[]=['-i','PATH=/usr/bin:/bin'];
     if(this.options.env)for(const k of Object.keys(this.options.env))args.push(k+'='+this.options.env[k]);
     args.push(this.command);for(const a of this.argv)args.push(a);
     const child=spawn('/usr/bin/env',args,{stdio:'pipe',detached:true,cwd:this.options.cwd||process.cwd()});
-    const s=new ProcessSandbox(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
+    if(!this.watchdog||this.watchdog.dead)this.watchdog=new Watchdog(watchdogBinary(this.options));
+    const s=new ProcessSandbox(child,this.watchdog,this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
     const abort=()=>s.kill();signal?.addEventListener('abort',abort,{once:true});
     const timer=setTimeout(abort,this.options.startupMs??5000);
     try {
+      // Register rejection handlers before awaiting heterogeneous readiness promises.
+      // Every original promise is still awaited and its failure remains fatal.
+      void s.confined.catch(()=>{});
       const first:any=await s.read();await s.confined;await s.watchdogReady;
       if(first.t!=='ready'||first.v!==1)throw Error('bad ready');
       if(signal?.aborted)throw Error('aborted');
       return s;
     }catch(e){s.kill();await s.exited;throw e;}
     finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
-  }
-}
-// UNSAFE development backend: QuickJS std/os can access the host filesystem.
-export class LocalProcessQjsBackend extends ProcessBackend {
-  constructor(qjs:string,memoryLimitMB=32,options:ProcessOptions={}) {
-    super('local-qjs',qjs,['--memory-limit',String(memoryLimitMB*1048576),'--stack-size','524288','--std','-e',
-      readFileSync(new URL('../protocol/bootstrap.js',import.meta.url),'utf8')],memoryLimitMB,options);
   }
 }
 const profiles=new Map<string,string>();

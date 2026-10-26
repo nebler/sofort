@@ -7,6 +7,7 @@ export interface Sandbox {
 }
 export interface Backend {
   readonly kind:string; readonly memoryLimitMB:number;
+  retain?():void;
   close?():Promise<void>;
   park(signal?:AbortSignal,deadline?:number):Promise<Sandbox>;
 }

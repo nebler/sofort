@@ -15,6 +15,7 @@ export class SandboxPool {
   private maxTokens=0;
   private maxCreating=0;
   private closed=false;
+  private closeTask:Promise<void>|undefined;
   private lifecycle=new AbortController();
   private disposals=[] as Promise<void>[];
   private startups=[] as Promise<Sandbox>[];
@@ -26,6 +27,7 @@ export class SandboxPool {
     if(!Number.isInteger(this.refillConcurrency)||this.refillConcurrency<1)throw Error('invalid refill concurrency');
     const gate=options.parkingGate;
     if(warmCount&&(!gate||!Number.isFinite(gate.idleCorePercent)||gate.idleCorePercent<0||gate.idleCorePercent>=2||!gate.evidence))throw Error('parking G1 evidence below 2% required');
+    this.backend.retain?.();
   }
   snapshot(){return {tokens:this.tokens,creating:this.creating,parked:this.parked.length,live:this.live.length,maxTokens:this.maxTokens,maxCreating:this.maxCreating,closed:this.closed};}
   private async start(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
@@ -101,7 +103,8 @@ export class SandboxPool {
     // Never reuse a completed VM. Refill is bounded and off the result path.
     if(!this.closed)void this.warm().catch(()=>{});
   }
-  async close():Promise<void> {
+  close():Promise<void>{if(!this.closeTask)this.closeTask=this.closeOwned();return this.closeTask;}
+  private async closeOwned():Promise<void> {
     this.closed=true;this.lifecycle.abort();for(const s of this.live)s.kill();
     await this.backend.close?.();
     await Promise.allSettled([...this.startups]);if(this.warming)try{await this.warming;}catch{}
