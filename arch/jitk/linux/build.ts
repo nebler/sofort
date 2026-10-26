@@ -1,4 +1,5 @@
 import {
+  chmodSync,
   copyFileSync,
   existsSync,
   lstatSync,
@@ -27,7 +28,25 @@ const IGNORED = new Set([
   "dist",
   "__pycache__",
   ".READY",
+  // Kernel tests leave read-only fixture trees here; never copy them.
+  "test-work",
+  "test-results",
+  "node_modules",
+  ".scriptc",
 ]);
+// rmSync cannot remove entries inside read-only directories; restore owner write first.
+function makeWritable(path: string): void {
+  if (!existsSync(path) || lstatSync(path).isSymbolicLink()) {
+    return;
+  }
+  const stat = lstatSync(path);
+  chmodSync(path, stat.mode | 0o700);
+  if (stat.isDirectory()) {
+    for (const name of readdirSync(path)) {
+      makeWritable(join(path, name));
+    }
+  }
+}
 function copyTree(source: string, dest: string): void {
   mkdirSync(dest, { recursive: true });
   for (const name of readdirSync(source)) {
@@ -97,6 +116,7 @@ export function splitCommand(text: string): string[] {
 export async function buildKernel(): Promise<void> {
   mkdirSync(WORK, { recursive: true });
   const dest = join(WORK, "kernel");
+  makeWritable(dest);
   rmSync(dest, { recursive: true, force: true });
   copyTree(join(ROOT, "../kernel"), dest);
   const script = read(join(ROOT, "../protocol/bootstrap.js"));
