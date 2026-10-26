@@ -81,18 +81,6 @@ def main():
         script = directory / f"{action}.sh"
         shell = "/bin/bash" if "bash" in script.read_text().splitlines()[0] else "/bin/sh"
         command = [shell, str(script)]
-    elif subtree == "vmm" and action == "build":
-        command = [sys.executable, str(directory / "build.py")]
-    elif subtree == "executor" and (directory / "run.sh").is_file():
-        command = ["sh", str(directory / "run.sh"), action]
-    elif subtree == "protocol" and action in {"build", "test"}:
-        node = node_binary()
-        if not os.path.isabs(node) or not os.path.isfile(node):
-            sys.exit("jitk: set JITK_NODE to a verified absolute Node >=24 binary; see protocol/README.md")
-        command = [node, str(directory / ("build.mjs" if action == "build" else "test.mjs"))]
-    elif subtree == "bench":
-        command = [sys.executable, str(directory / "run.py")]
-        command += ["--test"] if action == "test" else ["--samples", "30"]
     else:
         sys.exit(f"jitk: no {action} entrypoint in {subtree}; see {readme}; expected Makefile target '{action}' or {action}.sh")
     print(f"jitk: delegating {subtree}/{action} (see {readme})", flush=True)
