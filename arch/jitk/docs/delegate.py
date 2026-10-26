@@ -128,7 +128,13 @@ def main():
                                               "--path-format=absolute", "--git-common-dir"], text=True).strip()
             env["JITK_NESTED_SSH"] = str(Path(common).parent / "kvm-dev/ssh.sh")
         with test_tree() as root:
-            return execute(root)
+            status = execute(root)
+            # Later suites consume these ignored build products. Receipts stay disposable.
+            output = {"kernel": "dist", "executor": "build"}.get(subtree)
+            if status == 0 and output and (root / subtree / output).is_dir():
+                shutil.copytree(root / subtree / output, ROOT / subtree / output,
+                                dirs_exist_ok=True)
+            return status
     return execute(ROOT)
 
 
