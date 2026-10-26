@@ -1,2 +1,2 @@
-import {createCodeTool} from '@cloudflare/codemode';
-console.log(typeof createCodeTool);
+import {normalizeCode} from '@cloudflare/codemode';
+console.log(normalizeCode('return 2'));

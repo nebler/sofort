@@ -3,6 +3,6 @@
   "name": "async_spike",
   "entry": "async-library.ts",
   "emission": "llvm",
-  "abi": {"prefix":"spike_","init_symbol":"spike_init","sink_register_symbol":"spike_sink","callback_register_symbol":"spike_callback"},
+  "abi": {"prefix":"spike_","init_symbol":"spike_init","sink_register_symbol":"spike_sink"},
   "exports": [{"export":"value","symbol":"spike_value","params":[],"returns":"f64"}]
 }
