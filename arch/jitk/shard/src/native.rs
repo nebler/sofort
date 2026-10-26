@@ -239,7 +239,8 @@ pub fn hold(
         "{{\"event\":\"environment\",\"pid\":{},\"threads\":1,\"nested\":true}}",
         std::process::id()
     );
-    let run = inputs::decode(&std::fs::read(request)?).map_err(io::Error::other)?;
+    let run = inputs::decode(&read_metadata(File::open(request)?, MAX_REQUEST)?)
+        .map_err(io::Error::other)?;
     let kvm = Kvm::new();
     let snapshot = Snapshot::load(base)?;
     let mut entropy = File::open("/dev/urandom")?;

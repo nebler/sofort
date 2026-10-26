@@ -124,6 +124,14 @@ pub struct Snapshot {
     pub class: arena::Class,
     regs: Vec<Register>,
 }
+fn read_metadata(reader: impl Read, limit: usize) -> io::Result<Vec<u8>> {
+    let mut bytes = Vec::new();
+    reader.take((limit + 1) as u64).read_to_end(&mut bytes)?;
+    if bytes.len() > limit {
+        return Err(snapshot_error("snapshot metadata size bound"));
+    }
+    Ok(bytes)
+}
 fn snapshot_error(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
@@ -165,7 +173,7 @@ impl Snapshot {
         if memory.metadata()?.len() != RAM as u64 {
             return Err(snapshot_error("snapshot RAM length"));
         }
-        let layout = std::fs::read(format!("{base}.layout"))?;
+        let layout = read_metadata(File::open(format!("{base}.layout"))?, 72)?;
         let class = arena::Class::from_layout(&layout)
             .ok_or_else(|| snapshot_error("unsupported ring snapshot layout"))?;
         // The sidecar cannot select a different class than the linked image.
@@ -175,7 +183,7 @@ impl Snapshot {
         if !kernel.windows(layout.len()).any(|b| b == layout) {
             return Err(snapshot_error("snapshot/layout mismatch"));
         }
-        let b = std::fs::read(format!("{base}.regs"))?;
+        let b = read_metadata(File::open(format!("{base}.regs"))?, 8 + 2048 * (16 + 256))?;
         let regs = parse_registers(&b)?;
         Ok(Arc::new(Self {
             memory,
@@ -799,6 +807,24 @@ mod tests {
         b[32..32 + payload.len()].copy_from_slice(payload);
         s.copy(REQUEST, &b);
         s.store(0x40, len as u64);
+    }
+    #[test]
+    fn snapshot_metadata_reads_are_bounded_before_allocation() {
+        struct Endless {
+            read: usize,
+        }
+        impl Read for Endless {
+            fn read(&mut self, out: &mut [u8]) -> io::Result<usize> {
+                assert!(self.read <= 73, "reader consumed beyond limit+1");
+                let n = out.len().min(1024);
+                out[..n].fill(0);
+                self.read += n;
+                Ok(n)
+            }
+        }
+        assert!(read_metadata(Endless { read: 0 }, 72).is_err());
+        assert_eq!(read_metadata(&b"abc"[..], 3).unwrap(), b"abc");
+        assert!(read_metadata(&b"abcd"[..], 3).is_err());
     }
     fn register_bytes() -> Vec<u8> {
         let mut bytes = b"JTKREGS2".to_vec();
