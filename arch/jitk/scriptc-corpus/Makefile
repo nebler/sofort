@@ -1,7 +1,7 @@
 SCRIPTC := node_modules/.bin/scriptc
 ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
 export ZIG
-.PHONY: build census run test
+.PHONY: build census run test report
 $(SCRIPTC): package-lock.json package.json
 	npm ci --no-audit --no-fund
 build: .work/bin/census .work/bin/oracle
@@ -17,3 +17,8 @@ run: build
 	.work/bin/census run $(ARGS)
 test: build
 	.work/bin/census test
+.work/bin/report: report.ts lib.ts $(SCRIPTC)
+	mkdir -p .work/bin
+	$(SCRIPTC) build report.ts -o $@
+report: .work/bin/report
+	.work/bin/report

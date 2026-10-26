@@ -89,7 +89,7 @@ analysis.
 
 Each absent syscall is counted once per program. The launcher's initial execve
 is excluded. For programs with missing syscalls, a second ordinary Linux run
-checks output/exit stability, then strace injects ENOSYS into **one missing
+checks output/exit stability for Node-matching baselines, then strace injects ENOSYS into **one missing
 syscall at a time**. A stable output/exit change is an observed blocker; unchanged
 output/exit is tolerated. These are causal counterfactuals on Linux, not proof
 that implementing that syscall alone makes the program run on jitk. Single
@@ -100,7 +100,10 @@ filesystem semantics and resource contents also matter.
 Node comparison follows upstream: stdout and declared exit must match, with
 stderr compared for exit-0 programs; nonzero exception formatting is an upstream
 documented divergence. Linux-versus-jitk always compares stdout, stderr and exit.
-Unstable Linux baselines are excluded from causal blocker claims. Every local
+Unstable Linux baselines and Linux-versus-Node mismatches are excluded from causal
+blocker claims. The mounted driver batches the repeat and individual injection
+legs in one Docker exec; it never executes more than one payload at a time per
+worker. Every local
 receipt records source/ELF/output/trace hashes; raw per-program artifacts are
 pruned, with bounded mismatch snippets retained privately for triage.
 

@@ -109,12 +109,17 @@ function traceInfo(text: string): { calls: string[]; limits: string[] } {
   }
   return { calls: Array.from(calls).sort(), limits: Array.from(limits).sort() };
 }
-async function linux(elf: string, dir: string, inject: string): Promise<void> {
+async function linux(elf: string, dir: string): Promise<void> {
   mkdirSync(dir, { recursive: true });
   chmodSync(dir, 0o777);
   resetCwd(dirname(dir));
-  dump(join(dir, 'config.json'), { elf, cwd: join(dirname(dir), 'cwd'), inject, timeout: 12 });
-    const result = await capture(['docker', 'exec', '-i', ORACLE_CONTAINER, '/driver', dir], { timeout: 22 });
+  const parent = dirname(dir);
+  const nodeStatus = existsSync(join(parent, 'node.json')) ? readJSON<Status>(join(parent, 'node.json')) : { exit: null, error: 'missing-reference' };
+  dump(join(dir, 'config.json'), { elf, cwd: join(parent, 'cwd'), source: SOURCE, supported: [...Object.values(slots), 'exit_group'], timeout: 8,
+    expectedExit: nodeStatus.exit, referenceValid: nodeStatus.exit !== null && !nodeStatus.error,
+    expectedOut: existsSync(join(parent, 'node.stdout')) ? sha(readFileSync(join(parent, 'node.stdout'))) : '',
+    expectedErr: existsSync(join(parent, 'node.stderr')) ? sha(readFileSync(join(parent, 'node.stderr'))) : '' });
+    const result = await capture(['docker', 'exec', '-i', ORACLE_CONTAINER, '/driver', dir], { timeout: 300 });
     writeFileSync(join(dir, 'driver.stderr'), result.stderr);
     check(!result.timeout && result.returncode === 0 && existsSync(join(dir, 'status.json')), 'oracle-driver-failure ' + result.stderr.toString());
 }
@@ -193,7 +198,7 @@ async function program(name: string): Promise<void> {
       // Node reference runs live, using the upstream shim and directives.
       const node = await capture(['docker', 'exec', '-i', NODE_CONTAINER, 'node', join(ROOT, 'node-reference.ts'), SOURCE, join(CORPUS, name), dir], { timeout: 20 });
       if (node.returncode !== 0 || node.timeout || !existsSync(join(dir, 'node.json'))) row.node = 'reference-error';
-      await linux(elf, join(dir, 'linux'), '');
+      await linux(elf, join(dir, 'linux'));
       const status = readJSON<Status>(join(dir, 'linux/status.json'));
       const stdout = readFileSync(join(dir, 'linux/stdout'));
       const stderr = readFileSync(join(dir, 'linux/stderr'));
@@ -223,23 +228,25 @@ async function program(name: string): Promise<void> {
           if (existsSync(from)) writeFileSync(join(findings, filename.replace('/', '-')), readFileSync(from).subarray(0, 32768));
         }
       }
-      if (row.absent.length && !row.linux.timeout) {
-        await linux(elf, join(dir, 'repeat'), '');
-        const repeated = readJSON<Status>(join(dir, 'repeat/status.json'));
-        row.stable = identical(row.linux, stream(readFileSync(join(dir, 'repeat/stdout')), readFileSync(join(dir, 'repeat/stderr')), repeated.exit, repeated.timeout || false));
+      if (row.absent.length && !row.linux.timeout && existsSync(join(dir, 'linux/repeat/status.json'))) {
+        const repeated = readJSON<Status>(join(dir, 'linux/repeat/status.json'));
+        row.stable = identical(row.linux, stream(readFileSync(join(dir, 'linux/repeat/stdout')), readFileSync(join(dir, 'linux/repeat/stderr')), repeated.exit, repeated.timeout || false));
       }
       for (const syscall of row.absent) {
-        if (row.linux.timeout) break;
-        await linux(elf, join(dir, 'injected'), syscall);
-        const injected = readJSON<Status>(join(dir, 'injected/status.json'));
-        const injectedTrace = readFileSync(join(dir, 'injected/trace'), 'utf8');
-        const outcome = !injectedTrace.includes('(INJECTED)') ? 'not-exercised' : row.stable === false ? 'baseline-unstable' :
-          identical(row.linux, stream(readFileSync(join(dir, 'injected/stdout')), readFileSync(join(dir, 'injected/stderr')), injected.exit, injected.timeout || false)) ? 'survives' : 'changes-output-or-exit';
+        if (row.linux.timeout || row.node !== 'match' || row.stable === false) {
+          if (syscall === 'clone') row.injection = row.linux.timeout ? 'linux-timeout' : row.node !== 'match' ? 'linux-node-mismatch' : 'baseline-unstable';
+          continue;
+        }
+        const injectionDir = join(dir, 'linux', syscall);
+        const injected = readJSON<Status>(join(injectionDir, 'status.json'));
+        const injectedTrace = readFileSync(join(injectionDir, 'trace'), 'utf8');
+        const outcome = !injectedTrace.includes('(INJECTED)') ? 'not-exercised' :
+          identical(row.linux, stream(readFileSync(join(injectionDir, 'stdout')), readFileSync(join(injectionDir, 'stderr')), injected.exit, injected.timeout || false)) ? 'survives' : 'changes-output-or-exit';
         if (outcome === 'survives') row.tolerated.push(syscall);
         if (outcome === 'changes-output-or-exit') row.blockers.push(syscall);
         if (syscall === 'clone') { row.injection = outcome; row.injectionTrace = hash(injectedTrace); }
         appendFileSync(join(WORK, 'injections.jsonl'), JSON.stringify({ program: hash(name), syscall, outcome,
-          trace: hash(injectedTrace), result: stream(readFileSync(join(dir, 'injected/stdout')), readFileSync(join(dir, 'injected/stderr')), injected.exit, injected.timeout || false) }) + '\n');
+          trace: hash(injectedTrace), result: stream(readFileSync(join(injectionDir, 'stdout')), readFileSync(join(injectionDir, 'stderr')), injected.exit, injected.timeout || false) }) + '\n');
       }
       // Default census also exercises jitk. `run` resumes a census interrupted
       // before guest evaluation; it rebuilds only receipts lacking that stage.

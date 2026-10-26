@@ -8,7 +8,7 @@ Compiler: npm scriptc 0.4.5, macOS arm64. Minimal repro:
 
 ```ts
 const text = 'SC2020 SC2020';
-console.log(Array.from(new Set(text.match(/SC\d{4}/g) || []))));
+console.log(Array.from(new Set(text.match(/SC\d{4}/g) || [])));
 ```
 
 The compiler refuses `new Set(values)` with SC2020 even though the expression
