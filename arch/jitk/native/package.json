@@ -1,0 +1,8 @@
+{
+  "name": "sofort-native-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "node build.mjs", "test": "node test.mjs"},
+  "devDependencies": {"scriptc": "0.4.5"}
+}
