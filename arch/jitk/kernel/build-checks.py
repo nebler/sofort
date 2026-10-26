@@ -22,7 +22,7 @@ class Slots(unittest.TestCase):
                 shutil.copy(ROOT / 'generate.py', root)
             (root / 'prepare.py').write_text("import pathlib,sys\n(pathlib.Path(sys.argv[2])/'packed.rs').write_text('')\n")
             exe = root / 'build'
-            subprocess.run(['rustc', '--edition=2024', str(ROOT / 'build.rs'), '-o', str(exe)], check=True)
+            subprocess.run(['rustc', '+1.95.0', '--edition=2024', str(ROOT / 'build.rs'), '-o', str(exe)], check=True)
             env = dict(os.environ, CARGO_MANIFEST_DIR=str(root), OUT_DIR=str(out), JITK_SCRIPT='0')
             def generate(value):
                 (root / 'slots.json').write_text(value)
@@ -62,7 +62,7 @@ mod mmu {pub fn physical(n:usize)->usize{n}}
 mod user {pub const FS:usize=0;pub const FS_LEN:usize=0;}
 """ + f'#[path={json.dumps(str(ROOT / "src/fs.rs"))}] mod fs;\nfn main(){{ {body} }}'
             (root / 'check.rs').write_text(harness)
-            result = subprocess.run(['rustc', '--edition=2024', str(root / 'check.rs'), '-o', str(root / 'check')], capture_output=True)
+            result = subprocess.run(['rustc', '+1.95.0', '--edition=2024', str(root / 'check.rs'), '-o', str(root / 'check')], capture_output=True)
             self.assertNotEqual(result.returncode, 0, 'mutable Open escaped the safe API')
             self.assertIn(b'lifetime may not live long enough', result.stderr)
 
@@ -81,8 +81,17 @@ mod console {pub unsafe fn native()->bool{false}pub unsafe fn load(_:usize)->u64
 """ + f'#[path={json.dumps(str(ROOT / "src/fs.rs"))}] mod fs;' + f'#[path={json.dumps(str(ROOT / "src/fs_checks.rs"))}] mod checks;'
             (root / 'check.rs').write_text(harness)
             for features in [[], ['--cfg', 'feature="transport-ring"']]:
-                subprocess.run(['rustc', '--edition=2024', '--test', *features, str(root / 'check.rs'), '-o', str(root / 'check')], check=True)
+                subprocess.run(['rustc', '+1.95.0', '--edition=2024', '--test', *features, str(root / 'check.rs'), '-o', str(root / 'check')], check=True)
                 subprocess.run([str(root / 'check')], check=True)
+
+
+class Fdt(unittest.TestCase):
+    def test_bounded_boot_configuration(self):
+        with tempfile.TemporaryDirectory(prefix='jitk-fdt-check-') as tmp:
+            root = Path(tmp)
+            (root / 'test.rs').write_text('\n'.join(f'#[path={json.dumps(str(ROOT / "src" / file))}] mod {name};' for file, name in [('fdt.rs','fdt'), ('fdt_checks.rs','checks')]))
+            subprocess.run(['rustc', '+1.95.0', '--edition=2024', '--test', str(root / 'test.rs'), '-o', str(root / 'test')], check=True)
+            subprocess.run([str(root / 'test')], check=True)
 
 
 if __name__ == '__main__':
