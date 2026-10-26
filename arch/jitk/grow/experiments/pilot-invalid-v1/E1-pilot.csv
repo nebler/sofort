@@ -1,0 +1,9 @@
+run_id,date,host,model,cli,spec_level,target,attempt,accepted,rejecting_gate,visible_pass,heldout_pass,mutants_rejected,integration_pass,wall_s,cli_calls,human_minutes,handler_lines,human_lines
+e1-pilot-20261026-ppoll-terse-old-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6-sol,codex-cli 0.164.0,terse,ppoll,1,1,,1,1,2,1,63.439635917020496,1,0,83,0
+e1-pilot-20261026-ppoll-full-old-02,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6-sol,codex-cli 0.164.0,full,ppoll,1,1,,1,1,2,1,59.23011224999209,1,0,90,0
+e1-pilot-20261026-pread64-none-new-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6.1-sol,codex-cli 0.164.0,none,pread64,1,0,independent_full_stat_and_state,1,1,0,0,30.528468874981627,1,0,52,0
+e1-pilot-20261026-pread64-none-new-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6.1-sol,codex-cli 0.164.0,none,pread64,2,0,build_candidate,0,0,0,0,29.129271374986274,1,0,53,0
+e1-pilot-20261026-pread64-none-new-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6.1-sol,codex-cli 0.164.0,none,pread64,3,0,independent_full_stat_and_state,1,1,0,0,26.426599750004243,1,0,50,0
+e1-pilot-20261026-pread64-none-old-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6-sol,codex-cli 0.164.0,none,pread64,1,0,independent_full_stat_and_state,1,1,0,0,27.00049045900232,1,0,55,0
+e1-pilot-20261026-pread64-none-old-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6-sol,codex-cli 0.164.0,none,pread64,2,0,independent_full_stat_and_state,1,1,0,0,26.621449875005055,1,0,61,0
+e1-pilot-20261026-pread64-none-old-01,2026-10-26T18:17:52.077376+01:00,macOS-26.6.1-arm64-arm-64bit-Mach-O,gpt-6-sol,codex-cli 0.164.0,none,pread64,3,0,semantic_error_state_0,0,0,0,0,34.0523824999982,1,0,58,0

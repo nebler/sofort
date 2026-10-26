@@ -155,6 +155,134 @@ class Verify(unittest.TestCase):
                 validate_proposal('rt_sigaction',proposal('rt_sigaction',work,out,{},live=True))
             self.assertTrue((auth/'auth.json').is_file())
             self.assertTrue(private_paths and all(not p.exists() for p in private_paths))
+    def test_split_uses_original_visible_and_external_heldout_sources(self):
+        from profiles import resources
+        for name in ('ppoll','fstat','pread64'):
+            profile=PROFILES[name]
+            self.assertEqual(profile['visible'],probe_source(name))
+            self.assertNotEqual(profile['visible'],profile['heldout'])
+            self.assertNotIn(CANONICAL,profile['heldout'].parents)
+            self.assertTrue(profile['heldout'].is_file())
+        with scratch() as d:
+            visible=pathlib.Path(d)/'visible';hidden=pathlib.Path(d)/'heldout'
+            visible.mkdir();hidden.mkdir()
+            self.assertEqual((resources(visible)/'data.bin').stat().st_size,9000)
+            self.assertEqual((resources(hidden,heldout=True)/'data.bin').stat().st_size,10241)
+    def test_mutants_are_independent_of_generated_source_formatting(self):
+        for name in ('fstat','pread64'):
+            self.assertEqual(mutations(name,'pub fn call(_: &[usize])->isize { 0 }'),
+                             mutations(name,(CANONICAL/f'src/syscalls/{name}.rs').read_text()))
+    def test_live_prompt_excludes_heldout_source_and_receipts(self):
+        with scratch() as d:
+            work,out,auth=self.live_fixture(d)
+            (out/'heldout').mkdir();(out/'heldout/probe.c').write_text('SECRET_HELDOUT_CASE')
+            def cli(cmd,**kw):
+                prompt=kw['input_data'].decode()
+                self.assertIn(probe_source('ppoll').read_text(),prompt)
+                self.assertNotIn(PROFILES['ppoll']['heldout'].read_text(),prompt)
+                self.assertNotIn('SECRET_HELDOUT_CASE',prompt)
+                dump(out/'agent.json',{'path':'src/syscalls/ppoll.rs','source':'pub fn call(_: &[usize]) -> isize { 0 }'})
+                return subprocess.CompletedProcess(cmd,0,b'',b'')
+            with patch.dict(os.environ,{'CODEX_HOME':str(auth)}),patch('agent.shutil.which',return_value='/fixture/codex'),patch('agent.run',side_effect=cli):
+                proposal('ppoll',work,out,{},live=True)
+    def test_spec_ablation_preserves_observations_and_helpers(self):
+        prompts={}
+        with scratch() as d:
+            work,out,auth=self.live_fixture(d)
+            def cli(cmd,**kw):
+                prompts[level]=kw['input_data'].decode()
+                dump(out/'agent.json',{'path':'src/syscalls/ppoll.rs','source':'pub fn call(_: &[usize]) -> isize { 0 }'})
+                return subprocess.CompletedProcess(cmd,0,b'',b'')
+            with patch.dict(os.environ,{'CODEX_HOME':str(auth)}),patch('agent.shutil.which',return_value='/fixture/codex'),patch('agent.run',side_effect=cli):
+                for level in ('full','terse','none'):
+                    proposal('ppoll',work,out,{},live=True,spec_level=level)
+        for prompt in prompts.values():
+            self.assertIn(probe_source('ppoll').read_text(),prompt)
+            self.assertIn('// test helper API',prompt)
+            self.assertIn('fixture',prompt)
+        self.assertIn('nonnull sigmask returns -38',prompts['full'])
+        self.assertNotIn('nonnull sigmask returns -38',prompts['terse'])
+        self.assertNotIn('nonnull sigmask returns -38',prompts['none'])
+        self.assertNotIn('Implement bounded ppoll',prompts['none'])
+        self.assertIn('Syscall: ppoll.',prompts['none'])
+    def test_retry_feedback_does_not_expose_sealed_diagnostics(self):
+        from retries import retry_transaction
+        with scratch() as d:
+            root=pathlib.Path(d);work=root/'work';(work/'src/syscalls').mkdir(parents=True)
+            manifest={'version':0};seen=[]
+            def invoke(out,history):
+                out.mkdir();seen.append(copy.deepcopy(history))
+                if not history:
+                    dump(out/'stages.json',{'heldout_candidate':{'passed':False}})
+                    dump(out/'proposal.json',{'source':'previous public candidate'})
+                    manifest['version']=999
+                    (work/'src/syscalls/ppoll.rs').write_text('candidate')
+                    raise AssertionError('SECRET_TEST_INPUT_AND_EXPECTED_BYTES')
+                self.assertEqual(manifest,{'version':0})
+                self.assertFalse((work/'src/syscalls/ppoll.rs').exists())
+                return {'name':'ppoll','gate':'PASS'}
+            r=retry_transaction('ppoll',work,root/'out',manifest,3,invoke)
+            self.assertFalse(r['acceptance_at_1']);self.assertTrue(r['acceptance_at_3'])
+            self.assertEqual(len(seen),2)
+            self.assertNotIn('SECRET_TEST',json.dumps(seen))
+            self.assertIn('previous public candidate',json.dumps(seen))
+            self.assertIn('SECRET_TEST',(root/'out/attempt-1/rejection.json').read_text())
+    def test_three_rejections_stop_and_keep_every_attempt(self):
+        from retries import retry_transaction,TransactionRejected,feedback
+        for gate in ('assemble_heldout','heldout_candidate','build_heldout_candidate','independent_full_stat_and_state','mutation_gate','unchanged_sqlite'):
+            self.assertNotIn('SECRET',json.dumps(feedback(gate,AssertionError('SECRET'))))
+        with scratch() as d:
+            root=pathlib.Path(d);work=root/'work';(work/'src/syscalls').mkdir(parents=True)
+            calls=[]
+            def invoke(out,history):
+                out.mkdir();calls.append(out)
+                dump(out/'stages.json',{'heldout_candidate':{'passed':False}})
+                raise AssertionError('SECRET')
+            with self.assertRaises(TransactionRejected):retry_transaction('ppoll',work,root/'out',{},3,invoke)
+            r=json.loads((root/'out/report.json').read_text())
+            self.assertEqual(len(calls),3);self.assertFalse(r['accepted'])
+            self.assertNotIn('SECRET',json.dumps(r))
+    def test_cli_timeout_keeps_partial_progress_and_removes_auth(self):
+        with scratch() as d:
+            work,out,auth=self.live_fixture(d);private_paths=[]
+            def timeout(cmd,**kw):
+                private_paths.append(pathlib.Path(kw['env']['CODEX_HOME']))
+                raise subprocess.TimeoutExpired(cmd,240,output=b'partial event',stderr=b'connection timeout')
+            with patch.dict(os.environ,{'CODEX_HOME':str(auth)}),patch('agent.shutil.which',return_value='/fixture/codex'),patch('agent.run',side_effect=timeout):
+                with self.assertRaises(subprocess.TimeoutExpired):proposal('ppoll',work,out,{},live=True)
+            self.assertIn('connection timeout',(out/'agent.log').read_text())
+            self.assertTrue(all(not p.exists() for p in private_paths))
+    def test_claude_uses_own_flags_auth_and_schema_envelope(self):
+        with scratch() as d:
+            work,out,auth=self.live_fixture(d);private_paths=[]
+            (auth/'.credentials.json').write_text('{"test":"credential"}')
+            def cli(cmd,**kw):
+                self.assertIn('--print',cmd);self.assertIn('--safe-mode',cmd)
+                self.assertIn('--restricted',cmd);self.assertIn('--no-session-persistence',cmd)
+                self.assertEqual(cmd[cmd.index('--tools')+1],'')
+                self.assertNotIn('--sandbox',cmd);self.assertNotIn('exec',cmd)
+                private=pathlib.Path(kw['env']['CLAUDE_CONFIG_DIR']);private_paths.append(private)
+                self.assertTrue((private/'.credentials.json').is_file())
+                self.assertFalse((private/'auth.json').exists())
+                value={'path':'src/syscalls/ppoll.rs','source':'pub fn call(_: &[usize])->isize { 0 }'}
+                return subprocess.CompletedProcess(cmd,0,json.dumps({'is_error':False,'structured_output':value}).encode(),b'')
+            with patch.dict(os.environ,{'CLAUDE_CONFIG_DIR':str(auth),'JITK_GROW_CLI':'claude'}),patch('agent.shutil.which',return_value='/fixture/claude'),patch('agent.run',side_effect=cli):
+                value=proposal('ppoll',work,out,{},live=True)
+            self.assertEqual(value['path'],'src/syscalls/ppoll.rs')
+            self.assertTrue(all(not p.exists() for p in private_paths))
+    @unittest.skipUnless(shutil.which('rustc'),'Rust host compiler required')
+    def test_host_harness_accepts_real_kernel_super_imports(self):
+        from loop import host_handler_tests
+        with scratch() as d:
+            root=pathlib.Path(d);work=root/'kernel';out=root/'receipt';out.mkdir()
+            copy_kernel(work);shutil.rmtree(work/'tests')
+            handler=work/'src/syscalls/pread64.rs'
+            handler.write_text(handler.read_text().replace('use crate::{fs, syscalls::copyout};',
+                               'use crate::fs; use super::{copyout,writable};'))
+            result=host_handler_tests(work,out)
+            self.assertEqual(result.returncode,0)
+            self.assertFalse((work/'tests').exists())
+            self.assertNotIn(work,(out/'sealed-host-tests.py').parents)
     def test_live_failure_cleans_auth_without_replay(self):
         with scratch() as d:
             work,out,auth=self.live_fixture(d);private_paths=[]

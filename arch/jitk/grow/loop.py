@@ -18,9 +18,11 @@ class Receipt:
     def __init__(self,path): self.path=path; path.mkdir(parents=True,exist_ok=False); self.stages={}; self.start=time.perf_counter()
     def stage(self,label,fn):
         before=load(); t=time.perf_counter()
-        try: return fn()
+        passed=False
+        try:
+            result=fn();passed=True;return result
         finally:
-            self.stages[label]={'seconds':time.perf_counter()-t,'uptime_before':before,'uptime_after':load()}
+            self.stages[label]={'passed':passed,'seconds':time.perf_counter()-t,'uptime_before':before,'uptime_after':load()}
             dump(self.path/'stages.json',self.stages)
             print(label,round(self.stages[label]['seconds'],3),'s',flush=True)
 
@@ -43,10 +45,11 @@ def oracle(elf,argv,out,expected,samples=1,injections=(),data=b'ping\n',resource
     finally: subprocess.run(['docker','rm','-f',container],capture_output=True,timeout=10,env=SAFE_ENV)
     return json.loads((out/'linux-summary.json').read_text())
 
-def probe(name,out):
+def probe(name,out,source=None):
+    source=source or probe_source(name)
     obj=out/(name+'.o');elf=out/(name+'.elf')
-    options=['-ffreestanding','-fno-builtin','-fno-stack-protector','-O1','-DTARGET='+str(next(n for n,v in SLOTS.items() if v==name))] if name in ('fstat','pread64') else []
-    run(['clang','--target=aarch64-none-elf',*options,'-c',probe_source(name),'-o',obj])
+    options=['-ffreestanding','-fno-builtin','-fno-stack-protector','-O1','-DTARGET='+str(next(n for n,v in SLOTS.items() if v==name))] if source.suffix=='.c' else []
+    run(['clang','--target=aarch64-none-elf',*options,'-c',source,'-o',obj])
     run(['/opt/homebrew/bin/ld.lld','-T',ROOT/'probe.ld',obj,'-o',elf]); return elf
 
 def discover(image,dest):
@@ -84,7 +87,32 @@ def validate_source(name,source):
     assert not any(x in source for x in ('unsafe','include!','include_str!','include_bytes!','extern ','std::','asm!','#[path','mod '))
     assert 'pub fn call(' in source
 
-def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=None,database=None):
+def host_handler_tests(work,out):
+    trusted=CANONICAL/'tests/test_fs.py'
+    source=trusted.read_text().replace('root = Path(__file__).resolve().parents[1]', 'root = Path('+repr(str(work))+')')
+    # The original host harness placed handlers at crate root, unlike the real
+    # kernel. Nest them under syscalls so both super:: and crate:: imports work.
+    declarations=[line for line in source.splitlines() if line.startswith('#[path = "SYS/')]
+    assert len(declarations)==7, 'host harness layout changed; update the adapter'
+    for line in declarations: source=source.replace(line+'\n','')
+    marker='}\n#[path = "FS"] mod fs;'
+    assert source.count(marker)==1
+    nested='\n'.join(line.replace(' mod ',' pub mod ') for line in declarations)
+    source=source.replace(marker,'pub fn writable(a: usize, n: usize) -> bool { range(a,n).is_ok() }\n'+nested+'\n'+marker)
+    names=[re.search(r' mod (\w+);',line).group(1) for line in declarations]
+    source=source.replace('const CWD:', 'use syscalls::{'+','.join(names)+'};\nconst CWD:')
+    script=out/'sealed-host-tests.py';script.write_text(source)
+    dump(out/'host-tests-source.json',{'sha256':sha(trusted)})
+    return run(['python3',script])
+
+
+def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=None,database=None,spec='full',attempts=3):
+    from retries import retry_transaction
+    return retry_transaction(name,work,out,manifest,attempts if live else 1,
+        lambda dest,feedback:_transaction(name,work,dest,manifest,samples,discovery,live,sqlite_elf,database,spec,feedback))
+
+
+def _transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=None,database=None,spec='full',feedback=()):
     from observations import observe, require_result
     from profiles import PROFILES, mutations, resources
     from sqlite_profile import integration
@@ -100,18 +128,27 @@ def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=N
     # The original narrow ABI adapter still checks complete traces for G4.
     native=None if tree else linux((out/'oracle/linux-00.strace').read_text(),
                                   bytes.fromhex(reference['stdout_hex']),b'',0)
+    hidden=None
+    if profile['heldout']:
+        h=out/'heldout';h.mkdir()
+        assert work.resolve() not in h.resolve().parents, 'held-out probes must stay outside proposal repo'
+        hidden_fixture=r.stage('assemble_heldout',lambda:probe(name,h,profile['heldout']))
+        hidden_tree=resources(h,heldout=True)
+        hidden_reference=r.stage('heldout_linux_oracle',lambda:oracle(hidden_fixture,[name],h/'oracle',None,resources=hidden_tree))[0]
+        dump(h/'sealed.json',{'source_sha256':sha(profile['heldout']),'elf_sha256':sha(hidden_fixture),
+                             'resource_sha256':tree_hashes(hidden_tree),'reference_sha256':sha(h/'oracle/linux-summary.json')})
+        hidden=(hidden_fixture,hidden_tree,hidden_reference)
     value=r.stage('headless_cli' if live else 'recorded_proposal',
-                  lambda:proposal(name,work,out,discovery,live))
-    source=validate_proposal(name,value);validate_source(name,source)
+                  lambda:proposal(name,work,out,discovery,live,spec,feedback))
+    def validated():
+        source=validate_proposal(name,value);validate_source(name,source);return source
+    source=r.stage('source_validation',validated)
     handler=work/'src/syscalls'/f'{name}.rs';assert not handler.exists() and not handler.is_symlink()
     handler.write_text(source)
     assert sum(len(p.read_text().splitlines()) for p in (work/'src/syscalls').glob('rt_sig*.rs'))<=350
     dump(out/'proposal.json',dict(value,mode='live' if live else 'replay'))
-    if tree:
-        checks=r.stage('independent_full_stat_and_state',lambda:run(['python3',work/'tests/test_fs.py']))
-        (out/'host-handler-tests.log').write_bytes(checks.stdout+checks.stderr)
     image=r.stage('build_candidate',lambda:build(work,out/'build',fixture,[name],tree))
-    def verify(image,dest):
+    def verify(image,dest,reference=reference,native=native):
         info,raw,err=process(host_command(image),dest)
         observed=observe(raw);dump(str(dest)+'.observations.json',observed)
         check_host(info,err)
@@ -123,6 +160,14 @@ def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=N
     for i in range(samples):
         info=r.stage('semantic_error_state_'+str(i),lambda i=i:verify(image,out/f'vm-{i:02}'))
         times.append(info['seconds']*1000)
+    def verify_hidden(label):
+        fixture,tree,reference=hidden
+        image=r.stage('build_heldout_'+label,lambda:build(work,out/'heldout'/label,fixture,[name],tree))
+        return r.stage('heldout_'+label,lambda:verify(image,out/'heldout'/('vm-'+label),reference,None))
+    if hidden: verify_hidden('candidate')
+    if tree:
+        checks=r.stage('independent_full_stat_and_state',lambda:host_handler_tests(work,out))
+        (out/'host-handler-tests.log').write_bytes(checks.stdout+checks.stderr)
     rejected=[]
     for label,broken in mutations(name,source).items():
         assert broken!=source, 'mutation must alter source'
@@ -130,12 +175,17 @@ def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=N
             handler.write_text(broken)
             # Compilation failure never counts as mutation rejection.
             mutant=r.stage('build_mutant_'+label,lambda:build(work,out/('mutant-'+label),fixture,[name],tree))
-            try: verify(mutant,out/('mutation-'+label))
-            except AssertionError as e:
-                observed=json.loads((out/('mutation-'+label+'.observations.json')).read_text())
-                assert observed['trace_complete'], 'crash/protocol failure is not semantic mutation evidence'
-                rejected.append({'name':label,'rejected':True,'reason':str(e),'source_sha256':sha(handler)})
-            else: raise AssertionError('mutation survived: '+label)
+            reasons={}
+            for gate,check,dest in [('visible',lambda:verify(mutant,out/('mutation-'+label)),out/('mutation-'+label)),
+                                   *([('heldout',lambda:verify_hidden(label),out/'heldout'/('vm-'+label))] if hidden else [])]:
+                try: check()
+                except AssertionError as e:
+                    observed=json.loads(pathlib.Path(str(dest)+'.observations.json').read_text())
+                    assert observed['trace_complete'], 'crash/protocol failure is not semantic mutation evidence'
+                    reasons[gate]=str(e)
+            assert 'visible' in reasons, 'mutation survived visible probe: '+label
+            assert not hidden or 'heldout' in reasons, 'mutation survived held-out probe: '+label
+            rejected.append({'name':label,'rejected':True,'reasons':reasons,'source_sha256':sha(handler)})
         finally: handler.write_text(source)
     assert len(rejected)>=2
     dump(out/'mutations.json',rejected)
@@ -155,7 +205,7 @@ def transaction(name,work,out,manifest,samples,discovery,live=False,sqlite_elf=N
         app={'status':'PASS','elf_sha256':sha(elf),'argv':argv}
     previous=json.loads(json.dumps(manifest));manifest['version']+=1
     manifest['contracts']=[c for c in manifest['contracts'] if c['name']!=name]
-    evidence={'cases':profile['cases'],'mutations':rejected,'unchanged_integration':app['status'],
+    evidence={'cases':profile['cases'],'visible_pass':True,'heldout_pass':True if hidden else None,'mutations':rejected,'unchanged_integration':app['status'],
               'n':samples,'pass':samples,'repeat_counts_are_not_acceptance':True}
     manifest['contracts'].append({'nr':nr,'name':name,'source_sha256':sha(handler),
       'status':'profile-enosys' if injections else 'restricted',
@@ -187,6 +237,8 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--run-id',required=True)
     ap.add_argument('--samples',type=int,default=30)
+    ap.add_argument('--spec',choices=('full','terse','none'),default='full')
+    ap.add_argument('--attempts',type=int,choices=(1,2,3),default=3)
     ap.add_argument('--target',action='append',choices=sorted(PROFILES),
                     help='grow this named target, including an already registered handler; repeat for dependencies')
     ap.add_argument('--sqlite-elf',type=pathlib.Path)
@@ -204,6 +256,8 @@ def execute(a,temporary):
     from observations import observe
     r=Receipt(ROOT/'results'/a.run_id);out=r.path;work=temporary/'kernel'
     src,hashes=r.stage('copy_kernel',lambda:copy_kernel(work))
+    # Independent host tests must not be readable inside the proposal repository.
+    shutil.rmtree(work/'tests')
     select_host();select_gate();host_hash=sha(host())
     dump(out/'source.json',{'path':str(src),'files':hashes})
     targets=getattr(a,'target',None) or ['ppoll','rt_sigaction','rt_sigprocmask']
@@ -230,7 +284,8 @@ def execute(a,temporary):
             request=discover(image,out/('before-'+name))
             assert request['nr']==PROFILES[name]['nr']
         transactions.append(transaction(name,work,out/('tx-'+name),manifest,a.samples,request,a.live,
-                                        getattr(a,'sqlite_elf',None),getattr(a,'database',None)))
+                                        getattr(a,'sqlite_elf',None),getattr(a,'database',None),
+                                        getattr(a,'spec','full'),getattr(a,'attempts',3)))
     names=[f'src/syscalls/{n}.rs' for n in targets]+['syscalls.manifest.json']
     (out/'owner.patch').write_text(installation_patch(src,work,names))
     shutil.copyfile(work/'syscalls.manifest.json',out/'syscalls.manifest.json')

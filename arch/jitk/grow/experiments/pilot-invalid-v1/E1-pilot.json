@@ -1,0 +1,293 @@
+{
+  "date": "2026-10-26T18:17:52.077376+01:00",
+  "host": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "cli": "codex-cli 0.164.0",
+  "models": {
+    "old": "gpt-6-sol",
+    "new": "gpt-6.1-sol"
+  },
+  "source_commit": "f01dcca060f164c63543aa07bb1265b638c1fcb9",
+  "controller_sha256": {
+    "retries.py": "d78ed54cf10bcc251c00f5699c6a3533528345338628dce0eabe9111b8c8657f",
+    "sqlite_checks.py": "114d1795b9a5f627e5990ea2e15ad958c8e9a3c8cebffca39427f627cadec3bf",
+    "sqlite_profile.py": "8ec55f3207338c080b0177cb1f723aef2bcc6bbb9e1383286e7132cc6c998daa",
+    "observations.py": "697f551c1296f9ca8f77705c8b1a4ba51ae6c730f8a641ab1cfe4d19e96087c0",
+    "test.py": "674021f78f4afc3a9bc58130ee42e1e4dfc069956c21f64aa58b05c43c005d63",
+    "runtime.py": "9b8c69e112eaf62aa7b3fbabb4663d86dc339d684f800f3efc02a30ce10663d7",
+    "agent.py": "fb41b8a0ce278eeeefa5b352ce0982b7ed347f7d3fa4a7e705f36173a642efe9",
+    "loop.py": "6e3e79676d4b05cd87552d2a92c800d083f2b06779808e31cf6550a1c273fe2d",
+    "demo.py": "79cf237ff9561b78e8644fcd000ce39a9d5dc006ef6c91426b38b86f0ee836a5",
+    "profiles.py": "01e7b69f99b48709f0447e88087844da0578a9d52f6a6355bc27f6f5ff5c1401",
+    "prepare.py": "7c6268627a7b63099655b99519fdd58bfabda8b89c3a13dae92d99bced82837d",
+    "adapters.py": "3624b28b6a6297eeea1b08d50f4dc54afee3e310311f9212de1e005bef3a8ed5"
+  },
+  "oracle_image": "sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a",
+  "vmm_sha256": "57eb07f4438aff7c4b6df19bf49dc30cdbcdefcbd4fdbfb41a863f54c0798075",
+  "sqlite_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+  "database_sha256": "f3d4180cd07ad9eed5a674c7ff4e5f6d817eb517029c185f66af862a30eac059",
+  "disk_before": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   330Gi    86Gi    80%     23M  897M    2%   /System/Volumes/Data",
+  "uptime_before": "18:17  up 2 days, 20:31, 1 user, load averages: 3.63 5.39 4.86",
+  "protected_before": {
+    ".READY": "66400c8fedc715d57190e0b4ddcf277b6529ac3ad03a2ff40dc42a2cd436282b",
+    "release.json": "dfe2b3b906417d04bb2a1cf6a0c02ef6a95d5a2bb1f99fdc11b47544b19a5496"
+  },
+  "n_per_cell": 2,
+  "workers": 3,
+  "seed": 20261026,
+  "phase": "pilot",
+  "design": [
+    [
+      "e1-pilot-20261026-ppoll-terse-old-01",
+      "ppoll",
+      "terse",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-ppoll-full-old-02",
+      "ppoll",
+      "full",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-none-new-01",
+      "pread64",
+      "none",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-pread64-none-old-01",
+      "pread64",
+      "none",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-pread64-full-new-02",
+      "pread64",
+      "full",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-fstat-terse-old-01",
+      "fstat",
+      "terse",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-none-old-02",
+      "fstat",
+      "none",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-terse-old-02",
+      "pread64",
+      "terse",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-terse-new-01",
+      "pread64",
+      "terse",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-full-old-02",
+      "fstat",
+      "full",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-ppoll-none-old-02",
+      "ppoll",
+      "none",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-none-new-02",
+      "pread64",
+      "none",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-ppoll-terse-old-02",
+      "ppoll",
+      "terse",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-ppoll-full-new-02",
+      "ppoll",
+      "full",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-terse-old-01",
+      "pread64",
+      "terse",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-pread64-full-old-01",
+      "pread64",
+      "full",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-none-new-01",
+      "fstat",
+      "none",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-full-new-02",
+      "fstat",
+      "full",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-none-old-02",
+      "pread64",
+      "none",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-fstat-terse-new-02",
+      "fstat",
+      "terse",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-fstat-none-old-01",
+      "fstat",
+      "none",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-ppoll-terse-new-01",
+      "ppoll",
+      "terse",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-none-new-02",
+      "fstat",
+      "none",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-ppoll-none-new-01",
+      "ppoll",
+      "none",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-ppoll-none-new-02",
+      "ppoll",
+      "none",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-fstat-terse-new-01",
+      "fstat",
+      "terse",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-full-old-01",
+      "fstat",
+      "full",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-pread64-full-new-01",
+      "pread64",
+      "full",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-ppoll-full-old-01",
+      "ppoll",
+      "full",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-ppoll-full-new-01",
+      "ppoll",
+      "full",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-terse-old-02",
+      "fstat",
+      "terse",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-full-old-02",
+      "pread64",
+      "full",
+      "old",
+      2
+    ],
+    [
+      "e1-pilot-20261026-pread64-terse-new-02",
+      "pread64",
+      "terse",
+      "new",
+      2
+    ],
+    [
+      "e1-pilot-20261026-ppoll-none-old-01",
+      "ppoll",
+      "none",
+      "old",
+      1
+    ],
+    [
+      "e1-pilot-20261026-fstat-full-new-01",
+      "fstat",
+      "full",
+      "new",
+      1
+    ],
+    [
+      "e1-pilot-20261026-ppoll-terse-new-02",
+      "ppoll",
+      "terse",
+      "new",
+      2
+    ]
+  ],
+  "accounting": "human_minutes=0 and human_lines=0: no interactive human coding during sampling; prior human profile/spec work is not measured; implementation-agent work is reported separately"
+}

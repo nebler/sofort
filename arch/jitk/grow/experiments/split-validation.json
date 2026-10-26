@@ -1,0 +1,55 @@
+{
+  "fstat": {
+    "run_id": "split-replay-fs-20261026",
+    "visible_pass": true,
+    "heldout_pass": true,
+    "mutants": [
+      "wrong-size",
+      "false-success",
+      "wrong-errno"
+    ],
+    "integration": "PASS"
+  },
+  "pread64": {
+    "run_id": "split-replay-fs-20261026",
+    "visible_pass": true,
+    "heldout_pass": true,
+    "mutants": [
+      "wrong-page",
+      "moves-offset",
+      "wrong-errno",
+      "false-success"
+    ],
+    "integration": "PASS"
+  },
+  "ppoll": {
+    "run_id": "split-replay-ppoll-20261026",
+    "visible_pass": true,
+    "heldout_pass": true,
+    "mutants": [
+      "false-success",
+      "wrong-errno"
+    ],
+    "integration": "PASS"
+  },
+  "rt_sigaction": {
+    "run_id": "split-replay-signals-20261026",
+    "visible_pass": true,
+    "heldout_pass": null,
+    "mutants": [
+      "false-success",
+      "pointer-sensitive"
+    ],
+    "integration": "PASS"
+  },
+  "rt_sigprocmask": {
+    "run_id": "split-replay-signals-20261026",
+    "visible_pass": true,
+    "heldout_pass": null,
+    "mutants": [
+      "false-success",
+      "pointer-sensitive"
+    ],
+    "integration": "PASS"
+  }
+}
