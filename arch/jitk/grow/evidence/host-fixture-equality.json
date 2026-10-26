@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "source_commit": "377e3fdcff386a9ee1c7e2f8865632afba19486c",
+  "source_path": "arch/jitk/kernel/tests/test_fs.py",
+  "source_sha256": "551107991083f45f4634e28d91907cc372ada394e629e216dc3d0d12aab2b51a",
+  "rust_assertion_sha256": "525d6877a36f4ebcc07afc5d47e5f0931cc980d109ba221978b94b2a308a2fcf",
+  "current_fixture": "host-tests.rs",
+  "method": "Exact byte equality of unchanged Rust raw-string assertions before module-layout adaptation. No Python wrapper is executed or required."
+}

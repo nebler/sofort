@@ -1,0 +1,381 @@
+{
+  "status": "PASS",
+  "driver": "scriptc 0.4.5; aarch64-linux-musl; static ELF; mounted entrypoint",
+  "image_id": "sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a",
+  "profile_executions_compared": 31,
+  "compared": "Exact stdout/stderr bytes, exit/status, injection count and config; elapsed seconds excluded. strace PID/ASLR text is not byte-identical across process launches.",
+  "profiles": [
+    {
+      "group": "original",
+      "profile": "tx-ppoll/attempt-1/heldout/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "14f4a00a8bd1ca5898c54c5bd27cf6c705c477c8ed6f2c83910611456267ad40",
+      "normalized_output_sha256": "be3c17cd348be41f6d66c103492b67d2256c4e4f66e235a1e8ae365ab8b6ff20",
+      "stream_sha256": {
+        "linux-00.stdout": "4fc30575cff95cbda96cd991056d0d025951a2ff94847334c1dea628de6595fa",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "original",
+      "profile": "tx-ppoll/attempt-1/integration-linux",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "51e3d4f80f87241be1130fc05cee4686a3c4ded3b8678bb25bfb852fe87fa474",
+      "normalized_output_sha256": "b21429b477b45454376c50e7d882b9620d372a7a931c3f5549c9846929c7bb7d",
+      "stream_sha256": {
+        "linux-00.stdout": "5d7aed70adcebe5dfe3f9d201c6aade9323ce391a5411305454ace5e541041f3",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "original",
+      "profile": "tx-ppoll/attempt-1/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "f2ec30e83a3046ecac89c7635ce3597ff8364f37ca11cccefe1f31c5497f282d",
+      "normalized_output_sha256": "8cc4481d4de009f9f4dce82da14dcc7062779ca571275fb13050fa985321e34e",
+      "stream_sha256": {
+        "linux-00.stdout": "6152cdad233f95370996262509ef66ab43295fd77144f9eff755db915843f134",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "original",
+      "profile": "tx-rt_sigaction/attempt-1/integration-linux",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "18695fe5defa80131b739bc898b52c68478be0892456f0037893944cb0e0ef4d",
+      "normalized_output_sha256": "1b94a6ea85ba6791fe89ffffd5344f82aa668791da3e04d48be54d058585fe44",
+      "stream_sha256": {
+        "linux-00.stdout": "ba6094153ead0f5eb17f6781ad3895d7d87e06c32137d504e690193ee8191334",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "original",
+      "profile": "tx-rt_sigaction/attempt-1/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "f7c8224198f2843c5e59a026760b31f21e2869cb75ad2103f7bae533f4addf87",
+      "normalized_output_sha256": "386beccbe79722c3bfa0c096836ec13552bcb5dcbcc5ec169ca1f0e3ea34f2a8",
+      "stream_sha256": {
+        "linux-00.stdout": "30a976d9d199a7f75f40c124e6ba20aacc18848a53864f438c1443c1c69d2f49",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "original",
+      "profile": "tx-rt_sigprocmask/attempt-1/integration-linux",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "18695fe5defa80131b739bc898b52c68478be0892456f0037893944cb0e0ef4d",
+      "normalized_output_sha256": "1b94a6ea85ba6791fe89ffffd5344f82aa668791da3e04d48be54d058585fe44",
+      "stream_sha256": {
+        "linux-00.stdout": "ba6094153ead0f5eb17f6781ad3895d7d87e06c32137d504e690193ee8191334",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "original",
+      "profile": "tx-rt_sigprocmask/attempt-1/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "5682bfae9fb18b3cd7a4f021de7a2a8cf7490b84aa2c757d4ae5939a0c54b369",
+      "normalized_output_sha256": "386beccbe79722c3bfa0c096836ec13552bcb5dcbcc5ec169ca1f0e3ea34f2a8",
+      "stream_sha256": {
+        "linux-00.stdout": "30a976d9d199a7f75f40c124e6ba20aacc18848a53864f438c1443c1c69d2f49",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/heldout/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "e317f4297f644308246aa53c35c53df469ae1640a17c8d874349c71b479ed75e",
+      "normalized_output_sha256": "9797f6ee258f355f81837107b5b4b4c48e738a7223c9980097044cc87d481e15",
+      "stream_sha256": {
+        "linux-00.stdout": "3dc8c5e51a16ecf9c31e0ac2cbcd39480278a28fbc84eb1f12a5835d0744f743",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/aggregate/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "ed13f47e7f7d6b5838f57f202abe2ae917982345103f8f26117eec80662a6357",
+      "normalized_output_sha256": "1b94a6ea85ba6791fe89ffffd5344f82aa668791da3e04d48be54d058585fe44",
+      "stream_sha256": {
+        "linux-00.stdout": "ba6094153ead0f5eb17f6781ad3895d7d87e06c32137d504e690193ee8191334",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/bad-query/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "4a72e4c17773752a5cf876ea76e13c935c9b6d10e40e80e195b21b6be5768f82",
+      "normalized_output_sha256": "d1271ab2c5d1ea6e8c659422ce71407cfb074c1108d19f71fc4a7c0ac81d1fcc",
+      "stream_sha256": {
+        "linux-00.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "linux-00.stderr": "e719466f8d93ad1fa501b77147fa5998018aea26469d82eb5a7f4a80e2c6303e"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/filtered/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "6755ffc42887f35030f785c6c6c193698bcaebef72adbbe89e6b6642c061a4ac",
+      "normalized_output_sha256": "df18557ff8c1e5b0ab8d8ffc57fca4bf21dca886e958e1c26f7d95e82a959ffe",
+      "stream_sha256": {
+        "linux-00.stdout": "bfe158ea7435d4bb8b2d35123c715976679c42bcd1470367e98e4d196af59186",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/grouped/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "05e43af70ccfc54ba8565342c0ebb26593cdae28254b0a6265eefce7ed27ab99",
+      "normalized_output_sha256": "9c21a4aed5ed6ab3c3374e7e8d0f7bf87197eb344aebc2c1c3d27d130b2da3cc",
+      "stream_sha256": {
+        "linux-00.stdout": "fa434027af7927230f17b05302acf5e54f1fb004d131f9563fba797a1257bdf5",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/integrity/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "78f568f82f21fbdf87fc250eca3b909673dffa812dfe96ec68e232c0bffbce0e",
+      "normalized_output_sha256": "747ef284e4850b06b1554cb3b561649ba85d3c3b02a9a2e9cb20fb38a438e178",
+      "stream_sha256": {
+        "linux-00.stdout": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/join/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "a0226988547af8897d20721fb54e8d381e083ddecb69b39b617fc9ca18f4780d",
+      "normalized_output_sha256": "c0db3dffa6bddd87eb4bbcb34d1de53e11d64f687ef3f1a193b38c8785522394",
+      "stream_sha256": {
+        "linux-00.stdout": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/missing-table/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "38ddfefd45244439b1b21a198ab84af190d9bc0b81156dea6f035695f16ecba9",
+      "normalized_output_sha256": "17b68d2c319e5d33ea9bc7d7ed89f5010e3f52c8f946f031339e4705b416e31a",
+      "stream_sha256": {
+        "linux-00.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "linux-00.stderr": "e40645718a871e4ce1da4fb4af2461a11bc84e2e175f4e2bb38f46f131000a3b"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/ordered/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "ce6342b6467ce082de23266b5c9f116b8f828dd77c16f2e434b0fb4c28122ff0",
+      "normalized_output_sha256": "2fc83c3c82add1a42ffa5d3c951f4a6abc8770ecd1ff52d2cf70f9ad759ae173",
+      "stream_sha256": {
+        "linux-00.stdout": "6ded784fbcf01cadda320380232a3996ae33c519588385bd2505420c1f56c577",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/readonly-write/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "659f24a9d5384289b186274212144320f1424cee8a5b25ab342acf6cb93ea32d",
+      "normalized_output_sha256": "5f73903ea8da41738d93a248b9f7eac11f7ab2c4eb54a111df83ba2b9c4d22b3",
+      "stream_sha256": {
+        "linux-00.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "linux-00.stderr": "4b7494234ad6c9467f5ff04df1861ff3df66e8e8af6757e825dd42e682dfddfb"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/integration/schema/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "eb4b58c4d1abb250ac52b287d4ac7b35b4258ae530666f8c300f97482a02b89a",
+      "normalized_output_sha256": "6ad422f563bf95c7e153c77e9de4c9958e5b286485ce48dd6d743eae96a954f8",
+      "stream_sha256": {
+        "linux-00.stdout": "a9c3f6be41341d3a110e9e0fc90f35de167ec1ffaabcc0811183ba05aef8044f",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-fstat/attempt-1/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "e317f4297f644308246aa53c35c53df469ae1640a17c8d874349c71b479ed75e",
+      "normalized_output_sha256": "74e1a842115dbb3bee2aef166ec15279b072d405babea3692051ec47bf567739",
+      "stream_sha256": {
+        "linux-00.stdout": "a8e6d30ab7ce4ab30472004a2d01ade84800aa7851f3c54c25608115de25bead",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/heldout/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "efc8f0805fa4886ca7e4972f5631a322e28d585e318b57b1724ec10593afeeb5",
+      "normalized_output_sha256": "04a05a8ecafc39f69f07e19d256e0d624cf0797cb5e3e229bf3fa3e638d9974d",
+      "stream_sha256": {
+        "linux-00.stdout": "de2f123ca9b0032a32d1c4e9c67bc0ec077756dabbcf325cfc514fa163c4c1dd",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/aggregate/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "ed13f47e7f7d6b5838f57f202abe2ae917982345103f8f26117eec80662a6357",
+      "normalized_output_sha256": "1b94a6ea85ba6791fe89ffffd5344f82aa668791da3e04d48be54d058585fe44",
+      "stream_sha256": {
+        "linux-00.stdout": "ba6094153ead0f5eb17f6781ad3895d7d87e06c32137d504e690193ee8191334",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/bad-query/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "4a72e4c17773752a5cf876ea76e13c935c9b6d10e40e80e195b21b6be5768f82",
+      "normalized_output_sha256": "d1271ab2c5d1ea6e8c659422ce71407cfb074c1108d19f71fc4a7c0ac81d1fcc",
+      "stream_sha256": {
+        "linux-00.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "linux-00.stderr": "e719466f8d93ad1fa501b77147fa5998018aea26469d82eb5a7f4a80e2c6303e"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/filtered/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "6755ffc42887f35030f785c6c6c193698bcaebef72adbbe89e6b6642c061a4ac",
+      "normalized_output_sha256": "df18557ff8c1e5b0ab8d8ffc57fca4bf21dca886e958e1c26f7d95e82a959ffe",
+      "stream_sha256": {
+        "linux-00.stdout": "bfe158ea7435d4bb8b2d35123c715976679c42bcd1470367e98e4d196af59186",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/grouped/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "05e43af70ccfc54ba8565342c0ebb26593cdae28254b0a6265eefce7ed27ab99",
+      "normalized_output_sha256": "9c21a4aed5ed6ab3c3374e7e8d0f7bf87197eb344aebc2c1c3d27d130b2da3cc",
+      "stream_sha256": {
+        "linux-00.stdout": "fa434027af7927230f17b05302acf5e54f1fb004d131f9563fba797a1257bdf5",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/integrity/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "78f568f82f21fbdf87fc250eca3b909673dffa812dfe96ec68e232c0bffbce0e",
+      "normalized_output_sha256": "747ef284e4850b06b1554cb3b561649ba85d3c3b02a9a2e9cb20fb38a438e178",
+      "stream_sha256": {
+        "linux-00.stdout": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/join/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "a0226988547af8897d20721fb54e8d381e083ddecb69b39b617fc9ca18f4780d",
+      "normalized_output_sha256": "c0db3dffa6bddd87eb4bbcb34d1de53e11d64f687ef3f1a193b38c8785522394",
+      "stream_sha256": {
+        "linux-00.stdout": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/missing-table/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "38ddfefd45244439b1b21a198ab84af190d9bc0b81156dea6f035695f16ecba9",
+      "normalized_output_sha256": "17b68d2c319e5d33ea9bc7d7ed89f5010e3f52c8f946f031339e4705b416e31a",
+      "stream_sha256": {
+        "linux-00.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "linux-00.stderr": "e40645718a871e4ce1da4fb4af2461a11bc84e2e175f4e2bb38f46f131000a3b"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/ordered/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "ce6342b6467ce082de23266b5c9f116b8f828dd77c16f2e434b0fb4c28122ff0",
+      "normalized_output_sha256": "2fc83c3c82add1a42ffa5d3c951f4a6abc8770ecd1ff52d2cf70f9ad759ae173",
+      "stream_sha256": {
+        "linux-00.stdout": "6ded784fbcf01cadda320380232a3996ae33c519588385bd2505420c1f56c577",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/readonly-write/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "659f24a9d5384289b186274212144320f1424cee8a5b25ab342acf6cb93ea32d",
+      "normalized_output_sha256": "5f73903ea8da41738d93a248b9f7eac11f7ab2c4eb54a111df83ba2b9c4d22b3",
+      "stream_sha256": {
+        "linux-00.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "linux-00.stderr": "4b7494234ad6c9467f5ff04df1861ff3df66e8e8af6757e825dd42e682dfddfb"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/integration/schema/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "eb4b58c4d1abb250ac52b287d4ac7b35b4258ae530666f8c300f97482a02b89a",
+      "normalized_output_sha256": "6ad422f563bf95c7e153c77e9de4c9958e5b286485ce48dd6d743eae96a954f8",
+      "stream_sha256": {
+        "linux-00.stdout": "a9c3f6be41341d3a110e9e0fc90f35de167ec1ffaabcc0811183ba05aef8044f",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "sqlite",
+      "profile": "tx-pread64/attempt-1/oracle",
+      "samples": 1,
+      "status": "PASS",
+      "config_sha256": "efc8f0805fa4886ca7e4972f5631a322e28d585e318b57b1724ec10593afeeb5",
+      "normalized_output_sha256": "6d743477a81acaec5ecc4ead674b0d9ed9ca2050c53fc45f1d4ca59010b9daa4",
+      "stream_sha256": {
+        "linux-00.stdout": "48f2c60ce476a5d6c1f73631f7c00d47181dae747d47dac9bee5437f56d29a3a",
+        "linux-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

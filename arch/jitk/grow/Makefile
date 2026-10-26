@@ -1,10 +1,49 @@
-.PHONY: build test demo grow
-build:
-	python3 -B prepare.py
-test:
-	python3 -B test.py
-	python3 -B -m unittest discover -s oracle -p 'test_*.py'
+.PHONY: build test grow demo experiments clean oracle
+SCRIPTC := node_modules/.bin/scriptc
+SOURCES := $(wildcard *.ts)
+ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
+
+$(SCRIPTC): package.json package-lock.json
+	npm ci --no-audit --no-fund
+
+build: build/grow build/oracle-profile build/experiments build/parity build/sqlite-checks
+
+build/grow: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build main.ts -o $@
+
+build/test: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build test.ts -o $@
+
+test: build/test
+	build/test
+
+build/oracle-profile: oracle-profile.ts lib.ts $(SCRIPTC) package-lock.json
+	mkdir -p build
+	PATH="$(dir $(ZIG)):$$PATH" SCRIPTC_TARGET=aarch64-linux-musl $(SCRIPTC) build oracle-profile.ts -o $@
+
+oracle: build/oracle-profile
+
+build/experiments: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build experiments-main.ts -o $@
+
+build/parity: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build parity-main.ts -o $@
+
+build/sqlite-checks: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build sqlite-checks.ts -o $@
+
 grow: build
-	python3 -B loop.py --run-id run-$$(date +%Y%m%dT%H%M%S) $(ARGS)
-demo:
-	python3 -B demo.py $(ARGS)
+	build/grow --run-id run-$$(date +%Y%m%dT%H%M%S) --validate-only $(ARGS)
+
+demo: grow
+
+experiments: build
+	build/experiments $(ARGS)
+
+clean:
+	-rm -r build .scriptc

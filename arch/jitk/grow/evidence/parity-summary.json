@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "baseline_commit": "377e3fdcff386a9ee1c7e2f8865632afba19486c",
+  "python_grow_delta": "f5f9f562",
+  "scriptc": "0.4.5",
+  "validate_only": true,
+  "json_receipts_compared": 670,
+  "rows": [
+    {
+      "target": "ppoll",
+      "python": "PASS",
+      "typescript": "PASS",
+      "samples_each": 30,
+      "visible_each": true,
+      "heldout_each": true,
+      "mutants_each": 2,
+      "integration_each": "PASS",
+      "stage_sets_equal": true
+    },
+    {
+      "target": "rt_sigaction",
+      "python": "PASS",
+      "typescript": "PASS",
+      "samples_each": 30,
+      "visible_each": true,
+      "heldout_each": null,
+      "mutants_each": 2,
+      "integration_each": "PASS",
+      "stage_sets_equal": true
+    },
+    {
+      "target": "rt_sigprocmask",
+      "python": "PASS",
+      "typescript": "PASS",
+      "samples_each": 30,
+      "visible_each": true,
+      "heldout_each": null,
+      "mutants_each": 2,
+      "integration_each": "PASS",
+      "stage_sets_equal": true
+    },
+    {
+      "target": "fstat",
+      "python": "PASS",
+      "typescript": "PASS",
+      "samples_each": 30,
+      "visible_each": true,
+      "heldout_each": true,
+      "mutants_each": 3,
+      "integration_each": "PASS",
+      "stage_sets_equal": true
+    },
+    {
+      "target": "pread64",
+      "python": "PASS",
+      "typescript": "PASS",
+      "samples_each": 30,
+      "visible_each": true,
+      "heldout_each": true,
+      "mutants_each": 4,
+      "integration_each": "PASS",
+      "stage_sets_equal": true
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "status": "PASS",
+  "run_id": "ts-final-live-none",
+  "model": "gpt-6.1-sol",
+  "spec": "none",
+  "transactions": 3,
+  "N_per_target": 1,
+  "cli_calls": 4,
+  "wall_s": 120.85849099999666,
+  "acceptance_at_1": 2,
+  "acceptance_at_3": 3,
+  "cli_version": "codex-cli 0.164.0",
+  "reported_usage": {
+    "input_tokens": 89564,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 2516,
+    "reasoning_output_tokens": 533
+  },
+  "results": [
+    {
+      "target": "ppoll",
+      "status": "PASS",
+      "accepted": true,
+      "visible_samples": 30,
+      "heldout_pass": true,
+      "mutants_rejected": 2,
+      "integration": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "accepted": true,
+          "gate": "PASS",
+          "prompt_sha256": "b75ca8f07f5b9c48f8f40b720aefde2773d6910ae9c4a4f74d842506ddd3029b",
+          "proposal_source_sha256": "541a1e811abd75900b7d405d24fda883b630823f10c706e1ab7f78b137046018",
+          "lines": 72
+        }
+      ]
+    },
+    {
+      "target": "fstat",
+      "status": "PASS",
+      "accepted": true,
+      "visible_samples": 30,
+      "heldout_pass": true,
+      "mutants_rejected": 3,
+      "integration": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "accepted": true,
+          "gate": "PASS",
+          "prompt_sha256": "a7641b782f9e2f59ca0a8e8d3a7a6c40c82358438c2e04ef610b3c03f725e8b4",
+          "proposal_source_sha256": "bbb97abe568269c4ecba369c2231d18368058bb23bb0ef1f84c9a6a9db65da40",
+          "lines": 28
+        }
+      ]
+    },
+    {
+      "target": "pread64",
+      "status": "PASS",
+      "accepted": true,
+      "visible_samples": 30,
+      "heldout_pass": true,
+      "mutants_rejected": 4,
+      "integration": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "accepted": false,
+          "gate": "build_candidate",
+          "prompt_sha256": "ac4b9ebc1c55396851d105ede16d1592844e460424864c1a62463d5b77a1e53b",
+          "proposal_source_sha256": "3391edf0c31eeb234790d15317b9c1e4d46075a0f84c556a7a6a759b72048d7e",
+          "lines": 51
+        },
+        {
+          "attempt": 2,
+          "accepted": true,
+          "gate": "PASS",
+          "prompt_sha256": "b3b55b542857b82d4753d0ce1a34c8ae85915df46f3b3ea68d38549174514284",
+          "proposal_source_sha256": "affab37b12aaf4a7f9ed48ce0297fd8ae08766092945f163103a451981c3ce94",
+          "lines": 51
+        }
+      ]
+    }
+  ],
+  "grow_binary_sha256": "825b34964b15e91fca3ff1f673d9767f642a655854de94922a8fce3f3ac2c2be",
+  "note": "Recorded before the final handoff extraction of byte-identical Rust host assertions into host-tests.rs. Final native replay rechecked all five targets and all 670 receipts after that extraction."
+}
