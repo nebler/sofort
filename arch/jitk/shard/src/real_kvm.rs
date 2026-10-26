@@ -355,10 +355,18 @@ impl Slot {
     pub fn reset(&mut self) -> u64 {
         let t = Instant::now();
         self.drain();
-        check(
-            unsafe { madvise(self.ram.ptr.cast(), RAM, 4) },
-            "MADV_DONTNEED",
-        );
+        // Only these verified, host-selected memslots can hold tenant writes.
+        // Immutable pages remain protected in both KVM and the host mapping.
+        for (start, end, writable) in self.snapshot.as_ref().unwrap().class.regions(RAM, CTRL) {
+            if writable {
+                // SAFETY: catalogue extents are page aligned and within this
+                // stopped slot's live MAP_PRIVATE mapping. No RAM borrow escapes.
+                check(
+                    unsafe { madvise(self.ram.ptr.add(start).cast(), end - start, 4) },
+                    "MADV_DONTNEED writable extent",
+                );
+            }
+        }
         unsafe {
             self.run
                 .ptr
@@ -820,6 +828,90 @@ mod tests {
         b[32..32 + payload.len()].copy_from_slice(payload);
         s.copy(REQUEST, &b);
         s.store(0x40, len as u64);
+    }
+    fn test_snapshots() -> Vec<Arc<Snapshot>> {
+        let bases = std::env::var("JITK_SHARD_TEST_SNAPSHOTS").unwrap();
+        let snapshots: Vec<_> = bases
+            .split(':')
+            .map(|b| Snapshot::load(b).unwrap())
+            .collect();
+        for class in arena::Class::ALL {
+            assert!(snapshots.iter().any(|s| s.class == class));
+        }
+        snapshots
+    }
+    fn present(address: usize) -> bool {
+        use std::os::unix::fs::FileExt;
+        let mut entry = [0; 8];
+        File::open("/proc/self/pagemap")
+            .unwrap()
+            .read_exact_at(&mut entry, (address / 4096 * 8) as u64)
+            .unwrap();
+        u64::from_le_bytes(entry) & (1 << 63) != 0
+    }
+    #[test]
+    #[ignore = "requires KVM and both classes in JITK_SHARD_TEST_SNAPSHOTS; run under bench.lock"]
+    fn reset_cleans_every_writable_page_and_preserves_immutable_translations() {
+        let kvm = Kvm::new();
+        for snapshot in test_snapshots() {
+            let mut s = Slot::new(&kvm, snapshot.clone());
+            let mut pages = 0;
+            for (start, end, writable) in snapshot.class.regions(RAM, CTRL) {
+                if writable {
+                    for off in (start..end).step_by(4096) {
+                        s.copy(off, &[0xcc; 4096]);
+                        pages += 1;
+                    }
+                }
+            }
+            assert_eq!(pages * 4096, snapshot.class.bytes() + arena::RING_BYTES);
+            let saved = s.bytes(0, 4096);
+            assert!(present(s.ram.ptr as usize));
+            s.reset();
+            assert!(
+                present(s.ram.ptr as usize),
+                "immutable translation was discarded"
+            );
+            assert_eq!(s.bytes(0, 4096), saved);
+            assert!(s.pristine(), "every arena/ring page must be pristine");
+            s.shutdown().unwrap();
+        }
+    }
+    #[test]
+    #[ignore = "subprocess target for immutable_host_writes_fault"]
+    fn immutable_host_write_child() {
+        if std::env::var_os("JITK_IMMUTABLE_WRITE_CHILD").is_none() {
+            return;
+        }
+        // SAFETY: Linux RLIMIT_CORE accepts two u64 limits; zero prevents crash artifacts.
+        check(unsafe { setrlimit(4, &[0, 0]) }, "RLIMIT_CORE");
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let s = Slot::new(&Kvm::new(), snapshot);
+        s.copy(0, &[0xff]); // The host's immutable extent must fault, independent of KVM.
+        panic!("immutable RAM accepted a write");
+    }
+    #[test]
+    #[ignore = "requires KVM and both classes in JITK_SHARD_TEST_SNAPSHOTS; run under bench.lock"]
+    fn immutable_host_writes_fault() {
+        use std::os::unix::process::ExitStatusExt;
+        test_snapshots();
+        for base in std::env::var("JITK_SHARD_TEST_SNAPSHOTS")
+            .unwrap()
+            .split(':')
+        {
+            let status = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "kvm::tests::immutable_host_write_child",
+                    "--ignored",
+                ])
+                .env("JITK_IMMUTABLE_WRITE_CHILD", "1")
+                .env("JITK_SHARD_TEST_SNAPSHOT", base)
+                .output()
+                .unwrap()
+                .status;
+            assert_eq!(status.signal(), Some(11), "immutable write must SIGSEGV");
+        }
     }
     #[test]
     fn drop_does_not_panic_when_mmio_drain_fails() {
