@@ -42,7 +42,7 @@ export function proc(pid: number): Frame {
       try {
         record[file] = readFileSync(join(root, file), 'utf8');
       } catch (error) {
-    propagate(error);
+        propagate(error);
         record[file + '_error'] = detail(error);
       }
     }

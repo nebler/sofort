@@ -36,7 +36,7 @@ and snapshot overrides above.
 
 ## Benchmark
 
-`python3 -u bench.py 30 --output PATH` imports `../run.py` for load gates,
+`/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/hyperlight-bench 30 --output PATH` imports `../controller.ts` for load gates,
 workers, result validation, aggregate watchdog and reports. It adds strict
 prespawned Hyperlight and the exact Date.now 50 ms case. `Suite.sample` and
 `memory_sample` remain reusable. Gate defaults: load1 <6, budget 0.1 s/sample;
@@ -54,3 +54,7 @@ stay outside parked latency. Logical clones share a hardware VM and include
 clone creation in request latency. Memory uses macOS process footprint/RSS at
 READY, excluding HVF kernel allocations. See `INTEGRATION.md` and the historical
 `results/` receipts for measured selections and their load limits.
+
+The benchmark and analysis controllers are compiled with `make -C .. build`; see
+[the canonical harness](../README.md#typescript-implementation) for entrypoints
+and parity evidence. Run collection under `/usr/bin/lockf -k /tmp/sofort-bench.lock`.

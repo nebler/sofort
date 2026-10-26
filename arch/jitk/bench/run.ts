@@ -45,7 +45,9 @@ export function main(): void {
   try {
     args = parseArgs(process.argv.slice(2));
     check(args.smoke || args.test || args.report || args.samples >= 30, 'canonical run requires samples >= 30');
-    check([args.gate_budget, args.gate_poll, args.load_threshold].every(Number.isFinite) && args.gate_budget >= 0 && args.gate_poll > 0 && args.load_threshold > 0 && args.max_extra_rounds >= 0, 'invalid gate configuration');
+    if (!args.test && !args.report) {
+      check([args.gate_budget, args.gate_poll, args.load_threshold].every(Number.isFinite) && args.gate_budget >= 0 && args.gate_poll > 0 && args.load_threshold > 0 && args.max_extra_rounds >= 0, 'invalid gate configuration');
+    }
   } catch (error) {
     propagate(error);
     console.error(detail(error));
@@ -109,7 +111,7 @@ export function main(): void {
           entry.status = 'PASS';
           entry.ms = Number(clockNS() - worker.startNS) / 1e6;
         } catch (error) {
-    propagate(error);
+          propagate(error);
           entry.status = 'FAIL';
           entry.error = detail(error);
         } finally {
@@ -143,7 +145,7 @@ export function main(): void {
           Object.assign(row, sample(spec, selection, clone));
           row.status = 'PASS';
         } catch (error) {
-    propagate(error);
+          propagate(error);
           row.status = 'FAIL';
           row.error = detail(error);
         }

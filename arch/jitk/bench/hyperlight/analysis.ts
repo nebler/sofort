@@ -100,8 +100,8 @@ export function analyze(folder: string, verbose = true): void {
   }
   dump(join(folder, 'memory.json'), memory);
   if (verbose) {
-  for (const c of comparisons) {
-    console.log(c.jitk_mode, c.other_mode, c.case, c.winner, roundLabel(c.difference_ms), '[' + (c.difference_ci95_ms as number[]).map(roundLabel).join(', ') + ']');
+    for (const c of comparisons) {
+      console.log(c.jitk_mode, c.other_mode, c.case, c.winner, roundLabel(c.difference_ms), '[' + (c.difference_ci95_ms as number[]).map(roundLabel).join(', ') + ']');
+    }
   }
-}
 }

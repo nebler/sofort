@@ -1,3 +1,4 @@
+.DEFAULT_GOAL := build
 .PHONY: build test bench smoke clean
 SCRIPTC := node_modules/.bin/scriptc
 SOURCES := $(wildcard *.ts ledger/*.ts hyperlight/*.ts)

@@ -4,7 +4,7 @@ import { mkdirSync, renameSync, readFileSync, writeFileSync, existsSync, rmSync 
 import { loadavg, cpus, platform, release } from 'node:os';
 import { options, check, readJSON, dump, utc, command, Random, median, stats, detail } from './lib.ts';
 import { start, close, wait } from './native.ts';
-import { HERE, Worker, gate, choose, sample, startWatch, cleanup, ACTIVE, type Frame, type Spec, type SelectionConfig } from './controller.ts';
+import { HERE, Worker, gate, choose, sample, startWatch, watch, cleanup, ACTIVE, type Frame, type Spec, type SelectionConfig } from './controller.ts';
 
 import { SPECS, pairedSummary } from './paired.ts';
 
@@ -23,13 +23,18 @@ function main(): void {
   const monitorPath = raw + '.load-monitor';
   rmSync(monitorPath, { force: true });
   rmSync(monitorPath + '.stop', { force: true });
+  startWatch();
   const monitor = start([join(HERE, 'build/load-monitor'), monitorPath]);
+  watch('+' + monitor.pid + ' 7200');
   // Include setup in the monitor interval, before artifact freezing starts.
 
   const updateMonitor = (): void => {
     if (existsSync(monitorPath)) {
-      const lines = readFileSync(monitorPath, 'utf8').trim().split('\n');
-      data.load_monitor = lines.filter(line => line).map(line => JSON.parse(line) as Frame);
+      const text = readFileSync(monitorPath, 'utf8');
+      const complete = text.slice(0, text.lastIndexOf('\n') + 1);
+      if (complete) {
+        data.load_monitor = complete.trim().split('\n').map(line => JSON.parse(line) as Frame);
+      }
     }
   };
   const save = (): void => {
@@ -40,7 +45,6 @@ function main(): void {
     renameSync(tmp, raw);
   };
   const selections: Frame = {};
-  startWatch();
   try {
     for (const [label, vmm] of [['baseline', String(args.baseline)], ['v2', String(args.vmm)]]) {
       const cfg = { vmm, image: String(args.image), sandbox_profile: 'auto', scratch_dir: String(args.scratch_dir), hyperlight_adapter: null, no_hyperlight: true, executor_root: null, node: null } as SelectionConfig;
@@ -58,7 +62,7 @@ function main(): void {
           w.run('one_tool');
           entry.status = 'PASS';
         } catch (error) {
-    propagate(error);
+          propagate(error);
           entry.status = 'FAIL';
           entry.error = detail(error);
         } finally {
@@ -92,7 +96,7 @@ function main(): void {
               Object.assign(row, sample(spec, selections[label], null));
               row.status = 'PASS';
             } catch (error) {
-    propagate(error);
+              propagate(error);
               row.status = 'FAIL';
               row.error = detail(error);
             }

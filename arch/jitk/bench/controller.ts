@@ -20,7 +20,7 @@ let watchdog: Child | null = null;
 export function startWatch(): void {
   watchdog = start([join(HERE, 'build/watchdog')]);
 }
-function watch(line: string): void {
+export function watch(line: string): void {
   if (watchdog) {
     write(watchdog.stdin, Buffer.from(line + '\n'));
   }

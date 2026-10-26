@@ -90,7 +90,7 @@ export function memory(args: Frame): void {
         }
         cell.status = 'ok';
       } catch (error) {
-    propagate(error);
+        propagate(error);
         cell.status = 'error';
         cell.error = detail(error);
         cell.partial_processes = workers.map(w => proc(w.pid));
@@ -101,7 +101,7 @@ export function memory(args: Frame): void {
           try {
             Object.assign(entry, w.close());
           } catch (error) {
-    propagate(error);
+            propagate(error);
             entry.error = detail(error);
           }
           cleanupRows.push(entry);
@@ -160,7 +160,7 @@ export function controls(args: Frame): void {
       }
       c.status = 'ok';
     } catch (error) {
-    propagate(error);
+      propagate(error);
       c.status = 'error';
       c.error = detail(error);
     } finally {

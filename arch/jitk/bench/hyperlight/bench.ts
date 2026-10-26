@@ -45,7 +45,7 @@ function jitkArgv(cfg: JitkConfig): string[] {
       execFileSync(cfg.vmm, ['--compile-profile', profile, '--images', dirname(cfg.image)], { timeout: 30000, stdio: 'pipe' });
       cfg.sandboxProfile = profile;
     } catch (error) {
-    propagate(error);
+      propagate(error);
       rmSync(folder, { recursive: true, force: true });
       throw error;
     }
@@ -65,7 +65,7 @@ class Suite {
       this.clone = new Worker([WORKER, 'clone', SNAPSHOT], {}, 7200);
       this.clone.ready();
     } catch (error) {
-    propagate(error);
+      propagate(error);
       this.close();
       throw error;
     }
@@ -213,7 +213,7 @@ function main(): void {
           Object.assign(row, spec.mode === 'memory' ? memorySample(spec.kind, spec.count, suite.cfg) : suite.sample(spec.mode, spec.case));
           row.status = 'PASS';
         } catch (error) {
-    propagate(error);
+          propagate(error);
           row.status = 'FAIL';
           row.error = detail(error);
         }

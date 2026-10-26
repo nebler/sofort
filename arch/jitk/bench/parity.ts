@@ -6,42 +6,42 @@ import { pairedSummary } from './paired.ts';
 import { type Frame } from './controller.ts';
 
 function replay(inputs: string[], out: string): Frame {
-const orders: Frame[] = [];
-const random: Frame[] = [];
-const statistics: Frame[] = [];
-const paired: Frame[] = [];
-const result: Frame = { orders, random, statistics, paired };
-for (const seed of [0, 1, 601, 603, 39009, 4294967297, -604]) {
-  const rng = new Random(seed);
-  const order = Array.from({ length: 37 }, (_, i) => i);
-  rng.shuffle(order);
-  orders.push({ seed, order });
-  random.push({ seed, values: Array.from({ length: 100 }, () => rng.random()) });
-}
-for (const input of inputs) {
-  const sourceLabel = relative(import.meta.dirname, resolve(input)).replace(/\//g, '-');
-  const data = readJSON<Frame>(input);
-  if (data.summary && !data.specs) {
-    for (const passName of Array.from(new Set<string>((data.samples as Frame[]).map(r => String(r.pass)))).sort()) {
-      paired.push({ pass: passName, summary: pairedSummary((data.samples as Frame[]).filter(r => r.pass === passName)) });
-    }
-    continue;
+  const orders: Frame[] = [];
+  const random: Frame[] = [];
+  const statistics: Frame[] = [];
+  const paired: Frame[] = [];
+  const result: Frame = { orders, random, statistics, paired };
+  for (const seed of [0, 1, 601, 603, 39009, 4294967297, -604]) {
+    const rng = new Random(seed);
+    const order = Array.from({ length: 37 }, (_, i) => i);
+    rng.shuffle(order);
+    orders.push({ seed, order });
+    random.push({ seed, values: Array.from({ length: 100 }, () => rng.random()) });
   }
-  for (const name of Array.from(new Set<string>((data.samples as Frame[]).map(r => String(r.name)))).sort()) {
-    const all = (data.samples as Frame[]).filter(r => r.name === name && r.status === 'PASS');
-    for (const group of ['all', 'quiet']) {
-      const rows = group === 'all' ? all : all.filter(r => r.gate.passed);
-      for (const key of Object.keys(UNITS)) {
-        const xs = rows.filter(r => key in r).map(r => Number(r[key]));
-        if (xs.length) {
-          statistics.push({ input: sourceLabel, name, group, key, stats: stats(xs) });
+  for (const input of inputs) {
+    const sourceLabel = relative(import.meta.dirname, resolve(input)).replace(/\//g, '-');
+    const data = readJSON<Frame>(input);
+    if (data.summary && !data.specs) {
+      for (const passName of Array.from(new Set<string>((data.samples as Frame[]).map(r => String(r.pass)))).sort()) {
+        paired.push({ pass: passName, summary: pairedSummary((data.samples as Frame[]).filter(r => r.pass === passName)) });
+      }
+      continue;
+    }
+    for (const name of Array.from(new Set<string>((data.samples as Frame[]).map(r => String(r.name)))).sort()) {
+      const all = (data.samples as Frame[]).filter(r => r.name === name && r.status === 'PASS');
+      for (const group of ['all', 'quiet']) {
+        const rows = group === 'all' ? all : all.filter(r => r.gate.passed);
+        for (const key of Object.keys(UNITS)) {
+          const xs = rows.filter(r => key in r).map(r => Number(r[key]));
+          if (xs.length) {
+            statistics.push({ input: sourceLabel, name, group, key, stats: stats(xs) });
+          }
         }
       }
     }
+    report(data, join(out, sourceLabel + '.md'));
   }
-  report(data, join(out, sourceLabel + '.md'));
-}
-return result;
+  return result;
 }
 
 const HERE = import.meta.dirname;
