@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 // Offline QuickJS profile preparation. Builds only a separate ring image;
 // kernel sources, default image and native profiles remain unchanged.
-import {readFileSync,writeFileSync,existsSync,chmodSync} from 'node:fs';
+import {writeFileSync,existsSync,chmodSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {resolve,dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {helperSource,helperHash,fileHash} from '../../executor/prepared-helpers.mjs';
+import {helperSource,helperHash,bootstrapSource,fileHash} from '../../executor/prepared-helpers.mjs';
 const [binary,output]=process.argv.slice(2);
 if(!binary||!output)throw Error('usage: node prepare-helpers.mjs REAL_BINARY NEW_SNAPSHOT_BASE');
 const base=resolve(output),kernel=fileURLToPath(new URL('../../kernel/',import.meta.url));
 for(const ext of ['bin','mem','regs','layout','identity'])if(existsSync(base+'.'+ext))throw Error('snapshot already exists: '+base+'.'+ext);
-const bootstrap=readFileSync(kernel+'ring-bootstrap.js','utf8');
+const bootstrap=bootstrapSource;
 const checkpoint='const repair=os.snapshotCheckpoint();';
 if(bootstrap.split(checkpoint).length!==2)throw Error('expected one QuickJS checkpoint');
 const script=bootstrap.replace(checkpoint,helperSource+'\n'+checkpoint);
