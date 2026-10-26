@@ -13,4 +13,4 @@ sudo flock /home/dev/bench.lock bash -euo pipefail -c '
   ./target/release/jitk-shard wait 1024 > results/wait-1024.jsonl
   ./target/release/jitk-shard wait 1 > results/promise-1.jsonl
 '
-python3 summarize.py results
+./tool.sh summarize results

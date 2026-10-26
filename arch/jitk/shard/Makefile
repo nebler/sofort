@@ -1,7 +1,7 @@
 .PHONY: test
 test:
 	cargo +stable test --locked --offline
-	python3 harness/check-native-r7.py
+	./tool.sh check-native-r7
 
 # Prepared QuickJS snapshot plus one snapshot from each verified class. The caller
 # holds /home/dev/bench.lock, as for the real harness's other KVM measurements.

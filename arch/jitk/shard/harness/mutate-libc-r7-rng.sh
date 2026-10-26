@@ -8,14 +8,7 @@ cd /home/dev/r7-rng
 mutation_dir=${1:-$PWD/mutations}
 mkdir "$mutation_dir"
 cp -a payload-final/quickjs/quickjs-2026-06-04 "$mutation_dir/libc-omitted"
-python3 - "$mutation_dir" <<'PY'
-from pathlib import Path
-import sys
-p=Path(sys.argv[1])/'libc-omitted/checkpoint.h';s=p.read_text()
-needle='__jitk_reseed_libc(keys+8);'
-assert s.count(needle)==1
-p.write_text(s.replace(needle,'(void)0; /* negative mutation: omit libc repair */'))
-PY
+arch/jitk/shard/tool.sh mutate-libc "$mutation_dir"
 rm -f "$mutation_dir/libc-omitted/.obj/quickjs-libc.o" "$mutation_dir/libc-omitted/qjs"
 make -C "$mutation_dir/libc-omitted" qjs CC=/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc \
  CFLAGS='-O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\"' \

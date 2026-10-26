@@ -18,5 +18,5 @@ for class in glue-4m; do
     JITK_LEDGER_CGROUP="/sys/fs/cgroup/r7-integrate-$class" \
     JITK_LEDGER_SNAPSHOT="qjs-$class" JITK_LEDGER_FIXTURES=attack_hold \
     JITK_LEDGER_OUTPUT="$out/$class" \
-    python3 arch/jitk/shard/harness/ledger-r6.py >"$out/ledger-$class.log" 2>&1
+    arch/jitk/shard/tool.sh ledger-r6 >"$out/ledger-$class.log" 2>&1
 done
