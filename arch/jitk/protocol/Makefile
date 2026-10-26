@@ -2,11 +2,14 @@ NODE ?= /tmp/jitk-09/node-real
 .PHONY: build test vm hostile
 build:
 	$(NODE) build.mjs
-test: build
-	python3 make-vectors.py
+test: build .work/bin/make-vectors
+	.work/bin/make-vectors
 	$(NODE) test.mjs
 	$(NODE) import-check.mjs
-vm:
+vm: .work/bin/watchdog
 	$(NODE) vm-test.mjs
-hostile:
+hostile: .work/bin/watchdog
 	$(NODE) hostile/run.mjs
+
+TS_TOOLS := make-vectors.ts watchdog.ts report.ts
+include ../docs/scriptc.mk
