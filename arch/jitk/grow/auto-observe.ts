@@ -3,6 +3,17 @@ import type { Outcome } from './observations.ts';
 
 export interface Learned { rules: string[]; expected: Outcome }
 
+// Byte observations are relaxed per aligned 8-byte word (16 hex digits): a word
+// that differs between calibrations may hold any value, every other word stays
+// exact. A string or counter field that varies frees its whole word, so equal
+// digits that coincide by chance between the two runs cannot pin it.
+const WORD = 16;
+function relax(line: string, mask: string): string {
+  let out = '';
+  for (let w = 0; w * WORD < line.length; w += 1) out += mask[w] === '1' ? 'x'.repeat(Math.min(WORD, line.length - w * WORD)) : line.slice(w * WORD, (w + 1) * WORD);
+  return out;
+}
+
 // The oracle, not a syscall-name table, identifies nondeterministic fields.
 // Only positive scalar identity (up to equality) and equal-length byte variability
 // are relaxed.
@@ -21,21 +32,41 @@ export function normalizeAuto(hex: string, rules: string[]): string {
       return line.split('=')[0] + '=POSITIVE' + identities.indexOf(value);
     }
     if (rules[i].startsWith('bytes:')) { check(/^[\da-f]+$/.test(line) && line.length === Number(rules[i].slice(6)), 'volatile byte extent changed'); return 'BYTES:' + line.length; }
+    if (rules[i].startsWith('words:')) {
+      const [length, mask] = rules[i].slice(6).split(':');
+      check(/^[\da-f]*$/.test(line) && line.length === Number(length), 'volatile byte extent changed');
+      return relax(line, mask);
+    }
     return line;
   }).join('\n')).toString('hex');
 }
 
-export function learn(refs: Outcome[]): Learned {
+// identities: labels (text before '=') already seen to vary in another split of the
+// same target; their positive values are identities here too, so one split cannot
+// pin a value (a pid, an address) that only happened to repeat in its two runs.
+export function learn(refs: Outcome[], identities: string[] = []): Learned {
   check(refs.length === 2 && refs.every((r) => r.exit === 0 && r.stderr_hex === ''), 'two clean oracle calibrations required');
   const a = Buffer.from(refs[0].stdout_hex, 'hex').toString().split('\n'), b = Buffer.from(refs[1].stdout_hex, 'hex').toString().split('\n');
   check(a.length === b.length, 'unstable oracle observation shape');
   const rules = a.map((line, i) => {
-    if (line === b[i]) return 'exact';
+    if (line === b[i] && !(/^[\w-]+=[1-9]\d*$/.test(line) && identities.includes(line.split('=')[0]))) return 'exact';
     if (/^[\w-]+=[1-9]\d*$/.test(line) && /^[\w-]+=[1-9]\d*$/.test(b[i]) && line.split('=')[0] === b[i].split('=')[0]) return 'positive';
     check(/^[\da-f]+$/.test(line) && /^[\da-f]+$/.test(b[i]) && line.length === b[i].length, 'unhandled nondeterminism');
-    return 'bytes:' + line.length;
+    let mask = '';
+    for (let w = 0; w * WORD < line.length; w += 1) mask += line.slice(w * WORD, (w + 1) * WORD) === b[i].slice(w * WORD, (w + 1) * WORD) ? '0' : '1';
+    return mask.includes('0') ? 'words:' + line.length + ':' + mask : 'bytes:' + line.length;
   });
   const expected = { stdout_hex: normalizeAuto(refs[0].stdout_hex, rules), stderr_hex: '', exit: 0 };
   check(normalizeAuto(refs[1].stdout_hex, rules) === expected.stdout_hex, 'calibration disagreement');
   return { rules, expected };
+}
+
+// Labels whose positive values varied between calibrations in any split.
+export function varyingIdentities(learned: Learned[], outputs: Outcome[]): string[] {
+  const labels = new Set<string>();
+  learned.forEach((l, k) => {
+    const lines = Buffer.from(outputs[k].stdout_hex, 'hex').toString().split('\n');
+    l.rules.forEach((rule, i) => { if (rule === 'positive') labels.add(lines[i].split('=')[0]); });
+  });
+  return Array.from(labels).sort();
 }

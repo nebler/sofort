@@ -17,7 +17,7 @@ import { canonical, normalizeReceipt } from './parity.ts';
 import { normalize } from './normalize.ts';
 import { lintProbeConstants, rustTokens } from './probe-lint.ts';
 import { collectCalls, generate as autoGenerate, source as autoSource, shape } from './autoprofile.ts';
-import { learn, normalizeAuto } from './auto-observe.ts';
+import { learn, normalizeAuto, varyingIdentities } from './auto-observe.ts';
 
 const FIXTURES = join(ASSETS, 'tests/fixtures');
 interface Test {
@@ -88,6 +88,79 @@ test('autoprofile emits freestanding boundary/error/state probes without human e
     await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-fno-builtin', '-c', c, '-o', join(path, 'probe.o')]);
     await assert.rejects(async () => autoGenerate('missing', 1, [trace]), /no supported/);
   });
+});
+
+test('autoprofile detects writes with two fills and compares descriptor-independent outputs byte-wise', async () => {
+  assert.equal(shape('PROT_READ|PROT_WRITE').value, '3');
+  assert.equal(shape('MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE').value, String(2 + 32 + 16384));
+  assert.equal(shape('MAP_PRIVATE|MAP_UNKNOWN').kind, 'unsupported');
+  await temporary(async (path) => {
+    const trace = join(path, 'trace');
+    writeFileSync(trace, '7 leaf_struct({sysname="Linux", nodename="x"}) = 0\n7 leaf_fd(3</file>, {st_mode=S_IFREG|0644}) = 0\n7 leaf_random("\\xa7", 1, 0) = 1\n');
+    const independent = autoGenerate('leaf_struct', 160, [trace]);
+    const seed = independent.visible.find((c) => c.id === 'seed-0')!;
+    assert.ok(seed.observe.includes('if(extent0)bytes(first[0],extent0)'));
+    assert.ok(seed.observe.includes('first[0][j]!=0xa7||memory[0][j]!=0x5c'));
+    const code = autoSource(independent, [seed]);
+    assert.ok(code.includes('memory[i][j]=0x5c') && code.includes('second-return'));
+    // An invalid-pointer variant does not observe memory, so it calls once.
+    const invalid = independent.visible.concat(independent.heldout).find((c) => c.args[0] === '(long)ro')!;
+    assert.ok(!autoSource(independent, [invalid]).includes('second-return'));
+    const described = autoGenerate('leaf_fd', 80, [trace]).visible.find((c) => c.id === 'seed-0')!;
+    assert.ok(described.observe.includes('touched1') && !described.observe.includes('bytes(first'));
+    // A one-byte random result equal to one fill is still "touched".
+    const random = autoGenerate('leaf_random', 278, [trace]).visible.find((c) => c.id === 'seed-0')!;
+    assert.ok(random.observe.includes('first[0][j]!=0xa7||memory[0][j]!=0x5c') && random.observe.includes('bytes(first[0],n)'));
+    const c = join(path, 'generated.c'); writeFileSync(c, autoSource(independent, independent.visible));
+    await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-fno-builtin', '-c', c, '-o', join(path, 'probe.o')]);
+  });
+});
+
+test('autoprofile rebinds addresses near an earlier mapping to the probe mapping', async () => {
+  await temporary(async (path) => {
+    const trace = join(path, 'trace');
+    writeFileSync(trace, '7 mmap(NULL, 126976, 0x3, 0x22, -1, 0) = 0xffff82a76000\n7 mmap(0xffff82a61000, 126976, 0x3, 0x22, -1, 0) = 0xffff82a61000\n7 mmap(0x7000000000, 4096, 0x3, 0x22, -1, 0) = 0x7000000000\n');
+    const calls = collectCalls('mmap', [trace]);
+    assert.equal(calls[1].args[0].kind, 'mapped');
+    assert.ok(calls[1].args[0].value === String(0xffff82a61000 - 0xffff82a76000));
+    // Far from every earlier region: stays an absolute scalar.
+    assert.equal(calls[2].args[0].kind, 'scalar');
+    const seed = autoGenerate('mmap', 222, [trace]).visible.find((c) => c.id === 'seed-1')!;
+    assert.ok(seed.args[0] === '(mapping+-86016)');
+    // The allocator under test never provides the probe's own buffers.
+    const code = autoSource(autoGenerate('mmap', 222, [trace]), [seed]);
+    assert.ok(code.includes('memory[i]=arena+i*131072') && !code.includes('sys(222,0,786432'));
+    const c = join(path, 'generated.c'); writeFileSync(c, code);
+    await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-fno-builtin', '-c', c, '-o', join(path, 'probe.o')]);
+  });
+});
+
+test('identity labels that vary in one split are identities in the other', async () => {
+  const out = (s: string) => ({ stdout_hex: Buffer.from(s).toString('hex'), stderr_hex: '', exit: 0 });
+  const visible = [out('return=10\nrepeat-return=10\n'), out('return=9\nrepeat-return=9\n')];
+  const heldout = [out('return=10\nrepeat-return=10\ncount=3\n'), out('return=10\nrepeat-return=10\ncount=3\n')];
+  const first = [learn(visible), learn(heldout)];
+  const labels = varyingIdentities(first, [visible[0], heldout[0]]);
+  assert.ok(labels.join(',') === 'repeat-return,return');
+  const relaxed = learn(heldout, labels);
+  assert.ok(relaxed.rules.join(',') === 'positive,positive,exact,exact');
+  // Any stable positive pid passes; the repeat must still equal the first call.
+  assert.equal(normalizeAuto(Buffer.from('return=7\nrepeat-return=7\ncount=3\n').toString('hex'), relaxed.rules), relaxed.expected.stdout_hex);
+  assert.notEqual(normalizeAuto(Buffer.from('return=7\nrepeat-return=8\ncount=3\n').toString('hex'), relaxed.rules), relaxed.expected.stdout_hex);
+  assert.notEqual(normalizeAuto(Buffer.from('return=7\nrepeat-return=7\ncount=4\n').toString('hex'), relaxed.rules), relaxed.expected.stdout_hex);
+});
+
+test('Linux calibration relaxes varying 8-byte words and keeps the rest exact', async () => {
+  const word = (s: string) => s.padEnd(16, '0');
+  const a = 'return=0\n' + word('4c696e7578') + word('aaaa') + word('0102') + '\n';
+  const b = 'return=0\n' + word('4c696e7578') + word('bbbb') + word('0102') + '\n';
+  const learned = learn([a, b].map((s) => ({ stdout_hex: Buffer.from(s).toString('hex'), stderr_hex: '', exit: 0 })));
+  assert.ok(learned.rules[1] === 'words:48:010');
+  const other = 'return=0\n' + word('4c696e7578') + word('cccc') + word('0102') + '\n';
+  assert.equal(normalizeAuto(Buffer.from(other).toString('hex'), learned.rules), learned.expected.stdout_hex);
+  const wrongFixed = 'return=0\n' + word('4c696e7579') + word('cccc') + word('0102') + '\n';
+  assert.notEqual(normalizeAuto(Buffer.from(wrongFixed).toString('hex'), learned.rules), learned.expected.stdout_hex);
+  assert.throws(() => normalizeAuto(Buffer.from('return=0\n' + word('4c') + '\n').toString('hex'), learned.rules), /extent/);
 });
 
 test('Linux calibration relaxes only observed positive identity and byte variation', async () => {

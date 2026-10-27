@@ -41,7 +41,7 @@ export function generate(root: string, out: string): void {
     }
   }
   let dispatch = 'mod handlers {\n' + modules.join('\n') + '\n';
-  dispatch += '#[allow(unused_imports, reason="Candidate handlers may be deleted by the grow gate.")]\nuse super::{copyin, copyout, now_ns, park_poll, poll_fd, writable};\n';
+  dispatch += '#[allow(unused_imports, reason="Candidate handlers may be deleted by the grow gate.")]\nuse super::{copyin, copyout, map_zeroed, mmap_arena, now_ns, page_mapped, park_poll, poll_fd, writable};\n';
   dispatch += `pub fn registered(n:usize)->bool { matches!(n, ${present.join(' | ') || '_ if false'}) }\n`;
   dispatch += 'pub fn dispatch(n:usize,a:&[usize; 6])->isize { match n {\n' + arms.join('\n') + '\n_=>-38\n}}\n}\npub use handlers::{registered,dispatch};\n';
   writeFileSync(join(out, 'dispatch.rs'), dispatch);

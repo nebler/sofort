@@ -1,0 +1,216 @@
+# GrowOS Phase 2 (part 2) — 2026-10-27
+
+Goal: raise the number of unmodified scriptc-compiled programs that run on jitk
+byte-identical to Linux, growing as much new kernel behaviour as possible with
+the sealed grow loop and counting every human/agent-written kernel line
+separately. Corpus results: [`../scriptc-corpus/RESULTS-PHASE2.md`](../scriptc-corpus/RESULTS-PHASE2.md).
+
+All grow runs used `--validate-only`. `grow/release.json`, `grow/.READY` and
+`kernel/.READY` were not written. The canonical kernel source still builds to
+the READY image (`e3d774eb…`, checked after every kernel commit). The grown
+kernel is a separate tree (`phase2 assemble`), described by
+[`phase2-grown/GROWN.json`](phase2-grown/GROWN.json). Nothing was pushed.
+
+Pins: oracle `jitk-oracle:08` = `sha256:88f8f82b…0d0a` (not rebuilt); VMM
+`/tmp/jitk-r8/vmm-mac/jitk-vmm`; `codex-cli 0.164.0`, model `gpt-6.1-sol`,
+spec `none`, ≤3 attempts per transaction, N = 1 transaction per target (fixed
+before the batch); scriptc 0.4.5; macOS/HVF, functional results only. Per-run
+controller, kernel, prompt and profile hashes are in the local receipts
+(`results/p2-*`, gitignored). Per-attempt table:
+[`experiments/PHASE2.csv`](experiments/PHASE2.csv).
+
+## Result
+
+On the grown kernel, **3,198 of 3,947 comparable compiled corpus programs (81.0%) run byte-identical to Linux, up from 159 (4.0%)**; T1+T2 86.8% (from 4.3%). Visible 81.0%, held-out 81.3%, no regressions. The grown mmap alone accounts for 2,924 of the 3,039 newly passing programs, the human placement bound for 50, getrandom for 5 alone and 54 together with mmap. Details and the stock-layout result: RESULTS-PHASE2.md.
+
+## 1. Generator fixes (E3 weaknesses)
+
+| Weakness (E3 report) | Fix | Test |
+|---|---|---|
+| getrandom "touched" compared against one fill byte (≈1/256 false rejection per run) | every observed output is produced by two identical calls over fills `0xa7` and `0x5c`; a byte counts as written if it differs from either | `autoprofile detects writes with two fills…` |
+| opaque outputs (uname, affinity masks, sysinfo) checked only for write/no-write | outputs that depend on no descriptor or path are printed over their written extent; calibration relaxes only 8-byte words that differ between runs | `…relaxes varying 8-byte words…` |
+| getpid accepted any constant positive pid; container identity pinned by chance | calibrations run in two **separate** containers; an identity label that varies in one split is an identity in both | `identity labels that vary in one split…` |
+
+Descriptor/path outputs (fstat-like) keep write/no-write: jitk's read-only
+archive reports its own inode, mode and time values by design, and byte
+comparison rejected the canonical fstat (first regrade, invalidated). Seed
+traces now opt into `strace -y`, so a bare `3` in a trace is recognised as a
+descriptor.
+
+**E3 mutant table, regraded** (`p2-e3-mutants-v2-20261027`, generated profiles
+only): 9/9 mutants rejected by both splits; ppoll, fstat and pread64
+canonical controls pass. No regression. The later generator changes (guest
+capacity, near-mapping hints, scaffolding, blank lines, spacing) touch only
+mmap-shaped arguments, allocator targets, untouched independent outputs and
+calibration timing; the 54 native generator tests cover each.
+
+Re-validation of the 40 E3-accepted handlers for the overlapping targets
+against the new profiles (model-free `phase2 replay`): getrandom 10/10,
+uname 10/10 (sysname/release/version/machine now byte-exact), faccessat 8/10
+(2 rejected by the stronger profile), getpid 10/10 after identity sharing
+(before it: 10/10 rejected by held-out, which had pinned pid 10 by chance).
+
+## 2. Image placement (human change)
+
+`packer.ts` admitted PT_LOAD segments only up to 0x680000; scriptc/Zig link
+at 0x1000000, so every stock ELF was refused. The admission bound is now
+`IMAGE_END = 0x1880000`: any placement that still leaves the 1.5 MiB brk heap
+and the 4 MiB mmap arena that `prepare.ts` already required. A higher base
+is padded with unmapped zero pages; the heap floor stays 0x680000, so small
+images keep the identical layout. No kernel Rust changed. Cost: a stock
+image's mmap arena shrinks by the 12 MiB padding (about 11 MiB remain instead
+of about 22 MiB), and kernel.bin grows by the padding. Tests: three new packer
+cases (stock base accepted and zero-padded, bound accepted/refused, below base
+refused). The same change admits relinked images up to IMAGE_END, which also
+covers the 80 relinked programs refused for size in the census.
+
+## 3. mmap address hints — grown
+
+The census's dominant blocker (3,765 programs) is the canonical mmap
+returning EINVAL for a non-NULL hint without MAP_FIXED. Sequence:
+
+1. **The one-file contract could not express mmap.** Mapping pages needs
+   `unsafe` MMU calls, which the contract forbids. Human change: three
+   controller-owned helpers in `syscalls.rs` (`mmap_arena`, `page_mapped`,
+   `map_zeroed`) that check every range against the arena and own the page
+   tables. The canonical mmap is unchanged; the helpers are marked
+   dead-code-allowed, so LTO drops them and the canonical image stays
+   byte-identical. The generated handler module re-exports them next to the
+   original helpers.
+2. **The first generated profile was unsatisfiable.** scriptc's runtime makes
+   a 40 GiB `MAP_NORESERVE` reservation (Linux succeeds; a 32 MiB guest
+   cannot) and passes hints at absolute addresses that Linux honours. The
+   native-census seeds added Rust-std `MAP_FIXED` guard pages at absolute
+   addresses. Even a human hint fix failed 54 of 219 lines.
+   Generic generator fixes: Linux calibrations run under `ulimit -v` with the
+   guest's 32 MiB, so the reservation fails on both sides; an address within
+   1 MiB of an earlier mapping rebinds to the probe's own mapping with a
+   signed offset; mmap is seeded from scriptc traces only (as specified);
+   probe scaffolding takes static buffers when the target is the probe's own
+   allocator, so wrong-return mutants yield a wrong observation, not a crashed
+   probe (a crash can never count as a rejection).
+3. **Grown.** Profile: 46 visible / 22 held-out cases, frozen before sampling.
+   Transaction `p2-grow-v2-20261027-mmap`, attempt 1: 30/30 visible, held-out,
+   both mutants rejected, SQLite 10/10, corpus sample visible 14 → 104 of 150
+   (0 regressions), held-out sample +40 of 60. The accepted 74-line handler
+   places top-down like Linux, honours a free hint inside the arena, accepts
+   `MAP_FIXED`/`MAP_FIXED_NOREPLACE` only on free arena pages, and maps every
+   protection read-write, never executable (the helpers have no other mode).
+   The first transaction (`…-invalid-helper-import`) failed to build because
+   the helpers were not yet re-exported via `super`; it is a controller bug
+   and not counted.
+
+Hostile-guest suites with the grown handlers overlaid on the kernel tree:
+kernel, protocol, vmm, vmm/sandbox, executor, executor/policy and mcp all
+pass (`JITK_KERNEL_IMAGE` = the grown build, `826279c8…`). The tree was
+restored afterwards.
+
+## 4. Ranked syscalls
+
+Transactions (N = 1 per target, ≤3 attempts; gates: 30 visible runs,
+held-out probe, two wrong-return mutants, SQLite 10/10, no regression on the
+visible and held-out corpus programs that use the target):
+
+| Target | Profile cases (vis/held) | Result | Attempts | Corpus sample: visible new pass | Held-out new pass | Handler lines | In grown kernel |
+|---|---:|---|---:|---:|---:|---:|---|
+| mmap | 46/22 | accepted | 1 | 90 / 150 | 40 / 60 | 74 | yes |
+| getrandom | 56/28 | accepted | 1 | 48 / 61 | 11 / 13 | 43 | yes |
+| uname | 4/2 | accepted | 1 | 0 / 44 | 0 / 7 | 24 | yes |
+| getpid | 2/1 | accepted | 1 | 0 / 130 | 0 / 31 | 4 | yes |
+| faccessat | 22/10 | accepted | 1 | 3 / 42 | 0 / 13 | 24 | yes |
+| getpriority | 18/8 | accepted | 2 | 0 / 1 | 0 / 1 | 19 | yes |
+| getppid | 2/1 | accepted | 1 | 0 / 42 | 0 / 7 | 4 | yes |
+| sysinfo | 4/2 | accepted (2nd transaction) | 2 | 1 / 7 | 0 / 1 | 26 | yes |
+| unlinkat | 23/11 | accepted | 2 | 0 / 92 | 0 / 30 | 73 | **no: overfit** |
+| mkdirat | 33/16 | accepted | 1 | 0 / 78 | 0 / 25 | 109 | **no: overfit** |
+| chdir | 6/2 | accepted | 1 | 0 / 17 | 0 / 5 | 49 | **no: overfit** |
+| statfs | 36/18 | accepted (2nd transaction) | 1 | 0 / 4 | 0 / 0 | 34 | **no: overfit** |
+| getrusage | 14/6 | rejected (2 transactions) | 3+3 | – | – | – | no |
+| nanosleep | 2/0 | not run: empty held-out split (fails closed) | 0 | – | – | – | no |
+| mprotect, pipe2 | – | E4: need page-permission changes / an fd+buffer object outside one file | – | – | – | – | no |
+
+"Corpus sample" counts programs whose Linux run used the target (mmap: the
+first 150 visible / 60 held-out names), relative to the same tree before the
+target was grown; later targets build on earlier accepted handlers.
+
+Grown lines in the grown kernel: **218** (8 handlers). Each targets a call
+that was absent or, for mmap, replaced.
+
+### Failure classes
+
+| Class | Where | What happened |
+|---|---|---|
+| Oracle filesystem ≠ jitk archive (gate gap) | unlinkat, mkdirat, chdir, statfs | All gates passed, but the handlers branch on oracle-container paths (`/payload`, `/tmp`, `data.bin`) instead of the archive: mkdirat fakes a writable `/tmp` in a static table, statfs returns the oracle host's filesystem numbers. The Linux reference for path calls describes the container's root, and the phase-2 transaction (like E3's auto-grow) did not run the E2 constant lint. Excluded by hand from the grown kernel; they unlocked 0 corpus programs. Fix: an oracle root that mirrors the archive, plus a path-literal lint. |
+| Process counters pinned (generator) | getrusage ×2 transactions | `ru_minflt` (408) and `ru_nivcsw` (1) were identical in both Linux calibrations, so the profile demands the Linux probe's own fault count. No correct handler can know it. |
+| Slow-changing environment pinned (generator) | sysinfo, 1st transaction | uptime seconds and load averages matched in both calibrations. Fixed by 6 s calibration spacing; the 2nd transaction accepted on attempt 2. |
+| Blank observation line (generator bug, mine) | statfs, getrusage, 1st transactions | an untouched independent output printed an empty line; the guest observer drops blank lines, so every held-out comparison failed on line count. Fixed; the 1st transactions are invalid. |
+| Empty held-out split | nanosleep | every trace shape collapses to one seed (time pairs have no variants), so held-out is empty; the driver refuses rather than accept against a vacuous seal. |
+| Model error, fixed by feedback | getpriority att. 1, unlinkat att. 1 (held-out) | — |
+| Infrastructure: scriptc child-wait stall | sysinfo 2nd transaction, att. 1 | a visible VM run returned rc 0 with `timeout: true` at 10.0 s: the child had exited, the controller was woken only by the kill timer. A false rejection; it was the only such run among all VM runs. The same stall hit `docker image inspect` during profile preparation (now retried once and recorded). No stack was captured (see SCRIPTC-GAPS.md). |
+| Controller bugs (not counted as attempts) | batch driver | helpers not reachable via `super` (1st mmap transaction); two scriptc empty-array typing crashes in row bookkeeping; empty/stale corpus selections. Each fix is a pins amendment; gates unchanged. |
+
+## 5. Cost, human lines and minutes
+
+CLI: 30 codex calls (all phase-2 transactions including the invalidated one),
+1.47 M input tokens, 18.4 K output tokens (5.2 K reasoning), as reported by
+the CLI. No dollar figure is inferred. Profile preparation, replays, regrade
+and corpus reruns make no CLI calls.
+
+Human/agent-written lines (git diff against main; all written by this
+implementation agent, none by the user):
+
+| Area | Lines added/changed | Counted as |
+|---|---:|---|
+| Kernel Rust (`syscalls.rs` mapping helpers, incl. comments/attributes) | 55 | human kernel |
+| Kernel TS (`packer.ts` placement bound, `generate.ts` re-export) | 8 (2 code lines + comments) | human kernel (loader/build) |
+| `slots.json` (9 phase-2 slot entries) | 9 | human kernel |
+| Kernel tests (`test_packer.ts`) | 14 | human test |
+| Grow controller (autoprofile, auto-observe, oracle, phase2 driver, e3) | 477 | controller, not kernel |
+| Grow tests | 74 | controller test |
+| Corpus tooling (census rerun, guest.ts, phase2-report) | 241 | tooling |
+| Grown handlers in the grown kernel | 218 | **grown** |
+
+Human minutes: 0 interactive minutes from the user during this round. The
+implementation agent worked about 2 h 45 min of wall clock (generator fixes,
+driver, debugging, census, report). The lead's brief preparation was not
+timed, so no human-minutes-per-syscall figure is claimed.
+
+Disk (`/System/Volumes/Data` free): 33 GiB at start, 23 GiB at the lowest (after the stock census), 27 GiB after pruning the rerun compile cache and per-run kernel images
+(15 GiB floor checked by every batch and rerun). Docker: at most one oracle
+container at a time; the image was neither rebuilt nor retagged; no prune.
+
+## What this proves / doesn't
+
+Proves, for this corpus, kernel and helper API:
+
+* The loop can grow the corpus's dominant semantic gap. With a human-written
+  safe primitive (55 lines) and a generic, Linux-calibrated profile, an mmap
+  policy written by the model on its first attempt passed the sealed held-out
+  probe and unlocked most of the corpus. No human wrote an mmap policy, case
+  or expected value.
+* Byte-wise checks on descriptor-independent outputs plus two-container
+  calibration are strong enough to make uname/sysinfo/getrandom handlers
+  match Linux bytes, and keep the E3 mutant table at 9/9.
+
+Doesn't prove:
+
+* **Path syscalls**: the differential compares against the oracle container's
+  filesystem, not jitk's archive. Four accepted handlers mirrored oracle paths
+  and had to be excluded by inspection. The gates as built do not prevent
+  this; the sealed held-out shares the same environment.
+* Environment emulation is accepted, not prevented: uname, getpid (10),
+  getppid (6), getpriority and sysinfo return the oracle machine's values.
+  That is what byte-identity to that oracle requires, but it is not "a
+  correct kernel for this guest" (sysinfo reports 8 GB of RAM in a 32 MiB
+  guest).
+* Generator limits remain: time-pair arguments get no variants (nanosleep
+  has no held-out case), deterministic process counters are pinned
+  (getrusage), and two calibrations can pin slowly varying values (fixed for
+  sysinfo by spacing, not in general).
+* N = 1 transaction per target: acceptance@1/@3 rates are not statistically
+  resolved. The mutant gate still uses only two generic wrong-return mutants
+  for new targets.
+* mmap semantics beyond the probes (MAP_FIXED replacing mappings, PROT_NONE
+  enforcement, PROT_EXEC) are not checked; the grown handler maps everything
+  read-write and refuses to replace mappings.
+* No E4 (multi-file) growth: mprotect and pipe2 remain.

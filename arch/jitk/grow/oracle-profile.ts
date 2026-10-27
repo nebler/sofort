@@ -10,6 +10,10 @@ interface Config {
   stderr_hex?: string;
   exit?: number;
   injections?: string[];
+  // Seed-trace collection only: strace -y annotates descriptors with their paths.
+  annotate?: boolean;
+  // Address-space limit in KiB (guest capacity), inherited by the payload.
+  memory_kib?: number;
 }
 export async function runProfile(out: string): Promise<void> {
   const cfg = readJSON<Config>(join(out, 'oracle-config.json'));
@@ -19,10 +23,12 @@ export async function runProfile(out: string): Promise<void> {
     const stem = join(out, 'linux-' + String(i).padStart(2, '0'));
     const trace = stem + '.strace';
     const command = ['strace', '-f', '-qq', '-v', '-X', 'raw', '-xx', '-s', '1048576', '-o', trace];
+    if (cfg.annotate) command.splice(1, 0, '-y');
     for (const injection of cfg.injections || []) {
       command.push('-e', 'inject=' + injection);
     }
     command.push('--', '/payload', ...cfg.argv.slice(1));
+    if (cfg.memory_kib) command.unshift('/bin/sh', '-c', 'ulimit -v ' + String(Math.floor(cfg.memory_kib)) + ' && exec "$@"', 'sh');
     const started = performance.now();
     const result = await capture(command, { env: { PATH: '/bin:/usr/bin', LC_ALL: 'C', LANG: 'C', TZ: 'UTC' }, input: hexBytes(cfg.stdin_hex), holdStdin: true, timeout: 10 });
     writeFileSync(stem + '.stdout', result.stdout);

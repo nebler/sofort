@@ -3,8 +3,14 @@ import { join } from 'node:path';
 import { check, sha } from './lib.ts';
 
 export const BASE = 0x400000;
+// brk heap floor: small images keep HEAP = 0x680000 and mmap at HEAP + 1.5 MiB.
 export const LIMIT = 0x680000;
 export const STACK = 0x1e00000;
+// PT_LOAD admission bound: any placement in the user window that still leaves the
+// 1.5 MiB brk heap and a 4 MiB mmap arena below STACK (prepare re-checks with the
+// archive). A higher image base (scriptc/Zig link at 0x1000000) pads the flat
+// payload with unmapped zero pages below it; heap and mmap stay above the image.
+export const IMAGE_END = STACK - 0x180000 - 0x400000;
 interface Node {
   name: Buffer;
   parent: number;
@@ -99,7 +105,7 @@ export function pack(bytes: Buffer): { flat: Buffer; meta: Metadata } {
     const ms = u64(bytes, p + 40);
     const align = bytes.readBigUInt64LE(p + 48);
     check((flags & 3) !== 3, 'W+X segment forbidden');
-    check(BASE <= va && va <= va + ms && va + ms <= LIMIT && fs <= ms && offset + fs <= bytes.length, 'segment outside payload arena');
+    check(BASE <= va && va <= va + ms && va + ms <= IMAGE_END && fs <= ms && offset + fs <= bytes.length, 'segment outside payload arena');
     check(align === 0n || align === 1n || ((align & (align - 1n)) === 0n && BigInt(va - offset) % align === 0n), 'invalid segment alignment');
     if (ms === 0) {
       continue;

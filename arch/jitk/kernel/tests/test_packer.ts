@@ -1,16 +1,16 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { pack, archive } from '../packer.ts';
+import { pack, archive, IMAGE_END } from '../packer.ts';
 import { check } from '../lib.ts';
 
-function elf(second = 0x401000, flags = 6): Buffer {
+function elf(second = 0x401000, flags = 6, base = 0x400000, size = 64): Buffer {
   const bytes = Buffer.alloc(8192);
   Buffer.from([127, 69, 76, 70, 2, 1, 1]).copy(bytes);
   bytes.writeUInt16LE(2, 16);
   bytes.writeUInt16LE(183, 18);
   bytes.writeUInt32LE(1, 20);
-  bytes.writeBigUInt64LE(0x400100n, 24);
+  bytes.writeBigUInt64LE(BigInt(base + 0x100), 24);
   bytes.writeBigUInt64LE(64n, 32);
   bytes.writeUInt16LE(64, 52);
   bytes.writeUInt16LE(56, 54);
@@ -22,8 +22,8 @@ function elf(second = 0x401000, flags = 6): Buffer {
       bytes.writeBigUInt64LE(BigInt(value), at + 8 + index * 8);
     }
   }
-  segment(64, 5, 0, 0x400000, 512, 512);
-  segment(120, flags, 4096, second, 32, 64);
+  segment(64, 5, 0, base, 512, 512);
+  segment(120, flags, 4096, second, 32, size);
   bytes.fill(88, 4096, 4128);
   return bytes;
 }
@@ -46,6 +46,14 @@ check(normal.meta.phdr === 0x400040);
 const noHeader = elf();
 noHeader.writeBigUInt64LE(256n, 72);
 rejects(noHeader, 'header table');
+// scriptc/Zig's stock image base: accepted, zero-padded from 0x400000.
+const stock = pack(elf(0x1001000, 6, 0x1000000));
+check(stock.flat.length === 0xc02000 && stock.flat.subarray(0, 0xc00000).equals(Buffer.alloc(0xc00000)));
+check(stock.flat.subarray(0xc01000, 0xc01020).equals(Buffer.alloc(32, 88)) && stock.meta.phdr === 0x1000040 && stock.meta.entry === 0x1000100);
+// A segment must still leave the brk heap and the 4 MiB mmap arena below the stack.
+pack(elf(0x401000, 6, 0x400000, IMAGE_END - 0x401000));
+rejects(elf(0x401000, 6, 0x400000, IMAGE_END - 0x401000 + 1), 'outside payload arena');
+rejects(elf(0x401000, 6, 0x3ff000), 'outside payload arena');
 const real = pack(readFileSync(resolve(import.meta.dirname, '../payload/qjs')));
 check(real.flat.length > 2000000 && real.meta.physical_base === '0x80080000');
 const temporary = mkdtempSync(join(tmpdir(), 'jitk-packer-'));
@@ -81,4 +89,4 @@ try {
 } finally {
   rmSync(links, { recursive: true, force: true });
 }
-console.log('7 packer/archive tests passed');
+console.log('10 packer/archive tests passed');

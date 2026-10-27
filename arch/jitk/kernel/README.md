@@ -93,7 +93,10 @@ sh /absolute/copied-kernel/build.sh --features grow-trace
 <30000 bytes. It overrides all default qjs arguments. `JITK_SCRIPT` replaces only
 the default qjs -e argument. For a copy without sibling protocol/, set an explicit
 argv or script. `JITK_ELF` defaults to payload/qjs; static ET_EXEC AArch64 only,
-PT_LOAD VAs in [0x400000,0x680000], entry executable and PHDR table loaded.
+PT_LOAD VAs in [0x400000, IMAGE_END = 0x1880000] (the image must leave the 1.5 MiB brk heap
+and a 4 MiB mmap arena below 0x1e00000), entry executable and PHDR table loaded. A
+higher base, such as scriptc/Zig's default 0x1000000, is padded with unmapped zero pages
+from 0x400000; heap and mmap stay above the image, so the arena shrinks by the padding.
 W+X and ANY page-sharing between PT_LOAD segments are rejected (including RX/RW).
 Nonconforming executables must be relinked; there is no runtime relocation/parser.
 

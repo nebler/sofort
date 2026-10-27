@@ -11,9 +11,10 @@ make -C arch/jitk/scriptc-corpus test     # parser/classifier/split/embedding in
 make -C arch/jitk/scriptc-corpus report   # RESULTS.md from the completed journal
 make -C arch/jitk/scriptc-corpus audit    # journal/summary/CSV/pin consistency
 make -C arch/jitk/scriptc-corpus heldout  # trusted-gate held-out run
+make -C arch/jitk/scriptc-corpus rerun ARGS="--from full --id ID --kernel DIR [--selection visible|heldout] [--layout stock] [--uses SYSCALL]"
 ```
 
-Results: [`RESULTS.md`](RESULTS.md). Compiler findings: [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md).
+Results: [`RESULTS.md`](RESULTS.md); phase-2 grown kernel: [`RESULTS-PHASE2.md`](RESULTS-PHASE2.md). Compiler findings: [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md).
 
 `census` and `run` both execute the complete build → Linux/Node → ENOSYS
 experiments → canonical packer/VM pipeline. Completed receipts are resumed;

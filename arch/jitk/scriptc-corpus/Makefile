@@ -1,11 +1,11 @@
 SCRIPTC := node_modules/.bin/scriptc
 ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
 export ZIG
-.PHONY: build census run test report fallback audit heldout
+.PHONY: build census run test report fallback audit heldout rerun
 $(SCRIPTC): package-lock.json package.json
 	npm ci --no-audit --no-fund
 build: .work/bin/census .work/bin/oracle .work/bin/fallback
-.work/bin/census: census.ts lib.ts guest.ts guest-output.ts node-reference.ts zig-link.sh $(SCRIPTC)
+.work/bin/census: census.ts lib.ts guest.ts guest-output.ts node-reference.ts zig-link.sh ../kernel/packer.ts $(SCRIPTC)
 	mkdir -p .work/bin
 	$(SCRIPTC) build census.ts -o $@
 .work/bin/oracle: oracle.ts lib.ts $(SCRIPTC)
@@ -24,7 +24,7 @@ test: build
 	$(SCRIPTC) build report.ts -o $@
 report: .work/bin/report
 	.work/bin/report
-.work/bin/fallback: fallback.ts allocator-probe.ts lib.ts guest.ts guest-output.ts $(SCRIPTC)
+.work/bin/fallback: fallback.ts allocator-probe.ts lib.ts guest.ts guest-output.ts ../kernel/packer.ts $(SCRIPTC)
 	mkdir -p .work/bin
 	$(SCRIPTC) build fallback.ts -o $@
 fallback: build
@@ -34,6 +34,13 @@ fallback: build
 	$(SCRIPTC) build audit.ts -o $@
 audit: .work/bin/audit
 	.work/bin/audit
+.work/bin/phase2-report: phase2-report.ts lib.ts $(SCRIPTC)
+	mkdir -p .work/bin
+	$(SCRIPTC) build phase2-report.ts -o $@
+# jitk-only rerun of a completed census on another kernel tree, e.g.
+# ARGS="--from full --id grown-heldout --kernel DIR --selection heldout".
+rerun: build
+	.work/bin/census rerun $(ARGS)
 # Trusted-gate held-out run; never expose its seed, journal or names to a proposer.
 heldout: build
 	.work/bin/census run --id heldout --selection heldout $(ARGS)

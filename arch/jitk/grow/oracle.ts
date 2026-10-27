@@ -9,6 +9,9 @@ export interface OracleOptions {
   injections?: string[];
   data?: Buffer;
   resources?: string;
+  annotate?: boolean;
+  // Linux calibration with the guest's memory capacity (KiB of address space).
+  memoryKib?: number;
 }
 export type Oracle = (elf: string, argv: string[], out: string, expected: Buffer | null, options?: OracleOptions) => Promise<Outcome[]>;
 
@@ -16,7 +19,7 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
   check(existsSync(join(ROOT, 'build/oracle-profile')) && statSync(join(ROOT, 'build/oracle-profile')).isFile(), 'build the native oracle driver with make build');
   out = resolve(out);
   mkdirSync(out, { recursive: true });
-  dump(join(out, 'oracle-config.json'), { argv, expected_hex: expected === null ? null : expected.toString('hex'), stdin_hex: (options.data ?? Buffer.from('ping\n')).toString('hex'), samples: options.samples ?? 1, injections: options.injections || [] });
+  dump(join(out, 'oracle-config.json'), { argv, expected_hex: expected === null ? null : expected.toString('hex'), stdin_hex: (options.data ?? Buffer.from('ping\n')).toString('hex'), samples: options.samples ?? 1, injections: options.injections || [], annotate: options.annotate === true, memory_kib: options.memoryKib ?? 0 });
   const info = await run(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{json .}}']);
   writeFileSync(join(out, 'oracle-image.json'), info.stdout);
   const container = 'jitk-08-' + process.pid + '-' + Date.now();
