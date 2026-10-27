@@ -11,12 +11,9 @@ test-kvm:
 	cargo +stable build --release --locked --offline --bin real
 	JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" cargo +stable test --locked --offline --lib -- --ignored
 
-SCRIPTC := node_modules/.bin/scriptc
-ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
-SOURCES := $(wildcard *.ts)
+include ../tools/pin.mk
+SOURCES := $(wildcard *.ts) $(TSLIB_SOURCES)
 .PHONY: build build-linux clean
-$(SCRIPTC): package.json package-lock.json
-	npm ci --no-audit --no-fund
 build: build/mac/shard-tools
 build-linux: build/linux/shard-tools
 	$(MAKE) -C ../kernel .work/linux/prepare .work/linux/build-args

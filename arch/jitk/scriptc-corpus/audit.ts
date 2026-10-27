@@ -62,6 +62,6 @@ check(manifest.count === summary.total, 'selection count differs');
 check(manifest.runner === sha(readFileSync(join(root, 'census.ts'))), 'runner changed after evidence');
 check(manifest.oracle === sha(readFileSync(join(work, 'bin/oracle'))), 'driver changed after evidence');
 check(manifest.reference === sha(readFileSync(join(root, 'node-reference.ts'))), 'reference changed after evidence');
-check(manifest.compiler === sha(readFileSync(join(root, 'node_modules/.bin/scriptc'))), 'compiler changed after evidence');
+check(manifest.compiler === sha(readFileSync(join(root, '../tools/node_modules/.bin/scriptc'))), 'compiler changed after evidence');
 check(manifest.seedCommitment === sha(readFileSync(join(work, 'split-seed'))), 'private split seed changed');
 console.log('audit ok: ' + rows.length + ' unique receipts; ' + publicNames.length + ' visible CSV rows; pins and counts agree');

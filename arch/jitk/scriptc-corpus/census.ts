@@ -26,7 +26,7 @@ interface Row {
   stockLoader?: string; guestDivergent?: string[]; guestBlocking?: string[]; cause?: string;
 }
 const env = environment();
-const compiler = join(ROOT, 'node_modules/.bin/scriptc');
+const compiler = join(ROOT, '../tools/node_modules/.bin/scriptc');
 let index = 0;
 let limit = Infinity;
 let filter = '';
@@ -202,7 +202,7 @@ async function program(name: string): Promise<void> {
     const buildEnv = environment();
     buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
     buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
-    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, 'node_modules/@scriptc/runtime-linux-arm64-musl');
+    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
     if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
     // Keep compiler/cache writes local and bounded; program sources stay exact.
     buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
@@ -419,7 +419,7 @@ async function rerunProgram(base: Row, target: string, kernel: string, benign: s
     const buildEnv = environment();
     buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
     buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
-    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, 'node_modules/@scriptc/runtime-linux-arm64-musl');
+    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
     if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
     buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
     const args = [compiler, 'build', join(CORPUS, base.name), '-o', elf];

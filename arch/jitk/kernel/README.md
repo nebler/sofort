@@ -215,8 +215,9 @@ QuickJS's bootstrap already exposes `std`/`os` (`qjs --std`), so submitted
 code can read resources with `std.loadFile`. No guest API was added or widened.
 `tests/fs_bench.ts` measures size/boot/footprint. See `RESULTS-fs.md`.
 
-Native tooling is pinned to scriptc 0.4.5 in `../docs/package.json`. Run
-`make tools` to compile the tools under `.work/bin/`. See `PORT-PARITY.md`
+Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
+shared helpers in `../tslib/`. Run `make tools` to compile the tools under
+`.work/bin/`. See `PORT-PARITY.md`
 and `SCRIPTC-GAPS.md` for parity coverage and platform details.
 
 `make linux-tools` cross-compiles static aarch64 musl executables for the

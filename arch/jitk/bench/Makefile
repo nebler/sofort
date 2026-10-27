@@ -1,11 +1,8 @@
 .DEFAULT_GOAL := build
 .PHONY: build test bench smoke clean
-SCRIPTC := node_modules/.bin/scriptc
-SOURCES := $(wildcard *.ts ledger/*.ts hyperlight/*.ts)
+include ../tools/pin.mk
+SOURCES := $(wildcard *.ts ledger/*.ts hyperlight/*.ts) $(TSLIB_SOURCES)
 PROGRAMS := analysis-test gate run watchdog test-child load-monitor recertify ledger ledger-report ledger-verify ledger-waves hvf-control hyperlight-analyze hyperlight-bench hyperlight-build parity
-
-$(SCRIPTC): package.json package-lock.json
-	npm ci --no-audit --no-fund
 
 build/native.o: native.c
 	mkdir -p build

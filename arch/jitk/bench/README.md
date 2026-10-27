@@ -120,8 +120,9 @@ that no quiet pass was possible. All observations and cleanup state are retained
 ## TypeScript implementation
 
 Every former Python entrypoint is compiled by the locally pinned scriptc 0.4.5.
-`package.json` and `package-lock.json` pin the compiler; `make build` installs it
-with `npm ci` when needed. Native executables do not require Node or Python.
+`../tools/package.json` and `package-lock.json` pin the compiler for all of
+arch/jitk; `make build` installs it there with `npm ci` when needed. Shared
+helpers (process, JSON, hashing, CPython PRNG) come from `../tslib/`. Native executables do not require Node or Python.
 The existing `executor.mjs` adapter still requires the explicitly selected Node.
 
 | Former entrypoint | Compiled entrypoint, relative to this directory |

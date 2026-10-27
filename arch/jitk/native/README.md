@@ -2,8 +2,9 @@
 
 A TypeScript executable compiled by **scriptc 0.4.5**, with no runtime npm
 dependencies. The only package dependency is the exactly pinned compiler and
-its platform package in `package-lock.json`. Node is used to drive builds,
-canonical test clients and benchmarks; it is not spawned by the product.
+its platform package, shared by arch/jitk in `../tools/package-lock.json`.
+Node is used to drive builds, canonical test clients and benchmarks; it is
+not spawned by the product.
 
 The Node product in `../executor` and `../mcp` remains canonical and unchanged.
 This directory does not make native the default. Linux shard/ring execution
@@ -14,10 +15,10 @@ the existing schema and returns UNSUPPORTED on Mac.
 
 ```sh
 cd arch/jitk/native
-npm ci
+npm ci --prefix ../tools   # the arch/jitk scriptc pin (../tools/package-lock.json)
 # If your npm disabled the compiler's postinstall, explicitly install its binary:
-npm rebuild scriptc
-./node_modules/.bin/scriptc --version  # 0.4.5
+npm rebuild --prefix ../tools scriptc
+../tools/node_modules/.bin/scriptc --version  # 0.4.5
 node build.mjs
 export JITK_VMM_BINARY=/tmp/jitk-r8/vmm-mac/jitk-vmm
 export JITK_KERNEL_IMAGE=/absolute/path/to/arch/jitk/kernel/dist/kernel.bin

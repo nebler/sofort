@@ -1,7 +1,7 @@
 # Linux TypeScript port parity
 
 Baseline: parent of `96c09e93`, 2026-10-26. scriptc and the arm64 musl runtime
-are pinned to 0.4.5 in package.json and package-lock.json. Mac arm64 builds use
+are pinned to 0.4.5 in ../tools/package.json and package-lock.json. Mac arm64 builds use
 clang; static Linux aarch64 builds use zig 0.16.0. Linux requires no Node.
 No Rust source was changed. Raw logs, transferred binaries and reports remain
 outside Git. `JITK_RECORD=1` and output.sh's READY/evidence rules are unchanged.

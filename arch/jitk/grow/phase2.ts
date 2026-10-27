@@ -66,10 +66,10 @@ export function seedPrograms(csv: string, target: string, count = SEED_PROGRAMS)
 async function compileProgram(name: string, elf: string): Promise<void> {
   const zig = process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig';
   const env: Record<string, string> = { ...SAFE_ENV, PATH: dirname(zig) + ':' + (process.env.PATH || '/usr/bin:/bin'), HOME: process.env.HOME || '/tmp',
-    SCRIPTC_TARGET: 'aarch64-linux-musl', SCRIPTC_RUNTIME_PACK: join(CORPUS_ROOT, 'node_modules/@scriptc/runtime-linux-arm64-musl'),
+    SCRIPTC_TARGET: 'aarch64-linux-musl', SCRIPTC_RUNTIME_PACK: join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl'),
     SCRIPTC_LINKER: join(CORPUS_ROOT, 'zig-link.sh'), SCRIPTC_CACHE_DIR: join(CORPUS_WORK, 'cache'), ZIG: zig };
   const source = join(CORPUS_WORK, 'source');
-  const result = await capture([join(CORPUS_ROOT, 'node_modules/.bin/scriptc'), 'build', join(source, 'tests/corpus', name), '-o', elf], { cwd: source, env, timeout: 60 });
+  const result = await capture([join(ROOT, '../tools/node_modules/.bin/scriptc'), 'build', join(source, 'tests/corpus', name), '-o', elf], { cwd: source, env, timeout: 60 });
   check(result.returncode === 0 && existsSync(elf), 'corpus compile failed: ' + name + ' ' + result.stderr.toString().slice(0, 400));
 }
 

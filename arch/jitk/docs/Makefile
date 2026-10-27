@@ -1,5 +1,5 @@
 TS_TOOLS := delegate.ts count-loc.ts test_delegate.ts test_receipts.ts
-include scriptc.mk
+include ../tools/scriptc.mk
 .PHONY: test
 test: tools
 	$(MAKE) -C ../protocol tools

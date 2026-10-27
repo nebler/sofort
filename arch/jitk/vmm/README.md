@@ -151,6 +151,7 @@ Clippy and rustfmt components for Rust 1.95.0 are required. The gate includes
 `-D warnings -D clippy::undocumented_unsafe_blocks`; the seccomp-only probe
 allows unused launcher APIs locally because it intentionally excludes the CLI.
 
-Native tooling is pinned to scriptc 0.4.5 in `../docs/package.json`. Run
-`make tools` to compile the tools under `.work/bin/`. See `PORT-PARITY.md`
+Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
+shared helpers in `../tslib/`. Run `make tools` to compile the tools under
+`.work/bin/`. See `PORT-PARITY.md`
 and `SCRIPTC-GAPS.md` for parity coverage and platform details.
