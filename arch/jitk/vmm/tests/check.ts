@@ -1,11 +1,11 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { platform } from 'node:os';
-import { argument, capture, check, dump, output, run, Session, sha, sleep } from '../lib.ts';
+import { argument, capture, check, defaultBinary, defaultImages, defaultProfile, dump, output, run, Session, sha, sleep } from '../lib.ts';
 const root = process.env.JITK_VMM_ROOT || resolve(import.meta.dirname, '..');
-const binary = argument('binary', '/tmp/jitk-01/r3/' + platform() + '/jitk-vmm');
-const images = resolve(argument('images', '/tmp/jitk-01/r3/images'));
-const profile = argument('profile', '/tmp/jitk-01/r3/jitk.sbbin');
+const binary = argument('binary', defaultBinary());
+const images = resolve(argument('images', defaultImages()));
+const profile = argument('profile', defaultProfile());
 let kernel = argument('kernel');
 if (!kernel) {
   kernel = join(images, 'kernel.bin');

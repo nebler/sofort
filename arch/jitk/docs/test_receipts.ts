@@ -2,13 +2,15 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statS
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { check, capture, environment, run } from './lib.ts';
+import { requireArtifact } from '../tslib/deps.ts';
 const root = resolve(import.meta.dirname, '..');
 const env = environment();
 delete env.JITK_RECORD;
 let count = 0;
 let work = mkdtempSync(join(tmpdir(), 'jitk-receipts-'));
 try {
-  const node = process.env.JITK_NODE;
+  // Explicit JITK_NODE, else the deps cache; missing is an error, not a skip.
+  const node = requireArtifact('JITK_NODE');
   if (node) {
     for (const name of ['build.mjs', 'dispatcher.ts', 'dispatcher.js', 'vectors.json']) {
       cpSync(join(root, 'protocol', name), join(work, name));
@@ -28,8 +30,6 @@ try {
       check(readFileSync(path).equals(before));
     }
     count += 1;
-  } else {
-    console.log('SKIP protocol receipt test: set JITK_NODE to a verified absolute Node >=24');
   }
 } finally {
   rmSync(work, { recursive: true, force: true });

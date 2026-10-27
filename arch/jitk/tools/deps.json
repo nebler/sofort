@@ -1,0 +1,20 @@
+{
+  "comment": "Pinned external inputs that `make -C arch/jitk deps` (tools/deps.ts) builds into the jitk cache. See README.md, 'Clean clone'.",
+  "node": {
+    "version": "24.22.1",
+    "url": "https://nodejs.org/dist/v{version}/node-v{version}-{platform}.tar.gz",
+    "tarball_sha256": {
+      "darwin-arm64": "89c682593d76cd44233fa53b1563264e7de9cbb189cad169135c5b4fadfbc0a7",
+      "linux-arm64": "33c37be234ba8bee041961047b19160f4d7d0f164e8e246f78bdd10feff148b3"
+    },
+    "darwin_signed_name": "node-real",
+    "darwin_signed_sha256": "df969da390dce1b230f7d23ab2892b5d7b994ae4a7107b6f434a97068b73f11e"
+  },
+  "hyperlight_js": {
+    "repository": "https://github.com/hyperlight-dev/hyperlight-js.git",
+    "commit": "8d208af8ac3ca53f2069c9ef0ca6a45d89e032d7"
+  },
+  "hyperlight_toolchain": "nightly-2026-10-20",
+  "hyperlight_targets": ["aarch64-unknown-none"],
+  "vmm_toolchain": "1.95.0"
+}

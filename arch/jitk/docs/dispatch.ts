@@ -2,6 +2,7 @@ import { existsSync, lstatSync, readFileSync, realpathSync, statSync, unlinkSync
 import { isAbsolute, join, resolve, dirname, extname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { check, output, capture, environment } from './lib.ts';
+import { cacheDefaults, requireArtifact } from '../tslib/deps.ts';
 
 export const ROOT = resolve(import.meta.dirname, '..');
 
@@ -13,9 +14,10 @@ export function gitSnapshot(root: string): string[] {
   ].map(args => output(['git', '-C', root, ...args]));
 }
 
+// JITK_NODE when set, else the pinned Node from `make -C arch/jitk deps`.
 function nodeBinary(): string {
-  const node = process.env.JITK_NODE || '';
-  check(isAbsolute(node) && existsSync(node) && statSync(node).isFile(), 'jitk: set JITK_NODE to a verified absolute Node >=24 executable; see executor/README.md');
+  const node = requireArtifact('JITK_NODE');
+  check(isAbsolute(node) && existsSync(node) && statSync(node).isFile(), 'jitk: JITK_NODE must be a verified absolute Node >=24 executable (or unset for the deps cache); see executor/README.md');
   return node;
 }
 
@@ -59,8 +61,9 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
       unlinkSync(modules);
     }
     const node = nodeBinary();
-    const npm = realpathSync(process.env.JITK_NPM_CLI || output(['/bin/sh', '-c', 'command -v npm']).trim());
-    check(extname(npm) === '.js' && lstatSync(npm).isFile(), 'jitk: locked dependency install needs absolute JITK_NODE >=24 and JITK_NPM_CLI pointing to npm-cli.js; see executor/README.md');
+    // The npm bundled with the pinned Node (same install), unless overridden.
+    const npm = realpathSync(requireArtifact('JITK_NPM_CLI'));
+    check(extname(npm) === '.js' && lstatSync(npm).isFile(), 'jitk: locked dependency install needs JITK_NPM_CLI pointing to npm-cli.js (or unset for the deps cache); see executor/README.md');
     commands = [[node, npm, 'ci', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', process.env.JITK_NPM_CACHE || join(tmpdir(), 'jitk-npm-cache')]];
   } else if (subtree === 'linux' && ['nested', 'test'].includes(action) && existsSync(join(directory, 'run.sh'))) {
     commands = [['/bin/bash', join(directory, 'run.sh'), '--nested']];
@@ -82,7 +85,9 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
     throw new Error(`jitk: no ${action} entrypoint in ${subtree}; see ${readme}; expected Makefile target '${action}' or ${action}.sh`);
   }
   console.log(`jitk: delegating ${subtree}/${action} (see ${readme})`);
-  const env = environment();
+  // Unset artifact variables default to the deps cache for every subtree;
+  // explicit values are kept.
+  const env = { ...environment(), ...cacheDefaults() };
   if (subtree === 'protocol' && env.JITK_NODE) {
     env.NODE = env.JITK_NODE;
   }

@@ -1,7 +1,9 @@
 #!/bin/sh
 set -eu
 cd "$(dirname "$0")"
-TASK_NODE=${JITK_NODE:?Set JITK_NODE to an absolute Node >=24 executable}
+# Unset artifact variables (node, VMM, Hyperlight) default to the deps cache.
+if [ -x ../tools/.work/bin/deps ]; then eval "$(../tools/.work/bin/deps env)"; fi
+TASK_NODE=${JITK_NODE:?Set JITK_NODE to an absolute Node >=24 executable, or run make -C arch/jitk deps}
 case "$TASK_NODE" in /*) ;; *) echo 'JITK_NODE must be an absolute Node >=24 executable (PATH node may be a Vite+ shim)' >&2; exit 2;; esac
 "$TASK_NODE" -e 'if(Number(process.versions.node.split(".")[0])<24)throw Error("Node >=24 required")'
 "$TASK_NODE" node_modules/typescript/bin/tsc -p tsconfig.json

@@ -1,9 +1,9 @@
 import { mkdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { argument, check, dump, environment, median, output, run } from '../lib.ts';
-const binary = argument('binary', '/tmp/jitk-01/r3/darwin/jitk-vmm');
-const profile = argument('profile', '/tmp/jitk-01/r3/jitk.sbbin');
-const image = argument('image', '/tmp/jitk-01/r3/images/first.bin');
+import { dirname, join, resolve } from 'node:path';
+import { argument, check, defaultBinary, defaultImages, defaultProfile, dump, environment, median, output, run } from '../lib.ts';
+const binary = argument('binary', defaultBinary());
+const profile = argument('profile', defaultProfile());
+const image = argument('image', join(defaultImages(), 'first.bin'));
 const n = Number(argument('n', '30'));
 const destination = argument('out', resolve(import.meta.dirname, '..', process.env.JITK_RECORD === '1' ? 'evidence' : '.work', 'sandbox-macos.json'));
 interface Sample { apply_ns: number; prepare_and_apply_ns: number; wall_ns: number; uptime: string }

@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { check, equal, now, clockNS, readJSON, sha, command, median } from './lib.ts';
 import { start, poll, read, write, close, wait, sleep, usage, childrenCPU, pollMany, type Child } from './native.ts';
 import { kill, killDescendants } from './processes.ts';
+import { cachePath } from '../tslib/deps.ts';
 
 // Paths are anchored to source, never the invocation directory or binary name.
 export const HERE = resolve(import.meta.dirname);
@@ -272,7 +273,7 @@ export function files(folder: string): string[] {
 }
 function artifact(value: string | null, env: string, candidates: string[], label: string): string {
   const path = value || process.env[env] || candidates.find(p => existsSync(p) && statSync(p).isFile());
-  check(path && existsSync(path) && statSync(path).isFile(), label + ' missing; build it inside ' + ROOT + ' or set ' + env + '/explicit CLI override');
+  check(path && existsSync(path) && statSync(path).isFile(), label + ' missing; run make -C arch/jitk deps build, or set ' + env + '/explicit CLI override');
   return realpathSync(path);
 }
 export interface SelectionConfig {
@@ -287,7 +288,7 @@ export interface SelectionConfig {
 }
 export function choose(args: SelectionConfig): Frame {
   const image = artifact(args.image, 'JITK_IMAGE', [join(ROOT, 'kernel/dist/kernel.bin'), join(ROOT, 'kernel/build/kernel.bin')], 'kernel image');
-  const vmm = artifact(args.vmm, 'JITK_VMM_BINARY', [join(ROOT, 'vmm/build/jitk-vmm'), join(ROOT, 'vmm/target/release/jitk-vmm')], 'VMM');
+  const vmm = artifact(args.vmm, 'JITK_VMM_BINARY', [cachePath('JITK_VMM_BINARY'), join(ROOT, 'vmm/build/jitk-vmm'), join(ROOT, 'vmm/target/release/jitk-vmm')], 'VMM');
   const selection: Frame = { kernel_source: args.image || process.env.JITK_IMAGE ? 'explicit override' : 'canonical kernel', vmm_source: args.vmm || process.env.JITK_VMM_BINARY ? 'explicit override' : 'canonical VMM' };
   const scratch = args.scratch_dir || process.env.JITK_BENCH_TMP || tmpdir();
   mkdirSync(scratch, { recursive: true });

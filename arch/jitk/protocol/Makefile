@@ -1,4 +1,5 @@
-NODE ?= /tmp/jitk-09/node-real
+include ../tools/deps.mk
+NODE ?= $(call jitk_artifact,JITK_NODE)
 .PHONY: build test vm hostile
 build:
 	$(NODE) build.mjs
