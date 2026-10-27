@@ -41,12 +41,15 @@ export function normalizeAuto(hex: string, rules: string[]): string {
   }).join('\n')).toString('hex');
 }
 
-export function learn(refs: Outcome[]): Learned {
+// identities: labels (text before '=') already seen to vary in another split of the
+// same target; their positive values are identities here too, so one split cannot
+// pin a value (a pid, an address) that only happened to repeat in its two runs.
+export function learn(refs: Outcome[], identities: string[] = []): Learned {
   check(refs.length === 2 && refs.every((r) => r.exit === 0 && r.stderr_hex === ''), 'two clean oracle calibrations required');
   const a = Buffer.from(refs[0].stdout_hex, 'hex').toString().split('\n'), b = Buffer.from(refs[1].stdout_hex, 'hex').toString().split('\n');
   check(a.length === b.length, 'unstable oracle observation shape');
   const rules = a.map((line, i) => {
-    if (line === b[i]) return 'exact';
+    if (line === b[i] && !(/^[\w-]+=[1-9]\d*$/.test(line) && identities.includes(line.split('=')[0]))) return 'exact';
     if (/^[\w-]+=[1-9]\d*$/.test(line) && /^[\w-]+=[1-9]\d*$/.test(b[i]) && line.split('=')[0] === b[i].split('=')[0]) return 'positive';
     check(/^[\da-f]+$/.test(line) && /^[\da-f]+$/.test(b[i]) && line.length === b[i].length, 'unhandled nondeterminism');
     let mask = '';
@@ -56,4 +59,14 @@ export function learn(refs: Outcome[]): Learned {
   const expected = { stdout_hex: normalizeAuto(refs[0].stdout_hex, rules), stderr_hex: '', exit: 0 };
   check(normalizeAuto(refs[1].stdout_hex, rules) === expected.stdout_hex, 'calibration disagreement');
   return { rules, expected };
+}
+
+// Labels whose positive values varied between calibrations in any split.
+export function varyingIdentities(learned: Learned[], outputs: Outcome[]): string[] {
+  const labels = new Set<string>();
+  learned.forEach((l, k) => {
+    const lines = Buffer.from(outputs[k].stdout_hex, 'hex').toString().split('\n');
+    l.rules.forEach((rule, i) => { if (rule === 'positive') labels.add(lines[i].split('=')[0]); });
+  });
+  return Array.from(labels).sort();
 }

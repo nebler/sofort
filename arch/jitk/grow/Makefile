@@ -72,3 +72,7 @@ experiments: build
 
 clean:
 	-rm -r build .scriptc
+
+build/phase2: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build phase2-main.ts -o $@

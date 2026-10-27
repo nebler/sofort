@@ -60,12 +60,15 @@ export function collectCalls(name: string, traces: string[]): TraceCall[] {
         const decoded = arg.text.replace(/\\x([\da-fA-F]{2})/g, (_m: string, h: string) => String.fromCharCode(parseInt(h, 16)));
         if (decoded.includes('/') || decoded.startsWith('"file:')) { arg.kind = 'path'; arg.value = decoded; }
       }
-      // Rebind addresses observed as mmap results to a fresh anonymous mapping.
+      // Rebind addresses inside or within 1 MiB of an earlier mmap result (an
+      // address hint next to an existing region, say) to the probe's own fresh
+      // mapping, keeping the signed offset. Absolute oracle addresses would
+      // otherwise pin one process's layout.
       const prefix = readFileSync(path, 'utf8').slice(0, readFileSync(path, 'utf8').indexOf(raw));
       for (let i = 0; i < args.length; i += 1) if (args[i].kind === 'scalar' && /^0x[\da-f]+$/.test(args[i].value) && Number(args[i].value) > 0x100000) {
         const address = Number(args[i].value);
         for (const region of prefix.matchAll(/mmap\([^,]+,\s*(\d+),[^\n]+\)\s+=\s+(0x[\da-f]+)/g)) {
-          if (address >= Number(region[2]) && address < Number(region[2]) + Number(region[1])) { args[i].kind = 'mapped'; args[i].value = String(address - Number(region[2])); }
+          if (address >= Number(region[2]) - 0x100000 && address < Number(region[2]) + Number(region[1]) + 0x100000) { args[i].kind = 'mapped'; args[i].value = String(address - Number(region[2])); }
         }
       }
       if (args.some((arg) => arg.kind === 'unsupported')) continue;

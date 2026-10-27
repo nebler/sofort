@@ -1,7 +1,7 @@
 SCRIPTC := node_modules/.bin/scriptc
 ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
 export ZIG
-.PHONY: build census run test report fallback audit heldout
+.PHONY: build census run test report fallback audit heldout rerun
 $(SCRIPTC): package-lock.json package.json
 	npm ci --no-audit --no-fund
 build: .work/bin/census .work/bin/oracle .work/bin/fallback
@@ -34,6 +34,10 @@ fallback: build
 	$(SCRIPTC) build audit.ts -o $@
 audit: .work/bin/audit
 	.work/bin/audit
+# jitk-only rerun of a completed census on another kernel tree, e.g.
+# ARGS="--from full --id grown-heldout --kernel DIR --selection heldout".
+rerun: build
+	.work/bin/census rerun $(ARGS)
 # Trusted-gate held-out run; never expose its seed, journal or names to a proposer.
 heldout: build
 	.work/bin/census run --id heldout --selection heldout $(ARGS)
