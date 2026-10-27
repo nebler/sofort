@@ -13,7 +13,8 @@ import { check, capture, csvEncode, detail, diskSpace, dump, equal, readJSON, re
 import { ROOT, CANONICAL, build, cleanup, copyKernel, checkHost, hostCommand, processGuest, scratch, selectHost, treeHashes } from './runtime.ts';
 import { emit, generate } from './autoprofile.ts';
 import { learn, normalizeAuto, varyingIdentities, type Learned } from './auto-observe.ts';
-import { oracle, type Oracle } from './oracle.ts';
+import { oracle, requireSameTree, SHARED_TREE_MODE, type Oracle } from './oracle.ts';
+import { removeUnpacked } from '../kernel/packer.ts';
 import { probe, Receipt, validateSource, type Manifest } from './loop.ts';
 import { proposal, validateProposal } from './agent.ts';
 import { retryTransaction, type Feedback } from './retries.ts';
@@ -34,8 +35,11 @@ const GUEST_KIB = 32 * 1024;
 const SCRIPTC_ONLY = ['mmap'];
 const CALIBRATION_GAP_MS = 6000;
 const FIELDS = 'run_id,date,model,cli,spec_level,target,attempt,accepted,rejecting_gate,visible_pass,heldout_pass,mutants_rejected,sqlite_pass,corpus_visible,corpus_visible_new_pass,corpus_visible_regressions,corpus_heldout,corpus_heldout_new_pass,corpus_heldout_regressions,wall_s,cli_calls,handler_lines,human_lines'.split(',');
-interface Fixture { elf: string; resources: string; source: string; oracle: string; learned: Learned }
-interface Plan { target: string; nr: number; fixtures: Fixture[]; hashes: Record<string, string> }
+// tree: SHA-256 of the archive jitk embeds for `resources`; the Linux calibrations
+// ran chrooted into that same tree (oracle.ts shared tree). Compared before every
+// guest result is graded.
+interface Fixture { elf: string; resources: string; source: string; oracle: string; learned: Learned; tree: string }
+interface Plan { target: string; nr: number; fixtures: Fixture[]; hashes: Record<string, string>; oracle_fs?: string }
 interface CorpusRow { name: string; jitk: string; tier: string }
 function arg(argv: string[], flag: string, fallback = ''): string { const i = argv.indexOf(flag); return i < 0 ? fallback : argv[i + 1]; }
 
@@ -47,7 +51,7 @@ const robustOracle: Oracle = async (elf, argv, out, expected, options) => {
   catch (error) {
     if (!/rc=0 timeout/.test(detail(error))) throw error;
     writeFileSync(out + '.child-wait-stall.txt', detail(error).slice(0, 2000));
-    rmSync(out, { recursive: true, force: true });
+    removeUnpacked(out);
     return await oracle(elf, argv, out, expected, options);
   }
 };
@@ -109,7 +113,7 @@ async function prepare(argv: string[]): Promise<void> {
   for (const target of targets) {
     const dest = join(out, target);
     if (existsSync(join(dest, 'plan.json'))) continue;
-    await diskSpace(); rmSync(dest, { recursive: true, force: true }); mkdirSync(dest);
+    await diskSpace(); removeUnpacked(dest); mkdirSync(dest);
     const nr = Number(Object.keys(slots).find((key) => slots[key] === target)); check(Number.isInteger(nr), 'slot required: ' + target);
     // mmap is seeded from scriptc traces only: the native-census traces add Rust
     // std MAP_FIXED guard pages at absolute addresses of another process.
@@ -127,26 +131,29 @@ async function prepare(argv: string[]): Promise<void> {
       // pid numbering) shows up as variation instead of a pinned constant.
       const oraclePath = join(d, 'oracle');
       // Linux runs with the guest's capacity (32 MiB of address space), so a
-      // reservation the guest cannot back fails on both sides.
-      const a = await robustOracle(elf, [target], oraclePath, null, { resources, memoryKib: GUEST_KIB });
+      // reservation the guest cannot back fails on both sides, and on the guest's
+      // file tree: chrooted into the materialised archive of `resources`.
+      const a = await robustOracle(elf, [target], oraclePath, null, { tree: resources, memoryKib: GUEST_KIB });
       // Spaced calibrations: values that change slowly (uptime seconds, load averages
       // refreshed every 5 s) must show up as variation rather than be pinned.
       await new Promise<void>((done) => setTimeout(done, CALIBRATION_GAP_MS));
-      const b = await robustOracle(elf, [target], join(d, 'oracle-2'), null, { resources, memoryKib: GUEST_KIB });
+      const b = await robustOracle(elf, [target], join(d, 'oracle-2'), null, { tree: resources, memoryKib: GUEST_KIB });
       runs.push([a[0], b[0]]);
-      fixtures.push({ elf, resources, source, oracle: oraclePath, learned: learn([a[0], b[0]]) });
+      const tree = readJSON<{ sha256: string }>(join(oraclePath, 'tree.json')).sha256;
+      check(readJSON<{ sha256: string }>(join(d, 'oracle-2/tree.json')).sha256 === tree, 'calibrations ran on different trees');
+      fixtures.push({ elf, resources, source, oracle: oraclePath, learned: learn([a[0], b[0]]), tree });
     }
     // Identity labels that varied in either split are identities in both.
     const identities = varyingIdentities(fixtures.map((f) => f.learned), runs.map((r) => r[0]));
     for (let i = 0; i < fixtures.length; i += 1) {
       const d = join(dest, i ? 'heldout' : 'visible'), f = fixtures[i];
       f.learned = learn(runs[i], identities); dump(join(d, 'expected.json'), f.learned);
-      for (const p of [f.source, f.elf, join(f.resources, 'data.bin'), join(d, 'expected.json'), join(f.oracle, 'linux-summary.json'), join(d, 'oracle-2/linux-summary.json')]) hashes[p] = sha(p);
+      for (const p of [f.source, f.elf, join(f.resources, 'data.bin'), join(d, 'expected.json'), join(f.oracle, 'linux-summary.json'), join(d, 'oracle-2/linux-summary.json'), join(f.oracle, 'tree.json'), join(d, 'oracle-2/tree.json')]) hashes[p] = sha(p);
     }
-    dump(join(dest, 'plan.json'), { target, nr, fixtures, hashes, seeds: sources.map((p) => ({ path: p, sha256: sha(p) })) });
+    dump(join(dest, 'plan.json'), { target, nr, fixtures, hashes, oracle_fs: SHARED_TREE_MODE, seeds: sources.map((p) => ({ path: p, sha256: sha(p) })) });
     console.log('PROFILE', target, profile.visible.length, profile.heldout.length, fixtures.map((f) => f.learned.rules.filter((r) => r !== 'exact').length).join('/'));
   }
-  dump(join(out, 'pins.json'), { source: controllerHashes(), kernel: treeHashes(CANONICAL), disk: await diskSpace(), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), normalization: 'two Linux executions in separate containers, address space limited to the 32 MiB guest; varying positive scalars, byte extents and 8-byte words relaxed; everything else exact' });
+  dump(join(out, 'pins.json'), { source: controllerHashes(), kernel: treeHashes(CANONICAL), disk: await diskSpace(), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), oracle_fs: SHARED_TREE_MODE, oracle_root_sha256: sha(join(ROOT, 'build/oracle-root')), normalization: 'two Linux executions in separate containers, address space limited to the 32 MiB guest; varying positive scalars, byte extents and 8-byte words relaxed; everything else exact' });
 }
 
 // Runs the jitk-only corpus rerun for a kernel tree and returns its rows.
@@ -182,6 +189,7 @@ async function one(argv: string[]): Promise<void> {
   const accepted = resolve(arg(argv, '--accepted')); mkdirSync(accepted, { recursive: true });
   const plan = readJSON<Plan>(join(resolve(arg(argv, '--profiles')), target, 'plan.json'));
   for (const p of Object.keys(plan.hashes)) check(sha(p) === plan.hashes[p], 'sealed generated profile changed');
+  check(plan.oracle_fs === SHARED_TREE_MODE && plan.fixtures.every((f) => typeof f.tree === 'string'), 'profile was not calibrated on the shared tree: refusing to compare');
   // An empty held-out split would make the sealed gate vacuous: fail closed.
   const generated = readJSON<{ heldout: unknown[] }>(join(resolve(arg(argv, '--profiles')), target, 'profile.json'));
   check(generated.heldout.length > 0, 'generated profile has no held-out case: ' + target);
@@ -217,6 +225,7 @@ async function one(argv: string[]): Promise<void> {
       dump(join(out, 'proposal.json'), { path: 'src/syscalls/' + target + '.rs', source });
       writeFileSync(handler, source);
       async function verify(image: string, dest: string, fixture: Fixture): Promise<boolean> {
+        requireSameTree(dirname(image), fixture.tree);
         const result = await processGuest(hostCommand(image), dest); checkHost(result.info, result.err);
         const observed = observe(result.raw); dump(dest + '.observations.json', observed);
         check(!result.info.timeout && observed.trace_complete, 'complete guest protocol required');
@@ -230,6 +239,7 @@ async function one(argv: string[]): Promise<void> {
       for (const wrong of [-38, -123]) {
         writeFileSync(handler, 'pub fn call(_: &[usize]) -> isize {' + wrong + '}');
         const mutant = await r.stage('build_mutant_' + wrong, () => build(work, join(out, 'mutant-' + wrong), hidden.elf, [target], hidden.resources));
+        requireSameTree(dirname(mutant), hidden.tree);
         const result = await processGuest(hostCommand(mutant), join(out, 'mutant-vm-' + wrong)); checkHost(result.info, result.err);
         const observed = observe(result.raw); check(!result.info.timeout && observed.trace_complete, 'crash is not mutation rejection');
         let rejected = false;
@@ -302,6 +312,7 @@ async function replay(argv: string[]): Promise<void> {
         const f = plan.fixtures[i], dest = join(out, h + '-' + (i ? 'heldout' : 'visible'));
         try {
           const image = await build(work, dest, f.elf, [target], f.resources);
+          requireSameTree(dest, f.tree);
           const result = await processGuest(hostCommand(image), dest + '-vm'); checkHost(result.info, result.err);
           const observed = observe(result.raw); check(!result.info.timeout && observed.trace_complete, 'incomplete guest protocol');
           observed.stdout_hex = normalizeAuto(observed.stdout_hex, f.learned.rules);
@@ -341,11 +352,17 @@ async function batch(argv: string[]): Promise<void> {
   const prefix = arg(argv, '--run-id'), out = join(ROOT, 'results', prefix); mkdirSync(out, { recursive: true });
   const accepted = join(out, 'accepted'); mkdirSync(accepted, { recursive: true });
   const targets = arg(argv, '--targets') ? arg(argv, '--targets').split(',') : TARGETS;
-  const pins = { date: new Date().toISOString(), cli: await textCommand(['codex', '--version']), model: MODEL, controller_sha256: controllerHashes(), kernel: treeHashes(CANONICAL), protected: markers(), disk_before: await diskSpace(), vmm_sha256: sha(arg(argv, '--vmm')), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), n_per_target: 1, attempts: 3, spec: 'none', targets };
+  // Tree identity per target and split: the archive both sides were pinned to.
+  const trees: Record<string, string[]> = {};
+  for (const target of targets) {
+    const plan = readJSON<Plan>(join(resolve(arg(argv, '--profiles')), target, 'plan.json'));
+    trees[target] = plan.fixtures.map((f) => f.tree || '');
+  }
+  const pins = { date: new Date().toISOString(), cli: await textCommand(['codex', '--version']), model: MODEL, controller_sha256: controllerHashes(), kernel: treeHashes(CANONICAL), protected: markers(), disk_before: await diskSpace(), vmm_sha256: sha(arg(argv, '--vmm')), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), n_per_target: 1, attempts: 3, spec: 'none', targets, oracle_fs: SHARED_TREE_MODE, oracle_root_sha256: sha(join(ROOT, 'build/oracle-root')), trees };
   const prior = readOr<Record<string, unknown> | null>(join(out, 'pins.json'), null);
   // Gate inputs must not change across a resume. A controller change (batch
   // bookkeeping fixes) is recorded as an amendment with its hashes.
-  if (prior) for (const key of ['kernel', 'protected', 'vmm_sha256', 'oracle_image', 'model']) check(equal(prior[key], (pins as Record<string, unknown>)[key]), 'resume pins changed: ' + key);
+  if (prior) for (const key of ['kernel', 'protected', 'vmm_sha256', 'oracle_image', 'model', 'oracle_fs', 'oracle_root_sha256', 'trees']) check(equal(prior[key], (pins as Record<string, unknown>)[key]), 'resume pins changed: ' + key);
   if (prior && !equal(prior.controller_sha256, pins.controller_sha256)) {
     // An untyped [] fallback is number[] under scriptc; keep this array explicitly typed.
     const amendments: Record<string, unknown>[] = [];
