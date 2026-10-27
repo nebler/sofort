@@ -4,12 +4,14 @@
 //          wait at 1 s, so a lost wakeup is a ~1 s stall
 //   far    raw plus a 1800 s kill timer per child (the old lib.ts capture
 //          shape): a lost wakeup sleeps to that deadline, i.e. hangs
-//   tslib  ../process.ts spawnCapture (keepalive + overall timeout)
+//   track  raw with the child passed to ../process.ts track() (keepalive +
+//          1800 s deadline): far with only the workaround added
+//   tslib  ../process.ts spawnCapture (the shared helper end to end)
 // After each batch "done slow20 slow200 slow900 worst-ms" goes to --progress
 // with a synchronous write, so a watchdog sees progress without loop activity.
 import { spawn, type ChildProcess } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
-import { spawnCapture, startDirect } from '../process.ts';
+import { spawnCapture, startDirect, track } from '../process.ts';
 
 function option(name: string, fallback: string): string {
   const index = process.argv.indexOf('--' + name);
@@ -40,9 +42,12 @@ function start(): ChildProcess {
     : spawn(file, args, { stdio: 'ignore' });
 }
 
-async function raw(far: boolean): Promise<number> {
+async function raw(far: boolean, tracked: boolean): Promise<number> {
   return await new Promise<number>((resolve, reject) => {
     const child = start();
+    if (tracked) {
+      track(child, 1800);
+    }
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (far) {
       timer = setTimeout(() => child.kill('SIGKILL'), 1800 * 1000);
@@ -71,7 +76,7 @@ async function one(): Promise<number> {
   if (mode === 'tslib') {
     return await viaLib();
   }
-  return await raw(mode === 'far');
+  return await raw(mode === 'far', mode === 'track');
 }
 
 // Batch latency buckets: a lost wakeup costs up to the loop's next deadline,
