@@ -1,0 +1,60 @@
+{
+  "note": "Phase-2 grown kernel = canonical arch/jitk/kernel tree at this commit plus these accepted handlers (phase2 assemble). Not a release; kernel/.READY and grow/release.json are unchanged.",
+  "handlers": {
+    "faccessat": {
+      "sha256": "95a45c62498a838818d38902e2c576cca8304c86d0bbc62ea3f0a3a738008d87",
+      "lines": 24,
+      "replaced": null,
+      "transaction": "p2-grow-v2-20261027-faccessat"
+    },
+    "getpid": {
+      "sha256": "3de32c0678ebd93837d8bdfe5906c28a69084987bb7d8b2a680b560629b780f7",
+      "lines": 4,
+      "replaced": null,
+      "transaction": "p2-grow-v2-20261027-getpid"
+    },
+    "getppid": {
+      "sha256": "1e453deeb1d56fd949698280b344f80aad3e5ed9be95007701e29a1309f63574",
+      "lines": 4,
+      "replaced": null,
+      "transaction": "p2-grow-v2-20261027-getppid"
+    },
+    "getpriority": {
+      "sha256": "4a19498ee2a77df8aa0ef55676a65204006627596a4b25d2e7f5701f4cb0e7fe",
+      "lines": 19,
+      "replaced": null,
+      "transaction": "p2-grow-v2-20261027-getpriority"
+    },
+    "getrandom": {
+      "sha256": "4f4b43af23e509970efa2c69313f5d2c11d6e1ba1ee715d7fb0ace3b75a56cc4",
+      "lines": 43,
+      "replaced": null,
+      "transaction": "p2-grow-v2-20261027-getrandom"
+    },
+    "mmap": {
+      "sha256": "5de6f20ecf741c0e8d6cd3c8225f7b462504d7206635c6dd32dc3399b0b3dce8",
+      "lines": 74,
+      "replaced": "9344774b48388212008791a139ed86d73155a01a78b64a3827a4f99b655c59bb",
+      "transaction": "p2-grow-v2-20261027-mmap"
+    },
+    "sysinfo": {
+      "sha256": "76c83070be71573da4ef1eec43f635e132d262989073b39e57cce04bc089cafd",
+      "lines": 26,
+      "replaced": null,
+      "transaction": "p2-grow-v3-20261027-sysinfo"
+    },
+    "uname": {
+      "sha256": "cedbf89ee4658acc32e8e0e29095ee40dae4146a832a8060bb779eb601645288",
+      "lines": 24,
+      "replaced": null,
+      "transaction": "p2-grow-v2-20261027-uname"
+    }
+  },
+  "excluded_accepted": {
+    "chdir": "p2-grow-v2-20261027-chdir",
+    "unlinkat": "p2-grow-v2-20261027-unlinkat",
+    "mkdirat": "p2-grow-v2-20261027-mkdirat",
+    "statfs": "p2-grow-v3-20261027-statfs"
+  },
+  "excluded_reason": "passed every gate but branch on oracle-container paths (/payload, /tmp, data.bin) instead of the jitk archive"
+}

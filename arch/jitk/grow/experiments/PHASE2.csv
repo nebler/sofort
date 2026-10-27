@@ -1,0 +1,29 @@
+run_id,date,model,cli,spec_level,target,attempt,accepted,rejecting_gate,visible_pass,heldout_pass,mutants_rejected,sqlite_pass,corpus_visible,corpus_visible_new_pass,corpus_visible_regressions,corpus_heldout,corpus_heldout_new_pass,corpus_heldout_regressions,wall_s,cli_calls,handler_lines,human_lines
+p2-grow-v2-20261027-mmap,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,mmap,1,1,,1,1,2,1,150,90,0,60,40,0,200.0732390000224,1,74,0
+p2-grow-v2-20261027-getrandom,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrandom,1,1,,1,1,2,1,61,48,0,13,11,0,114.61185699999332,1,43,0
+p2-grow-v2-20261027-uname,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,uname,1,1,,1,1,2,1,44,0,0,7,0,0,78.1726740000248,1,24,0
+p2-grow-v2-20261027-getpid,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,getpid,1,1,,1,1,2,1,130,0,0,31,0,0,159.2081410000324,1,4,0
+p2-grow-v2-20261027-faccessat,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,faccessat,1,1,,1,1,2,1,42,3,0,13,0,0,84.4456289999485,1,24,0
+p2-grow-v2-20261027-sysinfo,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,sysinfo,1,0,heldout_candidate,1,0,0,not_reached,,,,,,,16.84166599994898,1,22,0
+p2-grow-v2-20261027-sysinfo,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,sysinfo,2,0,semantic_error_state_0,0,not_reached,0,not_reached,,,,,,,21.08211100000143,1,24,0
+p2-grow-v2-20261027-sysinfo,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,sysinfo,3,0,heldout_candidate,1,0,0,not_reached,,,,,,,23.757874000012876,1,30,0
+p2-grow-v2-20261027-getpriority,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,getpriority,1,0,heldout_candidate,1,0,0,not_reached,,,,,,,12.628231000006199,1,15,0
+p2-grow-v2-20261027-getpriority,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,getpriority,2,1,,1,1,2,1,1,0,0,1,0,0,58.13156199997663,1,19,0
+p2-grow-v2-20261027-getppid,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,getppid,1,1,,1,1,2,1,42,0,0,7,0,0,72.69226099997759,1,4,0
+p2-grow-v2-20261027-nanosleep,,,,,nanosleep,,0,setup,,,,,,,,,,,,,,
+p2-grow-v2-20261027-unlinkat,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,unlinkat,1,0,heldout_candidate,1,0,0,not_reached,,,,,,,26.702610000014307,1,55,0
+p2-grow-v2-20261027-unlinkat,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,unlinkat,2,1,,1,1,2,1,92,0,0,30,0,0,158.90730800002814,1,73,0
+p2-grow-v2-20261027-mkdirat,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,mkdirat,1,1,,1,1,2,1,78,0,0,25,0,0,141.27349300003053,1,109,0
+p2-grow-v2-20261027-chdir,2026-10-27T01:15:51.257Z,gpt-6.1-sol,codex-cli 0.164.0,none,chdir,1,1,,1,1,2,1,17,0,0,5,0,0,65.26047900003195,1,49,0
+p2-grow-v2-20261027-getrusage,2026-10-27T01:45:55.285Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrusage,1,0,semantic_error_state_0,0,not_reached,0,not_reached,,,,,,,15.346875,1,21,0
+p2-grow-v2-20261027-getrusage,2026-10-27T01:45:55.285Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrusage,2,0,heldout_candidate,1,0,0,not_reached,,,,,,,46.7372689999938,1,26,0
+p2-grow-v2-20261027-getrusage,2026-10-27T01:45:55.285Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrusage,3,0,semantic_error_state_0,0,not_reached,0,not_reached,,,,,,,39.70375199997425,1,34,0
+p2-grow-v2-20261027-statfs,2026-10-27T01:45:55.285Z,gpt-6.1-sol,codex-cli 0.164.0,none,statfs,1,0,heldout_candidate,1,0,0,not_reached,,,,,,,21.69696399998665,1,44,0
+p2-grow-v2-20261027-statfs,2026-10-27T01:45:55.285Z,gpt-6.1-sol,codex-cli 0.164.0,none,statfs,2,0,heldout_candidate,1,0,0,not_reached,,,,,,,37.325756999969485,1,81,0
+p2-grow-v2-20261027-statfs,2026-10-27T01:45:55.285Z,gpt-6.1-sol,codex-cli 0.164.0,none,statfs,3,0,heldout_candidate,1,0,0,not_reached,,,,,,,37.83532400000095,1,99,0
+p2-grow-v3-20261027-sysinfo,2026-10-27T01:52:09.635Z,gpt-6.1-sol,codex-cli 0.164.0,none,sysinfo,1,0,semantic_error_state_26,0,not_reached,0,not_reached,,,,,,,27.94743599998951,1,22,0
+p2-grow-v3-20261027-sysinfo,2026-10-27T01:52:09.635Z,gpt-6.1-sol,codex-cli 0.164.0,none,sysinfo,2,1,,1,1,2,1,7,1,0,1,0,0,53.647524999976156,1,26,0
+p2-grow-v3-20261027-getrusage,2026-10-27T01:52:09.635Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrusage,1,0,semantic_error_state_0,0,not_reached,0,not_reached,,,,,,,14.373264999985695,1,21,0
+p2-grow-v3-20261027-getrusage,2026-10-27T01:52:09.635Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrusage,2,0,heldout_candidate,1,0,0,not_reached,,,,,,,27.543916000008583,1,35,0
+p2-grow-v3-20261027-getrusage,2026-10-27T01:52:09.635Z,gpt-6.1-sol,codex-cli 0.164.0,none,getrusage,3,0,heldout_candidate,1,0,0,not_reached,,,,,,,75.13169199997186,1,56,0
+p2-grow-v3-20261027-statfs,2026-10-27T01:52:09.635Z,gpt-6.1-sol,codex-cli 0.164.0,none,statfs,1,1,,1,1,2,1,4,0,0,0,0,0,50.364417999982834,1,34,0
