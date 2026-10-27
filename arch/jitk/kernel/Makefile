@@ -6,6 +6,7 @@ ring:
 	sh build-ring.sh
 test: build tools bench-gate
 	.work/bin/build-checks
+	.work/bin/arch-lint --self-test
 	$(MAKE) -C ../docs tools
 	$(MAKE) -C ../protocol tools
 	../docs/.work/bin/test_delegate
@@ -24,7 +25,7 @@ fmt: .work/bin/format
 check:
 	sh check.sh
 
-TS_TOOLS := prepare.ts build-args.ts artifact.ts format.ts build-checks.ts refresh-contracts.ts $(wildcard tests/*.ts) $(wildcard results-fs/*.ts) payload/ring-rng/patch.ts
+TS_TOOLS := prepare.ts build-args.ts artifact.ts format.ts build-checks.ts arch-lint.ts refresh-contracts.ts $(wildcard tests/*.ts) $(wildcard results-fs/*.ts) payload/ring-rng/patch.ts
 SCRIPTC_FLAGS := --ffi native-ffi.json
 TS_EXTRA_DEPS := .work/native.o
 include ../tools/scriptc.mk
