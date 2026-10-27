@@ -57,6 +57,20 @@ test('E2 overfit controls evade the lint and narrow one canonical handler each',
   }
 });
 
+test('autoprofile treats a foreign absolute address as an output buffer, not a scalar', async () => {
+  await temporary(async (path) => {
+    const trace = join(path, 'trace');
+    writeFileSync(trace, '10 statfs("\\x2f\\x6d", 0xffffd51e4b40) = -1 ENOENT (No such file or directory)\n10 statfs("\\x2f", {f_type=0x6a656a63}) = 0\n10 mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0x7e1000\n');
+    const calls = collectCalls('statfs', [trace]);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].args[1].kind, 'opaque-output');
+    const profile = autoGenerate('statfs', 43, [trace]);
+    assert.equal(autoSource(profile, profile.visible.concat(profile.heldout)).includes('0xffffd51e4b40'), false);
+    // Small scalars and mmap lengths stay scalars.
+    assert.equal(collectCalls('mmap', [trace])[0].args[1].kind, 'scalar');
+  });
+});
+
 test('autoprofile parses nested trace shapes and ignores incomplete calls', async () => {
   assert.equal(shape('3</data/file>').kind, 'fd');
   assert.equal(shape('{st_size=8192, st_mode=0100444}').kind, 'opaque-output');
