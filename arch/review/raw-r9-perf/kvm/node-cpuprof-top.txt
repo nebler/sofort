@@ -1,0 +1,62 @@
+# Node --cpu-prof (50us) of exloop.mjs: 20+1000 one_tool execute()+drain on ShardBackend (copy-restore shard), nested KVM; self samples by function
+samples=8171 dur_ms=1787.203
+5653	(idle) :-1
+294	poll shard-backend.js:438
+145	parseFrame shard-backend.js:83
+136	(program) :-1
+133	flush shard-backend.js:430
+99	DOMException domexception:71
+92	execute executor.js:1538
+80	(garbage collector) :-1
+79	encode shard-backend.js:212
+68	update hash:133
+45	pp$4.raise acorn.mjs:3828
+44	 shard-backend.js:421
+39	feed shard-backend.js:274
+37	compileForInternalLoader realm:382
+30	compileSourceTextModule utils:315
+30	receive shard-backend.js:654
+28	 exloop.mjs:0
+28	 shard-backend.js:398
+25	getOptions acorn.mjs:436
+23	Parser acorn.mjs:517
+23	dispatch executor.js:1614
+22	decide1 policy.mjs:43
+22	executionBody executor.js:156
+22	kill shard-backend.js:758
+22	walk shard-backend.js:137
+21	pp$9.catchStackOverflow acorn.mjs:772
+20	park shard-backend.js:532
+19	abortSignal abort_controller:432
+19	read :-1
+19	send shard-backend.js:724
+17	send shard-backend.js:337
+16	FastBuffer buffer:955
+15	parse2 executor.js:143
+13	any abort_controller:251
+13	dispatch policy.mjs:79
+13	parse acorn.mjs:684
+13	unenroll node:timers:70
+12	 executor.js:1567
+12	 webidl:339
+12	encodeUtf8String :-1
+12	feed shard-backend.js:651
+12	insert timers:386
+12	parse acorn.mjs:613
+12	pp$8.parseTopLevel acorn.mjs:885
+12	send shard-backend.js:413
+11	record shard-backend.js:379
+11	setTimeout node:timers:114
+10	decode encoding:439
+10	latin1Slice :-1
+10	receive shard-backend.js:519
+10	wordsRegexp acorn.mjs:277
+9	decide policy.mjs:40
+9	dispatchEvent event_target:765
+9	expired executor.js:1552
+9	message shard-backend.js:390
+9	structuredClone :-1
+8	 pool.js:56
+8	copyImpl node:buffer:208
+8	readBigUInt64LE buffer:93
+8	warm pool.js:68

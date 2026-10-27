@@ -1,0 +1,36 @@
+  pid=161345 comm=real private_dirty_kib=1048 anon_kib=1044 pt_kib=96 threads=5
+  pid=161346 comm=real private_dirty_kib=120 anon_kib=120 pt_kib=52 threads=1
+cfg=[T=4] rep=1 total_private_dirty_kib=1168
+  pid=161371 comm=real private_dirty_kib=1048 anon_kib=1044 pt_kib=100 threads=5
+  pid=161372 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=48 threads=1
+cfg=[T=4] rep=2 total_private_dirty_kib=1172
+  pid=161396 comm=real private_dirty_kib=1048 anon_kib=1044 pt_kib=100 threads=5
+  pid=161397 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=52 threads=1
+cfg=[T=4] rep=3 total_private_dirty_kib=1172
+  pid=161421 comm=real private_dirty_kib=1032 anon_kib=1028 pt_kib=84 threads=5
+  pid=161422 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=48 threads=1
+cfg=[T=4 ARENA=1] rep=1 total_private_dirty_kib=1156
+  pid=161446 comm=real private_dirty_kib=1032 anon_kib=1028 pt_kib=72 threads=5
+  pid=161447 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=44 threads=1
+cfg=[T=4 ARENA=1] rep=2 total_private_dirty_kib=1156
+  pid=161471 comm=real private_dirty_kib=1036 anon_kib=1032 pt_kib=72 threads=5
+  pid=161472 comm=real private_dirty_kib=120 anon_kib=120 pt_kib=44 threads=1
+cfg=[T=4 ARENA=1] rep=3 total_private_dirty_kib=1156
+  pid=161496 comm=real private_dirty_kib=488 anon_kib=484 pt_kib=64 threads=2
+  pid=161497 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=48 threads=1
+cfg=[T=1] rep=1 total_private_dirty_kib=612
+  pid=161518 comm=real private_dirty_kib=1004 anon_kib=1000 pt_kib=68 threads=2
+  pid=161519 comm=real private_dirty_kib=120 anon_kib=120 pt_kib=48 threads=1
+cfg=[T=1] rep=2 total_private_dirty_kib=1124
+  pid=161540 comm=real private_dirty_kib=1004 anon_kib=1000 pt_kib=68 threads=2
+  pid=161541 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=52 threads=1
+cfg=[T=1] rep=3 total_private_dirty_kib=1128
+  pid=161563 comm=real private_dirty_kib=1000 anon_kib=996 pt_kib=72 threads=2
+  pid=161565 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=48 threads=1
+cfg=[T=1 ARENA=1] rep=1 total_private_dirty_kib=1124
+  pid=161586 comm=real private_dirty_kib=996 anon_kib=992 pt_kib=64 threads=2
+  pid=161587 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=44 threads=1
+cfg=[T=1 ARENA=1] rep=2 total_private_dirty_kib=1120
+  pid=161607 comm=real private_dirty_kib=1000 anon_kib=996 pt_kib=60 threads=2
+  pid=161609 comm=real private_dirty_kib=124 anon_kib=124 pt_kib=48 threads=1
+cfg=[T=1 ARENA=1] rep=3 total_private_dirty_kib=1124

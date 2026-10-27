@@ -1,0 +1,17 @@
+22:21  up 4 days, 35 mins, 1 user, load averages: 6.08 4.37 3.98
+{"mode":"inproc","n":100,"cpu_us_per_vm":123.5,"wall_us_per_vm":117.3}
+{"mode":"fork","n":100,"ram_mib":32,"touch_kib":0,"child_cpu_us_p50":547,"child_cpu_us_p90":606,"child_minflt_p50":131,"wall_us_per_vm":1089.5}
+{"mode":"spawn","n":100,"ram_mib":32,"touch_kib":0,"child_cpu_us_p50":3159,"child_cpu_us_p90":3467,"child_minflt_p50":507,"wall_us_per_vm":3928.7}
+{"mode":"fork","n":100,"ram_mib":32,"touch_kib":2860,"child_cpu_us_p50":763,"child_cpu_us_p90":849,"child_minflt_p50":309,"wall_us_per_vm":1332.9}
+{"mode":"spawn","n":100,"ram_mib":32,"touch_kib":2860,"child_cpu_us_p50":3445,"child_cpu_us_p90":3758,"child_minflt_p50":685,"wall_us_per_vm":4172.1}
+{"mode":"inproc","n":100,"cpu_us_per_vm":118.5,"wall_us_per_vm":113.1}
+{"mode":"fork","n":100,"ram_mib":32,"touch_kib":0,"child_cpu_us_p50":563,"child_cpu_us_p90":662,"child_minflt_p50":132,"wall_us_per_vm":1122.1}
+{"mode":"spawn","n":100,"ram_mib":32,"touch_kib":0,"child_cpu_us_p50":3195,"child_cpu_us_p90":3495,"child_minflt_p50":507,"wall_us_per_vm":3969.7}
+{"mode":"fork","n":100,"ram_mib":32,"touch_kib":2860,"child_cpu_us_p50":782,"child_cpu_us_p90":930,"child_minflt_p50":309,"wall_us_per_vm":1366.3}
+{"mode":"spawn","n":100,"ram_mib":32,"touch_kib":2860,"child_cpu_us_p50":3619,"child_cpu_us_p90":3961,"child_minflt_p50":685,"wall_us_per_vm":4413.3}
+{"mode":"inproc","n":100,"cpu_us_per_vm":128.1,"wall_us_per_vm":122.4}
+{"mode":"fork","n":100,"ram_mib":32,"touch_kib":0,"child_cpu_us_p50":572,"child_cpu_us_p90":760,"child_minflt_p50":131,"wall_us_per_vm":1162.9}
+{"mode":"spawn","n":100,"ram_mib":32,"touch_kib":0,"child_cpu_us_p50":3371,"child_cpu_us_p90":3746,"child_minflt_p50":507,"wall_us_per_vm":4200.8}
+{"mode":"fork","n":100,"ram_mib":32,"touch_kib":2860,"child_cpu_us_p50":796,"child_cpu_us_p90":916,"child_minflt_p50":309,"wall_us_per_vm":1377.0}
+{"mode":"spawn","n":100,"ram_mib":32,"touch_kib":2860,"child_cpu_us_p50":3677,"child_cpu_us_p90":3991,"child_minflt_p50":685,"wall_us_per_vm":4463.0}
+22:21  up 4 days, 35 mins, 1 user, load averages: 5.91 4.36 3.98

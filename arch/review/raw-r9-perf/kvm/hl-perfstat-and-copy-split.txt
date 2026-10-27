@@ -1,0 +1,46 @@
+== hl restore n=1
+{"event":"environment","pid":164653,"threads":1,"mode":"bench","fixture":"return2","n":1,"loadavg":"1.47 0.48 0.33 1/186 164653","uptime":"136512.46 807093.01","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binut
+{"event":"bench","mode":"restore","fixture":"return2","n":1,"create":{"n":1,"p50_ns":92334,"p99_ns":92334,"mean_ns":92334},"execute":{"n":1,"p50_ns":19899305,"p99_ns":19899305,"mean_ns":19899305},"total":{"n":1,"p50_ns":19991848,"p99_ns":19991848,"mean_ns":19991848},"cpu_ns_per_run":19999000,"wall_n
+135.50,msec,task-clock,135498625,100.00,,
+2136,,kvm:kvm_exit,135498625,100.00,,
+2064,,kvm:kvm_guest_fault,135498625,100.00,,
+40,,kvm:kvm_unmap_hva_range,135498625,100.00,,
+6,,kvm:kvm_mmio,135498625,100.00,,
+773,,raw_syscalls:sys_enter,135498625,100.00,,
+249,,minor-faults,135498625,100.00,,
+== hl restore n=201
+{"event":"environment","pid":164676,"threads":1,"mode":"bench","fixture":"return2","n":201,"loadavg":"1.67 0.54 0.35 2/186 164676","uptime":"136521.11 807109.31","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Bin
+{"event":"bench","mode":"restore","fixture":"return2","n":201,"create":{"n":201,"p50_ns":3215183,"p99_ns":4265521,"mean_ns":3279746},"execute":{"n":201,"p50_ns":19869680,"p99_ns":24010326,"mean_ns":20164304},"total":{"n":201,"p50_ns":23112238,"p99_ns":28517931,"mean_ns":23444387},"cpu_ns_per_run":23
+4816.37,msec,task-clock,4816366943,100.00,,
+73044,,kvm:kvm_exit,4816366943,100.00,,
+70864,,kvm:kvm_guest_fault,4816366943,100.00,,
+840,,kvm:kvm_unmap_hva_range,4816366943,100.00,,
+206,,kvm:kvm_mmio,4816366943,100.00,,
+17173,,raw_syscalls:sys_enter,4816366943,100.00,,
+3247,,minor-faults,4816366943,100.00,,
+== hl clone n=1
+{"event":"environment","pid":164699,"threads":1,"mode":"bench","fixture":"return2","n":1,"loadavg":"1.81 0.61 0.37 1/186 164699","uptime":"136528.68 807139.37","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binut
+{"event":"bench","mode":"clone","fixture":"return2","n":1,"create":{"n":1,"p50_ns":478544,"p99_ns":478544,"mean_ns":478544},"execute":{"n":1,"p50_ns":20374808,"p99_ns":20374808,"mean_ns":20374808},"total":{"n":1,"p50_ns":21289521,"p99_ns":21289521,"mean_ns":21289521},"cpu_ns_per_run":21059000,"wall_
+133.85,msec,task-clock,133850793,100.00,,
+2131,,kvm:kvm_exit,133850793,100.00,,
+2064,,kvm:kvm_guest_fault,133850793,100.00,,
+12,,kvm:kvm_unmap_hva_range,133850793,100.00,,
+6,,kvm:kvm_mmio,133850793,100.00,,
+760,,raw_syscalls:sys_enter,133850793,100.00,,
+235,,minor-faults,133850793,100.00,,
+== hl clone n=201
+{"event":"environment","pid":164718,"threads":1,"mode":"bench","fixture":"return2","n":201,"loadavg":"1.81 0.61 0.37 1/185 164718","uptime":"136531.28 807151.24","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Bin
+{"event":"bench","mode":"clone","fixture":"return2","n":201,"create":{"n":201,"p50_ns":462627,"p99_ns":3682601,"mean_ns":561771},"execute":{"n":201,"p50_ns":20212807,"p99_ns":21291479,"mean_ns":20224495},"total":{"n":201,"p50_ns":21071187,"p99_ns":24717621,"mean_ns":21234616},"cpu_ns_per_run":208410
+4293.51,msec,task-clock,4293506077,100.00,,
+73028,,kvm:kvm_exit,4293506077,100.00,,
+70864,,kvm:kvm_guest_fault,4293506077,100.00,,
+412,,kvm:kvm_unmap_hva_range,4293506077,100.00,,
+206,,kvm:kvm_mmio,4293506077,100.00,,
+21161,,raw_syscalls:sys_enter,4293506077,100.00,,
+3635,,minor-faults,4293506077,100.00,,
+== guest/host split, jitk copy-restore return2 201
+copy return2 x2001 user=15 sys=54 guest=11 ticks
+copy return2 x2001 user=12 sys=58 guest=9 ticks
+copy return2 x2001 user=13 sys=61 guest=10 ticks
+
+[exited with code 0]

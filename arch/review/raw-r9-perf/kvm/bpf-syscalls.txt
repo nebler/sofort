@@ -1,0 +1,554 @@
+
+
+@[sudo, 177]: 1
+@[real-copy.sh, 261]: 1
+@[node, 99]: 1
+@[real-proto, 46]: 1
+@[sudo, 160]: 1
+@[MainThread, 210]: 1
+@[MainThread, 129]: 1
+@[unix_chkpwd, 293]: 1
+@[MainThread, 260]: 1
+@[systemd, 9]: 1
+@[kill, 94]: 1
+@[MainThread, 120]: 1
+@[flock, 221]: 1
+@[flock, 48]: 1
+@[sudo, 140]: 1
+@[V8Worker, 56]: 1
+@[flock, 32]: 1
+@[node, 96]: 1
+@[jitk-owner-2, 73]: 1
+@[systemd-udevd, 99]: 1
+@[sleep, 132]: 1
+@[(udev-worker), 173]: 1
+@[MainThread, 279]: 1
+@[jitk-owner-3, 215]: 1
+@[systemd, 206]: 1
+@[sudo, 86]: 1
+@[systemd-udevd, 177]: 1
+@[jitk-owner-3, 56]: 1
+@[jitk-owner-2, 233]: 1
+@[systemd-udevd, 204]: 1
+@[unix_chkpwd, 94]: 1
+@[real-proto, 221]: 1
+@[kill, 293]: 1
+@[kill, 98]: 1
+@[real-proto, 67]: 1
+@[sudo, 91]: 1
+@[real-copy.sh, 173]: 1
+@[sudo, 156]: 1
+@[systemd, 242]: 1
+@[kill, 99]: 1
+@[MainThread, 121]: 1
+@[sudo, 144]: 1
+@[MainThread, 94]: 1
+@[kill, 48]: 1
+@[MainThread, 78]: 1
+@[sudo, 22]: 1
+@[real-copy.sh, 177]: 1
+@[real-copy.sh, 96]: 1
+@[(udev-worker), 278]: 1
+@[real-copy.sh, 278]: 1
+@[MainThread, 123]: 1
+@[V8Worker, 63]: 1
+@[jitk-owner-2, 56]: 1
+@[flock, 260]: 1
+@[sudo, 178]: 1
+@[systemd-udevd, 278]: 1
+@[systemd-journal, 9]: 1
+@[DelayedTaskSche, 59]: 1
+@[kill, 63]: 1
+@[node, 48]: 1
+@[sudo, 17]: 1
+@[kill, 278]: 1
+@[flock, 94]: 1
+@[jitk-owner-0, 123]: 1
+@[real-proto, 172]: 1
+@[(udev-worker), 212]: 1
+@[flock, 261]: 1
+@[DelayedTaskSche, 426]: 1
+@[real-copy.sh, 174]: 1
+@[MainThread, 199]: 1
+@[node, 233]: 1
+@[kill, 261]: 1
+@[unix_chkpwd, 96]: 1
+@[MainThread, 46]: 1
+@[systemd-udevd, 21]: 1
+@[DelayedTaskSche, 63]: 1
+@[sudo, 141]: 1
+@[unix_chkpwd, 64]: 1
+@[systemd, 208]: 1
+@[flock, 134]: 1
+@[(udev-worker), 90]: 1
+@[DelayedTaskSche, 226]: 1
+@[tail, 63]: 1
+@[flock, 278]: 1
+@[real-copy.sh, 293]: 1
+@[MainThread, 220]: 1
+@[systemd, 212]: 1
+@[MainThread, 139]: 1
+@[sudo, 96]: 1
+@[systemd-udevd, 176]: 1
+@[unix_chkpwd, 278]: 1
+@[jitk-owner-2, 123]: 1
+@[real-copy.sh, 99]: 1
+@[unix_chkpwd, 48]: 1
+@[node, 293]: 1
+@[MainThread, 160]: 1
+@[sleep, 215]: 1
+@[systemd-udevd, 175]: 1
+@[real-copy.sh, 221]: 1
+@[systemd-udevd, 220]: 1
+@[systemd-udevd, 167]: 1
+@[jitk-owner-1, 123]: 1
+@[sudo, 293]: 1
+@[sleep, 94]: 1
+@[DelayedTaskSche, 93]: 1
+@[sudo, 20]: 1
+@[(udev-worker), 222]: 1
+@[flock, 220]: 1
+@[systemd-udevd, 434]: 1
+@[real-copy.sh, 172]: 1
+@[flock, 63]: 1
+@[jitk-owner-1, 233]: 1
+@[real-copy.sh, 176]: 1
+@[DelayedTaskSche, 22]: 1
+@[(udev-worker), 207]: 1
+@[jitk-owner-1, 73]: 1
+@[unix_chkpwd, 174]: 1
+@[node, 167]: 1
+@[unix_chkpwd, 261]: 1
+@[jitk-owner-2, 178]: 1
+@[real-copy.sh, 48]: 1
+@[unix_chkpwd, 29]: 1
+@[jitk-owner-3, 73]: 1
+@[flock, 98]: 1
+@[kill, 96]: 1
+@[jitk-owner-3, 123]: 1
+@[jitk-owner-1, 178]: 1
+@[(udev-worker), 264]: 1
+@[(udev-worker), 172]: 1
+@[sudo, 123]: 1
+@[flock, 96]: 1
+@[jitk-owner-1, 56]: 1
+@[systemd, 264]: 1
+@[DelayedTaskSche, 19]: 1
+@[sudo, 129]: 1
+@[MainThread, 178]: 1
+@[flock, 293]: 1
+@[jitk-owner-3, 233]: 1
+@[real-proto, 78]: 1
+@[real-proto, 434]: 1
+@[systemd-udevd, 200]: 1
+@[MainThread, 221]: 1
+@[real-proto, 279]: 1
+@[systemd-journal, 86]: 1
+@[real-proto, 94]: 1
+@[real-copy.sh, 17]: 1
+@[kill, 129]: 1
+@[V8Worker, 214]: 1
+@[unix_chkpwd, 99]: 1
+@[V8Worker, 57]: 1
+@[unix_chkpwd, 44]: 1
+@[jitk-owner-3, 178]: 1
+@[systemd-udevd, 29]: 1
+@[sudo, 173]: 1
+@[sudo, 85]: 1
+@[sudo, 260]: 1
+@[DelayedTaskSche, 20]: 1
+@[jitk-owner-1, 215]: 1
+@[DelayedTaskSche, 135]: 1
+@[DelayedTaskSche, 425]: 1
+@[SignalInspector, 98]: 1
+@[sudo, 44]: 1
+@[systemd-udevd, 63]: 2
+@[systemd-logind, 22]: 2
+@[jitk-owner-3, 132]: 2
+@[sudo, 158]: 2
+@[sudo, 221]: 2
+@[jitk-owner-0, 56]: 2
+@[node, 278]: 2
+@[sh, 139]: 2
+@[(udev-worker), 434]: 2
+@[real-proto, 173]: 2
+@[sh, 221]: 2
+@[real-proto, 96]: 2
+@[unix_chkpwd, 62]: 2
+@[systemd, 209]: 2
+@[systemd-udevd, 424]: 2
+@[gmain, 73]: 2
+@[in:imuxsock, 212]: 2
+@[sudo, 43]: 2
+@[systemd-journal, 22]: 2
+@[sudo, 139]: 2
+@[jitk-owner-2, 132]: 2
+@[(udev-worker), 8]: 2
+@[sudo, 199]: 2
+@[sudo, 146]: 2
+@[sudo, 90]: 2
+@[sudo, 149]: 2
+@[real-copy.sh, 80]: 2
+@[jitk-owner-2, 222]: 2
+@[real-copy.sh, 25]: 2
+@[systemd-logind, 63]: 2
+@[systemd-logind, 207]: 2
+@[jitk-owner-2, 226]: 2
+@[real-copy.sh, 175]: 2
+@[unix_chkpwd, 198]: 2
+@[(udev-worker), 166]: 2
+@[systemd-logind, 178]: 2
+@[unix_chkpwd, 203]: 2
+@[real-proto, 48]: 2
+@[sudo, 175]: 2
+@[systemd-udevd, 78]: 2
+@[systemd-udevd, 35]: 2
+@[MainThread, 17]: 2
+@[sudo, 147]: 2
+@[MainThread, 425]: 2
+@[systemd-udevd, 198]: 2
+@[(udev-worker), 36]: 2
+@[sudo, 166]: 2
+@[in:imuxsock, 98]: 2
+@[real-proto, 24]: 2
+@[real-proto, 178]: 2
+@[rs:main Q:Reg, 64]: 2
+@[sudo, 48]: 2
+@[MainThread, 48]: 2
+@[jitk-owner-1, 222]: 2
+@[jitk-owner-0, 215]: 2
+@[sudo, 278]: 2
+@[systemd-logind, 212]: 2
+@[jitk-owner-0, 132]: 2
+@[real-proto, 29]: 2
+@[systemd-journal, 48]: 2
+@[node, 79]: 2
+@[systemd-journal, 211]: 2
+@[in:imuxsock, 73]: 2
+@[sudo, 172]: 2
+@[systemd-udevd, 207]: 2
+@[sudo, 155]: 2
+@[jitk-owner-1, 226]: 2
+@[sudo, 220]: 2
+@[(udev-worker), 78]: 2
+@[MainThread, 426]: 2
+@[real-copy.sh, 63]: 2
+@[sh, 220]: 2
+@[flock, 23]: 2
+@[jitk-owner-3, 226]: 2
+@[DelayedTaskSche, 233]: 2
+@[MainThread, 165]: 2
+@[systemd-udevd, 211]: 2
+@[MainThread, 20]: 2
+@[systemd-journal, 212]: 2
+@[systemd-journal, 178]: 2
+@[sudo, 436]: 2
+@[jitk-owner-3, 222]: 2
+@[sudo, 132]: 2
+@[flock, 99]: 2
+@[systemd-udevd, 88]: 2
+@[jitk-owner-1, 132]: 2
+@[sudo, 78]: 3
+@[flock, 215]: 3
+@[unix_chkpwd, 25]: 3
+@[systemd, 95]: 3
+@[sudo, 25]: 3
+@[systemd-udevd, 174]: 3
+@[multipathd, 115]: 3
+@[jitk-owner-0, 233]: 3
+@[flock, 214]: 3
+@[real-copy.sh, 57]: 3
+@[sudo, 99]: 3
+@[DelayedTaskSche, 222]: 3
+@[node, 261]: 3
+@[unix_chkpwd, 214]: 3
+@[real-copy.sh, 215]: 3
+@[real-proto, 278]: 3
+@[node, 29]: 3
+@[(udev-worker), 20]: 3
+@[unix_chkpwd, 79]: 3
+@[real-copy.sh, 56]: 3
+@[sudo, 24]: 3
+@[flock, 135]: 3
+@[kill, 214]: 3
+@[kill, 215]: 3
+@[real-copy.sh, 214]: 3
+@[sudo, 59]: 3
+@[sudo, 214]: 3
+@[(udev-worker), 167]: 3
+@[sudo, 159]: 3
+@[(udev-worker), 74]: 3
+@[multipathd, 64]: 3
+@[V8Worker, 123]: 4
+@[(udev-worker), 176]: 4
+@[(udev-worker), 175]: 4
+@[rs:main Q:Reg, 98]: 4
+@[MainThread, 90]: 4
+@[real-proto, 123]: 4
+@[DelayedTaskSche, 98]: 4
+@[(udev-worker), 198]: 4
+@[V8Worker, 178]: 4
+@[V8Worker, 93]: 4
+@[(udev-worker), 177]: 4
+@[systemd-udevd, 209]: 4
+@[MainThread, 24]: 4
+@[real-proto, 132]: 4
+@[(udev-worker), 174]: 4
+@[MainThread, 176]: 4
+@[MainThread, 177]: 4
+@[unix_chkpwd, 167]: 4
+@[sudo, 98]: 4
+@[DelayedTaskSche, 215]: 4
+@[(udev-worker), 21]: 4
+@[sh, 260]: 4
+@[MainThread, 67]: 4
+@[MainThread, 19]: 4
+@[MainThread, 175]: 4
+@[(udev-worker), 22]: 4
+@[systemd, 29]: 4
+@[systemd, 207]: 4
+@[V8Worker, 120]: 4
+@[V8Worker, 121]: 4
+@[systemd-logind, 291]: 4
+@[sudo, 441]: 4
+@[node, 214]: 4
+@[MainThread, 208]: 4
+@[real-proto, 233]: 4
+@[MainThread, 174]: 4
+@[systemd, 56]: 4
+@[(udev-worker), 48]: 4
+@[real-proto, 435]: 5
+@[flock, 226]: 5
+@[DelayedTaskSche, 57]: 5
+@[real-proto, 19]: 5
+@[MainThread, 59]: 5
+@[sudo, 174]: 5
+@[systemd-udevd, 208]: 5
+@[node, 135]: 5
+@[jitk-owner-0, 222]: 5
+@[real-proto, 167]: 5
+@[jitk-owner-0, 226]: 5
+@[systemd-journal, 78]: 5
+@[MainThread, 214]: 5
+@[systemd, 22]: 5
+@[real-copy.sh, 226]: 5
+@[kill, 226]: 5
+@[real-proto, 214]: 6
+@[(udev-worker), 88]: 6
+@[gmain, 27]: 6
+@[real-proto, 293]: 6
+@[(udev-worker), 52]: 6
+@[systemd-udevd, 135]: 6
+@[sudo, 203]: 6
+@[V8Worker, 226]: 6
+@[(udev-worker), 211]: 6
+@[MainThread, 261]: 6
+@[sh, 135]: 6
+@[sudo, 61]: 6
+@[MainThread, 167]: 6
+@[MainThread, 293]: 6
+@[(udev-worker), 135]: 6
+@[(udev-worker), 439]: 6
+@[systemd-udevd, 441]: 6
+@[systemd, 57]: 6
+@[MainThread, 435]: 6
+@[real-proto, 99]: 6
+@[systemd-udevd, 22]: 6
+@[systemd-udevd, 212]: 6
+@[systemd-journal, 57]: 6
+@[sudo, 21]: 6
+@[systemd, 80]: 6
+@[systemd-udevd, 86]: 7
+@[systemd-journal, 56]: 7
+@[sudo, 73]: 7
+@[MainThread, 99]: 7
+@[(udev-worker), 25]: 7
+@[(udev-worker), 64]: 7
+@[real-copy.sh, 134]: 7
+@[systemd-journal, 80]: 7
+@[systemd, 21]: 7
+@[node, 57]: 8
+@[real-copy.sh, 222]: 8
+@[MainThread, 29]: 8
+@[real-proto, 62]: 8
+@[node, 56]: 8
+@[(udev-worker), 208]: 8
+@[sudo, 206]: 8
+@[real-proto, 80]: 8
+@[(udev-worker), 38]: 8
+@[unix_chkpwd, 134]: 8
+@[(udev-worker), 209]: 8
+@[sh, 79]: 8
+@[MainThread, 21]: 8
+@[systemd, 441]: 9
+@[sudo, 207]: 9
+@[systemd, 63]: 9
+@[unix_chkpwd, 215]: 9
+@[sudo, 29]: 9
+@[unix_chkpwd, 63]: 9
+@[real-proto, 261]: 9
+@[unix_chkpwd, 56]: 9
+@[sudo, 198]: 9
+@[unix_chkpwd, 80]: 10
+@[MainThread, 226]: 10
+@[systemd-journal, 63]: 10
+@[node, 177]: 11
+@[node, 90]: 11
+@[(udev-worker), 63]: 11
+@[node, 174]: 11
+@[node, 63]: 11
+@[MainThread, 25]: 11
+@[node, 176]: 11
+@[sudo, 167]: 11
+@[node, 175]: 11
+@[unix_chkpwd, 226]: 11
+@[unix_chkpwd, 57]: 11
+@[systemd-logind, 44]: 12
+@[systemd-udevd, 44]: 12
+@[MainThread, 80]: 12
+@[V8Worker, 135]: 12
+@[systemd-udevd, 61]: 12
+@[real-proto, 291]: 12
+@[systemd-udevd, 178]: 12
+@[real-proto, 215]: 13
+@[real-proto, 134]: 13
+@[systemd-udevd, 25]: 13
+@[real-proto, 25]: 13
+@[node, 215]: 13
+@[node, 226]: 14
+@[node, 172]: 14
+@[real-proto, 226]: 14
+@[node, 80]: 14
+@[systemd, 178]: 14
+@[(udev-worker), 79]: 16
+@[node, 98]: 16
+@[multipathd, 98]: 16
+@[systemd-logind, 80]: 16
+@[systemd-journal, 129]: 16
+@[(udev-worker), 44]: 16
+@[kill, 80]: 17
+@[kill, 57]: 17
+@[sudo, 135]: 17
+@[flock, 80]: 17
+@[real-proto, 135]: 19
+@[sudo, 261]: 19
+@[flock, 57]: 19
+@[node, 25]: 20
+@[sudo, 79]: 20
+@[unix_chkpwd, 222]: 22
+@[V8Worker, 215]: 22
+@[systemd-logind, 56]: 22
+@[flock, 222]: 22
+@[kill, 222]: 22
+@[systemd-logind, 57]: 22
+@[real-proto, 57]: 23
+@[V8Worker, 222]: 24
+@[real-proto, 56]: 24
+@[kill, 56]: 30
+@[node, 134]: 31
+@[flock, 56]: 31
+@[V8Worker, 233]: 31
+@[node, 222]: 33
+@[MainThread, 56]: 34
+@[sudo, 134]: 34
+@[MainThread, 135]: 36
+@[real-proto, 222]: 37
+@[sudo, 62]: 37
+@[sudo, 291]: 40
+@[MainThread, 172]: 42
+@[(udev-worker), 291]: 42
+@[sudo, 226]: 45
+@[MainThread, 57]: 45
+@[MainThread, 291]: 47
+@[sudo, 215]: 49
+@[MainThread, 134]: 63
+@[systemd-journal, 29]: 63
+@[(udev-worker), 80]: 104
+@[sudo, 80]: 106
+@[MainThread, 233]: 108
+@[MainThread, 222]: 111
+@[sudo, 222]: 116
+@[sudo, 63]: 125
+@[systemd-udevd, 79]: 136
+@[sudo, 57]: 139
+@[sudo, 56]: 143
+@[(udev-worker), 57]: 171
+@[(udev-worker), 56]: 176
+@[MainThread, 215]: 212
+@[jitk-owner-0, 178]: 521
+@[MainThread, 98]: 598
+@[systemd-udevd, 291]: 656
+@[systemd-udevd, 80]: 1052
+@[systemd-udevd, 57]: 1442
+@[systemd-udevd, 56]: 1472
+@[V8Worker, 98]: 1503
+@[jitk-owner-0, 73]: 1561
+@[jitk-owner-0, 63]: 2080
+@[jitk-owner-0, 67]: 2080
+@[jitk-owner-0, 291]: 2080
+@[jitk-owner-0, 64]: 2600
+@[MainThread, 64]: 3175
+@[MainThread, 63]: 3710
+@[jitk-owner-0, 113]: 4160
+@[real-proto, 64]: 5201
+@[real-proto, 73]: 5705
+@[real-proto, 63]: 5741
+@[MainThread, 22]: 6183
+@[real-proto, 260]: 9344
+@[jitk-owner-0, 29]: 207226
+@cs[tail]: 1
+@cs[ksoftirqd/3]: 1
+@cs[migration/4]: 1
+@cs[sleep]: 1
+@cs[unix_chkpwd]: 1
+@cs[migration/0]: 1
+@cs[ksoftirqd/5]: 1
+@cs[migration/1]: 1
+@cs[migration/3]: 1
+@cs[migration/5]: 1
+@cs[DelayedTaskSche]: 2
+@cs[systemd-logind]: 2
+@cs[ksoftirqd/1]: 2
+@cs[ksoftirqd/2]: 2
+@cs[SignalInspector]: 2
+@cs[kill]: 2
+@cs[jitk-owner-2]: 2
+@cs[rcu_exp_gp_kthr]: 2
+@cs[flock]: 2
+@cs[kworker/u24:0]: 2
+@cs[gmain]: 2
+@cs[migration/2]: 2
+@cs[jitk-owner-1]: 2
+@cs[ksoftirqd/0]: 2
+@cs[systemd-journal]: 3
+@cs[in:imuxsock]: 3
+@cs[rs:main Q:Reg]: 3
+@cs[kworker/4:0]: 3
+@cs[jitk-owner-3]: 4
+@cs[udev-worker]: 4
+@cs[sh]: 5
+@cs[systemd]: 5
+@cs[kworker/u24:2]: 5
+@cs[kcompactd0]: 6
+@cs[kworker/3:0]: 6
+@cs[kworker/u24:1]: 6
+@cs[kworker/1:2]: 6
+@cs[systemd-udevd]: 6
+@cs[kworker/5:1]: 7
+@cs[multipathd]: 7
+@cs[sudo]: 8
+@cs[kworker/2:1]: 13
+@cs[kworker/1:0]: 16
+@cs[kworker/0:0]: 27
+@cs[bpftrace]: 35
+@cs[rcu_preempt]: 67
+@cs[V8Worker]: 505
+@cs[swapper/0]: 721
+@cs[swapper/1]: 1260
+@cs[jitk-owner-0]: 1570
+@cs[swapper/3]: 1817
+@cs[swapper/2]: 2098
+@cs[swapper/5]: 2157
+@cs[swapper/4]: 2968
+@cs[MainThread]: 3019
+@cs[real-proto]: 5700

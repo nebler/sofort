@@ -1,0 +1,194 @@
+--- /tmp/r9s/proto/mod.rs.orig	2026-10-27 22:12:28
++++ /tmp/r9s/proto/mod.rs	2026-10-27 22:27:40
+@@ -210,9 +210,13 @@
+     pub fn reset(&mut self) -> u64 {
+         let t = Instant::now();
+         self.drain();
++        let cfg = r9_cfg();
+         // Only these verified, host-selected memslots can hold tenant writes.
+         // Immutable pages remain protected in both KVM and the host mapping.
+         for (start, end, writable) in self.snapshot.as_ref().unwrap().class.regions(RAM, CTRL) {
++            if writable && cfg.copy && self.r9_copy_restore(start, end, cfg.limit) {
++                continue;
++            }
+             if writable {
+                 // SAFETY: catalogue extents are page aligned and within this
+                 // stopped slot's live MAP_PRIVATE mapping. No RAM borrow escapes.
+@@ -229,7 +233,15 @@
+             }
+         }
+         self.run.immediate_exit().store(0, Release);
+-        self.restore_regs(&self.snapshot.as_ref().unwrap().regs);
++        if cfg.skip_id {
++            for r in &self.snapshot.as_ref().unwrap().regs {
++                if !r9_invariant(r.id) {
++                    self.set_bytes(r.id, &r.data);
++                }
++            }
++        } else {
++            self.restore_regs(&self.snapshot.as_ref().unwrap().regs);
++        }
+         self.tx = 0;
+         self.rx = 0;
+         self.rx_consumed = 0;
+@@ -239,6 +251,83 @@
+         self.drains = 0;
+         t.elapsed().as_nanos() as u64
+     }
++    /// R9 PROTOTYPE (not product code): restore privately CoW'd pages of one
++    /// writable extent by copying them back from the snapshot, keeping host and
++    /// stage-2 mappings. Falls back to MADV_DONTNEED above `limit` private pages.
++    fn r9_copy_restore(&self, start: usize, end: usize, limit: usize) -> bool {
++        use std::os::unix::fs::FileExt;
++        let pages = (end - start) / 4096;
++        let mut map = vec![0u8; pages * 8];
++        let va = self.ram.ptr as usize + start;
++        R9_PAGEMAP.with(|f| f.read_exact_at(&mut map, (va / 4096 * 8) as u64)).unwrap();
++        let snap = r9_snapshot_map(self.snapshot.as_ref().unwrap());
++        let mut private = Vec::new();
++        for i in 0..pages {
++            let e = u64::from_le_bytes(map[i * 8..i * 8 + 8].try_into().unwrap());
++            // present and not file/shared-anon: a private CoW copy
++            if e >> 63 & 1 == 1 && e >> 61 & 1 == 0 {
++                private.push(i);
++            }
++        }
++        if private.len() > limit {
++            R9_STATS.with(|s| s.borrow_mut().2 += 1);
++            return false;
++        }
++        let mut differing = 0;
++        if std::env::var_os("JITK_R9_PAGES").is_some() {
++            for i in &private {
++                let off = start + i * 4096;
++                // SAFETY: prototype diagnostic; both pages are in live mappings, KVM stopped.
++                let (a, b) = unsafe {
++                    (
++                        std::slice::from_raw_parts(self.ram.ptr.add(off), 4096),
++                        std::slice::from_raw_parts(snap.add(off), 4096),
++                    )
++                };
++                let changed = a.iter().zip(b).filter(|(x, y)| x != y).count();
++                let nz_now = a.iter().filter(|x| **x != 0).count();
++                let nz_snap = b.iter().filter(|x| **x != 0).count();
++                eprintln!("r9page off={off:#x} changed={changed} nonzero_now={nz_now} nonzero_snap={nz_snap}");
++                if std::env::var_os("JITK_R9_DIFFS").is_some() {
++                    // 8-byte words that differ: offset, old, new (little endian)
++                    for w in 0..512 {
++                        let o = &b[w * 8..w * 8 + 8];
++                        let n = &a[w * 8..w * 8 + 8];
++                        if o != n {
++                            eprintln!(
++                                "r9diff off={:#x} old={:#018x} new={:#018x}",
++                                off + w * 8,
++                                u64::from_le_bytes(o.try_into().unwrap()),
++                                u64::from_le_bytes(n.try_into().unwrap())
++                            );
++                        }
++                    }
++                }
++            }
++        }
++        for i in &private {
++            let off = start + i * 4096;
++            // SAFETY: prototype; both ranges are within live mappings, KVM is stopped.
++            unsafe {
++                let dst = self.ram.ptr.add(off);
++                let src = snap.add(off);
++                if libc::memcmp(dst.cast(), src.cast(), 4096) != 0 {
++                    ptr::copy_nonoverlapping(src, dst, 4096);
++                    differing += 1;
++                }
++            }
++        }
++        R9_STATS.with(|s| {
++            let mut s = s.borrow_mut();
++            s.0 += private.len() as u64;
++            s.1 += differing;
++            s.3 += 1;
++            if std::env::var_os("JITK_R9_VERBOSE").is_some() {
++                eprintln!("r9 extent {start:#x} private={} differing={differing}", private.len());
++            }
++        });
++        true
++    }
+     pub fn pristine(&self) -> bool {
+         use std::os::unix::fs::FileExt;
+         let mut page = [0u8; 4096];
+@@ -775,4 +864,76 @@
+             .is_err()
+         );
+     }
++}
++
++// ---- R9 prototype helpers (scratch only) ----
++#[derive(Clone, Copy)]
++struct R9Cfg {
++    copy: bool,
++    skip_id: bool,
++    limit: usize,
++}
++fn r9_cfg() -> R9Cfg {
++    static CFG: std::sync::OnceLock<R9Cfg> = std::sync::OnceLock::new();
++    *CFG.get_or_init(|| {
++        let reset = std::env::var("JITK_R9_RESET").unwrap_or_default();
++        R9Cfg {
++            copy: reset == "copy",
++            skip_id: std::env::var_os("JITK_R9_SKIP_ID").is_some(),
++            limit: std::env::var("JITK_R9_LIMIT")
++                .ok()
++                .and_then(|v| v.parse().ok())
++                .unwrap_or(1 << 20),
++        }
++    })
+ }
++thread_local! {
++    static R9_PAGEMAP: File = File::open("/proc/self/pagemap").unwrap();
++    // (private pages seen, pages copied, fallbacks, extents restored)
++    static R9_STATS: std::cell::RefCell<(u64, u64, u64, u64)> = const { std::cell::RefCell::new((0, 0, 0, 0)) };
++}
++pub fn r9_stats() -> (u64, u64, u64, u64) {
++    R9_STATS.with(|s| *s.borrow())
++}
++fn r9_snapshot_map(s: &Snapshot) -> *const u8 {
++    // One read-only view per snapshot file (keyed by its inode).
++    use std::os::unix::fs::MetadataExt;
++    static MAP: std::sync::Mutex<Vec<(u64, u64, usize)>> = std::sync::Mutex::new(Vec::new());
++    let md = s.memory.metadata().unwrap();
++    let key = (md.dev(), md.ino());
++    let mut m = MAP.lock().unwrap();
++    if let Some(e) = m.iter().find(|e| (e.0, e.1) == key) {
++        return e.2 as *const u8;
++    }
++    let p = (|| {
++        // SAFETY: prototype; read-only shared view of the immutable snapshot file.
++        let p = unsafe {
++            libc::mmap(
++                ptr::null_mut(),
++                RAM,
++                libc::PROT_READ,
++                libc::MAP_SHARED,
++                s.memory.as_raw_fd(),
++                0,
++            )
++        };
++        assert_ne!(p as isize, -1);
++        p as usize
++    })();
++    m.push((key.0, key.1, p));
++    p as *const u8
++}
++/// AArch64 identification registers a guest cannot modify (op0=3, op1=0,
++/// CRn=0, CRm=1..7: the ID_* block; MIDR/REVIDR; CTR_EL0, CLIDR, DCZID).
++/// MPIDR is restored. KVM rejects changed ID values after first run anyway.
++pub fn r9_invariant(id: u64) -> bool {
++    if (id >> 16) & 0xffff != 0x0013 {
++        return false;
++    }
++    let enc = id & 0xffff;
++    let (op0, op1, crn, crm, op2) = (enc >> 14 & 3, enc >> 11 & 7, enc >> 7 & 15, enc >> 3 & 15, enc & 7);
++    (op0 == 3 && op1 == 0 && crn == 0 && crm >= 1)
++        || (op0 == 3 && op1 == 0 && crn == 0 && crm == 0 && (op2 == 0 || op2 == 6))
++        || (op0 == 3 && op1 == 3 && crn == 0 && crm == 0 && (op2 == 1 || op2 == 7))
++        || (op0 == 3 && op1 == 1 && crn == 0 && crm == 0 && op2 == 1)
++}
