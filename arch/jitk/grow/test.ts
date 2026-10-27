@@ -127,6 +127,11 @@ test('autoprofile rebinds addresses near an earlier mapping to the probe mapping
     assert.equal(calls[2].args[0].kind, 'scalar');
     const seed = autoGenerate('mmap', 222, [trace]).visible.find((c) => c.id === 'seed-1')!;
     assert.ok(seed.args[0] === '(mapping+-86016)');
+    // The allocator under test never provides the probe's own buffers.
+    const code = autoSource(autoGenerate('mmap', 222, [trace]), [seed]);
+    assert.ok(code.includes('memory[i]=arena+i*131072') && !code.includes('sys(222,0,786432'));
+    const c = join(path, 'generated.c'); writeFileSync(c, code);
+    await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-fno-builtin', '-c', c, '-o', join(path, 'probe.o')]);
   });
 });
 

@@ -164,11 +164,15 @@ export function generate(name: string, nr: number, traces: string[]): Generated 
 }
 
 export function source(profile: Generated, cases: AutoCase[]): string {
-  let code = PRELUDE + '\nvoid _start(void){\n';
+  // Scaffolding never depends on the syscall under test: when the target is the
+  // probe's own allocator (mmap/munmap), buffers come from static storage, so a
+  // broken candidate yields a wrong observation instead of a crashed probe.
+  const selfHosted = profile.nr === 222 || profile.nr === 215;
+  let code = PRELUDE + (selfHosted ? 'static unsigned char arena[786432] __attribute__((aligned(4096)));\n' : '') + '\nvoid _start(void){\n';
   for (const c of cases) {
     const args = [...c.args]; while (args.length < 6) args.push('0');
     const invoke = 'sys(' + profile.nr + ',' + args.join(',') + ')';
-    code += '{long buffers=sys(222,0,786432,3,34,-1,0);for(unsigned i=0;i<6;i++){memory[i]=(unsigned char*)buffers+i*131072;sys(215,buffers+i*131072+65536,65536,0,0,0,0);}\n';
+    code += selfHosted ? '{for(unsigned i=0;i<6;i++)memory[i]=arena+i*131072;\n' : '{long buffers=sys(222,0,786432,3,34,-1,0);for(unsigned i=0;i<6;i++){memory[i]=(unsigned char*)buffers+i*131072;sys(215,buffers+i*131072+65536,65536,0,0,0,0);}\n';
     code += 'long fd=sys(56,-100,(long)"/data.bin",0,0,0,0);long mapping=sys(222,0,1048576,3,34,-1,0);\n' + c.declarations + '\n';
     code += 'for(unsigned i=0;i<6;i++)for(unsigned j=0;j<65536;j++)memory[i][j]=0xa7;\n';
     if (c.closed) code += 'sys(57,fd,0,0,0,0,0);\n';
@@ -179,7 +183,7 @@ export function source(profile: Generated, cases: AutoCase[]): string {
     if (c.category === 'state' && !c.closed) {
       code += 'for(unsigned i=0;i<6;i++)for(unsigned j=0;j<4096;j++)saved[i][j]=memory[i][j];long r2=' + invoke + ';result("repeat-return",r2);unsigned same=1;for(unsigned i=0;i<6;i++)for(unsigned j=0;j<4096;j++)same&=saved[i][j]==memory[i][j];result("repeat-memory",same);\n';
     }
-    code += 'sys(57,fd,0,0,0,0,0);sys(215,mapping,1048576,0,0,0,0);for(unsigned i=0;i<6;i++)sys(215,(long)memory[i],65536,0,0,0,0);}\n';
+    code += 'sys(57,fd,0,0,0,0,0);sys(215,mapping,1048576,0,0,0,0);' + (selfHosted ? '' : 'for(unsigned i=0;i<6;i++)sys(215,(long)memory[i],65536,0,0,0,0);') + '}\n';
   }
   return code + 'sys(64,1,(long)output,used,0,0,0);sys(94,0,0,0,0,0,0);}\n';
 }
