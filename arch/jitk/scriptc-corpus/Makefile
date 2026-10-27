@@ -2,7 +2,7 @@ include ../tools/pin.mk
 export ZIG
 .PHONY: build census run test report fallback audit heldout rerun
 build: .work/bin/census .work/bin/oracle .work/bin/fallback
-.work/bin/census: census.ts lib.ts $(TSLIB_SOURCES) guest.ts guest-output.ts node-reference.ts zig-link.sh ../kernel/packer.ts $(SCRIPTC)
+.work/bin/census: census.ts writes.ts lib.ts $(TSLIB_SOURCES) guest.ts guest-output.ts node-reference.ts zig-link.sh ../kernel/packer.ts $(SCRIPTC)
 	mkdir -p .work/bin
 	$(SCRIPTC) build census.ts -o $@
 .work/bin/oracle: oracle.ts lib.ts $(TSLIB_SOURCES) $(SCRIPTC)

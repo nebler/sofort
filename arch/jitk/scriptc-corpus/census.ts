@@ -5,6 +5,7 @@ import { capture, run, dump, readJSON, check, environment, copyTree, files, sha 
 import { pack } from '../kernel/packer.ts';
 import { guestStdout } from './guest-output.ts';
 import { guest, stream, identical, errno, embedded, type Stream } from './guest.ts';
+import { writeProfile, MUTATING } from './writes.ts';
 
 const ROOT = resolve(import.meta.dirname);
 const WORK = join(ROOT, '.work');
@@ -500,6 +501,52 @@ async function rerun(): Promise<void> {
   dump(join(WORK, runId + '-summary.json'), summary);
   console.log(JSON.stringify({ run: runId, total: summary.total, completed: summary.completed, jitk: summary.jitk, tiers }));
 }
+// writes: Linux-only filesystem-write profile of the programs a rerun journal
+// (--from) left failing whose census Linux run used a mutating path call. Each
+// program is rebuilt (hash-checked against the census ELF), run once in the
+// census Linux environment (fresh writable cwd, /tmp tmpfs) and its trace
+// summarised (writes.ts); trace and ELF are deleted. Rows stay in .work.
+async function writes(): Promise<void> {
+  check(/^[a-zA-Z0-9_-]+$/.test(fromId) && existsSync(join(WORK, fromId + '.jsonl')) && /^[a-zA-Z0-9_-]+$/.test(runId) && runId !== 'full', 'writes needs --from <rerun id> and a fresh --id');
+  check(Number.isInteger(workers) && workers >= 1 && workers <= 2, 'at most two oracle workers');
+  await prepare();
+  diskBefore = await disk();
+  const census = new Map(latestRows('full').map(r => [r.name, r]));
+  const selected = latestRows(fromId).filter(r => r.jitk !== 'pass' && r.jitk !== 'elf-drift' && (census.get(r.name)?.syscalls || []).some(c => MUTATING.includes(c))).sort((a, b) => a.name.localeCompare(b.name)).slice(0, limit);
+  JOURNAL = join(WORK, runId + '.jsonl');
+  const done = new Set(existsSync(JOURNAL) ? readFileSync(JOURNAL, 'utf8').trim().split('\n').filter(Boolean).map(l => (JSON.parse(l) as { name: string }).name) : []);
+  const todo = selected.filter(r => !done.has(r.name));
+  console.log('writes=' + runId + ' from=' + fromId + ' selected=' + selected.length + ' remaining=' + todo.length);
+  let next = 0;
+  const tasks: Promise<void>[] = [];
+  for (let w = 0; w < workers; w++) tasks.push((async () => {
+    while (next < todo.length) {
+      const row = todo[next++];
+      const dir = join(WORK, 'jobs', hash('writes\0' + row.name).slice(0, 16));
+      rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true }); chmodSync(dir, 0o777);
+      const result: Record<string, unknown> = { name: row.name, held: row.held, tier: row.tier, jitk: row.jitk, cause: row.cause || '' };
+      try {
+        const elf = join(dir, 'program');
+        const buildEnv = environment();
+        buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
+        buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
+        buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
+        buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
+        buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
+        const args = [compiler, 'build', join(CORPUS, row.name), '-o', elf];
+        if (inputs(row.name).split('\n', 2).includes('// @optimization: speed')) args.push('--optimization', 'speed');
+        const build = await capture(args, { cwd: SOURCE, env: buildEnv, timeout: 40 });
+        check(build.returncode === 0 && !build.timeout && existsSync(elf) && sha(readFileSync(elf)) === census.get(row.name)?.elf, 'rebuilt ELF differs from the census ELF');
+        await linux(elf, join(dir, 'linux'));
+        result.status = readJSON<Status>(join(dir, 'linux/status.json'));
+        result.profile = writeProfile(readFileSync(join(dir, 'linux/trace'), 'utf8'), join(dir, 'cwd'));
+      } catch (e) { result.error = String(e).slice(0, 500); }
+      finally { appendFileSync(JOURNAL, JSON.stringify(result) + '\n'); rmSync(dir, { recursive: true, force: true }); }
+    }
+  })());
+  for (const r of await Promise.allSettled(tasks)) check(r.status === 'fulfilled', 'worker failed');
+  await disk();
+}
 async function main(): Promise<void> {
   mode = process.argv[2] || 'census';
   for (let i = 3; i < process.argv.length; i += 2) {
@@ -536,9 +583,12 @@ async function main(): Promise<void> {
     check(divergent(['mmap:-22', 'mmap:-12', 'rt_sigaction:-38'], ['mmap:-12']).join(',') === 'mmap:-22', 'divergent errors');
     const flat = Buffer.from('payload-bytes');
     check(embedded(Buffer.concat([Buffer.alloc(0x80000), flat]), flat) && !embedded(Buffer.concat([Buffer.alloc(0x80000), Buffer.from('stale-payload')]), flat), 'payload embedding check');
+    const w = writeProfile('1 mkdirat(AT_FDCWD, "/tmp/scriptc-x", 0700) = 0\n1 openat(AT_FDCWD, "/tmp/scriptc-x/a", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3\n1 write(3, "hello", 5) = 5\n1 write(1, "out", 3) = 3\n1 close(3) = 0\n1 write(3, "x", 1) = 1\n1 mkdirat(AT_FDCWD, "tmp-1-payload", 0777) = 0\n1 mkdirat(AT_FDCWD, "tmp-1-payload", 0777) = -1 EEXIST (File exists)\n1 unlinkat(AT_FDCWD, "/w/cwd/tmp-1-payload", AT_REMOVEDIR) = 0\n1 newfstatat(AT_FDCWD, "/", {}, 0) = 0\n', '/w/cwd');
+    check(w.dirs === 2 && w.files === 1 && w.removed === 1 && w.bytes === 5 && w.peakOpen === 1 && w.where.tmp === 2 && w.where.cwd === 2 && w.errors['mkdirat:EEXIST'] === 1 && w.related.newfstatat === 1, 'write profile');
     console.log('ok'); return;
   }
   if (mode === 'rerun') { await rerun(); return; }
+  if (mode === 'writes') { await writes(); return; }
   check(mode === 'census' || mode === 'run' || mode === 'report', 'expected census/run/report/rerun/test');
   check(Number.isInteger(workers) && workers >= 1 && workers <= 2, 'at most two oracle workers (one slot reserved for grow)');
   check(['all', 'visible', 'heldout'].includes(selection), 'invalid selection');
