@@ -32,6 +32,7 @@ const SEED_PROGRAMS = 3;
 const GUEST_KIB = 32 * 1024;
 // Targets seeded from scriptc corpus traces only.
 const SCRIPTC_ONLY = ['mmap'];
+const CALIBRATION_GAP_MS = 6000;
 const FIELDS = 'run_id,date,model,cli,spec_level,target,attempt,accepted,rejecting_gate,visible_pass,heldout_pass,mutants_rejected,sqlite_pass,corpus_visible,corpus_visible_new_pass,corpus_visible_regressions,corpus_heldout,corpus_heldout_new_pass,corpus_heldout_regressions,wall_s,cli_calls,handler_lines,human_lines'.split(',');
 interface Fixture { elf: string; resources: string; source: string; oracle: string; learned: Learned }
 interface Plan { target: string; nr: number; fixtures: Fixture[]; hashes: Record<string, string> }
@@ -128,6 +129,9 @@ async function prepare(argv: string[]): Promise<void> {
       // Linux runs with the guest's capacity (32 MiB of address space), so a
       // reservation the guest cannot back fails on both sides.
       const a = await robustOracle(elf, [target], oraclePath, null, { resources, memoryKib: GUEST_KIB });
+      // Spaced calibrations: values that change slowly (uptime seconds, load averages
+      // refreshed every 5 s) must show up as variation rather than be pinned.
+      await new Promise<void>((done) => setTimeout(done, CALIBRATION_GAP_MS));
       const b = await robustOracle(elf, [target], join(d, 'oracle-2'), null, { resources, memoryKib: GUEST_KIB });
       runs.push([a[0], b[0]]);
       fixtures.push({ elf, resources, source, oracle: oraclePath, learned: learn([a[0], b[0]]) });
@@ -148,11 +152,15 @@ async function prepare(argv: string[]): Promise<void> {
 // Runs the jitk-only corpus rerun for a kernel tree and returns its rows.
 // Held-out names and results stay in the corpus .work journal and receipts.
 async function corpus(kernel: string, id: string, selection: string, filter: string[], limit: number, out: string): Promise<CorpusRow[]> {
+  // A transaction id is fresh; leftovers come only from an interrupted transaction.
+  for (const stale of [id + '.jsonl', id + '-manifest.json', id + '-summary.json', id + '-disk-before.txt', 'kernel-' + id]) rmSync(join(CORPUS_WORK, stale), { recursive: true, force: true });
   const command = [CENSUS, 'rerun', '--from', 'full', '--id', id, '--kernel', kernel, '--selection', selection, '--workers', '2', '--targets', 'target-phase2', '--limit', String(limit), ...filter];
   const result = await capture(command, { cwd: CORPUS_ROOT, env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', ZIG: process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig', JITK_VMM_BINARY: process.env.JITK_VMM_BINARY || '' }, timeout: 3600 });
   writeFileSync(out + '.log', Buffer.concat([result.stdout, result.stderr]));
   check(result.returncode === 0, 'corpus rerun failed: ' + id);
-  const rows = readFileSync(join(CORPUS_WORK, id + '.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line) as CorpusRow);
+  // No program of this split uses the target: the rerun selects nothing and writes no journal.
+  const path = join(CORPUS_WORK, id + '.jsonl');
+  const rows = !existsSync(path) ? [] : readFileSync(path, 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line) as CorpusRow);
   for (const extra of ['kernel-' + id]) rmSync(join(CORPUS_WORK, extra), { recursive: true, force: true });
   rmSync(join(CORPUS_WORK, 'findings-' + id), { recursive: true, force: true });
   return rows;
@@ -307,6 +315,27 @@ async function replay(argv: string[]): Promise<void> {
   dump(join(out, 'grades.json'), grades);
 }
 
+// One CSV row per attempt of a finished transaction.
+export function attemptRows(id: string, target: string, tx: string, date: string, cli: string): Record<string, unknown>[] {
+  const rows: Record<string, unknown>[] = [];
+  const report = readJSON<{ accepted: boolean; attempts: Feedback[] }>(join(tx, 'report.json'));
+  for (const a of report.attempts) {
+    const d = join(tx, 'attempt-' + a.attempt), stages = readOr<Record<string, { passed: boolean }>>(join(d, 'stages.json'), {});
+    const visible = Object.keys(stages).filter((s) => s.startsWith('semantic_error_state_'));
+    const source = readOr<{ source: string }>(join(d, 'agent.json'), { source: '' }).source;
+    const cv = readOr<{ total?: number; newPass?: number; regressions?: unknown[] }>(join(d, 'corpus-visible.json'), {});
+    const ch = readOr<{ total?: number; newPass?: number; regressions?: number }>(join(d, 'corpus-heldout.json'), {});
+    rows.push({ run_id: id, date, model: MODEL, cli, spec_level: 'none', target, attempt: a.attempt, accepted: Number(a.accepted), rejecting_gate: a.accepted ? '' : a.gate,
+      visible_pass: visible.length === 30 ? Number(visible.every((s) => stages[s].passed)) : visible.some((s) => !stages[s].passed) ? 0 : 'not_reached',
+      heldout_pass: stages.heldout_candidate ? Number(stages.heldout_candidate.passed) : 'not_reached', mutants_rejected: readOr<unknown[]>(join(d, 'mutations.json'), []).length,
+      sqlite_pass: stages.unchanged_sqlite ? Number(stages.unchanged_sqlite.passed) : 'not_reached',
+      corpus_visible: cv.total ?? '', corpus_visible_new_pass: cv.newPass ?? '', corpus_visible_regressions: cv.regressions ? cv.regressions.length : '',
+      corpus_heldout: ch.total ?? '', corpus_heldout_new_pass: ch.newPass ?? '', corpus_heldout_regressions: ch.regressions ?? '',
+      wall_s: a.wall_s, cli_calls: existsSync(join(d, 'agent-mode.json')) ? 1 : 0, handler_lines: source ? source.trimEnd().split('\n').length : 0, human_lines: 0 });
+  }
+  return rows;
+}
+
 async function batch(argv: string[]): Promise<void> {
   check(argv.includes('--validate-only'), '--validate-only required');
   const prefix = arg(argv, '--run-id'), out = join(ROOT, 'results', prefix); mkdirSync(out, { recursive: true });
@@ -314,12 +343,25 @@ async function batch(argv: string[]): Promise<void> {
   const targets = arg(argv, '--targets') ? arg(argv, '--targets').split(',') : TARGETS;
   const pins = { date: new Date().toISOString(), cli: await textCommand(['codex', '--version']), model: MODEL, controller_sha256: controllerHashes(), kernel: treeHashes(CANONICAL), protected: markers(), disk_before: await diskSpace(), vmm_sha256: sha(arg(argv, '--vmm')), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), n_per_target: 1, attempts: 3, spec: 'none', targets };
   const prior = readOr<Record<string, unknown> | null>(join(out, 'pins.json'), null);
-  if (prior) for (const key of ['controller_sha256', 'kernel', 'protected', 'vmm_sha256', 'oracle_image', 'model']) check(equal(prior[key], (pins as Record<string, unknown>)[key]), 'resume pins changed: ' + key);
+  // Gate inputs must not change across a resume. A controller change (batch
+  // bookkeeping fixes) is recorded as an amendment with its hashes.
+  if (prior) for (const key of ['kernel', 'protected', 'vmm_sha256', 'oracle_image', 'model']) check(equal(prior[key], (pins as Record<string, unknown>)[key]), 'resume pins changed: ' + key);
+  if (prior && !equal(prior.controller_sha256, pins.controller_sha256)) {
+    // An untyped [] fallback is number[] under scriptc; keep this array explicitly typed.
+    const amendments: Record<string, unknown>[] = [];
+    if (Array.isArray(prior.amendments)) for (const item of prior.amendments as Record<string, unknown>[]) amendments.push(item);
+    amendments.push({ date: pins.date, controller_sha256: pins.controller_sha256, note: arg(argv, '--amendment', 'controller changed between resumes') });
+    prior.amendments = amendments; prior.controller_sha256 = pins.controller_sha256; dump(join(out, 'pins.json'), prior);
+  }
   if (!prior) dump(join(out, 'pins.json'), pins);
-  const rows: Record<string, unknown>[] = readOr(join(out, 'rows.json'), []);
+  const rows = readOr<Record<string, unknown>[]>(join(out, 'rows.json'), []);
   for (const target of targets) {
     const id = prefix + '-' + target, dest = join(ROOT, 'results', id), tx = join(dest, 'tx-' + target);
-    if (existsSync(join(tx, 'report.json')) && !existsSync(join(tx, 'paused.json')) && rows.some((r) => r.run_id === id)) continue;
+    // A finished transaction is adopted (rows recorded once), never re-run.
+    if (existsSync(join(tx, 'report.json')) && !existsSync(join(tx, 'paused.json'))) {
+      if (!rows.some((r) => r.run_id === id)) { for (const row of attemptRows(id, target, tx, pins.date, pins.cli)) rows.push(row); dump(join(out, 'rows.json'), rows); }
+      continue;
+    }
     if (existsSync(dest)) rmSync(dest + '-interrupted', { recursive: true, force: true });
     if (existsSync(dest)) { await run(['mv', dest, dest + '-interrupted-' + Date.now()]); for (let i = rows.length - 1; i >= 0; i -= 1) if (rows[i].run_id === id) rows.splice(i, 1); }
     const disk = await diskSpace();
@@ -330,20 +372,7 @@ async function batch(argv: string[]): Promise<void> {
     dump(join(dest, 'experiment.json'), { command, model: MODEL, returncode: result.returncode, disk_before: disk, disk_after: await diskSpace() });
     if (!existsSync(join(tx, 'report.json'))) { console.log(target, 'SETUP-FAILED', result.stderr.toString().slice(-600)); rows.push({ run_id: id, target, accepted: 0, rejecting_gate: 'setup' }); dump(join(out, 'rows.json'), rows); continue; }
     const report = readJSON<{ accepted: boolean; attempts: Feedback[] }>(join(tx, 'report.json'));
-    for (const a of report.attempts) {
-      const d = join(tx, 'attempt-' + a.attempt), stages = readOr<Record<string, { passed: boolean }>>(join(d, 'stages.json'), {});
-      const visible = Object.keys(stages).filter((s) => s.startsWith('semantic_error_state_'));
-      const source = readOr<{ source: string }>(join(d, 'agent.json'), { source: '' }).source;
-      const cv = readOr<{ total?: number; newPass?: number; regressions?: unknown[] }>(join(d, 'corpus-visible.json'), {});
-      const ch = readOr<{ total?: number; newPass?: number; regressions?: number }>(join(d, 'corpus-heldout.json'), {});
-      rows.push({ run_id: id, date: pins.date, model: MODEL, cli: pins.cli, spec_level: 'none', target, attempt: a.attempt, accepted: Number(a.accepted), rejecting_gate: a.accepted ? '' : a.gate,
-        visible_pass: visible.length === 30 ? Number(visible.every((s) => stages[s].passed)) : visible.some((s) => !stages[s].passed) ? 0 : 'not_reached',
-        heldout_pass: stages.heldout_candidate ? Number(stages.heldout_candidate.passed) : 'not_reached', mutants_rejected: readOr<unknown[]>(join(d, 'mutations.json'), []).length,
-        sqlite_pass: stages.unchanged_sqlite ? Number(stages.unchanged_sqlite.passed) : 'not_reached',
-        corpus_visible: cv.total ?? '', corpus_visible_new_pass: cv.newPass ?? '', corpus_visible_regressions: cv.regressions ? cv.regressions.length : '',
-        corpus_heldout: ch.total ?? '', corpus_heldout_new_pass: ch.newPass ?? '', corpus_heldout_regressions: ch.regressions ?? '',
-        wall_s: a.wall_s, cli_calls: existsSync(join(d, 'agent-mode.json')) ? 1 : 0, handler_lines: source ? source.trimEnd().split('\n').length : 0, human_lines: 0 });
-    }
+    for (const row of attemptRows(id, target, tx, pins.date, pins.cli)) rows.push(row);
     dump(join(out, 'rows.json'), rows); writeFileSync(join(out, 'PHASE2.csv'), csvEncode(rows, FIELDS));
     console.log(target, report.accepted ? 'PASS' : existsSync(join(tx, 'paused.json')) ? 'PAUSED' : 'FAIL');
     check(!existsSync(join(tx, 'paused.json')), 'paused on rate limit: resume the batch later without reducing N');
@@ -359,5 +388,6 @@ export async function main(argv: string[]): Promise<void> {
   else if (argv[0] === 'batch') await batch(argv);
   else if (argv[0] === 'replay') await replay(argv);
   else if (argv[0] === 'assemble') await assemble(argv);
+  else if (argv[0] === 'rows') console.log(JSON.stringify(attemptRows(arg(argv, '--id'), arg(argv, '--target'), resolve(arg(argv, '--tx')), '', '')));
   else throw new Error('phase2 traces|prepare|one|batch|replay|assemble; one/batch require --validate-only');
 }

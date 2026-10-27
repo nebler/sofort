@@ -106,12 +106,14 @@ function base(call: TraceCall, id: string): AutoCase {
       observations.push('bytes((unsigned char*)array' + i + ',' + items.length * 8 + ');');
     } else {
       args.push('(long)memory[' + i + ']');
+      // The written bytes are printed only when touched: the guest observer drops
+      // blank lines, so an empty extent must not produce an empty line.
       // first[] holds the call's effect over fill 0xa7 and memory[] that of an
       // identical call over fill 0x5c. A written byte equal to one fill differs
       // from the other, so "touched" has no single-sentinel blind spot.
       const written = 'first[' + i + '][j]!=0xa7||memory[' + i + '][j]!=0x5c';
       if (arg.kind === 'bytes') observations.push('if(r>0){unsigned n=r<64?r:64;unsigned changed=0;for(unsigned j=0;j<n;j++)changed|=' + written + ';result("touched",changed!=0);bytes(first[' + i + '],n);}');
-      else observations.push('unsigned extent' + i + '=0;for(unsigned j=0;j<4096;j++)if(' + written + ')extent' + i + '=j+1;result("touched' + i + '",extent' + i + '!=0);' + (independent ? 'bytes(first[' + i + '],extent' + i + ');' : ''));
+      else observations.push('unsigned extent' + i + '=0;for(unsigned j=0;j<4096;j++)if(' + written + ')extent' + i + '=j+1;result("touched' + i + '",extent' + i + '!=0);' + (independent ? 'if(extent' + i + ')bytes(first[' + i + '],extent' + i + ');' : ''));
     }
   }
   // NULL timeout shapes are made finite whenever a decoded time-pair shape

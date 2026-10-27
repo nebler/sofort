@@ -201,3 +201,34 @@ The unconditional `const value: Record<string, unknown> = { ...source }` works.
 `e2.ts` copies keys into a fresh `Record<string, unknown>` instead. The E2/E3
 batches (97 CLI calls plus the replay grader) showed no `scr_children_wait`
 hang.
+
+## Phase 2 (2026-10-27): late child-exit notification
+
+During `phase2 prepare` a `docker image inspect` child exited normally, but
+the controller saw its close event only when `capture`'s 180 s kill timer
+fired: the result was rc=0 with complete stdout **and** `timeout: true`.
+That is the `scr_children_wait`/kevent symptom described upstream: the
+exit happened, the parent was not woken. The stall resolved itself at the
+timer, before a manual `sample` could attach, so no stack was captured. A
+watchdog now samples any scriptc controller that holds an unreaped (zombie)
+child for more than 20 s; `phase2.ts` retries an oracle step once on
+`rc=0 ... timeout` and records it, so the stall can never be counted as a
+gate decision. Not filed upstream.
+
+`assert.equal` on a `string | undefined` array element is refused with
+SC2020 (the union rule above); the phase-2 tests compare with
+`assert.ok(a === b)`.
+
+An empty array literal used as an untyped fallback is typed `number[]`, even
+when the surrounding annotation says otherwise. Pushing an object then fails at
+run time with `TypeError: expected number at $[0], got object`. Two forms hit
+the phase-2 batch driver after its first accepted transaction:
+
+```ts
+const rows: Record<string, unknown>[] = readOr(path, []); // T inferred from []
+const list = (record.items as unknown[] | undefined) || [];
+list.push({ a: 1 });                                      // throws
+```
+
+Explicit type arguments (`readOr<Record<string, unknown>[]>(path, [])`) or an
+explicitly typed local array avoid it. Not filed upstream.

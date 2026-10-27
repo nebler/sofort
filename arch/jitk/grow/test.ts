@@ -99,7 +99,7 @@ test('autoprofile detects writes with two fills and compares descriptor-independ
     writeFileSync(trace, '7 leaf_struct({sysname="Linux", nodename="x"}) = 0\n7 leaf_fd(3</file>, {st_mode=S_IFREG|0644}) = 0\n7 leaf_random("\\xa7", 1, 0) = 1\n');
     const independent = autoGenerate('leaf_struct', 160, [trace]);
     const seed = independent.visible.find((c) => c.id === 'seed-0')!;
-    assert.ok(seed.observe.includes('bytes(first[0],extent0)'));
+    assert.ok(seed.observe.includes('if(extent0)bytes(first[0],extent0)'));
     assert.ok(seed.observe.includes('first[0][j]!=0xa7||memory[0][j]!=0x5c'));
     const code = autoSource(independent, [seed]);
     assert.ok(code.includes('memory[i][j]=0x5c') && code.includes('second-return'));
