@@ -30,6 +30,49 @@ pub fn copyout(addr: usize, src: &[u8]) -> Result<(), isize> {
 pub fn writable(addr: usize, len: usize) -> bool {
     crate::user::access(addr, len, true).is_some()
 }
+// Controller-owned anonymous-memory primitives. A handler chooses addresses;
+// these check every range against the mmap arena and own the page tables, so
+// handler code needs no unsafe and cannot reach the image, archive or stack.
+pub fn mmap_arena() -> (usize, usize) {
+    #[cfg(feature = "transport-ring")]
+    let limit = crate::mmu::mmap_limit();
+    #[cfg(not(feature = "transport-ring"))]
+    let limit = crate::memory::MMAP_END;
+    (crate::user::MMAP, limit)
+}
+pub fn page_mapped(va: usize) -> bool {
+    let (start, end) = mmap_arena();
+    (start..end).contains(&va) && crate::mmu::valid(va & !4095, false)
+}
+pub fn map_zeroed(base: usize, len: usize) -> bool {
+    let (start, end) = mmap_arena();
+    let Some(stop) = base.checked_add(len) else {
+        return false;
+    };
+    if !base.is_multiple_of(4096)
+        || len == 0
+        || !len.is_multiple_of(4096)
+        || base < start
+        || stop > end
+    {
+        return false;
+    }
+    if (base..stop)
+        .step_by(4096)
+        .any(|va| crate::mmu::valid(va, false))
+    {
+        return false;
+    }
+    // SAFETY: the range is page-aligned, inside the mmap arena and unmapped, so
+    // its backing is disjoint from every live mapping. This masked-IRQ trap owns
+    // the tables and flushes before EL0 resumes.
+    unsafe {
+        crate::user::pages(base, stop, true, false);
+        core::ptr::write_bytes(crate::mmu::physical(base) as *mut u8, 0, len);
+        crate::mmu::flush();
+    }
+    true
+}
 pub fn now_ns() -> u64 {
     crate::wait::now_ns()
 }
