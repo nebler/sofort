@@ -248,7 +248,7 @@ override is still honored);
 Linux needs neither Node nor Python for this component. `./tool.sh NAME ARGS...`
 replaces each Python command using the basename without `.py` (for example
 `./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and
-lock composition live in `lib.ts`. `make test` still takes its own measurement
+lock composition come from `../tslib/` through `lib.ts`. `make test` still takes its own measurement
 locks; never put another bench.lock around it. `test-kvm` still expects the
 caller to hold that lock and supply the snapshot environment variables.
 See `PORT-PARITY.md` and `SCRIPTC-GAPS.md` for comparisons and compiler workarounds.

@@ -145,8 +145,8 @@ retention and statistical estimators are preserved. `build/gate [threshold
 previously imported Python. Defaults are 6 / 10 s / 1 s. The historical `.READY`
 receipt remains unchanged: this port does not certify new performance numbers.
 
-`lib.ts` contains the generic process, hash, JSON, assertion, clock, numerical
-and seeded random helpers. `native.c` is a statically linked OS ABI bridge for
+`lib.ts` re-exports the generic process, hash, JSON, assertion and seeded random
+helpers from `../tslib/` and keeps the clock and numerical helpers. `native.c` is a statically linked OS ABI bridge for
 pipes, select, wait4, libproc and read-only ledger calls, replacing ctypes.
 Timing uses integer monotonic nanoseconds. The watchdog remains a separate
 process, and EOF, deadlines, interrupts and detached descendants are tested.
