@@ -1,0 +1,72 @@
+{
+  "cgroup": "/sys/fs/cgroup/linux-mem-2026-10-27",
+  "memory_max": 6442450944,
+  "counts": [1, 8, 32, 128, 256],
+  "reps": 3,
+  "settle_s": 3,
+  "families": [
+    {
+      "name": "jitk-shard",
+      "fixtures": ["ready", "return2", "one_tool"],
+      "argv": ["{W}/bin/real", "hold", "{W}/snap/helpers", "{fixture}", "{n}", "3600"],
+      "env": {"GLIBC_TUNABLES": "glibc.malloc.hugetlb=0"},
+      "warm": ["{W}/snap/helpers.mem", "{W}/snap/helpers.regs", "{W}/snap/helpers.layout", "{W}/bin/real"],
+      "per_process": false,
+      "counts": []
+    },
+    {
+      "name": "hl-default",
+      "fixtures": ["ready", "return2", "one_tool"],
+      "argv": ["{W}/bin/hl-density", "hold", "{W}/snap/hl-default", "{fixture}", "{n}"],
+      "env": {"GLIBC_TUNABLES": "glibc.malloc.hugetlb=0"},
+      "warm": ["{W}/snap/hl-default", "{W}/bin/hl-density"],
+      "per_process": false,
+      "counts": []
+    },
+    {
+      "name": "jitk-node",
+      "fixtures": ["return2", "one_tool"],
+      "argv": ["{W}/node/node-v24.22.1-linux-arm64/bin/node", "{W}/tree/arch/jitk/executor/ipc/measure-helpers.mjs", "hold", "{n}"],
+      "env": {"JITK_SHARD_BINARY": "{W}/bin/real", "JITK_SHARD_SNAPSHOT": "{W}/snap/helpers", "JITK_HELPERS_FIXTURE": "{fixture}"},
+      "warm": ["{W}/snap/helpers.mem", "{W}/snap/helpers.regs", "{W}/snap/helpers.layout", "{W}/bin/real", "{W}/node/node-v24.22.1-linux-arm64/bin/node", "{W}/tree/arch/jitk/executor/build", "{W}/tree/arch/jitk/executor/ipc/measure-helpers.mjs"],
+      "per_process": false,
+      "counts": []
+    },
+    {
+      "name": "hl-16m",
+      "fixtures": ["ready", "return2", "one_tool"],
+      "argv": ["{W}/bin/hl-density", "hold", "{W}/snap/hl-16m", "{fixture}", "{n}"],
+      "env": {"GLIBC_TUNABLES": "glibc.malloc.hugetlb=0"},
+      "warm": ["{W}/snap/hl-16m", "{W}/bin/hl-density"],
+      "per_process": false,
+      "counts": []
+    },
+    {
+      "name": "hl-proc",
+      "fixtures": ["return2"],
+      "argv": ["{W}/bin/hl-density", "hold", "{W}/snap/hl-default", "{fixture}", "{n}"],
+      "env": {"GLIBC_TUNABLES": "glibc.malloc.hugetlb=0"},
+      "warm": ["{W}/snap/hl-default", "{W}/bin/hl-density"],
+      "per_process": true,
+      "counts": [1, 8, 32, 128]
+    },
+    {
+      "name": "jitk-shard-thp",
+      "fixtures": ["one_tool"],
+      "argv": ["{W}/bin/real", "hold", "{W}/snap/helpers", "{fixture}", "{n}", "3600"],
+      "env": {},
+      "warm": ["{W}/snap/helpers.mem", "{W}/snap/helpers.regs", "{W}/snap/helpers.layout", "{W}/bin/real"],
+      "per_process": false,
+      "counts": []
+    },
+    {
+      "name": "hl-default-thp",
+      "fixtures": ["one_tool"],
+      "argv": ["{W}/bin/hl-density", "hold", "{W}/snap/hl-default", "{fixture}", "{n}"],
+      "env": {},
+      "warm": ["{W}/snap/hl-default", "{W}/bin/hl-density"],
+      "per_process": false,
+      "counts": []
+    }
+  ]
+}
