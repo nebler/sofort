@@ -1,6 +1,7 @@
 //! AArch64: EL1 kernel, EL0 user, stage-1 4 KiB pages, libkrun/KVM/HVF virt platform.
-//! Every function here is `#[inline(always)]`: it replaces inline assembly that
-//! used to sit in the core, so the generated code is unchanged.
+//! These primitives replace inline assembly that used to sit in the core. Their
+//! inlining attributes match how that code compiled before, so the image is
+//! unchanged (ARCH.md, "Image identity").
 use core::arch::{asm, global_asm};
 
 #[cfg(not(feature = "transport-ring"))]
@@ -13,6 +14,43 @@ global_asm!(include_str!("vectors.S"));
 mod trap;
 #[cfg(feature = "qjs")]
 pub use trap::frame;
+
+/// Device MMIO for the virtio console. Registers are mapped Device-nGnRE by mmu.rs;
+/// single 32-bit LDR/STR accesses, never merged or split.
+#[cfg(not(feature = "transport-ring"))]
+pub mod mmio {
+    use core::arch::asm;
+    /// # Safety
+    /// addr is an aligned, mapped, writable 32-bit device register.
+    pub unsafe fn write32(addr: usize, val: u32) {
+        // SAFETY: addr is an aligned, mapped, writable 32-bit device register; the store
+        // lends no memory reference.
+        unsafe {
+            asm!("str {v:w}, [{a}]",v=in(reg) val,a=in(reg) addr,options(nostack));
+        }
+    }
+    /// # Safety
+    /// addr is an aligned readable 32-bit MMIO register in a mapped device.
+    pub unsafe fn read32(addr: usize) -> u32 {
+        let v: u32;
+        // SAFETY: addr is an aligned readable 32-bit MMIO register in a mapped device.
+        unsafe {
+            asm!("ldr {v:w}, [{a}]",v=out(reg) v,a=in(reg) addr,options(nostack));
+        }
+        v
+    }
+    /// Full barrier: orders guest accesses to shared ring memory against device
+    /// DMA and against MMIO notifications.
+    /// # Safety
+    /// Execution is at EL1.
+    pub unsafe fn barrier() {
+        // SAFETY: Execution is at EL1; the barrier orders guest queue accesses against
+        // device DMA without lending memory references.
+        unsafe {
+            asm!("dmb sy", options(nostack));
+        }
+    }
+}
 
 /// Guest physical RAM base and the packed user image inside it (libkrun aarch64
 /// places RAM at 2 GiB; link.ld and the packer use the same numbers).
