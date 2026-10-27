@@ -1,0 +1,25 @@
+{"rep":1,"variant":"copy","r":{"slots":1,"owners":1,"conc":1,"runs":1500,"runsPerSec":704.7915856432387,"shedRetries":18610,"nodeCpuUsPerRun":937.36,"shardCpuUsPerRun":853.3333333333334,"wallS":2.128288746}}
+{"rep":1,"variant":"copy","r":{"slots":4,"owners":4,"conc":2,"runs":1500,"runsPerSec":1620.4083071796103,"shedRetries":2,"nodeCpuUsPerRun":442.9986666666667,"shardCpuUsPerRun":880,"wallS":0.9256926129999999}}
+{"rep":1,"variant":"copy","r":{"slots":16,"owners":4,"conc":8,"runs":1500,"runsPerSec":3024.3896276154337,"shedRetries":0,"nodeCpuUsPerRun":284.14866666666666,"shardCpuUsPerRun":1113.3333333333333,"wallS":0.495967843}}
+{"rep":1,"variant":"copy","r":{"slots":64,"owners":4,"conc":32,"runs":1500,"runsPerSec":675.2751894282187,"shedRetries":0,"nodeCpuUsPerRun":438.564,"shardCpuUsPerRun":5933.333333333333,"wallS":2.221316618}}
+{"rep":1,"variant":"copy","r":{"slots":64,"owners":4,"conc":48,"runs":1500,"runsPerSec":218.1878715543902,"shedRetries":247407,"nodeCpuUsPerRun":3355.0273333333334,"shardCpuUsPerRun":18493.333333333332,"wallS":6.874809260999999}}
+{"rep":2,"variant":"copy","r":{"slots":1,"owners":1,"conc":1,"runs":1500,"runsPerSec":750.9332606072157,"shedRetries":19175,"nodeCpuUsPerRun":855.2913333333333,"shardCpuUsPerRun":826.6666666666666,"wallS":1.9975143980000003}}
+{"rep":2,"variant":"copy","r":{"slots":4,"owners":4,"conc":2,"runs":1500,"runsPerSec":453.2643840767451,"shedRetries":0,"nodeCpuUsPerRun":461.9266666666667,"shardCpuUsPerRun":4120,"wallS":3.309326858}}
+{"rep":2,"variant":"copy","r":{"slots":16,"owners":4,"conc":8,"runs":1500,"runsPerSec":264.43706445297215,"shedRetries":0,"nodeCpuUsPerRun":543.892,"shardCpuUsPerRun":14926.666666666666,"wallS":5.672427211}}
+{"rep":2,"variant":"copy","r":{"slots":64,"owners":4,"conc":32,"runs":1500,"runsPerSec":203.21395083172618,"shedRetries":0,"nodeCpuUsPerRun":802.4593333333333,"shardCpuUsPerRun":19853.333333333332,"wallS":7.38138299}}
+{"rep":2,"variant":"copy","r":{"slots":64,"owners":4,"conc":48,"runs":1500,"runsPerSec":1723.3892135047574,"shedRetries":2763,"nodeCpuUsPerRun":336.0586666666667,"shardCpuUsPerRun":2106.6666666666665,"wallS":0.8703779670000001}}
+{"rep":3,"variant":"copy","r":{"slots":1,"owners":1,"conc":1,"runs":1500,"runsPerSec":687.8321134021689,"shedRetries":18287,"nodeCpuUsPerRun":953.674,"shardCpuUsPerRun":880,"wallS":2.1807647109999997}}
+{"rep":3,"variant":"copy","r":{"slots":4,"owners":4,"conc":2,"runs":1500,"runsPerSec":1693.8277440962515,"shedRetries":0,"nodeCpuUsPerRun":455.29,"shardCpuUsPerRun":900,"wallS":0.8855682079999999}}
+{"rep":3,"variant":"copy","r":{"slots":16,"owners":4,"conc":8,"runs":1500,"runsPerSec":2516.0984887703585,"shedRetries":0,"nodeCpuUsPerRun":362.9653333333333,"shardCpuUsPerRun":1233.3333333333333,"wallS":0.5961610829999999}}
+{"rep":3,"variant":"copy","r":{"slots":64,"owners":4,"conc":32,"runs":1500,"runsPerSec":309.5657787027937,"shedRetries":0,"nodeCpuUsPerRun":593.438,"shardCpuUsPerRun":13013.333333333334,"wallS":4.845496832}}
+{"rep":3,"variant":"copy","r":{"slots":64,"owners":4,"conc":48,"runs":1500,"runsPerSec":204.867603338904,"shedRetries":259595,"nodeCpuUsPerRun":3540.63,"shardCpuUsPerRun":19633.333333333332,"wallS":7.321801864000001}}
+{"rep":1,"variant":"base","r":{"slots":64,"owners":4,"conc":32,"runs":600,"runsPerSec":37.86872905022937,"shedRetries":0,"nodeCpuUsPerRun":1161.655,"shardCpuUsPerRun":105650,"wallS":15.844207478}}
+[42] {"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":722.026,"nodeUserUs":122.25,"nodeSysUs":599.776,"wallUsPerRun":1424.79372}
+[42] 1548,,kvm:kvm_exit,5564200645,100.00,,
+[42] 1040,,kvm:kvm_mmio,5564193020,100.00,,
+[42] 1473,,kvm:kvm_guest_fault,5564192561,100.00,,
+[10] {"n":500,"code":"return (await Promise.all(Array.from({length:10},(_,i)=>codemode.echo(i)))).length","nodeUsPerRun":1268.002,"nodeUserUs":292.406,"nodeSysUs":975.596,"wallUsPerRun":2984.297184}
+[10] 6468,,kvm:kvm_exit,10254416172,100.00,,
+[10] 5720,,kvm:kvm_mmio,10254420918,100.00,,
+[10] 6191,,kvm:kvm_guest_fault,10254428046,100.00,,
+[exited with code 0]

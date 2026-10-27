@@ -1,0 +1,6 @@
+{"rep":1,"case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":741.414,"nodeUserUs":126.796,"nodeSysUs":614.618,"wallUsPerRun":1479.602694}}
+{"rep":1,"case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":479.26,"nodeUserUs":83.536,"nodeSysUs":395.724,"wallUsPerRun":916.521458}}
+{"rep":2,"case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":644.542,"nodeUserUs":84.126,"nodeSysUs":560.416,"wallUsPerRun":1339.577576}}
+{"rep":2,"case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":500.846,"nodeUserUs":98.836,"nodeSysUs":402.01,"wallUsPerRun":968.7397939999998}}
+{"rep":3,"case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":712.842,"nodeUserUs":94.88,"nodeSysUs":617.962,"wallUsPerRun":1457.870708}}
+{"rep":3,"case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":581.088,"nodeUserUs":138.874,"nodeSysUs":442.214,"wallUsPerRun":1121.503122}}

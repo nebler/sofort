@@ -1,0 +1,13 @@
+[package]
+name = "r9-vmprobe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# R9 measurement probe (not product code). Spawns jitk-vmm per VM and records
+# per-phase wall time, wait4 rusage and (macOS) per-thread CPU from libproc.
+[dependencies]
+libc = "0.2"
+
+[profile.release]
+opt-level = 2

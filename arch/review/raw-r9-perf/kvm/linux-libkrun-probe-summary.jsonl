@@ -1,0 +1,5 @@
+# Linux libkrun under nested KVM, per phase (3 reps x 20, load1 0.1-0.3)
+{"mode":"exec","case":"return2","n":60,"cpu_ms":0.41,"user_ms":0.362,"sys_ms":0,"minflt":71,"ready_or_waitgo_ms":0,"done_ms":0,"reaped_ms":0.518044,"mac_main_thread_ms":0,"mac_vcpu_thread_ms":0,"linux_vcpu_ticks":0,"mac_footprint_mib":0}
+{"mode":"prebuild","case":"return2","n":60,"cpu_ms":0.487,"user_ms":0,"sys_ms":0.444,"minflt":78,"ready_or_waitgo_ms":0.47821,"done_ms":0,"reaped_ms":0.661379,"mac_main_thread_ms":0,"mac_vcpu_thread_ms":0,"linux_vcpu_ticks":0,"mac_footprint_mib":0}
+{"mode":"ready","case":"return2","n":60,"cpu_ms":99.348,"user_ms":56.632,"sys_ms":43.284,"minflt":1120,"ready_or_waitgo_ms":97.10135,"done_ms":0,"reaped_ms":98.625566,"mac_main_thread_ms":0,"mac_vcpu_thread_ms":0,"linux_vcpu_ticks":8,"mac_footprint_mib":0}
+{"mode":"full","case":"return2","n":60,"cpu_ms":110.592,"user_ms":66.623,"sys_ms":44.98,"minflt":1130,"ready_or_waitgo_ms":96.842932,"done_ms":107.022607,"reaped_ms":109.511077,"mac_main_thread_ms":0,"mac_vcpu_thread_ms":0,"linux_vcpu_ticks":9,"mac_footprint_mib":0}

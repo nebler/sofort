@@ -1,0 +1,56 @@
+== slots=16 conc=8 owners=1 rep=1
+{"slots":16,"owners":1,"conc":8,"runs":2000,"runsPerSec":253.38125078870297,"shedRetries":0,"nodeCpuUsPerRun":603.957,"shardCpuUsPerRun":4165,"wallS":7.893243852}
+50429.88,msec,task-clock,50429883558,100.00,,
+18023,,kvm:kvm_exit,50429907308,100.00,,
+10944,,kvm:kvm_guest_fault,50429907558,100.00,,
+11128,,kvm:kvm_unmap_hva_range,50430205141,100.00,,
+4016,,kvm:kvm_mmio,50430209099,100.00,,
+50361,,context-switches,50430206475,100.00,,
+213,,cpu-migrations,50430204225,100.00,,
+== slots=16 conc=8 owners=4 rep=1
+{"slots":16,"owners":4,"conc":8,"runs":2000,"runsPerSec":251.86659844156299,"shedRetries":0,"nodeCpuUsPerRun":639.748,"shardCpuUsPerRun":15640,"wallS":7.940711521000001}
+49758.30,msec,task-clock,49758298309,100.00,,
+40032,,kvm:kvm_exit,49758302728,100.00,,
+10511,,kvm:kvm_guest_fault,49758297769,100.00,,
+10959,,kvm:kvm_unmap_hva_range,49758301770,100.00,,
+4016,,kvm:kvm_mmio,49758317686,100.00,,
+47142,,context-switches,49758326476,100.00,,
+666,,cpu-migrations,49758330810,100.00,,
+== slots=16 conc=8 owners=2 rep=1
+{"slots":16,"owners":2,"conc":8,"runs":2000,"runsPerSec":2446.656125346616,"shedRetries":0,"nodeCpuUsPerRun":336.957,"shardCpuUsPerRun":875,"wallS":0.8174422140000002}
+7119.90,msec,task-clock,7119898224,100.00,,
+11691,,kvm:kvm_exit,7119898263,100.00,,
+10944,,kvm:kvm_guest_fault,7119906347,100.00,,
+11569,,kvm:kvm_unmap_hva_range,7119908473,100.00,,
+4016,,kvm:kvm_mmio,7119910347,100.00,,
+25503,,context-switches,7119927513,100.00,,
+390,,cpu-migrations,7119939431,100.00,,
+== slots=16 conc=8 owners=1 rep=2
+{"slots":16,"owners":1,"conc":8,"runs":2000,"runsPerSec":1419.8467481881048,"shedRetries":0,"nodeCpuUsPerRun":390.343,"shardCpuUsPerRun":850,"wallS":1.408602726}
+11028.98,msec,task-clock,11028977832,100.00,,
+11529,,kvm:kvm_exit,11028978168,100.00,,
+10944,,kvm:kvm_guest_fault,11028978415,100.00,,
+11088,,kvm:kvm_unmap_hva_range,11028978917,100.00,,
+4016,,kvm:kvm_mmio,11028979833,100.00,,
+40895,,context-switches,11028981374,100.00,,
+310,,cpu-migrations,11028979500,100.00,,
+== slots=16 conc=8 owners=4 rep=2
+{"slots":16,"owners":4,"conc":8,"runs":2000,"runsPerSec":257.8466979849595,"shedRetries":0,"nodeCpuUsPerRun":615.664,"shardCpuUsPerRun":15295,"wallS":7.756546877}
+48477.96,msec,task-clock,48477959691,100.00,,
+39752,,kvm:kvm_exit,48477970481,100.00,,
+10944,,kvm:kvm_guest_fault,48477998524,100.00,,
+12405,,kvm:kvm_unmap_hva_range,48478001732,100.00,,
+4016,,kvm:kvm_mmio,48478012149,100.00,,
+47802,,context-switches,48478032441,100.00,,
+579,,cpu-migrations,48478036774,100.00,,
+== slots=16 conc=8 owners=2 rep=2
+{"slots":16,"owners":2,"conc":8,"runs":2000,"runsPerSec":320.1119284930721,"shedRetries":0,"nodeCpuUsPerRun":549.436,"shardCpuUsPerRun":6440,"wallS":6.2478146610000005}
+39810.52,msec,task-clock,39810520891,100.00,,
+22140,,kvm:kvm_exit,39810517891,100.00,,
+10511,,kvm:kvm_guest_fault,39810515180,100.00,,
+10284,,kvm:kvm_unmap_hva_range,39810514057,100.00,,
+4016,,kvm:kvm_mmio,39810518350,100.00,,
+46589,,context-switches,39810519223,100.00,,
+433,,cpu-migrations,39810515097,100.00,,
+
+[exited with code 0]
