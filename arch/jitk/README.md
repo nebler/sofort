@@ -9,6 +9,7 @@ See [architecture](docs/ARCHITECTURE.md), [evidence and claims](docs/CLAIMS.md),
 From this directory:
 
 ```sh
+make deps           # pinned Node/npm, VMM, Hyperlight source/worker/snapshot → jitk cache
 make build          # kernel → VMM → protocol generated JS → executor
 make test           # every root suite plus sandbox, policy, Hyperlight adapter
 make bench          # canonical load-aware area-06 harness
@@ -16,6 +17,53 @@ make demo           # executor result → deleted syscall regrowth → Lua
 make linux-nested   # area-05 nested-KVM functional suite
 make loc            # reproducible owned-source line inventory
 ```
+
+## Clean clone
+
+From a fresh clone (or after a reboot cleared `/tmp`), with no `JITK_*` or
+`HYPERLIGHT_*` variables set:
+
+```sh
+make -C arch/jitk build test   # build and test depend on deps; it runs first
+```
+
+`make deps` (also the first step of `build`, `test`, `bench` and `demo`)
+builds what is missing into the jitk cache and prints a manifest; a second
+run only verifies hashes. `make deps-status` prints the selection without
+building.
+
+| variable | cache entry | how it is made |
+| --- | --- | --- |
+| `JITK_NODE`, `JITK_NPM_CLI` | `node/v24.22.1-darwin-arm64/` | nodejs.org tarball, sha256 pinned in [`tools/deps.json`](tools/deps.json); macOS: `bin/node-real` ad-hoc signed with [`tools/node.entitlements`](tools/node.entitlements) (Hypervisor), signed hash pinned; npm is the tarball's `npm-cli.js` |
+| `HYPERLIGHT_JS_SRC` | `src/hyperlight-js-<commit>/` | `git fetch --depth 1` of the pinned commit |
+| `JITK_VMM_BINARY` | `vmm/darwin-<inputs>/jitk-vmm` | [`vmm/build.ts`](vmm/build.ts); libkrun shared in `vmm/libkrun-darwin-<patches>/` |
+| `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` | `hyperlight/darwin-arm64-<inputs>/` | [`bench/hyperlight/build.ts`](bench/hyperlight/build.ts) from that source; `cargo fetch --locked`, then offline build |
+
+The cache root is `$JITK_CACHE`, else `$XDG_CACHE_HOME/jitk`, else
+`~/.cache/jitk`. It sits outside every checkout, so all clones and worktrees
+share one copy and nothing needs ignoring. Entries are keyed by pin or by a
+hash of their inputs (VMM: builder, patches, launcher and sandbox sources,
+`.READY` state; Hyperlight: adapter crate, lockfile, builder, source commit,
+toolchain), so checkouts at different revisions never share a stale build.
+Each entry is built in a staging directory, renamed into place after its
+manifest is written, and built under a lock in `locks/`. Expect about 1.8 GB,
+mostly the Hyperlight Cargo target and the libkrun checkout.
+
+Resolution is shared by every consumer ([`tslib/deps.ts`](tslib/deps.ts);
+Makefiles use [`tools/deps.mk`](tools/deps.mk), shell uses `tools/.work/bin/deps env`):
+an explicitly set variable always wins and is never rebuilt; otherwise the
+cache path; a missing artifact is an error naming `make -C arch/jitk deps`,
+never a skip. The delegate passes the selected values to every subtree.
+
+Preinstalled prerequisites (not installed by `deps`): macOS arm64 with Xcode
+command-line tools (`clang`, `codesign`, `strip`), `git`, `curl`, `make`, a
+Node/npm on `PATH` for the one-time scriptc install in `tools/`, rustup with
+`1.95.0` and `nightly-2026-10-20` (`rustup toolchain install nightly-2026-10-20
+--profile minimal --component rust-src --target aarch64-unknown-none`), LLVM
+`ld.lld` on `PATH` for the VMM test guests, zig 0.16 (`ZIG`, see
+`tools/pin.mk`), and network access for Node, crates and Git sources on first
+use. `make test`'s `linux` suite still needs the kvm-dev VM and Docker; see
+[`linux/README.md`](linux/README.md).
 
 MCP clients reach jitk through [`mcp/`](mcp/README.md): one `execute` tool that runs
 code-mode JS in a parked single-use VM, plus file-backed skill/doc resources.
@@ -27,8 +75,8 @@ helpers. Every child it spawns runs under the lost child-exit wakeup
 workaround described in [SCRIPTC-HANG.md](SCRIPTC-HANG.md).
 
 Prerequisites and platform restrictions belong to each subtree's README.
-The top level delegates commands; it does not install tools or implement a
-second build, VM launcher, benchmark, or grow controller. Missing subtrees or
+The top level delegates commands; apart from the `deps` cache it does not
+install tools or implement a second build, VM launcher, benchmark, or grow controller. Missing subtrees or
 entrypoints fail with their path and required owner action. A `.READY` file is
 an owner's coordination signal, not independent proof of a gate.
 
@@ -50,13 +98,13 @@ H2 runs `grow/grow` as a new real deletion/regrowth transaction, then
 `grow/demo` for its labeled receipts and live qjs/Lua boots; playback alone
 does not establish fresh regrowth. See `grow/README.md` for its oracle image.
 Protocol build always precedes executor build so generated decoder JS cannot
-silently lag its canonical TS source. Set `JITK_NODE` to a verified absolute
-Node >=24 executable.
+silently lag its canonical TS source. `JITK_NODE` defaults to the pinned
+cache Node; an override must be a verified absolute Node >=24 executable.
 Build also delegates the executor README's `npm ci --ignore-scripts` prerequisite
 to install locked dependencies locally when needed; the copied dangling cache
-link is removed. A valid development symlink is retained. `npm` must resolve to
-`npm-cli.js`, or set `JITK_NPM_CLI` to its absolute path; it runs under the verified
-Node executable. npm cache defaults to `jitk-npm-cache` in the system temp directory
+link is removed. A valid development symlink is retained. `JITK_NPM_CLI`
+defaults to the `npm-cli.js` bundled with the cache Node (override with an
+absolute path); it runs under the selected Node executable. npm cache defaults to `jitk-npm-cache` in the system temp directory
 (`JITK_NPM_CACHE` overrides); no global packages/toolchains are installed.
 
 Clean-copy verification and exact failures are recorded outside the copied
@@ -70,7 +118,8 @@ backend. `make demo` passes independently. The strict all-file reference scan
 and the 30/30 deadline target still fail; see the final report and claims ledger.
 
 Set `JITK_VMM_BUILD` to a private build-output directory and `JITK_VMM_BINARY`
-to that directory's `jitk-vmm` when isolating a verification run. Set
-`JITK_KERNEL_CARGO_TARGET_DIR` for the kernel's build cache. Hyperlight and nested
-Linux prerequisites use their documented explicit environment variables; the
+to that directory's `jitk-vmm` when isolating a verification run (by default
+both select the cache entry). Set `JITK_KERNEL_CARGO_TARGET_DIR` for the
+kernel's build cache. Hyperlight inputs default to the cache (see Clean clone);
+nested Linux prerequisites use their documented explicit environment variables; the
 integration receipt records and hashes the isolated inputs actually used.
