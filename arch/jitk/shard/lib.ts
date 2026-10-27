@@ -9,6 +9,7 @@ export { check } from '../tslib/assert.ts';
 export { digest } from '../tslib/hash.ts';
 export { jsonLines as lines } from '../tslib/json.ts';
 export { canonical } from '../tslib/fs.ts';
+export { track } from '../tslib/process.ts';
 export { mean, median, fit } from '../tslib/stats.ts';
 export { env, locked, sleep, status, kill, capture, run, saveResult, StreamProcess } from '../tslib/stream-process.ts';
 export type { Options, Result } from '../tslib/stream-process.ts';
