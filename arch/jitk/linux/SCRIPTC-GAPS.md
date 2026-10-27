@@ -33,8 +33,9 @@ rows.reduce((sum, row) => sum + Number(row.n), 0);
 SC1090/SC2020: reduce on a checked-dynamic array is not lowered. Use a typed loop.
 Indexed optional Buffers also require explicit undefined narrowing before writes.
 
-The general async process, JSON, hashing and assertion helpers are in `lib.ts`,
-copied locally from the shard component rather than importing across components.
+The general async process, JSON, hashing and assertion helpers are shared with
+the shard component through `../tslib/` (`stream-process.ts`); `lib.ts` keeps
+the linux root, tool entrypoint and record accessors.
 
 ## SIGPIPE bypasses finally
 
