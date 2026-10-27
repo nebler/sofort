@@ -222,3 +222,25 @@ receipts: lint false positives over accepted handlers and the held-out failure
 rate over every visible-passing attempt. In this design the mutant gate grades
 the tests, not the candidate (mutants derive from the canonical handler), so it
 cannot reject a candidate by construction.
+
+Phase 2 (corpus-driven growth) uses `phase2`, also validate-only:
+
+```sh
+make -C arch/jitk/grow build build/phase2
+grow=arch/jitk/grow/build
+$grow/phase2 traces  --out /abs/TRACES                 # visible corpus seed traces
+$grow/phase2 prepare --profiles /abs/PROFILES --traces /abs/TRACES \
+  --fresh /abs/E3_RUN/fresh --database /abs/demo.db   # autoprofile + calibrations
+JITK_VMM_BINARY=/abs/jitk-vmm $grow/phase2 replay --target T --profiles /abs/PROFILES \
+  --out /abs/OUT --handler FILE.rs                      # model-free grading
+$grow/phase2 batch --run-id ID --validate-only --vmm /abs/jitk-vmm \
+  --profiles /abs/PROFILES --sqlite-elf /abs/sqlite3-static --database /abs/demo.db
+$grow/phase2 assemble --accepted DIR --out /abs/GROWN_KERNEL
+```
+
+Calibrations run in two separate containers, 6 s apart, with the guest's
+32 MiB address space (`ulimit -v`). Corpus integration gates use
+`scriptc-corpus` reruns on visible and held-out programs that use the
+target; held-out names and results never leave the corpus `.work/`. The
+eight handlers of the phase-2 grown kernel are in `phase2-grown/`; results
+and failure classes are in `EXPERIMENTS-PHASE2-2026-10-27.md`.
