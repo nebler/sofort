@@ -33,6 +33,10 @@ pub fn writable(addr: usize, len: usize) -> bool {
 // Controller-owned anonymous-memory primitives. A handler chooses addresses;
 // these check every range against the mmap arena and own the page tables, so
 // handler code needs no unsafe and cannot reach the image, archive or stack.
+#[allow(
+    dead_code,
+    reason = "Grown mmap policies use these; the canonical mmap predates them."
+)]
 pub fn mmap_arena() -> (usize, usize) {
     #[cfg(feature = "transport-ring")]
     let limit = crate::mmu::mmap_limit();
@@ -40,10 +44,18 @@ pub fn mmap_arena() -> (usize, usize) {
     let limit = crate::memory::MMAP_END;
     (crate::user::MMAP, limit)
 }
+#[allow(
+    dead_code,
+    reason = "Grown mmap policies use these; the canonical mmap predates them."
+)]
 pub fn page_mapped(va: usize) -> bool {
     let (start, end) = mmap_arena();
     (start..end).contains(&va) && crate::mmu::valid(va & !4095, false)
 }
+#[allow(
+    dead_code,
+    reason = "Grown mmap policies use these; the canonical mmap predates them."
+)]
 pub fn map_zeroed(base: usize, len: usize) -> bool {
     let (start, end) = mmap_arena();
     let Some(stop) = base.checked_add(len) else {
