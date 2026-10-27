@@ -1,7 +1,8 @@
 # Owner entrypoints for docs/delegate.py. build installs the locked SDK locally
 # (scripts disabled) and syntax-checks; test/bench need built executor, VMM, kernel.
-NODE_BIN = $(or $(JITK_NODE),$(error set JITK_NODE to an absolute Node >=24 executable; see README.md))
-NPM_CLI = $(or $(JITK_NPM_CLI),$(error set JITK_NPM_CLI to npm-cli.js; see README.md))
+include ../tools/deps.mk
+NODE_BIN = $(call jitk_artifact,JITK_NODE)
+NPM_CLI = $(call jitk_artifact,JITK_NPM_CLI)
 NPM_CACHE = $(or $(JITK_NPM_CACHE),$(or $(TMPDIR),/tmp)/jitk-npm-cache)
 
 .PHONY: build test bench

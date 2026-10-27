@@ -9,6 +9,7 @@ export { SAFE_ENV, sha, scratch, cleanup, load, capture, run, treeHashes, killCh
 export type { ProcessOptions, ProcessResult } from './lib.ts';
 import type { ProcessResult } from './lib.ts';
 import { load } from './lib.ts';
+import { requireArtifact } from '../tslib/deps.ts';
 
 export const ROOT = resolve(import.meta.dirname);
 export const ASSETS = ROOT;
@@ -106,8 +107,9 @@ export async function build(work: string, out: string, elf: string, argv: string
 
 let selectedHost: string | undefined;
 export function selectHost(): void {
-  const value = process.env.JITK_VMM_BINARY;
-  check(value, 'Set JITK_VMM_BINARY to the built canonical v2 jitk-vmm executable');
+  // Explicit JITK_VMM_BINARY, else the deps cache; later steps read the env.
+  const value = requireArtifact('JITK_VMM_BINARY');
+  process.env.JITK_VMM_BINARY = value;
   selectedHost = realpathSync(value);
   accessSync(selectedHost, constants.X_OK);
 }

@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {Dispatcher, LIMIT, type Frame} from './protocol.js';
+import {requireArtifact} from '../tslib/deps.ts';
 
 import type {Sandbox,Backend} from './types.js';
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
@@ -68,8 +69,7 @@ class Watchdog {
   }
 }
 function watchdogBinary(options:ProcessOptions):string {
-  const bin=options.watchdog??process.env.JITK_WATCHDOG??process.env.JITK_VMM_BINARY;
-  if(!bin)throw Error('watchdog: set ProcessOptions.watchdog, JITK_WATCHDOG or JITK_VMM_BINARY to a jitk-vmm binary');
+  const bin=options.watchdog??process.env.JITK_WATCHDOG??requireArtifact('JITK_VMM_BINARY');
   return bin;
 }
 export class ProcessBackend implements Backend {

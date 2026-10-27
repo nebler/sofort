@@ -1,6 +1,6 @@
 import {receiptPath} from './receipt-path.js';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync} from 'node:fs';
+import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -10,6 +10,7 @@ const d=JSON.parse(readFileSync(new URL('../../bench/hyperlight/adapter.json',im
 const base=fileURLToPath(new URL('../../bench/hyperlight/',import.meta.url));
 const worker=resolve(base,process.env.HYPERLIGHT_WORKER??d.strict_argv[0]);
 const snapshot=resolve(base,process.env.HYPERLIGHT_SNAPSHOT??d.strict_argv[2]);
+for(const path of [worker,resolve(snapshot,'index.json')])if(!existsSync(path))throw Error('Hyperlight artifact missing: '+path+'; run `make -C arch/jitk deps` or set HYPERLIGHT_WORKER and HYPERLIGHT_SNAPSHOT');
 const artifacts=Object.fromEntries([worker,resolve(snapshot,'index.json')].map(path=>[path,createHash('sha256').update(readFileSync(path)).digest('hex')]));
 const b:Backend=new HyperlightBackend(worker,snapshot,5000);
 assert.equal(b.kind,'hyperlight-js');

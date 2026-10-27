@@ -5,13 +5,14 @@ import {fileURLToPath} from 'node:url';
 import {JitkBackend} from './backend.js';
 import type {Backend} from './types.js';
 import type {ParkingGate} from './pool.js';
+import {requireArtifact} from '../tslib/deps.ts';
 export const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:string;integrated:boolean} {
   if(process.platform!=='darwin')throw Error('native core currently supports macOS HVF only');
   if(process.env.JITK_BACKEND&&process.env.JITK_BACKEND!=='jitk')throw Error('native core supports only JITK_BACKEND=jitk');
-  const vmm=process.env.JITK_VMM_BINARY||'/tmp/jitk-r8/vmm-mac/jitk-vmm';
+  const vmm=requireArtifact('JITK_VMM_BINARY');
   const image=process.env.JITK_KERNEL_IMAGE||resolve(root,'kernel/dist/kernel.bin');
-  if(!existsSync(vmm)||!existsSync(image))throw Error('missing VMM/kernel; set JITK_VMM_BINARY and JITK_KERNEL_IMAGE to built artifacts');
+  if(!existsSync(vmm)||!existsSync(image))throw Error('missing VMM/kernel '+vmm+', '+image+'; run make -C arch/jitk deps build, or set JITK_VMM_BINARY and JITK_KERNEL_IMAGE');
   const hash=(p:string):string=>createHash('sha256').update(readFileSync(p)).digest('hex');
   const vh=hash(vmm),kh=hash(image);
   let gate:ParkingGate|undefined;

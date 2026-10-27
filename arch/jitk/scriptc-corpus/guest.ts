@@ -6,6 +6,7 @@ import { capture, run, environment, sha, check, type Result } from './lib.ts';
 import { pack } from '../kernel/packer.ts';
 import { observe } from '../grow/observations.ts';
 import { guestStdout } from './guest-output.ts';
+import { requireArtifact } from '../tslib/deps.ts';
 
 export interface Stream { stdout: string; stderr: string; exit: number | null; timeout: boolean }
 export interface Guest {
@@ -97,7 +98,7 @@ export async function guest(elf: string, dir: string, timeout = 10, target = 'ta
   writeFileSync(join(dir, 'kernel-build.log'), Buffer.concat([result.stdout, result.stderr]));
   if (result.returncode !== 0 || result.timeout || !existsSync(join(out, 'kernel.bin'))) return { buildError: result.timeout ? 'timeout' : 'rc=' + result.returncode };
   check(embedded(readFileSync(join(out, 'kernel.bin')), pack(readFileSync(elf)).flat), 'stale-payload-embedding: kernel.bin does not contain this ELF');
-  const vmm = process.env.JITK_VMM_BINARY || '/tmp/jitk-r8/vmm-mac/jitk-vmm';
+  const vmm = requireArtifact('JITK_VMM_BINARY');
   const vm = await capture([vmm, '--image', join(out, 'kernel.bin')], { timeout });
   const observed = observe(vm.stdout);
   const text = vm.stdout.toString('latin1');
