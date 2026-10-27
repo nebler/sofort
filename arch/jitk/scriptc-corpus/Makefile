@@ -34,6 +34,9 @@ fallback: build
 	$(SCRIPTC) build audit.ts -o $@
 audit: .work/bin/audit
 	.work/bin/audit
+.work/bin/phase2-report: phase2-report.ts lib.ts $(SCRIPTC)
+	mkdir -p .work/bin
+	$(SCRIPTC) build phase2-report.ts -o $@
 # jitk-only rerun of a completed census on another kernel tree, e.g.
 # ARGS="--from full --id grown-heldout --kernel DIR --selection heldout".
 rerun: build
