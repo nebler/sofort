@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
 import { check } from '../tslib/assert.ts';
 import { sleep, track } from '../tslib/process.ts';
+import { vmmBuildDir } from '../tslib/deps.ts';
+import { join } from 'node:path';
 
 // Shared helpers live in ../tslib; the VMM session and report formatting are vmm's.
 export { check } from '../tslib/assert.ts';
@@ -67,4 +69,16 @@ export class Session {
 export function fixed3(value: number): string {
   const rounded = Math.round(value * 1000);
   return String(Math.floor(rounded / 1000)) + '.' + String(rounded % 1000).padStart(3, '0');
+}
+
+// Defaults matching the Makefile: the cache VMM build (../tslib/deps.ts) and
+// this checkout's .work/ test images and compiled profile.
+export function defaultBinary(): string {
+  return join(process.env.JITK_VMM_BUILD || vmmBuildDir(), 'jitk-vmm');
+}
+export function defaultImages(): string {
+  return process.env.JITK_TEST_IMAGES || join(import.meta.dirname, '.work/test-images');
+}
+export function defaultProfile(): string {
+  return join(import.meta.dirname, '.work/test.sbbin');
 }

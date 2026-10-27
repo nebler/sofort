@@ -49,8 +49,14 @@ every child; signals and deadline kills are never valid results.
 ## Build
 
 Requires Rust 1.95.0, Python 3, git, make and a native C linker. Builds keep
-the pinned libkrun checkout and all binaries outside the repository, under
-`/tmp/jitk-01/r3/<platform>` by default (`JITK_VMM_BUILD` overrides this).
+the pinned libkrun checkout and all binaries outside the repository, by
+default in the jitk cache (`../README.md#clean-clone`): `vmm/<platform>-<inputs>/`
+keyed by a hash of `build.ts`, the patch set, `src/`, `sandbox/` and the
+`.READY` state, with `libkrun` linked to one checkout per patch set
+(`vmm/libkrun-<platform>-<patches>/`). An unchanged input set is not rebuilt.
+`JITK_VMM_BUILD` overrides the output directory (its own `libkrun/` unless
+`JITK_VMM_LIBKRUN` names one); `.work/bin/build --print-binary` prints the
+selection. `make test` keeps test images and the compiled profile in `.work/`.
 `LIBKRUN_SOURCE` may name a local git clone or a remote; the exact full commit
 is always checked. No installed libkrun is used. Optional libkrun features
 and FFI are disabled, rlib linked with fat LTO, stripped, and panic=abort in

@@ -1,8 +1,8 @@
 import { mkdirSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { run } from '../lib.ts';
+import { defaultImages, run } from '../lib.ts';
 const root = join(import.meta.dirname, 'fixtures');
-const out = process.env.JITK_TEST_IMAGES || '/tmp/jitk-01/r3/images';
+const out = defaultImages();
 mkdirSync(out, { recursive: true });
 await run(['clang', '--target=aarch64-none-elf', '-c', join(root, 'start.S'), '-o', join(out, 'start.o')], { inherit: true });
 async function compile(name: string, source: string, flags: string[], linker: string): Promise<void> {

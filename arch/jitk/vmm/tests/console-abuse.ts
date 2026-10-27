@@ -1,11 +1,11 @@
 import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { platform } from 'node:os';
-import { argument, capture, dump, fixed3, median, output, sleep } from '../lib.ts';
+import { argument, capture, defaultBinary, defaultImages, defaultProfile, dump, fixed3, median, output, sleep } from '../lib.ts';
 declare function nativeChildrenCPU(): number;
-const binary = argument('binary', '/tmp/jitk-01/r3/' + platform() + '/jitk-vmm');
-const images = argument('images', '/tmp/jitk-01/r3/images');
-const profile = argument('profile', '/tmp/jitk-01/r3/jitk.sbbin');
+const binary = argument('binary', defaultBinary());
+const images = argument('images', defaultImages());
+const profile = argument('profile', defaultProfile());
 const repeats = Number(argument('repeats', '30'));
 const modes = argument('modes', '1,2,3,4,5,6,7,8,9').split(',').map(Number);
 const deadline = Number(argument('deadline', '3'));

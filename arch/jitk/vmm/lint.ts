@@ -1,9 +1,9 @@
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { platform } from 'node:os';
 import { check, environment, run } from './lib.ts';
+import { vmmBuildDir } from '../tslib/deps.ts';
 const root = import.meta.dirname;
-const build = process.env.JITK_VMM_BUILD || '/tmp/jitk-01/r3/' + platform();
+const build = process.env.JITK_VMM_BUILD || vmmBuildDir();
 const deps = join(build, 'libkrun/target/release/deps');
 const flags = ['--cfg', 'sandbox_ready', '-C', 'panic=abort', '-Zpanic_abort_tests', '-L', 'dependency=' + deps, '--extern', 'krun=' + join(deps, 'libkrun.rlib')];
 for (const [crate, prefix] of [['libc', 'liblibc-'], ['utils', 'libkrun_utils-']]) {
