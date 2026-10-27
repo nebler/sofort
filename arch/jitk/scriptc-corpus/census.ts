@@ -42,6 +42,13 @@ let JOURNAL = '';
 let diskBefore = '';
 let infrastructureFailure = false;
 let layout = 'jitk';
+// rerun: source journal, kernel tree and optional program filters.
+let fromId = '';
+let kernelArg = '';
+let namesFile = '';
+let uses = '';
+let findingsDir = 'findings';
+let targetPrefix = '';
 
 function hash(text: string): string { return sha(Buffer.from(text)); }
 function held(name: string): boolean { return parseInt(hash(seed + '\0' + name).slice(0, 8), 16) % 100 < heldPercent; }
@@ -152,12 +159,12 @@ export function classify(r: { complete: boolean; same: boolean; fault: boolean; 
 export function divergent(guestErrors: string[], linuxErrors: string[]): string[] {
   return guestErrors.filter(e => !e.endsWith(':-38') && !linuxErrors.includes(e));
 }
-async function jitk(elf: string, dir: string, row: Row, linuxErrors: string[]): Promise<void> {
+async function jitk(elf: string, dir: string, row: Row, linuxErrors: string[], target = 'target', kernel = join(WORK, 'kernel')): Promise<void> {
   // Invoking the exact canonical packer for EVERY compiled ELF is deliberate:
   // a syscall shortage must never hide a loader/packer gap.
   try { pack(readFileSync(elf)); }
   catch (e) { row.jitk = 'loader-refusal'; row.loader = String(e).replace(/^Error: /, ''); return; }
-  const g = await guest(elf, dir);
+  const g = await guest(elf, dir, 10, target, kernel);
   if ('buildError' in g) { row.jitk = 'build-error'; row.diagnostic = row.diagnostic || 'kernel ' + g.buildError; return; }
   row.guestTrace = g.trace;
   row.guestMissing = g.missing;
@@ -174,7 +181,7 @@ async function jitk(elf: string, dir: string, row: Row, linuxErrors: string[]): 
   const last = g.errorOrder.filter(e => row.guestDivergent!.includes(e)).pop();
   row.cause = row.jitk === 'pass' ? '' : c.blocking.length ? 'missing:' + c.blocking.join('+') : g.control ? 'stdout-control-byte' : last ? 'divergent:' + last : row.crash || row.jitk;
   if (row.jitk !== 'pass') {
-    const findings = join(WORK, 'findings', hash(row.name));
+    const findings = join(WORK, findingsDir, hash(row.name));
     mkdirSync(findings, { recursive: true });
     writeFileSync(join(findings, 'vm.stdout.head'), g.raw.subarray(0, 65536));
     writeFileSync(join(findings, 'vm.stdout.tail'), g.raw.subarray(Math.max(0, g.raw.length - 65536)));
@@ -383,6 +390,116 @@ async function prepare(): Promise<void> {
   const kernel = join(WORK, 'kernel');
   if (!existsSync(join(kernel, 'Cargo.toml'))) copyTree(resolve(ROOT, '../kernel'), kernel, new Set(['.work', 'target', 'target-ring', 'dist', 'test-work', 'test-results', 'node_modules']));
 }
+// rerun: jitk-only re-evaluation of a completed census journal against another
+// kernel tree (`--kernel DIR`, copied into .work/kernel-<id>). Linux/Node
+// streams, tolerated/blocker sets and tiers come from the `--from` journal.
+// Every ELF is rebuilt; under the jitk layout it must hash to the census ELF,
+// so the comparison stays like for like. The census trace files were pruned, so
+// `cause` filters guest errors by those seen in passing programs of the source
+// journal instead of by the per-program Linux error set.
+function latestRows(id: string): Row[] {
+  const latest = new Map<string, Row>();
+  for (const line of readFileSync(join(WORK, id + '.jsonl'), 'utf8').trim().split('\n').filter(Boolean)) {
+    const row = JSON.parse(line) as Row;
+    latest.set(row.name, row);
+  }
+  return Array.from(latest.values());
+}
+async function rerunProgram(base: Row, target: string, kernel: string, benign: string[]): Promise<void> {
+  const row: Row = { name: base.name, held: base.held, source: base.source, build: base.build, diagnostic: '', elf: base.elf,
+    tier: base.tier, node: base.node, linux: base.linux, syscalls: base.syscalls, absent: base.absent, blockers: base.blockers,
+    tolerated: base.tolerated, limitations: base.limitations, jitk: 'not-run', stable: base.stable, stockLoader: base.stockLoader };
+  const dir = join(WORK, 'jobs', hash(runId + '\0' + base.name).slice(0, 16));
+  rmSync(dir, { recursive: true, force: true });
+  mkdirSync(dir, { recursive: true });
+  try {
+    const text = inputs(base.name);
+    check(hash(text) === base.source, 'corpus source drift: ' + base.name);
+    const elf = join(dir, 'program');
+    const buildEnv = environment();
+    buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
+    buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
+    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, 'node_modules/@scriptc/runtime-linux-arm64-musl');
+    if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
+    buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
+    const args = [compiler, 'build', join(CORPUS, base.name), '-o', elf];
+    if (text.split('\n', 2).includes('// @optimization: speed')) args.push('--optimization', 'speed');
+    const build = await capture(args, { cwd: SOURCE, env: buildEnv, timeout: 40 });
+    if (build.returncode !== 0 || build.timeout || !existsSync(elf)) { row.jitk = 'build-error'; row.diagnostic = 'rebuild failed'; return; }
+    if (layout === 'jitk' && sha(readFileSync(elf)) !== base.elf) { row.jitk = 'elf-drift'; row.diagnostic = 'rebuilt ELF differs from the census ELF'; return; }
+    if (layout === 'stock') row.elf = sha(readFileSync(elf));
+    try { pack(readFileSync(elf)); }
+    catch (e) { row.jitk = 'loader-refusal'; row.loader = String(e).replace(/^Error: /, ''); return; }
+    await jitk(elf, dir, row, benign, target, kernel);
+  } catch (e) {
+    row.diagnostic = row.diagnostic || String(e).slice(0, 1000);
+    if (/stale-payload-embedding/.test(String(e))) infrastructureFailure = true;
+  } finally {
+    appendFileSync(JOURNAL, JSON.stringify(row) + '\n');
+    rows.push(row);
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+async function rerun(): Promise<void> {
+  check(/^[a-zA-Z0-9_-]+$/.test(fromId) && existsSync(join(WORK, fromId + '.jsonl')), 'rerun needs --from <completed census id>');
+  check(kernelArg !== '' && existsSync(join(kernelArg, 'build.sh')), 'rerun needs --kernel <kernel tree>');
+  check(Number.isInteger(workers) && workers >= 1 && workers <= 3, 'rerun uses at most three guest workers');
+  check(['all', 'visible', 'heldout'].includes(selection) && (layout === 'stock' || layout === 'jitk'), 'selection/layout');
+  check(/^[a-zA-Z0-9_-]+$/.test(runId) && runId !== 'full' && runId !== fromId, 'rerun needs a fresh --id');
+  await prepare();
+  diskBefore = await disk();
+  findingsDir = 'findings-' + runId;
+  const source = latestRows(fromId);
+  const names = namesFile ? new Set(readFileSync(namesFile, 'utf8').split('\n').filter(Boolean)) : null;
+  const selected = source.filter(r => r.build === 'compiled' && (!filter || r.name.includes(filter)) && (!names || names.has(r.name))
+    && (!uses || uses.split(',').some(u => r.syscalls.includes(u))) && (selection === 'all' || held(r.name) === (selection === 'heldout')))
+    .sort((a, b) => a.name.localeCompare(b.name)).slice(0, limit);
+  const kernel = join(WORK, 'kernel-' + runId);
+  if (!existsSync(join(kernel, 'Cargo.toml'))) copyTree(resolve(kernelArg), kernel, new Set(['.work', 'target', 'target-ring', 'dist', 'test-work', 'test-results', 'node_modules', '.git']));
+  const benign = Array.from(new Set(source.filter(r => r.jitk === 'pass').flatMap(r => r.guestErrors || []))).sort();
+  const manifest = { mode: 'rerun', from: fromId, fromJournal: sha(readFileSync(join(WORK, fromId + '.jsonl'))), seedCommitment: hash(seed), heldPercent,
+    selection, layout, linker: layout === 'jitk' ? sha(readFileSync(join(ROOT, 'zig-link.sh'))) : 'scriptc-default',
+    selected: hash(selected.map(r => r.name).join('\n')), count: selected.length, runner: sha(readFileSync(join(ROOT, 'census.ts'))),
+    guest: sha(readFileSync(join(ROOT, 'guest.ts'))), compiler: sha(readFileSync(compiler)),
+    kernel: hash(files(kernel).map(f => f.slice(kernel.length) + ':' + sha(readFileSync(f))).join('\n')), benign };
+  const manifestPath = join(WORK, runId + '-manifest.json');
+  if (existsSync(manifestPath)) check(JSON.stringify(readJSON<unknown>(manifestPath)) === JSON.stringify(manifest), 'resume pins changed: choose a fresh --id');
+  else dump(manifestPath, manifest);
+  JOURNAL = join(WORK, runId + '.jsonl');
+  if (existsSync(JOURNAL)) rows = latestRows(runId).filter(r => r.jitk !== 'not-run');
+  const completed = new Set(rows.map(r => r.name));
+  const todo = selected.filter(r => !completed.has(r.name));
+  console.log('rerun=' + runId + ' from=' + fromId + ' selected=' + selected.length + ' remaining=' + todo.length + ' workers=' + workers);
+  for (let start = 0; start < todo.length; start += 100) {
+    const batch = todo.slice(start, start + 100);
+    let next = 0;
+    // Distinct Cargo target dirs let the workers build images concurrently.
+    const tasks: Promise<void>[] = [];
+    for (let w = 0; w < workers; w++) tasks.push((async () => {
+      while (next < batch.length && !infrastructureFailure) await rerunProgram(batch[next++], (targetPrefix || 'target-' + runId) + '-' + w, kernel, benign);
+    })());
+    const results = await Promise.allSettled(tasks);
+    for (const result of results) check(result.status === 'fulfilled', 'worker failed');
+    check(!infrastructureFailure, 'guest infrastructure failed; resume to retry');
+    console.log('completed=' + rows.length + '/' + selected.length + ' pass=' + rows.filter(r => r.jitk === 'pass').length);
+    await disk();
+  }
+  const before = new Map(source.map(r => [r.name, r]));
+  const transitions: Record<string, number> = {};
+  for (const r of rows) { const key = (before.get(r.name)?.jitk || 'absent') + '->' + r.jitk; transitions[key] = (transitions[key] || 0) + 1; }
+  const tiers = ['T1', 'T2', 'T3', 'T4'].map(t => ({ tier: t, compiled: rows.filter(r => r.tier === t).length,
+    before: rows.filter(r => r.tier === t && before.get(r.name)?.jitk === 'pass').length, after: rows.filter(r => r.tier === t && r.jitk === 'pass').length }));
+  const summary = { schema: 1, mode: 'rerun', run: runId, from: fromId, selection, layout, total: selected.length, completed: rows.length,
+    complete: rows.length === selected.length, heldout: rows.filter(r => r.held).length, jitk: count(rows.map(r => r.jitk)),
+    before: count(rows.map(r => before.get(r.name)?.jitk || 'absent')), tiers, transitions,
+    t1t2: { compiled: rows.filter(r => r.tier === 'T1' || r.tier === 'T2').length, before: rows.filter(r => (r.tier === 'T1' || r.tier === 'T2') && before.get(r.name)?.jitk === 'pass').length, after: rows.filter(r => (r.tier === 'T1' || r.tier === 'T2') && r.jitk === 'pass').length },
+    nodeVerifiedPass: rows.filter(r => r.node === 'match' && r.jitk === 'pass').length,
+    causes: count(rows.filter(r => r.jitk !== 'pass').map(r => r.cause || r.jitk)), crashes: count(rows.filter(r => r.crash).map(r => r.crash || '')),
+    guestMissing: count(rows.flatMap(r => r.guestMissing || [])), loader: count(rows.filter(r => r.loader).map(r => r.loader || '')),
+    benign, diskBefore, diskAfter: await disk() };
+  dump(join(WORK, runId + '-summary.json'), summary);
+  console.log(JSON.stringify({ run: runId, total: summary.total, completed: summary.completed, jitk: summary.jitk, tiers }));
+}
 async function main(): Promise<void> {
   mode = process.argv[2] || 'census';
   for (let i = 3; i < process.argv.length; i += 2) {
@@ -395,6 +512,11 @@ async function main(): Promise<void> {
     else if (key === '--heldout-percent') heldPercent = Number(value);
     else if (key === '--id') runId = value;
     else if (key === '--layout') layout = value;
+    else if (key === '--from') fromId = value;
+    else if (key === '--kernel') kernelArg = value;
+    else if (key === '--names') namesFile = value;
+    else if (key === '--uses') uses = value;
+    else if (key === '--targets') targetPrefix = value;
     else throw new Error('unknown argument ' + key);
   }
   if (mode === 'test') {
@@ -416,7 +538,8 @@ async function main(): Promise<void> {
     check(embedded(Buffer.concat([Buffer.alloc(0x80000), flat]), flat) && !embedded(Buffer.concat([Buffer.alloc(0x80000), Buffer.from('stale-payload')]), flat), 'payload embedding check');
     console.log('ok'); return;
   }
-  check(mode === 'census' || mode === 'run' || mode === 'report', 'expected census/run/report/test');
+  if (mode === 'rerun') { await rerun(); return; }
+  check(mode === 'census' || mode === 'run' || mode === 'report', 'expected census/run/report/rerun/test');
   check(Number.isInteger(workers) && workers >= 1 && workers <= 2, 'at most two oracle workers (one slot reserved for grow)');
   check(['all', 'visible', 'heldout'].includes(selection), 'invalid selection');
   check(layout === 'stock' || layout === 'jitk', 'invalid link layout');

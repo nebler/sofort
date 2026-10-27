@@ -1,6 +1,6 @@
 // Canonical jitk guest leg shared by the corpus runner and the clone-fallback
 // probe: unchanged kernel copy, canonical release profile, grow-trace observer.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { capture, run, environment, sha, check, type Result } from './lib.ts';
 import { pack } from '../kernel/packer.ts';
@@ -20,8 +20,9 @@ const ZIG = process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig';
 const compiler = join(ROOT, 'node_modules/.bin/scriptc');
 // Packed payload GPA offset inside kernel.bin (link.ld: 0x80080000 - 0x80000000).
 const PACKED_OFFSET = 0x80000;
-let toolsReady: Promise<void> | undefined;
-let building = false;
+const toolsReady = new Map<string, Promise<void>>();
+// One Cargo build per target directory at a time (build.sh runs objcopy outside its lock).
+const building = new Set<string>();
 let names: Record<string, string> | undefined;
 let errnos: Record<string, number> | undefined;
 
@@ -57,15 +58,14 @@ export function stream(out: Buffer, err: Buffer, code: number | null, timeout = 
 export function identical(a: Stream, b: Stream): boolean {
   return !a.timeout && !b.timeout && a.stdout === b.stdout && a.stderr === b.stderr && a.exit === b.exit;
 }
-async function kernelTools(): Promise<void> {
-  if (toolsReady) return toolsReady;
-  toolsReady = (async () => {
-    mkdirSync(join(WORK, 'kernel-tools'), { recursive: true });
+async function kernelTools(kernel: string, tools: string): Promise<void> {
+  if (!toolsReady.has(tools)) toolsReady.set(tools, (async () => {
+    mkdirSync(tools, { recursive: true });
     for (const tool of ['prepare', 'build-args', 'artifact']) {
-      await run([compiler, 'build', join(WORK, 'kernel', tool + '.ts'), '-o', join(WORK, 'kernel-tools', tool)], { timeout: 45 });
+      await run([compiler, 'build', join(kernel, tool + '.ts'), '-o', join(tools, tool)], { timeout: 45 });
     }
-  })();
-  await toolsReady;
+  })());
+  await toolsReady.get(tools);
 }
 // Rust incremental compilation does not track the `.incbin` payload inside
 // global_asm!, so an incremental cache silently keeps the FIRST payload. The
@@ -77,21 +77,23 @@ export function embedded(kernel: Buffer, flat: Buffer): boolean {
 // the caller first; it is a loader result, not a guest result. Concurrent
 // processes must use distinct target directories: build.sh runs objcopy
 // outside Cargo's lock, and a foreign relink would trip the embedding check.
-export async function guest(elf: string, dir: string, timeout = 10, target = 'target'): Promise<Guest | { buildError: string }> {
-  await kernelTools();
+export async function guest(elf: string, dir: string, timeout = 10, target = 'target', kernel = join(WORK, 'kernel')): Promise<Guest | { buildError: string }> {
+  // Build tools are keyed by the kernel tree's TypeScript (prepare/packer may differ).
+  const tools = kernel === join(WORK, 'kernel') ? join(WORK, 'kernel-tools') : join(WORK, 'kernel-tools-' + sha(Buffer.from(readdirSync(kernel).filter(f => f.endsWith('.ts')).sort().map(f => f + ':' + sha(readFileSync(join(kernel, f)))).join('\n'))).slice(0, 16));
+  await kernelTools(kernel, tools);
   const out = join(dir, 'image');
   const buildEnv = environment();
-  buildEnv.JITK_TOOLS_DIR = join(WORK, 'kernel-tools');
+  buildEnv.JITK_TOOLS_DIR = tools;
   buildEnv.CARGO_TARGET_DIR = join(WORK, target);
   buildEnv.JITK_OUT_DIR = out;
   buildEnv.JITK_ELF = elf;
   buildEnv.JITK_ARGV_JSON = JSON.stringify([elf]);
   for (const key of Object.keys(buildEnv)) if (key.startsWith('CARGO_PROFILE_') || key === 'CARGO_INCREMENTAL') delete buildEnv[key];
-  while (building) await new Promise<void>(r => setTimeout(r, 10));
-  building = true;
+  while (building.has(target)) await new Promise<void>(r => setTimeout(r, 10));
+  building.add(target);
   let result: Result;
-  try { result = await capture(['sh', join(WORK, 'kernel', 'build.sh'), '--features', 'qjs,grow-trace'], { env: buildEnv, timeout: 120 }); }
-  finally { building = false; }
+  try { result = await capture(['sh', join(kernel, 'build.sh'), '--features', 'qjs,grow-trace'], { env: buildEnv, timeout: 120 }); }
+  finally { building.delete(target); }
   writeFileSync(join(dir, 'kernel-build.log'), Buffer.concat([result.stdout, result.stderr]));
   if (result.returncode !== 0 || result.timeout || !existsSync(join(out, 'kernel.bin'))) return { buildError: result.timeout ? 'timeout' : 'rc=' + result.returncode };
   check(embedded(readFileSync(join(out, 'kernel.bin')), pack(readFileSync(elf)).flat), 'stale-payload-embedding: kernel.bin does not contain this ELF');

@@ -5,7 +5,7 @@ export ZIG
 $(SCRIPTC): package-lock.json package.json
 	npm ci --no-audit --no-fund
 build: .work/bin/census .work/bin/oracle .work/bin/fallback
-.work/bin/census: census.ts lib.ts guest.ts guest-output.ts node-reference.ts zig-link.sh $(SCRIPTC)
+.work/bin/census: census.ts lib.ts guest.ts guest-output.ts node-reference.ts zig-link.sh ../kernel/packer.ts $(SCRIPTC)
 	mkdir -p .work/bin
 	$(SCRIPTC) build census.ts -o $@
 .work/bin/oracle: oracle.ts lib.ts $(SCRIPTC)
@@ -24,7 +24,7 @@ test: build
 	$(SCRIPTC) build report.ts -o $@
 report: .work/bin/report
 	.work/bin/report
-.work/bin/fallback: fallback.ts allocator-probe.ts lib.ts guest.ts guest-output.ts $(SCRIPTC)
+.work/bin/fallback: fallback.ts allocator-probe.ts lib.ts guest.ts guest-output.ts ../kernel/packer.ts $(SCRIPTC)
 	mkdir -p .work/bin
 	$(SCRIPTC) build fallback.ts -o $@
 fallback: build
