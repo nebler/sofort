@@ -10,7 +10,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { check, capture, csvEncode, detail, diskSpace, dump, equal, files, readJSON, readOr, run, SAFE_ENV, sha } from './lib.ts';
-import { ROOT, CANONICAL, build, cleanup, copyKernel, checkHost, hostCommand, processGuest, scratch, selectHost, treeHashes } from './runtime.ts';
+import { ROOT, CANONICAL, build, slotNumber, cleanup, copyKernel, checkHost, hostCommand, processGuest, scratch, selectHost, treeHashes } from './runtime.ts';
 import { emit, generate } from './autoprofile.ts';
 import { learn, normalizeAuto, varyingIdentities, type Learned } from './auto-observe.ts';
 import { oracle, requireSameTree, SHARED_TREE_MODE, type Oracle } from './oracle.ts';
@@ -108,13 +108,12 @@ async function prepare(argv: string[]): Promise<void> {
   const index = readJSON<Record<string, string[]>>(join(resolve(arg(argv, '--traces')), 'index.json'));
   const fresh = resolve(arg(argv, '--fresh'));
   const common = [resolve(ROOT, '../../research/native-census/raw/sqlite3/full.strace'), resolve(ROOT, '../../research/native-census/raw/qsv/full.strace'), resolve(ROOT, '../../research/native-census/raw/rg/full.strace'), join(fresh, 'qjs/linux-00.strace'), join(fresh, 'sqlite/linux-00.strace')];
-  const slots = readJSON<Record<string, string>>(join(CANONICAL, 'slots.json'));
   const targets = arg(argv, '--targets') ? arg(argv, '--targets').split(',') : TARGETS;
   for (const target of targets) {
     const dest = join(out, target);
     if (existsSync(join(dest, 'plan.json'))) continue;
     await diskSpace(); removeUnpacked(dest); mkdirSync(dest);
-    const nr = Number(Object.keys(slots).find((key) => slots[key] === target)); check(Number.isInteger(nr), 'slot required: ' + target);
+    const nr = Number(slotNumber(target)); check(Number.isInteger(nr), 'slot required: ' + target);
     // mmap is seeded from scriptc traces only: the native-census traces add Rust
     // std MAP_FIXED guard pages at absolute addresses of another process.
     const sources = [...(index[target] || []), ...(SCRIPTC_ONLY.includes(target) ? [] : common)];

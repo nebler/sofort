@@ -2,7 +2,7 @@ import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, unlinkSync
 import { join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { check, detail, dump, equal, GateError, readJSON } from './lib.ts';
-import { ASSETS, CANONICAL, ROOT, build, capture, checkHost, cleanup, copyKernel, distribution, host, hostCommand, load, probeSource, processGuest, run, scratch, selectGate, selectHost, sha, treeHashes, type GuestInfo } from './runtime.ts';
+import { ASSETS, CANONICAL, ROOT, build, slotNumber, capture, checkHost, cleanup, copyKernel, distribution, host, hostCommand, load, probeSource, processGuest, run, scratch, selectGate, selectHost, sha, treeHashes, type GuestInfo } from './runtime.ts';
 import { compare, guest, linux } from './adapters.ts';
 import { hostHandlerTests } from './host-tests.ts';
 import { retryTransaction, type Feedback, type TransactionReport } from './retries.ts';
@@ -16,7 +16,6 @@ import { requireNoProbeBranches } from './probe-lint.ts';
 export const LUA_ARGV = ['lua', '-e', readFileSync(join(ASSETS, 'fixtures.lua'), 'utf8')];
 export const QJS_ARGV = ['qjs', '--std', '-e', 'os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print("reply:"+s)})'];
 const LUA_OUTPUT = Buffer.from('{"count":5,"sum":23,"max":9}\n');
-const SLOTS = readJSON<Record<string, string>>(join(CANONICAL, 'slots.json'));
 
 interface Stage {
   passed: boolean;
@@ -54,8 +53,8 @@ export class Receipt {
 export async function probe(name: string, out: string, source = probeSource(name)): Promise<string> {
   const obj = join(out, name + '.o');
   const elf = join(out, name + '.elf');
-  const nr = Object.keys(SLOTS).find((n) => SLOTS[n] === name);
-  check(nr, 'missing kernel slot');
+  const nr = slotNumber(name);
+  check(nr !== undefined, 'missing kernel slot');
   const options = source.endsWith('.c') ? ['-ffreestanding', '-fno-builtin', '-fno-stack-protector', '-O1', '-DTARGET=' + nr] : [];
   await run(['clang', '--target=aarch64-none-elf', ...options, '-c', source, '-o', obj]);
   await run(['/opt/homebrew/bin/ld.lld', '-T', join(ASSETS, 'probe.ld'), obj, '-o', elf]);

@@ -6,10 +6,9 @@ fn main() {
     // Arch layer: linker script and Linux syscall-number table (see ARCH.md).
     let arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
     let arch_dir = base.join("src/arch").join(&arch);
-    println!(
-        "cargo:rerun-if-changed={}",
-        arch_dir.join("link.ld").display()
-    );
+    for file in ["link.ld", "syscalls.json"] {
+        println!("cargo:rerun-if-changed={}", arch_dir.join(file).display());
+    }
     for key in [
         "JITK_ELF",
         "JITK_SCRIPT",
@@ -56,11 +55,13 @@ fn main() {
             .unwrap()
             .success()
     );
-    // The native generator parses slots once for the manifest and dispatcher.
+    // The native generator parses slots and the arch syscall table once for the
+    // manifest and dispatcher.
     assert!(
         Command::new(tools.join("build-args"))
             .arg(&out)
             .arg(&base)
+            .arg(&arch)
             .status()
             .unwrap()
             .success()

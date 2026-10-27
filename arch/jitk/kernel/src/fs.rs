@@ -264,10 +264,12 @@ pub fn data(n: &Node) -> &'static [u8] {
     }
 }
 
-// AArch64 stat ABI, shared by pathname and descriptor metadata. Archive
-// metadata is deterministic; console descriptors describe anonymous pipes.
-pub fn stat(n: Option<Node>) -> [u8; 128] {
-    let mut st = [0u8; 128];
+// Linux `struct stat` layout is per-architecture ABI data.
+#[cfg_attr(target_arch = "aarch64", path = "arch/aarch64/stat.rs")]
+mod stat_abi;
+// Linux stat, shared by pathname and descriptor metadata. Archive metadata is
+// deterministic; console descriptors describe anonymous pipes.
+pub fn stat(n: Option<Node>) -> stat_abi::Bytes {
     let (dev, ino, mode, size) = match n {
         Some(n) => (
             1u64,
@@ -277,14 +279,15 @@ pub fn stat(n: Option<Node>) -> [u8; 128] {
         ),
         None => (0, 0, 0o10600, 0),
     };
-    st[0..8].copy_from_slice(&dev.to_le_bytes());
-    st[8..16].copy_from_slice(&ino.to_le_bytes());
-    st[16..20].copy_from_slice(&mode.to_le_bytes());
-    st[20..24].copy_from_slice(&1u32.to_le_bytes());
-    st[48..56].copy_from_slice(&size.to_le_bytes());
-    st[56..60].copy_from_slice(&4096u32.to_le_bytes());
-    st[64..72].copy_from_slice(&size.div_ceil(512).to_le_bytes());
-    st
+    stat_abi::encode(&stat_abi::Stat {
+        dev,
+        ino,
+        mode,
+        nlink: 1,
+        size,
+        blksize: 4096,
+        blocks: size.div_ceil(512),
+    })
 }
 
 // Copy a NUL-terminated user path one page at a time (PATH_MAX 4096 incl. NUL).
