@@ -28,7 +28,10 @@ export function trackedChildren(): number {
   return running;
 }
 
-export function killGroup(child: ChildProcess, signal = 'SIGKILL'): void {
+// The signals the tools send (process.kill wants a signal name, not a string).
+export type Signal = 'SIGKILL' | 'SIGTERM' | 'SIGINT';
+
+export function killGroup(child: ChildProcess, signal: Signal = 'SIGKILL'): void {
   if (child.pid === undefined) {
     return;
   }

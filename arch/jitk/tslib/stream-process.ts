@@ -5,7 +5,7 @@ import { type ChildProcess, spawn } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { constants } from 'node:os';
 import { check } from './assert.ts';
-import { environment, killGroup, spawnCapture, startDirect, track } from './process.ts';
+import { environment, killGroup, spawnCapture, startDirect, track, type Signal } from './process.ts';
 
 // The current environment plus extra.
 export function env(extra: Record<string, string> = {}): Record<string, string> {
@@ -42,7 +42,7 @@ export function status(code: number | null, signal: string | null): number {
   return -(signals[signal || 'SIGKILL'] || 1);
 }
 
-export function kill(child: ChildProcess, signal = 'SIGKILL'): void {
+export function kill(child: ChildProcess, signal: Signal = 'SIGKILL'): void {
   killGroup(child, signal);
 }
 
