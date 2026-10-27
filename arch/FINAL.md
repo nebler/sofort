@@ -42,6 +42,7 @@ Hyperlight also cannot run static Lua; jitk runs Lua byte-identical to Linux.
 1. **Linux bare-metal numbers.** CPU-ms/VM must be measured against the 5 CPU-ms kill line. The kit is one command; a c7g.metal spot run costs under $1. Needs user approval.
 2. **Quiet-machine benchmark.** Every number so far comes from load 12–146.
 3. **Memory gap vs Hyperlight (6×).** Options: share image pages across VMs with file-backed `MAP_PRIVATE` (measured 256 → 39 MiB PSS on 32 VMs; needs a libkrun loader patch), or a smaller guest.
+   **Update 2026-10-27:** the 6× applies only to the macOS path, which runs one process per VM. On the same nested-KVM Linux host, the shard and Hyperlight's in-process shared-snapshot sandboxes cost the same per VM within ~4%, with Hyperlight slightly lower: `return 2` 0.515 vs 0.495 MiB, one tool call 0.535 vs 0.527 MiB. Hyperlight's fixed cost is also ~1.5 MiB lower. See `jitk/bench/RESULTS-LINUX-MEMORY-2026-10-27.md`.
 4. **H5 gaps.** The Linux escape suite, EOF mid-call, and the full matrix on the final executor have not run.
 5. **Reproducibility and size.** The Linux VMM build is not bit-reproducible. 9.4k owned LOC is over the 5.75k planning cap; the runtime alone is ~4k.
 6. **Story honesty.** Lua already runs with ENOSYS defaults, so the growth for Lua is a verified contract, not "dead → alive". SQLite with time/random (+5 syscalls) is a stronger second-binary demo.
