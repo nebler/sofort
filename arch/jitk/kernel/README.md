@@ -27,6 +27,11 @@ provenance and restrictions. All frames spanning guard rotation are built withou
 stack protection, including libc; do not enable it without redesigning checkpoint
 unwinding. The default `payload/qjs` and `dist/kernel.bin` remain unchanged.
 
+Source layout: an architecture-neutral core plus `src/arch/aarch64/` (boot, vectors,
+MMU, timer/GIC, FDT, trap entry, MMIO, syscall numbers, stat layout). See
+[ARCH.md](ARCH.md) for the interface an x86_64 port implements; `arch-lint` keeps
+assembly and AArch64 names out of the core.
+
 `make -C arch/jitk/kernel` builds the 32 MiB AArch64 RAW image. Requires Rust
 1.95.0 + aarch64-unknown-none, Python 3, LLVM objcopy (override `OBJCOPY`).
 There are no Cargo dependencies or network downloads. `payload/qjs` is the stripped
@@ -100,9 +105,11 @@ from 0x400000; heap and mmap stay above the image, so the arena shrinks by the p
 W+X and ANY page-sharing between PT_LOAD segments are rejected (including RX/RW).
 Nonconforming executables must be relinked; there is no runtime relocation/parser.
 
-`slots.json` fixes syscall numbers. build.rs emits dispatch and registered slots
-from `src/syscalls/<name>.rs`; deleting a file requires no other change. Multiple
-slots may name the same handler: 93 (exit) and 94 (exit_group) both use `exit.rs`
+`slots.json` maps Linux syscall names to handler modules. The numbers come from
+the architecture's table, `src/arch/aarch64/syscalls.json`; a new slot needs an
+entry there too. build.rs emits dispatch, registered slots and
+`syscalls::nr` from `src/syscalls/<name>.rs`; deleting a file requires no other
+change. Multiple slots may name the same handler: exit (93) and exit_group (94) both use `exit.rs`
 because the guest has exactly one thread. The module is emitted once; deleting
 it unregisters both slots. Reserved
 134 rt_sigaction and 135 rt_sigprocmask are installed as Lua profile handlers:

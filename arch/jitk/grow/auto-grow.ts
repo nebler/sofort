@@ -1,7 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { check, capture, csvDecode, csvEncode, detail, diskSpace, dump, equal, readJSON, readOr, run, SAFE_ENV, sha, load, pythonShuffle } from './lib.ts';
-import { ROOT, CANONICAL, build, cleanup, copyKernel, checkHost, hostCommand, processGuest, scratch, selectHost, treeHashes } from './runtime.ts';
+import { ROOT, CANONICAL, build, slotNumber, cleanup, copyKernel, checkHost, hostCommand, processGuest, scratch, selectHost, treeHashes } from './runtime.ts';
 import { emit, generate } from './autoprofile.ts';
 import { learn, normalizeAuto, type Learned } from './auto-observe.ts';
 import { oracle } from './oracle.ts';
@@ -20,10 +20,9 @@ function arg(argv: string[], flag: string, fallback = ''): string { const i = ar
 async function prepare(argv: string[]): Promise<void> {
   const out = resolve(arg(argv, '--profiles')); check(!existsSync(out), 'profiles already exist'); mkdirSync(out, { recursive: true });
   const traces = [resolve(ROOT, '../../research/native-census/raw/sqlite3/full.strace'), resolve(ROOT, '../../research/native-census/raw/qsv/full.strace'), resolve(ROOT, '../../research/native-census/raw/rg/full.strace'), resolve(arg(argv, '--fresh') + '/qjs/linux-00.strace'), resolve(arg(argv, '--fresh') + '/sqlite/linux-00.strace')];
-  const slots = readJSON<Record<string, string>>(join(CANONICAL, 'slots.json'));
   for (const target of TARGETS) {
     await diskSpace(); const dest = join(out, target); mkdirSync(dest);
-    const nr = Number(Object.keys(slots).find((key) => slots[key] === target)); check(Number.isInteger(nr), 'slot required');
+    const nr = Number(slotNumber(target)); check(Number.isInteger(nr), 'slot required');
     const profile = generate(target, nr, traces); emit(profile, dest);
     const fixtures: Fixture[] = [], hashes: Record<string, string> = {};
     for (const split of ['visible', 'heldout']) {

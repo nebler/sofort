@@ -1,7 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { check, csvEncode, detail, diskSpace, dump, equal, load, readJSON, sha, treeHashes } from './lib.ts';
-import { ROOT, CANONICAL, build, checkHost, cleanup, copyKernel, hostCommand, processGuest, scratch, selectHost } from './runtime.ts';
+import { ROOT, CANONICAL, build, slotNumber, checkHost, cleanup, copyKernel, hostCommand, processGuest, scratch, selectHost } from './runtime.ts';
 import { emit, generate } from './autoprofile.ts';
 import { mutations } from './profiles.ts';
 import { oracle } from './oracle.ts';
@@ -29,14 +29,13 @@ export async function runE3(argv: string[]): Promise<void> {
   copyFileSync(arg('--database'), join(resourceRoot, 'demo.db')); writeFileSync(join(resourceRoot, 'dev/null'), '');
   await oracle(arg('--sqlite-elf'), ['sqlite3', '-batch', '-init', '/dev/null', 'file:/demo.db?mode=ro&immutable=1', 'select sum(v) from n;'], join(fresh, 'sqlite'), Buffer.from('23\n'), { resources: resourceRoot, data: Buffer.alloc(0), annotate: true });
   traces.push(join(fresh, 'sqlite/linux-00.strace'));
-  const slots = readJSON<Record<string, string>>(join(CANONICAL, 'slots.json'));
   // Freeze every generated test and Linux expectation before opening mutants.
   const fixtures: Record<string, { elf: string; reference: Outcome; resources: string }[]> = {};
   const frozen: Record<string, unknown> = {};
   for (const target of ['ppoll', 'fstat', 'pread64']) {
     await diskSpace();
     const dest = join(out, target); mkdirSync(dest);
-    const nr = Number(Object.keys(slots).find((key) => slots[key] === target));
+    const nr = Number(slotNumber(target));
     const profile = generate(target, nr, traces); emit(profile, dest);
     fixtures[target] = [];
     for (const split of ['visible', 'heldout']) {

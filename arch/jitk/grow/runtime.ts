@@ -14,6 +14,16 @@ import { requireArtifact } from '../tslib/deps.ts';
 export const ROOT = resolve(import.meta.dirname);
 export const ASSETS = ROOT;
 export const CANONICAL = resolve(ROOT, '../kernel');
+// Kernel slots are named (slots.json: syscall name -> handler); the number comes
+// from the guest architecture's table. Grown guests are aarch64 Linux ELFs.
+export function slotNumber(handler: string): number | undefined {
+  const slots = JSON.parse(readFileSync(join(CANONICAL, 'slots.json'), 'utf8')) as Record<string, string>;
+  const table = JSON.parse(readFileSync(join(CANONICAL, 'src/arch/aarch64/syscalls.json'), 'utf8')) as Record<string, number | null>;
+  const name = Object.keys(slots).find((key) => slots[key] === handler);
+  if (name === undefined) return undefined;
+  const nr = table[name];
+  return typeof nr === 'number' ? nr : undefined;
+}
 let canonicalGate = false;
 export function selectGate(): void {
   canonicalGate = existsSync(resolve(ROOT, '../bench/.READY'));

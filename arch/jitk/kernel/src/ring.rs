@@ -66,6 +66,21 @@ unsafe fn copy_ring(base: usize, cursor: usize, b: &mut [u8], write: bool) {
     }
 }
 /// # Safety
+/// The host has published immutable run seed/clock fields while this vCPU is stopped. The sole
+/// masked-IRQ vCPU exclusively updates kernel seed/epoch state.
+pub unsafe fn boot_info() {
+    // SAFETY: The host has published immutable run seed/clock fields while this vCPU is
+    // stopped. The sole masked-IRQ vCPU exclusively updates kernel seed/epoch state.
+    unsafe {
+        core::ptr::copy_nonoverlapping(
+            (CTRL + SEED) as *const u8,
+            (&raw mut crate::SEED).cast::<u8>(),
+            16,
+        );
+        crate::EPOCH_OFFSET = load(EPOCH_NS).saturating_sub(load(MONOTONIC_NS));
+    }
+}
+/// # Safety
 /// Called once at EL1 with the control page mapped and the stopped host having published the
 /// ABI header.
 pub unsafe fn init(_: usize) {
@@ -296,7 +311,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             assert_eq!({ NEXT }, 1);
             assert_eq!({ INPUT }, 0);
             crate::arch::doorbell(CHECKPOINT); // offline CHECKPOINT, after bootstrap
-            crate::arch::boot_info();
+            boot_info();
             assert_eq!({ CANARY }, 0);
             CANARY = load(GENERATION);
             assert!(CANARY != 0);
@@ -413,12 +428,9 @@ pub unsafe fn native_checkpoint() {
         // Do it offline so restore does not CoW the entire 2.3 MiB loader range.
         crate::mmu::protect_aliases();
         crate::mmu::flush();
-        for va in (0x400000..0x650000).step_by(64) {
-            core::arch::asm!("dc cvau,{a}", a=in(reg) crate::mmu::physical(va));
-        }
-        core::arch::asm!("dsb ish", "ic iallu", "dsb ish", "isb");
+        crate::arch::sync_icache(0x400000, 0x650000);
         crate::arch::doorbell(CHECKPOINT);
-        crate::arch::boot_info();
+        boot_info();
         assert!(native());
         assert!(load(OUTPUT_BYTES) <= OUTPUT_LIMIT as u64);
         store(REPAIRED_GENERATION, load(GENERATION));

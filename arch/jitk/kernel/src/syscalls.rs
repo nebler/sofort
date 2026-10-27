@@ -1,11 +1,5 @@
-pub mod nr {
-    #[cfg(feature = "transport-ring")]
-    pub const DUP3: usize = 24;
-    pub const IOCTL: usize = 29;
-    pub const READ: usize = 63;
-    pub const WRITE: usize = 64;
-    pub const PPOLL: usize = 73;
-}
+// Generated from slots.json and src/arch/<arch>/syscalls.json: handler modules,
+// dispatch, registered(), and `nr` (Linux syscall numbers on this arch).
 include!(concat!(env!("OUT_DIR"), "/dispatch.rs"));
 
 // Controller-owned checked helpers; candidate modules never dereference pointers.

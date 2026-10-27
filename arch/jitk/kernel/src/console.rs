@@ -1,7 +1,7 @@
-use core::{
-    arch::asm,
-    ptr::{read_volatile as rv, write_volatile as wv},
-};
+// virtio-mmio console (VIRTIO_F_VERSION_1, multiport). Device registers go through
+// arch::mmio; the split rings are plain guest memory ordered by mmio::barrier.
+use crate::arch::mmio::{barrier, read32, write32};
+use core::ptr::{read_volatile as rv, write_volatile as wv};
 const N: usize = 8;
 #[repr(C, align(4096))]
 #[derive(Clone, Copy)]
@@ -26,32 +26,13 @@ static mut CONTROL: [[u8; 256]; N] = [[0; 256]; N];
 unsafe fn wr(off: usize, val: u32) {
     // SAFETY: BASE is the initialized, mapped virtio MMIO base; off is an aligned 32-bit
     // register offset in that device.
-    unsafe {
-        asm!("str {v:w}, [{a}]",v=in(reg) val,a=in(reg) BASE+off,options(nostack));
-    }
-}
-/// # Safety
-/// addr is an aligned readable 32-bit MMIO register in the mapped console device.
-unsafe fn read32(addr: usize) -> u32 {
-    let v: u32;
-    // SAFETY: addr is an aligned readable 32-bit MMIO register in the mapped console device.
-    unsafe {
-        asm!("ldr {v:w}, [{a}]",v=out(reg) v,a=in(reg) addr,options(nostack));
-    }
-    v
+    unsafe { write32(BASE + off, val) }
 }
 /// # Safety
 /// BASE is initialized and off selects an aligned readable virtio register.
 unsafe fn rd(off: usize) -> u32 {
     // SAFETY: BASE is initialized and off selects an aligned readable virtio register.
     unsafe { read32(BASE + off) }
-}
-unsafe fn barrier() {
-    // SAFETY: Execution is at EL1; the barrier orders guest queue accesses against device
-    // DMA without lending memory references.
-    unsafe {
-        asm!("dmb sy", options(nostack));
-    }
 }
 /// # Safety
 /// off and off+4 select the two address registers; addr is a stable identity-mapped queue

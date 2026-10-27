@@ -31,5 +31,5 @@ _start:
     b 1b
 2:  mov x0, x20
     bl kernel_main
-3:  wfi
+3:  yield
     b 3b
