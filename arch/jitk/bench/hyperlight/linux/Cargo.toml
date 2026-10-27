@@ -1,0 +1,19 @@
+[package]
+name = "jitk-hyperlight-linux"
+version = "0.1.0"
+edition = "2024"
+# Linux/KVM twin of ../Cargo.toml: same pinned hyperlight-js checkout (staged
+# as a ./hyperlight-js symlink, as build.ts does) and hyperlight-host 0.18.0,
+# KVM backend. Lockfile = ../Cargo.lock plus kvm-bindings/kvm-ioctls. Build and
+# use: ../../RESULTS-LINUX-MEMORY-2026-10-27.md (Reproduce).
+[dependencies]
+hyperlight-js = { path = "hyperlight-js/src/hyperlight-js", default-features = false, features = ["kvm"] }
+hyperlight-host = { version = "=0.18.0", default-features = false, features = ["kvm"] }
+hyperlight-js-common = { path = "hyperlight-js/src/hyperlight-js-common" }
+serde_json = "1"
+libc = "0.2"
+[profile.release]
+panic = "abort"
+[[bin]]
+name = "hl-density"
+path = "density.rs"
