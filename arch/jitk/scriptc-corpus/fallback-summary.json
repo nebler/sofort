@@ -1,0 +1,35 @@
+{
+  "diagnostic": "allocator-prefault",
+  "corpusProgram": false,
+  "compiler": "0.4.5",
+  "target": "aarch64-linux-musl",
+  "source": "58473c58edc28f2079ccbcae0208b6486c8d38e9d5b6e8fa5ed13564bb12775e",
+  "elf": "f41b4b514479d1d973fc9a1fc93762f305b76b9d919e5d1770a541c27a2c7145",
+  "trace": "15e6cef659e14704529d435bedddbe72118b14f699fd2e5394e12353729d6d32",
+  "cloneObserved": true,
+  "cloneENOSYSInjected": true,
+  "survives": true,
+  "nodeMatch": true,
+  "stdoutHash": "b20d04b4df5f483c00df21461a282a927916b56d42dbf2940133bddc07dcf35a",
+  "stderrHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "exit": 0,
+  "jitk": {
+    "outcome": "crash",
+    "cloneReached": false,
+    "missing": [
+      "sched_getaffinity",
+      "tkill"
+    ],
+    "errors": [
+      "mmap:-12",
+      "mmap:-22",
+      "rt_sigaction:-38",
+      "rt_sigprocmask:-38",
+      "sched_getaffinity:-38",
+      "tkill:-38"
+    ],
+    "fault": "esr=0000000092000046 far=0000000000000000 pc=0000000000420ea8",
+    "abort": true,
+    "trace": "99c319d1d755cb3d53c6dd987ef35044d43fcb8424a813b9d8b12b8f252ee010"
+  }
+}
