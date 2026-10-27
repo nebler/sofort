@@ -1,7 +1,7 @@
 # jitk: final status after 4 review rounds (2026-10-24)
 
 ## What exists (`arch/jitk/`, `make build test demo`)
-A runtime for code-mode agents. Each JS snippet runs in a **fresh single-use microVM**: libkrun on HVF (macOS) or KVM (Linux). Inside the VM, a **1.4k-LOC Rust no_std kernel** runs **unmodified static QuickJS at EL0**. The guest's only I/O is a JSON-lines tool channel to a trusted TypeScript executor. The executor implements Cloudflare codemode's `Executor` and TanStack's `IsolateDriver`. The kernel's 17-syscall surface is **grown by an agent**: ENOSYS → Linux strace oracle → agent writes the handler → differential test in fresh VMs → versioned manifest.
+A runtime for code-mode agents. Each JS snippet runs in a **fresh single-use microVM**: libkrun on HVF (macOS) or KVM (Linux). Inside the VM, a **Rust no_std kernel (default image: ~2.6k code lines, of which ~1.8k architecture-neutral core and ~0.8k `arch/aarch64`; counted 2026-10-27)** runs **unmodified static QuickJS at EL0**. The guest's only I/O is a JSON-lines tool channel to a trusted TypeScript executor. The executor implements Cloudflare codemode's `Executor` and TanStack's `IsolateDriver`. The kernel's 17-syscall surface is **grown by an agent**: ENOSYS → Linux strace oracle → agent writes the handler → differential test in fresh VMs → versioned manifest.
 
 | Component | Impl LOC |
 |---|---|
