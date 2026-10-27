@@ -5,10 +5,15 @@ Node runs only the expected-output side, using the pinned corpus's own shim,
 directives, decorator transform and JSX helper. No Python is used.
 
 ```sh
-make -C arch/jitk/scriptc-corpus census
-make -C arch/jitk/scriptc-corpus run
-make -C arch/jitk/scriptc-corpus test
+make -C arch/jitk/scriptc-corpus census   # full pipeline, resumable
+make -C arch/jitk/scriptc-corpus run      # same pipeline (resume a run)
+make -C arch/jitk/scriptc-corpus test     # parser/classifier/split/embedding invariants
+make -C arch/jitk/scriptc-corpus report   # RESULTS.md from the completed journal
+make -C arch/jitk/scriptc-corpus audit    # journal/summary/CSV/pin consistency
+make -C arch/jitk/scriptc-corpus heldout  # trusted-gate held-out run
 ```
+
+Results: [`RESULTS.md`](RESULTS.md). Compiler findings: [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md).
 
 `census` and `run` both execute the complete build → Linux/Node → ENOSYS
 experiments → canonical packer/VM pipeline. Completed receipts are resumed;
@@ -48,14 +53,36 @@ grow agent. Each program is isolated by its fresh cwd; runtime temp files live
 in container tmpfs. Process creation is bounded, timed-out host tools are sampled
 on macOS before kill/reap, and containers are removed in `finally`.
 
+Each program is compiled twice. The **stock** link (scriptc/Zig default, base
+0x1000000) is only passed through the canonical packer and recorded as
+`stock_loader`. The **jitk** link (`zig-link.sh`: the same Zig linker plus
+`-Wl,--image-base=0x400000`) is the ELF used for Linux, Node comparison and
+jitk. Only the image base differs. `--layout stock` runs the whole pipeline on
+stock ELFs instead (every one is a loader refusal today).
+
 The source kernel is copied into `.work/kernel/`; all image/Cargo/native-tool
-outputs stay in `.work/`. A successful pack is built with the unchanged kernel
-and `grow-trace`, and run using `$JITK_VMM_BINARY` (default
-`/tmp/jitk-r8/vmm-mac/jitk-vmm`). Guest stdout, developer fd2 log bytes and terminal
+outputs stay in `.work/`. `guest.ts` builds each image with the unchanged
+kernel, the **canonical release profile** and `qjs,grow-trace`, and runs it
+using `$JITK_VMM_BINARY` (default `/tmp/jitk-r8/vmm-mac/jitk-vmm`). Do not
+use an incremental profile: rustc does not track the payload `.incbin` in
+`global_asm!`, so an incremental target dir silently keeps the first payload.
+Every image is checked to contain the packed ELF byte for byte. A mismatch is
+an infrastructure failure that stops the run. Concurrent processes need distinct
+Cargo target dirs, because `build.sh` runs objcopy outside Cargo's lock. Guest stdout, developer fd2 log bytes and terminal
 exit are decoded with the canonical grow-trace observer and compared as byte
 hashes to Linux. A packer refusal is a measured loader failure, never a syscall
 failure. The production printable-output protocol itself is another compatibility
 limit; arbitrary Unicode/control/unterminated output may require transport work.
+
+Classification. **pass**: identical stdout, stderr and exit with a complete
+trace. **missing-syscall**: the guest hit an unregistered call that Linux also
+executed and that the Linux ENOSYS experiment did not show tolerated; guest-only
+missing calls such as `tkill` from `abort()` are consequences. **crash**:
+fault, abort, timeout, protocol failure or a stdout control byte.
+**mismatch**: complete but different. **loader-refusal**: packer rejection.
+`cause` names the blocking syscall, the transport limit, or the last
+registered-syscall error result that Linux never returned for that call (e.g.
+`mmap:-22`). It is a heuristic for ranking, not proof.
 
 ## Selection and held-out use
 
@@ -63,7 +90,7 @@ limit; arbitrary Unicode/control/unterminated output may require transport work.
 make -C arch/jitk/scriptc-corpus census ARGS='--id pilot --limit 20 --workers 1'
 make -C arch/jitk/scriptc-corpus census ARGS='--id timers --filter timer'
 make -C arch/jitk/scriptc-corpus census ARGS='--id visible --selection visible'
-make -C arch/jitk/scriptc-corpus run ARGS='--id hidden --selection heldout'
+make -C arch/jitk/scriptc-corpus heldout          # = run --id heldout --selection heldout
 ```
 
 A random seed is created once in private `.work/split-seed` (mode 0600). The

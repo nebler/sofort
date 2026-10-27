@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync, writeFileSync, chmodSync, symlinkSync, existsSync, rmSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { run, capture, check, dump, readJSON, sha, environment } from './lib.ts';
+import { pack } from '../kernel/packer.ts';
+import { guest, stream, identical } from './guest.ts';
 
 interface Status { exit: number | null; timeout?: boolean; error?: string | null }
 const root = resolve(import.meta.dirname);
@@ -20,6 +22,7 @@ async function main(): Promise<void> {
   buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + buildEnv.PATH;
   buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
   buildEnv.SCRIPTC_RUNTIME_PACK = join(root, 'node_modules/@scriptc/runtime-linux-arm64-musl');
+  buildEnv.SCRIPTC_LINKER = join(root, 'zig-link.sh');
   await run([join(root, 'node_modules/.bin/scriptc'), 'build', join(root, 'allocator-probe.ts'), '-o', elf], { env: buildEnv, timeout: 45 });
   // Both containers are sequential and named for unconditional timeout cleanup.
   const name = 'jitk-corpus-fallback-' + process.pid;
@@ -53,12 +56,25 @@ async function main(): Promise<void> {
         readFileSync(join(out, 'stdout')).equals(readFileSync(join(cloneDir, 'stdout'))) &&
         readFileSync(join(out, 'stderr')).equals(readFileSync(join(cloneDir, 'stderr')));
     }
+    // jitk has no clone slot: the unregistered call returns ENOSYS with a
+    // missing record. Same ELF, same comparison as the corpus.
+    let jitk: Record<string, unknown>;
+    try {
+      pack(readFileSync(elf));
+      const g = await guest(elf, job, 10, 'target-fallback');
+      if ('buildError' in g) jitk = { outcome: 'build-error' };
+      else {
+        const same = identical(g.stream, stream(readFileSync(join(out, 'stdout')), readFileSync(join(out, 'stderr')), normal.exit, normal.timeout || false));
+        jitk = { outcome: g.complete && same ? 'pass' : g.complete ? 'mismatch' : 'crash', cloneReached: g.missing.includes('clone'),
+          missing: g.missing, errors: g.errors, fault: g.fault, abort: g.abort, trace: g.trace };
+      }
+    } catch (e) { jitk = { outcome: 'loader-refusal', loader: String(e).replace(/^Error: /, '') }; }
     const summary = { diagnostic: 'allocator-prefault', corpusProgram: false, compiler: '0.4.5', target: 'aarch64-linux-musl',
       source: sha(readFileSync(join(root, 'allocator-probe.ts'))), elf: sha(readFileSync(elf)),
       trace: sha(Buffer.from(trace)), cloneObserved: hasClone, cloneENOSYSInjected: injected, survives,
       nodeMatch: expected.exit === normal.exit && readFileSync(join(job, 'node.stdout')).equals(readFileSync(join(out, 'stdout'))) &&
         readFileSync(join(job, 'node.stderr')).equals(readFileSync(join(out, 'stderr'))),
-      stdoutHash: sha(readFileSync(join(out, 'stdout'))), stderrHash: sha(readFileSync(join(out, 'stderr'))), exit: normal.exit };
+      stdoutHash: sha(readFileSync(join(out, 'stdout'))), stderrHash: sha(readFileSync(join(out, 'stderr'))), exit: normal.exit, jitk };
     dump(join(root, 'fallback-summary.json'), summary);
     console.log(JSON.stringify(summary));
     check(summary.nodeMatch && hasClone && injected && survives, 'allocator helper fallback was not established');

@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync, symlinkSync, appendFileSync, chmodSync, realpathSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { capture, run, dump, readJSON, check, environment, copyTree, files, sha, type Result } from './lib.ts';
+import { capture, run, dump, readJSON, check, environment, copyTree, files, sha } from './lib.ts';
 import { pack } from '../kernel/packer.ts';
-import { observe } from '../grow/observations.ts';
+import { guestStdout } from './guest-output.ts';
+import { guest, stream, identical, errno, embedded, type Stream } from './guest.ts';
 
 const ROOT = resolve(import.meta.dirname);
 const WORK = join(ROOT, '.work');
@@ -15,13 +16,14 @@ const NODE_IMAGE = 'sha256:14078204b6bb268c107ceff6d3c43f45a888105e5c2b18b14c32b
 const ORACLE_CONTAINER = 'jitk-corpus-linux-' + process.pid;
 const NODE_CONTAINER = 'jitk-corpus-node-' + process.pid;
 interface Status { exit: number | null; timeout?: boolean; error?: string | null }
-interface Stream { stdout: string; stderr: string; exit: number | null; timeout: boolean }
 interface Row {
   name: string; held: boolean; source: string; build: string; diagnostic: string;
   elf?: string; tier: string; node?: string; linux?: Stream; syscalls: string[];
   absent: string[]; blockers: string[]; tolerated: string[]; limitations: string[]; jitk: string; loader?: string;
   trace?: string; injection?: string; injectionTrace?: string; guest?: Stream;
   stable?: boolean;
+  guestMissing?: string[]; guestErrors?: string[]; guestTrace?: string; crash?: string;
+  stockLoader?: string; guestDivergent?: string[]; guestBlocking?: string[]; cause?: string;
 }
 const env = environment();
 const compiler = join(ROOT, 'node_modules/.bin/scriptc');
@@ -38,27 +40,11 @@ let slots: Record<string, string> = {};
 let runId = 'full';
 let JOURNAL = '';
 let diskBefore = '';
-let toolsReady: Promise<void> | undefined;
 let infrastructureFailure = false;
-
-async function kernelTools(): Promise<void> {
-  if (toolsReady) return toolsReady;
-  toolsReady = (async () => {
-    for (const tool of ['prepare', 'build-args', 'artifact']) {
-      await run([compiler, 'build', join(WORK, 'kernel', tool + '.ts'), '-o', join(WORK, 'kernel-tools', tool)], { timeout: 45 });
-    }
-  })();
-  await toolsReady;
-}
+let layout = 'jitk';
 
 function hash(text: string): string { return sha(Buffer.from(text)); }
 function held(name: string): boolean { return parseInt(hash(seed + '\0' + name).slice(0, 8), 16) % 100 < heldPercent; }
-function stream(out: Buffer, err: Buffer, code: number | null, timeout = false): Stream {
-  return { stdout: sha(out), stderr: sha(err), exit: code, timeout };
-}
-function identical(a: Stream, b: Stream): boolean {
-  return !a.timeout && !b.timeout && a.stdout === b.stdout && a.stderr === b.stderr && a.exit === b.exit;
-}
 async function disk(): Promise<string> {
   const value = (await run(['df', '-h', '/System/Volumes/Data'], { timeout: 5 })).stdout.toString().trim();
   const raw = (await run(['df', '-k', '/System/Volumes/Data'], { timeout: 5 })).stdout.toString().trim().split('\n');
@@ -86,9 +72,14 @@ function tier(text: string, calls: string[]): string {
   if (/node:fs|from\s*["']fs["']|setTimeout|setInterval|\bDate\b|performance\./.test(text) || calls.some(c => /^(nanosleep|clock_nanosleep|unlinkat|mkdirat|renameat|inotify)/.test(c))) return 'T2';
   return 'T1';
 }
-function traceInfo(text: string): { calls: string[]; limits: string[] } {
+function traceInfo(text: string): { calls: string[]; limits: string[]; errors: string[] } {
   const calls = new Set<string>();
   const limits = new Set<string>();
+  const errors = new Set<string>();
+  for (const line of text.split('\n')) {
+    const e = /^\s*(?:\d+\s+)?(?:<\.\.\. )?([a-zA-Z_][a-zA-Z_0-9]*)(?:\(| resumed>).*\)\s+=\s+-1\s+(E[A-Z0-9]+)/.exec(line);
+    if (e) errors.add(e[1] + ':' + -errno(e[2]));
+  }
   let initialExec = true;
   for (const line of text.split('\n')) {
     const m = /^\s*(?:\d+\s+)?([a-zA-Z_][a-zA-Z_0-9]*)\(/.exec(line);
@@ -108,7 +99,7 @@ function traceInfo(text: string): { calls: string[]; limits: string[] } {
     if (call === 'clock_gettime' && !/clock_gettime\(CLOCK_(REALTIME|MONOTONIC),/.test(line)) limits.add('clock_gettime:clockid');
     if (call === 'rt_sigaction' || call === 'rt_sigprocmask' || call === 'mremap') limits.add(call + ':ENOSYS-stub');
   }
-  return { calls: Array.from(calls).sort(), limits: Array.from(limits).sort() };
+  return { calls: Array.from(calls).sort(), limits: Array.from(limits).sort(), errors: Array.from(errors).sort() };
 }
 async function linux(elf: string, dir: string): Promise<void> {
   mkdirSync(dir, { recursive: true });
@@ -145,35 +136,51 @@ function resetCwd(dir: string): void {
   symlinkSync(join(SOURCE, 'node_modules'), join(cwd, 'node_modules'));
   writeFileSync(join(cwd, 'package.json'), readFileSync(join(SOURCE, 'package.json')));
 }
-async function guest(elf: string, dir: string, row: Row): Promise<void> {
+// pass: byte-identical stdout/stderr/exit with a complete trace.
+// missing-syscall: the guest hit a missing syscall that Linux also executed and
+// that was not shown tolerated by the single-syscall ENOSYS experiment.
+// Guest-only missing calls (e.g. tkill from abort) are consequences.
+// crash: fault/timeout/incomplete protocol; mismatch: complete but different.
+export function classify(r: { complete: boolean; same: boolean; fault: boolean; timeout: boolean },
+  missing: string[], absent: string[], tolerated: string[]): { jitk: string; blocking: string[] } {
+  const blocking = missing.filter(n => absent.includes(n) && !tolerated.includes(n));
+  if (r.complete && r.same) return { jitk: 'pass', blocking };
+  if (blocking.length) return { jitk: 'missing-syscall', blocking };
+  return { jitk: r.complete && !r.fault && !r.timeout ? 'mismatch' : 'crash', blocking };
+}
+// Registered-syscall error results Linux never produced for the same call.
+export function divergent(guestErrors: string[], linuxErrors: string[]): string[] {
+  return guestErrors.filter(e => !e.endsWith(':-38') && !linuxErrors.includes(e));
+}
+async function jitk(elf: string, dir: string, row: Row, linuxErrors: string[]): Promise<void> {
   // Invoking the exact canonical packer for EVERY compiled ELF is deliberate:
   // a syscall shortage must never hide a loader/packer gap.
   try { pack(readFileSync(elf)); }
   catch (e) { row.jitk = 'loader-refusal'; row.loader = String(e).replace(/^Error: /, ''); return; }
-  await kernelTools();
-  const kernel = join(WORK, 'kernel');
-  const out = join(dir, 'image');
-  const buildEnv = environment();
-  buildEnv.JITK_TOOLS_DIR = join(WORK, 'kernel-tools');
-  buildEnv.CARGO_TARGET_DIR = join(WORK, 'target');
-  buildEnv.JITK_OUT_DIR = out;
-  buildEnv.JITK_ELF = elf;
-  buildEnv.JITK_ARGV_JSON = JSON.stringify([elf]);
-  const result = await capture(['sh', join(kernel, 'build.sh'), '--features', 'qjs,grow-trace'], { env: buildEnv, timeout: 90 });
-  writeFileSync(join(dir, 'kernel-build.log'), Buffer.concat([result.stdout, result.stderr]));
-  if (result.returncode !== 0 || result.timeout) { row.jitk = 'build-error'; return; }
-  const vmm = process.env.JITK_VMM_BINARY || '/tmp/jitk-r8/vmm-mac/jitk-vmm';
-  const vm = await capture([vmm, '--image', join(out, 'kernel.bin')], { timeout: 5 });
-  writeFileSync(join(dir, 'vm.stdout'), vm.stdout);
-  writeFileSync(join(dir, 'vm.stderr'), vm.stderr);
-  const observed = observe(vm.stdout);
-  row.guest = stream(Buffer.from(observed.stdout_hex, 'hex'), Buffer.from(observed.stderr_hex, 'hex'), observed.exit, vm.timeout);
-  const missing = observed.missing.map(v => String(v.nr));
-  if (observed.trace_complete && row.linux && identical(row.guest, row.linux)) row.jitk = 'pass';
-  else if (missing.length > 0) row.jitk = 'missing-syscall';
-  else if (!observed.trace_complete || vm.returncode !== 0) row.jitk = 'crash';
-  else row.jitk = 'mismatch';
-  dump(join(dir, 'vm-observation.json'), observed);
+  const g = await guest(elf, dir);
+  if ('buildError' in g) { row.jitk = 'build-error'; row.diagnostic = row.diagnostic || 'kernel ' + g.buildError; return; }
+  row.guestTrace = g.trace;
+  row.guestMissing = g.missing;
+  row.guestErrors = g.errors;
+  row.guest = g.stream;
+  row.guestDivergent = divergent(g.errors, linuxErrors);
+  const c = classify({ complete: g.complete, same: row.linux !== undefined && identical(g.stream, row.linux), fault: g.fault !== null, timeout: g.stream.timeout },
+    g.missing, row.absent, row.tolerated);
+  row.jitk = c.jitk;
+  row.guestBlocking = c.blocking;
+  if (row.jitk === 'crash') row.crash = g.stream.timeout ? 'timeout' : g.control ? 'stdout-control-byte' : g.abort ? 'abort' : g.fault ? 'fault' : g.fatal ? 'fatal-protocol' : 'incomplete-protocol';
+  // The cause is a heuristic: the blocking missing syscall, else the transport
+  // limit, else the LAST Linux-divergent error result before the failure.
+  const last = g.errorOrder.filter(e => row.guestDivergent!.includes(e)).pop();
+  row.cause = row.jitk === 'pass' ? '' : c.blocking.length ? 'missing:' + c.blocking.join('+') : g.control ? 'stdout-control-byte' : last ? 'divergent:' + last : row.crash || row.jitk;
+  if (row.jitk !== 'pass') {
+    const findings = join(WORK, 'findings', hash(row.name));
+    mkdirSync(findings, { recursive: true });
+    writeFileSync(join(findings, 'vm.stdout.head'), g.raw.subarray(0, 65536));
+    writeFileSync(join(findings, 'vm.stdout.tail'), g.raw.subarray(Math.max(0, g.raw.length - 65536)));
+    dump(join(findings, 'vm-failure.json'), { complete: g.complete, fault: g.fault, abort: g.abort, missing: g.missing,
+      errors: g.errors, divergent: row.guestDivergent, hostExit: g.hostExit, timeout: g.stream.timeout });
+  }
 }
 async function program(name: string): Promise<void> {
   const text = inputs(name);
@@ -189,6 +196,7 @@ async function program(name: string): Promise<void> {
     buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
     buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
     buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, 'node_modules/@scriptc/runtime-linux-arm64-musl');
+    if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
     // Keep compiler/cache writes local and bounded; program sources stay exact.
     buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
     const args = [compiler, 'build', join(CORPUS, name), '-o', elf];
@@ -205,6 +213,20 @@ async function program(name: string): Promise<void> {
     } else {
       row.build = 'compiled';
       row.elf = sha(readFileSync(elf));
+      if (layout === 'jitk') {
+        // The unmodified scriptc/Zig link is what a user ships; record its
+        // canonical packer result separately from the relinked jitk layout.
+        const stockEnv = { ...buildEnv };
+        delete stockEnv.SCRIPTC_LINKER;
+        const stockElf = join(dir, 'program-stock');
+        const stock = await capture([compiler, 'build', join(CORPUS, name), '-o', stockElf, ...args.slice(5)], { cwd: SOURCE, env: stockEnv, timeout: 40 });
+        if (stock.returncode !== 0 || stock.timeout || !existsSync(stockElf)) row.stockLoader = 'build-error';
+        else {
+          try { pack(readFileSync(stockElf)); row.stockLoader = 'ok'; }
+          catch (e) { row.stockLoader = String(e).replace(/^Error: /, ''); }
+        }
+        rmSync(stockElf, { force: true });
+      }
       try { pack(readFileSync(elf)); }
       catch (e) { row.jitk = 'loader-refusal'; row.loader = String(e).replace(/^Error: /, ''); }
       resetCwd(dir);
@@ -221,6 +243,7 @@ async function program(name: string): Promise<void> {
       const info = traceInfo(trace);
       row.syscalls = info.calls;
       row.limitations = info.limits;
+      const linuxErrors = info.errors;
       row.absent = info.calls.filter(c => !Object.values(slots).includes(c === 'exit_group' ? 'exit' : c));
       row.tier = tier(text, info.calls);
       if (row.node !== 'reference-error') {
@@ -268,12 +291,12 @@ async function program(name: string): Promise<void> {
       }
       // Default census also exercises jitk. `run` resumes a census interrupted
       // before guest evaluation; it rebuilds only receipts lacking that stage.
-      if (row.jitk !== 'loader-refusal') await guest(elf, dir, row);
+      if (row.jitk !== 'loader-refusal') await jitk(elf, dir, row, linuxErrors);
     }
   } catch (e) {
     row.diagnostic = row.diagnostic || String(e).slice(0, 1000);
     if (row.build === 'compiled' && !row.linux) row.node = 'oracle-error';
-    if (String(e).includes('oracle-driver-failure')) infrastructureFailure = true;
+    if (/oracle-driver-failure|stale-payload-embedding/.test(String(e))) infrastructureFailure = true;
   } finally {
     dump(join(dir, 'receipt.json'), row);
     // Retain small hashes and results, never thousands of ELFs/traces/outputs.
@@ -290,16 +313,22 @@ function count(values: string[]): Record<string, number> {
   return result;
 }
 async function summarize(total: number): Promise<void> {
-  const missing = Array.from(new Set(rows.flatMap(r => r.absent))).map(name => ({
+  const allMissing = new Set<string>();
+  for (const row of rows) for (const name of [...row.absent, ...(row.guestMissing || [])]) allMissing.add(name);
+  const missing = Array.from(allMissing).map(name => ({
     syscall: name, programs: rows.filter(r => r.absent.includes(name)).length,
     t1t2: rows.filter(r => (r.tier === 'T1' || r.tier === 'T2') && r.absent.includes(name)).length,
     blocks: rows.filter(r => r.blockers.includes(name)).length,
     t1t2Blocks: rows.filter(r => (r.tier === 'T1' || r.tier === 'T2') && r.blockers.includes(name)).length,
     single: rows.filter(r => r.blockers.length === 1 && r.blockers[0] === name).length,
-  })).sort((a, b) => b.single - a.single || b.t1t2Blocks - a.t1t2Blocks || b.programs - a.programs || a.syscall.localeCompare(b.syscall));
+    jitkSeen: rows.filter(r => (r.guestMissing || []).includes(name)).length,
+    jitkBlocks: rows.filter(r => r.jitk === 'missing-syscall' && (r.guestBlocking || []).includes(name)).length,
+    jitkT1T2Blocks: rows.filter(r => (r.tier === 'T1' || r.tier === 'T2') && r.jitk === 'missing-syscall' && (r.guestBlocking || []).includes(name)).length,
+    jitkSingle: rows.filter(r => r.jitk === 'missing-syscall' && (r.guestBlocking || []).length === 1 && r.guestBlocking![0] === name).length,
+  })).sort((a, b) => b.jitkSingle - a.jitkSingle || b.jitkBlocks - a.jitkBlocks || b.single - a.single || b.t1t2Blocks - a.t1t2Blocks || b.programs - a.programs || a.syscall.localeCompare(b.syscall));
   const after = await disk();
   const summary = { schema: 1, revision: REV, compiler: '0.4.5', target: 'aarch64-linux-musl', image: IMAGE,
-    nodeImage: NODE_IMAGE, splitCommitment: hash(seed), run: runId, total, completed: rows.length, complete: rows.length === total, selection,
+    nodeImage: NODE_IMAGE, layout, kernelProfile: 'canonical release (lto, codegen-units=1, non-incremental)', splitCommitment: hash(seed), run: runId, total, completed: rows.length, complete: rows.length === total, selection,
     heldout: rows.filter(r => r.held).length, stages: count(rows.map(r => r.build)),
     node: count(rows.filter(r => r.build === 'compiled').map(r => r.node || 'not-run')),
     jitk: count(rows.filter(r => r.build === 'compiled').map(r => r.jitk)),
@@ -312,13 +341,22 @@ async function summarize(total: number): Promise<void> {
     loader: count(rows.filter(r => r.loader).map(r => r.loader || '')),
     cloneFallback: count(rows.filter(r => r.injection).map(r => r.injection || '')),
     unstableLinux: rows.filter(r => r.stable === false).length,
+    nodeVerifiedPass: rows.filter(r => r.node === 'match' && r.jitk === 'pass').length,
+    guestErrors: count(rows.flatMap(r => r.guestErrors || [])),
+    crashes: count(rows.filter(r => r.crash).map(r => r.crash || '')),
+    stockLoader: count(rows.filter(r => r.stockLoader).map(r => r.stockLoader || '')),
+    causes: count(rows.filter(r => r.build === 'compiled' && r.jitk !== 'pass' && r.jitk !== 'loader-refusal').map(r => r.cause || r.jitk)),
+    divergent: count(rows.flatMap(r => r.guestDivergent || [])),
+    covered: (() => { const c = rows.filter(r => r.build === 'compiled' && r.linux && r.absent.length === 0);
+      return { programs: c.length, nodeMatch: c.filter(r => r.node === 'match').length, jitk: count(c.map(r => r.jitk)) }; })(),
+    t1t2: count(rows.filter(r => r.build === 'compiled' && (r.tier === 'T1' || r.tier === 'T2')).map(r => r.jitk)),
     diskBefore, diskAfter: after };
   dump(join(WORK, runId + '-summary.json'), summary);
   // Public files exclude held-out identities, hashes, outputs and membership.
   if (runId === 'full') {
     dump(join(ROOT, 'summary.json'), summary);
-    const csv = 'program,tier,build,diagnostic,node,jitk,missing,blockers,limitations\n' + rows.filter(r => !r.held).sort((a,b) => a.name.localeCompare(b.name)).map(r =>
-      [r.name, r.tier, r.build, /^SC\d/.test(r.diagnostic) ? r.diagnostic : r.diagnostic ? 'build-or-driver-error' : '', r.node || '', r.jitk, r.absent.join(';'), r.blockers.join(';'), r.limitations.join(';')].map(c => '"' + c.replaceAll('"', '""') + '"').join(',')).join('\n') + '\n';
+    const csv = 'program,tier,build,diagnostic,node,stock_loader,jitk,cause,linux_missing,linux_blockers,jitk_missing\n' + rows.filter(r => !r.held).sort((a,b) => a.name.localeCompare(b.name)).map(r =>
+      [r.name, r.tier, r.build, /^SC\d/.test(r.diagnostic) ? r.diagnostic : r.diagnostic ? 'build-or-driver-error' : '', r.node || '', r.stockLoader || '', r.jitk, r.cause || '', r.absent.join(';'), r.blockers.join(';'), (r.guestMissing || []).join(';')].map(c => '"' + c.replaceAll('"', '""') + '"').join(',')).join('\n') + '\n';
     check(Buffer.byteLength(csv) < 1024 * 1024, 'public CSV exceeds 1 MiB');
     writeFileSync(join(ROOT, 'census.csv'), csv);
   }
@@ -344,8 +382,6 @@ async function prepare(): Promise<void> {
   slots = readJSON<Record<string, string>>(resolve(ROOT, '../kernel/slots.json'));
   const kernel = join(WORK, 'kernel');
   if (!existsSync(join(kernel, 'Cargo.toml'))) copyTree(resolve(ROOT, '../kernel'), kernel, new Set(['.work', 'target', 'target-ring', 'dist', 'test-work', 'test-results', 'node_modules']));
-  // Native tools read canonical sources but write only to this task's .work.
-  mkdirSync(join(WORK, 'kernel-tools'), { recursive: true });
 }
 async function main(): Promise<void> {
   mode = process.argv[2] || 'census';
@@ -358,23 +394,39 @@ async function main(): Promise<void> {
     else if (key === '--seed') seed = value;
     else if (key === '--heldout-percent') heldPercent = Number(value);
     else if (key === '--id') runId = value;
+    else if (key === '--layout') layout = value;
     else throw new Error('unknown argument ' + key);
   }
   if (mode === 'test') {
+    check(guestStdout(Buffer.from('\nA\n\n')).equals(Buffer.from('\nA\n\n')), 'blank stdout lines');
+    check(guestStdout(Buffer.from('tail')).equals(Buffer.from('tail')), 'unterminated stdout');
+    check(guestStdout(Buffer.from('\x1e{"v":2,"kind":"sys.enter"}\n\nX\n')).equals(Buffer.from('\nX\n')), 'record stripping preserves stdout');
     check(traceInfo('42 nanosleep({tv_sec=0}, NULL) = 0\n42 clone(a) = 1').calls.join(',') === 'clone,nanosleep', 'trace parser');
     check(traceInfo('ppoll([{fd=7, events=POLLIN}], 1, NULL, NULL, 8) = 0').limits.includes('ppoll:fd>2'), 'ppoll limits');
     check(held('x') === held('x') && tier('console.log(1)', []) === 'T1', 'split/tier');
     check(tier('setTimeout(f, 1)', []) === 'T2' && tier('new Worker(f)', []) === 'T3' && tier('fetch(url)', []) === 'T4', 'tiers');
+    const ok = { complete: true, same: true, fault: false, timeout: false };
+    check(classify(ok, ['sched_getaffinity'], ['sched_getaffinity'], ['sched_getaffinity']).jitk === 'pass', 'classify pass');
+    check(classify({ ...ok, same: false }, ['getrandom'], ['getrandom'], []).jitk === 'missing-syscall', 'classify blocker');
+    check(classify({ ...ok, complete: false, same: false, fault: true }, ['tkill'], [], []).jitk === 'crash', 'guest-only missing is a consequence');
+    check(classify({ ...ok, same: false }, ['madvise'], ['madvise'], ['madvise']).jitk === 'mismatch', 'tolerated missing');
+    check(traceInfo('7 mmap(0x7e1000, 4096, PROT_READ, MAP_PRIVATE, -1, 0) = -1 EINVAL (Invalid argument)\n<... read resumed>"", 1) = -1 EAGAIN (x)').errors.join(',') === 'mmap:-22,read:-11', 'linux errno parser');
+    check(divergent(['mmap:-22', 'mmap:-12', 'rt_sigaction:-38'], ['mmap:-12']).join(',') === 'mmap:-22', 'divergent errors');
+    const flat = Buffer.from('payload-bytes');
+    check(embedded(Buffer.concat([Buffer.alloc(0x80000), flat]), flat) && !embedded(Buffer.concat([Buffer.alloc(0x80000), Buffer.from('stale-payload')]), flat), 'payload embedding check');
     console.log('ok'); return;
   }
   check(mode === 'census' || mode === 'run' || mode === 'report', 'expected census/run/report/test');
   check(Number.isInteger(workers) && workers >= 1 && workers <= 2, 'at most two oracle workers (one slot reserved for grow)');
   check(['all', 'visible', 'heldout'].includes(selection), 'invalid selection');
+  check(layout === 'stock' || layout === 'jitk', 'invalid link layout');
   check(/^[a-zA-Z0-9_-]+$/.test(runId), 'unsafe run id');
   await prepare();
   diskBefore = await disk();
   const selected = entries().filter(n => (!filter || n.includes(filter)) && (selection === 'all' || held(n) === (selection === 'heldout'))).slice(0, limit);
-  const manifest = { revision: REV, seedCommitment: hash(seed), heldPercent, selection,
+  const manifest = { revision: REV, seedCommitment: hash(seed), heldPercent, selection, layout,
+    linker: layout === 'jitk' ? sha(readFileSync(join(ROOT, 'zig-link.sh'))) : 'scriptc-default',
+    kernelProfile: { optimization: 's', lto: false, incremental: true, codegenUnits: 16 },
     selected: hash(selected.join('\n')), count: selected.length, image: IMAGE, nodeImage: NODE_IMAGE,
     runner: sha(readFileSync(join(ROOT, 'census.ts'))), oracle: sha(readFileSync(join(WORK, 'bin/oracle'))),
     reference: sha(readFileSync(join(ROOT, 'node-reference.ts'))), compiler: sha(readFileSync(compiler)),
