@@ -137,11 +137,11 @@ deadline covers a child that really hangs.
 - scriptc 0.4.5, macOS 26.6.1 arm64.
 - Repro: spawn `/usr/bin/true` (`detached: true`, piped stdio) sequentially
   while a far-off timer (e.g. 30 min) is pending, awaiting each `close`.
-  About 1 in 18,000 spawns (7 in 124,923), the
-  process sleeps in `scr_loop_run →
-  scr_children_wait → kevent` with the child a zombie until the timer fires.
-  With no timer the same miss is a 1 s stall (`SCR_IO_POLL_MS`). Corpus
-  test 8401-style programs (300 children, one far timer) fail in only ~2% of runs at this rate.
+  About 1 in 18,000 spawns (7 in 124,923), the process sleeps in
+  `scr_loop_run → scr_children_wait → kevent` with the child a zombie until
+  the timer fires. With no timer the same miss is a 1 s stall
+  (`SCR_IO_POLL_MS`). Corpus test 8401-style programs (300 children, one far
+  timer) fail in only ~2% of runs at this rate.
 - Cause: `NOTE_EXIT` is `EV_ONESHOT` and is drained and discarded by
   `scr_children_wait`. XNU posts it before the child is reapable, so the
   following `waitpid(WNOHANG)` sweep can miss, and nothing re-arms the wakeup.
