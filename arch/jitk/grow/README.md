@@ -244,3 +244,21 @@ Calibrations run in two separate containers, 6 s apart, with the guest's
 target; held-out names and results never leave the corpus `.work/`. The
 eight handlers of the phase-2 grown kernel are in `phase2-grown/`; results
 and failure classes are in `EXPERIMENTS-PHASE2-2026-10-27.md`.
+
+Shared tree (`EXPERIMENTS-PATHFS-2026-10-27.md`): calibrations run on the
+guest's own file tree. `oracle.ts` packs the fixture's `resources` exactly as
+`prepare.ts` does, materialises that archive (`kernel/packer.ts unpack`, files
+0444, directories 0555), checks it re-packs to the same bytes, bind-mounts it
+read-only into the unchanged `jitk-oracle:08` image and runs the payload under
+`oracle-root` (static C, `make build`): open the payload, `chroot` into the tree,
+cwd `/`, drop to 65534:65534 without groups, `execveat`. That container runs as
+root with `--cap-drop ALL` plus only `SYS_CHROOT`, `SETUID`, `SETGID` and
+`no-new-privileges`; strace's launcher prelude is split off into
+`linux-NN.launcher.strace`. Each split's archive SHA-256 is sealed in
+`plan.json`; `one`/`replay` refuse to grade unless the built image's
+`packed.resources.sha256` equals it (mutants included), and `batch` pins the
+trees, the launcher hash and the mode across resumes. `prepare --heldout-tree
+variant` builds an audit profile whose held-out split runs on a different tree
+(`data.bin/` a directory, plus an empty directory); it is used only with
+`replay`, never as a batch gate. Seed traces and the SQLite integration keep the
+container filesystem.

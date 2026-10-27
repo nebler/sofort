@@ -9,7 +9,7 @@
 // installs, promotes or writes release markers.
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { check, capture, csvEncode, detail, diskSpace, dump, equal, readJSON, readOr, run, SAFE_ENV, sha } from './lib.ts';
+import { check, capture, csvEncode, detail, diskSpace, dump, equal, files, readJSON, readOr, run, SAFE_ENV, sha } from './lib.ts';
 import { ROOT, CANONICAL, build, cleanup, copyKernel, checkHost, hostCommand, processGuest, scratch, selectHost, treeHashes } from './runtime.ts';
 import { emit, generate } from './autoprofile.ts';
 import { learn, normalizeAuto, varyingIdentities, type Learned } from './auto-observe.ts';
@@ -125,7 +125,15 @@ async function prepare(argv: string[]): Promise<void> {
     const fixtures: Fixture[] = [], hashes: Record<string, string> = {}, runs: Outcome[][] = [];
     for (const split of ['visible', 'heldout']) {
       const d = join(dest, split); mkdirSync(d); const resources = join(d, 'resources'); mkdirSync(resources);
-      copyFileSync(arg(argv, '--database'), join(resources, 'data.bin'));
+      // Tree-variant audit (--heldout-tree variant): the held-out split runs on a
+      // different archive, where data.bin is a directory holding the database and
+      // an empty directory sits beside it. Expected values are still learned from
+      // Linux on that tree; a handler that special-cases the visible tree's names
+      // fails there. Default: both splits use { data.bin }.
+      if (split === 'heldout' && arg(argv, '--heldout-tree') === 'variant') {
+        mkdirSync(join(resources, 'data.bin')); mkdirSync(join(resources, 'empty'));
+        copyFileSync(arg(argv, '--database'), join(resources, 'data.bin', 'data.bin'));
+      } else copyFileSync(arg(argv, '--database'), join(resources, 'data.bin'));
       const source = join(dest, split + '.c'); const elf = await probe(target, d, source);
       // Two calibrations in two containers, so container identity (hostname,
       // pid numbering) shows up as variation instead of a pinned constant.
@@ -148,9 +156,9 @@ async function prepare(argv: string[]): Promise<void> {
     for (let i = 0; i < fixtures.length; i += 1) {
       const d = join(dest, i ? 'heldout' : 'visible'), f = fixtures[i];
       f.learned = learn(runs[i], identities); dump(join(d, 'expected.json'), f.learned);
-      for (const p of [f.source, f.elf, join(f.resources, 'data.bin'), join(d, 'expected.json'), join(f.oracle, 'linux-summary.json'), join(d, 'oracle-2/linux-summary.json'), join(f.oracle, 'tree.json'), join(d, 'oracle-2/tree.json')]) hashes[p] = sha(p);
+      for (const p of [f.source, f.elf, ...files(f.resources), join(d, 'expected.json'), join(f.oracle, 'linux-summary.json'), join(d, 'oracle-2/linux-summary.json'), join(f.oracle, 'tree.json'), join(d, 'oracle-2/tree.json')]) hashes[p] = sha(p);
     }
-    dump(join(dest, 'plan.json'), { target, nr, fixtures, hashes, oracle_fs: SHARED_TREE_MODE, seeds: sources.map((p) => ({ path: p, sha256: sha(p) })) });
+    dump(join(dest, 'plan.json'), { target, nr, fixtures, hashes, oracle_fs: SHARED_TREE_MODE, heldout_tree: arg(argv, '--heldout-tree', 'same'), seeds: sources.map((p) => ({ path: p, sha256: sha(p) })) });
     console.log('PROFILE', target, profile.visible.length, profile.heldout.length, fixtures.map((f) => f.learned.rules.filter((r) => r !== 'exact').length).join('/'));
   }
   dump(join(out, 'pins.json'), { source: controllerHashes(), kernel: treeHashes(CANONICAL), disk: await diskSpace(), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), oracle_fs: SHARED_TREE_MODE, oracle_root_sha256: sha(join(ROOT, 'build/oracle-root')), normalization: 'two Linux executions in separate containers, address space limited to the 32 MiB guest; varying positive scalars, byte extents and 8-byte words relaxed; everything else exact' });
