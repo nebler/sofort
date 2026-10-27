@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { argument, capture, check, run } from '../lib.ts';
+import { argument, capture, check, run, track } from '../lib.ts';
 const binary = argument('binary');
 const image = argument('image');
 check(binary && image, '--binary and --image required');
@@ -11,7 +11,7 @@ let writer: ReturnType<typeof spawn> | null = null;
 try {
   const fifo = join(work, 'profile');
   await run(['mkfifo', fifo]);
-  writer = spawn('/bin/sh', ['-c', '{ dd if=/dev/zero bs=65537 count=1 2>/dev/null; sleep 10; } > "$1"', 'writer', fifo], { detached: true, stdio: 'ignore' });
+  writer = track(spawn('/bin/sh', ['-c', '{ dd if=/dev/zero bs=65537 count=1 2>/dev/null; sleep 10; } > "$1"', 'writer', fifo], { detached: true, stdio: 'ignore' }), 60);
   const result = await capture([binary, '--image', image, '--sandbox-profile', fifo], { timeout: 3 });
   check(!result.timeout && result.returncode === 70 && result.stderr.toString().includes('bad compiled profile'), result.stderr.toString());
 } finally {
