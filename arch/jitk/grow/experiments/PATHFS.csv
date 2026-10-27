@@ -1,0 +1,6 @@
+run_id,date,model,cli,spec_level,target,attempt,accepted,rejecting_gate,visible_pass,heldout_pass,mutants_rejected,sqlite_pass,corpus_visible,corpus_visible_new_pass,corpus_visible_regressions,corpus_heldout,corpus_heldout_new_pass,corpus_heldout_regressions,wall_s,cli_calls,handler_lines,human_lines
+pathfs-20261027-statfs,2026-10-27T07:29:22.948Z,gpt-6.1-sol,codex-cli 0.164.0,none,statfs,1,0,headless_cli,not_reached,not_reached,0,not_reached,,,,,,,17.949962999999524,1,0,0
+pathfs-20261027-statfs,2026-10-27T07:29:22.948Z,gpt-6.1-sol,codex-cli 0.164.0,none,statfs,2,1,,1,1,2,1,4,1,0,0,0,0,76.04510300004482,1,22,0
+pathfs-20261027-unlinkat,2026-10-27T07:29:22.948Z,gpt-6.1-sol,codex-cli 0.164.0,none,unlinkat,1,1,,1,1,2,1,92,0,0,30,0,0,149.32576300001145,1,24,0
+pathfs-20261027-mkdirat,2026-10-27T07:29:22.948Z,gpt-6.1-sol,codex-cli 0.164.0,none,mkdirat,1,1,,1,1,2,1,78,0,0,25,0,0,124.49847699999809,1,9,0
+pathfs-20261027-chdir,2026-10-27T07:29:22.948Z,gpt-6.1-sol,codex-cli 0.164.0,none,chdir,1,1,,1,1,2,1,17,0,0,5,0,0,57.80989700001478,1,13,0
