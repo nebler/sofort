@@ -23,11 +23,11 @@ export async function runE3(argv: string[]): Promise<void> {
   const traces: string[] = [resolve(ROOT, '../../research/native-census/raw/sqlite3/full.strace'), resolve(ROOT, '../../research/native-census/raw/qsv/full.strace')];
   const fresh = join(out, 'fresh'); mkdirSync(fresh);
   await diskSpace();
-  await oracle(join(CANONICAL, 'payload/qjs'), QJS_ARGV, join(fresh, 'qjs'), Buffer.from('reply:ping\n'));
+  await oracle(join(CANONICAL, 'payload/qjs'), QJS_ARGV, join(fresh, 'qjs'), Buffer.from('reply:ping\n'), { annotate: true });
   traces.push(join(fresh, 'qjs/linux-00.strace'));
   const resourceRoot = join(fresh, 'resources'); mkdirSync(join(resourceRoot, 'dev'), { recursive: true });
   copyFileSync(arg('--database'), join(resourceRoot, 'demo.db')); writeFileSync(join(resourceRoot, 'dev/null'), '');
-  await oracle(arg('--sqlite-elf'), ['sqlite3', '-batch', '-init', '/dev/null', 'file:/demo.db?mode=ro&immutable=1', 'select sum(v) from n;'], join(fresh, 'sqlite'), Buffer.from('23\n'), { resources: resourceRoot, data: Buffer.alloc(0) });
+  await oracle(arg('--sqlite-elf'), ['sqlite3', '-batch', '-init', '/dev/null', 'file:/demo.db?mode=ro&immutable=1', 'select sum(v) from n;'], join(fresh, 'sqlite'), Buffer.from('23\n'), { resources: resourceRoot, data: Buffer.alloc(0), annotate: true });
   traces.push(join(fresh, 'sqlite/linux-00.strace'));
   const slots = readJSON<Record<string, string>>(join(CANONICAL, 'slots.json'));
   // Freeze every generated test and Linux expectation before opening mutants.

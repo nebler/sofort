@@ -10,6 +10,8 @@ interface Config {
   stderr_hex?: string;
   exit?: number;
   injections?: string[];
+  // Seed-trace collection only: strace -y annotates descriptors with their paths.
+  annotate?: boolean;
 }
 export async function runProfile(out: string): Promise<void> {
   const cfg = readJSON<Config>(join(out, 'oracle-config.json'));
@@ -19,6 +21,7 @@ export async function runProfile(out: string): Promise<void> {
     const stem = join(out, 'linux-' + String(i).padStart(2, '0'));
     const trace = stem + '.strace';
     const command = ['strace', '-f', '-qq', '-v', '-X', 'raw', '-xx', '-s', '1048576', '-o', trace];
+    if (cfg.annotate) command.splice(1, 0, '-y');
     for (const injection of cfg.injections || []) {
       command.push('-e', 'inject=' + injection);
     }

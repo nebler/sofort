@@ -7,7 +7,7 @@ export interface Shape { kind: string; text: string; value: string }
 export interface TraceCall { args: Shape[]; raw: string; trace: string }
 export interface AutoCase { id: string; category: string; args: string[]; declarations: string; observe: string; closed: boolean }
 export interface Generated { name: string; nr: number; traces: Record<string, string>; calls: TraceCall[]; visible: AutoCase[]; heldout: AutoCase[]; policy: string }
-const SYMBOLS: Record<string, string> = { AT_FDCWD: '-100', F_OK: '0', R_OK: '4', W_OK: '2', X_OK: '1', GRND_NONBLOCK: '1', GRND_RANDOM: '2', GRND_INSECURE: '4', MADV_NORMAL: '0', MADV_RANDOM: '1', MADV_SEQUENTIAL: '2', MADV_WILLNEED: '3', MADV_DONTNEED: '4', MADV_FREE: '8' };
+const SYMBOLS: Record<string, string> = { AT_FDCWD: '-100', F_OK: '0', R_OK: '4', W_OK: '2', X_OK: '1', GRND_NONBLOCK: '1', GRND_RANDOM: '2', GRND_INSECURE: '4', MADV_NORMAL: '0', MADV_RANDOM: '1', MADV_SEQUENTIAL: '2', MADV_WILLNEED: '3', MADV_DONTNEED: '4', MADV_FREE: '8', PROT_NONE: '0', PROT_READ: '1', PROT_WRITE: '2', PROT_EXEC: '4', MAP_SHARED: '1', MAP_PRIVATE: '2', MAP_FIXED: '16', MAP_ANONYMOUS: '32', MAP_NORESERVE: '16384', MAP_POPULATE: '32768', MAP_STACK: '131072', RUSAGE_SELF: '0', RUSAGE_CHILDREN: '-1', PRIO_PROCESS: '0', AT_REMOVEDIR: '512', O_RDONLY: '0', O_CLOEXEC: '524288', O_DIRECTORY: '16384' };
 
 // ABI layouts are transport metadata. No errno, successful result, stat field
 // values, or target-specific behavioral assertions are supplied here.
@@ -18,7 +18,7 @@ static long sys(long n,long a,long b,long c,long d,long e,long f) {
 }
 // Pointer arguments get separate 64 KiB mappings, each followed by an unmapped
 // 64 KiB hole: oversized kernel writes fault instead of corrupting the probe.
-static unsigned char *memory[6], saved[6][4096];
+static unsigned char *memory[6], saved[6][4096], first[6][4096];
 static const char ro[]="trace derived readonly memory";
 static char output[262144]; static unsigned used;
 static void text(const char*s){while(*s)output[used++]=*s++;}
@@ -32,6 +32,9 @@ static struct time_pair immediate;
 
 export function shape(text: string): Shape {
   if (SYMBOLS[text]) return { kind: 'scalar', text, value: SYMBOLS[text] };
+  if (text.includes('|') && text.split('|').every((part) => SYMBOLS[part] !== undefined || /^(?:\d+|0x[\da-f]+)$/.test(part))) {
+    return { kind: 'scalar', text, value: String(text.split('|').reduce((sum, part) => sum + Number(SYMBOLS[part] ?? part), 0)) };
+  }
   if (text.startsWith('AT_FDCWD<')) return { kind: 'fd', text, value: '-100' };
   if (/^-?\d+</.test(text)) return { kind: 'fd', text, value: text.split('<')[0] };
   if (text.startsWith('[{fd=')) return { kind: 'fd-array', text, value: '' };
@@ -75,6 +78,11 @@ export function collectCalls(name: string, traces: string[]): TraceCall[] {
 
 function base(call: TraceCall, id: string): AutoCase {
   const args: string[] = [], declarations: string[] = [], observations: string[] = [];
+  // Outputs that depend on no descriptor or path are compared byte for byte
+  // (varying words are learned from Linux). Descriptor/path outputs describe the
+  // oracle's filesystem, which jitk's read-only archive replaces by design, so
+  // they keep the write/no-write observation.
+  const independent = !call.args.some((arg) => ['fd', 'path', 'fd-array'].includes(arg.kind));
   for (let i = 0; i < call.args.length; i += 1) {
     const arg = call.args[i];
     if (arg.kind === 'fd') args.push(Number(arg.value) >= 3 ? 'fd' : arg.value);
@@ -95,8 +103,12 @@ function base(call: TraceCall, id: string): AutoCase {
       observations.push('bytes((unsigned char*)array' + i + ',' + items.length * 8 + ');');
     } else {
       args.push('(long)memory[' + i + ']');
-      if (arg.kind === 'bytes') observations.push('if(r>0){unsigned n=r<64?r:64;unsigned changed=0;for(unsigned j=0;j<n;j++)changed|=memory[' + i + '][j]!=0xa7;result("touched",changed!=0);bytes(memory[' + i + '],n);}');
-      else observations.push('unsigned changed' + i + '=0;for(unsigned j=0;j<4096;j++)changed' + i + '|=memory[' + i + '][j]!=0xa7;result("touched' + i + '",changed' + i + '!=0);');
+      // first[] holds the call's effect over fill 0xa7 and memory[] that of an
+      // identical call over fill 0x5c. A written byte equal to one fill differs
+      // from the other, so "touched" has no single-sentinel blind spot.
+      const written = 'first[' + i + '][j]!=0xa7||memory[' + i + '][j]!=0x5c';
+      if (arg.kind === 'bytes') observations.push('if(r>0){unsigned n=r<64?r:64;unsigned changed=0;for(unsigned j=0;j<n;j++)changed|=' + written + ';result("touched",changed!=0);bytes(first[' + i + '],n);}');
+      else observations.push('unsigned extent' + i + '=0;for(unsigned j=0;j<4096;j++)if(' + written + ')extent' + i + '=j+1;result("touched' + i + '",extent' + i + '!=0);' + (independent ? 'bytes(first[' + i + '],extent' + i + ');' : ''));
     }
   }
   // NULL timeout shapes are made finite whenever a decoded time-pair shape
@@ -145,7 +157,7 @@ export function generate(name: string, nr: number, traces: string[]): Generated 
   const visible: AutoCase[] = [], heldout: AutoCase[] = [];
   for (let i = 0; i < cases.length; i += 1) (i % 3 === 2 ? heldout : visible).push(cases[i]);
   const hashes: Record<string, string> = {}; for (const path of traces) hashes[path] = sha(path);
-  return { name, nr, traces: hashes, calls, visible, heldout, policy: 'trace-shapes-v1: observed seeds (max 8); local scalar boundaries; invalid output addresses; descriptor lifecycle; seek-position observation; opaque outputs measured only by write/no-write and repeat equality; all expected values learned from Linux, no human spec text' };
+  return { name, nr, traces: hashes, calls, visible, heldout, policy: 'trace-shapes-v1: observed seeds (max 8); local scalar boundaries; invalid output addresses; descriptor lifecycle; seek-position observation; two-fill write detection; descriptor-independent outputs compared byte-wise over their written extent; descriptor/path outputs by write/no-write and repeat equality; all expected values learned from Linux, no human spec text' };
 }
 
 export function source(profile: Generated, cases: AutoCase[]): string {
@@ -157,7 +169,9 @@ export function source(profile: Generated, cases: AutoCase[]): string {
     code += 'long fd=sys(56,-100,(long)"/data.bin",0,0,0,0);long mapping=sys(222,0,1048576,3,34,-1,0);\n' + c.declarations + '\n';
     code += 'for(unsigned i=0;i<6;i++)for(unsigned j=0;j<65536;j++)memory[i][j]=0xa7;\n';
     if (c.closed) code += 'sys(57,fd,0,0,0,0,0);\n';
-    code += 'text("' + c.id + '\\n");long r=' + invoke + ';result("return",r);\n' + c.observe + '\n';
+    code += 'text("' + c.id + '\\n");long r=' + invoke + ';result("return",r);\n';
+    if (c.observe.includes('first[')) code += 'for(unsigned i=0;i<6;i++)for(unsigned j=0;j<4096;j++)first[i][j]=memory[i][j];for(unsigned i=0;i<6;i++)for(unsigned j=0;j<65536;j++)memory[i][j]=0x5c;long r1=' + invoke + ';result("second-return",r1);\n';
+    code += c.observe + '\n';
     if (c.args.includes('fd') && !c.closed) code += 'result("position",sys(62,fd,0,1,0,0,0));\n';
     if (c.category === 'state' && !c.closed) {
       code += 'for(unsigned i=0;i<6;i++)for(unsigned j=0;j<4096;j++)saved[i][j]=memory[i][j];long r2=' + invoke + ';result("repeat-return",r2);unsigned same=1;for(unsigned i=0;i<6;i++)for(unsigned j=0;j<4096;j++)same&=saved[i][j]==memory[i][j];result("repeat-memory",same);\n';
