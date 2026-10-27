@@ -1,0 +1,21 @@
+Component | implementation/build | tests | total physical LOC
+bench | 3288 | 290 | 3578
+bench/hyperlight | 978 | 74 | 1052
+docs | 257 | 137 | 394
+executor | 1729 | 721 | 2450
+executor/policy | 146 | 102 | 248
+grow | 4873 | 1084 | 5957
+integration | 52 | 0 | 52
+kernel | 4630 | 1875 | 6505
+linux | 2846 | 106 | 2952
+mcp | 409 | 204 | 613
+protocol | 1003 | 222 | 1225
+vmm | 894 | 885 | 1779
+vmm/sandbox | 804 | 250 | 1054
+TOTAL | | | 27859
+Excluded: vendor, generated files, data, outputs, binaries; owned fixture code included; no whole-product 1.5k claim.
+Upstream patch (separate): vmm/patches/control-rx.diff +1/-1
+Upstream patch (separate): vmm/patches/libkrun-robustness.diff +156/-88
+Upstream patch (separate): vmm/patches/native-build.diff +1/-3
+Upstream patch (separate): vmm/patches/raw-direct-load.diff +6/-3
+Upstream patch (separate): vmm/patches/thread-hook.diff +16/-1

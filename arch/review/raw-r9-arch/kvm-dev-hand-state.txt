@@ -1,0 +1,15 @@
+# 2026-10-27, read-only inspection of kvm-dev (/Users/noah/code/sofort/kvm-dev/ssh.sh) and the Mac
+# kvm-dev: default snapshot of executor/ipc/run-ssh.ts (JITK_SHARD_REMOTE_SNAPSHOT default /home/dev/r7-ipc/prepared)
+-r--r--r--  1 dev dev       72 Oct 25 23:30 prepared.layout
+-r--r--r--  1 dev dev 33554432 Oct 25 23:30 prepared.mem
+-r--r--r--  1 dev dev     6368 Oct 25 23:30 prepared.regs
+# (no prepared.identity: executor/prepared-helpers.mjs:21 throws "stale shard snapshot" without it)
+# kvm-dev: default Node of run-ssh.ts / measure-helpers.ts
+/home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/
+# kvm-dev: private census state read by shard/native.ts:165,223
+2.9G	/home/dev/r6-census
+# kvm-dev: `cargo +stable` used by shard/Makefile:3
+cargo 1.99.1 (5f94df478 2026-08-27)
+# Mac: `cargo +stable` (shard/Cargo.toml rust-version = "1.95" -> `make -C shard test` fails: "jitk-shard@0.1.0 requires rustc 1.95")
+cargo 1.85.0 (d73d2caf9 2024-12-31)
+# Mac: `cargo +1.95.0 test --locked --offline` in shard/: 14 lib tests pass (pure modules only)
