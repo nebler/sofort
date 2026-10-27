@@ -28,13 +28,19 @@ Choose a fresh snapshot destination when rebuilding. The build generates
 `adapter.json` with the selected absolute paths for consumers. The shipped
 unbuilt descriptor uses paths relative to its own directory.
 
-Set `JITK_NODE` to a verified absolute Node >=24 executable.
-`make test` runs the adapter's checks with TypeScript transformation enabled.
-When `HYPERLIGHT_JS_SRC` is unset, it prints a clear **SKIP for all 13 checks**
-and succeeds without requiring Node or starting a VM. When set, missing or
-invalid source/build inputs fail with setup instructions; the enabled test
-must pass all checks. Existing built artifacts can be supplied with the worker
-and snapshot overrides above.
+`make -C ../.. deps` does all of the above into the jitk cache
+(`../../README.md#clean-clone`): it fetches the pinned commit, runs this
+builder with `HYPERLIGHT_FETCH=1` (`cargo fetch --locked` for the adapter
+crate and the checkout's workspace before the offline build) and
+`HYPERLIGHT_DESCRIPTOR` (the generated descriptor stays beside the cache
+outputs instead of rewriting the tracked `adapter.json`). Unset
+`HYPERLIGHT_JS_SRC`, `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` and `JITK_NODE`
+select those cache entries (`HYPERLIGHT_BUILD_DIR`, when set, still selects
+its own outputs). `make test` runs the adapter's checks with TypeScript
+transformation enabled; missing or invalid inputs fail with setup
+instructions naming `make -C arch/jitk deps`, and the test must pass all 13
+checks. The only skip is on non-macOS hosts (HVF only). Existing built
+artifacts can be supplied with the worker and snapshot overrides above.
 
 ## Benchmark
 

@@ -64,6 +64,13 @@ async function main(): Promise<void> {
   const worker = canonical(env.HYPERLIGHT_WORKER || join(build, 'target/release/r2-worker'));
   const snapshot = canonical(env.HYPERLIGHT_SNAPSHOT || join(build, 'snapshot'));
   env.CARGO_TARGET_DIR = join(build, 'target');
+  if (env.HYPERLIGHT_FETCH === '1') {
+    // Populate the Cargo registry from the lockfiles (adapter crate and the
+    // checkout's workspace, which the guest runtime build resolves) so the
+    // offline build below works on a clean machine.
+    await command([env.CARGO, 'fetch', '--locked', '--manifest-path', join(crate, 'Cargo.toml')], env);
+    await command([env.CARGO, 'fetch', '--locked', '--manifest-path', join(src, 'Cargo.toml')], env);
+  }
   await command([env.CARGO, 'build', '--offline', '--locked', '--release', '--manifest-path', join(crate, 'Cargo.toml')], env);
   const built = join(build, 'target/release/r2-worker');
   if (worker !== built) {
@@ -78,7 +85,9 @@ async function main(): Promise<void> {
   descriptor.strict_argv = [worker, 'strict', snapshot];
   descriptor.clone_argv = [worker, 'clone', snapshot];
   descriptor.files = ['worker.rs', 'bootstrap.js', 'Cargo.lock'].map(name => join(root, name)).concat([worker, join(snapshot, 'index.json')]);
-  dump(join(root, 'adapter.json'), descriptor);
+  // HYPERLIGHT_DESCRIPTOR redirects the generated descriptor (the deps cache
+  // keeps it beside its outputs instead of rewriting the tracked one).
+  dump(env.HYPERLIGHT_DESCRIPTOR || join(root, 'adapter.json'), descriptor);
 }
 
 main().catch((error: unknown) => {

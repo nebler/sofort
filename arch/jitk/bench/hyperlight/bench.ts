@@ -7,12 +7,14 @@ import { options, check, readJSON, dump, sha, utc, command, clockNS, now, median
 import { sleep, usage } from '../native.ts';
 import { Worker, CASES, HERE as CONTROLLER, ROOT as JITK, gate, startWatch, cleanup, type Frame } from '../controller.ts';
 import { report } from '../report.ts';
+import { artifactPath, requireArtifact } from '../../tslib/deps.ts';
 
 const ROOT = import.meta.dirname;
-const NODE = process.env.JITK_NODE || '';
-const BUILD = resolve(process.env.HYPERLIGHT_BUILD_DIR || join(ROOT, 'build'));
-const WORKER = resolve(process.env.HYPERLIGHT_WORKER || join(BUILD, 'target/release/r2-worker'));
-const SNAPSHOT = resolve(process.env.HYPERLIGHT_SNAPSHOT || join(BUILD, 'snapshot'));
+// Explicit variables (or HYPERLIGHT_BUILD_DIR outputs), else the deps cache.
+const NODE = artifactPath('JITK_NODE');
+const BUILD = process.env.HYPERLIGHT_BUILD_DIR || '';
+const WORKER = resolve(process.env.HYPERLIGHT_WORKER || (BUILD ? join(BUILD, 'target/release/r2-worker') : artifactPath('HYPERLIGHT_WORKER')));
+const SNAPSHOT = resolve(process.env.HYPERLIGHT_SNAPSHOT || (BUILD ? join(BUILD, 'snapshot') : artifactPath('HYPERLIGHT_SNAPSHOT')));
 const MODES = ['jitk-cold', 'hl-strict-cold', 'jitk-parked', 'hl-strict-prespawned', 'hl-logical-clone'];
 const CONTRACTS: Record<string, string> = {};
 for (const mode of MODES) {
@@ -29,10 +31,10 @@ interface JitkConfig {
   sandboxProfile?: string;
 }
 function jitkConfig(): JitkConfig {
-  const cfg: JitkConfig = { vmm: resolve(process.env.JITK_VMM_BINARY || join(JITK, 'vmm/build/jitk-vmm')), image: resolve(process.env.JITK_KERNEL_IMAGE || process.env.JITK_IMAGE || join(JITK, 'kernel/dist/kernel.bin')), launcher: '01-vmm', parkingEvidence: join(JITK, 'kernel/.READY'), hyperlight: { worker: WORKER, snapshot: SNAPSHOT } };
+  const cfg: JitkConfig = { vmm: resolve(artifactPath('JITK_VMM_BINARY')), image: resolve(process.env.JITK_KERNEL_IMAGE || process.env.JITK_IMAGE || join(JITK, 'kernel/dist/kernel.bin')), launcher: '01-vmm', parkingEvidence: join(JITK, 'kernel/.READY'), hyperlight: { worker: WORKER, snapshot: SNAPSHOT } };
   for (const key of ['vmm', 'image']) {
     const path = key === 'vmm' ? cfg.vmm : cfg.image;
-    check(existsSync(path), 'Missing canonical ' + key + ': ' + path + '; build jitk or set JITK_VMM_BINARY and JITK_KERNEL_IMAGE (or JITK_IMAGE)');
+    check(existsSync(path), 'Missing canonical ' + key + ': ' + path + '; run make -C arch/jitk deps build, or set JITK_VMM_BINARY and JITK_KERNEL_IMAGE (or JITK_IMAGE)');
   }
   return cfg;
 }
@@ -156,8 +158,16 @@ function memorySample(kind: string, count: number, cfg: JitkConfig): Frame {
 function main(): void {
   const args = options(process.argv.slice(2), { n: 30, gate_budget: 0.1, load_threshold: 6, output: join(ROOT, 'results'), smoke: false }, ['n']);
   args.n = Number(args.n);
-  if ((!args.smoke && args.n < 30) || !NODE || !isAbsolute(NODE) || !process.env.HYPERLIGHT_JS_SRC) {
-    console.error('n >=30 required; set JITK_NODE to a verified absolute Node executable and HYPERLIGHT_JS_SRC to the pinned checkout; see README.md');
+  if ((!args.smoke && args.n < 30) || !isAbsolute(NODE)) {
+    console.error('n >=30 required and JITK_NODE must be an absolute Node executable; see README.md');
+    process.exit(2);
+  }
+  try {
+    for (const name of ['JITK_NODE', 'HYPERLIGHT_JS_SRC']) {
+      requireArtifact(name);
+    }
+  } catch (error) {
+    console.error(detail(error));
     process.exit(2);
   }
   const out = String(args.output);
