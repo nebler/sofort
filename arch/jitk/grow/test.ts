@@ -18,6 +18,9 @@ import { normalize } from './normalize.ts';
 import { lintProbeConstants, rustTokens } from './probe-lint.ts';
 import { collectCalls, generate as autoGenerate, source as autoSource, shape } from './autoprofile.ts';
 import { learn, normalizeAuto, varyingIdentities } from './auto-observe.ts';
+import { imageTree, requireSameTree, shareTree, treeHash } from './oracle.ts';
+import { splitLauncher } from './oracle-trace.ts';
+import { removeUnpacked } from '../kernel/packer.ts';
 
 const FIXTURES = join(ASSETS, 'tests/fixtures');
 interface Test {
@@ -52,6 +55,20 @@ test('E2 overfit controls evade the lint and narrow one canonical handler each',
     assert.equal(lintProbeConstants(name, source).length, 0, file);
     assert.notEqual(source, readFileSync(join(CANONICAL, 'src/syscalls/' + name + '.rs'), 'utf8'));
   }
+});
+
+test('autoprofile treats a foreign absolute address as an output buffer, not a scalar', async () => {
+  await temporary(async (path) => {
+    const trace = join(path, 'trace');
+    writeFileSync(trace, '10 statfs("\\x2f\\x6d", 0xffffd51e4b40) = -1 ENOENT (No such file or directory)\n10 statfs("\\x2f", {f_type=0x6a656a63}) = 0\n10 mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0x7e1000\n');
+    const calls = collectCalls('statfs', [trace]);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].args[1].kind, 'opaque-output');
+    const profile = autoGenerate('statfs', 43, [trace]);
+    assert.equal(autoSource(profile, profile.visible.concat(profile.heldout)).includes('0xffffd51e4b40'), false);
+    // Small scalars and mmap lengths stay scalars.
+    assert.equal(collectCalls('mmap', [trace])[0].args[1].kind, 'scalar');
+  });
 });
 
 test('autoprofile parses nested trace shapes and ignores incomplete calls', async () => {
@@ -173,6 +190,41 @@ test('Linux calibration relaxes only observed positive identity and byte variati
   const identity = learn(['return=10\nrepeat-return=10\n', 'return=15\nrepeat-return=15\n'].map((s) => ({ stdout_hex: Buffer.from(s).toString('hex'), stderr_hex: '', exit: 0 })));
   assert.equal(normalizeAuto(Buffer.from('return=1\nrepeat-return=1\n').toString('hex'), identity.rules), identity.expected.stdout_hex);
   assert.notEqual(normalizeAuto(Buffer.from('return=1\nrepeat-return=2\n').toString('hex'), identity.rules), identity.expected.stdout_hex);
+});
+test('shared tree: the oracle tree re-packs to the guest archive and pins its hash', async () => {
+  await temporary(async (path) => {
+    const resources = join(path, 'resources'); mkdirSync(join(resources, 'd'), { recursive: true });
+    writeFileSync(join(resources, 'data.bin'), 'abc'); writeFileSync(join(resources, 'd/x'), '');
+    const shared = shareTree(resources, join(path, 'tree'));
+    assert.equal(shared.entries, 4);
+    assert.equal(shared.sha256, treeHash(resources));
+    assert.equal(statSync(join(path, 'tree/data.bin')).mode & 0o777, 0o444);
+    assert.equal(statSync(join(path, 'tree/d')).mode & 0o777, 0o555);
+    // An empty archive (corpus guests) materialises as an empty root.
+    assert.equal(shareTree(null, join(path, 'empty')).entries, 1);
+    removeUnpacked(join(path, 'tree')); removeUnpacked(join(path, 'empty'));
+    assert.equal(existsSync(join(path, 'tree')), false);
+  });
+});
+test('shared tree: comparison fails closed on a missing or different tree hash', async () => {
+  await temporary(async (path) => {
+    const good = 'a'.repeat(64);
+    dump(join(path, 'manifest.json'), { packed: { resources: { sha256: good } } });
+    assert.equal(imageTree(path), good);
+    requireSameTree(path, good);
+    await assert.rejects(async () => requireSameTree(path, 'b'.repeat(64)), /shared tree mismatch/);
+    await assert.rejects(async () => requireSameTree(path, undefined), /no shared-tree hash/);
+    dump(join(path, 'manifest.json'), { packed: {} });
+    await assert.rejects(async () => requireSameTree(path, good), /lacks the packed archive hash/);
+  });
+});
+test('shared tree: launcher prelude is split off at the payload execveat', async () => {
+  const text = '9 execve("/oracle-root", [], []) = 0\n9 chroot("/jitk-root") = 0\n9 execveat(3, "", [], [], AT_EMPTY_PATH) = 0\n9 chdir("/") = 0\n9 exit(0) = ?\n';
+  const parts = splitLauncher(text);
+  assert.equal(parts.payload, '9 chdir("/") = 0\n9 exit(0) = ?\n');
+  assert.match(parts.launcher, /chroot/);
+  assert.equal(parts.payload.includes('chroot'), false);
+  await assert.rejects(async () => splitLauncher('9 execveat(3, "", [], [], AT_EMPTY_PATH) = -1 EACCES (Permission denied)\n'), /did not execute the payload/);
 });
 function test(name: string, body: () => Promise<void>): void {
   tests.push({ name, body });

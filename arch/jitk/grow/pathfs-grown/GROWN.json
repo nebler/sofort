@@ -1,0 +1,13 @@
+{
+  "note": "Path handlers grown against the shared-tree oracle (EXPERIMENTS-PATHFS-2026-10-27.md). The measured kernel is phase2 assemble over phase2-grown/*.rs plus these three *.rs. audit-rejected/unlinkat.rs passed every batch gate but failed the tree-variant audit and is not in that kernel. Not a release; kernel/.READY and grow/release.json are unchanged.",
+  "oracle_fs": "shared-tree-v1: payload chrooted into the materialised jitk archive (ro bind mount), cwd /, uid/gid 65534",
+  "tree_sha256": "3e345678891be516906e2e0454887689116ac0fc391bf6c51dddd5cd9cda5a62",
+  "handlers": {
+    "statfs": { "sha256": "890d3dd7ca5f995b99dddc45aec6115fbb870fc30f52873f0c551c6c71709c97", "lines": 22, "transaction": "pathfs-20261027-statfs", "attempt": 2, "tree_variant_audit": "PASS/PASS" },
+    "mkdirat": { "sha256": "9894349551a7fea8771d847d596cfb3836a9a01caf89d33eb1bae1da71cc0c3a", "lines": 9, "transaction": "pathfs-20261027-mkdirat", "attempt": 1, "tree_variant_audit": "PASS/PASS" },
+    "chdir": { "sha256": "d11b2220e5137156c491174d3bdb97ea7b268f6921dcf3bb0ed1a858ea6a9e67", "lines": 13, "transaction": "pathfs-20261027-chdir", "attempt": 1, "tree_variant_audit": "PASS/PASS" }
+  },
+  "audit_rejected": {
+    "unlinkat": { "sha256": "ba928d5291cd349506397d9a405ecf3f6ed5b5511a9d026e42ad5df569efb662", "lines": 23, "transaction": "pathfs-20261027-unlinkat", "attempt": 1, "tree_variant_audit": "PASS/REJECT", "reason": "unlinkat(fd, \"/data.bin\", 0) on a non-root directory: handler EISDIR, Linux on a read-only mount EROFS" }
+  }
+}

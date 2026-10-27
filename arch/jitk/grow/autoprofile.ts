@@ -71,6 +71,13 @@ export function collectCalls(name: string, traces: string[]): TraceCall[] {
           if (address >= Number(region[2]) - 0x100000 && address < Number(region[2]) + Number(region[1]) + 0x100000) { args[i].kind = 'mapped'; args[i].value = String(address - Number(region[2])); }
         }
       }
+      // A remaining absolute address far above any guest mapping (2^40+: the
+      // tracee's stack, say) is a buffer of another process. strace prints such an
+      // output buffer raw when the call failed, as {...} when it succeeded. Treat it
+      // as the output buffer it was: the probe passes its own buffer, plus the usual
+      // invalid-address variants. Copying the raw value would make the expected
+      // result depend on where Linux ASLR placed the probe's own stack.
+      for (const arg of args) if (arg.kind === 'scalar' && /^0x[\da-f]+$/.test(arg.value) && Number(arg.value) >= 2 ** 40) { arg.kind = 'opaque-output'; arg.value = ''; }
       if (args.some((arg) => arg.kind === 'unsupported')) continue;
       const key = args.map((arg) => arg.kind + ':' + (arg.kind === 'scalar' ? arg.value : arg.kind === 'fd-array' ? arg.text.replace(/<[^>]*>/g, '') : '')).join('|');
       if (!seen.has(key)) { seen.add(key); calls.push({ args, raw, trace: path }); }

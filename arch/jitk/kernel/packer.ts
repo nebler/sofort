@@ -1,4 +1,4 @@
-import { lstatSync, readdirSync, readFileSync } from 'node:fs';
+import { chmodSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, sha } from './lib.ts';
 
@@ -72,6 +72,53 @@ export function archive(root: string | null): { bytes: Buffer; count: number } {
     bodySize += content.length;
   }
   return { bytes: Buffer.concat([table, ...names, ...body]), count: nodes.length };
+}
+
+// Inverse of archive(): materialise a JITKFS01 archive as the directory tree the
+// guest sees (files 0444, directories 0555, as fstat/newfstatat report them), so a
+// Linux reference can run on the same tree. `dir` must not exist. Re-packing the
+// result reproduces the input bytes; callers check that before using the tree.
+export function unpack(bytes: Buffer, dir: string): number {
+  check(bytes.length >= 16 && bytes.subarray(0, 8).toString('latin1') === 'JITKFS01', 'JITKFS01 archive required');
+  const count = bytes.readUInt32LE(8);
+  check(count >= 1 && 16 + 24 * count <= bytes.length, 'archive index outside archive');
+  const field = (i: number, f: number): number => bytes.readUInt32LE(16 + 24 * i + 4 * f);
+  const paths: string[] = [dir];
+  const dirs: string[] = [];
+  mkdirSync(dir);
+  for (let i = 0; i < count; i += 1) {
+    const directory = field(i, 3) === 1;
+    if (i > 0) {
+      const parent = field(i, 2);
+      check(parent < i && field(parent, 3) === 1, 'archive parent must be an earlier directory');
+      const name = bytes.subarray(field(i, 0), field(i, 0) + field(i, 1)).toString('utf8');
+      check(name.length > 0 && name !== '.' && name !== '..' && !name.includes('/') && !name.includes('\0'), 'unsafe archive name');
+      paths.push(join(paths[parent], name));
+    }
+    if (directory) {
+      if (i > 0) mkdirSync(paths[i]);
+      dirs.push(paths[i]);
+    } else {
+      check(i > 0 && field(i, 4) + field(i, 5) <= bytes.length, 'archive file outside archive');
+      writeFileSync(paths[i], bytes.subarray(field(i, 4), field(i, 4) + field(i, 5)));
+      chmodSync(paths[i], 0o444);
+    }
+  }
+  for (let i = dirs.length - 1; i >= 0; i -= 1) chmodSync(dirs[i], 0o555);
+  return count;
+}
+// Removes a tree written by unpack (its directories are read-only).
+export function removeUnpacked(dir: string): void {
+  if (!existsSync(dir)) return;
+  const stack = [dir];
+  while (stack.length) {
+    const path = stack.pop()!;
+    if (lstatSync(path).isDirectory()) {
+      chmodSync(path, 0o755);
+      for (const name of readdirSync(path)) stack.push(join(path, name));
+    }
+  }
+  rmSync(dir, { recursive: true, force: true });
 }
 
 function u64(bytes: Buffer, offset: number): number {

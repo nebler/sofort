@@ -1,7 +1,7 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { pack, archive, IMAGE_END } from '../packer.ts';
+import { pack, archive, unpack, removeUnpacked, IMAGE_END } from '../packer.ts';
 import { check } from '../lib.ts';
 
 function elf(second = 0x401000, flags = 6, base = 0x400000, size = 64): Buffer {
@@ -68,6 +68,23 @@ try {
   check(JSON.stringify(row(0).slice(3)) === '[1,1,2]' && name(1) === 'a.txt' && name(2) === 'b');
   check(fs.bytes.subarray(row(1)[4], row(1)[4] + row(1)[5]).toString() === 'hi');
   check(row(3)[2] === 2 && row(4)[2] === 3);
+  // unpack materialises the guest tree (0444 files, 0555 dirs) and re-packs identically.
+  const tree = join(temporary, 'unpacked');
+  check(unpack(fs.bytes, tree) === 5 && archive(tree).bytes.equals(fs.bytes));
+  check((statSync(join(tree, 'a.txt')).mode & 0o777) === 0o444 && (statSync(join(tree, 'b/c')).mode & 0o777) === 0o555);
+  const emptyTree = join(temporary, 'empty');
+  check(unpack(archive(null).bytes, emptyTree) === 1 && readdirSync(emptyTree).length === 0 && archive(emptyTree).bytes.equals(archive(null).bytes));
+  // A '..' entry name must never escape the destination.
+  const hostile = Buffer.from(fs.bytes);
+  hostile.write('..', row(1)[0]);
+  hostile.writeUInt32LE(2, 16 + 24 + 4);
+  let refused = false;
+  try { unpack(hostile, join(temporary, 'hostile')); }
+  catch (error: unknown) { refused = error instanceof Error && error.message.includes('unsafe archive name'); }
+  check(refused);
+  removeUnpacked(tree);
+  removeUnpacked(emptyTree);
+  check(!existsSync(tree) && !existsSync(emptyTree));
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }
@@ -89,4 +106,4 @@ try {
 } finally {
   rmSync(links, { recursive: true, force: true });
 }
-console.log('10 packer/archive tests passed');
+console.log('12 packer/archive tests passed');

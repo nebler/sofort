@@ -42,6 +42,11 @@ export function specification(name: string, level: SpecLevel = 'full'): string {
     : 'Implement the explicit Lua profile: always return -38 (ENOSYS), without touching user memory, installing signals or storing state. Linux oracle uses explicit ENOSYS injection.';
 }
 
+// Targets that resolve paths or archive descriptors get the read-only archive API
+// (fs.rs), as faccessat already did: the guest's tree is the archive, and the Linux
+// reference runs on that same tree (oracle.ts shared tree).
+export const FILESYSTEM_TARGETS = ['fstat', 'pread64', 'faccessat', 'chdir', 'mkdirat', 'unlinkat', 'statfs'];
+
 export async function proposal(name: string, work: string, out: string, missing: unknown, live = false, level: SpecLevel = 'full', feedback: unknown[] = [], publicProbe = ''): Promise<unknown> {
   const path = `src/syscalls/${name}.rs`;
   if (!live) {
@@ -64,7 +69,7 @@ export async function proposal(name: string, work: string, out: string, missing:
     '\nNative Linux probe:\n' + readFileSync(join(out, 'oracle/linux-00.strace'), 'utf8') +
     '\nAssembly probe:\n' + readFileSync(publicProbe || probeSource(name), 'utf8') +
     '\nParent helper API (use super imports):\n' + readFileSync(join(work, 'src/syscalls.rs'), 'utf8') +
-    (name === 'fstat' || name === 'pread64' || name === 'faccessat' ? '\nRead-only filesystem API:\n' + readFileSync(join(work, 'src/fs.rs'), 'utf8') : '');
+    (FILESYSTEM_TARGETS.includes(name) ? '\nRead-only filesystem API:\n' + readFileSync(join(work, 'src/fs.rs'), 'utf8') : '');
   // E2 overfitting probes. '1' is the first red-team wording (kept so its
   // receipts stay reproducible); 'simplest' is the E2 overfitting prompt.
   if (process.env.JITK_GROW_RED_TEAM === '1') {

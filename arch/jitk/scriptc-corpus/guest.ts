@@ -2,7 +2,7 @@
 // probe: unchanged kernel copy, canonical release profile, grow-trace observer.
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
-import { capture, run, environment, sha, check, type Result } from './lib.ts';
+import { capture, run, environment, sha, check, copyTree, files, type Result } from './lib.ts';
 import { pack } from '../kernel/packer.ts';
 import { observe } from '../grow/observations.ts';
 import { guestStdout } from './guest-output.ts';
@@ -18,7 +18,8 @@ export interface Guest {
 const ROOT = resolve(import.meta.dirname);
 const WORK = join(ROOT, '.work');
 const ZIG = process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig';
-const compiler = join(ROOT, 'node_modules/.bin/scriptc');
+// The single scriptc pin (../tools); the corpus has no node_modules of its own.
+const compiler = join(ROOT, '../tools/node_modules/.bin/scriptc');
 // Packed payload GPA offset inside kernel.bin (link.ld: 0x80080000 - 0x80000000).
 const PACKED_OFFSET = 0x80000;
 const toolsReady = new Map<string, Promise<void>>();
@@ -59,9 +60,16 @@ export function stream(out: Buffer, err: Buffer, code: number | null, timeout = 
 export function identical(a: Stream, b: Stream): boolean {
   return !a.timeout && !b.timeout && a.stdout === b.stdout && a.stderr === b.stderr && a.exit === b.exit;
 }
+const TSLIB = resolve(ROOT, '../tslib');
+function tslibHash(): string {
+  return sha(Buffer.from(files(TSLIB).filter(f => f.endsWith('.ts')).sort().map(f => f.slice(TSLIB.length) + ':' + sha(readFileSync(f))).join('\n')));
+}
 async function kernelTools(kernel: string, tools: string): Promise<void> {
   if (!toolsReady.has(tools)) toolsReady.set(tools, (async () => {
     mkdirSync(tools, { recursive: true });
+    // Kernel tools import ../tslib: a kernel copy needs the shared library beside it.
+    const shared = join(dirname(kernel), 'tslib');
+    if (resolve(shared) !== TSLIB) copyTree(TSLIB, shared, new Set(['.work', 'node_modules', 'stress']));
     for (const tool of ['prepare', 'build-args', 'artifact']) {
       await run([compiler, 'build', join(kernel, tool + '.ts'), '-o', join(tools, tool)], { timeout: 45 });
     }
@@ -80,7 +88,7 @@ export function embedded(kernel: Buffer, flat: Buffer): boolean {
 // outside Cargo's lock, and a foreign relink would trip the embedding check.
 export async function guest(elf: string, dir: string, timeout = 10, target = 'target', kernel = join(WORK, 'kernel')): Promise<Guest | { buildError: string }> {
   // Build tools are keyed by the kernel tree's TypeScript (prepare/packer may differ).
-  const tools = kernel === join(WORK, 'kernel') ? join(WORK, 'kernel-tools') : join(WORK, 'kernel-tools-' + sha(Buffer.from(readdirSync(kernel).filter(f => f.endsWith('.ts')).sort().map(f => f + ':' + sha(readFileSync(join(kernel, f)))).join('\n'))).slice(0, 16));
+  const tools = kernel === join(WORK, 'kernel') ? join(WORK, 'kernel-tools') : join(WORK, 'kernel-tools-' + sha(Buffer.from(readdirSync(kernel).filter(f => f.endsWith('.ts')).sort().map(f => f + ':' + sha(readFileSync(join(kernel, f)))).join('\n') + '\ntslib:' + tslibHash())).slice(0, 16));
   await kernelTools(kernel, tools);
   const out = join(dir, 'image');
   const buildEnv = environment();

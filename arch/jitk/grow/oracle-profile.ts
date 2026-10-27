@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { capture, check, detail, dump, hexBytes, readJSON } from './lib.ts';
+import { splitLauncher } from './oracle-trace.ts';
 
 interface Config {
   argv: string[];
@@ -14,6 +15,8 @@ interface Config {
   annotate?: boolean;
   // Address-space limit in KiB (guest capacity), inherited by the payload.
   memory_kib?: number;
+  // Shared tree (oracle.ts): run the payload chrooted into this in-container root.
+  root?: string | null;
 }
 export async function runProfile(out: string): Promise<void> {
   const cfg = readJSON<Config>(join(out, 'oracle-config.json'));
@@ -27,7 +30,8 @@ export async function runProfile(out: string): Promise<void> {
     for (const injection of cfg.injections || []) {
       command.push('-e', 'inject=' + injection);
     }
-    command.push('--', '/payload', ...cfg.argv.slice(1));
+    if (cfg.root) command.push('--', '/oracle-root', cfg.root, '/payload', '/payload', ...cfg.argv.slice(1));
+    else command.push('--', '/payload', ...cfg.argv.slice(1));
     if (cfg.memory_kib) command.unshift('/bin/sh', '-c', 'ulimit -v ' + String(Math.floor(cfg.memory_kib)) + ' && exec "$@"', 'sh');
     const started = performance.now();
     const result = await capture(command, { env: { PATH: '/bin:/usr/bin', LC_ALL: 'C', LANG: 'C', TZ: 'UTC' }, input: hexBytes(cfg.stdin_hex), holdStdin: true, timeout: 10 });
@@ -37,7 +41,13 @@ export async function runProfile(out: string): Promise<void> {
     if (cfg.expected_hex !== null) {
       check(result.returncode === (cfg.exit ?? 0) && result.stdout.toString('hex') === cfg.expected_hex && result.stderr.toString('hex') === (cfg.stderr_hex || ''), 'Linux oracle output mismatch');
     }
-    const text = readFileSync(trace, 'utf8');
+    let text = readFileSync(trace, 'utf8');
+    if (cfg.root) {
+      const parts = splitLauncher(text);
+      writeFileSync(stem + '.launcher.strace', parts.launcher);
+      writeFileSync(trace, parts.payload);
+      text = parts.payload;
+    }
     for (const injection of cfg.injections || []) {
       const name = injection.split(':')[0];
       check(text.split('\n').some((line) => line.includes(name + '(') && line.includes('(INJECTED)')), name);

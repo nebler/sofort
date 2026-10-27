@@ -2,7 +2,7 @@
 include ../tools/pin.mk
 SOURCES := $(wildcard *.ts) $(TSLIB_SOURCES)
 
-build: kernel-tools build/grow build/oracle-profile build/experiments build/parity build/sqlite-checks
+build: kernel-tools build/grow build/oracle-profile build/oracle-root build/experiments build/parity build/sqlite-checks
 
 .PHONY: kernel-tools
 kernel-tools: build/kernel-tools/prepare build/kernel-tools/build-args build/kernel-tools/artifact
@@ -28,11 +28,16 @@ build/test: $(SOURCES) $(SCRIPTC)
 test: build/test
 	build/test
 
-build/oracle-profile: oracle-profile.ts lib.ts $(TSLIB_SOURCES) $(SCRIPTC)
+build/oracle-profile: oracle-profile.ts oracle-trace.ts lib.ts $(TSLIB_SOURCES) $(SCRIPTC)
 	mkdir -p build
 	PATH="$(dir $(ZIG)):$$PATH" SCRIPTC_TARGET=aarch64-linux-musl $(SCRIPTC) build oracle-profile.ts -o $@
 
-oracle: build/oracle-profile
+# Shared-tree launcher (static aarch64 musl), mounted into the unchanged oracle image.
+build/oracle-root: oracle-root.c
+	mkdir -p build
+	$(ZIG) cc -target aarch64-linux-musl -static -Os -Wall -Werror $< -o $@
+
+oracle: build/oracle-profile build/oracle-root
 
 build/experiments: $(SOURCES) $(SCRIPTC)
 	mkdir -p build

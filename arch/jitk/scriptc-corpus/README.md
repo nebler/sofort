@@ -12,7 +12,14 @@ make -C arch/jitk/scriptc-corpus report   # RESULTS.md from the completed journa
 make -C arch/jitk/scriptc-corpus audit    # journal/summary/CSV/pin consistency
 make -C arch/jitk/scriptc-corpus heldout  # trusted-gate held-out run
 make -C arch/jitk/scriptc-corpus rerun ARGS="--from full --id ID --kernel DIR [--selection visible|heldout] [--layout stock] [--uses SYSCALL]"
+arch/jitk/scriptc-corpus/.work/bin/census writes --from RERUN_ID --id ID [--workers 1|2]  # Linux write profiles
 ```
+
+`writes` reruns, on Linux only, the programs a rerun journal left failing whose census
+Linux run used a mutating path call (mkdirat, unlinkat, renameat2, ftruncate, ...), in the
+census environment, and records per program what they create, where (cwd, /tmp, other),
+how many bytes they write and which filesystem calls they issue (`writes.ts`). It sizes a
+writable scratch tree; it grades nothing. Rows stay in `.work/`.
 
 Results: [`RESULTS.md`](RESULTS.md); phase-2 grown kernel: [`RESULTS-PHASE2.md`](RESULTS-PHASE2.md). Compiler findings: [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md).
 
