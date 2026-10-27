@@ -4,8 +4,8 @@ TypeScript compiled with **scriptc 0.4.5** is the sole grow-loop implementation.
 `../kernel/` remains the only kernel source. The controller requires its `.READY`,
 copies it into a disposable Git repository, removes independent tests before
 proposal generation, and removes that repository/Cargo cache on exit. No Python implementation
-source is tracked in grow. Generic process, hashing, JSON and assertion helpers live
-in `lib.ts` for later consolidation with the other TypeScript ports.
+source is tracked in grow. Generic process, hashing, JSON and assertion helpers come
+from the shared `../tslib/` through `lib.ts`.
 
 ```sh
 make -C arch/jitk/grow build test

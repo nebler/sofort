@@ -12,4 +12,4 @@ hostile: .work/bin/watchdog
 	$(NODE) hostile/run.mjs
 
 TS_TOOLS := make-vectors.ts watchdog.ts report.ts
-include ../docs/scriptc.mk
+include ../tools/scriptc.mk

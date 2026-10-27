@@ -120,7 +120,7 @@ export async function buildKernel(): Promise<void> {
   rmSync(dest, { recursive: true, force: true });
   copyTree(join(ROOT, "../kernel"), dest);
   const script = read(join(ROOT, "../protocol/bootstrap.js"));
-  // The disposable source copy has neither docs/scriptc.mk nor compiled tools.
+  // The disposable source copy has neither tools/scriptc.mk nor compiled tools.
   // Execute canonical host tools while building only the copied kernel source.
   const tools = process.env.JITK_TOOLS_DIR || join(ROOT, "../kernel/.work", process.platform === "linux" ? "linux" : "bin");
   if (!process.env.JITK_TOOLS_DIR && process.platform === "darwin") {

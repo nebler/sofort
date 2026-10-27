@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { chmodSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify, csvDecode, csvEncode, sha } from './lib.ts';
+import { check, detail, dump, equal, parseJSON, readJSON, signed, stringify, csvDecode, csvEncode, sha, track } from './lib.ts';
 import { ASSETS, CANONICAL, ROOT, SAFE_ENV, build, capture, cleanup, copyKernel, killChild, run, scratch, treeHashes } from './runtime.ts';
 import { compare, guest, linux, type Differential } from './adapters.ts';
 import { discover, installationPatch, parseArgs, validateSource } from './loop.ts';
@@ -310,7 +310,7 @@ test('candidate escape tokens rejected', async () => {
 
 test('denied group signal falls back to child kill and reaps', async () => {
   await new Promise<void>((resolveTest, reject) => {
-    const child = spawn('/bin/sleep', ['30'], { detached: true, env: SAFE_ENV });
+    const child = track(spawn('/bin/sleep', ['30'], { detached: true, env: SAFE_ENV }), 60);
     child.on('error', reject);
     child.on('close', (code: number | null, signal: string | null) => {
       try {

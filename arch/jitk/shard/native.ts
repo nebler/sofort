@@ -30,6 +30,7 @@ import {
   run,
   saveResult,
   sha,
+  track,
   sleep,
   tool,
   type Json,
@@ -384,6 +385,7 @@ class Worker {
       detached: true,
       stdio: ["pipe", "pipe", "pipe"],
     });
+    track(this.child, 7200);
     this.child.stdout!.on("data", (chunk: Buffer) => {
       this.bytes = Buffer.concat([this.bytes, chunk]);
     });

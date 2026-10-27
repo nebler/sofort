@@ -41,5 +41,5 @@ independent watchdog and are killed/reaped in `finally`. A watchdog firing is a
 failure in this suite; rejection must come from the dispatcher or kernel/EL0.
 `.READY` covers canonical build plus host conformance; VM evidence is separate.
 
-Native tooling uses scriptc 0.4.5 pinned in `../docs/package.json`; run
-`make tools` to compile it. See `PORT-PARITY.md` and `../docs/SCRIPTC-GAPS.md`.
+Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
+shared helpers in `../tslib/`; run `make tools` to compile it. See `PORT-PARITY.md` and `../docs/SCRIPTC-GAPS.md`.

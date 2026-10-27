@@ -1,10 +1,7 @@
 .DEFAULT_GOAL := build
-SCRIPTC := node_modules/.bin/scriptc
-ZIG ?= /Users/noah/.local/share/zig-0.16.0/zig
-SOURCES := $(wildcard *.ts) $(wildcard nested/*.ts)
+include ../tools/pin.mk
+SOURCES := $(wildcard *.ts) $(wildcard nested/*.ts) $(TSLIB_SOURCES)
 .PHONY: build build-linux test nested clean
-$(SCRIPTC): package.json package-lock.json
-	npm ci --no-audit --no-fund
 build: build/mac/linux-tools
 build-linux: build/linux/linux-tools
 build/mac/linux-tools: $(SOURCES) native.c native.ffi.json $(SCRIPTC)

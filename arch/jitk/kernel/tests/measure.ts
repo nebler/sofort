@@ -2,7 +2,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { loadavg } from 'node:os';
-import { check, dump, output, sleep, run, same as isDeepStrictEqual } from '../lib.ts';
+import { check, dump, output, sleep, run, same as isDeepStrictEqual, track } from '../lib.ts';
 
 export const ROOT = resolve(process.env.JITK_TEST_OUTPUT || join(import.meta.dirname, '..', process.env.JITK_RECORD === '1' ? 'test-results' : '.work/test-results'));
 mkdirSync(ROOT, { recursive: true });
@@ -45,7 +45,7 @@ export class VM {
   private started = performance.now();
   private closed: Promise<void>;
   constructor(tick = 0, kernel = KERNEL, waitGo = false, host = HOST, hostArgs: string[] = []) {
-    this.p = spawn(host, [...hostArgs, kernel, ...(waitGo ? ['--wait-go'] : [])], { env: { ...process.env, JITK_TICK_US: String(tick) }, stdio: ['pipe', 'pipe', 'pipe'] });
+    this.p = track(spawn(host, [...hostArgs, kernel, ...(waitGo ? ['--wait-go'] : [])], { env: { ...process.env, JITK_TICK_US: String(tick) }, stdio: ['pipe', 'pipe', 'pipe'] }), 3600);
     this.p.stdout!.on('data', (data: Buffer) => {
       this.buffer += data.toString();
       let end = this.buffer.indexOf('\n');

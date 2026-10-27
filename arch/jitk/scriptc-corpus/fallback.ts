@@ -21,9 +21,9 @@ async function main(): Promise<void> {
   const buildEnv = environment();
   buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + buildEnv.PATH;
   buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
-  buildEnv.SCRIPTC_RUNTIME_PACK = join(root, 'node_modules/@scriptc/runtime-linux-arm64-musl');
+  buildEnv.SCRIPTC_RUNTIME_PACK = join(root, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
   buildEnv.SCRIPTC_LINKER = join(root, 'zig-link.sh');
-  await run([join(root, 'node_modules/.bin/scriptc'), 'build', join(root, 'allocator-probe.ts'), '-o', elf], { env: buildEnv, timeout: 45 });
+  await run([join(root, '../tools/node_modules/.bin/scriptc'), 'build', join(root, 'allocator-probe.ts'), '-o', elf], { env: buildEnv, timeout: 45 });
   // Both containers are sequential and named for unconditional timeout cleanup.
   const name = 'jitk-corpus-fallback-' + process.pid;
   const common = ['--rm', '--init', '-i', '--name', name, '--platform', 'linux/arm64', '--network', 'none',

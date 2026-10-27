@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { appendFileSync, closeSync, mkdirSync, openSync, readFileSync, readSync, rmdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { check, dump } from '../lib.ts';
+import { check, dump, track } from '../lib.ts';
 const root = process.env.JITK_HELPERS_ROOT || '/home/dev/r8-helpers';
 const phase = process.env.PHASE;
 check(phase, 'PHASE required');
@@ -35,7 +35,7 @@ for (let rep = 0; rep < 2; rep += 1) {
     const err = join(out, rep + '-' + n + '.stderr');
     writeFileSync(err, '');
     const command = ['-c', 'echo $$ > "$1/cgroup.procs"; shift; exec "$@"', 'spawn', cg, node, join(root, 'arch/jitk/executor/ipc/measure-helpers.mjs'), 'hold', String(n)];
-    const child = spawn('sh', command, { detached: true, stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = track(spawn('sh', command, { detached: true, stdio: ['pipe', 'pipe', 'pipe'] }), 3600);
     const events: unknown[] = [];
     const lines: string[] = [];
     let buffer = '';

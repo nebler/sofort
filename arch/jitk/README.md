@@ -20,6 +20,12 @@ make loc            # reproducible owned-source line inventory
 MCP clients reach jitk through [`mcp/`](mcp/README.md): one `execute` tool that runs
 code-mode JS in a parked single-use VM, plus file-backed skill/doc resources.
 
+The TypeScript tooling in every subtree is compiled by the one scriptc 0.4.5
+pin in [`tools/`](tools/package.json) (`tools/pin.mk`, `tools/scriptc.mk`) and
+shares [`tslib/`](tslib/) for process, JSON, hashing, file and seeded random
+helpers. Every child it spawns runs under the lost child-exit wakeup
+workaround described in [SCRIPTC-HANG.md](SCRIPTC-HANG.md).
+
 Prerequisites and platform restrictions belong to each subtree's README.
 The top level delegates commands; it does not install tools or implement a
 second build, VM launcher, benchmark, or grow controller. Missing subtrees or

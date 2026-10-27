@@ -19,7 +19,7 @@ nested: .work/bin/tests/nested-kvm
 	.work/bin/tests/nested-kvm
 
 TS_TOOLS := build.ts relink.ts lint.ts $(wildcard tests/*.ts)
-include ../docs/scriptc.mk
+include ../tools/scriptc.mk
 
 .work/native.o: native.c
 	mkdir -p .work
@@ -32,9 +32,9 @@ include ../docs/scriptc.mk
 linux-tools: .work/linux/build .work/linux/tests/check .work/linux/tests/console-abuse .work/linux/tests/seccomp-check
 .work/native-linux.o: native.c
 	mkdir -p .work
-	/Users/noah/.local/share/zig-0.16.0/zig cc -target aarch64-linux-musl -c $< -o $@
+	$(ZIG) cc -target aarch64-linux-musl -c $< -o $@
 .work/linux/tests/console-abuse: SCRIPTC_FLAGS := --ffi native-linux-ffi.json
 .work/linux/tests/console-abuse: .work/native-linux.o
 .work/linux/%: %.ts $(TS_SOURCES) $(SCRIPTC)
 	mkdir -p $(@D)
-	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(TOOLS_PACKAGE)/node_modules/@scriptc/runtime-linux-arm64-musl SCRIPTC_LINKER=$(CURDIR)/zig-cc.sh $(SCRIPTC) build $< $(SCRIPTC_FLAGS) -o $@
+	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(CURDIR)/zig-cc.sh $(SCRIPTC) build $< $(SCRIPTC_FLAGS) -o $@

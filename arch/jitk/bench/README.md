@@ -120,8 +120,9 @@ that no quiet pass was possible. All observations and cleanup state are retained
 ## TypeScript implementation
 
 Every former Python entrypoint is compiled by the locally pinned scriptc 0.4.5.
-`package.json` and `package-lock.json` pin the compiler; `make build` installs it
-with `npm ci` when needed. Native executables do not require Node or Python.
+`../tools/package.json` and `package-lock.json` pin the compiler for all of
+arch/jitk; `make build` installs it there with `npm ci` when needed. Shared
+helpers (process, JSON, hashing, CPython PRNG) come from `../tslib/`. Native executables do not require Node or Python.
 The existing `executor.mjs` adapter still requires the explicitly selected Node.
 
 | Former entrypoint | Compiled entrypoint, relative to this directory |
@@ -144,8 +145,8 @@ retention and statistical estimators are preserved. `build/gate [threshold
 previously imported Python. Defaults are 6 / 10 s / 1 s. The historical `.READY`
 receipt remains unchanged: this port does not certify new performance numbers.
 
-`lib.ts` contains the generic process, hash, JSON, assertion, clock, numerical
-and seeded random helpers. `native.c` is a statically linked OS ABI bridge for
+`lib.ts` re-exports the generic process, hash, JSON, assertion and seeded random
+helpers from `../tslib/` and keeps the clock and numerical helpers. `native.c` is a statically linked OS ABI bridge for
 pipes, select, wait4, libproc and read-only ledger calls, replacing ctypes.
 Timing uses integer monotonic nanoseconds. The watchdog remains a separate
 process, and EOF, deadlines, interrupts and detached descendants are tested.
