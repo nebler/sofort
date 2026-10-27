@@ -1,0 +1,8 @@
+22:44  up 4 days, 58 mins, 1 user, load averages: 7.92 6.35 5.50
+{"n":100,"code":"return (await codemode.echo(41))+1","nodeCpuUsPerExecute":1646.15,"nodeUserUs":1183.24,"nodeSysUs":462.91,"wallMsPerExecute":10.1352}
+{"n":100,"code":"return 2","nodeCpuUsPerExecute":1470.06,"nodeUserUs":1037.55,"nodeSysUs":432.51,"wallMsPerExecute":9.826577910000001}
+{"n":100,"code":"return (await codemode.echo(41))+1","nodeCpuUsPerExecute":1609.3,"nodeUserUs":1161.35,"nodeSysUs":447.95,"wallMsPerExecute":9.85429875}
+{"n":100,"code":"return 2","nodeCpuUsPerExecute":1400.32,"nodeUserUs":986.57,"nodeSysUs":413.75,"wallMsPerExecute":9.47157459}
+{"n":100,"code":"return (await codemode.echo(41))+1","nodeCpuUsPerExecute":1498.72,"nodeUserUs":1082.13,"nodeSysUs":416.59,"wallMsPerExecute":9.477723750000001}
+{"n":100,"code":"return 2","nodeCpuUsPerExecute":1292.38,"nodeUserUs":906.91,"nodeSysUs":385.47,"wallMsPerExecute":8.91734958}
+22:45  up 4 days, 58 mins, 1 user, load averages: 7.93 6.40 5.53

@@ -1,0 +1,5 @@
+174899 bash -c pgrep -af perf-r9 || echo no-procs; du -sh /home/dev/perf-r9-2026-10-27; rm -rf /home/dev/perf-r9-2026-10-27; ls -d /home/dev/perf-r9-2026-10-27 2>&1; df -h /home | tail -1; date -u
+657M	/home/dev/perf-r9-2026-10-27
+ls: cannot access '/home/dev/perf-r9-2026-10-27': No such file or directory
+/dev/vda1        58G   16G   42G  28% /
+Tue Oct 27 21:48:03 UTC 2026

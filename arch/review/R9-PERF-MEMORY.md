@@ -59,10 +59,21 @@ Evidence is in `raw-r9-perf/` (small files). Bulk evidence is in `~/sofort-local
   - policy sha256: 3%.
 - **Promise.all(10) through the executor.** It takes 12.4 KVM exits and 11 doorbell MMIOs per run (the `[42]`/`[10]` rows at the end of `kvm/exconc-run1.jsonl`). Each reply resumes the guest separately, which confirms P05.
 
-**Throughput, one Node + one shard** (copy-restore, nested, 1,500–3,000 runs per cell; `kvm/exconc*.jsonl`). These are noisy because nested vCPU contention is high when other Mac load is present.
-- Stable best: **16 slots, 8 in flight: 2,500–3,000 runs/s**, at Node 0.28–0.36 + shard 1.1–1.2 CPU-ms/run.
-- Some repetitions dropped to 200–450 runs/s, with shard CPU 4–20 ms/run, while the outer Mac was at load 6–7.
-- Main (full discard), 64 slots, 32 in flight: **37 runs/s**, shard CPU 106 ms/run.
+**Throughput, one Node + one shard** (copy-restore, nested, 1,500–3,000 runs per cell; `kvm/exconc-run1.jsonl`, `exconc2.jsonl`, `exconc3-perfstat.txt`). The results are **bimodal, and the bimodality is a nested-host artifact.**
+
+| mode | runs/s | shard CPU/run | Node CPU/run |
+|---|---:|---:|---:|
+| fast | **860–3,745** | 0.79–1.7 ms | 0.27–0.40 ms |
+| slow, 1 owner | 230–260 | 4.1–4.6 ms | 0.55–0.67 ms |
+| slow, 4 owners | 230–260 | 15–18 ms | 0.55–0.67 ms |
+
+- **Best observed:** 16 slots, 8 in flight, 2,450–3,745 runs/s.
+- **Why it is an artifact:**
+  - The guest-visible work is identical in both modes: 10,944 stage-2 faults and 4,016 doorbell MMIOs per 2,028 runs.
+  - Only the KVM exits that are neither faults nor MMIO differ: 5.7/run fast against 9–20/run slow. Context switches are also higher in slow mode.
+  - kvm-dev reports **0 steal time**, so outer-Mac preemption shows up as CPU inside L1. The Mac was at load 6–8 during these runs.
+- **Main (full discard), 64 slots, 32 in flight: 37 runs/s**, shard CPU 106 ms/run.
+- In the executor path, copy-restore still takes about 5.4 stage-2 faults and 5.5 `kvm_unmap_hva_range` per run, against about 1 in the single-slot driver. The likely cause is MMU-notifier events from the shard's own `munmap`s fanned out to all VMs of the process. Not investigated further.
 - See §3 for the admission limits found here.
 
 ### 1c. macOS, libkrun, one process per VM (HVF, metal, contended)
@@ -93,7 +104,11 @@ Probe: `prototypes/vmprobe`, wait4 rusage plus per-thread libproc. 3 reps × 40 
   | in-process create/destroy (no isolation; floor) | 0.12–0.13 | – | – |
 
   HVF works in a forked child as long as the parent never created a VM. Saving: **about 2.6–2.9 CPU-ms per VM**.
-- **Executor, Mac** (canonical harness, wall only): cold `execute()` **13.0 ms** p50 (56 ms before the native watchdog; 9.2 ms on Oct 24), against 8.5 ms raw cold. Parked `execute()` is 3.9–4.7 ms against 0.43 ms raw. Node CPU is not measured by that harness.
+- **Executor, Mac** (canonical harness, wall only): cold `execute()` **13.0 ms** p50 (56 ms before the native watchdog; 9.2 ms on Oct 24), against 8.5 ms raw cold. Parked `execute()` is 3.9–4.7 ms against 0.43 ms raw.
+- **Node CPU per cold `execute()`, Mac** (`prototypes/mac-exloop.mjs`, 3 reps × 100 sequential, load 7.9; `mac/mac-exloop.jsonl`):
+  - one tool: **1.50–1.65 ms**, of which user 1.08–1.18;
+  - `return 2`: 1.29–1.47 ms.
+  - This comes on top of the VMM's 6.5–7.2 ms, so a cold Mac `execute()` costs **about 8–9 CPU-ms in total**.
 
 ### 1d. Linux, libkrun, one process per VM (nested)
 Same probe, Linux build of the Oct-24 VMM `d066a3a9`, current kernel image. 3 reps × 20 (`kvm/linux-libkrun-probe-summary.jsonl`, `kvm/lin-perfstat.csv`).
@@ -219,7 +234,7 @@ Metal gains are estimates unless stated otherwise.
   - **The throughput demo is limited by executor admission (§3) before CPU.**
 - **macOS libkrun.** It costs 6.5–7.2 CPU-ms/VM today (contended) and 4.86 at the quiet Oct-24 point.
   - About 3.3 ms of that is process creation plus framework load. The fork-server alone takes the measured path to about 3.6–4.0 ms. Image mapping and snapshot restore would go lower.
-  - The Node executor adds about 4.5 ms wall to a cold `execute()`. Its CPU is unmeasured on macOS.
+  - The Node executor adds about 4.5 ms wall and 1.3–1.65 CPU-ms to a cold `execute()`. That puts a cold Mac `execute()` at about 8–9 CPU-ms today; the fork-server would bring it to about 5–6.
 - **Linux libkrun process-per-VM.** Each fresh VM pays about 1,040 first-touch stage-2 faults, 99 virtio-console MMIO exits and a full QuickJS boot (~1.5 ms of guest work on HVF).
   - At 2–4 µs per fault, that is about 2–4 ms of faults alone, so plausibly 4–6 ms in total: borderline.
   - It cannot be judged without metal. The shard is the path for the demo.
@@ -229,7 +244,7 @@ Metal gains are estimates unless stated otherwise.
 - **No quiet Mac.** Load1 was 3.5–8 throughout. The canonical harness flagged 5–6 of 30 samples per row as over the gate.
 - **macOS:**
   - syscall/fault tracing inside HVF (SIP is on, so no dtrace);
-  - Node CPU per `execute()` (the harness reports wall time only);
+  - a split of Node's 1.3–1.65 ms cold-execute CPU on macOS (no profile was taken);
   - attribution of the ~3.1 MiB of `phys_footprint` outside user regions;
   - an end-to-end fork-server or file-mapped libkrun (only HVF primitives were prototyped).
 - **KVM kernel memory:** about 70–110 KiB/VM is not attributed by the allocation trace (allocations with no captured stack).
@@ -247,6 +262,7 @@ Metal gains are estimates unless stated otherwise.
   - kvm-dev: Ubuntu 26.04, Linux 7.0.0-38, 6 vCPU, nested.
   - Scratch: `/home/dev/perf-r9-2026-10-27/`. The tree is a `git archive` of `f3f14f0f` arch/jitk, the snapshot is a copy of the 2026-10-27 `helpers.*`, and Node is the R7 copy, 24.13.0.
   - All kvm-dev timing and memory runs held `flock /home/dev/bench.lock`. The Mac canonical subset held `/tmp/sofort-bench.lock`.
+  - kvm-dev scratch peaked at 659 MB and was deleted afterwards (`kvm/cleanup.txt`). The canonical harness's rewrite of the tracked `bench/RESULTS.md` was reverted; its table is kept as `mac/RESULTS-r9-subset.md`.
 - **Shard A/B.** `real` and `real-proto` were built from the same tree. The prototype touches only `shard/src/kvm/mod.rs` and is env-gated (`JITK_R9_RESET=copy`, `JITK_R9_SKIP_ID`, `JITK_R9_LIMIT`, diagnostic `JITK_R9_PAGES`/`JITK_R9_DIFFS`). Variants were interleaved within each repetition.
 - **Probes.**
   - `prototypes/vmprobe`: Rust; per-phase rusage plus per-thread CPU.
