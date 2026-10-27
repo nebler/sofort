@@ -3,6 +3,13 @@ fn main() {
     println!("cargo::rustc-check-cfg=cfg(ring_glue_4m)");
     let base = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let out = PathBuf::from(env::var("OUT_DIR").unwrap());
+    // Arch layer: linker script and Linux syscall-number table (see ARCH.md).
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+    let arch_dir = base.join("src/arch").join(&arch);
+    println!(
+        "cargo:rerun-if-changed={}",
+        arch_dir.join("link.ld").display()
+    );
     for key in [
         "JITK_ELF",
         "JITK_SCRIPT",
@@ -21,7 +28,6 @@ fn main() {
         "lib.ts",
         "../protocol/bootstrap.js",
         "ring-bootstrap.js",
-        "link.ld",
     ] {
         println!("cargo:rerun-if-changed={file}");
     }
@@ -59,5 +65,8 @@ fn main() {
             .unwrap()
             .success()
     );
-    println!("cargo:rustc-link-arg=-T{}", base.join("link.ld").display());
+    println!(
+        "cargo:rustc-link-arg=-T{}",
+        arch_dir.join("link.ld").display()
+    );
 }

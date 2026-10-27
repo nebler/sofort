@@ -1,6 +1,6 @@
 //! Fixed guest address map; mirrors the linker, packer, and VMM layouts.
-pub const RAM_GPA: usize = 0x80000000;
-pub const PACKED_GPA: usize = 0x80080000;
+//! Physical placement is per architecture; the user virtual layout is not.
+pub use crate::arch::{PACKED_GPA, RAM_GPA};
 pub const USER_BASE: usize = 0x400000;
 pub const USER_END: usize = 0x2400000;
 pub const STACK_START: usize = 0x1fe0000;

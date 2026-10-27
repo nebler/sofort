@@ -22,6 +22,7 @@ try {
   const env = environment();
   env.CARGO_MANIFEST_DIR = work;
   env.OUT_DIR = out;
+  env.CARGO_CFG_TARGET_ARCH = 'aarch64';
   env.JITK_SCRIPT = '0';
   env.JITK_TOOLS_DIR = tools;
   async function generate(value: string): Promise<number> {
@@ -84,7 +85,7 @@ mod console {pub unsafe fn native()->bool{false}pub unsafe fn load(_:usize)->u64
 }
 work = workspace();
 try {
-  const harness = '#![allow(dead_code, reason="Boot wrapper is unused by host parser checks.")]\n' + [['fdt.rs', 'fdt'], ['fdt_checks.rs', 'checks']].map(row => `#[path=${json(join(ROOT, 'src', row[0]), 0)}] mod ${row[1]};`).join('\n');
+  const harness = '#![allow(dead_code, reason="Boot wrapper is unused by host parser checks.")]\n' + [['arch/aarch64/fdt.rs', 'fdt'], ['arch/aarch64/fdt_checks.rs', 'checks']].map(row => `#[path=${json(join(ROOT, 'src', row[0]), 0)}] mod ${row[1]};`).join('\n');
   writeFileSync(join(work, 'test.rs'), harness);
   await run(['rustc', '+1.95.0', '--edition=2024', '--test', join(work, 'test.rs'), '-o', join(work, 'test')], { inherit: true });
   await run([join(work, 'test')], { inherit: true });

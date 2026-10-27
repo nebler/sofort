@@ -1,9 +1,8 @@
 #![no_std]
 #![no_main]
-#[cfg(not(feature = "transport-ring"))]
-use core::arch::asm;
-use core::{arch::global_asm, panic::PanicInfo};
-#[cfg(feature = "transport-ring")]
+use core::panic::PanicInfo;
+// Architecture layer: small primitives live in `arch`; the larger arch subsystems
+// below keep fixed crate-root paths (see ARCH.md, "Crate-root mounts").
 mod arch;
 #[cfg(not(feature = "transport-ring"))]
 mod console;
@@ -15,61 +14,65 @@ mod memory;
 mod ring_abi;
 mod syscalls;
 mod trace;
-#[cfg_attr(feature = "transport-ring", path = "arch/aarch64/wait.rs")]
+#[cfg_attr(
+    all(target_arch = "aarch64", not(feature = "transport-ring")),
+    path = "arch/aarch64/wait.rs"
+)]
+#[cfg_attr(feature = "transport-ring", path = "wait_ring.rs")]
 mod wait;
 static mut EPOCH_OFFSET: u64 = 0;
-global_asm!(concat!(
-    ".section .packed,\"a\"\n.incbin \"",
-    env!("OUT_DIR"),
-    "/payload.flat\"\n"
-));
 
 #[cfg(all(feature = "qjs", not(feature = "transport-ring")))]
+#[cfg_attr(target_arch = "aarch64", path = "arch/aarch64/fdt.rs")]
 mod fdt;
-#[cfg_attr(feature = "transport-ring", path = "arch/aarch64/page_tables.rs")]
+#[cfg_attr(
+    all(target_arch = "aarch64", not(feature = "transport-ring")),
+    path = "arch/aarch64/mmu.rs"
+)]
+#[cfg_attr(
+    all(target_arch = "aarch64", feature = "transport-ring"),
+    path = "arch/aarch64/mmu_ring.rs"
+)]
 mod mmu;
 #[cfg(feature = "qjs")]
 static mut SEED: [u8; 16] = [0; 16];
-#[cfg(not(feature = "transport-ring"))]
-global_asm!(include_str!("boot.S"));
-#[cfg(feature = "transport-ring")]
-global_asm!(include_str!("arch/aarch64/boot.S"));
 #[unsafe(no_mangle)]
 /// # Safety
 /// The boot stub enters once at EL1 on the sole vCPU with DAIF masked, a valid stack and mapped
 /// VMM boot data. No EL0 or interrupt handler runs during initialization.
-unsafe extern "C" fn kernel_main(fdt: usize) -> ! {
+unsafe extern "C" fn kernel_main(boot: usize) -> ! {
     // SAFETY: The boot stub enters once at EL1 on the sole vCPU with DAIF masked, a valid
     // stack and mapped VMM boot data. No EL0 or interrupt handler runs during
     // initialization.
     unsafe {
-        #[cfg(not(feature = "transport-ring"))]
-        let entry_counter = wait::ticks();
-        mmu::init();
+        // The VMM boot handoff (aarch64: FDT) names the console and interrupt
+        // controller; arch::boot also brings up the kernel address space.
         #[cfg(not(feature = "transport-ring"))]
         {
-            let config = fdt::read(fdt);
-            SEED = config.seed;
-            EPOCH_OFFSET = config
-                .epoch
-                .saturating_sub(wait::ticks_ns(if config.counter == 0 {
-                    entry_counter
-                } else {
-                    config.counter
-                }));
-            console::init(config.console);
-            wait::init(config.dist, config.redist, config.irq, config.tick);
+            let _irq = arch::boot(
+                boot,
+                #[inline(always)]
+                |info| {
+                    SEED = *info.seed();
+                    EPOCH_OFFSET = info.epoch_offset();
+                    console::init(info.console());
+                    arch::irq_init(info);
+                    info.console_irq()
+                },
+            );
             #[cfg(feature = "trace")]
             {
                 console::print("\x1eirq ");
-                console::hex(config.irq as usize);
+                console::hex(_irq as usize);
                 console::print("\n");
             }
         }
+        // The ring control page replaces the boot handoff.
         #[cfg(feature = "transport-ring")]
         {
-            let _ = fdt;
-            arch::boot_info();
+            let _ = boot;
+            mmu::init();
+            console::boot_info();
             console::init(0);
         }
 
@@ -107,7 +110,7 @@ pub unsafe fn off() -> ! {
     // SAFETY: Execution is at EL1; the FINISH doorbell or PSCI SYSTEM_OFF call is terminal
     // and cannot return to user code.
     unsafe {
-        asm!("hvc #0", in("x0") 0x84000008u64);
+        arch::system_off();
     }
     loop {
         core::hint::spin_loop()

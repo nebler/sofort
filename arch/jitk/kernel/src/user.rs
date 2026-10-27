@@ -1,11 +1,5 @@
 use crate::{console as c, mmu as m};
-use core::{
-    arch::{asm, global_asm},
-    ptr::copy_nonoverlapping,
-};
-const ESR_CLASS_SHIFT: u32 = 26;
-const ESR_SVC64: u64 = 0x15;
-global_asm!(include_str!("vectors.S"));
+use core::ptr::copy_nonoverlapping;
 mod packed {
     include!(concat!(env!("OUT_DIR"), "/packed.rs"));
 }
@@ -138,25 +132,13 @@ pub unsafe fn run() -> ! {
         };
         #[cfg(not(feature = "transport-ring"))]
         let cache_end = 0x650000;
-        for va in (crate::memory::USER_BASE..cache_end).step_by(64) {
-            asm!("dc cvau,{a}",a=in(reg) m::physical(va));
-        }
-        asm!("dsb ish", "ic iallu", "dsb ish", "isb");
-        // SAFETY: these symbols are supplied by the guest linker/assembly with the
-        // declared addresses and storage.
-        unsafe extern "C" {
-            static vectors: u8;
-        }
+        crate::arch::sync_icache(crate::memory::USER_BASE, cache_end);
         let entry = if cfg!(feature = "probe") {
             crate::memory::USER_BASE
         } else {
             packed::ENTRY
         };
-        #[cfg(feature = "transport-ring")]
-        crate::arch::enter_user(&raw const vectors, sp, entry);
-        #[cfg(not(feature = "transport-ring"))]
-        asm!("msr vbar_el1,{v}","msr sp_el0,{sp}","msr elr_el1,{entry}","msr spsr_el1,{mask}",".inst 0xd500419f","isb","eret",
-         mask=in(reg) 0x3c0u64,v=in(reg) &raw const vectors,sp=in(reg) sp,entry=in(reg) entry,options(noreturn));
+        crate::arch::enter_user(sp, entry);
     }
 }
 pub(crate) fn access(va: usize, len: usize, w: bool) -> Option<usize> {
@@ -207,49 +189,35 @@ pub(crate) fn output(va: usize, len: usize) -> isize {
         }
     }
 }
-#[unsafe(no_mangle)]
-/// # Safety
-/// vectors.S supplies an aligned exclusive 33-word saved frame on the live EL1 stack with DAIF
-/// masked. EL0 stays stopped, so checked user mappings cannot change during dispatch.
-unsafe extern "C" fn trap(frame: *mut usize) {
-    // SAFETY: vectors.S supplies an aligned exclusive 33-word saved frame on the live EL1
-    // stack with DAIF masked. EL0 stays stopped, so checked user mappings cannot change
-    // during dispatch.
-    unsafe {
-        #[cfg(not(feature = "transport-ring"))]
-        let f = core::slice::from_raw_parts_mut(frame, 33);
-        #[cfg(feature = "transport-ring")]
-        let f = crate::arch::trap_frame(frame);
-        let esr: u64;
-        asm!("mrs {v},esr_el1",v=out(reg) esr);
-        if esr >> ESR_CLASS_SHIFT != ESR_SVC64 {
-            let far: u64;
-            asm!("mrs {v},far_el1",v=out(reg) far);
-            c::print("\x1eFAULT esr=");
-            c::hex(esr as usize);
-            c::print(" far=");
-            c::hex(far as usize);
-            c::print(" pc=");
-            c::hex(f[31]);
-            c::print("\n");
-            crate::off();
-        }
-        #[cfg(feature = "transport-ring")]
-        asm!(".inst 0xd500409f", "isb", options(nostack)); // msr pan, #0
+/// Core half of the syscall trap. The arch trap entry expands this with the
+/// saved user frame (`&mut [usize]`, indexed by `arch::frame`) once per Linux
+/// syscall; the result goes to the frame's return slot. It must be expanded
+/// inside that entry's `unsafe` block, whose SAFETY contract (sole masked-IRQ
+/// trap, user code stopped, user-access protection lifted on the ring path)
+/// covers the console, ring and probe operations here. A macro rather than a
+/// function: a call boundary changes how the trap is inlined and laid out
+/// (ARCH.md, "Image identity").
+macro_rules! syscall_entry {
+    ($frame:expr) => {{
+        use crate::arch::frame;
+        let f: &mut [usize] = $frame;
         #[cfg(feature = "trace")]
         {
-            c::print("\x1esys ");
-            c::hex(f[8]);
-            c::print("\n");
+            crate::console::print("\x1esys ");
+            crate::console::hex(f[frame::NR]);
+            crate::console::print("\n");
         }
-        let n = f[8];
-        let args: [usize; 6] = f[..6].try_into().unwrap();
+        let n = f[frame::NR];
+        let args: [usize; 6] = f[frame::ARGS..frame::ARGS + 6].try_into().unwrap();
+        // ring::syscall checks every user range before access.
         #[cfg(feature = "transport-ring")]
         if let Some(ret) = crate::console::syscall(n, &args) {
-            f[0] = ret as usize;
+            f[frame::RET] = ret as usize;
             return;
         }
-        crate::trace::enter(n, &args, f[31]);
+        crate::trace::enter(n, &args, f[frame::PC]);
+        // Probe-only isolation checks deliberately touch protected addresses; the
+        // expected outcome is a fatal fault, reported by the arch trap entry.
         #[cfg(feature = "probe")]
         let ret = match n {
             12345 => core::ptr::read_volatile(crate::memory::USER_BASE as *const isize),
@@ -258,7 +226,7 @@ unsafe extern "C" fn trap(frame: *mut usize) {
                 0
             }
             12347 => {
-                core::ptr::write_volatile(m::physical(FS) as *mut usize, 0);
+                core::ptr::write_volatile(crate::mmu::physical(crate::user::FS) as *mut usize, 0);
                 0
             }
             _ => crate::syscalls::dispatch(n, &args),
@@ -266,6 +234,7 @@ unsafe extern "C" fn trap(frame: *mut usize) {
         #[cfg(not(feature = "probe"))]
         let ret = crate::syscalls::dispatch(n, &args);
         crate::trace::exit(n, &args, ret);
-        f[0] = ret as usize;
-    }
+        f[frame::RET] = ret as usize;
+    }};
 }
+pub(crate) use syscall_entry;
