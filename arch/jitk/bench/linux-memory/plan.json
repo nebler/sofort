@@ -30,7 +30,7 @@
       "env": {"JITK_SHARD_BINARY": "{W}/bin/real", "JITK_SHARD_SNAPSHOT": "{W}/snap/helpers", "JITK_HELPERS_FIXTURE": "{fixture}"},
       "warm": ["{W}/snap/helpers.mem", "{W}/snap/helpers.regs", "{W}/snap/helpers.layout", "{W}/bin/real", "{W}/node/node-v24.22.1-linux-arm64/bin/node", "{W}/tree/arch/jitk/executor/build", "{W}/tree/arch/jitk/executor/ipc/measure-helpers.mjs"],
       "per_process": false,
-      "counts": []
+      "counts": [1, 8, 32]
     },
     {
       "name": "hl-16m",
