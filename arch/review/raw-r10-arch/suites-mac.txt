@@ -1,0 +1,10 @@
+protocol EXIT 0
+executor EXIT 0
+mcp EXIT 0
+executor/policy EXIT 0
+EXIT 0
+      "path": "/Users/noah/.cache/jitk/node/v24.22.1-darwin-arm64/bin/node-real",
+/Users/noah/.cache/jitk/node/v24.22.1-darwin-arm64/bin/node-real build.mjs
+(Use `node-real --trace-warnings ...` to show where the warning was created)
+"/Users/noah/.cache/jitk/node/v24.22.1-darwin-arm64/bin/node-real" "/Users/noah/.cache/jitk/node/v24.22.1-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js" ci --ignore-scripts --no-audit --no-fund --prefer-offline --cache "/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T//jitk-npm-cache"
+for f in jitk.mjs native.mjs native-test.mjs native-linux-test.mjs server.mjs test.mjs bench.mjs providers/*.mjs; do "/Users/noah/.cache/jitk/node/v24.22.1-darwin-arm64/bin/node-real" --check $f || exit 1; done
