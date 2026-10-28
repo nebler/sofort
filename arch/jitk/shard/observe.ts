@@ -15,6 +15,7 @@ import {
   read,
   sleep,
   StreamProcess,
+  runRoot,
   type Json,
 } from "./lib.ts";
 
@@ -60,9 +61,7 @@ function sample(cg: string, pid: number): Json {
   };
 }
 export async function ledger(native: boolean): Promise<void> {
-  const root =
-    process.env.JITK_LEDGER_ROOT ||
-    (native ? "/home/dev/r7-bytes" : "/home/dev/r6-shard");
+  const root = runRoot("JITK_LEDGER_ROOT");
   const cg =
     process.env.JITK_LEDGER_CGROUP ||
     (native ? "/sys/fs/cgroup/r7-bytes" : "/sys/fs/cgroup/r6-shard");
