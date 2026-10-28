@@ -8,6 +8,9 @@ Every claim follows the reports' label convention:
 - **measured** means a local experiment;
 - everything else is the agents' sourced research or inference.
 
+**The full list of every single idea** (1,109 entries plus 362 rejected one-liners) is in [catalogue/README.md](catalogue/README.md).
+It has a master index table, and each entry gives what the idea is, how it works, evidence, prior art, verdict and kill test.
+
 Contents:
 
 0. [The one-page version](#0-the-one-page-version)
