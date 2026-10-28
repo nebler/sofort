@@ -2,7 +2,7 @@
 // Regenerate with `make -C arch/jitk/abi gen`; `make -C arch/jitk/abi test` fails while it is stale.
 
 /** Bumped with any peer-visible ABI change; READY and the prepared snapshot identity carry it. */
-export const ABI_VERSION=10;
+export const ABI_VERSION=11;
 /** Node <-> shard IPC (ipc/ABI.md). */
 export const IPC=Object.freeze({
   // message kinds: Node -> shard
@@ -19,10 +19,16 @@ export const IPC=Object.freeze({
   stats:22,
   quarantined:23,
   restored:24,
+  log:25,
   // record geometry
   headerBytes:32,
   payload:16384,
   capacity:64,
+  // header flags word and its MORE bit
+  flagsAt:24,
+  more:1,
+  // largest message payload (reassembly bound)
+  messageBytes:1048576,
   // physical sandbox slots per shard
   slots:64,
   // READY payload: ABI_VERSION u32 LE
@@ -31,17 +37,22 @@ export const IPC=Object.freeze({
   startHeaderBytes:24,
   deadlineHorizonNs:60000000000,
   // per-run guest limits
-  calls:32,
-  callBytes:1024,
-  replyBytes:1024,
-  doneBytes:16352,
-  sourceBytes:8192,
+  calls:4096,
+  outstanding:64,
+  inflightBytes:2097152,
+  callBytes:1048576,
+  replyBytes:1048576,
+  doneBytes:1048576,
+  sourceBytes:73728,
+  logs:1024,
+  consoleBytes:32768,
   errorBytes:512,
   statsFixedBytes:32,
-  statsRoundTrips:32,
+  statsRoundTrips:4096,
   // queue bounds
-  recordsPerGeneration:35,
-  outbound:2241,
+  messagesPerGeneration:5123,
+  outbound:69825,
+  nodeOutbound:262528,
 });
 /** Arena classes of prepared snapshots: the START reservation and the writable arena. */
 export const ARENA_CLASSES=Object.freeze({

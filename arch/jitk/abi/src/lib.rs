@@ -21,7 +21,7 @@
 /// snapshot format. The shard sends it in READY and the prepared snapshot
 /// `.identity` records it; Node and the shard refuse a mismatch. Bump it with
 /// any change to a value in this crate.
-pub const ABI_VERSION: u32 = 10;
+pub const ABI_VERSION: u32 = 11;
 
 pub mod layout {
     //! Guest physical memory layout, per architecture.
@@ -127,7 +127,7 @@ pub mod ring {
     /// `JTK2` at control offset 0 (u32).
     pub const MAGIC: u32 = 0x324b544a;
     /// Ring ABI major version, u16 at control offset 4.
-    pub const RING_VERSION: u16 = 2;
+    pub const RING_VERSION: u16 = 3;
     /// The first control word of a JS run.
     pub const JS_VERSION: u64 = MAGIC as u64 | (RING_VERSION as u64) << 32;
     /// The first control word of a native run (R7 feature flag at bit 48).
@@ -158,7 +158,9 @@ pub mod ring {
     pub const ARGC: usize = 0x248;
     pub const ARCHIVE_BYTES: usize = 0x250;
     pub const OUTPUT_BYTES: usize = 0x260;
-    /// Run source (JS) or NUL-separated argv (native), at this control offset.
+    /// NUL-separated argv (native profile), at this control offset. The JS
+    /// run source is not here: it is the SOURCE message on the RX ring, and
+    /// SOURCE_BYTES is its length.
     pub const SOURCE_OFFSET: usize = 0x400;
 
     // --- Doorbell operations (u32 written to the doorbell page). ---
@@ -180,8 +182,20 @@ pub mod ring {
     pub const STDOUT: u16 = 6;
     pub const STDERR: u16 = 7;
     pub const NATIVE_EXIT: u16 = 8;
-    /// `flags` of JSON records (CALL, RET, ERR, LOG, DONE).
+    /// Host to guest, id 0: the JS run source (SOURCE_BYTES bytes), the first
+    /// message on RX of every JS run.
+    pub const SOURCE: u16 = 9;
+    /// Guest to host, id 0: one tenant console line, JSON `[level, message]`.
+    /// One-way (no reply); at most MAX_LOGS per run.
+    pub const CONSOLE: u16 = 10;
+    /// `flags` of JSON records (CALL, RET, ERR, LOG, DONE, SOURCE, CONSOLE).
     pub const JSON_UTF8: u16 = 1;
+    /// `flags` bit of a JSON record whose message continues in the next
+    /// record. A message (CALL, DONE, CONSOLE on TX; SOURCE, RET, ERR on RX)
+    /// is one or more consecutive records of one kind and id; every one but
+    /// the last carries MORE and exactly MAX_PAYLOAD bytes. A message's
+    /// bounds below are on its concatenated payload.
+    pub const MORE: u16 = 2;
     /// `cap` of CALL and RET records in the JS profile; native records carry 0.
     pub const CALL_CAP: u32 = 1;
 
@@ -189,22 +203,43 @@ pub mod ring {
     pub const FD_CHECKPOINT: usize = 100;
     pub const FD_REPAIR: usize = 101;
     pub const FD_FINISH: usize = 102;
-    /// Call id `i` (1..=MAX_CALLS) is fd `FD_CALL_BASE + i`.
+    /// write: one CONSOLE message.
+    pub const FD_CONSOLE: usize = 103;
+    /// read: the next RET/ERR record on RX, as REPLY_PREFIX_BYTES (id u32,
+    /// kind u16, flags u16, little endian) then its payload; -EAGAIN when
+    /// none. The buffer must hold REPLY_PREFIX_BYTES + MAX_PAYLOAD.
+    pub const FD_REPLY: usize = 104;
+    pub const REPLY_PREFIX_BYTES: usize = 8;
+    /// write to `FD_CALL_BASE + i`: the CALL message of call id `i`
+    /// (1..=MAX_CALLS, in order).
     pub const FD_CALL_BASE: usize = 128;
     pub const FD_CALL_FIRST: usize = FD_CALL_BASE + 1;
     pub const FD_CALL_LAST: usize = FD_CALL_BASE + MAX_CALLS;
 
-    // --- Guest-visible limits. ---
-    /// Tool calls per run (call ids 1..=MAX_CALLS).
-    pub const MAX_CALLS: usize = 32;
-    /// CALL payload bytes.
-    pub const CALL_BYTES: usize = 1024;
-    /// RET/ERR (reply) payload bytes.
-    pub const REPLY_BYTES: usize = 1024;
-    /// DONE payload bytes.
-    pub const DONE_BYTES: usize = MAX_PAYLOAD;
-    /// Run source (JS) or argv storage (native) bytes.
-    pub const SOURCE_LIMIT: usize = 8192;
+    // --- Guest-visible limits: the console (v1) path's, protocol/dispatcher.ts LIMIT. ---
+    /// Tool calls per run (call ids 1..=MAX_CALLS); LIMIT.calls.
+    pub const MAX_CALLS: usize = 4096;
+    /// Calls sent and not yet answered; LIMIT.outstanding.
+    pub const MAX_OUTSTANDING: usize = 64;
+    /// CALL payload bytes of the outstanding calls; LIMIT.inflight.
+    pub const INFLIGHT_BYTES: usize = 2 * 1024 * 1024;
+    /// CALL message bytes; LIMIT.frame.
+    pub const CALL_BYTES: usize = 1024 * 1024;
+    /// RET/ERR (reply) message bytes; LIMIT.frame.
+    pub const REPLY_BYTES: usize = 1024 * 1024;
+    /// DONE message bytes; LIMIT.frame.
+    pub const DONE_BYTES: usize = 1024 * 1024;
+    /// SOURCE message bytes: the START source, UTF-8, which binds at most
+    /// LIMIT.code (65,536) bytes of tenant code as data behind the adapter
+    /// call and at most 64 namespace names (executor/shard-backend.ts).
+    pub const SOURCE_LIMIT: usize = 72 * 1024;
+    /// CONSOLE messages per run; LIMIT.logs.
+    pub const MAX_LOGS: usize = 1024;
+    /// CONSOLE message bytes: a LIMIT.log (4,096-byte UTF-8) line escaped to
+    /// ASCII (at most 6 bytes per byte) plus the level.
+    pub const CONSOLE_BYTES: usize = 32 * 1024;
+    /// Native argv storage bytes at SOURCE_OFFSET.
+    pub const ARGV_BYTES: usize = 8192;
     /// Native argv entries.
     pub const MAX_ARGS: usize = 32;
     /// Aggregate native stdout+stderr capture cap.
@@ -223,17 +258,28 @@ pub mod ring {
     pub const CHECKPOINT_RECEIPT_BYTES: usize = 48;
 
     const _: () = {
-        assert!(SOURCE_OFFSET + SOURCE_LIMIT <= CONTROL_BYTES);
+        assert!(SOURCE_OFFSET + ARGV_BYTES <= CONTROL_BYTES);
         assert!(OUTPUT_BYTES < SOURCE_OFFSET);
-        assert!(MAX_CALLS <= 32); // the shard tracks calls in a u32 bitmap
-        assert!(CALL_BYTES <= MAX_PAYLOAD && REPLY_BYTES <= MAX_PAYLOAD);
+        assert!(MAX_OUTSTANDING <= MAX_CALLS && MAX_CALLS.is_multiple_of(64));
+        assert!(INFLIGHT_BYTES >= CALL_BYTES);
+        assert!(CONSOLE_BYTES >= 6 * 4096 + 64);
         assert!(RECORD_BYTES <= RING_BYTES);
-        assert!(FD_FINISH < FD_CALL_FIRST);
+        // A full record is 8-aligned, so MORE fragments never carry padding.
+        assert!(record_len(MAX_PAYLOAD) == RECORD_BYTES);
+        assert!(FD_REPLY < FD_CALL_FIRST);
     };
 
     /// Record bytes for a payload: align8(HEADER_BYTES + payload).
     pub const fn record_len(payload: usize) -> usize {
         (HEADER_BYTES + payload + 7) & !7
+    }
+    /// Records of a message of `bytes` payload bytes (at least one).
+    pub const fn records(bytes: usize) -> usize {
+        if bytes == 0 {
+            1
+        } else {
+            bytes.div_ceil(MAX_PAYLOAD)
+        }
     }
 
     /// The 32-byte little-endian record header: len u32 @0, kind u16 @4,
@@ -423,13 +469,19 @@ pub mod ipc {
     pub const TX_CONSUMER: usize = 256;
 
     // Header: kind u32, slot u32, generation u64, identity u32, payload
-    // length u32, reserved u64 = 0.
+    // length u32, flags u32, reserved u32 = 0.
     pub const KIND_AT: usize = 0;
     pub const SLOT_AT: usize = 4;
     pub const GENERATION_AT: usize = 8;
     pub const ID_AT: usize = 16;
     pub const LENGTH_AT: usize = 20;
-    pub const RESERVED_AT: usize = 24;
+    pub const FLAGS_AT: usize = 24;
+    pub const RESERVED_AT: usize = 28;
+    /// `flags`: the message continues in the next record. A message is one or
+    /// more consecutive records of one direction with the same kind, slot,
+    /// generation and id; every one but the last carries MORE and exactly
+    /// PAYLOAD bytes. The per-kind bounds below are on the whole message.
+    pub const MORE: u32 = 1;
 
     // Node -> shard.
     pub const START: u32 = 1;
@@ -453,6 +505,8 @@ pub mod ipc {
     /// Generation: the one QUARANTINED ended; no payload. Node counts the slot
     /// as capacity again and admits its next generation.
     pub const RESTORED: u32 = 24;
+    /// One tenant console line (the guest's CONSOLE message), id 0. No reply.
+    pub const LOG: u32 = 25;
 
     pub const READY_BYTES: usize = 4;
     /// Physical sandbox slots per shard.
@@ -467,16 +521,45 @@ pub mod ipc {
     /// STATS payload: four u64 then at most STATS_ROUND_TRIPS u64.
     pub const STATS_FIXED_BYTES: usize = 32;
     pub const STATS_ROUND_TRIPS: usize = super::ring::MAX_CALLS;
-    /// Records one generation may send: one per call, STATS, DONE/ERROR,
-    /// RELEASED or QUARANTINED.
-    pub const RECORDS_PER_GENERATION: usize = super::ring::MAX_CALLS + 3;
-    /// Outbound queue bound: every slot's generation plus READY.
-    pub const OUTBOUND: usize = MAX_SLOTS * RECORDS_PER_GENERATION + 1;
+    /// The largest message payload of any kind: what a receiver reassembles.
+    pub const MESSAGE_BYTES: usize = super::ring::CALL_BYTES;
+    /// Records a message of `bytes` payload bytes takes (at least one).
+    pub const fn records(bytes: usize) -> usize {
+        if bytes == 0 {
+            1
+        } else {
+            bytes.div_ceil(PAYLOAD)
+        }
+    }
+    /// Messages one generation may send: one per call and per log, STATS,
+    /// DONE/ERROR, RELEASED or QUARANTINED.
+    pub const MESSAGES_PER_GENERATION: usize = super::ring::MAX_CALLS + super::ring::MAX_LOGS + 3;
+    /// Messages of one generation not yet delivered to Node: Node answers
+    /// only delivered calls, so at most MAX_OUTSTANDING calls, plus every log,
+    /// STATS, DONE/ERROR and RELEASED/QUARANTINED.
+    pub const QUEUED_PER_GENERATION: usize =
+        super::ring::MAX_OUTSTANDING + super::ring::MAX_LOGS + 3;
+    /// The shard's outbound message queue bound: every slot's generation plus READY.
+    pub const OUTBOUND: usize = MAX_SLOTS * QUEUED_PER_GENERATION + 1;
+    /// Records Node may send one slot in one generation: START, a reply to
+    /// each outstanding call, CANCEL.
+    pub const NODE_RECORDS_PER_GENERATION: usize =
+        records(START_HEADER_BYTES + super::ring::SOURCE_LIMIT)
+            + super::ring::MAX_OUTSTANDING * records(super::ring::REPLY_BYTES)
+            + 1;
+    /// Node's unflushed record bound (every slot's generation), and the HVF
+    /// zygote's per-child queue bound (one slot's).
+    pub const NODE_OUTBOUND: usize = MAX_SLOTS * NODE_RECORDS_PER_GENERATION;
 
     const _: () = {
-        assert!(super::ring::DONE_BYTES <= PAYLOAD);
+        use super::ring;
+        assert!(ring::DONE_BYTES <= MESSAGE_BYTES && ring::REPLY_BYTES <= MESSAGE_BYTES);
+        assert!(START_HEADER_BYTES + ring::SOURCE_LIMIT <= MESSAGE_BYTES);
+        assert!(ring::CONSOLE_BYTES <= MESSAGE_BYTES);
+        assert!(STATS_FIXED_BYTES + 8 * STATS_ROUND_TRIPS <= MESSAGE_BYTES);
+        // A guest record's payload always fits one IPC record.
+        assert!(ring::MAX_PAYLOAD <= PAYLOAD);
         assert!(MAX_SLOTS as u64 <= CAPACITY);
-        assert!(START_HEADER_BYTES + super::ring::SOURCE_LIMIT <= PAYLOAD);
     };
 }
 
@@ -494,11 +577,22 @@ mod tests {
         assert_eq!(ring::RX, ring::CONTROL + 0xc000);
         assert_eq!(ring::ARENA_GPA, 0x8180_0000);
         assert_eq!(ring::TRANSPORT_BYTES, 81920);
-        assert_eq!(ring::JS_VERSION, 0x2_324b_544a);
-        assert_eq!(ring::FD_CALL_LAST, 160);
+        assert_eq!(ring::FD_CALL_LAST, 4224);
+        assert_eq!(ring::JS_VERSION, 0x3_324b_544a);
         assert_eq!(ipc::BYTES, 2_105_344);
         assert_eq!(ipc::DATA + ipc::REGION, 1_054_720);
-        assert_eq!(ipc::OUTBOUND, 2241);
+        assert_eq!(ipc::OUTBOUND, 69_825);
+        assert_eq!(ipc::NODE_RECORDS_PER_GENERATION, 5 + 64 * 64 + 1);
+    }
+
+    #[test]
+    fn message_fragments() {
+        assert_eq!(ring::records(0), 1);
+        assert_eq!(ring::records(ring::MAX_PAYLOAD), 1);
+        assert_eq!(ring::records(ring::MAX_PAYLOAD + 1), 2);
+        assert_eq!(ring::records(ring::CALL_BYTES), 65);
+        assert_eq!(ipc::records(ipc::PAYLOAD), 1);
+        assert_eq!(ipc::records(ring::REPLY_BYTES), 64);
     }
 
     #[test]
