@@ -3,20 +3,20 @@ import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {SandboxPool,OverloadedError,recommendedWarmCount} from './pool.js';
-import type {Backend,Sandbox} from './backend.js';
+import type {Backend,Session} from './backend.js';
 const gate={idleCorePercent:0,evidence:'deterministic fake backend, no guest CPU'};
 const delay=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 const tick=()=>new Promise(r=>setImmediate(r));
 class Fake implements Backend {
   readonly memoryLimitMB=32;
-  activeStarts=0;maxStarts=0;instances:(Sandbox&{reap:()=>void;kills:number})[]=[];dead?:Error;
+  activeStarts=0;maxStarts=0;instances:(Session&{reap:()=>void;kills:number})[]=[];dead?:Error;
   constructor(readonly autoReap=true,readonly kind:Backend['kind']='process',readonly startMs=10,readonly reapMs=20){}
-  async park(signal?:AbortSignal):Promise<Sandbox> {
+  async park(signal?:AbortSignal):Promise<Session> {
     if(this.dead)throw this.dead;
     this.activeStarts++;this.maxStarts=Math.max(this.maxStarts,this.activeStarts);
     let reap!:()=>void;
     const exited=new Promise<void>(r=>{reap=r;});
-    const s={exited,reap,kills:0,read:async()=>null,send:async()=>{},kill:()=>{s.kills++;if(this.autoReap)setTimeout(reap,this.reapMs);}};
+    const s={phase:'parked' as const,exited,reap,kills:0,start:async()=>{},next:async()=>({kind:'fail' as const,cause:'engine' as const,message:'fake'}),reply:async()=>{},kill:()=>{s.kills++;if(this.autoReap)setTimeout(reap,this.reapMs);}};
     this.instances.push(s);
     try {
       await delay(this.startMs);
@@ -29,7 +29,7 @@ class Fake implements Backend {
   die(e:Error){this.dead=e;for(const s of this.instances)s.reap();}
 }
 // Settlement order of queued acquires, without awaiting them.
-const track=(p:Promise<Sandbox>,order:number[],i:number)=>{const r={s:undefined as Sandbox|undefined,e:undefined as unknown};
+const track=(p:Promise<Session>,order:number[],i:number)=>{const r={s:undefined as Session|undefined,e:undefined as unknown};
   void p.then(s=>{r.s=s;order.push(i);},e=>{r.e=e;order.push(i);});return r;};
 const rows:any[]=[],loadBefore=execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim();
 assert.throws(()=>new SandboxPool(new Fake(),1,4),/G1/);

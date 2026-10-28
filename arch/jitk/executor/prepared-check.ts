@@ -3,7 +3,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {helperHash,fileHash,verifyPreparedSnapshot} from './prepared-helpers.mjs';
-import {executionBody} from './code.js';
+import {executionBody,jsJob} from './code.js';
 import {shardSource} from './shard-backend.js';
 import {sourceChecks} from './shard-source-check.js';
 const root=mkdtempSync(join(tmpdir(),'jitk-prepared-')),base=join(root,'snapshot');
@@ -19,10 +19,10 @@ try {
   assert.throws(()=>verifyPreparedSnapshot(base),/shard snapshot identity mismatch: mem/);
   const providers=[{name:'codemode',fns:{echo:async(x:unknown)=>x}}];
   const code='return (await codemode.echo(41))+1';
-  const prepared=executionBody(code,providers,true),legacy=executionBody(code,providers);
+  const job=jsJob(code,providers),prepared=executionBody(job,true),legacy=executionBody(job);
   assert.ok(!prepared.includes('function stringify')&&!prepared.includes('installBase64'));
   assert.ok(legacy.includes('function stringify')&&legacy.includes('installBase64'));
-  const source=shardSource({t:'run',code:prepared,ns:{codemode:['echo']}});
+  const source=shardSource(prepared,['codemode']);
   assert.ok(Buffer.byteLength(source)<600,`minimal binding: ${source.length}`);
   console.log(JSON.stringify({suite:'prepared',status:'PASS',checks:8+await sourceChecks(),sourceBytes:source.length,legacyBodyBytes:legacy.length,helperHash}));
 } finally {rmSync(root,{recursive:true,force:true});}

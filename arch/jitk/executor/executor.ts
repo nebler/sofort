@@ -2,8 +2,8 @@ import type {Executor,ExecuteResult,ResolvedProvider,ExecuteOptions} from '@clou
 import type {IsolateDriver,IsolateConfig,IsolateContext,ExecutionResult} from '@tanstack/ai-code-mode';
 import {sanitizeToolName} from './upstream.js';
 import {parse,stringify} from './codec.mjs';
-import {executionBody} from './code.js';
-import type {Sandbox} from './backend.js';
+import {jsJob} from './code.js';
+import type {Session} from './engine.js';
 import {SandboxPool} from './pool.js';
 import {rules,noCredentials,type PolicyConfig} from './policy-adapter.js';
 import {performance} from 'node:perf_hooks';
@@ -11,7 +11,6 @@ import {LIMIT} from '../protocol/dispatcher.js';
 export * from './backend.js';
 export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
-export {HyperlightBackend} from '../bench/hyperlight/backend.js';
 export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
 export type Context=Readonly<{executionId:string;signal:AbortSignal;provenance:readonly Label[]}>;
@@ -41,7 +40,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     const baseContext={executionId:crypto.randomUUID(),signal:controller.signal};
     const getContext=():Context=>Object.freeze({...baseContext,provenance:Object.freeze([...labels])});
     const ctx=getContext();
-    let sandbox:Sandbox|undefined;let kill:(()=>void)|undefined;let live=true;let run:any;
+    let sandbox:Session|undefined;let kill:(()=>void)|undefined;let live=true;let run:any;
     let firstCall=true,firstRet=true;
     try {
       if(code.length>LIMIT.code)throw new Error('code limit');
@@ -76,11 +75,8 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       if(expired())abort();
       if(ctx.signal.aborted)throw new Error('aborted');
       await s.armDeadline?.(deadline);
-      const body=executionBody(code,providers,this.pool.backend.kind==='shard');
-      if(body.length>LIMIT.code)throw Error('code limit including trusted adapters');
-      await s.send({t:'run',code:body,ns:Object.fromEntries(providers.map(p=>[p.name,Object.keys(p.fns)]))});
+      await s.start(jsJob(code,providers));
       mark('runSent');
-      let nextId=1;const pending=new Set<Promise<void>>();
       const dispatch=async(call:Call)=>{
         try {
           const decision=rules.decide(run,{t:'call',id:call.id,ns:call.ns,fn:call.fn,args:parse(JSON.stringify(call.args))});
@@ -99,27 +95,24 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           // Compatibility provenance is observational; only 07's effects decide admission.
           if(run.tainted.untrusted)labels.add('tool-untrusted');
           if(expired())abort();
-          if(live&&!ctx.signal.aborted){await s.send({t:'ret',id:call.id,ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
-        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.kill();return;}if(live&&!ctx.signal.aborted)await s.send({t:'ret',id:call.id,err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.kill());}
+          if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
+        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.kill();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.kill());}
       };
       while(true){
-        const m:any=await s.read();
+        // Events are validated by the session's engine adapter (bytes, schema,
+        // call ids, budgets); a call id is answered exactly once below.
+        const ev=await s.next();
         if(expired())abort();
         if(ctx.signal.aborted)throw new Error('aborted');
-        if(!m||typeof m!=='object'||Array.isArray(m))throw new Error('invalid frame');
-        if(m.t==='log'){
-          logs.push(m.level==='log'?m.msg:`[${m.level}] ${m.msg}`);
-        }else if(m.t==='call'){
+        if(ev.kind==='log'){
+          logs.push(ev.level==='log'?ev.msg:`[${ev.level}] ${ev.msg}`);
+        }else if(ev.kind==='call'){
           if(firstCall){firstCall=false;mark('firstCall');}
-          // Byte/schema/state/ID limits already passed the shared dispatcher.
-          if(m.id!==nextId++)throw Error('invalid/budgeted call');
-          const p=dispatch(m);pending.add(p);void p.then(()=>pending.delete(p),()=>pending.delete(p));
-        }else if(m.t==='done'){
+          void dispatch({id:ev.id,ns:ev.ns,fn:ev.fn,args:ev.args});
+        }else if(ev.kind==='done'){
           mark('done');
-          if(Object.hasOwn(m,'err'))throw Error(`${m.err.name}: ${m.err.message}`);
-          return {result:parse(JSON.stringify(m.ok)),logs};
-        }
-        else throw new Error('unknown frame');
+          return {result:parse(JSON.stringify(ev.ok)),logs};
+        }else throw Error(ev.message);
       }
     }catch(e){if(expired())abort();return {result:undefined,error:ctx.signal.aborted?'Execution aborted or timed out':String(e),logs};}
     finally {

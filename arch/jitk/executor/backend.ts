@@ -5,21 +5,12 @@ import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {Dispatcher, LIMIT, type Frame} from '../protocol/dispatcher.js';
+import {failure,type Engine,type GuestEvent,type Job,type Phase,type Reply,type Session} from './engine.js';
+import {executionBody} from './code.js';
 
-export interface Sandbox {
-  readonly exited:Promise<void>;
-  armDeadline?(deadline:number):Promise<void>;
-  readonly deadlineReceipt?:{deadline:number;firedAt:number;killAt:number};
-  read():Promise<unknown>;
-  send(frame:unknown):Promise<void>;
-  kill():void;
-}
-export interface Backend {
-  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard';
-  close?():Promise<void>;
-  readonly memoryLimitMB:number;
-  park(signal?:AbortSignal,deadline?:number):Promise<Sandbox>;
-}
+export type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
+/** The public name for an engine (codemode/TanStack/MCP callers construct these). */
+export type Backend=Engine;
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
   /** jitk-vmm binary providing `--watchdog`; defaults to JITK_WATCHDOG, then JITK_VMM_BINARY. */ watchdog?:string};
 /** One shared native deadline watchdog per binary (vmm/src/watchdog.rs): a separate process, so it
@@ -93,15 +84,15 @@ function watchdogBinary(options:ProcessOptions):string {
 export class ProcessBackend implements Backend {
   constructor(readonly kind:Backend['kind'],readonly command:string,readonly argv:string[],
     readonly memoryLimitMB=32,readonly options:ProcessOptions={}) {}
-  async park(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
+  async park(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(signal?.aborted)throw Error('aborted');
     const child=spawn(this.command,this.argv,{stdio:'pipe',detached:true,cwd:this.options.cwd,
       env:{PATH:'/usr/bin:/bin',...LINUX_MALLOC_ENV,...this.options.env}});
-    const s=new ProcessSandbox(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
+    const s=new ProcessSession(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
     const abort=()=>s.kill();signal?.addEventListener('abort',abort,{once:true});
     const timer=setTimeout(abort,this.options.startupMs??5000);
     try {
-      const [first]:any[]=await Promise.all([s.read(),s.confined,s.watchdogReady]);
+      const [first]:any[]=await Promise.all([s.frame(),s.confined,s.watchdogReady]);
       if(first.t!=='ready'||first.v!==1)throw Error('bad ready');
       if(signal?.aborted)throw Error('aborted');
       return s;
@@ -135,7 +126,9 @@ export class JitkBackend extends ProcessBackend {
     super('jitk',vmm,config.launcher==='01-vmm'?['--image',config.image,'--mem-mib',String(mem),...(sandboxProfile?['--sandbox-profile',sandboxProfile]:[])]:[config.image],mem,config);
   }
 }
-class ProcessSandbox implements Sandbox {
+/** A VMM or worker process speaking protocol v1 on stdio. The v1 Dispatcher is
+ *  this adapter's decoder: frames exist only here and become GuestEvents. */
+class ProcessSession implements Session {
   readonly exited:Promise<void>;
   readonly confined:Promise<void>;
   readonly watchdogReady:Promise<void>;
@@ -205,7 +198,12 @@ class ProcessSandbox implements Sandbox {
     if(!drain){this.queue=[];this.queueBytes=0;}
     for(const w of this.waiters.splice(0))w.reject(e);
   }
-  read():Promise<unknown> {
+  get phase():Phase {
+    const state=this.dispatcher.snapshot().state;
+    return this.error||state==='dead'?'ended':state==='done'?'done':state==='running'?'running':'parked';
+  }
+  /** The next dispatcher-validated v1 frame (park() reads `ready` with it). */
+  frame():Promise<unknown> {
     let p:Promise<unknown>;
     if(this.queue.length){const m=this.queue.shift()!;this.queueBytes-=JSON.stringify(m).length;p=Promise.resolve(m);}
     else if(this.error)p=Promise.reject(this.error);
@@ -214,7 +212,20 @@ class ProcessSandbox implements Sandbox {
     // waiter. Check again at the microtask boundary before exposing its value.
     return p.then(m=>{if(this.fatalError)throw this.error;return m;});
   }
-  send(frame:unknown):Promise<void> {
+  async start(job:Job):Promise<void> {
+    await this.send({t:'run',code:executionBody(job),ns:job.tools});
+  }
+  async next():Promise<GuestEvent> {
+    let m:any;
+    try{m=await this.frame();}catch(e){return failure(e);}
+    // Byte, schema, state, id and budget limits already passed the dispatcher.
+    if(m.t==='call')return {kind:'call',id:m.id,ns:m.ns,fn:m.fn,args:m.args};
+    if(m.t==='log')return {kind:'log',level:m.level,msg:m.msg};
+    if(m.t==='done')return Object.hasOwn(m,'err')?{kind:'fail',cause:'guest',message:`${m.err.name}: ${m.err.message}`}:{kind:'done',ok:m.ok};
+    return {kind:'fail',cause:'engine',message:'unknown frame'};
+  }
+  reply(id:number,r:Reply):Promise<void> {return this.send({t:'ret',id,...r});}
+  private send(frame:unknown):Promise<void> {
     // A single writer retains <=1 encoded frame, independent of pipe pressure.
     // Producers (<=64 admitted calls) keep their result until write completion.
     if(++this.writes>65){this.writes--;this.kill();return Promise.reject(Error('writer producer limit'));}

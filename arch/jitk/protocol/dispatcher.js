@@ -88,46 +88,90 @@ function decode(s       , frame        )      {
 export function schema(m      , direction               )      {
   switch (m.t) {
     case 'ready': keys(m,['t','v']); if (direction!=='guest' || m.v!==1) bad('SCHEMA'); break;
-    case 'run': {
+    case 'run':
       keys(m,['t','code','ns']); if (direction!=='host') bad('SCHEMA');
-      text(m.code,LIMIT.code); if (utf8(m.code)>LIMIT.code) bad('SCHEMA'); if (!object(m.ns)) bad('SCHEMA');
-      const entries=Object.entries(m.ns); if (entries.length>64) bad('SCHEMA');
-      let count=0;
-      for (const [ns,fns] of entries) {
-        if (!name(ns) || reserved.has(ns) || !Array.isArray(fns) || fns.length>256) bad('SCHEMA');
-        const seen=new Set        ();
-        for (const fn of fns) {
-          if (!name(fn) || fn==='then' || seen.has(fn)) bad('SCHEMA');
-          seen.add(fn); if (++count>1024) bad('SCHEMA');
-        }
-      }
+      checkCode(m.code); checkTools(m.ns);
       break;
-    }
     case 'call':
-      keys(m,['t','id','ns','fn','args']);
-      if (direction!=='guest' || !name(m.ns) || !name(m.fn) || !Array.isArray(m.args)) bad('SCHEMA');
+      keys(m,['t','id','ns','fn','args']); if (direction!=='guest') bad('SCHEMA');
+      checkCall(m.ns,m.fn,m.args);
       break;
-    case 'ret':
-      keys(m,own(m,'ok')?['t','id','ok']:['t','id','err']);
-      if (direction!=='host') bad('SCHEMA');
-      if (own(m,'err')) {
-        keys(m.err,['code','message']); text(m.err.code,64); text(m.err.message,4096);
-        if (!/^[A-Z][A-Z0-9_]{0,63}$/.test(m.err.code          )) bad('SCHEMA');
-      }
-      break;
+    case 'ret': checkReply(m,['t','id']); if (direction!=='host') bad('SCHEMA'); break;
     case 'log':
-      keys(m,['t','level','msg']); text(m.msg,LIMIT.log); if (utf8(m.msg)>LIMIT.log) bad('SCHEMA');
-      if (direction!=='guest' || typeof m.level!=='string' || !levels.has(m.level)) bad('SCHEMA');
+      keys(m,['t','level','msg']); if (direction!=='guest') bad('SCHEMA');
+      checkLog(m.level,m.msg);
       break;
-    case 'done':
-      keys(m,own(m,'ok')?['t','ok']:['t','err']); if (direction!=='guest') bad('SCHEMA');
-      if (own(m,'err')) { keys(m.err,['name','message']); text(m.err.name,128); text(m.err.message,4096); }
-      break;
+    case 'done': checkDone(m,['t']); if (direction!=='guest') bad('SCHEMA'); break;
     default: bad('SCHEMA');
   }
   if (m.t==='call' || m.t==='ret') {
     if (typeof m.id!=='number' || !Number.isSafeInteger(m.id) || m.id<1 || m.id>LIMIT.calls) bad('ID');
   }
+}
+// Field validators. schema() applies them to v1 frames; the shard adapter, which
+// decodes binary records rather than frames, applies the same ones directly.
+export function checkCode(code        )      {
+  text(code,LIMIT.code); if (utf8(code)>LIMIT.code) bad('SCHEMA'); scalar(code);
+}
+export function checkTools(ns        )      {
+  if (!object(ns)) bad('SCHEMA');
+  const entries=Object.entries(ns); if (entries.length>64) bad('SCHEMA');
+  let count=0;
+  for (const [n,fns] of entries) {
+    if (!name(n) || reserved.has(n) || !Array.isArray(fns) || fns.length>256) bad('SCHEMA');
+    const seen=new Set        ();
+    for (const fn of fns) {
+      if (!name(fn) || fn==='then' || seen.has(fn)) bad('SCHEMA');
+      seen.add(fn); if (++count>1024) bad('SCHEMA');
+    }
+  }
+}
+export function checkCall(ns        , fn        , args        )      {
+  if (!name(ns) || !name(fn) || !Array.isArray(args)) bad('SCHEMA');
+}
+export function checkLog(level        , msg        )      {
+  text(msg,LIMIT.log); if (utf8(msg)>LIMIT.log) bad('SCHEMA');
+  if (typeof level!=='string' || !levels.has(level)) bad('SCHEMA');
+}
+// Exactly `extra` plus one of ok | err; err is {name,message} (done) or {code,message} (reply).
+function outcome(m        , extra         )                    {
+  if (!object(m)) bad('SCHEMA');
+  keys(m,[...extra, own(m,'ok')?'ok':'err']);
+}
+export function checkDone(m        , extra         =[])                    {
+  outcome(m,extra);
+  if (own(m,'err')) { keys(m.err,['name','message']); text(m.err.name,128); text(m.err.message,4096); }
+}
+export function checkReply(m        , extra         =[])                    {
+  outcome(m,extra);
+  if (own(m,'err')) {
+    keys(m.err,['code','message']); text(m.err.code,64); text(m.err.message,4096);
+    if (!/^[A-Z][A-Z0-9_]{0,63}$/.test(m.err.code          )) bad('SCHEMA');
+  }
+}
+/** One guest run's host-side state, independent of transport: call ids (in order
+ * from 1), open calls and their bytes, and the log budget. The v1 Dispatcher and
+ * the shard adapter each keep one, so both enforce the same limits and codes. */
+export class RunBudget {
+  next=1;          pending=new Map               (); inflight=0; logs=0; logBytes=0;
+  call(id       , bytes       ) {
+    if (this.next>LIMIT.calls) bad('CALL_LIMIT');
+    if (id!==this.next) bad('ID');
+    if (this.pending.size>=LIMIT.outstanding) bad('OUTSTANDING');
+    if (this.inflight+bytes>LIMIT.inflight) bad('INFLIGHT');
+    this.pending.set(id,bytes); this.next++; this.inflight+=bytes;
+  }
+  log(msg       ) {
+    if (this.logs+1>LIMIT.logs || this.logBytes+utf8(msg)>LIMIT.logBytes) bad('LOG_LIMIT');
+    this.logs++; this.logBytes+=utf8(msg);
+  }
+  open(id       )         { return this.pending.has(id); }
+  reply(id       ) {
+    const bytes=this.pending.get(id); if (bytes===undefined) bad('ID');
+    this.inflight-=bytes; this.pending.delete(id);
+  }
+  done(ok        ) { if (ok && this.pending.size) bad('OUTSTANDING_DONE'); this.clear(); }
+  clear() { this.pending.clear(); this.inflight=0; }
 }
 export function encode(m        )            {
   let s                 ;
@@ -147,17 +191,16 @@ export class Dispatcher {
           buf=new Uint8Array(1024);
           used=0;
           inBytes=0;         outBytes=0;         frames=0;
-          next=1;         pending=new Map               ();         inflight=0;
-          logs=0;         logBytes=0;
+          run=new RunBudget();
           fault                ;
           hooks      ;
   constructor(hooks      ) { this.hooks=hooks; }
   snapshot() { return {state:this.state,buffered:this.used,capacity:this.buf.length,
-    outstanding:this.pending.size,inflight:this.inflight,next:this.next,
-    inBytes:this.inBytes,outBytes:this.outBytes,frames:this.frames,logs:this.logs,logBytes:this.logBytes}; }
+    outstanding:this.run.pending.size,inflight:this.run.inflight,next:this.run.next,
+    inBytes:this.inBytes,outBytes:this.outBytes,frames:this.frames,logs:this.run.logs,logBytes:this.run.logBytes}; }
   cancel(code='CANCELLED') {
     if (this.state==='dead') return;
-    this.state='dead'; this.used=0; this.buf=new Uint8Array(0); this.pending.clear(); this.inflight=0;
+    this.state='dead'; this.used=0; this.buf=new Uint8Array(0); this.run.clear();
     this.fault={code,message:code}; this.hooks.kill(this.fault);
   }
           fail(e        )       {
@@ -196,19 +239,10 @@ export class Dispatcher {
           accept(m      , bytes       ) {
     if (m.t==='ready' && this.state==='ready') { this.state='parked'; return; }
     if (this.state!=='running') bad('STATE');
-    if (m.t==='call') {
-      if (this.next>LIMIT.calls) bad('CALL_LIMIT');
-      if (m.id!==this.next) bad('ID');
-      if (this.pending.size>=LIMIT.outstanding) bad('OUTSTANDING');
-      if (this.inflight+bytes>LIMIT.inflight) bad('INFLIGHT');
-      this.pending.set(m.id          ,bytes); this.next++; this.inflight+=bytes;
-    } else if (m.t==='log') {
-      if (this.logs+1>LIMIT.logs || this.logBytes+utf8(m.msg          )>LIMIT.logBytes) bad('LOG_LIMIT');
-      this.logs++; this.logBytes+=utf8(m.msg          );
-    } else if (m.t==='done') {
-      if (own(m,'ok') && this.pending.size) bad('OUTSTANDING_DONE');
-      this.state='done'; this.pending.clear(); this.inflight=0;
-    } else bad('STATE');
+    if (m.t==='call') this.run.call(m.id          ,bytes);
+    else if (m.t==='log') this.run.log(m.msg          );
+    else if (m.t==='done') { this.run.done(own(m,'ok')); this.state='done'; }
+    else bad('STATE');
   }
   // enqueue is synchronous, bounded, all-or-nothing; false means retry this frame.
   // It must never invoke feed. No state/credit is released until it accepts bytes.
@@ -217,12 +251,12 @@ export class Dispatcher {
       this.alive(); const wire=encode(value);
       const m=parseFrame(new TextDecoder().decode(wire.subarray(0,-1))); schema(m,'host');
       if (m.t==='run' ? this.state!=='parked' : this.state!=='running') bad('STATE');
-      if (m.t==='ret' && !this.pending.has(m.id          )) bad('ID');
+      if (m.t==='ret' && !this.run.open(m.id          )) bad('ID');
       if (this.outBytes+wire.length>LIMIT.wire) bad('WIRE_LIMIT');
       if (!enqueue(wire)) return false;
       this.outBytes+=wire.length;
       if (m.t==='run') this.state='running';
-      else { this.inflight-=this.pending.get(m.id          ) ; this.pending.delete(m.id          ); }
+      else this.run.reply(m.id          );
       return true;
     } catch(e) { return this.fail(e); }
   }

@@ -1,6 +1,6 @@
 // Pure adapter semantics; real QuickJS coverage lives in shard-check.ts.
 import assert from 'node:assert/strict';
-import {executionBody} from './code.js';
+import {executionBody,jsJob} from './code.js';
 import {helperSource} from './prepared-helpers.mjs';
 import {shardSource} from './shard-backend.js';
 const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
@@ -8,17 +8,17 @@ export async function sourceChecks():Promise<number> {
   new Function(helperSource)();
   let checks=0;
   for(const name of ['tools','run','__jitk_ring_custom']){
-    const code=executionBody(`return [await ${name}.echo("Grüße 😀"),String.raw\`Grüße 😀\`]`,[{name,fns:{echo:async()=>null}}],true);
-    const source=shardSource({t:'run',code,ns:{[name]:['echo']}});
+    const code=executionBody(jsJob(`return [await ${name}.echo("Grüße 😀"),String.raw\`Grüße 😀\`]`,[{name,fns:{echo:async()=>null}}]),true);
+    const source=shardSource(code,[name]);
     assert.ok(!/[^\x00-\x7f]/.test(source));
     const result=await new AsyncFunction('tools','run',source)({echo:async(kind:string,ns:string,fn:string,args:unknown[])=>{assert.equal(kind,'call');assert.equal(ns,name);assert.equal(fn,'echo');return {ok:args[0]};}},{});
     assert.deepEqual(result,['Grüße 😀','Grüße 😀']);checks++;
   }
-  const primitive=shardSource({t:'run',code:executionBody('throw null',[],true),ns:{}});
+  const primitive=shardSource(executionBody(jsJob('throw null',[]),true),[]);
   await assert.rejects(new AsyncFunction('tools','run',primitive)({},{}),{name:'Error',message:'null'});checks++;
-  const pending=shardSource({t:'run',code:executionBody('codemode.echo();return 2',[{name:'codemode',fns:{echo:async()=>null}}],true),ns:{codemode:['echo']}});
+  const pending=shardSource(executionBody(jsJob('codemode.echo();return 2',[{name:'codemode',fns:{echo:async()=>null}}]),true),['codemode']);
   await assert.rejects(new AsyncFunction('tools','run',pending)({echo:async()=>{await new Promise(resolve=>setImmediate(resolve));return {ok:1};}},{}),{name:'Error',message:'unawaited calls at completion'});checks++;
-  assert.throws(()=>shardSource({t:'run',code:' '.repeat(8192),ns:{}}),/source limit/);checks++;
+  assert.throws(()=>shardSource(' '.repeat(8192),[]),/source limit/);checks++;
   delete (globalThis as any).__jitkPrepared;
   return checks;
 }
