@@ -73,7 +73,7 @@ jobs:
       # registry. Saved even when a later step fails.
       - name: Restore caches
         id: cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             /home/runner/.cache/jitk
@@ -89,7 +89,7 @@ jobs:
 
       - name: Save caches
         if: always() && steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             /home/runner/.cache/jitk
