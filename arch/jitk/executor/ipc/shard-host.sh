@@ -16,6 +16,8 @@ export JITK_NODE JITK_NPM_CLI JITK_SHARD_BINARY JITK_SHARD_SNAPSHOT
 cd "$JITK/shard"
 PATH=$PATH:${CARGO_HOME:-$HOME/.cargo}/bin cargo "+$(sh ../tools/rust-toolchain.sh)" test --locked --offline --bin real
 cd "$JITK/executor"
+# The hostile-peer fixture: uploaded by run-ssh, else built natively.
+make -s .work/bin/fixtures/shard-peer
 "$JITK_NODE" "$JITK_NPM_CLI" ci --ignore-scripts --no-audit --no-fund
 sh run.sh build
 suite='"$JITK_NODE" build/shard-check.js'
