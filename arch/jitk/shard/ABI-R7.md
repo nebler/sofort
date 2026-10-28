@@ -176,7 +176,16 @@ exitCode and outputLimited; a nonzero guest status is a completed run, not an
 MCP transport error. Native worker timeout/cancellation kills that persistent
 worker and requires MCP-server restart; it is not the new shard lease protocol.
 
-On Mac, `execute` remains libkrun and `run` returns UNSUPPORTED. On Linux arm64,
+On macOS arm64, `run` uses `hvf native-worker` (`src/hvf/native.rs`, 2026-10-28):
+the same frames, bind, byte streams and fd subset; profiles prepared by `hvf
+prepare`; the archive in anonymous host memory made read-only, mapped at the
+same GPA read-only and never executable, rounded to the 16-KiB HVF granule
+(KVM: 4 KiB); one VM per process, so a run for another profile replaces the
+slot's VM (~1–7 ms with the run) instead of keeping one per profile. Its
+process enters jitk.sb for the first profile's directory and drops fork
+(RLIMIT_NPROC 0) before any VM exists. `make -C shard check-native-hvf` runs
+the 41 cases twice against the Linux oracle a Linux `check-native-r7` recorded.
+`execute` stays libkrun by default there. On Linux arm64,
 `run` uses this KVM ring worker; the existing `execute` adapter remains libkrun
 until the separately owned Node/shard policy cutover. A native-only server can
 set `execute:false`; it lists both tools but execute returns UNSUPPORTED. No

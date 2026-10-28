@@ -167,7 +167,9 @@ those state machines on any host with a fake backend. Behind the seam
 | kick | lease signal | `hvf::Kicker` (`hv_vcpus_exit`) |
 
 `kvm::Slot` is `Slot<KvmVm>` with the same constructors, labels and call order
-as before; the native worker stays KVM-only. The job clock, the per-run LOG
+as before; the Linux native worker keeps its own KVM slot adapter
+(`kvm/native.rs`), the HVF one is `hvf/native.rs` (below, "HVF native
+worker"); both share the frame loop (`inputs::serve`). The job clock, the per-run LOG
 budget and quarantine reasons live in the generic slot, so HVF has them too:
 `Slot::set_clock` registers a `clock::Clock` cell (the owner pool does this on
 Linux; `clock_advances_inside_a_run` checks it on HVF), and
@@ -337,6 +339,38 @@ libkrun's p50 hides its VMM boot behind the warm pool; its CPU does not
 (every run boots and reaps one VMM). The HVF per-run CPU includes Node's
 side (the executor, policy, IPC), the zygote's forwarding and the engine
 process's run and reset (~100 µs of it, per `hvf bench` above).
+
+## HVF native worker (`hvf native-worker`)
+
+`hvf native-worker TOOL=SNAPSHOT_BASE ...` (`src/hvf/native.rs`) is the Linux
+`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR7 frames
+on stdin/stdout (`inputs::serve`, shared with Linux), native bind, byte
+streams and output cap, on profiles of both arena classes prepared by `hvf
+prepare` (`./tool.sh prepare-native-r7` uses the deps-built engine on the
+Mac). The late-bound input archive is anonymous host memory made read-only,
+mapped at ARCHIVE_GPA (KVM's memslot 63) read-only and not executable, and
+removed before the next run's (`input_archive_is_read_only_and_never_executes`:
+a guest read sees the bytes; a store, a branch, and a read once unmapped fault,
+both classes). HVF allows one VM per process, so the worker holds one slot: a
+run of another profile replaces it. Before any VM exists the process enters
+jitk.sb (the first profile's directory) and drops fork; snapshots are mapped
+from descriptors opened before, so profiles in other directories work too.
+`executor/native-backend.ts` and the MCP `run` tool drive it unchanged
+(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
+included).
+
+`make check-native-hvf` (part of `make test-hvf`) prepares the six census
+profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)
+and runs the 41-case corpus twice. A Mac cannot run the Linux programs, so the
+oracle is a Linux `check-native-r7` run's `corpus-1.json` (every row exact
+there: KVM worker = the program on Linux), which `make -C ../executor
+parity-ssh` fetches to `executor/.work/native/linux-arm64.json`; each HVF row
+must reproduce the Linux program's exit status and stdout/stderr bytes
+(sha256). Measured 2026-10-28: 41/41 exact twice, every case with an input
+archive, median 3.6 ms per case through Node (max 12 ms; nested KVM's
+8.3 ms is not comparable). The fd and region probes stay Linux-only (their
+oracle is the probe running on Linux). Without the census or the reference it
+prints SKIP and why.
 
 ## Native TypeScript harness
 

@@ -36,10 +36,20 @@ test-kvm: snapshot
 # deps-built engine: a confined child must still run HVF and be denied files,
 # network and exec that an unconfined control is allowed.
 HVF_TESTS ?= hvf::
-.PHONY: test-hvf
+.PHONY: test-hvf check-native-hvf
 test-hvf: snapshot
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="$(CURDIR)/hvf-run.sh" $(CARGO_PIN) test --locked --offline --lib $(HVF_TESTS) -- --ignored --test-threads=1 $(HVF_TEST_ARGS)
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && "$(call jitk_artifact,JITK_SHARD_BINARY)" confine "$$JITK_SHARD_TEST_SNAPSHOT"
+	$(MAKE) check-native-hvf
+
+# macOS arm64: the native corpus (41 cases, six census profiles of both arena
+# classes, late-bound input archives) on the HVF engine's native worker,
+# against the Linux native regression's recorded oracle. Skips, saying why,
+# without the census (./tool.sh import-census) or the Linux reference, which
+# `make -C ../executor parity-ssh` fetches from kvm-dev.
+JITK_NATIVE_REFERENCE ?= $(abspath $(CURDIR)/../executor/.work/native/linux-arm64.json)
+check-native-hvf:
+	JITK_SHARD_BINARY="$(call jitk_artifact,JITK_SHARD_BINARY)" JITK_NATIVE_REFERENCE="$(JITK_NATIVE_REFERENCE)" ./tool.sh check-native-hvf
 
 # src/kvm_abi.rs (the KVM UAPI constants) is checked in; abi-gen.ts derives it.
 abi:

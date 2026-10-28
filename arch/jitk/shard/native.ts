@@ -17,7 +17,7 @@ import {
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { loadavg } from "node:os";
-import { cacheRoot } from "../tslib/deps.ts";
+import { cacheRoot, requireArtifact } from "../tslib/deps.ts";
 import {
   ROOT,
   capture,
@@ -79,7 +79,18 @@ const PINS: Record<string, string[]> = {
 };
 const RUN = resolve(process.env.JITK_NATIVE_RUN_DIR || ROOT);
 const RAW = join(RUN, "raw");
-const REAL = join(ROOT, "arch/jitk/shard/target/release/real");
+const MAC = process.platform === "darwin";
+// The worker binary: Linux `real` (prepare builds it), macOS the signed HVF
+// engine from the deps cache (JITK_SHARD_BINARY, `make -C arch/jitk deps`).
+function real(): string {
+  return MAC
+    ? requireArtifact("JITK_SHARD_BINARY")
+    : join(ROOT, "arch/jitk/shard/target/release/real");
+}
+// KVM measurements serialize on the bench lock; the Mac has none.
+function measured(command: string[], wait?: number): string[] {
+  return MAC ? command : locked(command, wait);
+}
 const BUILD_ENV = env(cargoEnv());
 // The six census binaries are pinned inputs, not evidence: static aarch64
 // musl builds from the R6 census (Alpine 3.21 recipes; jq differs from the
@@ -198,13 +209,24 @@ function fixtureTar(data: Buffer): Buffer {
 export async function prepare(): Promise<void> {
   mkdirSync(RAW, { recursive: true });
   mkdirSync(join(RUN, "images"), { recursive: true });
-  saveResult(
-    await run(["cargo", "build", "--release", "--locked", "--offline"], {
-      cwd: join(ROOT, "arch/jitk/shard"),
-      env: BUILD_ENV,
-    }),
-    join(RAW, "shard-build.log"),
-  );
+  if (MAC) {
+    // The deps cache's signed engine prepares; the kernel build needs this
+    // host's prepare/build-args tools (tool.sh builds them on Linux).
+    check(existsSync(real()), "JITK_SHARD_BINARY missing");
+    if (!process.env.JITK_TOOLS_DIR) {
+      const kernel = join(ROOT, "arch/jitk/kernel");
+      await run(["make", "-s", "-C", kernel, ".work/bin/prepare", ".work/bin/build-args"]);
+      BUILD_ENV.JITK_TOOLS_DIR = join(kernel, ".work/bin");
+    }
+  } else {
+    saveResult(
+      await run(["cargo", "build", "--release", "--locked", "--offline"], {
+        cwd: join(ROOT, "arch/jitk/shard"),
+        env: BUILD_ENV,
+      }),
+      join(RAW, "shard-build.log"),
+    );
+  }
   const profiles: Record<string, Profile> = {};
   const prepared: Record<string, Json> = {};
   const classes = JSON.parse(process.env.JITK_NATIVE_CLASSES || "{}") as Record<
@@ -251,7 +273,7 @@ export async function prepare(): Promise<void> {
       Buffer.concat([build.stdout, build.stderr]),
     );
     saveResult(
-      await run(locked([REAL, "prepare", base + ".bin", base], 600)),
+      await run(measured([real(), "prepare", base + ".bin", base], 600)),
       join(RAW, "prepare-" + name + ".jsonl"),
       join(RAW, "prepare-" + name + ".stderr"),
     );
@@ -436,7 +458,7 @@ class Worker {
   ended = false;
   errors: Buffer[] = [];
   constructor(args: string[]) {
-    this.child = spawn(REAL, ["native-worker", ...args], {
+    this.child = spawn(real(), ["native-worker", ...args], {
       detached: true,
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -494,6 +516,74 @@ function removeFiles(directory: string): void {
     }
   }
 }
+// What a case must produce: the program's own run on Linux, or on the Mac
+// that run as a Linux corpus recorded it (bytes as sha256; hex when short).
+interface Oracle {
+  returncode: number;
+  stdout: Buffer | null;
+  stderr: Buffer | null;
+  stdoutSha256: string;
+  stderrSha256: string;
+  stdoutHex: string | null;
+  stderrHex: string | null;
+}
+function linuxOracle(r: { returncode: number; stdout: Buffer; stderr: Buffer }): Oracle {
+  return {
+    returncode: r.returncode,
+    stdout: r.stdout,
+    stderr: r.stderr,
+    stdoutSha256: digest(r.stdout),
+    stderrSha256: digest(r.stderr),
+    stdoutHex: r.stdout.toString("hex"),
+    stderrHex: r.stderr.toString("hex"),
+  };
+}
+type ReferenceRow = Record<string, unknown>;
+// The Linux corpus.json the Mac compares with: JITK_NATIVE_REFERENCE, all 41
+// rows exact on Linux (KVM worker == the program on Linux).
+function referenceRows(): ReferenceRow[] {
+  const path = process.env.JITK_NATIVE_REFERENCE || "";
+  check(
+    path.length > 0 && existsSync(path),
+    "set JITK_NATIVE_REFERENCE to a Linux native corpus.json (check-native-r7's corpus-1.json; `make -C arch/jitk/executor parity-ssh` fetches it)",
+  );
+  const rows = json(path) as ReferenceRow[];
+  check(
+    rows.length === 41 && rows.every((r) => r["pass_exact"] === true),
+    "the Linux reference must have 41 exact rows",
+  );
+  return rows;
+}
+function referenceOracle(rows: ReferenceRow[], i: number, c: Case): Oracle {
+  const r = rows[i];
+  check(
+    r !== undefined &&
+      r["tool"] === c.tool &&
+      r["case"] === c.label &&
+      JSON.stringify(r["argv"]) === JSON.stringify(c.args),
+    "the Linux reference is another corpus (row " + String(i) + ")",
+  );
+  const inputs = r["inputs"] as Record<string, { sha256: string }>;
+  for (const path of Object.keys(c.files)) {
+    const data = c.files[path];
+    const input = inputs[path];
+    check(
+      data !== undefined &&
+        input !== undefined &&
+        input.sha256 === digest(data),
+      "the Linux reference ran other inputs (row " + String(i) + ")",
+    );
+  }
+  return {
+    returncode: Number(r["linux_exit"]),
+    stdout: null,
+    stderr: null,
+    stdoutSha256: String(r["linux_stdout_sha256"]),
+    stderrSha256: String(r["linux_stderr_sha256"]),
+    stdoutHex: (r["linux_stdout_hex"] as string | null) ?? null,
+    stderrHex: (r["linux_stderr_hex"] as string | null) ?? null,
+  };
+}
 export async function corpus(): Promise<void> {
   mkdirSync(RAW, { recursive: true });
   const uname = (await run(["uname", "-s", "-n", "-r", "-v", "-m"])).stdout
@@ -509,9 +599,15 @@ export async function corpus(): Promise<void> {
       fields[fields.length - 1],
     ],
     load: loadavg(),
-    uptime: read("/proc/uptime"),
-    nested: true,
+    uptime: MAC ? null : read("/proc/uptime"),
+    nested: !MAC,
+    hypervisor: MAC ? "hvf" : "kvm",
   });
+  // The oracle is the program itself on Linux. A Mac cannot run Linux
+  // binaries: it takes the Linux oracle's bytes (sha256) and status from a
+  // Linux run of this corpus (JITK_NATIVE_REFERENCE, corpus.json of
+  // check-native-r7), each of whose rows must have matched there too.
+  const reference = MAC ? referenceRows() : [];
   const profiles = json(join(RUN, "profiles.json")) as Record<string, Profile>;
   for (const name of Object.keys(profiles)) {
     check(
@@ -543,28 +639,32 @@ export async function corpus(): Promise<void> {
         utimesSync(p, 0, 0);
         inputs[path] = { bytes: data.length, sha256: digest(data) };
       }
-      // bash exec -a preserves Python subprocess(executable=...) argv[0].
-      const native = await capture(
-        [
-          "/bin/bash",
-          "-c",
-          'exec -a "$0" "$@"',
-          c.args[0],
-          profiles[c.tool].binary,
-          ...c.args.slice(1),
-        ],
-        {
-          cwd: oracle,
-          timeout: 10,
-          env: {
-            PATH: "/usr/bin:/bin",
-            HOME: "/nonexistent",
-            LC_ALL: "C",
-            LANG: "C",
-            TZ: "UTC",
-          },
-        },
-      );
+      const native = MAC
+        ? referenceOracle(reference, i, c)
+        : linuxOracle(
+            await capture(
+              [
+                // bash exec -a preserves Python subprocess(executable=...) argv[0].
+                "/bin/bash",
+                "-c",
+                'exec -a "$0" "$@"',
+                c.args[0],
+                profiles[c.tool].binary,
+                ...c.args.slice(1),
+              ],
+              {
+                cwd: oracle,
+                timeout: 10,
+                env: {
+                  PATH: "/usr/bin:/bin",
+                  HOME: "/nonexistent",
+                  LC_ALL: "C",
+                  LANG: "C",
+                  TZ: "UTC",
+                },
+              },
+            ),
+          );
       const wire = request(c.tool, c.args, c.files);
       if (c.tool === "lua" && c.label === "sum") {
         writeFileSync(
@@ -601,8 +701,8 @@ export async function corpus(): Promise<void> {
       const passed =
         status === 0 &&
         code === native.returncode &&
-        stdout.equals(native.stdout) &&
-        stderr.equals(native.stderr);
+        digest(stdout) === native.stdoutSha256 &&
+        digest(stderr) === native.stderrSha256;
       const row: Record<string, unknown> = {
         i,
         memory_class: profiles[c.tool].memory_class,
@@ -615,24 +715,30 @@ export async function corpus(): Promise<void> {
         limited: out.readUInt32LE(16),
         stdout_hex: stdout.toString("hex"),
         stderr_hex: stderr.toString("hex"),
-        linux_stdout_hex: native.stdout.toString("hex"),
-        linux_stderr_hex: native.stderr.toString("hex"),
+        linux_stdout_hex: native.stdoutHex,
+        linux_stderr_hex: native.stderrHex,
         linux_exit: native.returncode,
+        linux_stdout_sha256: native.stdoutSha256,
+        linux_stderr_sha256: native.stderrSha256,
+        oracle: MAC ? "reference" : "linux",
         elapsed_ns: Number(process.hrtime.bigint() - start),
         load: loadavg(),
         error: status ? out.subarray(20).toString() : null,
         inputs,
       };
-      const streams = {
+      const streams: Record<string, Buffer | null> = {
         stdout,
         stderr,
         linux_stdout: native.stdout,
         linux_stderr: native.stderr,
       };
       for (const key of Object.keys(streams)) {
-        const value = (streams as Record<string, Buffer>)[key];
+        const value = streams[key];
         if (value === undefined) {
           throw new Error("missing stream");
+        }
+        if (value === null) {
+          continue; // the reference oracle's bytes: only their hash is here
         }
         writeFileSync(
           join(RAW, String(i).padStart(2, "0") + "-" + key + ".bin"),
@@ -705,7 +811,7 @@ export async function probe(kind: string): Promise<void> {
     Buffer.concat([build.stdout, build.stderr]),
   );
   saveResult(
-    await run(locked([REAL, "prepare", base + ".bin", base])),
+    await run(measured([real(), "prepare", base + ".bin", base])),
     join(RAW, "prepare-native-" + kind + ".jsonl"),
   );
   const data =
@@ -719,7 +825,7 @@ export async function probe(kind: string): Promise<void> {
   if (kind === "regions") {
     check(linux.returncode === 37, "regions oracle exit");
   }
-  const worker = await capture(locked([REAL, "native-worker", "fd=" + base]), {
+  const worker = await capture(measured([real(), "native-worker", "fd=" + base]), {
     input: request("fd", ["fd"], { "data/input": data }),
     timeout: 60,
   });
@@ -798,7 +904,7 @@ export async function gate(): Promise<void> {
       symlinkSync(join(tmp, "images/lua-r7." + ext), bad + "." + ext);
     }
     copyFileSync(join(tmp, "images/zstd-r7.layout"), bad + ".layout");
-    const denied = await capture([REAL, "native-worker", "bad=" + bad]);
+    const denied = await capture([real(), "native-worker", "bad=" + bad]);
     check(
       denied.returncode !== 0 &&
         denied.stderr.toString().includes("snapshot/layout mismatch"),
@@ -820,5 +926,77 @@ export async function gate(): Promise<void> {
   }
   console.log(
     "native regression: 41/41 exact twice; fd and region probes PASS",
+  );
+}
+// The Mac's native regression on the HVF engine's worker (`hvf native-worker`,
+// src/hvf/native.rs): the six profiles prepared by HVF, the 41 cases twice
+// against a Linux run's recorded oracle (JITK_NATIVE_REFERENCE), and the
+// mismatched-layout rejection. The fd and region probes compare with the
+// probe itself running on Linux and stay Linux-only. Skips while the census
+// or the reference is absent.
+export async function gateHvf(): Promise<void> {
+  const missing = censusMissing();
+  const path = process.env.JITK_NATIVE_REFERENCE || "";
+  if (missing.length || !path || !existsSync(path)) {
+    console.log(
+      "check-native-hvf: SKIP: " +
+        (missing.length
+          ? "pinned census binaries absent from " +
+            CENSUS +
+            " (" +
+            missing.join(" ") +
+            "); `./tool.sh import-census FILE|CENSUS_DIR...`"
+          : "no Linux reference corpus (JITK_NATIVE_REFERENCE=" +
+            path +
+            "); `make -C arch/jitk/executor parity-ssh` fetches it from kvm-dev"),
+    );
+    return;
+  }
+  const out = resolve(
+    process.env.JITK_NATIVE_CHECK_OUTPUT ||
+      join(ROOT, "arch/jitk/shard/test-results/native-hvf"),
+  );
+  mkdirSync(out, { recursive: true });
+  const tmp = mkdtempSync(join(ROOT, ".native-check-"));
+  const childEnv = env({
+    JITK_NATIVE_ROOT: ROOT,
+    JITK_NATIVE_RUN_DIR: tmp,
+    JITK_NATIVE_REFERENCE: resolve(path),
+  });
+  delete childEnv.JITK_NATIVE_CLASSES;
+  delete childEnv.JITK_NATIVE_TOOLS;
+  try {
+    await run(tool("prepare-native-r7"), { env: childEnv, inherit: true });
+    for (const rep of [1, 2]) {
+      await run(tool("native-corpus-r7"), { env: childEnv, inherit: true });
+      const rows = json(join(tmp, "raw/corpus.json")) as {
+        pass_exact: boolean;
+      }[];
+      check(
+        rows.length === 41 && rows.every((r) => r.pass_exact),
+        "41 exact cases required",
+      );
+      copyFileSync(
+        join(tmp, "raw/corpus.json"),
+        join(out, "corpus-" + rep + ".json"),
+      );
+    }
+    const bad = join(tmp, "images/mismatched");
+    for (const ext of ["mem", "regs"]) {
+      symlinkSync(join(tmp, "images/lua-r7." + ext), bad + "." + ext);
+    }
+    copyFileSync(join(tmp, "images/zstd-r7.layout"), bad + ".layout");
+    const denied = await capture([real(), "native-worker", "bad=" + bad]);
+    check(
+      denied.returncode !== 0 &&
+        denied.stderr.toString().includes("snapshot/layout mismatch"),
+      "layout mismatch must be rejected: " + denied.stderr.toString(),
+    );
+    copyFileSync(join(tmp, "profiles.json"), join(out, "profiles.json"));
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+  console.log(
+    "native regression on HVF: 41/41 exact twice against the Linux oracle; layout mismatch rejected",
   );
 }
