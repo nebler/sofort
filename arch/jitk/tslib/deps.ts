@@ -2,7 +2,9 @@
 // (tools/deps.ts) builds into the persistent jitk cache, and the shared
 // resolution rule for every consumer: an explicitly set environment variable
 // wins; otherwise the cache path; a missing artifact is an error naming the
-// make target. Pins live in ../tools/deps.json.
+// make target (`make -C arch/jitk/shard snapshot` for the prepared shard
+// snapshot, `make -C arch/jitk deps` for the rest). Pins live in
+// ../tools/deps.json; its rust_toolchain is the one Rust pin.
 //
 // Cache root: $JITK_CACHE, else $XDG_CACHE_HOME/jitk, else ~/.cache/jitk. It
 // is outside every checkout so clones and worktrees share one copy, and

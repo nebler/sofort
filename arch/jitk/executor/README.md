@@ -148,26 +148,20 @@ sustained capacity are not established by macOS functional executor tests.
 backend explicitly:
 
 ```sh
-export JITK_NODE=/absolute/path/to/node
-export JITK_BACKEND=shard
-export JITK_SHARD_BINARY=/absolute/path/to/shard/target/release/real
-export JITK_SHARD_SNAPSHOT=/absolute/path/to/prepared-base
-./run.sh build
+make -C .. deps                # pinned Node + shard binary (JITK_NODE, JITK_SHARD_BINARY)
+make -C ../shard snapshot      # prepared helper snapshot (JITK_SHARD_SNAPSHOT)
+JITK_BACKEND=shard ./run.sh build
 ```
 
-Build the Rust `real` executable with `cargo build --release --bin real` in
-`../shard`, and build the ring-only QuickJS payload as described there. Prepare
-an executor profile once, offline, in a new output location:
-
-```sh
-node ../shard/harness/prepare-helpers.mjs /absolute/path/to/real /absolute/new/base
-```
-
-The preparer uses the existing kernel `JITK_SCRIPT` build input to evaluate the
-codec and carrier helpers before CHECKPOINT, producing a separate ring image.
+`run.sh` takes `JITK_NODE`, `JITK_SHARD_BINARY` and `JITK_SHARD_SNAPSHOT` from
+the jitk cache (`../tools/.work/bin/deps env`) unless they are set. The shard
+binary is built from `../shard` with the pinned toolchain; the snapshot step
+([`../shard/snapshot.ts`](../shard/snapshot.ts)) uses the existing kernel
+`JITK_SCRIPT` build input to evaluate the codec and carrier helpers before
+CHECKPOINT, producing a separate ring image, and is idempotent.
 Each run sends only user code, provider descriptors/preludes and a small binding.
-The `.identity` sidecar binds the helper-source SHA-256 and `.mem/.regs/.layout`
-hashes. The executor checks it before spawning a shard; old snapshots or changed
+The `.identity` sidecar binds the helper-source SHA-256, the ring kernel
+SHA-256 and the `.mem/.regs/.layout` hashes. The executor checks it before spawning a shard; old snapshots or changed
 helpers fail with a clear reprepare error. Never replace active snapshot files.
 Helper objects and globals are guest memory restored on every generation.
 No image or libkrun default changes. MCP reads the same `JITK_BACKEND` selection;
@@ -196,15 +190,18 @@ JITK_SHARD_TEST=ssh JITK_SHARD_BENCH=1 make test-shard
 JITK_SHARD_TEST=ssh make test
 ```
 
-SSH uses `JITK_NESTED_SSH` or the project's `kvm-dev/ssh.sh`. Install a verified
-Node with headers under `/home/dev/r7-ipc/` and prepare the ring snapshot there
-first. Set `JITK_SHARD_REMOTE_ROOT=/home/dev/r8-helpers` to stage/test in a
-different round-specific scratch root, and `JITK_SHARD_OUTPUT` for local receipts. Defaults are `/home/dev/r7-ipc/node/node-v24.13.0-linux-arm64/bin/node`
-and `/home/dev/r7-ipc/prepared`; override `JITK_SHARD_REMOTE_NODE` and
-`JITK_SHARD_REMOTE_SNAPSHOT` within that private root. The runner stages sources,
-builds Rust, installs the exact JS lockfile with scripts disabled, builds the
-addon, then holds `/home/dev/bench.lock` for the Linux tests. It never manages
-the VM lifecycle. Mac `make test` without this opt-in stays unchanged.
+SSH uses `JITK_NESTED_SSH` or the project's `kvm-dev/ssh.sh`. It needs nothing
+prepared on the VM beyond rustup (`rustup toolchain install 1.95.0 --profile
+minimal --target aarch64-unknown-none`, the `tools/deps.json` pin), `cc`,
+`clang`, `llvm-objcopy`, `flock` and network access on first use. The runner
+stages this tree's sources under `JITK_SHARD_REMOTE_ROOT` (default `jitk-ssh` in
+the remote home; `JITK_SHARD_OUTPUT` for local receipts) and runs
+[`ipc/shard-host.sh`](ipc/shard-host.sh) there: `make deps` and
+`make -C shard snapshot` into the remote jitk cache, the shard binary's own
+tests, the exact JS lockfile with scripts disabled, the addon, then the Linux
+tests under the bench lock (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`).
+On a Linux host, `sh ipc/shard-host.sh` is the same check without SSH. It never
+manages the VM lifecycle. Mac `make test` without this opt-in stays unchanged.
 
 The ring profile has smaller source, call, reply and live-memory bounds than
 libkrun. Small codec values, Unicode, concurrent tools, structured tool errors
