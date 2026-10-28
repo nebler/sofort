@@ -1,0 +1,60 @@
+{{! Template of ring-bootstrap.js: edit here, then `make -C arch/jitk/abi gen` (abi/src/bin/abi-gen.rs). }}
+{{! The output is embedded in the ring kernel image and hashed into the snapshot helper identity. }}
+// Shard-only prepared profile. Native RNG repair, Bellard QuickJS std/os loop.
+// Small JSON-only echo capability; deliberately no timers or policy authority.
+const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+const pending=new Map(), source=new ArrayBuffer({{SOURCE_LIMIT}});
+// Saved before CHECKPOINT: the native hook must repair this same context.
+const preparedRandom=Math.random;
+let next=1;
+function encode(v) {
+  const s=JSON.stringify(v).replace(/[\u007f-\uffff]/g,
+    c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
+  const b=new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++) b[i]=s.charCodeAt(i);
+  return b;
+}
+function decode(b,n) { return String.fromCharCode(...b.subarray(0,n)); }
+function finish(ok,value) {
+  const b=encode(ok?{ok:value===undefined?null:value}:{err:{name:String(value.name),message:String(value.message)}});
+  if(os.write({{FD_FINISH}},b.buffer,0,b.length)!==b.length) throw Error('FINISH failed');
+}
+function echo(...args) {
+  // Check every local limit before taking a call ID, so a rejected call
+  // cannot shift the ID (and fd) of the next one.
+  if(next>{{MAX_CALLS}}) return Promise.reject(Error('call budget'));
+  const b=encode(args);
+  if(b.length>{{CALL_BYTES}}) return Promise.reject(Error('call bytes'));
+  const id=next++;
+  return new Promise((resolve,reject)=>{
+    pending.set(id,{resolve,reject,buffer:new ArrayBuffer({{REPLY_BYTES}})});
+    // A failed write keeps its ID consumed: the host may have seen part of it.
+    if(os.write({{FD_CALL_BASE}}+id,b.buffer,0,b.length)!==b.length) {
+      pending.delete(id);
+      reject(Error('CALL failed'));
+    }
+  });
+}
+os.setReadHandler(0,()=>{
+  for(const [id,p] of pending) {
+    const n=os.read({{FD_CALL_BASE}}+id,p.buffer,0,{{REPLY_BYTES}});
+    if(n===-11) continue;
+    pending.delete(id);
+    if(n<0) p.reject(Error('RET failed'));
+    else p.resolve(JSON.parse(decode(new Uint8Array(p.buffer),n)));
+  }
+});
+// Dedicated checkpoint: QuickJS, helpers and bootstrap initialized; no run input.
+const repair=os.snapshotCheckpoint();
+if(globalThis.__tenantCanary!==undefined) throw Error('snapshot leak');
+if(repair.byteLength!=={{CHECKPOINT_RECEIPT_BYTES}}) throw Error('repair failed');
+const rb=new Uint8Array(repair), dv=new DataView(repair);
+const run=Object.freeze({generation:String(dv.getBigUint64(0,true)),
+  entropy:Array.from(rb.subarray(8,24),b=>b.toString(16).padStart(2,'0')).join(''),
+  epoch:String(dv.getBigUint64(24,true)),
+  libcEntropy:Array.from(rb.subarray(32,48),b=>b.toString(16).padStart(2,'0')).join('')});
+const n=os.read(0,source,0,{{SOURCE_LIMIT}});
+try {
+  const body=new AsyncFunction('tools','run','"use strict";\n'+decode(new Uint8Array(source),n));
+  Promise.resolve(body(Object.freeze({echo}),run)).then(v=>finish(true,v),e=>finish(false,e));
+} catch(e) { finish(false,e); }

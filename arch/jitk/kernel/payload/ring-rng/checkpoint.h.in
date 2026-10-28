@@ -1,0 +1,46 @@
+{{! Template of checkpoint.h: edit here, then `make -C arch/jitk/abi gen` (abi/src/bin/abi-gen.rs). }}
+/* Included only by this ring payload's quickjs-libc.c. All frames spanning
+ * checkpoint/guard repair are built with -fno-stack-protector, including musl.
+ * One thread, no tenant input/jobs/callbacks before this function returns. */
+#include <sys/auxv.h>
+#include "chacha.h"
+
+extern void JS_SetSnapshotRandomSeed(JSContext *, uint64_t);
+extern void __jitk_reseed_libc(const unsigned char [16]);
+extern void __jitk_check_libc(const unsigned char [16]);
+
+static JSValue js_os_snapshot_checkpoint(JSContext *ctx, JSValueConst this_val,
+                                         int argc, JSValueConst *argv)
+{
+    static int entered;
+    unsigned char repair[{{CHECKPOINT_RECEIPT_BYTES}}]={0}, keys[64], receipt[64], libc_receipt[64];
+    uint64_t math_seed;
+    unsigned short seed48_bits[3];
+    if (entered++)
+        return JS_ThrowTypeError(ctx, "checkpoint already consumed");
+    if (write({{FD_CHECKPOINT}}, NULL, 0)!=0 || read({{FD_REPAIR}}, repair, {{REPAIR_BYTES}})!={{REPAIR_BYTES}})
+        _exit(127); /* Never continue with snapshot randomness. */
+    rng_block(repair+8, 0, keys);
+    rng_block(repair+8, 1, receipt); /* Public, independent of private keys. */
+    memcpy(&math_seed, keys, 8);
+    JS_SetSnapshotRandomSeed(ctx, math_seed);
+    __jitk_reseed_libc(keys+8); /* AT_RANDOM, SSP, mallocng tags. */
+    srand(rng_load32(keys+24));
+    srandom(rng_load32(keys+28));
+    memcpy(seed48_bits, keys+32, sizeof seed48_bits);
+    seed48(seed48_bits);
+    seed48(seed48_bits); /* Also overwrite seed48's saved previous-state buffer. */
+    __jitk_check_libc(keys+8);
+    /* Fingerprint the actual repaired AT_RANDOM, without publishing its bytes. */
+    rng_block((const unsigned char *)getauxval(AT_RANDOM), 2, libc_receipt);
+    memcpy(repair+8, receipt, 16);
+    memcpy(repair+32, libc_receipt, 16);
+    explicit_bzero(keys, sizeof keys);
+    explicit_bzero(receipt, sizeof receipt);
+    explicit_bzero(libc_receipt, sizeof libc_receipt);
+    explicit_bzero(seed48_bits, sizeof seed48_bits);
+    math_seed=0;
+    JSValue result=JS_NewArrayBufferCopy(ctx, repair, sizeof repair);
+    explicit_bzero(repair, sizeof repair);
+    return result;
+}
