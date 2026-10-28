@@ -15,11 +15,12 @@
 //!
 //! Deadlines and STATS times are on `clock::ipc_ns` (Node's process.hrtime).
 use super::{HvfVm, Kicker, State, conn};
+use crate::calls::Calls;
 use crate::clock::{self, Clock};
 use crate::constants::{ABI_VERSION, ipc::ERROR_BYTES, ring};
 use crate::service::{
-    self, CALL, CANCEL, DONE, ERROR, Message, QUARANTINED, READY, RELEASED, REPLY, START, invalid,
-    u64_at,
+    self, CALL, CANCEL, DONE, ERROR, LOG, Message, QUARANTINED, READY, RELEASED, REPLY, START,
+    invalid, u64_at,
 };
 use crate::slot::{Request, ResetPolicy, RunError, Slot};
 use crate::snapshot::Snapshot;
@@ -79,10 +80,11 @@ struct Run {
     generation: u64,
     deadline: u64,
     /// Calls sent to Node and not yet answered, and when each was sent.
-    pending: u32,
-    sent: [u64; 32],
+    calls: Calls,
     round_trips: Vec<u64>,
     cpu_ns: u64,
+    /// The guest parked with a timer (its ppoll deadline): resume it then.
+    wake_at: Option<Instant>,
 }
 struct Engine {
     slot: Slot<HvfVm>,
@@ -140,9 +142,9 @@ pub fn serve(
         stopped: AtomicU64::new(0),
         closed: AtomicBool::new(false),
     });
-    // A generation brings at most START, 32 REPLY and CANCEL, plus the
-    // reader's Expired; the zygote bounds what it queues for this child.
-    let (tx, rx) = sync_channel(128);
+    // A generation brings at most START, a REPLY per open call and CANCEL,
+    // plus the reader's Expired; the zygote bounds what it queues for this child.
+    let (tx, rx) = sync_channel(ring::MAX_OUTSTANDING + 4);
     let read = fd.try_clone()?;
     let reader = signals.clone();
     std::thread::Builder::new()
@@ -176,13 +178,23 @@ impl Engine {
     }
     fn serve(&mut self, rx: &Receiver<Cmd>) -> io::Result<()> {
         loop {
-            // An idle pristine slot drops its pages once due (ResetPolicy idle_trim).
-            let due = self.run.is_none().then(|| self.slot.trim_due()).flatten();
+            // An idle pristine slot drops its pages once due (ResetPolicy
+            // idle_trim); a parked guest's timer resumes it.
+            let due = match &self.run {
+                None => self.slot.trim_due(),
+                Some(run) => run.wake_at,
+            };
             let cmd = match due {
                 Some(due) => match rx.recv_timeout(due.saturating_duration_since(Instant::now())) {
                     Ok(cmd) => cmd,
                     Err(RecvTimeoutError::Timeout) => {
-                        self.slot.trim();
+                        match self.run.as_mut() {
+                            None => self.slot.trim(),
+                            Some(run) => {
+                                run.wake_at = None;
+                                self.drive()?;
+                            }
+                        }
                         continue;
                     }
                     Err(RecvTimeoutError::Disconnected) => return Ok(()),
@@ -245,10 +257,10 @@ impl Engine {
         self.run = Some(Run {
             generation,
             deadline,
-            pending: 0,
-            sent: [0; 32],
+            calls: Calls::default(),
             round_trips: Vec::new(),
             cpu_ns: thread_cpu() - cpu,
+            wake_at: None,
         });
         self.drive()
     }
@@ -256,14 +268,15 @@ impl Engine {
         let Some(run) = self.run.as_mut() else {
             return Ok(()); // a reply in flight when the run ended
         };
-        let bit = 1u32.checked_shl(m.id.wrapping_sub(1)).unwrap_or(0);
-        if run.generation != m.generation || run.pending & bit == 0 {
+        if run.generation != m.generation {
             return Ok(());
         }
+        let Some(sent) = run.calls.answer(m.id.into()) else {
+            return Ok(());
+        };
         let cpu = thread_cpu();
-        run.pending &= !bit;
-        run.round_trips
-            .push(clock::ipc_ns().saturating_sub(run.sent[m.id as usize - 1]));
+        run.round_trips.push(clock::ipc_ns().saturating_sub(sent));
+        run.wake_at = None;
         let request = Request {
             id: m.id.into(),
             bytes: m.bytes,
@@ -322,6 +335,13 @@ impl Engine {
                 }
                 Ok(Some(step)) => step,
             };
+            // Console lines first: the last ones often share the FINISH exit.
+            for line in step.logs {
+                conn::send(
+                    self.out,
+                    &Message::new(LOG, self.index, generation, 0, line),
+                )?;
+            }
             if step.op == ring::FINISH {
                 let result = if !self.slot.repaired() {
                     Err(RunError::GuestProtocol("missing repair acknowledgement"))
@@ -336,15 +356,20 @@ impl Engine {
             {
                 return self.finish(Err(RunError::GuestProtocol("unexpected checkpoint/repair")));
             }
-            if !step.requests.is_empty() || step.op == ring::WAIT {
-                // Request bytes are opaque here; Node owns the call schema.
-                let now = clock::ipc_ns();
-                for r in step.requests {
-                    run.sent[r.id as usize - 1] = now;
-                    run.pending |= 1 << (r.id - 1);
-                    let call = Message::new(CALL, self.index, generation, r.id, r.bytes);
-                    conn::send(self.out, &call)?;
+            // Request bytes are opaque here; Node owns the call schema.
+            let now = clock::ipc_ns();
+            for r in step.requests {
+                if !run.calls.issue(r.id, now) {
+                    return Err(invalid("HVF child: call outside the outstanding bound"));
                 }
+                let call = Message::new(CALL, self.index, generation, r.id, r.bytes);
+                conn::send(self.out, &call)?;
+            }
+            // A WAIT parks the guest until Node answers or its timer is due,
+            // unless RX records still wait for ring space: then it runs on,
+            // reads them and frees it. SUBMIT (TX full) runs on.
+            if step.op == ring::WAIT && !self.slot.backlogged() {
+                run.wake_at = crate::slot::wake_time(self.slot.wait_deadline());
                 return Ok(());
             }
         }

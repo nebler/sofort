@@ -185,8 +185,11 @@ impl<V: Vm> Slot<V> {
         self.tx = 0;
         self.rx = 0;
         self.rx_consumed = 0;
-        self.seen = 0;
-        self.replied = 0;
+        self.calls = Default::default();
+        self.replies = 0;
+        self.partial = None;
+        self.backlog.clear();
+        self.logs = 0;
         self.exits = 0;
         report.ns = t.elapsed().as_nanos() as u64;
         if self.policy.verify {

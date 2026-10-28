@@ -4,14 +4,15 @@
 //! shared-memory queues to Node, owner threads behind it) and the macOS HVF
 //! zygote (`hvf::zygote`, a socket to Node, one engine process per slot behind
 //! it) both run it, so Node sees one protocol from either.
+use crate::calls::Calls;
 use crate::constants::ipc as wire;
 use crate::constants::ring;
 use crate::payload;
 use std::{collections::VecDeque, io};
 
 pub use crate::constants::ipc::{
-    CALL, CANCEL, DONE, ERROR, HEADER_BYTES, PAYLOAD, QUARANTINED, READY, RELEASED, REPLY,
-    RESTORED, START, STATS,
+    CALL, CANCEL, DONE, ERROR, HEADER_BYTES, LOG, MESSAGE_BYTES, PAYLOAD, QUARANTINED, READY,
+    RELEASED, REPLY, RESTORED, START, STATS,
 };
 
 pub fn invalid(message: &'static str) -> io::Error {
@@ -24,8 +25,9 @@ pub fn u64_at(b: &[u8], at: usize) -> u64 {
     u64::from_le_bytes(b[at..at + 8].try_into().unwrap())
 }
 
-/// One IPC record: kind u32, slot u32, generation u64, id u32, payload length
-/// u32, reserved u64 = 0, then the payload.
+/// One IPC message: one or more records (kind u32, slot u32, generation
+/// u64, id u32, payload length u32, flags u32, reserved u32 = 0, then the
+/// payload), all but the last with flags MORE and a full PAYLOAD.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Message {
     pub kind: u32,
@@ -44,49 +46,106 @@ impl Message {
             bytes,
         }
     }
-    /// Decode a record from a private copy that starts with its header; the
-    /// copy may be longer than the record (a fixed-size queue slot).
-    pub fn decode(copy: &[u8]) -> io::Result<Self> {
+    /// Decode one record from a private copy that starts with its header; the
+    /// copy may be longer than the record (a fixed-size queue slot). Returns
+    /// the record as a message and whether its message continues (MORE).
+    pub fn decode(copy: &[u8]) -> io::Result<(Self, bool)> {
         if copy.len() < HEADER_BYTES {
             return Err(invalid("IPC record header"));
         }
         let n = u32_at(copy, wire::LENGTH_AT) as usize;
-        if n > PAYLOAD || u64_at(copy, wire::RESERVED_AT) != 0 || copy.len() < HEADER_BYTES + n {
+        let flags = u32_at(copy, wire::FLAGS_AT);
+        if n > PAYLOAD
+            || flags & !wire::MORE != 0
+            || u32_at(copy, wire::RESERVED_AT) != 0
+            || copy.len() < HEADER_BYTES + n
+        {
             return Err(invalid("IPC record length/reserved"));
         }
-        Ok(Self {
-            kind: u32_at(copy, wire::KIND_AT),
-            slot: u32_at(copy, wire::SLOT_AT),
-            generation: u64_at(copy, wire::GENERATION_AT),
-            id: u32_at(copy, wire::ID_AT),
-            bytes: copy[HEADER_BYTES..HEADER_BYTES + n].to_vec(),
-        })
+        let more = flags & wire::MORE != 0;
+        if more && n != PAYLOAD {
+            return Err(invalid("IPC record fragment"));
+        }
+        Ok((
+            Self {
+                kind: u32_at(copy, wire::KIND_AT),
+                slot: u32_at(copy, wire::SLOT_AT),
+                generation: u64_at(copy, wire::GENERATION_AT),
+                id: u32_at(copy, wire::ID_AT),
+                bytes: copy[HEADER_BYTES..HEADER_BYTES + n].to_vec(),
+            },
+            more,
+        ))
     }
-    pub fn header(&self) -> [u8; HEADER_BYTES] {
+    fn header(&self, n: usize, more: bool) -> [u8; HEADER_BYTES] {
         let mut h = [0u8; HEADER_BYTES];
         h[wire::KIND_AT..wire::KIND_AT + 4].copy_from_slice(&self.kind.to_le_bytes());
         h[wire::SLOT_AT..wire::SLOT_AT + 4].copy_from_slice(&self.slot.to_le_bytes());
         h[wire::GENERATION_AT..wire::GENERATION_AT + 8]
             .copy_from_slice(&self.generation.to_le_bytes());
         h[wire::ID_AT..wire::ID_AT + 4].copy_from_slice(&self.id.to_le_bytes());
-        h[wire::LENGTH_AT..wire::LENGTH_AT + 4]
-            .copy_from_slice(&(self.bytes.len() as u32).to_le_bytes());
+        h[wire::LENGTH_AT..wire::LENGTH_AT + 4].copy_from_slice(&(n as u32).to_le_bytes());
+        let flags = if more { wire::MORE } else { 0 };
+        h[wire::FLAGS_AT..wire::FLAGS_AT + 4].copy_from_slice(&flags.to_le_bytes());
         h
     }
-    /// Header and payload, for a stream transport.
-    pub fn encode(&self) -> io::Result<Vec<u8>> {
-        if self.bytes.len() > PAYLOAD {
-            return Err(invalid("IPC local payload bound"));
+    /// The message's records, each header and payload.
+    pub fn records(&self) -> io::Result<Vec<Vec<u8>>> {
+        if self.bytes.len() > MESSAGE_BYTES {
+            return Err(invalid("IPC local message bound"));
         }
-        let mut b = Vec::with_capacity(HEADER_BYTES + self.bytes.len());
-        b.extend_from_slice(&self.header());
-        b.extend_from_slice(&self.bytes);
-        Ok(b)
+        let count = wire::records(self.bytes.len());
+        Ok((0..count)
+            .map(|i| {
+                let len = self.bytes.len();
+                let chunk = &self.bytes[(i * PAYLOAD).min(len)..((i + 1) * PAYLOAD).min(len)];
+                let mut b = Vec::with_capacity(HEADER_BYTES + chunk.len());
+                b.extend_from_slice(&self.header(chunk.len(), i + 1 < count));
+                b.extend_from_slice(chunk);
+                b
+            })
+            .collect())
+    }
+    /// Every record back to back, for a stream transport.
+    pub fn encode(&self) -> io::Result<Vec<u8>> {
+        Ok(self.records()?.concat())
+    }
+}
+/// Reassembles one direction's messages: their records are consecutive, so
+/// at most one message is partial.
+#[derive(Default)]
+pub struct Assembler {
+    partial: Option<Message>,
+}
+impl Assembler {
+    /// Add a decoded record; the message once its last record arrived.
+    pub fn push(&mut self, record: Message, more: bool) -> io::Result<Option<Message>> {
+        let message = match self.partial.take() {
+            None => record,
+            Some(mut m) => {
+                if (m.kind, m.slot, m.generation, m.id)
+                    != (record.kind, record.slot, record.generation, record.id)
+                {
+                    return Err(invalid("IPC fragment identity"));
+                }
+                m.bytes.extend_from_slice(&record.bytes);
+                m
+            }
+        };
+        if message.bytes.len() > MESSAGE_BYTES {
+            return Err(invalid("IPC message bound"));
+        }
+        if more {
+            self.partial = Some(message);
+            return Ok(None);
+        }
+        Ok(Some(message))
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub enum Phase {
+    #[default]
     Idle,
     Running,
     Done,
@@ -95,41 +154,48 @@ pub enum Phase {
     /// until the HVF zygote restores it (RESTORED); the Linux shard never does.
     Quarantined,
 }
-/// One slot's IPC state: the generation Node admitted, its phase, the next
-/// guest call id and the calls Node still owes a reply.
+/// One slot's IPC state: the generation Node admitted, its phase, its guest
+/// call ids (the calls Node still owes a reply) and its console lines.
+#[derive(Default)]
 pub struct State {
     pub generation: u64,
     pub phase: Phase,
-    pub next: u64,
-    pub pending: u32,
-}
-impl Default for State {
-    fn default() -> Self {
-        Self {
-            generation: 0,
-            phase: Phase::Idle,
-            next: 1,
-            pending: 0,
-        }
-    }
+    pub calls: Calls,
+    pub logs: usize,
 }
 impl State {
+    /// Whether a guest message of this slot is forwarded. Ok(false): the
+    /// generation is being reset, drop it.
+    fn forwarding(&self) -> io::Result<bool> {
+        match self.phase {
+            Phase::Resetting => Ok(false),
+            Phase::Running => Ok(true),
+            _ => Err(invalid("IPC owner call state")),
+        }
+    }
     /// A guest call the engine forwards. Ok(false): the generation is being
     /// reset, drop it. Engines forward only bounded printable calls
-    /// (payload::forwarded) in id order; anything else is an engine bug and
-    /// fails the whole service.
+    /// (payload::forwarded) in id order within the outstanding bound; anything
+    /// else is an engine bug and fails the whole service.
     pub fn call(&mut self, id: u64, bytes: &[u8]) -> io::Result<bool> {
-        if self.phase == Phase::Resetting {
+        if !self.forwarding()? {
             return Ok(false);
         }
-        if self.phase != Phase::Running {
-            return Err(invalid("IPC owner call state"));
-        }
-        if id != self.next || id > 32 || !payload::forwarded(ring::CALL, bytes) {
+        if !payload::forwarded(ring::CALL, bytes) || !self.calls.issue(id, 0) {
             return Err(invalid("IPC guest call schema/id"));
         }
-        self.next += 1;
-        self.pending |= 1u32 << (id - 1);
+        Ok(true)
+    }
+    /// A guest console line the engine forwards (IPC LOG), at most MAX_LOGS
+    /// per generation. Ok(false): drop it, as `call`.
+    pub fn log(&mut self, bytes: &[u8]) -> io::Result<bool> {
+        if !self.forwarding()? {
+            return Ok(false);
+        }
+        if !payload::forwarded(ring::CONSOLE, bytes) || self.logs >= ring::MAX_LOGS {
+            return Err(invalid("IPC guest log schema/budget"));
+        }
+        self.logs += 1;
         Ok(true)
     }
     /// The generation's completion (STATS then DONE or ERROR). Ok(false): it
@@ -149,19 +215,15 @@ impl State {
     /// generation must still match, so it never targets a reused slot).
     pub fn reply(&mut self, m: &Message) -> io::Result<bool> {
         if m.generation != self.generation
-            || m.id == 0
-            || m.id > 32
             || m.bytes.is_empty()
             || m.bytes.len() > ring::REPLY_BYTES
             || !payload::printable(&m.bytes)
         {
             return Err(invalid("IPC reply schema/generation"));
         }
-        let bit = 1u32 << (m.id - 1);
-        if self.pending & bit == 0 {
+        if self.calls.answer(m.id.into()).is_none() {
             return Err(invalid("IPC duplicate/unknown reply"));
         }
-        self.pending &= !bit;
         Ok(self.phase == Phase::Running)
     }
 }
@@ -227,12 +289,10 @@ pub fn admission(m: &Message, now: u64, charge: u32) -> io::Result<(u64, String)
     }
     let n = u32_at(b, 16) as usize;
     let source = &b[wire::START_HEADER_BYTES..];
-    if n > ring::SOURCE_LIMIT
-        || source.len() != n
-        || source.iter().any(|b| !b.is_ascii() || *b == 0)
-    {
+    if n > ring::SOURCE_LIMIT || source.len() != n {
         return Err(invalid("IPC source bound/encoding"));
     }
+    // UTF-8 text (the JS profile's run body, NUL, its data); opaque here.
     Ok((
         deadline,
         String::from_utf8(source.to_vec()).map_err(|_| invalid("IPC source UTF-8"))?,
@@ -245,7 +305,7 @@ pub fn released(s: &mut State, slot: usize, quarantined: Option<String>) -> io::
     if s.phase != Phase::Resetting {
         return Err(invalid("IPC unexpected reset"));
     }
-    s.pending = 0;
+    s.calls = Calls::default();
     let Some(why) = quarantined else {
         s.phase = Phase::Idle;
         return Ok(Message::new(RELEASED, slot, s.generation, 0, Vec::new()));
@@ -294,10 +354,19 @@ mod tests {
         let mut m = Message::new(START, 0, 1, 0, vec![0; 24]);
         assert!(admission(&m, 0, 2 << 20).is_err());
         m.bytes[0..8].copy_from_slice(&1u64.to_le_bytes());
-        m.bytes[8..12].copy_from_slice(&32u32.to_le_bytes());
-        m.bytes[12..16].copy_from_slice(&1024u32.to_le_bytes());
+        m.bytes[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
+        m.bytes[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
         m.bytes[20..24].copy_from_slice(&(2u32 * 1024 * 1024).to_le_bytes());
         assert!(admission(&m, 0, 2 << 20).is_ok());
+        // A source of SOURCE_LIMIT bytes takes several records and is admitted.
+        let mut big = m.clone();
+        big.bytes[16..20].copy_from_slice(&(ring::SOURCE_LIMIT as u32).to_le_bytes());
+        big.bytes
+            .extend(std::iter::repeat_n(b'x', ring::SOURCE_LIMIT));
+        assert!(admission(&big, 0, 2 << 20).is_ok());
+        big.bytes[16..20].copy_from_slice(&(ring::SOURCE_LIMIT as u32 + 1).to_le_bytes());
+        big.bytes.push(b'x');
+        assert!(admission(&big, 0, 2 << 20).is_err());
         m.bytes[16..20].copy_from_slice(&u32::MAX.to_le_bytes());
         assert!(admission(&m, 0, 2 << 20).is_err());
         m.bytes[16..20].fill(0);
@@ -306,11 +375,15 @@ mod tests {
     }
     #[test]
     fn a_quarantined_reset_ends_its_slot() {
-        let resetting = || State {
-            generation: 5,
-            phase: Phase::Resetting,
-            next: 3,
-            pending: 1,
+        let resetting = || {
+            let mut calls = Calls::default();
+            assert!(calls.issue(1, 0));
+            State {
+                generation: 5,
+                phase: Phase::Resetting,
+                calls,
+                logs: 0,
+            }
         };
         let mut s = resetting();
         let m = released(&mut s, 2, None).unwrap();
@@ -318,7 +391,7 @@ mod tests {
             (m.kind, m.slot, m.generation, m.bytes.len()),
             (RELEASED, 2, 5, 0)
         );
-        assert!(s.phase == Phase::Idle && s.pending == 0);
+        assert!(s.phase == Phase::Idle && s.calls.idle());
         // Only a resetting slot can be released.
         assert!(released(&mut s, 2, None).is_err());
         let mut s = resetting();
@@ -341,27 +414,63 @@ mod tests {
         let m = Message::new(CALL, 3, 0x0102_0304_0506_0708, 7, b"[1]".to_vec());
         let b = m.encode().unwrap();
         assert_eq!(b.len(), HEADER_BYTES + 3);
-        assert_eq!(Message::decode(&b).unwrap(), m);
-        // Truncated payload, oversized length, nonzero reserved word.
+        assert_eq!(Message::decode(&b).unwrap(), (m, false));
+        // Truncated payload, oversized length, unknown flag, nonzero reserved
+        // word, a MORE record that is not full.
         assert!(Message::decode(&b[..b.len() - 1]).is_err());
         let mut long = b.clone();
         long[20..24].copy_from_slice(&(PAYLOAD as u32 + 1).to_le_bytes());
         assert!(Message::decode(&long).is_err());
-        let mut reserved = b.clone();
-        reserved[24] = 1;
-        assert!(Message::decode(&reserved).is_err());
+        for (at, value) in [(24, 2), (28, 1), (24, 1)] {
+            let mut bad = b.clone();
+            bad[at] = value;
+            assert!(Message::decode(&bad).is_err(), "header byte {at}");
+        }
         assert!(
-            Message::new(CALL, 0, 1, 1, vec![0; PAYLOAD + 1])
+            Message::new(CALL, 0, 1, 1, vec![0; MESSAGE_BYTES + 1])
                 .encode()
                 .is_err()
+        );
+    }
+    #[test]
+    fn messages_span_records() {
+        let m = Message::new(
+            REPLY,
+            2,
+            9,
+            4,
+            (0..2 * PAYLOAD + 5).map(|i| i as u8).collect(),
+        );
+        let records = m.records().unwrap();
+        assert_eq!(records.len(), 3);
+        let mut a = Assembler::default();
+        for (i, r) in records.iter().enumerate() {
+            let (record, more) = Message::decode(r).unwrap();
+            assert_eq!(more, i < 2);
+            let done = a.push(record, more).unwrap();
+            assert_eq!(done.as_ref(), (i == 2).then_some(&m));
+        }
+        // A record of another message between two fragments is refused.
+        let mut a = Assembler::default();
+        let (first, more) = Message::decode(&records[0]).unwrap();
+        assert!(a.push(first, more).unwrap().is_none());
+        let other = Message::new(REPLY, 2, 9, 5, b"{}".to_vec());
+        assert!(a.push(other, false).is_err());
+        // An empty message is one record.
+        assert_eq!(
+            Message::new(CANCEL, 0, 1, 0, vec![])
+                .records()
+                .unwrap()
+                .len(),
+            1
         );
     }
     #[test]
     fn slot_state_machine() {
         let mut s = State::default();
         let mut start = Message::new(START, 0, 1, 0, vec![0; 24]);
-        start.bytes[8..12].copy_from_slice(&32u32.to_le_bytes());
-        start.bytes[12..16].copy_from_slice(&1024u32.to_le_bytes());
+        start.bytes[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
+        start.bytes[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
         start.bytes[20..24].copy_from_slice(&(2u32 << 20).to_le_bytes());
         assert!(s.start(&start, 0, 2 << 20).is_ok());
         assert!(s.start(&start, 0, 2 << 20).is_err(), "replayed START");
@@ -370,6 +479,16 @@ mod tests {
         let reply = Message::new(REPLY, 0, 1, 1, b"{}".to_vec());
         assert!(s.reply(&reply).unwrap());
         assert!(s.reply(&reply).is_err(), "duplicate reply");
+        // Logs have their own budget and need no reply.
+        for _ in 0..ring::MAX_LOGS {
+            assert!(s.log(b"[\"log\",\"x\"]").unwrap());
+        }
+        assert!(s.log(b"[\"log\",\"x\"]").is_err(), "log budget");
+        assert!(s.call(2, b"[]").unwrap());
+        assert!(
+            s.reply(&Message::new(REPLY, 0, 1, 2, b"{}".to_vec()))
+                .unwrap()
+        );
         assert!(s.complete().unwrap());
         assert!(s.complete().is_err(), "duplicate completion");
         let cancel = Message::new(CANCEL, 0, 1, 0, vec![]);

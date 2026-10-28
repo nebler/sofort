@@ -153,13 +153,23 @@ impl Reactor {
                 slot,
                 generation,
                 requests,
+                logs,
             } => {
                 let s = &mut self.states[slot];
                 if generation != s.generation {
                     return Err(invalid("IPC owner generation"));
                 }
-                // Owners forward only bounded printable calls (payload::forwarded);
-                // a mismatch here is a shard bug, so it fails the whole service.
+                // Owners forward only bounded printable calls and console
+                // lines (payload::forwarded); a mismatch here is a shard bug,
+                // so it fails the whole service.
+                for line in logs {
+                    if s.log(&line)? {
+                        enqueue(
+                            &mut self.outbound,
+                            Message::new(ipc::LOG, slot, generation, 0, line),
+                        )?;
+                    }
+                }
                 for request in requests {
                     if s.call(request.id, &request.bytes)? {
                         enqueue(

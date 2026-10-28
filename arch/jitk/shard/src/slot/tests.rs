@@ -165,19 +165,102 @@ fn slot() -> Slot<FakeVm> {
     s
 }
 fn record(s: &Slot<FakeVm>, kind: u16, id: u64, payload: &[u8]) {
+    fragment(s, kind, id, payload, false);
+}
+/// A guest TX record at the producer cursor (`more`: a MORE fragment).
+fn fragment(s: &Slot<FakeVm>, kind: u16, id: u64, payload: &[u8], more: bool) {
     let len = (32 + payload.len() + 7) & !7;
     let mut b = vec![0; len];
     b[..4].copy_from_slice(&(len as u32).to_le_bytes());
     b[4..6].copy_from_slice(&kind.to_le_bytes());
-    b[6..8].copy_from_slice(&ring::JSON_UTF8.to_le_bytes());
+    let flags = ring::JSON_UTF8 | if more { ring::MORE } else { 0 };
+    b[6..8].copy_from_slice(&flags.to_le_bytes());
     b[8..16].copy_from_slice(&2u64.to_le_bytes());
     b[16..24].copy_from_slice(&id.to_le_bytes());
     b[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
     b[28..32].copy_from_slice(&(if kind == 1 { 1u32 } else { 0 }).to_le_bytes());
     b[32..32 + payload.len()].copy_from_slice(payload);
-    // At the guest's TX cursor (records already decoded stay consumed).
-    s.copy(REQUEST + s.tx, &b);
-    s.store(ring::TX_PRODUCER, (s.tx + len) as u64);
+    // At the guest's TX cursor, wrapping (records already decoded stay consumed).
+    let prod = s.load(ring::TX_PRODUCER) as usize;
+    for (i, x) in b.iter().enumerate() {
+        s.copy(REQUEST + (prod + i) % ring::RING_BYTES, &[*x]);
+    }
+    s.store(ring::TX_PRODUCER, (prod + len) as u64);
+}
+/// The guest read every RX record so far.
+fn consume_rx(s: &Slot<FakeVm>) {
+    s.store(ring::RX_CONSUMER, s.load(ring::RX_PRODUCER));
+}
+#[test]
+fn messages_span_tx_records_across_exits() {
+    let mut s = slot();
+    let full = vec![b'x'; ring::MAX_PAYLOAD];
+    fragment(&s, ring::CALL, 1, &full, true);
+    let e = s.decode_exit(ring::SUBMIT).unwrap().unwrap();
+    assert!(e.requests.is_empty(), "a partial call is not forwarded");
+    fragment(&s, ring::CALL, 1, &full, true);
+    record(&s, ring::CALL, 1, b"]");
+    let e = s.decode_exit(ring::SUBMIT).unwrap().unwrap();
+    assert_eq!(e.requests.len(), 1);
+    assert_eq!(e.requests[0].bytes.len(), 2 * ring::MAX_PAYLOAD + 1);
+    // Console lines are one-way messages with their own budget.
+    for _ in 0..ring::MAX_LOGS {
+        record(&s, ring::CONSOLE, 0, b"[\"log\",\"a\"]");
+        assert_eq!(s.decode_exit(ring::SUBMIT).unwrap().unwrap().logs.len(), 1);
+    }
+    record(&s, ring::CONSOLE, 0, b"[\"log\",\"a\"]");
+    assert!(s.decode_exit(ring::SUBMIT).is_err(), "console budget");
+    // A MORE fragment must be full, and nothing may come between fragments.
+    let mut s = slot();
+    fragment(&s, ring::CALL, 1, b"[", true);
+    assert!(s.decode_exit(ring::SUBMIT).is_err());
+    let mut s = slot();
+    fragment(&s, ring::CALL, 1, &full, true);
+    record(&s, ring::CONSOLE, 0, b"[]");
+    assert!(s.decode_exit(ring::SUBMIT).is_err());
+    // The outstanding bound: the 65th open call is a protocol error.
+    let mut s = slot();
+    for id in 1..=ring::MAX_OUTSTANDING as u64 {
+        record(&s, ring::CALL, id, b"[]");
+    }
+    assert_eq!(
+        s.decode_exit(ring::SUBMIT).unwrap().unwrap().requests.len(),
+        64
+    );
+    record(&s, ring::CALL, 65, b"[]");
+    assert!(s.decode_exit(ring::SUBMIT).is_err());
+}
+#[test]
+fn rx_backlog_waits_for_ring_space() {
+    let mut s = fixture(ResetPolicy::default());
+    // A source of three records: two fit the 32 KiB ring, one waits.
+    let source = "x".repeat(2 * ring::MAX_PAYLOAD + 10);
+    s.bind(3, &source, &mut io::repeat(7));
+    assert_eq!(s.load(ring::SOURCE_BYTES), source.len() as u64);
+    assert_eq!(s.load(ring::RX_PRODUCER), 2 * ring::RECORD_BYTES as u64);
+    assert!(s.backlogged());
+    consume_rx(&s);
+    s.flush().unwrap();
+    assert!(!s.backlogged());
+    // Replies: one per open call, as many records as they need.
+    for id in 1..=3 {
+        assert!(s.calls.issue(id, 0));
+    }
+    for id in 1..=3 {
+        s.reply(&Request {
+            id,
+            bytes: vec![b'y'; 20_000],
+        })
+        .unwrap();
+    }
+    assert!(s.backlogged());
+    for _ in 0..8 {
+        consume_rx(&s);
+        s.flush().unwrap();
+    }
+    assert!(!s.backlogged());
+    assert_eq!(s.load(ring::HOST_EPOCH), 3);
+    assert!(s.calls.idle());
 }
 
 #[test]
@@ -225,10 +308,10 @@ fn malformed_guest_records_are_run_errors() {
     for (kind, name, outcome, payload) in crate::payload::tests::corpus() {
         let mut s = slot();
         record(&s, kind, u64::from(kind == ring::CALL), &payload);
-        let op = if kind == ring::CALL {
-            ring::SUBMIT
-        } else {
+        let op = if kind == ring::DONE {
             ring::FINISH
+        } else {
+            ring::SUBMIT
         };
         match s.decode_exit(op) {
             Ok(_) => assert_ne!(outcome, "shard", "{name}"),
@@ -272,7 +355,7 @@ fn malformed_guest_records_are_run_errors() {
 #[test]
 fn reply_notifications_use_host_shadow_not_guest_counter() {
     let mut s = slot();
-    s.seen = 1;
+    assert!(s.calls.issue(1, 0));
     s.store(ring::HOST_EPOCH, u64::MAX);
     s.reply(&Request {
         id: 1,
@@ -284,6 +367,7 @@ fn reply_notifications_use_host_shadow_not_guest_counter() {
 #[test]
 fn guest_reply_credit_is_checked() {
     let mut s = slot();
+    assert!(s.calls.issue(1, 0));
     s.store(ring::RX_CONSUMER, u64::MAX);
     assert!(
         s.reply(&Request {

@@ -10,6 +10,7 @@
 compile_error!("the jitk shard's Linux KVM backend supports aarch64 only");
 
 pub mod arena;
+pub mod calls;
 #[cfg(unix)]
 pub mod clock;
 pub mod constants;
