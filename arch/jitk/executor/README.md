@@ -258,7 +258,9 @@ engine process per slot; each enters vmm/sandbox's Seatbelt profile before
 creating its VM (`make -C ../shard test-hvf` runs `hvf confine`: files,
 network and exec denied, HVF allowed). The zygote kills an engine process
 whose run outlives its deadline by 100 ms; a dead engine process fails its run
-and its slot is QUARANTINED. `close()` closes the socket and the zygote reaps
+and its slot is QUARANTINED, then re-forked and RESTORED (`onRestore`;
+`capacity.lost` counts slots quarantined and not yet restored; a crash loop
+fails the engine). `close()` closes the socket and the zygote reaps
 every engine process.
 
 `run.sh test` runs `shard-check.ts` on the HVF engine whenever

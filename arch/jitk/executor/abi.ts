@@ -2,7 +2,7 @@
 // Regenerate with `make -C arch/jitk/abi gen`; `make -C arch/jitk/abi test` fails while it is stale.
 
 /** Bumped with any peer-visible ABI change; READY and the prepared snapshot identity carry it. */
-export const ABI_VERSION=9;
+export const ABI_VERSION=10;
 /** Node <-> shard IPC (ipc/ABI.md). */
 export const IPC=Object.freeze({
   // message kinds: Node -> shard
@@ -18,6 +18,7 @@ export const IPC=Object.freeze({
   ping:21,
   stats:22,
   quarantined:23,
+  restored:24,
   // record geometry
   headerBytes:32,
   payload:16384,

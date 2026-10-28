@@ -271,6 +271,17 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   the slot is QUARANTINED (`engine process exited (signal 9)`). Node closing
   the socket ends the zygote, which kills and reaps every child; a child whose
   socket closes stops its vCPU and exits.
+- **Capacity comes back** (IPC RESTORED, ABI 10). Once a slot is
+  QUARANTINED, the zygote forks it a fresh engine process from the snapshot it
+  still holds (no file is opened again); when that process is READY the
+  zygote sends RESTORED at the generation QUARANTINED ended, and Node counts
+  the slot again and admits its next generation (~11 ms from the CANCEL to
+  RESTORED in `shard-check`). An engine process that dies while its slot is
+  idle is replaced the same way without a message (Node never saw the slot
+  go). A re-forked child must be READY within 10 s or is killed. Re-forks are
+  budgeted: more than `restore_budget(slots)` = max(4, 2 × slots) within 60 s
+  is a crash loop, and the engine exits (`... re-forked within 60 s (crash
+  loop); failing closed`) rather than spinning.
 - **Clock.** IPC deadlines and STATS times are CLOCK_MONOTONIC_RAW
   (`clock::ipc_ns`), which is mach_continuous_time and Node's process.hrtime.
   macOS's CLOCK_MONOTONIC has a different base.
@@ -286,10 +297,14 @@ them. The zygote itself is not confined (it must fork; the profile denies
 Tests: `hvf::tests::engine_child_runs_kicks_and_quarantines` (in-process
 child: tool call round trip, deadline kick within 200 ms, CANCEL of a spinning
 guest, clean slot after both, failed reset -> QUARANTINED -> slot_unavailable,
-socket close ends serve); `hvf::conn` and `service` unit tests;
+socket close ends serve); `hvf::conn`, `service` and
+`hvf::zygote::restore_tests` (the re-fork budget) unit tests;
 `../executor/shard-check.ts` on the real binary (restore, concurrency, hostile
 payloads, environment, a blocked-Node deadline, zygote escalation of a stopped
-child, dead-child quarantine, malformed admissions, no orphans); the parity
+child, dead-child quarantine then RESTORED and both slots serving, silent
+replacement of an idle dead child, a crash loop failing the engine after 5
+kills of a one-slot engine, an unsolicited RESTORED, malformed admissions, no
+orphans); the parity
 corpus on `hvf` (85 cases: 63 ok, 22 allowlisted, 0 undocumented; every
 allowlisted case is a ring-profile limit shared with the Linux shard).
 

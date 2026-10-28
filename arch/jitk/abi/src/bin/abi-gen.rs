@@ -88,6 +88,7 @@ fn typescript() -> String {
         ("ping", ipc::PING.into(), ""),
         ("stats", ipc::STATS.into(), ""),
         ("quarantined", ipc::QUARANTINED.into(), ""),
+        ("restored", ipc::RESTORED.into(), ""),
         ("headerBytes", ipc::HEADER_BYTES as u64, "record geometry"),
         ("payload", ipc::PAYLOAD as u64, ""),
         ("capacity", ipc::CAPACITY, ""),

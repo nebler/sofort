@@ -19,12 +19,20 @@
 //! QUARANTINED with the reason, as for a failed reset in the child.
 //! Node closing the socket ends the zygote; a child sees its socket close
 //! and exits, even mid-run.
+//!
+//! Capacity comes back. Once a slot is QUARANTINED (or its process dies
+//! while the slot is idle, which Node never sees), the zygote forks it a
+//! fresh child from the snapshot it still holds; when that child is READY,
+//! a QUARANTINED slot is reported RESTORED and admits its next generation.
+//! Re-forks are budgeted (`Restores`): more than `restore_budget(slots)`
+//! within `RESTORE_WINDOW_NS` is a crash loop, and the engine fails closed
+//! instead of spinning.
 use super::{State, child, confine::Sandbox, conn::Conn};
 use crate::clock;
 use crate::constants::{ABI_VERSION, ipc as wire, ring};
 use crate::service::{
     self, CALL, CANCEL, Cancel, DONE, ERROR, Message, Phase, QUARANTINED, READY, RELEASED, REPLY,
-    START, invalid, released,
+    RESTORED, START, invalid, released,
 };
 use crate::slot::ResetPolicy;
 use crate::snapshot::Snapshot;
@@ -42,8 +50,53 @@ pub const ESCALATION_NS: u64 = 100_000_000;
 const RESET_GRACE_NS: u64 = 1_000_000_000;
 /// Records queued for one child: a generation's START, REPLY and CANCEL.
 const CHILD_QUEUE: usize = ring::MAX_CALLS + 4;
-/// Children must all report READY within this at startup.
+/// Children must all report READY within this at startup, and a re-forked
+/// child within this of its fork (or it is killed and re-forked again).
 const STARTUP_NS: u64 = 10_000_000_000;
+/// The window of the re-fork budget.
+pub const RESTORE_WINDOW_NS: u64 = 60_000_000_000;
+/// Re-forks allowed within `RESTORE_WINDOW_NS`: two per slot, at least 4.
+/// A slot is re-forked only after its process died or its reset failed;
+/// neither happens to a healthy engine whatever its tenants run.
+pub fn restore_budget(slots: usize) -> usize {
+    (2 * slots).max(4)
+}
+
+/// The re-fork budget: when each re-fork within the window happened.
+pub struct Restores {
+    budget: usize,
+    window: u64,
+    at: std::collections::VecDeque<u64>,
+}
+impl Restores {
+    pub fn new(budget: usize, window: u64) -> Self {
+        Self {
+            budget,
+            window,
+            at: std::collections::VecDeque::new(),
+        }
+    }
+    /// Charge one re-fork at `now`. Err: the window already holds the whole
+    /// budget (a crash loop).
+    pub fn charge(&mut self, now: u64) -> io::Result<()> {
+        while self
+            .at
+            .front()
+            .is_some_and(|&t| now.saturating_sub(t) >= self.window)
+        {
+            self.at.pop_front();
+        }
+        if self.at.len() >= self.budget {
+            return Err(io::Error::other(format!(
+                "HVF engine: {} engine processes re-forked within {} s (crash loop); failing closed",
+                self.budget,
+                self.window / 1_000_000_000
+            )));
+        }
+        self.at.push_back(now);
+        Ok(())
+    }
+}
 
 struct Child {
     pid: libc::pid_t,
@@ -52,6 +105,8 @@ struct Child {
     /// Why the process is gone; QUARANTINED carries it.
     dead: Option<String>,
     ready: bool,
+    /// A re-forked child must report READY by then.
+    ready_by: Option<u64>,
     /// When the zygote kills a child whose run or reset has not ended.
     kill_at: Option<u64>,
     escalated: bool,
@@ -67,6 +122,7 @@ pub struct Zygote {
     policy: ResetPolicy,
     sandbox: Sandbox,
     charge: u32,
+    restores: Restores,
 }
 
 /// The process's thread count (`proc_pidinfo`): fork needs exactly one.
@@ -136,9 +192,11 @@ impl Zygote {
             policy,
             sandbox,
             charge,
+            restores: Restores::new(restore_budget(slots), RESTORE_WINDOW_NS),
         };
         for i in 0..slots {
-            z.fork(i)?;
+            let child = z.fork(i)?;
+            z.children.push(child);
         }
         z.await_ready()?;
         z.node.queue(&Message::new(
@@ -152,7 +210,7 @@ impl Zygote {
     }
     /// Fork the child for slot `i`. Called only while this process has one
     /// thread, so the child inherits no lock another thread held.
-    fn fork(&mut self, i: usize) -> io::Result<()> {
+    fn fork(&mut self, i: usize) -> io::Result<Child> {
         if threads()? != 1 {
             return Err(invalid("HVF zygote must be single-threaded to fork"));
         }
@@ -194,15 +252,26 @@ impl Zygote {
         drop(theirs);
         let conn = Conn::new(ours, CHILD_QUEUE);
         conn.set_nonblocking()?;
-        self.children.push(Child {
+        Ok(Child {
             pid,
             conn: Some(conn),
             dead: None,
             ready: false,
+            ready_by: None,
             kill_at: None,
             escalated: false,
             stats: false,
-        });
+        })
+    }
+    /// Replace slot `i`'s dead process with a fresh child of the snapshot,
+    /// within the re-fork budget (spent: the engine fails closed). It reports
+    /// READY later (`child_message`); what Node sends meanwhile queues on
+    /// its socket.
+    fn restore(&mut self, i: usize) -> io::Result<()> {
+        self.restores.charge(clock::ipc_ns())?;
+        let mut child = self.fork(i)?;
+        child.ready_by = Some(clock::ipc_ns().saturating_add(STARTUP_NS));
+        self.children[i] = child;
         Ok(())
     }
     fn await_ready(&mut self) -> io::Result<()> {
@@ -277,7 +346,12 @@ impl Zygote {
                 });
             }
             let now = clock::ipc_ns();
-            let next = self.children.iter().filter_map(|c| c.kill_at).min();
+            let next = self
+                .children
+                .iter()
+                .flat_map(|c| [c.kill_at, c.ready_by])
+                .flatten()
+                .min();
             let timeout = next.map_or(-1, |at| {
                 (at.saturating_sub(now).div_ceil(1_000_000)).min(i32::MAX as u64) as i32
             });
@@ -313,16 +387,34 @@ impl Zygote {
                     self.died(i)?;
                 }
             }
+            // Capacity comes back: a slot without a process that Node has
+            // been told is gone, or that was idle, gets a fresh one.
+            for i in 0..self.children.len() {
+                if self.children[i].conn.is_none()
+                    && matches!(self.states[i].phase, Phase::Idle | Phase::Quarantined)
+                {
+                    self.restore(i)?;
+                }
+            }
         }
     }
-    /// Kill every child whose run or reset outlived its bound.
+    /// Kill every child whose run or reset outlived its bound, and every
+    /// re-forked child that did not start in time.
     fn escalate(&mut self) {
         let now = clock::ipc_ns();
         for c in &mut self.children {
-            if c.conn.is_some() && c.kill_at.is_some_and(|at| now >= at) {
+            if c.conn.is_none() {
+                continue;
+            }
+            if c.kill_at.is_some_and(|at| now >= at) {
                 c.kill_at = None;
                 c.escalated = true;
                 // SAFETY: a child of this process that has not been reaped.
+                unsafe { libc::kill(c.pid, libc::SIGKILL) };
+            }
+            if c.ready_by.is_some_and(|at| now >= at) {
+                c.ready_by = None;
+                // SAFETY: as above.
                 unsafe { libc::kill(c.pid, libc::SIGKILL) };
             }
         }
@@ -352,6 +444,22 @@ impl Zygote {
     fn child_message(&mut self, i: usize, m: Message) -> io::Result<()> {
         let s = &mut self.states[i];
         let c = &mut self.children[i];
+        if !c.ready {
+            // A re-forked child's first message is READY, as at startup.
+            if m.kind != READY || m.slot as usize != i || m.bytes != ABI_VERSION.to_le_bytes() {
+                return Err(invalid("HVF engine: child READY"));
+            }
+            c.ready = true;
+            c.ready_by = None;
+            if s.phase == Phase::Quarantined {
+                // Node was told the slot is gone; it is back, at the
+                // generation QUARANTINED ended.
+                s.phase = Phase::Idle;
+                self.node
+                    .queue(&Message::new(RESTORED, i, s.generation, 0, Vec::new()))?;
+            }
+            return Ok(());
+        }
         if m.slot as usize != i || m.generation != s.generation || m.generation == 0 {
             return Err(invalid("child slot/generation"));
         }
@@ -399,7 +507,8 @@ impl Zygote {
                 let why = String::from_utf8_lossy(&m.bytes).into_owned();
                 c.kill_at = None;
                 self.node.queue(&released(s, i, Some(why.clone()))?)?;
-                // It never serves again: free its memory now.
+                // This process never serves again: free its memory now
+                // (`serve` forks the slot a fresh one).
                 c.dead = Some(why);
                 // SAFETY: a child of this process that has not been reaped.
                 unsafe { libc::kill(c.pid, libc::SIGKILL) };
@@ -410,7 +519,9 @@ impl Zygote {
         }
         Ok(())
     }
-    /// Child `i` is gone (or is killed now): end what it was running.
+    /// Child `i` is gone (or is killed now): end what it was running. `serve`
+    /// re-forks the slot once Node knows (QUARANTINED) or need not (idle); a
+    /// run this ends stays Done until Node's CANCEL quarantines the slot.
     fn died(&mut self, i: usize) -> io::Result<()> {
         let c = &mut self.children[i];
         if c.conn.is_none() {
@@ -421,6 +532,7 @@ impl Zygote {
         let why = format!("engine process exited ({})", reap(c.pid));
         c.conn = None;
         c.kill_at = None;
+        c.ready_by = None;
         c.dead = Some(why.clone());
         let s = &mut self.states[i];
         match s.phase {
@@ -675,4 +787,25 @@ fn probe(
         allowed(applied.map_err(io::Error::other)),
         fields.join(",")
     )
+}
+
+#[cfg(test)]
+mod restore_tests {
+    use super::{RESTORE_WINDOW_NS, Restores, restore_budget};
+    #[test]
+    fn restore_budget_fails_a_crash_loop_and_refills_with_time() {
+        assert_eq!((restore_budget(1), restore_budget(8)), (4, 16));
+        let s = 1_000_000_000;
+        let mut r = Restores::new(3, 10 * s);
+        for t in [0, s, 2 * s] {
+            r.charge(t).unwrap();
+        }
+        let e = r.charge(3 * s).unwrap_err().to_string();
+        assert!(e.contains("crash loop"), "{e}");
+        // The first re-fork leaves the window at 10 s, the next at 11 s.
+        r.charge(10 * s).unwrap();
+        assert!(r.charge(10 * s + 1).is_err());
+        r.charge(11 * s).unwrap();
+        assert!(RESTORE_WINDOW_NS >= 10 * s);
+    }
 }
