@@ -9,7 +9,7 @@ import {helperHash,fileHash} from './prepared-helpers.mjs';
 import {ShardBackend,type ShardMetrics} from './shard-backend.js';
 import {SharedChannel,IPC,monotonicNs,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
-import {SandboxPool} from './pool.js';
+import {SandboxPool,OverloadedError} from './pool.js';
 import {transportChecks} from './shard-ipc-check.js';
 import {sourceChecks} from './shard-source-check.js';
 
@@ -105,6 +105,27 @@ try {
   const core=await createJitk({warm:0,maxLive:2,timeoutMs:5000,tools:{tools:{echo:{args:(a:unknown[])=>a,reads:'public',egress:false,writes:false,timeoutMs:1000,invoke:async(a:number[])=>a[0]+1,output:(v:unknown)=>v}}}});
   try{await core.warmed;const r=await core.run('return await tools.echo(41)');check(r.result===42&&!r.error,'JITK_BACKEND=shard through MCP core');}
   finally{await core.close();if(previous===undefined)delete process.env.JITK_BACKEND;else process.env.JITK_BACKEND=previous;}
+}
+
+// Admission waits instead of shedding: park() queues behind a resetting slot,
+// is bounded, abortable, and a dead shard rejects its waiters.
+{
+  const one=new ShardBackend({binary,snapshot,slots:1,owners:1,maxWaiting:1});
+  try {
+    const held=await one.park(),ac=new AbortController(),queued=()=>new Promise(r=>setImmediate(r));
+    const aborted=one.park(ac.signal);await queued();
+    await assert.rejects(one.park(),e=>e instanceof OverloadedError&&e.code==='OVERLOADED');assertions++;
+    ac.abort();await assert.rejects(aborted,/aborted/);assertions++;
+    const next=one.park();held.kill();const s=await next;
+    check((s as any).slot===0&&(s as any).generation===2n,'reset slot hands off to the head park() waiter');
+    s.kill();await s.exited;
+    const pool1=new SandboxPool(one,0,1),ex1=new MicroVMExecutor(pool1,()=> 'allow',5000);let errors=0;
+    // No drain(): the R9 probe shape that used to hit 'pool saturated' ~12x/run.
+    for(let i=0;i<50;i++){const r=await ex1.execute('return 2',{});if(r.error||r.result!==2)errors++;}
+    await pool1.drain();check(errors===0,'sequential executor on 1 shard slot: 50 runs, no admission error');
+    const busy=await one.park(),waiting=one.park().then(()=>undefined,(e:Error)=>e);await queued();
+    await one.close();check(/shard backend closed/.test(String(await waiting)),'shard death rejects queued park() waiters');busy.kill();
+  } finally {await one.close();}
 }
 
 // Node treats the shard as hostile: private-copy validation, cursor bounds,

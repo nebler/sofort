@@ -2,10 +2,12 @@ import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
 import {Dispatcher,ProtocolError,encode,parseFrame,parseJson,type Frame} from '../protocol/dispatcher.js';
 import type {Backend,Sandbox} from './backend.js';
+import {AdmissionQueue} from './pool.js';
 import {IPC,SharedChannel,monotonicNs,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
-export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;onMetrics?:(m:ShardMetrics)=>void};
+/** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)). */
+export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void};
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(frame:Frame):string {
@@ -23,6 +25,7 @@ export class ShardBackend implements Backend {
   readonly child:ChildProcess;
   private channel:SharedChannel;
   private sandboxes=new Map<number,ShardSandbox>();
+  private queue:AdmissionQueue<ShardSandbox>;
   private generations:bigint[];
   private dead?:Error;
   private resolveReady!:()=>void;
@@ -36,7 +39,7 @@ export class ShardBackend implements Backend {
     verifyPreparedSnapshot(options.snapshot);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
-    this.generations=Array<bigint>(slots).fill(0n);
+    this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
     this.channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));
     // Exactly these descriptors and a credential-free environment are inherited.
@@ -51,7 +54,7 @@ export class ShardBackend implements Backend {
   private die(e:Error) {
     if(this.dead)return;this.dead=e;clearTimeout(this.startup);this.rejectReady(e);
     this.child?.kill('SIGKILL');this.channel?.close();
-    for(const s of this.sandboxes.values())s.failed(e);this.sandboxes.clear();
+    for(const s of this.sandboxes.values())s.failed(e);this.sandboxes.clear();this.queue.rejectAll(e);
   }
   private receive(m:Message) {
     if(m.kind===IPC.ready){
@@ -73,16 +76,25 @@ export class ShardBackend implements Backend {
     }else await this.ready;
     if(this.dead)throw this.dead;
     if(signal?.aborted)throw Error('aborted');
-    const slot=this.generations.findIndex((_,i)=>!this.sandboxes.has(i));
-    if(slot<0)throw Error('shard pool saturated');
-    const generation=++this.generations[slot];
-    if(generation>=1n<<62n)throw Error('shard generation exhausted');
-    const s=new ShardSandbox(this,slot,generation);this.sandboxes.set(slot,s);
+    // All slots busy or resetting: wait in FIFO order; released() hands over.
+    const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sandboxes.has(i));
+    const s=slot<0?await this.queue.wait(signal,deadline):this.claim(slot);
+    if(signal?.aborted){s.kill();await s.exited;throw Error('aborted');}
     if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.kill();await s.exited;throw e;}
     return s;
   }
+  private claim(slot:number):ShardSandbox {
+    const generation=++this.generations[slot];
+    if(generation>=1n<<62n)throw Error('shard generation exhausted');
+    const s=new ShardSandbox(this,slot,generation);this.sandboxes.set(slot,s);return s;
+  }
   send(kind:number,s:ShardSandbox,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
-  released(s:ShardSandbox) {if(this.sandboxes.get(s.slot)!==s)throw Error('shard release identity');this.sandboxes.delete(s.slot);}
+  released(s:ShardSandbox) {
+    if(this.sandboxes.get(s.slot)!==s)throw Error('shard release identity');this.sandboxes.delete(s.slot);
+    // The slot just finished its reset: give it straight to the head waiter.
+    const w=this.queue.shift();if(!w)return;
+    try{w.resolve(this.claim(s.slot));}catch(e){w.reject(e as Error);}
+  }
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}
   now():bigint {return monotonicNs();}
