@@ -21,6 +21,61 @@ pub struct Snapshot {
     pub memory: File,
     pub class: arena::Class,
     pub(crate) regs: Vec<Register>,
+    /// Read-only view of `memory`, the source of copy-restore resets.
+    #[cfg(target_os = "linux")]
+    pub(crate) reference: Reference,
+}
+/// One `PROT_READ`, `MAP_SHARED` view of the snapshot file, shared by every slot
+/// of this snapshot. The file is opened read-only, so the kernel refuses any
+/// later `mprotect(PROT_WRITE)` of this view: nothing in the process can write
+/// the bytes a reset copies from. Its clean pages are the same page-cache pages
+/// that back untouched guest RAM.
+#[cfg(target_os = "linux")]
+pub(crate) struct Reference {
+    ptr: *const u8,
+}
+// SAFETY: the view is immutable for its whole lifetime (read-only file, read-only
+// shared mapping) and only raw-pointer reads are exposed.
+#[cfg(target_os = "linux")]
+unsafe impl Send for Reference {}
+// SAFETY: as for Send; concurrent reads of immutable bytes do not race.
+#[cfg(target_os = "linux")]
+unsafe impl Sync for Reference {}
+#[cfg(target_os = "linux")]
+impl Reference {
+    pub(crate) fn map(memory: &File) -> io::Result<Self> {
+        use std::os::fd::AsRawFd;
+        // SAFETY: memory is a live descriptor whose length was checked to be RAM;
+        // the result is checked before use and owned by the returned Reference.
+        let p = unsafe {
+            libc::mmap(
+                std::ptr::null_mut(),
+                RAM,
+                libc::PROT_READ,
+                libc::MAP_SHARED,
+                memory.as_raw_fd(),
+                0,
+            )
+        };
+        if p == libc::MAP_FAILED {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(Self { ptr: p.cast() })
+    }
+    /// Base of the RAM-sized read-only view.
+    pub(crate) fn ptr(&self) -> *const u8 {
+        self.ptr
+    }
+}
+#[cfg(target_os = "linux")]
+impl Drop for Reference {
+    fn drop(&mut self) {
+        // SAFETY: this owns the original mapping; every Slot that reads through it
+        // holds the Arc<Snapshot> owning this Reference.
+        unsafe {
+            libc::munmap(self.ptr as *mut _, RAM);
+        }
+    }
 }
 pub(crate) fn read_metadata(reader: impl Read, limit: usize) -> io::Result<Vec<u8>> {
     let mut bytes = Vec::new();
@@ -89,6 +144,8 @@ impl Snapshot {
         let b = read_metadata(File::open(format!("{base}.regs"))?, 8 + 2048 * (16 + 256))?;
         let regs = parse_registers(&b)?;
         Ok(Arc::new(Self {
+            #[cfg(target_os = "linux")]
+            reference: Reference::map(&memory)?,
             memory,
             regs,
             class,

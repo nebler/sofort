@@ -8,6 +8,7 @@ use crate::{
     lease,
 };
 use std::{
+    cell::Cell,
     fs::File,
     io::{self, Read},
     os::fd::{AsRawFd, FromRawFd},
@@ -27,9 +28,11 @@ pub const REQUEST: usize = ring::TX;
 pub const REPLY: usize = ring::RX;
 
 mod platform;
-use libc::{ioctl, madvise, mprotect};
+mod reset;
+use libc::{ioctl, mprotect};
 pub use platform::{Kvm, raise_fds};
 use platform::{Mapping, OneReg, Region, call, check};
+pub use reset::{Discard, ResetPolicy, ResetReport};
 
 pub struct Request {
     pub id: u64,
@@ -75,6 +78,18 @@ pub struct Slot {
     pub drains: u64,
     pending_mmio: bool,
     pub(crate) lease: Option<lease::Lease>,
+    policy: ResetPolicy,
+    /// The pristine invariant (reset.rs) holds. Cleared by every host write to
+    /// guest RAM or registers and before every KVM_RUN; set only at the end of
+    /// `reset` and by `new`. `bind` requires it.
+    pristine: Cell<bool>,
+    /// RAM may hold private pages: set with every RAM write or run, cleared by
+    /// a discard. Only selects idle trimming; never trusted for correctness.
+    resident: Cell<bool>,
+    reset_at: Instant,
+    /// Reused reset buffers: private page offsets and raw pagemap entries.
+    dirty: Vec<usize>,
+    entries: Vec<u8>,
 }
 impl Slot {
     fn create(kvm: &Kvm, file: &File, class: Option<arena::Class>) -> Self {
@@ -133,6 +148,12 @@ impl Slot {
             drains: 0,
             pending_mmio: false,
             lease: None,
+            policy: ResetPolicy::default(),
+            pristine: Cell::new(false),
+            resident: Cell::new(false),
+            reset_at: Instant::now(),
+            dirty: Vec::new(),
+            entries: Vec::new(),
         }
     }
     /// Create an unpartitioned boot VM for trusted offline snapshot preparation.
@@ -140,15 +161,30 @@ impl Slot {
         let slot = Self::create(kvm, memory, None);
         slot.set(REG_PC, ring::RAM_GPA);
         slot.set(REG_PSTATE, 0x3c5);
+        slot.pristine.set(true); // fresh boot image: no tenant has run here
         slot
     }
     pub fn new(kvm: &Kvm, snapshot: Arc<Snapshot>) -> Self {
+        Self::with_policy(kvm, snapshot, ResetPolicy::default())
+    }
+    pub fn with_policy(kvm: &Kvm, snapshot: Arc<Snapshot>, policy: ResetPolicy) -> Self {
         let mut s = Self::create(kvm, &snapshot.memory, Some(snapshot.class));
+        // Full restore, ID registers included: KVM accepts their values only
+        // before the first KVM_RUN. Resets restore all but reset::invariant().
         s.restore_regs(&snapshot.regs);
         s.snapshot = Some(snapshot);
+        s.policy = policy;
+        // A fresh MAP_PRIVATE mapping reads as the file and no vCPU has run.
+        s.pristine.set(true);
         s
     }
+    /// Any host write to guest RAM: the slot is no longer pristine.
+    fn wrote_ram(&self) {
+        self.pristine.set(false);
+        self.resident.set(true);
+    }
     fn set_bytes(&self, id: u64, b: &[u8]) {
+        self.pristine.set(false);
         let r = OneReg {
             id,
             addr: b.as_ptr() as u64,
@@ -188,6 +224,7 @@ impl Slot {
     /// Complete pending MMIO before teardown. The caller owns a stopped vCPU.
     pub fn shutdown(&mut self) -> io::Result<()> {
         if self.pending_mmio {
+            self.pristine.set(false); // completing the MMIO advances the guest PC
             // SAFETY: the live kvm_run mapping is owned here and no KVM_RUN is
             // active. immediate_exit is the UAPI byte; the pointer cannot escape.
             self.run.immediate_exit().store(1, Release);
@@ -207,55 +244,8 @@ impl Slot {
         }
         Ok(())
     }
-    pub fn reset(&mut self) -> u64 {
-        let t = Instant::now();
-        self.drain();
-        // Only these verified, host-selected memslots can hold tenant writes.
-        // Immutable pages remain protected in both KVM and the host mapping.
-        for (start, end, writable) in self.snapshot.as_ref().unwrap().class.regions(RAM, CTRL) {
-            if writable {
-                // SAFETY: catalogue extents are page aligned and within this
-                // stopped slot's live MAP_PRIVATE mapping. No RAM borrow escapes.
-                check(
-                    unsafe {
-                        madvise(
-                            self.ram.ptr.add(start).cast(),
-                            end - start,
-                            libc::MADV_DONTNEED,
-                        )
-                    },
-                    "MADV_DONTNEED writable extent",
-                );
-            }
-        }
-        self.run.immediate_exit().store(0, Release);
-        self.restore_regs(&self.snapshot.as_ref().unwrap().regs);
-        self.tx = 0;
-        self.rx = 0;
-        self.rx_consumed = 0;
-        self.seen = 0;
-        self.replied = 0;
-        self.exits = 0;
-        self.drains = 0;
-        t.elapsed().as_nanos() as u64
-    }
-    pub fn pristine(&self) -> bool {
-        use std::os::unix::fs::FileExt;
-        let mut page = [0u8; 4096];
-        for off in (0..RAM).step_by(4096) {
-            self.snapshot
-                .as_ref()
-                .unwrap()
-                .memory
-                .read_exact_at(&mut page, off as u64)
-                .unwrap();
-            if self.bytes(off, 4096) != page {
-                return false;
-            }
-        }
-        true
-    }
     pub fn corrupt_canary(&self, v: u64) {
+        self.wrote_ram();
         self.ram
             .put(self.snapshot.as_ref().unwrap().class.canary(), v);
     }
@@ -278,6 +268,7 @@ impl Slot {
         self.atomic(off).load(Acquire)
     }
     fn store(&self, off: usize, v: u64) {
+        self.wrote_ram();
         self.atomic(off).store(v, Release);
     }
     /// Copy stopped guest RAM; callers never borrow the underlying mapping.
@@ -293,6 +284,7 @@ impl Slot {
     }
     fn copy(&self, off: usize, b: &[u8]) {
         assert!(off.checked_add(b.len()).is_some_and(|end| end <= RAM));
+        self.wrote_ram();
         // SAFETY: b owns/borrows host memory, never this mapping. Bounds are
         // checked; only this stopped slot's owner writes its writable RAM.
         unsafe {
@@ -301,6 +293,9 @@ impl Slot {
     }
     pub fn bind(&mut self, generation: u64, source: &str, entropy: &mut File) -> [u8; 16] {
         assert!(generation > self.generation && source.len() <= ring::SOURCE_LIMIT);
+        // The one gate between tenants: no run binds to a slot a previous run,
+        // or any host write since the last reset, has touched.
+        assert!(self.pristine.get(), "bind requires a pristine slot");
         self.generation = generation;
         self.store(0, ring::JS_VERSION);
         self.store(ring::GENERATION, generation);
@@ -378,6 +373,7 @@ impl Slot {
                     deadline_ns: l.deadline(),
                 });
             }
+            self.wrote_ram(); // the guest may write RAM and registers
             // SAFETY: this owner has the live vCPU/run mappings; no guest RAM
             // reference spans KVM_RUN, which takes a zero scalar argument.
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
@@ -553,9 +549,42 @@ impl Drop for Slot {
     }
 }
 
+/// EL1 fixtures from guest/reset-attack.S for the reset tests.
+#[cfg(test)]
+pub(crate) mod test_guest {
+    core::arch::global_asm!(include_str!("../../guest/reset-attack.S"));
+    macro_rules! fixture {
+        ($name:ident, $start:ident, $end:ident) => {
+            pub fn $name() -> &'static [u8] {
+                // SAFETY: the included assembly exports these byte-address labels
+                // around read-only payloads; Rust never owns them.
+                unsafe extern "C" {
+                    static $start: u8;
+                    static $end: u8;
+                }
+                let (start, end) = (std::ptr::addr_of!($start), std::ptr::addr_of!($end));
+                // SAFETY: each label pair encloses one fixture in one read-only
+                // section that lives for the whole test binary.
+                unsafe { std::slice::from_raw_parts(start, end as usize - start as usize) }
+            }
+        };
+    }
+    fixture!(fill, jitk_reset_fill_start, jitk_reset_fill_end);
+    fixture!(probe, jitk_reset_probe_start, jitk_reset_probe_end);
+    fixture!(cpu_off, jitk_reset_cpu_off_start, jitk_reset_cpu_off_end);
+    fixture!(
+        system_off,
+        jitk_reset_system_off_start,
+        jitk_reset_system_off_end
+    );
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{CTRL, Kvm, Mapping, RAM, REQUEST, Request, RunError, Slot, Snapshot, check};
+    use super::{
+        CTRL, Kvm, Mapping, RAM, REQUEST, Request, ResetPolicy, RunError, Slot, Snapshot, check,
+        test_guest,
+    };
     use crate::{arena, constants::ring};
     use std::{fs::File, sync::Arc};
     fn slot() -> Slot {
@@ -576,6 +605,12 @@ mod tests {
             drains: 0,
             pending_mmio: false,
             lease: None,
+            policy: super::ResetPolicy::default(),
+            pristine: std::cell::Cell::new(false),
+            resident: std::cell::Cell::new(false),
+            reset_at: std::time::Instant::now(),
+            dirty: Vec::new(),
+            entries: Vec::new(),
         }
     }
     fn record(s: &Slot, kind: u16, id: u64, payload: &[u8]) {
@@ -612,33 +647,230 @@ mod tests {
             .unwrap();
         u64::from_le_bytes(entry) & (1 << 63) != 0
     }
+    /// Both reset paths, with the full pristine and register comparison after
+    /// every reset and trim.
+    fn policies() -> [(&'static str, ResetPolicy); 2] {
+        let verify = |copy_limit| ResetPolicy {
+            copy_limit,
+            idle_trim: None,
+            verify: true,
+        };
+        [("copy", verify(RAM / 4096)), ("discard", verify(0))]
+    }
+    fn writable_pages(snapshot: &Snapshot) -> u32 {
+        ((snapshot.class.bytes() + arena::RING_BYTES) / 4096) as u32
+    }
+    /// The probe's hash of the snapshot file itself (read by descriptor, not
+    /// through the copy path's view): arena without the code page, transport.
+    /// try_exit stores the clock word before each KVM_RUN; it is taken from
+    /// `monotonic`, every other word from the file.
+    fn snapshot_hash(snapshot: &Snapshot, monotonic: u64) -> u64 {
+        use std::os::unix::fs::FileExt;
+        let class = snapshot.class;
+        let mut h: u64 = 0xcbf2_9ce4_8422_2325;
+        for (start, end) in [
+            (class.start(), class.canary()),
+            (CTRL, CTRL + arena::RING_BYTES),
+        ] {
+            let mut b = vec![0; end - start];
+            snapshot.memory.read_exact_at(&mut b, start as u64).unwrap();
+            for (i, w) in b.as_chunks::<8>().0.iter().enumerate() {
+                let w = if start + i * 8 == CTRL + ring::MONOTONIC_NS {
+                    monotonic
+                } else {
+                    u64::from_le_bytes(*w)
+                };
+                h = (h ^ w).wrapping_mul(0x100_0000_01b3);
+            }
+        }
+        h
+    }
+    fn reg(s: &Slot, id: u64) -> u64 {
+        let mut v = 0u64;
+        let r = super::OneReg {
+            id,
+            addr: &mut v as *mut u64 as u64,
+        };
+        super::call(
+            &s.cpu,
+            crate::constants::kvm::KVM_GET_ONE_REG,
+            &r as *const _ as u64,
+        );
+        v
+    }
+    /// Run an EL1 fixture that ends in a read-only store.
+    fn attack(s: &mut Slot, code: &[u8]) {
+        s.redirect_entry(code);
+        assert!(
+            matches!(s.exit(), Err(RunError::MemoryBound { address }) if address == ring::RAM_GPA)
+        );
+    }
+    /// Whether what the guest reads back, hashed by the guest itself, is the
+    /// snapshot (plus the clock word try_exit stored for this run).
+    fn probe(s: &mut Slot) -> bool {
+        attack(s, test_guest::probe());
+        let seen = reg(s, crate::constants::kvm::REG_X0);
+        seen == snapshot_hash(s.snapshot.as_ref().unwrap(), s.load(ring::MONOTONIC_NS))
+    }
+    /// The slot's private (anonymous) KiB per the kernel's own VMA accounting.
+    fn anonymous_kib(s: &Slot) -> u64 {
+        let (lo, hi) = (s.ram.ptr as u64, s.ram.ptr as u64 + RAM as u64);
+        let smaps = std::fs::read_to_string("/proc/self/smaps").unwrap();
+        let mut inside = false;
+        let mut kib = 0;
+        for line in smaps.lines() {
+            if let Some((range, _)) = line.split_once(' ')
+                && let Some((a, b)) = range.split_once('-')
+                && let (Ok(a), Ok(b)) = (u64::from_str_radix(a, 16), u64::from_str_radix(b, 16))
+            {
+                inside = a >= lo && b <= hi;
+            } else if inside && let Some(v) = line.strip_prefix("Anonymous:") {
+                kib += v
+                    .trim()
+                    .trim_end_matches(" kB")
+                    .trim()
+                    .parse::<u64>()
+                    .unwrap();
+            }
+        }
+        kib
+    }
     #[test]
     #[ignore = "requires KVM and both classes in JITK_SHARD_TEST_SNAPSHOTS; run under bench.lock"]
     fn reset_cleans_every_writable_page_and_preserves_immutable_translations() {
         let kvm = Kvm::new();
         for snapshot in test_snapshots() {
-            let mut s = Slot::new(&kvm, snapshot.clone());
-            let mut pages = 0;
-            for (start, end, writable) in snapshot.class.regions(RAM, CTRL) {
-                if writable {
-                    for off in (start..end).step_by(4096) {
-                        s.copy(off, &[0xcc; 4096]);
-                        pages += 1;
+            for (name, policy) in policies() {
+                let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
+                let mut pages = 0u32;
+                for (start, end, writable) in snapshot.class.regions(RAM, CTRL) {
+                    if writable {
+                        for off in (start..end).step_by(4096) {
+                            s.copy(off, &[0xcc; 4096]);
+                            pages += 1;
+                        }
                     }
                 }
+                assert_eq!(
+                    pages as usize * 4096,
+                    snapshot.class.bytes() + arena::RING_BYTES
+                );
+                let saved = s.bytes(0, 4096);
+                assert!(present(s.ram.ptr as usize));
+                let r = s.reset();
+                if name == "copy" {
+                    assert_eq!((r.discard, r.private), (None, pages), "{name}");
+                } else {
+                    assert_eq!(r.discard, Some(super::Discard::Limit), "{name}");
+                }
+                assert!(
+                    present(s.ram.ptr as usize),
+                    "immutable translation was discarded"
+                );
+                assert_eq!(s.bytes(0, 4096), saved);
+                assert!(
+                    s.pristine(),
+                    "{name}: every arena/ring page must be pristine"
+                );
+                // Host writes reach the guest through fresh CoW copies; the guest
+                // must read the snapshot back, not a stale stage-2 page.
+                assert!(probe(&mut s), "{name}: guest view");
+                s.shutdown().unwrap();
             }
-            assert_eq!(pages * 4096, snapshot.class.bytes() + arena::RING_BYTES);
-            let saved = s.bytes(0, 4096);
-            assert!(present(s.ram.ptr as usize));
-            s.reset();
-            assert!(
-                present(s.ram.ptr as usize),
-                "immutable translation was discarded"
-            );
-            assert_eq!(s.bytes(0, 4096), saved);
-            assert!(s.pristine(), "every arena/ring page must be pristine");
+        }
+    }
+    #[test]
+    #[ignore = "requires KVM and both classes in JITK_SHARD_TEST_SNAPSHOTS; run under bench.lock"]
+    fn hostile_guest_writes_and_registers_never_reach_the_next_run() {
+        let kvm = Kvm::new();
+        for snapshot in test_snapshots() {
+            for (name, policy) in policies() {
+                let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
+                assert!(probe(&mut s), "{name}: fresh slot");
+                s.reset();
+                for round in 0..3 {
+                    // Every writable byte and every reachable register class.
+                    attack(&mut s, test_guest::fill());
+                    assert!(!s.is_pristine());
+                    let r = s.reset(); // verify: RAM + every register + MP state
+                    if name == "copy" {
+                        // The fill dirties every writable page but its code page;
+                        // redirect_entry dirtied that one.
+                        assert_eq!((r.discard, r.private), (None, writable_pages(&snapshot)));
+                    } else {
+                        assert_eq!(r.discard, Some(super::Discard::Limit));
+                    }
+                    assert!(s.pristine(), "{name} round {round}: RAM");
+                    let regs = s.register_mismatches();
+                    assert!(regs.is_empty(), "{name} round {round}: {regs:#x?}");
+                    assert!(probe(&mut s), "{name} round {round}: guest view");
+                    s.reset();
+                }
+                // PSCI SYSTEM_OFF leaves the vCPU STOPPED; the reset makes it
+                // RUNNABLE, or the probe's KVM_RUN would sleep.
+                s.redirect_entry(test_guest::system_off());
+                assert!(matches!(s.exit(), Err(RunError::GuestProtocol(_))));
+                s.reset();
+                assert!(probe(&mut s), "{name}: after SYSTEM_OFF");
+                s.shutdown().unwrap();
+            }
+        }
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn copy_limit_boundary_is_exact() {
+        let kvm = Kvm::new();
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let n = writable_pages(&snapshot) as usize; // the fill's private pages
+        for (limit, copies) in [(n - 1, false), (n, true), (n + 1, true)] {
+            let policy = ResetPolicy {
+                copy_limit: limit,
+                idle_trim: None,
+                verify: true,
+            };
+            let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
+            attack(&mut s, test_guest::fill());
+            let r = s.reset();
+            if copies {
+                assert_eq!((r.discard, r.private as usize), (None, n), "limit {limit}");
+                assert!(s.is_resident());
+            } else {
+                assert_eq!(r.discard, Some(super::Discard::Limit), "limit {limit}");
+                assert_eq!(r.private as usize, limit, "counted up to the limit");
+                assert!(!s.is_resident());
+            }
+            assert!(s.pristine(), "limit {limit}");
+            assert!(probe(&mut s), "limit {limit}");
             s.shutdown().unwrap();
         }
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn trim_releases_private_pages_and_stays_pristine() {
+        let kvm = Kvm::new();
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let policy = ResetPolicy {
+            copy_limit: RAM / 4096,
+            idle_trim: Some(std::time::Duration::ZERO),
+            verify: true,
+        };
+        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
+        assert_eq!(anonymous_kib(&s), 0, "fresh slot");
+        assert_eq!(s.trim_due(), None, "nothing to trim");
+        attack(&mut s, test_guest::fill());
+        s.reset();
+        let held = anonymous_kib(&s);
+        assert_eq!(
+            held,
+            u64::from(writable_pages(&snapshot)) * 4,
+            "copy path keeps its pages"
+        );
+        assert!(s.trim_due().is_some());
+        s.trim(); // verify: RAM + registers
+        assert_eq!(anonymous_kib(&s), 0, "trim released {held} KiB");
+        assert!(s.is_pristine() && !s.is_resident() && s.trim_due().is_none());
+        assert!(probe(&mut s));
+        s.shutdown().unwrap();
     }
     #[test]
     #[ignore = "subprocess target for immutable_host_writes_fault"]

@@ -114,18 +114,27 @@ impl Wake {
     pub fn try_notify(&self) -> io::Result<()> {
         try_notify(self.0.as_raw_fd())
     }
-    pub fn wait(&self) {
+    /// Wait for a notification, or until `deadline` (owner idle trimming).
+    pub fn wait_until(&self, deadline: Option<std::time::Instant>) {
         let mut fd = PollFd {
             fd: self.0.as_raw_fd(),
             events: libc::POLLIN,
             revents: 0,
         };
         loop {
+            let timeout = deadline.map_or(-1, |d| {
+                let left = d.saturating_duration_since(std::time::Instant::now());
+                // Round up so a wakeup is never early; cap at poll's int range.
+                left.as_nanos().div_ceil(1_000_000).min(i32::MAX as u128) as i32
+            });
             // SAFETY: The single initialized pollfd is live and writable
             // throughout poll; its File remains owned by Wake.
-            let n = unsafe { poll(&mut fd, 1, -1) };
+            let n = unsafe { poll(&mut fd, 1, timeout) };
             if n < 0 && io::Error::last_os_error().raw_os_error() == Some(libc::EINTR) {
                 continue;
+            }
+            if n == 0 && timeout >= 0 {
+                return;
             }
             assert_eq!(n, 1, "owner wake poll");
             if consume(fd.fd) {

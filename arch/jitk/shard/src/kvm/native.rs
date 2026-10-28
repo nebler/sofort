@@ -164,6 +164,7 @@ impl NativeVm {
         let mut rx = Receiver::new(generation, streams::OUTPUT_LIMIT).map_err(str::to_string)?;
         loop {
             s.store(ring::MONOTONIC_NS, monotonic_ns());
+            s.wrote_ram(); // the guest may write RAM and registers
             loop {
                 // SAFETY: The owner holds live VM/vCPU mappings and has no
                 // outstanding guest RAM borrows; KVM_RUN retains no

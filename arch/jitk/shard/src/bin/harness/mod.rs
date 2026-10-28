@@ -32,6 +32,7 @@ fn expected(name: &str) -> &'static str {
         "one_tool" | "wait" => "{\"ok\":42}",
         "promise10" => "{\"ok\":45}",
         "json64k" => "{\"ok\":65536}",
+        "bomb" => "{\"err\":{\"name\":\"InternalError\",\"message\":\"out of memory\"}}",
         _ => "",
     }
 }
@@ -43,7 +44,15 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     if a.get(1).map(String::as_str) == Some("ipc") {
         raise_fds();
-        let result = ipc_service::run(&a[2], a[3].parse().unwrap(), a[4].parse().unwrap());
+        // ipc BASE SLOTS OWNERS [RESET_POLICY], e.g. copy-limit=128,idle-trim-ms=2000
+        let policy = match a.get(5).map(|p| kvm::ResetPolicy::parse(p)).transpose() {
+            Ok(p) => p.unwrap_or_default(),
+            Err(e) => {
+                eprintln!("shard IPC: {e}");
+                std::process::exit(1);
+            }
+        };
+        let result = ipc_service::run(&a[2], a[3].parse().unwrap(), a[4].parse().unwrap(), policy);
         if let Err(e) = result {
             eprintln!("shard IPC: {e}");
             std::process::exit(1);
@@ -59,7 +68,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     assert!(
         a.len() >= 3,
-        "prepare IMAGE BASE | bench/hold/hostile BASE FIXTURE N [SECONDS] | stress/deadlines BASE FIXTURE N | native-worker ARGS | native-hold ..."
+        "prepare IMAGE BASE | bench/hold/hostile/idle BASE FIXTURE N [SECONDS] | stress/deadlines BASE FIXTURE N | native-worker ARGS | native-hold ..."
     );
     if a[1] == "native-worker" {
         kvm::native::worker(&a[2..])?;

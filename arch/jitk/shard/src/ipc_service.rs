@@ -71,7 +71,7 @@ fn enqueue(out: &mut VecDeque<Message>, m: Message) -> io::Result<()> {
     out.push_back(m);
     Ok(())
 }
-pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
+pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) -> io::Result<()> {
     if slots == 0
         || slots > MAX_SLOTS
         || owners == 0
@@ -109,6 +109,7 @@ pub fn run(base: &str, slots: usize, owners: usize) -> io::Result<()> {
         slots,
         owners,
         Some(Arc::new(move || wake.signal())),
+        policy,
     );
     let mut reactor = Reactor {
         pool,
