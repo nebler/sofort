@@ -7,8 +7,8 @@ export type {Engine,GuestEvent,JsJob,JsLimits,Job,Limits,NativeJob,NativeLimits,
 /** The public name for an engine (codemode/TanStack/MCP callers construct these). */
 export type Backend=Engine;
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;
-  /** Engine binary serving `watchdog`; defaults to JITK_WATCHDOG, then JITK_SHARD_BINARY. */ watchdog?:string};
-/** One shared native deadline watchdog per binary (`hvf watchdog` / `real watchdog`,
+  /** Engine binary serving `process-watchdog`; defaults to JITK_WATCHDOG, then JITK_SHARD_BINARY. */ watchdog?:string};
+/** One shared native deadline watchdog per binary (`hvf process-watchdog` / `real process-watchdog`,
  *  shard/src/watchdog.rs): a separate process, so it still fires while a trusted tool blocks
  *  Node's event loop, spawned once instead of per worker process. */
 class Watchdog {
@@ -24,7 +24,7 @@ class Watchdog {
   private readonly vms=new Map<number,{timeout:(m:any)=>void;fail:(e:Error)=>void;armed?:{deadline:number;resolve:()=>void;reject:(e:Error)=>void}}>();
   private constructor(bin:string) {
     // EOF on its stdin (including executor death) kills every registered VM.
-    this.proc=spawn(bin,['watchdog'],{stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
+    this.proc=spawn(bin,['process-watchdog'],{stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
     this.proc.unref();for(const p of [this.proc.stdin,this.proc.stdout,this.proc.stderr])(p as any).unref?.();
     this.proc.stdin.on('error',()=>{});this.proc.stderr.resume();
     this.ready=new Promise<void>((resolve,reject)=>{

@@ -3,7 +3,7 @@
 **2026-10-28: libkrun is deleted** (`vmm/`, `vmm/sandbox/`, `linux/`). The
 first two sections below are the historical libkrun contracts; what survives
 of them: the Seatbelt profile is `shard/src/hvf/jitk.sb`, the shared deadline
-watchdog is `shard/src/watchdog.rs` (`hvf watchdog` / `real watchdog`, the
+watchdog is `shard/src/watchdog.rs` (`hvf process-watchdog` / `real process-watchdog`, the
 process backends' watchdog), and the console kernel profile boots on
 `hvf console --image KERNEL [--seed HEX] [--epoch-ns NS]`
 (`shard/src/hvf/console.rs`), which keeps the launcher contract used by

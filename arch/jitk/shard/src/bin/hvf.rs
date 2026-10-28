@@ -21,7 +21,7 @@
 //!                                            the console kernel profile on
 //!                                            stdin/stdout (hvf/console.rs;
 //!                                            GrowOS and kernel tests only)
-//!   hvf watchdog                             the process backends' deadline
+//!   hvf process-watchdog                     the process backends' deadline
 //!                                            watchdog (watchdog.rs)
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 fn main() {
@@ -84,10 +84,10 @@ mod mac {
                     std::process::exit(70);
                 }
             }
-            "watchdog" => jitk_shard::watchdog::run(),
+            "process-watchdog" => jitk_shard::watchdog::run(),
             _ => {
                 eprintln!(
-                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE | hvf native-worker TOOL=BASE... | hvf console --image KERNEL [--seed HEX] [--epoch-ns NS] | hvf watchdog"
+                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE | hvf native-worker TOOL=BASE... | hvf console --image KERNEL [--seed HEX] [--epoch-ns NS] | hvf process-watchdog"
                 );
                 std::process::exit(2);
             }

@@ -10,7 +10,7 @@
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
 //   JITK_SHARD_BINARY          shard `real` (Linux) or the HVF engine `hvf`
 //                              (macOS, signed) from source, pinned toolchain;
-//                              it also serves `watchdog` and (macOS) `console`
+//                              it also serves `process-watchdog` and (macOS) `console`
 // JITK_SHARD_SNAPSHOT needs KVM or HVF and is built by
 // `make -C arch/jitk/shard snapshot` (shard/snapshot.ts) into the same cache.
 // Every entry is built in a staging directory and renamed into place after

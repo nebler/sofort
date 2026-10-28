@@ -370,7 +370,7 @@ trusted test and grow images. It goes when the console profile does (the
 kernel follow-up; GrowOS first needs a host-visible trace on the ring
 profile).
 
-`hvf watchdog` and `real watchdog` (`src/watchdog.rs`, moved unchanged from
+`hvf process-watchdog` and `real process-watchdog` (`src/watchdog.rs`, moved unchanged from
 `jitk-vmm --watchdog`) are the process backends' shared deadline watchdog
 (`../executor/backend.ts`: Hyperlight's adapter, test peers).
 

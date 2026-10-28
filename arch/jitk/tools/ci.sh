@@ -111,7 +111,7 @@ executor_build() {
 }
 # The executor checks that need no engine (run.sh test's list minus the ones
 # on the shard in the KVM part). transport-check and watchdog-check run the
-# process backend with the shard binary's `real watchdog`.
+# process backend with the shard binary's `real process-watchdog`.
 executor_checks() {
   for check in abi-check prepared-check pool-check resolve-check transport-check shard-sandbox-check watchdog-check; do
     echo "executor: $check"

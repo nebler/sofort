@@ -57,7 +57,7 @@ Jitk uses the HVF engine (`JITK_SHARD_BINARY`, deps cache) and
 executor rows the ring engine (`JITK_SHARD_SNAPSHOT`), the executor's
 default. Until 2026-10-28 both ran on the libkrun VMM; recorded results are
 libkrun's. The adapter (`backend.ts`) shares the executor's process backend,
-whose watchdog is the engine binary's `watchdog` mode.
+whose watchdog is the engine binary's `process-watchdog` mode.
 
 Cold begins before process spawn; parked begins before RUN after READY +5 ms.
 Each strict unit is consumed once, killed and reaped. Refill/snapshot restore

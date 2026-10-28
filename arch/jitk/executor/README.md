@@ -75,7 +75,7 @@ Seatbelt profile, was removed on 2026-10-28.)
 
 `ProcessBackend` remains for engines that speak protocol v1 on stdio (09's
 Hyperlight adapter, kind `hyperlight-js`, and test peers). Deadlines are
-enforced by one shared native watchdog per executor, the `watchdog` mode of
+enforced by one shared native watchdog per executor, the `process-watchdog` mode of
 the engine binary (`../shard/src/watchdog.rs`, formerly `jitk-vmm --watchdog`;
 set `watchdog` or `JITK_WATCHDOG` to override `JITK_SHARD_BINARY`). It is a
 separate process, so it fires while a tool blocks Node, but it is spawned

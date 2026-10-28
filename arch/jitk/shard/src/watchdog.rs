@@ -1,4 +1,4 @@
-//! Shared deadline watchdog (`hvf watchdog`, `real watchdog`): one trusted process per
+//! Shared deadline watchdog (`hvf process-watchdog`, `real process-watchdog`): one trusted process per
 //! executor, independent of Node's event loop and of every worker process it guards (the
 //! process backends, executor/backend.ts: Hyperlight's worker, test peers). Moved here from
 //! the former libkrun VMM (`jitk-vmm --watchdog`), unchanged.

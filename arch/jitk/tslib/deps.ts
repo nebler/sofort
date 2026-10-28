@@ -97,7 +97,7 @@ export function cargoPath(path: string): string {
 // The production shard binary, built from source with the pinned toolchain:
 // shard `real` on Linux (KVM), shard `hvf` on macOS (the HVF engine, signed
 // with the hypervisor entitlement; its Seatbelt profile is
-// shard/src/hvf/jitk.sb). Both also serve `watchdog` (the process backends'
+// shard/src/hvf/jitk.sb). Both also serve `process-watchdog` (the process backends'
 // deadline watchdog); `hvf console` runs the console kernel profile.
 export function shardInputs(): string {
   const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest'), 'shard/hypervisor.entitlements'];
