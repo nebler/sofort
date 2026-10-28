@@ -49,4 +49,7 @@ node=$dir/bin/node
 if [ "$os" = darwin ]; then
   node=$dir/bin/node-real
 fi
+# Package install scripts (scriptc's native installer) run a bare `node`.
+PATH=$dir/bin:$PATH
+export PATH
 exec "$node" "$dir/lib/node_modules/npm/bin/npm-cli.js" "$@"
