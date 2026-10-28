@@ -1,14 +1,18 @@
-// Prepared helper snapshots for the KVM shard, built into the jitk cache
-// (`make -C arch/jitk/shard snapshot`; Linux arm64 with /dev/kvm). Run by the
-// pinned Node (type stripping) so the helper composition is the executor's
-// own module, ../executor/prepared-helpers.mjs.
+// Prepared helper snapshots for the shard, built into the jitk cache
+// (`make -C arch/jitk/shard snapshot`; Linux arm64 with /dev/kvm, or macOS
+// arm64 with Hypervisor.framework). Run by the pinned Node (type stripping)
+// so the helper composition is the executor's own module,
+// ../executor/prepared-helpers.mjs.
 //
 // One snapshot per arena class (glue-2m is the executor's default; glue-4m is
 // there for the class-coverage KVM tests). Each is the ring kernel with the
 // executor helpers spliced in before the QuickJS checkpoint, built with the
-// pinned toolchain and prepared by the shard binary (JITK_SHARD_BINARY, from
-// `make -C arch/jitk deps`). Layout and keys: ../tslib/deps.ts (snapshotKey,
-// snapshotIndex). An entry that exists and verifies (identity, file hashes,
+// pinned toolchain and prepared by the shard binary (Linux: JITK_SHARD_BINARY,
+// from `make -C arch/jitk deps`; macOS: the crate's `hvf` tool, built here and
+// signed with the hypervisor entitlement). Entries are per host platform
+// (linux-arm64, darwin-arm64): `.mem` has the same format on both, `.regs` is
+// the preparing hypervisor's register file. Layout and keys: ../tslib/deps.ts
+// (snapshotKey, snapshotIndex). An entry that exists and verifies (identity, file hashes,
 // kernel image hash) is reused; anything else is rebuilt in a staging
 // directory and renamed into place.
 //
@@ -23,7 +27,7 @@ import { shaFile } from '../tslib/hash.ts';
 import { dumpJSON, readJSON } from '../tslib/json.ts';
 import { environment } from '../tslib/process.ts';
 import { run } from '../tslib/subprocess.ts';
-import { JITK_ROOT, SNAPSHOT_CLASSES, SNAPSHOT_TARGET, hostPlatform, pins, requireArtifact, snapshotBase, snapshotIndex, snapshotInputs, snapshotKey, snapshotRoot, withLock } from '../tslib/deps.ts';
+import { JITK_ROOT, SNAPSHOT_CLASSES, SNAPSHOT_TARGET, cacheRoot, hostPlatform, pins, requireArtifact, snapshotBase, snapshotIndex, snapshotInputs, snapshotKey, snapshotRoot, withLock } from '../tslib/deps.ts';
 import { rustToolchain } from '../tslib/rust.ts';
 import { ABI_VERSION } from '../executor/abi.ts';
 import { IDENTITY_VERSION, bootstrapSource, helperHash, helperSource, verifyPreparedSnapshot } from '../executor/prepared-helpers.mjs';
@@ -61,6 +65,20 @@ async function kernelImage(cls: string, out: string, env: Record<string, string>
   await run([tools.CARGO, 'build', '--locked', '--offline', '--release', '--target', 'aarch64-unknown-none', '--features', 'transport-ring'], { cwd: KERNEL, env: settings, inherit: true, timeout: 3600 });
   await run([env.OBJCOPY || 'llvm-objcopy', '-O', 'binary', join(settings.CARGO_TARGET_DIR, 'aarch64-unknown-none/release/jitk-02'), out], { env, timeout: 600 });
   return shaFile(out);
+}
+
+// macOS: the shard crate's `hvf prepare` (Hypervisor.framework), built with the
+// pinned toolchain into the shard's cache target and ad-hoc signed with the
+// hypervisor entitlement; returns its path.
+async function hvfTool(env: Record<string, string>): Promise<string> {
+  const pin = pins().rust_toolchain;
+  const tools = await rustToolchain(env, pin, [], []);
+  const target = join(cacheRoot(), 'shard', 'target-' + hostPlatform());
+  const settings: Record<string, string> = { ...env, ...tools, RUSTUP_TOOLCHAIN: pin, CARGO_TARGET_DIR: target };
+  await run([tools.CARGO, 'build', '--locked', '--offline', '--release', '--bin', 'hvf'], { cwd: join(JITK_ROOT, 'shard'), env: settings, inherit: true, timeout: 1800 });
+  const tool = join(target, 'release/hvf');
+  await run(['codesign', '--force', '--sign', '-', '--entitlements', join(JITK_ROOT, 'vmm/hypervisor.entitlements'), tool], { env, timeout: 120 });
+  return tool;
 }
 
 function verified(dir: string): boolean {
@@ -169,9 +187,9 @@ function printEnv(): void {
 async function main(): Promise<void> {
   const command = process.argv[2] || 'build';
   if (command === 'build') {
-    check(process.platform === 'linux', 'shard snapshots need Linux arm64 with /dev/kvm');
+    check(process.arch === 'arm64' && ['linux', 'darwin'].includes(process.platform), 'shard snapshots need Linux arm64 with /dev/kvm or macOS arm64');
     const env = environment();
-    const shard = requireArtifact('JITK_SHARD_BINARY');
+    const shard = process.platform === 'darwin' ? await hvfTool(env) : requireArtifact('JITK_SHARD_BINARY');
     for (const cls of SNAPSHOT_CLASSES) {
       await buildClass(cls, shard, env);
     }
