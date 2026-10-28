@@ -1,0 +1,1 @@
+const b=new Uint8Array([91,255,93]);os.write(129,b.buffer,0,b.length);return await new Promise(()=>{});

@@ -1,6 +1,6 @@
 import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
-import {Dispatcher,encode,parseFrame,type Frame} from '../protocol/dispatcher.js';
+import {Dispatcher,ProtocolError,encode,parseFrame,parseJson,type Frame} from '../protocol/dispatcher.js';
 import type {Backend,Sandbox} from './backend.js';
 import {IPC,SharedChannel,monotonicNs,type Message} from './shard-ipc.js';
 
@@ -85,13 +85,19 @@ export class ShardBackend implements Backend {
   released(s:ShardSandbox) {if(this.sandboxes.get(s.slot)!==s)throw Error('shard release identity');this.sandboxes.delete(s.slot);}
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}
+  now():bigint {return monotonicNs();}
   async close():Promise<void> {
     if(this.closed)return;this.closed=true;
     const reaped=this.child.exitCode!==null||this.child.signalCode!==null?Promise.resolve():new Promise<void>(resolve=>this.child.once('close',()=>resolve()));
     this.die(Error('shard backend closed'));await reaped;
   }
 }
-class ShardSandbox implements Sandbox {
+/** What a sandbox needs from its shard; tests substitute a fake channel. */
+export type ShardHost=Pick<ShardBackend,'now'|'send'|'released'|'metrics'|'fatal'>;
+/** Errors thrown from receive() mean the shard itself broke the IPC contract
+ * (envelope, identity, order, state) and fail the whole connection. Guest
+ * payload content is tenant data: invalid content fails only this generation. */
+export class ShardSandbox implements Sandbox {
   readonly exited:Promise<void>;
   private resolveExit!:()=>void;
   private state:'parked'|'running'|'done'|'releasing'|'released'='parked';
@@ -109,10 +115,10 @@ class ShardSandbox implements Sandbox {
   private admittedDeadlineNs=0n;
   private stopped:Promise<never>;
   private rejectStopped!:(e:Error)=>void;
-  constructor(private backend:ShardBackend,readonly slot:number,readonly generation:bigint) {
+  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint) {
     this.exited=new Promise(resolve=>{this.resolveExit=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
-    this.dispatcher=new Dispatcher({kill:f=>{this.backend.fatal(Error('protocol '+f.code));},message:m=>{
+    this.dispatcher=new Dispatcher({kill:f=>this.abandon(Error('protocol '+f.code)),message:m=>{
       if(m.t==='ready')return;
       if(this.waiter){const w=this.waiter;this.waiter=undefined;w.resolve(m);}
       else {if(this.frames.length>=34)throw Error('shard receive queue bound');this.frames.push(m);}
@@ -126,6 +132,27 @@ class ShardSandbox implements Sandbox {
   }
   failed(e:Error) {this.rejectStopped(e);if(!this.error){this.error=e;this.frames=[];this.waiter?.reject(e);this.waiter=undefined;}this.state='released';this.resolveExit();}
   private feed(frame:unknown) {this.dispatcher.feed(encode(frame));}
+  /** Fail this generation only: reject the reader and reset the slot via CANCEL. */
+  private abandon(e:Error) {this.error??=e;this.kill();}
+  private guest(handle:()=>void) {
+    try{handle();}catch(e){this.abandon(Error('protocol '+(e instanceof ProtocolError?e.code:'HOST_ERROR')));}
+  }
+  private call(bytes:Buffer,wire:number) {
+    const v=parseJson(bytes.toString('latin1'));
+    if(Array.isArray(v)&&v.length===4&&v[0]==='call'&&typeof v[1]==='string'&&typeof v[2]==='string'&&Array.isArray(v[3])){
+      const id=this.nextCall++;this.pending.set(id,wire);
+      this.feed({t:'call',id,ns:v[1],fn:v[2],args:v[3]});
+    }else if(Array.isArray(v)&&v.length===3&&v[0]==='log'){
+      this.feed({t:'log',level:v[1],msg:v[2]});
+      this.wirePending.delete(wire);
+      void this.backend.send(IPC.reply,this,wire,Buffer.from('{"ok":null}')).catch(e=>this.backend.fatal(e));
+    }else throw new ProtocolError('SCHEMA');
+  }
+  private done(bytes:Buffer) {
+    const v=parseFrame(bytes.toString('latin1'));
+    if(Object.hasOwn(v,'t'))throw new ProtocolError('SCHEMA');
+    this.feed({...v,t:'done'});this.state='done';
+  }
   receive(m:Message) {
     if(++this.received>35)throw Error('shard IPC per-run message bound');
     if(m.kind===IPC.call){if(m.id<1||m.id>32||m.bytes.length>1024)throw Error('shard IPC call bound');}
@@ -141,17 +168,8 @@ class ShardSandbox implements Sandbox {
     if(this.state!=='running')throw Error('shard IPC run state');
     if(m.kind===IPC.call){
       if(m.id!==this.nextWire++||m.id>32||m.bytes.length>1024)throw Error('shard IPC call identity/size');
-      const v=parseFrame(`{"args":${m.bytes.toString('latin1')}}`).args;
-      if(!Array.isArray(v))throw Error('shard IPC call schema');
       this.wirePending.add(m.id);
-      if(v.length===4&&v[0]==='call'&&typeof v[1]==='string'&&typeof v[2]==='string'&&Array.isArray(v[3])){
-        const id=this.nextCall++;this.pending.set(id,m.id);
-        this.feed({t:'call',id,ns:v[1],fn:v[2],args:v[3]});
-      }else if(v.length===3&&v[0]==='log'){
-        this.feed({t:'log',level:v[1],msg:v[2]});
-        this.wirePending.delete(m.id);
-        void this.backend.send(IPC.reply,this,m.id,Buffer.from('{"ok":null}')).catch(e=>this.backend.fatal(e));
-      }else throw Error('shard IPC call schema');
+      this.guest(()=>this.call(m.bytes,m.id));
     }else if(m.kind===IPC.stats){
       if(m.id||this.gotMetrics||m.bytes.length<32)throw Error('shard IPC metrics schema');
       const n=m.bytes.readBigUInt64LE(24);
@@ -160,8 +178,7 @@ class ShardSandbox implements Sandbox {
       this.backend.metrics({deadlineNs:this.admittedDeadlineNs,slot:this.slot,generation:this.generation,ownerCpuNs:m.bytes.readBigUInt64LE(0),stoppedNs:m.bytes.readBigUInt64LE(8),resetDoneNs:m.bytes.readBigUInt64LE(16),roundTripsNs:Array.from({length:Number(n)},(_,i)=>m.bytes.readBigUInt64LE(32+8*i))});
     }else if(m.kind===IPC.done){
       if(m.id||m.bytes.length>16352||!this.gotMetrics||this.wirePending.size)throw Error('shard IPC done schema/outstanding');
-      const text=m.bytes.toString('latin1');if(text[0]!=='{')throw Error('shard IPC done JSON');
-      this.feed(parseFrame('{"t":"done",'+text.slice(1)));this.state='done';
+      this.guest(()=>this.done(m.bytes));
     }else if(m.kind===IPC.error){
       if(m.id||m.bytes.length>512||!this.gotMetrics)throw Error('shard IPC error schema');
       this.error=Error(m.bytes.toString('utf8'));this.waiter?.reject(this.error);this.waiter=undefined;this.state='done';
@@ -194,7 +211,7 @@ class ShardSandbox implements Sandbox {
       const remaining=Math.max(0,this.deadline-Date.now());
       if(remaining>60000)throw Error('shard deadline limit (60000 ms)');
       const payload=Buffer.alloc(24+source.length);
-      this.admittedDeadlineNs=monotonicNs()+BigInt(Math.floor(remaining*1e6));
+      this.admittedDeadlineNs=this.backend.now()+BigInt(Math.floor(remaining*1e6));
       payload.writeBigUInt64LE(this.admittedDeadlineNs,0);
       payload.writeUInt32LE(32,8);payload.writeUInt32LE(1024,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(2*1048576,20);source.copy(payload,24);
       this.state='running';await this.write(IPC.start,0,payload);

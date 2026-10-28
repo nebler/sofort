@@ -352,12 +352,7 @@ impl Managed {
             }
             if self.behavior.mode == Mode::Policy && (!e.requests.is_empty() || e.op == ring::WAIT)
             {
-                if e.requests
-                    .iter()
-                    .any(|r| !crate::ipc_json::request(&r.bytes))
-                {
-                    return Err(RunError::GuestProtocol("policy call schema"));
-                }
+                // Request bytes are opaque here; Node owns the call schema.
                 let sent = kvm::monotonic_ns();
                 for r in &e.requests {
                     self.policy_sent[r.id as usize - 1] = sent;
@@ -693,7 +688,7 @@ mod tests {
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
         let mut pool = Pool::new(Kvm::new(), snapshot, 2, 2);
         for (slot, source, mode) in [
-            (0, include_str!("../fixtures/policy_call.js"), Mode::Policy),
+            (0, include_str!("../fixtures/bad_call.js"), Mode::Policy),
             (1, include_str!("../fixtures/return2.js"), Mode::Run),
         ] {
             pool.start(
