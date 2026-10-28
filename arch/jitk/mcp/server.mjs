@@ -58,10 +58,10 @@ function mcpServer(jitk, cfg) {
   const nl = jitk.nativeLimits, mib = n => `${n / (1 << 20)} MiB`;
   const run = {
     name: 'run',
-    description: 'Run a prepared static native tool in a fresh Linux arm64 KVM microVM. args excludes argv[0]. ' +
+    description: 'Run a prepared static native tool in a fresh arm64 microVM (Linux KVM or macOS HVF). args excludes argv[0]. ' +
       `files maps relative read-only guest paths to canonical base64 bytes (${nl.files} files, ${mib(nl.inputBytes)} archive). ` +
       `Returns stdout/stderr as {encoding:"base64",data}, exitCode, outputLimited (${mib(nl.outputBytes)} combined cap). ` +
-      'macOS v1 returns UNSUPPORTED. Configured profiles: ' + Object.keys(cfg.native?.profiles ?? {}).join(', '),
+      'Without configured profiles it returns UNSUPPORTED. Configured profiles: ' + Object.keys(cfg.native?.profiles ?? {}).join(', '),
     inputSchema: {type: 'object', properties: {tool: {type: 'string'}, args: {type: 'array', maxItems: nl.args, items: {type: 'string'}},
       files: {type: 'object', maxProperties: nl.files, additionalProperties: {type: 'string'}}}, required: ['tool'], additionalProperties: false},
   };

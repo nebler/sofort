@@ -10,8 +10,8 @@ use crate::payload;
 use std::{collections::VecDeque, io};
 
 pub use crate::constants::ipc::{
-    CALL, CANCEL, DONE, ERROR, HEADER_BYTES, PAYLOAD, QUARANTINED, READY, RELEASED, REPLY, START,
-    STATS,
+    CALL, CANCEL, DONE, ERROR, HEADER_BYTES, PAYLOAD, QUARANTINED, READY, RELEASED, REPLY,
+    RESTORED, START, STATS,
 };
 
 pub fn invalid(message: &'static str) -> io::Error {
@@ -91,7 +91,8 @@ pub enum Phase {
     Running,
     Done,
     Resetting,
-    /// Reported QUARANTINED: never admits again; any message for it is a Node bug.
+    /// Reported QUARANTINED: admits nothing (any message for it is a Node bug)
+    /// until the HVF zygote restores it (RESTORED); the Linux shard never does.
     Quarantined,
 }
 /// One slot's IPC state: the generation Node admitted, its phase, the next

@@ -16,8 +16,9 @@ of hard-coding them or branching on the backend kind.
 
 A job is `js` (tenant code and tool names, run by `MicroVMExecutor`) or
 `native` (a prepared static program, its args and input files, run by
-`NativeExecutor`). `native-backend.ts` is the persistent Linux arm64 ring worker
-(`real native-worker`, `../shard/ABI-R7.md`) as an Engine with one session: a
+`NativeExecutor`). `native-backend.ts` is the persistent arm64 ring worker
+(`real native-worker` on Linux KVM, `hvf native-worker` on macOS HVF,
+`../shard/ABI-R7.md`) as an Engine with one session: a
 native session yields `stdout`, `stderr` and `done {exitCode, outputLimited}`,
 and its `limits.native` carries the profiles and the JNR7 request/output bounds.
 `native-check.ts` runs it on a stand-in worker (`fixtures/native-worker.mjs`).
@@ -254,11 +255,16 @@ Node's spawn creates for a `pipe` stdio entry (`PipeChannel`, `shard-ipc.ts`;
 no native addon), and deadlines are on `process.hrtime`, which the engine
 reads as CLOCK_MONOTONIC_RAW. HVF allows one VM per process, so the engine
 (`../shard/src/hvf/zygote.rs`) is a single-threaded zygote that forks one
-engine process per slot; each enters vmm/sandbox's Seatbelt profile before
-creating its VM (`make -C ../shard test-hvf` runs `hvf confine`: files,
-network and exec denied, HVF allowed). The zygote kills an engine process
+engine process per slot. The zygote enters vmm/sandbox's Seatbelt profile
+plus fork and signalling its children before its first fork; each engine
+process inherits it and drops the fork grant before creating its VM
+(`make -C ../shard test-hvf` runs `hvf confine`: files, writes, network and
+exec denied to both, fork denied to engine processes, HVF allowed). The
+zygote kills an engine process
 whose run outlives its deadline by 100 ms; a dead engine process fails its run
-and its slot is QUARANTINED. `close()` closes the socket and the zygote reaps
+and its slot is QUARANTINED, then re-forked and RESTORED (`onRestore`;
+`capacity.lost` counts slots quarantined and not yet restored; a crash loop
+fails the engine). `close()` closes the socket and the zygote reaps
 every engine process.
 
 `run.sh test` runs `shard-check.ts` on the HVF engine whenever
@@ -267,3 +273,20 @@ sections are skipped; the macOS-only section kills, stops and reaps engine
 processes), and the parity corpus includes `hvf` by default on the Mac. Per-run
 cost against libkrun: `node build/engine-bench.js` (offline; see
 `../shard/README.md` "HVF engine").
+
+Warm parking (G1 on HVF). A pool keeps sessions parked only with a parking
+gate (`SandboxPool` `parkingGate`). `./run.sh hvf-parking-gate`
+(`hvf-parking-gate.ts`, offline) measures the HVF engine as kernel/.READY's G1
+measures a libkrun VM: every slot parked for 10 s (CPU of the zygote and all
+engine processes by `ps`, below 2% of a core), then 1000 checked tool-call
+exchanges through the executor, 32 per run (the ring profile's call budget;
+libkrun's G1 run carries all 1000) with a 3 s parked-in-WAIT pause every
+100th. It writes `.work/hvf-parking-gate.json` (`JITK_RECORD=1`:
+`hvf-parking-gate.json` here), binding the engine binary's sha256, the
+snapshot's `.identity` sha256 and the slots. `select-backend` (so the MCP
+server's `warm`) returns it as the gate for `JITK_BACKEND=hvf` only when all
+three match (`JITK_HVF_PARKING_GATE` names one explicitly); a rebuilt engine
+needs a new run. Measured 2026-10-28, M4 Pro, macOS 26.6.1, load 3.7–4.6:
+8 slots, 0.00 CPU-s in 10.0 s for 9 processes (below `ps` resolution),
+1000/1000 exchanges in 32 runs (p50 5.7 ms per 32-call run without a pause).
+No `.READY` is involved or changed.

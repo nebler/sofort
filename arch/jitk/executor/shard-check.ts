@@ -10,10 +10,11 @@ import {execFileSync,spawn,type ChildProcess} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
 import {ABI_VERSION} from './abi.js';
-import {ShardBackend,type ShardMetrics,type ShardQuarantine} from './shard-backend.js';
+import {ShardBackend,type ShardMetrics,type ShardQuarantine,type ShardRestore,type ShardSession} from './shard-backend.js';
 import {PipeChannel,SharedChannel,IPC,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
 import {SandboxPool,OverloadedError} from './pool.js';
+import {hvfGate} from './select-backend.js';
 import {transportChecks} from './shard-ipc-check.js';
 import {sourceChecks} from './shard-source-check.js';
 
@@ -203,18 +204,25 @@ try {
 
 // HVF: every slot is a process the zygote supervises. A dead engine process
 // takes only its slot out of service (its run fails as engine, its reset is
-// QUARANTINED with the reason); a run whose process cannot stop at its
-// deadline is killed by the zygote (escalation); close() reaps them all.
+// QUARANTINED with the reason) until the zygote has re-forked it (RESTORED);
+// a run whose process cannot stop at its deadline is killed by the zygote
+// (escalation); a crash loop fails the engine; close() reaps them all.
 if(hvf){
-  const lost:ShardQuarantine[]=[];
-  const two=new ShardBackend({binary,snapshot,slots:2,onQuarantine:q=>lost.push(q)});
+  const until=async(what:string,done:()=>boolean,ms=3000)=>{
+    const end=Date.now()+ms;
+    while(!done()){if(Date.now()>end)throw Error('timed out waiting for '+what);await new Promise(r=>setTimeout(r,10));}
+  };
+  const lost:ShardQuarantine[]=[],back:ShardRestore[]=[];
+  const two=new ShardBackend({binary,snapshot,slots:2,onQuarantine:q=>lost.push(q),onRestore:r=>back.push(r)});
   try {
     await two.ready;
     const zygote=two.child.pid!,children=engines(zygote);
     check(children.length===2,'one engine process per slot');
+    assert.throws(()=>(two as any).receive({kind:IPC.restored,slot:1,generation:1n,id:0,bytes:Buffer.alloc(0)}),/restore schema\/state/);
+    check(two.capacity.lost===0,'RESTORED for a slot that is not quarantined is a shard contract violation');
     // A stopped engine process cannot kick its own vCPU: the zygote kills it
     // ESCALATION (100 ms) after the deadline and reports a deadline.
-    const s=await two.park();await s.armDeadline!(Date.now()+100);
+    const s=await two.park() as ShardSession;await s.armDeadline!(Date.now()+100);
     const t=performance.now();
     await s.start({kind:'js',source:'async()=>{while(true){}}',tools:{},prelude:''});
     await new Promise(r=>setTimeout(r,20));
@@ -223,20 +231,80 @@ if(hvf){
     for(const pid of engines(zygote))process.kill(pid,'SIGCONT');
     check(ev.kind==='fail'&&ev.cause==='deadline'&&/engine process killed/.test(ev.message),'zygote escalation kills a stuck engine process: '+JSON.stringify(ev));
     check(waited>=100&&waited<1000,`escalation after the deadline plus 100 ms (${waited.toFixed(0)} ms)`);
+    const t0=performance.now();
     s.release();await s.released;
-    check(lost.length===1&&/engine process exited \(signal 9\)/.test(lost[0].reason)&&two.capacity.lost===1,'the killed slot is QUARANTINED with its reason: '+JSON.stringify(lost.map(q=>q.reason)));
-    check(engines(zygote).length===1,'the killed engine process is reaped');
-    // The other slot still serves, and an engine process that dies while idle
-    // fails only its next run.
-    const pool2=new SandboxPool(two,0,1),ex2=new MicroVMExecutor(pool2,()=> 'allow',5000);
-    let r=await ex2.execute('return 7',{});await pool2.drain();check(!r.error&&r.result===7,'the surviving slot serves');
-    process.kill(engines(zygote)[0]!,'SIGKILL');await new Promise(r=>setTimeout(r,50));
-    r=await ex2.execute('return 8',{});await pool2.drain();
-    check(!!r.error&&/slot_unavailable: engine process exited/.test(r.error),'a dead engine process fails its next run as engine: '+r.error);
-    check(lost.length===2&&two.capacity.lost===2,'and its slot is QUARANTINED');
+    check(lost.length===1&&lost[0].slot===s.slot&&/engine process exited \(signal 9\)/.test(lost[0].reason),'the killed slot is QUARANTINED with its reason: '+JSON.stringify(lost.map(q=>q.reason)));
+    // The zygote re-forks it from the snapshot; RESTORED gives the capacity back.
+    await until('RESTORED',()=>back.length===1);
+    const restoreMs=performance.now()-t0;
+    check(back[0].slot===s.slot&&back[0].generation===s.generation&&back[0].lost===0&&two.capacity.lost===0,'the quarantined slot is RESTORED at its generation: '+JSON.stringify(back.map(r=>({...r,generation:String(r.generation)}))));
+    const respawned=engines(zygote);
+    check(respawned.length===2&&respawned.filter(pid=>!children.includes(pid)).length===1,`the killed engine process is reaped and replaced (restored in ${restoreMs.toFixed(1)} ms)`);
+    // Both slots serve, the restored one included.
+    const pool2=new SandboxPool(two,0,2),ex2=new MicroVMExecutor(pool2,()=> 'allow',5000);
+    const both=await Promise.all([1,2].map(i=>ex2.execute(`return await codemode.echo(${i})`,{echo:async x=>{await new Promise(r=>setTimeout(r,20));return x;}})));await pool2.drain();
+    check(both.every((r,i)=>!r.error&&r.result===i+1),'the restored slot and its sibling serve at once: '+JSON.stringify(both));
+    // An engine process that dies while its slot is idle is re-forked before
+    // Node needs it: no run fails, nothing is quarantined.
+    const before=engines(zygote);
+    process.kill(before[0]!,'SIGKILL');
+    await until('idle re-fork',()=>{const now=engines(zygote);return now.length===2&&!now.includes(before[0]!);});
+    const again=await Promise.all([3,4].map(i=>ex2.execute(`return ${i}`,{})));await pool2.drain();
+    check(again.every((r,i)=>!r.error&&r.result===i+3)&&lost.length===1&&two.capacity.lost===0,'an engine process that dies while idle is replaced silently: '+JSON.stringify(again));
     await pool2.close();
-    await assert.rejects(two.park(),/shard capacity lost: all 2 slots quarantined/);assertions++;
   } finally {await two.close();}
+  // A crash loop fails the engine closed instead of re-forking forever: one
+  // slot gets restore_budget(1) = 4 re-forks per 60 s (shard/src/hvf/zygote.rs).
+  {
+    const one=new ShardBackend({binary,snapshot,slots:1});
+    let stderr='';one.child.stderr!.on('data',(b:Buffer)=>{stderr+=b;});
+    const exited=new Promise<void>(resolve=>one.child.once('close',()=>resolve()));
+    try {
+      await one.ready;
+      const zygote=one.child.pid!;
+      let killed=0,pid=engines(zygote)[0]!;
+      while(one.child.exitCode===null&&one.child.signalCode===null&&killed<10){
+        process.kill(pid,'SIGKILL');killed++;
+        await until('re-fork or failure',()=>{const now=engines(zygote);return one.child.exitCode!==null||(now.length===1&&now[0]!==pid);}).catch(()=>{});
+        await new Promise(r=>setTimeout(r,20));
+        pid=one.child.exitCode===null?engines(zygote)[0]!:pid;
+      }
+      await exited;
+      check(killed===5&&/crash loop/.test(stderr),`a crash loop fails the engine after ${killed} kills: ${stderr.trim()}`);
+      await assert.rejects(one.park(),/shard IPC closed by the engine|sandbox exited: shard/);assertions++;
+    } finally {await one.close();}
+  }
+  // Warm parking (hvf-parking-gate.ts): select-backend takes a gate receipt
+  // only for the engine binary and snapshot it measured, with at least the
+  // slots asked for. The receipts here are synthetic test inputs in a
+  // scratch directory, never a receipt path the executor reads.
+  {
+    const dir=mkdtempSync(join(tmpdir(),'jitk-hvf-gate-')),path=join(dir,'gate.json');
+    const sha=(p:string)=>execFileSync('/usr/bin/shasum',['-a','256',p],{encoding:'utf8'}).split(' ')[0];
+    const receipt={engine:'hvf',status:'PASS',exchanges:1000,idle_core_percent:0,slots:8,engine_sha256:sha(binary),snapshot_identity_sha256:sha(snapshot+'.identity')};
+    const saved=process.env.JITK_HVF_PARKING_GATE;
+    try {
+      process.env.JITK_HVF_PARKING_GATE=path;
+      const gate=(r:object,slots=8)=>{writeFileSync(path,JSON.stringify(r));return hvfGate(binary,snapshot,slots);};
+      check(gate(receipt)?.evidence===path,'a matching HVF gate receipt is accepted');
+      check(!gate({...receipt,engine_sha256:'0'.repeat(64)})&&!gate({...receipt,snapshot_identity_sha256:'0'.repeat(64)})&&!gate(receipt,9)&&
+        !gate({...receipt,idle_core_percent:2})&&!gate({...receipt,exchanges:999})&&!gate({...receipt,status:'FAIL'}),
+        'another engine, snapshot, more slots, 2% idle, fewer exchanges or a FAIL is not');
+      // Parked HVF sessions serve as unparked ones do.
+      const g=gate(receipt)!;
+      const warm=new ShardBackend({binary,snapshot,slots:2});
+      const wpool=new SandboxPool(warm,2,2,{parkingGate:g}),wex=new MicroVMExecutor(wpool,()=> 'allow',5000);
+      try {
+        await wpool.warm();
+        check(wpool.snapshot().parked===2,'the warm pool parks both HVF slots');
+        const rs=await Promise.all([5,6].map(i=>wex.execute(`return await codemode.echo(${i})`,{echo:async x=>x})));
+        check(rs.every((r,i)=>!r.error&&r.result===i+5),'parked HVF sessions run: '+JSON.stringify(rs));
+      } finally {await wpool.close();await warm.close();}
+    } finally {
+      if(saved===undefined)delete process.env.JITK_HVF_PARKING_GATE;else process.env.JITK_HVF_PARKING_GATE=saved;
+      rmSync(dir,{recursive:true,force:true});
+    }
+  }
   // close() lets the zygote reap its engine processes: none is left behind.
   const three=new ShardBackend({binary,snapshot,slots:3});
   await three.ready;const pids=engines(three.child.pid!);await three.close();

@@ -1,0 +1,9 @@
+;; The HVF engine zygote's grants beyond vmm/sandbox's jitk.sb (zygote.rs,
+;; `zygote_profile`): the zygote enters jitk.sb plus these rules after it has
+;; loaded the snapshot and read what a confined process cannot, before its
+;; first fork. macOS refuses a second sandbox_apply in a sandboxed process, so
+;; the engine processes it forks keep this profile; each takes away the fork
+;; grant itself (RLIMIT_NPROC 0, child.rs `confine`) before it creates its VM.
+;; jitk.sb: deny default, read only the snapshot directory, one sysctl.
+(allow process-fork)
+(allow signal (target children))

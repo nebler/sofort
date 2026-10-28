@@ -9,11 +9,14 @@ import {ARENA_CLASSES} from './abi.js';
 import {ABI_VERSION,IPC,PipeChannel,SharedChannel,checkReady,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
-/** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are gone for the shard's lifetime. */
+/** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are out of service now.
+ *  On Linux a lost slot never returns; the HVF engine re-forks it and reports RESTORED. */
 export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:number;slots:number};
+/** A quarantined slot back in service (IPC RESTORED, HVF): `lost` of `slots` are still out. */
+export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number};
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
- *  onQuarantine observes lost capacity; without it each loss is one stderr line. */
-export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void};
+ *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
+export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void};
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(code:string,names:string[]):string {
@@ -52,7 +55,7 @@ export class ShardBackend implements Engine {
   private sessions=new Map<number,ShardSession>();
   private queue:AdmissionQueue<ShardSession>;
   private generations:bigint[];
-  /** Slots the shard reported QUARANTINED: never claimed again. */
+  /** Slots the shard reported QUARANTINED and not RESTORED: never claimed. */
   private lost=new Set<number>();
   private dead?:Error;
   private resolveReady!:()=>void;
@@ -100,6 +103,7 @@ export class ShardBackend implements Engine {
       this.didReady=true;clearTimeout(this.startup);this.resolveReady();return;
     }
     if(!this.didReady||m.slot>=this.generations.length||m.generation===0n)throw Error('shard IPC peer slot/state');
+    if(m.kind===IPC.restored){this.restored(m);return;}
     const s=this.sessions.get(m.slot);
     // Unsolicited and stale messages fail the whole untrusted shard closed.
     if(!s||m.generation!==s.generation)throw Error('shard IPC stale generation');
@@ -127,7 +131,7 @@ export class ShardBackend implements Engine {
     const s=new ShardSession(this,slot,generation);this.sessions.set(slot,s);return s;
   }
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
-  /** Physical slots, and those lost to quarantine (capacity is slots - lost). */
+  /** Physical slots, and those out of service after a quarantine (capacity is slots - lost). */
   get capacity() {return {slots:this.generations.length,lost:this.lost.size};}
   released(s:ShardSession,quarantine?:string) {
     if(this.sessions.get(s.slot)!==s)throw Error('shard release identity');this.sessions.delete(s.slot);
@@ -136,13 +140,26 @@ export class ShardBackend implements Engine {
     const w=this.queue.shift();if(!w)return;
     try{w.resolve(this.claim(s.slot));}catch(e){w.reject(e as Error);}
   }
-  /** The slot never returns: account for it, report it, fail the shard once none is left. */
+  /** The slot is out of service: account for it and report it. On Linux it
+   *  never returns, so the shard fails once none is left; the HVF engine
+   *  re-forks it (RESTORED, or the engine fails closed on a crash loop). */
   private quarantined(s:ShardSession,reason:string) {
     this.lost.add(s.slot);
     const q:ShardQuarantine={slot:s.slot,generation:s.generation,reason,lost:this.lost.size,slots:this.generations.length};
     if(this.options.onQuarantine)try{this.options.onQuarantine(q);}catch{}
     else process.stderr.write(`jitk shard: slot ${q.slot} quarantined (${reason}); capacity ${q.slots-q.lost}/${q.slots}\n`);
-    if(this.lost.size===this.generations.length)this.die(Error(`shard capacity lost: all ${q.slots} slots quarantined`));
+    if(this.kind==='shard'&&this.lost.size===this.generations.length)this.die(Error(`shard capacity lost: all ${q.slots} slots quarantined`));
+  }
+  /** A quarantined slot serves again at the generation its QUARANTINED
+   *  ended: count it, report it, give it to the head waiter. */
+  private restored(m:Message) {
+    if(this.kind!=='hvf'||!this.lost.has(m.slot)||this.sessions.has(m.slot)||m.generation!==this.generations[m.slot]||m.id||m.bytes.length)throw Error('shard IPC restore schema/state');
+    this.lost.delete(m.slot);
+    const r:ShardRestore={slot:m.slot,generation:m.generation,lost:this.lost.size,slots:this.generations.length};
+    if(this.options.onRestore)try{this.options.onRestore(r);}catch{}
+    else process.stderr.write(`jitk shard: slot ${r.slot} restored; capacity ${r.slots-r.lost}/${r.slots}\n`);
+    const w=this.queue.shift();if(!w)return;
+    try{w.resolve(this.claim(m.slot));}catch(e){w.reject(e as Error);}
   }
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}

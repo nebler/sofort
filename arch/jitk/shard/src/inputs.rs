@@ -1,6 +1,8 @@
 //! Bounded late-bound files encoded using the kernel's existing RO archive.
 use crate::constants::ring;
+use crate::streams::Output;
 use std::collections::{BTreeMap, VecDeque};
+use std::io::{self, Read, Write};
 pub const MAX_ARCHIVE: usize = ring::ARCHIVE_LIMIT;
 pub const MAX_FILES: usize = 64;
 pub const MAX_REQUEST: usize = MAX_ARCHIVE + 16384;
@@ -155,6 +157,69 @@ fn archive(tree: &Tree<'_>) -> Result<Vec<u8>, &'static str> {
         names += name.len();
     }
     Ok(b)
+}
+/// A worker response payload (ABI-R7 "Persistent worker IPC"): five u32
+/// words (worker status, guest status, stdout and stderr lengths,
+/// outputLimited), then stdout and stderr; a failure zeroes the last four
+/// and carries at most 512 diagnostic bytes.
+pub fn response(out: Result<Output, String>) -> Vec<u8> {
+    let mut b = Vec::new();
+    match out {
+        Ok(out) => {
+            for w in [
+                0,
+                out.exit_code,
+                out.stdout.len() as u32,
+                out.stderr.len() as u32,
+                out.limited as u32,
+            ] {
+                b.extend_from_slice(&w.to_le_bytes());
+            }
+            b.extend_from_slice(&out.stdout);
+            b.extend_from_slice(&out.stderr);
+        }
+        Err(e) => {
+            for w in [1, 0, 0, 0, 0] {
+                b.extend_from_slice(&u32::to_le_bytes(w));
+            }
+            b.extend_from_slice(e.as_bytes().get(..512).unwrap_or(e.as_bytes()));
+        }
+    }
+    b
+}
+/// The persistent worker's frame loop, on every host: u32-le length-prefixed
+/// JNR7 requests from `input`, one response frame each to `output`, until
+/// `input` ends. `run` executes one decoded request at a fresh, strictly
+/// increasing generation (the worker picks the profile).
+pub fn serve(
+    input: &mut impl Read,
+    output: &mut impl Write,
+    mut run: impl FnMut(&Run, u64) -> Result<Output, String>,
+) -> io::Result<()> {
+    let mut generation = 1u64;
+    loop {
+        let mut head = [0; 4];
+        match input.read(&mut head[..1])? {
+            0 => return Ok(()),
+            _ => input.read_exact(&mut head[1..])?,
+        };
+        let len = u32::from_le_bytes(head) as usize;
+        if len > MAX_REQUEST {
+            return Err(io::Error::other("native IPC frame budget"));
+        }
+        let mut bytes = vec![0; len];
+        input.read_exact(&mut bytes)?;
+        generation = generation
+            .checked_add(1)
+            .ok_or_else(|| io::Error::other("native generation exhausted"))?;
+        let out = decode(&bytes)
+            .map_err(str::to_string)
+            .and_then(|r| run(&r, generation));
+        let b = response(out);
+        output.write_all(&(b.len() as u32).to_le_bytes())?;
+        output.write_all(&b)?;
+        output.flush()?;
+    }
 }
 #[cfg(test)]
 mod tests {

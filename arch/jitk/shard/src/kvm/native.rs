@@ -6,11 +6,11 @@ use crate::constants::kvm::{
 };
 use crate::constants::ring;
 use crate::{inputs, streams};
-use inputs::{MAX_ARCHIVE, MAX_REQUEST, Run};
+use inputs::{MAX_ARCHIVE, Run};
 use libc::{ioctl, mmap, munmap};
 use std::{
     fs::File,
-    io::{self, Read, Write},
+    io::{self, Write},
     os::{
         fd::{AsRawFd, FromRawFd},
         raw::c_void,
@@ -210,31 +210,6 @@ impl NativeVm {
         }
     }
 }
-fn response(out: Result<Output, String>) -> Vec<u8> {
-    let mut b = Vec::new();
-    match out {
-        Ok(out) => {
-            for w in [
-                0,
-                out.exit_code,
-                out.stdout.len() as u32,
-                out.stderr.len() as u32,
-                out.limited as u32,
-            ] {
-                b.extend_from_slice(&w.to_le_bytes());
-            }
-            b.extend_from_slice(&out.stdout);
-            b.extend_from_slice(&out.stderr);
-        }
-        Err(e) => {
-            for w in [1, 0, 0, 0, 0] {
-                b.extend_from_slice(&u32::to_le_bytes(w));
-            }
-            b.extend_from_slice(e.as_bytes().get(..512).unwrap_or(e.as_bytes()));
-        }
-    }
-    b
-}
 /// One fixed worker, one reusable slot/profile, no per-run helper process.
 pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
     let kvm = Kvm::new();
@@ -251,40 +226,18 @@ pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
         }
         vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)?));
     }
-    let mut input = io::stdin().lock();
-    let mut output = io::stdout().lock();
     let mut entropy = File::open("/dev/urandom")?;
-    let mut generation = 1u64;
-    loop {
-        let mut head = [0; 4];
-        match input.read(&mut head[..1])? {
-            0 => {
-                for vm in vms.values_mut() {
-                    vm.shutdown()?;
-                }
-                return Ok(());
-            }
-            _ => input.read_exact(&mut head[1..])?,
-        };
-        let len = u32::from_le_bytes(head) as usize;
-        if len > MAX_REQUEST {
-            return Err("native IPC frame budget".into());
-        }
-        let mut bytes = vec![0; len];
-        input.read_exact(&mut bytes)?;
-        generation = generation
-            .checked_add(1)
-            .ok_or("native generation exhausted")?;
-        let out = inputs::decode(&bytes)
-            .map_err(str::to_string)
-            .and_then(|run| {
-                vms.get_mut(&run.tool)
-                    .ok_or_else(|| "unknown native profile".to_string())?
-                    .run(&run, generation, &mut entropy)
-            });
-        let b = response(out);
-        output.write_all(&(b.len() as u32).to_le_bytes())?;
-        output.write_all(&b)?;
-        output.flush()?;
+    inputs::serve(
+        &mut io::stdin().lock(),
+        &mut io::stdout().lock(),
+        |run, generation| {
+            vms.get_mut(&run.tool)
+                .ok_or_else(|| "unknown native profile".to_string())?
+                .run(run, generation, &mut entropy)
+        },
+    )?;
+    for vm in vms.values_mut() {
+        vm.shutdown()?;
     }
+    Ok(())
 }

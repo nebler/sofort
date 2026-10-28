@@ -4,7 +4,8 @@
 // prepared snapshots from the remote jitk cache (`make deps`, `make -C shard
 // snapshot`). JITK_SSH_TARGET=test-linux runs `make test-linux` (the parity
 // corpus, executor/parity/README.md) instead and copies its report back to
-// .work/parity/linux-arm64.json. Settings: JITK_NESTED_SSH (the ssh.sh wrapper),
+// .work/parity/linux-arm64.json, and the Linux native regression's corpus to
+// .work/native/linux-arm64.json. Settings: JITK_NESTED_SSH (the ssh.sh wrapper),
 // JITK_SHARD_REMOTE_ROOT (scratch root, relative to the remote home unless
 // absolute; default jitk-ssh), JITK_SHARD_BENCH=1, JITK_SHARD_OUTPUT.
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -51,8 +52,9 @@ const files: string[] = [join(root, 'arch/jitk/Makefile')];
 for (const part of ['tools', 'tslib', 'docs', 'abi', 'kernel', 'vmm', 'shard', 'executor', 'protocol', 'bench/hyperlight', 'mcp']) {
   files.push(...sources(join(root, 'arch/jitk', part)).sort());
 }
-// The parity corpus imports the benchmark workloads.
-files.push(join(root, 'arch/jitk/bench/cases.json'));
+// The parity corpus imports the benchmark workloads; the shard's native fd
+// probe links with grow's probe script.
+files.push(join(root, 'arch/jitk/bench/cases.json'), join(root, 'arch/jitk/grow/probe.ld'));
 const target = process.env.JITK_SSH_TARGET || 'shard';
 check(target === 'shard' || target === 'test-linux', 'JITK_SSH_TARGET must be shard or test-linux');
 // The hostile peer is cross-compiled locally; remote builds need no zig.
@@ -110,6 +112,16 @@ if (target === 'test-linux') {
     mkdirSync(dirname(local), { recursive: true });
     writeFileSync(local, fetched.stdout);
     console.log('jitk: parity report ' + local);
+  }
+  // The Linux native regression's corpus (check-native-r7, when the census is
+  // imported there): the oracle the Mac's HVF native worker is compared with
+  // (shard `check-native-hvf`).
+  const native = await capture([ssh, 'cat ' + quote(remote + '/arch/jitk/shard/test-results/native/corpus-1.json')], { timeout: 60 });
+  if (native.returncode === 0) {
+    const local = join(executor, '.work/native/linux-arm64.json');
+    mkdirSync(dirname(local), { recursive: true });
+    writeFileSync(local, native.stdout);
+    console.log('jitk: native reference ' + local);
   }
 }
 process.exitCode = result.returncode;

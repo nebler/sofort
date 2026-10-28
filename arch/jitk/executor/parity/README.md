@@ -30,7 +30,7 @@ One question with one answer: do the backends agree? (R10 change #7, R9 N6,
 |---|---|---|
 | Mac | `make -C arch/jitk test` (or `make -C arch/jitk/executor parity`) | `jitk` (libkrun), `hyperlight-js`, `hvf` |
 | Linux arm64 KVM host, clean clone | `make -C arch/jitk test-linux` | `jitk` (libkrun on Linux), `shard` |
-| Mac, using kvm-dev | `make -C arch/jitk/executor parity-ssh` | both of the above, then the cross-host compare |
+| Mac, using kvm-dev | `make -C arch/jitk/executor parity-ssh` | both of the above, then the cross-host compare, then the native corpus on the HVF worker against the Linux native oracle (`shard` `check-native-hvf`) |
 
 `JITK_PARITY_BACKENDS=jitk,shard` selects backends; a selected backend that
 cannot start fails the run. `hvf` is the shard's ring engine on

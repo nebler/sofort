@@ -442,6 +442,28 @@ impl HvfVm {
             exec: None,
         })
     }
+    /// The native profile's late-bound input archive (ABI-R7, KVM's memslot
+    /// 63): `len` bytes at `ring::ARCHIVE_GPA`, guest read-only and never
+    /// executable.
+    ///
+    /// # Safety
+    /// `host..host + len` is a live, granule-aligned mapping that outlives the
+    /// translation (`unmap_input`, or the VM).
+    pub(crate) unsafe fn map_input(&mut self, host: *mut u8, len: usize) -> io::Result<()> {
+        check(
+            // SAFETY: the caller keeps the range live while it is mapped.
+            unsafe { hv_vm_map(host.cast(), ring::ARCHIVE_GPA, len, READ) },
+            "hv_vm_map (input)",
+        )
+    }
+    /// Remove the input archive's translation (the vCPU is stopped).
+    pub(crate) fn unmap_input(&mut self, len: usize) -> io::Result<()> {
+        // SAFETY: a range `map_input` mapped; HVF only drops the translation.
+        check(
+            unsafe { hv_vm_unmap(ring::ARCHIVE_GPA, len) },
+            "hv_vm_unmap (input)",
+        )
+    }
     fn flags(kind: Region) -> u64 {
         match kind {
             Region::Immutable => READ | EXEC,
@@ -876,6 +898,8 @@ mod child;
 #[path = "../../vmm/sandbox/mod.rs"]
 mod confine;
 mod conn;
+pub mod native;
+mod seatbelt;
 pub mod zygote;
 
 #[cfg(test)]

@@ -8,11 +8,15 @@
 //!   hvf ipc SNAPSHOT_BASE SLOTS [POLICY]     the engine: Node's IPC on fd 3 (a
 //!                                            stream socket), one confined process
 //!                                            per slot (hvf/zygote.rs)
-//!   hvf confine SNAPSHOT_BASE                Seatbelt check: a confined and an
-//!                                            unconfined forked child try HVF, the
-//!                                            snapshot directory, files, network,
-//!                                            exec; exits 1 unless only the
-//!                                            confined one is denied
+//!   hvf native-worker TOOL=BASE...           the persistent native worker
+//!                                            (shard/ABI-R7.md; hvf/native.rs)
+//!   hvf confine SNAPSHOT_BASE                confinement check: an unconfined
+//!                                            control, an engine process and the
+//!                                            zygote, each confined as in
+//!                                            production, try fork, signals, HVF,
+//!                                            the snapshot directory, files,
+//!                                            network, exec; exits 1 unless each
+//!                                            is denied all it does not need
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 fn main() {
     mac::run();
@@ -62,19 +66,29 @@ mod mac {
                 }
             }
             "confine" => confine(arg(2)),
+            "native-worker" => {
+                if let Err(e) = jitk_shard::hvf::native::worker(&a[2..]) {
+                    eprintln!("hvf native-worker: {e}");
+                    std::process::exit(1);
+                }
+            }
             _ => {
                 eprintln!(
-                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE"
+                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE | hvf native-worker TOOL=BASE..."
                 );
                 std::process::exit(2);
             }
         }
     }
 
-    /// The Seatbelt profile must deny the confined child everything but HVF
-    /// and its snapshot directory, and the control must be allowed all of it
-    /// (so a denial is the profile's, not this host's).
+    /// Each Seatbelt profile must deny its process everything but what it
+    /// needs, and the control must be allowed all of it (so a denial is the
+    /// profile's, not this host's). The engine process needs HVF and its
+    /// snapshot directory; the zygote needs to fork an engine process (which
+    /// then runs HVF under both profiles), signal it, count its threads and
+    /// read the snapshot directory.
     fn confine(base: &str) {
+        use jitk_shard::hvf::zygote::Probed;
         let report = jitk_shard::hvf::zygote::confinement(base).unwrap_or_else(|e| {
             eprintln!("hvf confine: {e}");
             std::process::exit(1)
@@ -88,8 +102,9 @@ mod mac {
             let at = row.find(&format!("\"{k}\":")).expect("probe field") + k.len() + 3;
             row[at..].starts_with("true")
         };
-        let always = ["applied", "hvf_run", "read_snapshot_dir"];
-        let denied = [
+        let probed = ["fork_engine", "signal_child", "count_threads", "hvf_run"];
+        let files = [
+            "read_snapshot_dir",
             "read_etc_hosts",
             "read_home",
             "write_tmp",
@@ -97,17 +112,44 @@ mod mac {
             "udp_send",
             "spawn_true",
         ];
-        let ok = rows.len() == 2
-            && always
-                .iter()
-                .all(|k| field(rows[0], k) && field(rows[1], k))
-            && denied
-                .iter()
-                .all(|k| field(rows[0], k) && !field(rows[1], k));
-        if !ok {
-            eprintln!(
-                "hvf confine: FAIL (row 0 unconfined must allow all, row 1 confined must deny {denied:?})"
-            );
+        let needs = |who: Probed| -> &'static [&'static str] {
+            match who {
+                Probed::Unconfined => &[],
+                // A process's own task info stays readable under deny default.
+                Probed::Engine => &["count_threads", "hvf_run", "read_snapshot_dir"],
+                Probed::Zygote => &[
+                    "fork_engine",
+                    "signal_child",
+                    "count_threads",
+                    "read_snapshot_dir",
+                ],
+            }
+        };
+        let mut failed = Vec::new();
+        if rows.len() != Probed::ALL.len() {
+            failed.push(format!("{} rows", rows.len()));
+        }
+        for (who, row) in Probed::ALL.into_iter().zip(&rows) {
+            if !field(row, "applied") {
+                failed.push(format!("{}: profile not applied", who.name()));
+            }
+            for k in probed.iter().chain(&files) {
+                // The zygote's row has no hvf_run (null): it never creates a VM.
+                if who == Probed::Zygote && *k == "hvf_run" {
+                    continue;
+                }
+                let want = who == Probed::Unconfined || needs(who).contains(k);
+                if field(row, k) != want {
+                    failed.push(format!(
+                        "{}: {k} {}",
+                        who.name(),
+                        if want { "denied" } else { "allowed" }
+                    ));
+                }
+            }
+        }
+        if !failed.is_empty() {
+            eprintln!("hvf confine: FAIL ({})", failed.join("; "));
             std::process::exit(1);
         }
         eprintln!("hvf confine: PASS");

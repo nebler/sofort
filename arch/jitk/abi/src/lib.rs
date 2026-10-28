@@ -21,7 +21,7 @@
 /// snapshot format. The shard sends it in READY and the prepared snapshot
 /// `.identity` records it; Node and the shard refuse a mismatch. Bump it with
 /// any change to a value in this crate.
-pub const ABI_VERSION: u32 = 9;
+pub const ABI_VERSION: u32 = 10;
 
 pub mod layout {
     //! Guest physical memory layout, per architecture.
@@ -448,6 +448,11 @@ pub mod ipc {
     /// for the shard's lifetime (never admits again). Payload: the reason,
     /// at most ERROR_BYTES printable ASCII bytes.
     pub const QUARANTINED: u32 = 23;
+    /// A quarantined slot serves again: the engine replaced what failed
+    /// (HVF: re-forked its engine process from the pristine snapshot).
+    /// Generation: the one QUARANTINED ended; no payload. Node counts the slot
+    /// as capacity again and admits its next generation.
+    pub const RESTORED: u32 = 24;
 
     pub const READY_BYTES: usize = 4;
     /// Physical sandbox slots per shard.

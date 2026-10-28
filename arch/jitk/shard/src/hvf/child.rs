@@ -93,29 +93,45 @@ struct Engine {
     run: Option<Run>,
 }
 
-/// Serve slot `index` on `fd` until the zygote closes it. `confine` (the
-/// production path) is applied first, before the VM exists: the same
-/// Seatbelt profile and call order as jitk-vmm (vmm/sandbox).
+/// What an engine process does to its inherited confinement before its VM
+/// exists. It runs under the zygote's profile (zygote.rs `zygote_profile`:
+/// vmm/sandbox's jitk.sb plus fork and signalling children), because macOS
+/// refuses a second sandbox_apply in a sandboxed process. It takes the fork
+/// grant away itself: RLIMIT_NPROC 0, which an unprivileged process cannot
+/// raise again. That does not bind root, so the engine refuses to run as root.
+pub fn confine() -> io::Result<()> {
+    // SAFETY: no arguments.
+    if unsafe { libc::geteuid() } == 0 {
+        return Err(io::Error::other(
+            "HVF engine: refusing to run as root (RLIMIT_NPROC does not bind root)",
+        ));
+    }
+    let none = libc::rlimit {
+        rlim_cur: 0,
+        rlim_max: 0,
+    };
+    // SAFETY: a live rlimit value.
+    if unsafe { libc::setrlimit(libc::RLIMIT_NPROC, &none) } != 0 {
+        return Err(io::Error::last_os_error());
+    }
+    Ok(())
+}
+
+/// Serve slot `index` on `fd` until the zygote closes it. `confined` (the
+/// production path): drop the fork grant first, before the VM exists
+/// (`confine`).
 pub fn serve(
     fd: OwnedFd,
     index: usize,
     snapshot: Arc<Snapshot<State>>,
     policy: ResetPolicy,
-    confine: Option<&mut super::confine::Sandbox>,
+    confined: bool,
 ) -> io::Result<()> {
-    let mut confine = confine;
-    if let Some(sandbox) = confine.as_deref_mut() {
-        sandbox
-            .before_build()
-            .map_err(|e| io::Error::other(e.to_string()))?;
+    if confined {
+        confine()?;
     }
     let charge = service::ipc_charge(snapshot.class)?;
     let mut slot = Slot::create(HvfVm::create()?, snapshot, policy)?;
-    if let Some(sandbox) = confine {
-        sandbox
-            .after_build()
-            .map_err(|e| io::Error::other(e.to_string()))?;
-    }
     let clock = Clock::start(1);
     slot.set_clock(clock.cell(0));
     let signals = Arc::new(Signals {

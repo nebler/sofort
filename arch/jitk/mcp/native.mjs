@@ -1,5 +1,6 @@
 // MCP `run`: native jobs on the executor's native Engine (executor/native-backend.ts,
-// the persistent Linux arm64 ring worker). No native executable runs on the host.
+// the persistent ring worker: shard `real native-worker` on Linux arm64 KVM,
+// `hvf native-worker` on macOS arm64 HVF). No native executable runs on the host.
 const build = new URL('../executor/build/', import.meta.url);
 const failure = (code, message) => ({error: {code, message}});
 const base64 = bytes => ({encoding: 'base64', data: Buffer.from(bytes).toString('base64')});
@@ -20,9 +21,9 @@ export function nativeJob({tool, args = [], files = {}}, limits) {
 
 export async function createNativeRunner(config, timeoutMs) {
   const {NativeBackend, NativeExecutor, NATIVE_LIMITS, SandboxPool} = await import(new URL('executor.js', build).href);
-  if (process.platform !== 'linux' || process.arch !== 'arm64' || !config) return {
+  if (!['linux', 'darwin'].includes(process.platform) || process.arch !== 'arm64' || !config) return {
     limits: NATIVE_LIMITS,
-    async run() { return failure('UNSUPPORTED', 'Native byte-stream tools require the Linux arm64 KVM ring backend and configured prepared profiles; macOS v1 uses libkrun for execute.'); },
+    async run() { return failure('UNSUPPORTED', 'Native byte-stream tools require the arm64 ring worker (Linux KVM `real`, macOS HVF `hvf`) and configured prepared profiles.'); },
     async close() {},
   };
   const engine = new NativeBackend({binary: config.binary, profiles: config.profiles});

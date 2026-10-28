@@ -167,7 +167,9 @@ those state machines on any host with a fake backend. Behind the seam
 | kick | lease signal | `hvf::Kicker` (`hv_vcpus_exit`) |
 
 `kvm::Slot` is `Slot<KvmVm>` with the same constructors, labels and call order
-as before; the native worker stays KVM-only. The job clock, the per-run LOG
+as before; the Linux native worker keeps its own KVM slot adapter
+(`kvm/native.rs`), the HVF one is `hvf/native.rs` (below, "HVF native
+worker"); both share the frame loop (`inputs::serve`). The job clock, the per-run LOG
 budget and quarantine reasons live in the generic slot, so HVF has them too:
 `Slot::set_clock` registers a `clock::Clock` cell (the owner pool does this on
 Linux; `clock_advances_inside_a_run` checks it on HVF), and
@@ -248,15 +250,17 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
 ```
 
 - **Zygote.** Checks it has one thread before every fork (`proc_pidinfo`),
-  loads the verified snapshot, compiles vmm/sandbox's `jitk.sb` for the
-  snapshot directory, reads the D-cache line size (sysctl, denied later), and
-  forks one engine process per slot; READY to Node once every child is READY.
+  loads the verified snapshot, reads the D-cache line size (sysctl, denied
+  later), enters its Seatbelt profile (jitk.sb + zygote.sb, "Confinement"
+  below) and forks one engine process per slot; READY to Node once every
+  child is READY.
   It validates every Node message (START admission, REPLY pending bits,
   CANCEL generation) and every child message (call ids in order, STATS
   before one completion, bounded printable DONE, RELEASED/QUARANTINED only
   while resetting) and forwards them; a Node violation fails the engine
   closed, a child violation kills that child.
-- **Engine process.** Enters the Seatbelt profile, then creates its VM, slot
+- **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
+  creates its VM, slot
   and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
   admit (reset unless pristine, sampled check), bind, run to calls or WAIT,
   resume per REPLY, finish (an error resets at once), reset on CANCEL, idle
@@ -271,25 +275,53 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   the slot is QUARANTINED (`engine process exited (signal 9)`). Node closing
   the socket ends the zygote, which kills and reaps every child; a child whose
   socket closes stops its vCPU and exits.
+- **Capacity comes back** (IPC RESTORED, ABI 10). Once a slot is
+  QUARANTINED, the zygote forks it a fresh engine process from the snapshot it
+  still holds (no file is opened again); when that process is READY the
+  zygote sends RESTORED at the generation QUARANTINED ended, and Node counts
+  the slot again and admits its next generation (~11 ms from the CANCEL to
+  RESTORED in `shard-check`). An engine process that dies while its slot is
+  idle is replaced the same way without a message (Node never saw the slot
+  go). A re-forked child must be READY within 10 s or is killed. Re-forks are
+  budgeted: more than `restore_budget(slots)` = max(4, 2 × slots) within 60 s
+  is a crash loop, and the engine exits (`... re-forked within 60 s (crash
+  loop); failing closed`) rather than spinning.
 - **Clock.** IPC deadlines and STATS times are CLOCK_MONOTONIC_RAW
   (`clock::ipc_ns`), which is mach_continuous_time and Node's process.hrtime.
   macOS's CLOCK_MONOTONIC has a different base.
 
-Confinement (REPORT.md risk 4). `hvf confine BASE` (run by `make test-hvf`)
-forks a confined and an unconfined child. Measured on macOS 26.6.1: the
-confined one creates a VM and runs `return 2`, reads its snapshot directory,
-and gets EPERM for /etc/hosts, the home directory listing, a /tmp write, TCP
-and UDP to localhost and exec of /usr/bin/true; the control is allowed all of
-them. The zygote itself is not confined (it must fork; the profile denies
-`process-fork`) and never runs guest code.
+Confinement (REPORT.md risk 4). The zygote confines itself before its first
+fork: vmm/sandbox's `jitk.sb` (deny default, read the snapshot directory, one
+sysctl) plus `src/hvf/zygote.sb` (fork, signal its children). macOS refuses a
+second `sandbox_apply` in a sandboxed process (EPERM, measured, also with the
+Sandbox mac syscall allowed), so an engine process cannot narrow that profile
+with Seatbelt; it inherits it and takes away the fork grant itself with
+RLIMIT_NPROC 0 before it creates its VM (`child::confine`; unprivileged
+processes cannot raise it, and since root is not bound by it the engine
+refuses to run as root). `hvf confine BASE` (run by `make test-hvf`) forks
+three probe processes. Measured on macOS 26.6.1:
+- the unconfined control is allowed everything below;
+- an engine process (zygote profile + `child::confine`) creates a VM and runs
+  `return 2` and reads its snapshot directory; fork fails (EAGAIN), and so do
+  signalling a child and exec; /etc/hosts, the home directory listing, a /tmp
+  write, TCP and UDP to localhost get EPERM;
+- the zygote (its profile) forks an engine process that confines itself, runs
+  `return 2` and then cannot fork; it SIGKILLs and reaps a child and reads its
+  snapshot directory; the same files, writes, network and exec get EPERM.
+Everything the zygote opens (the snapshot files, the Node socket) is open
+before it confines itself, and re-forks reuse them.
 
 Tests: `hvf::tests::engine_child_runs_kicks_and_quarantines` (in-process
 child: tool call round trip, deadline kick within 200 ms, CANCEL of a spinning
 guest, clean slot after both, failed reset -> QUARANTINED -> slot_unavailable,
-socket close ends serve); `hvf::conn` and `service` unit tests;
+socket close ends serve); `hvf::conn`, `service` and
+`hvf::zygote::restore_tests` (the re-fork budget) unit tests;
 `../executor/shard-check.ts` on the real binary (restore, concurrency, hostile
 payloads, environment, a blocked-Node deadline, zygote escalation of a stopped
-child, dead-child quarantine, malformed admissions, no orphans); the parity
+child, dead-child quarantine then RESTORED and both slots serving, silent
+replacement of an idle dead child, a crash loop failing the engine after 5
+kills of a one-slot engine, an unsolicited RESTORED, malformed admissions, no
+orphans); the parity
 corpus on `hvf` (85 cases: 63 ok, 22 allowlisted, 0 undocumented; every
 allowlisted case is a ring-profile limit shared with the Linux shard).
 
@@ -307,6 +339,38 @@ libkrun's p50 hides its VMM boot behind the warm pool; its CPU does not
 (every run boots and reaps one VMM). The HVF per-run CPU includes Node's
 side (the executor, policy, IPC), the zygote's forwarding and the engine
 process's run and reset (~100 µs of it, per `hvf bench` above).
+
+## HVF native worker (`hvf native-worker`)
+
+`hvf native-worker TOOL=SNAPSHOT_BASE ...` (`src/hvf/native.rs`) is the Linux
+`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR7 frames
+on stdin/stdout (`inputs::serve`, shared with Linux), native bind, byte
+streams and output cap, on profiles of both arena classes prepared by `hvf
+prepare` (`./tool.sh prepare-native-r7` uses the deps-built engine on the
+Mac). The late-bound input archive is anonymous host memory made read-only,
+mapped at ARCHIVE_GPA (KVM's memslot 63) read-only and not executable, and
+removed before the next run's (`input_archive_is_read_only_and_never_executes`:
+a guest read sees the bytes; a store, a branch, and a read once unmapped fault,
+both classes). HVF allows one VM per process, so the worker holds one slot: a
+run of another profile replaces it. Before any VM exists the process enters
+jitk.sb (the first profile's directory) and drops fork; snapshots are mapped
+from descriptors opened before, so profiles in other directories work too.
+`executor/native-backend.ts` and the MCP `run` tool drive it unchanged
+(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
+included).
+
+`make check-native-hvf` (part of `make test-hvf`) prepares the six census
+profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)
+and runs the 41-case corpus twice. A Mac cannot run the Linux programs, so the
+oracle is a Linux `check-native-r7` run's `corpus-1.json` (every row exact
+there: KVM worker = the program on Linux), which `make -C ../executor
+parity-ssh` fetches to `executor/.work/native/linux-arm64.json`; each HVF row
+must reproduce the Linux program's exit status and stdout/stderr bytes
+(sha256). Measured 2026-10-28: 41/41 exact twice, every case with an input
+archive, median 3.6 ms per case through Node (max 12 ms; nested KVM's
+8.3 ms is not comparable). The fd and region probes stay Linux-only (their
+oracle is the probe running on Linux). Without the census or the reference it
+prints SKIP and why.
 
 ## Native TypeScript harness
 
