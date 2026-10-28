@@ -1,7 +1,7 @@
 # The research summary: every round, 27–28 October 2026
 
-This file covers all the research done in this thread: **11 rounds, 69 reports from GPT-6.1-Sol and Opus 5.5 agents,
-and 2 local spikes.** Rounds 10 (`stack/`) and 11 (`connect26/`) have their own summaries: [stack/SUMMARY.md](stack/SUMMARY.md), [connect26/SUMMARY.md](connect26/SUMMARY.md). Each round has its own folder under `arch/research/`, and each report has full sources.
+This file covers all the research done in this thread: **13 rounds, about 120 reports from GPT-6.1-Sol and Opus 5.5 agents,
+and 2 local spikes.** Rounds 10 (`stack/`), 11 (`connect26/`) and the 165-video corpus with its ambition round (`corpus/`) have their own summaries: [stack/SUMMARY.md](stack/SUMMARY.md), [connect26/SUMMARY.md](connect26/SUMMARY.md), [corpus/SUMMARY.md](corpus/SUMMARY.md). **Start with corpus/SUMMARY.md: it supersedes the earlier picks.** Each round has its own folder under `arch/research/`, and each report has full sources.
 
 Every claim follows the reports' label convention:
 - **verified** means I checked it myself in the primary source;
@@ -78,6 +78,16 @@ predictions, wishes and pain (about 560 signals). There were no strong predictio
 transition named by a hurt team: version skew (Artifacts), hibernation (Agents SDK), tenant moves (Ramp), sampling
 (TELUS), and plan/flag changes (VSCO). Seed line: "building got cheap, but owning it is still kind of a problem". See
 [connect26/SUMMARY.md](connect26/SUMMARY.md).
+
+**Corpus and ambition round (`corpus/`, 28–29 October):**
+- **Scope:** 165 videos (about 1.4M words) transcribed and mined by 35 agents, then filtered by the builder's ambition
+  test: reject anything the next model can one-shot, and aim for 100–1000×.
+- **Result:** no tool-sized idea from any round survives. What survives are institutions that accumulate verified
+  real-world evidence.
+- **Top picks:** a Package Behavior Atlas (the executable account of JS ecosystem compatibility) and Fil-everything
+  (one memory-safety boundary across LLVM languages).
+
+See [corpus/SUMMARY.md](corpus/SUMMARY.md).
 
 ---
 
@@ -646,6 +656,7 @@ All checked by me in primary sources on 2026-10-28.
 | `flip2/` | 7 | 01-kernels, 02-distributed, 03-propose-check, 04-codemode, 05-numerics-data, 06-sweep |
 | `split/` | 8 | 01-pi, 02-compat, 03-brain, 04-hands, 05-workspace, 06-economics |
 | `deep/` | 9 | 01-pain, 02-primitives, 03-language, 04-wasm, 05-agentweb, 06-tooling |
+| `corpus/` | 12–13 | transcripts/ (152), extract/E01–E19, synthesis/S01–S07, ambition/A01–A09, SUMMARY |
 | `connect26/` | 11 | transcripts/ (13 talks), 01-agentweb, 02-storage, 03-durable, 04-customers, 05-platforms, SUMMARY |
 | `stack/` | 10 | 01-hardware, 02-runtime, 03-languages, 04-data, 05-distributed, 06-frontend, 07-infra-ops, 08-selfext-agents, 09-selfext-apps, 10-rigor-flip, SUMMARY |
 
