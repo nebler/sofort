@@ -16,6 +16,8 @@ pub mod constants;
 pub mod entropy;
 #[cfg(unix)]
 pub mod hv;
+#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+pub mod hvf;
 pub mod inputs;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod ipc;
