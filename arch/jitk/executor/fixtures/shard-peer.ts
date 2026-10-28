@@ -56,7 +56,9 @@ if (mode === 'bad-abi') {
   await sleep(5000);
   process.exit(0);
 }
-if (mode === 'backpressure') {
+// backpressure never returns credit; quarantine does, and answers every
+// CANCEL with QUARANTINED, as a shard whose resets all fail.
+if (mode === 'backpressure' || mode === 'quarantine') {
   let consumed = 0;
   while (true) {
     const current = Number(read(64, 8).readBigUInt64LE());
@@ -66,9 +68,14 @@ if (mode === 'backpressure') {
       const slot = record.readUInt32LE(4);
       const generation = record.readBigUInt64LE(8);
       consumed += 1;
+      if (mode === 'quarantine') {
+        scalar(128, BigInt(consumed));
+      }
       if (kind === 1) {
         send(22, slot, generation, 0, Buffer.alloc(32));
         send(17, slot, generation, 0, Buffer.from('{"ok":1}'));
+      } else if (kind === 3 && mode === 'quarantine') {
+        send(IPC.quarantined, slot, generation, 0, Buffer.from('reset failed: fixture'));
       } else if (kind === 3) {
         send(19, slot, generation);
       } else {

@@ -66,7 +66,7 @@ fn done(pool: &mut Pool, slot: usize, generation: u64) -> Completion {
 }
 fn verify_reset(pool: &mut Pool, slot: usize) {
     pool.reset(slot);
-    assert!(matches!(pool.recv(), Event::Reset { slot: id } if id == slot));
+    assert!(matches!(pool.recv(), Event::Reset { slot: id, quarantined: None } if id == slot));
 }
 pub fn run(
     kvm: Arc<Kvm>,

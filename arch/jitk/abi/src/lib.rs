@@ -21,7 +21,7 @@
 /// snapshot format. The shard sends it in READY and the prepared snapshot
 /// `.identity` records it; Node and the shard refuse a mismatch. Bump it with
 /// any change to a value in this crate.
-pub const ABI_VERSION: u32 = 8;
+pub const ABI_VERSION: u32 = 9;
 
 pub mod layout {
     //! Guest physical memory layout, per architecture.
@@ -444,6 +444,10 @@ pub mod ipc {
     pub const READY: u32 = 20;
     pub const PING: u32 = 21;
     pub const STATS: u32 = 22;
+    /// In place of RELEASED: the reset failed and the slot is out of service
+    /// for the shard's lifetime (never admits again). Payload: the reason,
+    /// at most ERROR_BYTES printable ASCII bytes.
+    pub const QUARANTINED: u32 = 23;
 
     pub const READY_BYTES: usize = 4;
     /// Physical sandbox slots per shard.
@@ -458,7 +462,8 @@ pub mod ipc {
     /// STATS payload: four u64 then at most STATS_ROUND_TRIPS u64.
     pub const STATS_FIXED_BYTES: usize = 32;
     pub const STATS_ROUND_TRIPS: usize = super::ring::MAX_CALLS;
-    /// Records one generation may send: one per call, STATS, DONE/ERROR, RELEASED.
+    /// Records one generation may send: one per call, STATS, DONE/ERROR,
+    /// RELEASED or QUARANTINED.
     pub const RECORDS_PER_GENERATION: usize = super::ring::MAX_CALLS + 3;
     /// Outbound queue bound: every slot's generation plus READY.
     pub const OUTBOUND: usize = MAX_SLOTS * RECORDS_PER_GENERATION + 1;
