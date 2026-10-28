@@ -34,7 +34,10 @@ function scalar(s       ) {
 }
 // This is a structural/duplicate-key pre-scan, not an alternate JSON decoder.
 // Only JSON.parse interprets escapes, key identity, numbers, and JSON grammar.
-export function parseFrame(s       )       {
+export function parseFrame(s       )       { return decode(s,true)         ; }
+// Same limits for a bare JSON value (shard binary records carry no frame object).
+export function parseJson(s       )      { return decode(s,false); }
+function decode(s       , frame        )      {
   if (!s.length || s.length>LIMIT.frame) bad('FRAME_LIMIT');
   const stack                                                  =[];
   let budget=0;
@@ -72,7 +75,7 @@ export function parseFrame(s       )       {
     }
   }
   let value        ; try { value=JSON.parse(s); } catch { return bad('JSON'); }
-  if (!object(value)) bad('SCHEMA');
+  if (frame && !object(value)) bad('SCHEMA');
   const walk=(v        )     => {
     if (typeof v==='number' && (!Number.isFinite(v) || Math.abs(v)>Number.MAX_SAFE_INTEGER)) bad('NUMBER');
     if (typeof v==='string') scalar(v);
@@ -80,7 +83,7 @@ export function parseFrame(s       )       {
       for (const [k,x] of Object.entries(v)) { scalar(k); walk(x); }
     }
   };
-  walk(value); return value;
+  walk(value); return value        ;
 }
 export function schema(m      , direction               )      {
   switch (m.t) {
