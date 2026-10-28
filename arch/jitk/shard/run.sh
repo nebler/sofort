@@ -2,10 +2,10 @@
 # Whole-process benchmark driver, never invoked on a runtime/call path.
 set -euo pipefail
 cd "$(dirname "$0")"
-export PATH=/home/dev/.cargo/bin:"$PATH"
+export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
 cargo build --release --offline
 mkdir -p results
-sudo flock /home/dev/bench.lock bash -euo pipefail -c '
+sudo flock "${JITK_BENCH_LOCK:-/home/dev/bench.lock}" bash -euo pipefail -c '
   ./target/release/jitk-shard selftest > results/selftest.jsonl
   ./target/release/jitk-shard density > results/density.jsonl
   ./target/release/jitk-shard reset 1000 > results/reset-1000.jsonl

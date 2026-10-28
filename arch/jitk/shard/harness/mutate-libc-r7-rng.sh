@@ -1,16 +1,16 @@
 #!/bin/sh
-# Run under flock /home/dev/bench.lock after the main measurements.
+# Run under flock "${JITK_BENCH_LOCK:-/home/dev/bench.lock}" after the main measurements.
 # Mutates a task-owned copy, never the measured payload or source.
 set -eu
 ulimit -c 0
-cd /home/dev/r7-rng
-. /home/dev/.cargo/env
+cd "${JITK_R7_ROOT:-$HOME/r7-rng}"
+. "${CARGO_HOME:-$HOME/.cargo}/env"
 mutation_dir=${1:-$PWD/mutations}
 mkdir "$mutation_dir"
 cp -a payload-final/quickjs/quickjs-2026-06-04 "$mutation_dir/libc-omitted"
 arch/jitk/shard/tool.sh mutate-libc "$mutation_dir"
 rm -f "$mutation_dir/libc-omitted/.obj/quickjs-libc.o" "$mutation_dir/libc-omitted/qjs"
-make -C "$mutation_dir/libc-omitted" qjs CC=/home/dev/r7-rng/payload-final/musl-install/bin/musl-gcc \
+make -C "$mutation_dir/libc-omitted" qjs CC="$PWD/payload-final/musl-install/bin/musl-gcc" \
  CFLAGS='-O2 -g -Wall -fwrapv -fno-strict-aliasing -fno-stack-protector -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\"' \
  LDFLAGS='-static -no-pie -Wl,-z,max-page-size=4096' LDEXPORT= >raw/mutation-build.log 2>&1
 strip -o "$mutation_dir/qjs-libc-omitted" "$mutation_dir/libc-omitted/qjs"

@@ -2,8 +2,9 @@
 # Run only inside kvm-dev, in a NEW task-owned directory. The acceptance corpus
 # reuses the unchanged census binary; this separately verifies its source recipe.
 set -eu
-TASK_SQLITE_DIR=${1:?new directory under /home/dev/r7-grow required}
-case "$TASK_SQLITE_DIR" in /home/dev/r7-grow/*) ;; *) exit 2;; esac
+GROW_ROOT=${JITK_R7_GROW_ROOT:-$HOME/r7-grow}
+TASK_SQLITE_DIR=${1:?new directory under $GROW_ROOT required}
+case "$TASK_SQLITE_DIR" in "$GROW_ROOT"/*) ;; *) exit 2;; esac
 test ! -e "$TASK_SQLITE_DIR"
 mkdir -p "$TASK_SQLITE_DIR"
 cd "$TASK_SQLITE_DIR"

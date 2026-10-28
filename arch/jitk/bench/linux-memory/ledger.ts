@@ -1,6 +1,7 @@
 // Linux same-host memory ledger: N concurrent held VMs per cell, each cell in a
 // fresh cgroup v2 child entered at birth (spawn-cg, clone3 CLONE_INTO_CGROUP).
-// Runs as root on the KVM host under /home/dev/bench.lock; method and commands:
+// Runs as root on the KVM host under the bench lock ($JITK_BENCH_LOCK, default
+// /home/dev/bench.lock; ../../tslib/stream-process.ts); method and commands:
 // ../RESULTS-LINUX-MEMORY-2026-10-27.md.
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
