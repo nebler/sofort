@@ -452,6 +452,7 @@ fn stress(
     let names = ["return2", "one_tool", "promise10", "bomb"];
     let pick = |first: usize, slot: usize| names[(first / slots + slot) % names.len()];
     let mut completed = 0;
+    let (mut copies, mut discards) = (0, 0); // begin() resets by path
     let mut entropy = HashSet::new();
     for first in (0..n).step_by(slots) {
         let batch_start = Instant::now();
@@ -491,6 +492,11 @@ fn stress(
                     assert_eq!(generation, (first + slot + 2) as u64);
                     assert!(entropy.insert(completion.seed));
                     max_run_ns = max_run_ns.max(completion.metrics.run_ns);
+                    match completion.metrics.reset.map(|r| r.discard.is_some()) {
+                        Some(false) => copies += 1,
+                        Some(true) => discards += 1,
+                        None => {}
+                    }
                     assert_eq!(
                         completion.result.as_ref().unwrap_or_else(|error| panic!(
                             "stress completed={completed} slot={slot} generation={generation} batch_ns={} run_ns={} error={error}",
@@ -511,7 +517,7 @@ fn stress(
         verify_reset(pool, slot);
     }
     println!(
-        "{{\"event\":\"stress\",\"runs\":{completed},\"slots\":{slots},\"canary_leaks\":0,\"cross_talk\":0,\"fresh_entropy\":{}}}",
+        "{{\"event\":\"stress\",\"runs\":{completed},\"slots\":{slots},\"canary_leaks\":0,\"cross_talk\":0,\"fresh_entropy\":{},\"copy_resets\":{copies},\"discard_resets\":{discards}}}",
         entropy.len()
     );
 }

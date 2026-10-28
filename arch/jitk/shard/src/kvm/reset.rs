@@ -169,11 +169,16 @@ fn pagemap() -> Option<&'static File> {
         .get_or_init(|| {
             // SAFETY: sysconf takes a scalar name and has no memory effects.
             let page = unsafe { libc::sysconf(libc::_SC_PAGESIZE) };
-            if page != PAGE as libc::c_long {
-                return None;
+            let file = if page == PAGE as libc::c_long {
+                // Positional reads only: one descriptor serves every owner thread.
+                File::open("/proc/self/pagemap").ok()
+            } else {
+                None
+            };
+            if file.is_none() {
+                eprintln!("shard: pagemap unavailable (page size {page}); every reset discards");
             }
-            // Positional reads only: one descriptor serves every owner thread.
-            File::open("/proc/self/pagemap").ok()
+            file
         })
         .as_ref()
 }
