@@ -1,0 +1,100 @@
+# jitk CI on a GitHub-hosted Linux arm64 runner: `make -C arch/jitk ci`
+# (arch/jitk/tools/ci.sh) runs doctor, deps and every Linux-capable suite and
+# build. GitHub's arm64 runners expose no /dev/kvm, so the KVM suites (shard
+# snapshot/test-kvm, shard-host.sh, vmm test, test-linux) print a skip here;
+# they run on a KVM host (kvm-dev, or a self-hosted runner with JITK_CI_KVM=1).
+# See arch/jitk/README.md "CI".
+name: jitk-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'arch/jitk/**'
+      - '.github/workflows/jitk-ci.yml'
+  pull_request:
+    paths:
+      - 'arch/jitk/**'
+      - '.github/workflows/jitk-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: jitk-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    env:
+      JITK_CACHE: /home/runner/.cache/jitk
+      JITK_NPM_CACHE: /home/runner/.cache/jitk-npm
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      # Only what `make doctor` asks for on Linux: cc, clang, ld.lld,
+      # llvm-objcopy, flock, curl, git, tar, xz.
+      - name: Native tools
+        run: |
+          missing=
+          for pair in cc:build-essential clang:clang ld.lld:lld llvm-objcopy:llvm flock:util-linux xz:xz-utils curl:curl git:git; do
+            command -v "${pair%%:*}" >/dev/null 2>&1 || missing="$missing ${pair#*:}"
+          done
+          if [ -n "$missing" ]; then
+            sudo apt-get update -q
+            # shellcheck disable=SC2086 # one word per package
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends $missing
+          fi
+          # tools/npm.sh prefers a PATH npm; drop the image's Node so the
+          # pinned one (tools/deps.json) is bootstrapped, as on a clean host.
+          for path in $(type -ap npm npx corepack node); do sudo rm -f "$path"; done
+          hash -r
+          if command -v npm >/dev/null 2>&1; then echo "npm still on PATH: $(command -v npm)"; exit 1; fi
+
+      - name: Rust toolchain (tools/deps.json rust_toolchain)
+        run: |
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf -o "$RUNNER_TEMP/rustup-init" https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init
+            sh -c 'chmod +x "$1" && "$1" -y --no-modify-path --profile minimal --default-toolchain none' _ "$RUNNER_TEMP/rustup-init"
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh)" --profile minimal \
+            --component clippy --component rustfmt --target aarch64-unknown-none
+
+      # The jitk deps cache (Node, zig, libkrun VMM, shard binary; entries are
+      # content-keyed, so a stale one is rebuilt, never reused) and the cargo
+      # registry. Saved even when a later step fails.
+      - name: Restore caches
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /home/runner/.cache/jitk
+            /home/runner/.cache/jitk-npm
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: jitk-linux-arm64-${{ hashFiles('arch/jitk/tools/deps.json', 'arch/jitk/**/Cargo.lock', 'arch/jitk/**/package-lock.json') }}
+          restore-keys: jitk-linux-arm64-
+
+      - name: make -C arch/jitk ci
+        run: make -C arch/jitk ci
+
+      - name: Save caches
+        if: always() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /home/runner/.cache/jitk
+            /home/runner/.cache/jitk-npm
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: ${{ steps.cache.outputs.cache-primary-key }}

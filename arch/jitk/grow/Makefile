@@ -12,7 +12,7 @@ build/kernel-tools/native.o: ../kernel/native.c
 	clang -c $< -o $@
 
 build/kernel-tools/ffi.json: ../kernel/native-ffi.json build/kernel-tools/native.o
-	node -e 'const fs=require("fs"),p=require("path"),v=JSON.parse(fs.readFileSync("../kernel/native-ffi.json"));v.libraries=[p.resolve("build/kernel-tools/native.o")];fs.writeFileSync("$@",JSON.stringify(v))'
+	"$(call jitk_artifact,JITK_NODE)" -e 'const fs=require("fs"),p=require("path"),v=JSON.parse(fs.readFileSync("../kernel/native-ffi.json"));v.libraries=[p.resolve("build/kernel-tools/native.o")];fs.writeFileSync("$@",JSON.stringify(v))'
 
 build/kernel-tools/%: ../kernel/%.ts $(wildcard ../kernel/*.ts) $(TSLIB_SOURCES) build/kernel-tools/ffi.json $(SCRIPTC)
 	$(SCRIPTC) build $< --ffi build/kernel-tools/ffi.json -o $@

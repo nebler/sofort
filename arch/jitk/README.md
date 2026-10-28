@@ -97,6 +97,32 @@ shard binary, and the
 shard suites run from a clean clone with no variables set; see
 [`shard/README.md`](shard/README.md) "Clean clone on Linux arm64".
 
+## CI
+
+`make ci` ([`tools/ci.sh`](tools/ci.sh)) is the single entrypoint for a clean
+Linux arm64 host. It runs `doctor` and `deps` (a failure stops the run). Then
+the layering lint, `abi test`, the kernel build and host checks, `docs test`,
+shard `make test`, protocol, the executor checks that need no VMM backend,
+policy, the MCP build and native test, the sandbox unit test, tslib, bench, grow
+and every scriptc build. With a usable `/dev/kvm` it also runs `shard snapshot`,
+`shard test-kvm`, `executor/ipc/shard-host.sh` and the Linux `vmm test`, all
+under `$JITK_BENCH_LOCK`, plus `make test-linux` once that target exists. It
+ends by checking that the git checkout is still clean. Every skipped part
+prints its reason. The libkrun console-backend suites (`kernel/.READY` pins the
+Mac-built image), Hyperlight and HVF stay in the Mac's `make test`. The run
+exits 1 if any step failed. `JITK_CI_KVM=0` skips the KVM part and
+`JITK_CI_KVM=1` requires it.
+
+[`.github/workflows/jitk-ci.yml`](../../.github/workflows/jitk-ci.yml) runs it
+on GitHub's `ubuntu-24.04-arm` runner (2 vCPU, 8 GB) for pushes to `main`,
+pull requests and manual dispatch. It only triggers on changes under
+`arch/jitk/` or to the workflow. It installs only what `doctor` asks for and
+caches the jitk deps cache, npm cache and cargo registry, keyed by
+`tools/deps.json` and the lockfiles. GitHub's arm64 runners expose no
+`/dev/kvm`, so the KVM part is skipped there and still runs on kvm-dev, or on
+a self-hosted KVM runner with `JITK_CI_KVM=1`. On kvm-dev:
+`make -C arch/jitk ci`.
+
 MCP clients reach jitk through [`mcp/`](mcp/README.md): one `execute` tool that runs
 code-mode JS in a parked single-use VM, plus file-backed skill/doc resources.
 
