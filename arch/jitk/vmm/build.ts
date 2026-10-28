@@ -24,6 +24,9 @@ if (process.argv.includes('--print-binary')) {
 const env = environment();
 env.RUSTUP_TOOLCHAIN = pins(jitk).rust_toolchain;
 env.CARGO_PROFILE_RELEASE_PANIC = 'abort';
+// libkrun's Makefile runs a bare `cargo`; hosts whose non-login shells lack
+// rustup's bin directory (kvm-dev over ssh) get it appended, as in tools/pin.mk.
+env.PATH = (env.PATH || '') + ':' + (env.CARGO_HOME || (env.HOME || '') + '/.cargo') + '/bin';
 async function command(args: string[]): Promise<void> {
   await run(args, { env, inherit: true });
 }
