@@ -88,7 +88,7 @@ impl Input {
         };
         // SAFETY: The C-layout region descriptor is live through ioctl; size zero
         // removes the stopped VM input slot before its mapping is dropped.
-        if unsafe { ioctl(slot._vm.as_raw_fd(), KVM_SET_USER_MEMORY_REGION as _, &r) } < 0 {
+        if unsafe { ioctl(slot.vm.fd.as_raw_fd(), KVM_SET_USER_MEMORY_REGION as _, &r) } < 0 {
             return Err(io::Error::last_os_error());
         }
         Ok(())
@@ -104,7 +104,7 @@ impl Input {
         // SAFETY: The stopped VM receives a C-layout region descriptor pointing to
         // this live sealed mapping, which NativeVm retains until after memslot
         // removal or VM teardown.
-        if unsafe { ioctl(slot._vm.as_raw_fd(), KVM_SET_USER_MEMORY_REGION as _, &r) } < 0 {
+        if unsafe { ioctl(slot.vm.fd.as_raw_fd(), KVM_SET_USER_MEMORY_REGION as _, &r) } < 0 {
             return Err(io::Error::last_os_error());
         }
         Ok(())
@@ -169,7 +169,7 @@ impl NativeVm {
                 // SAFETY: The owner holds live VM/vCPU mappings and has no
                 // outstanding guest RAM borrows; KVM_RUN retains no
                 // userspace argument pointer.
-                let ret = unsafe { ioctl(s.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
+                let ret = unsafe { ioctl(s.vcpu.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
                 if ret >= 0 {
                     break;
                 }
@@ -177,18 +177,18 @@ impl NativeVm {
                     return Err(io::Error::last_os_error().to_string());
                 }
             }
-            s.pending_mmio = false;
-            let reason = s.run.u32(EXIT_REASON);
+            s.vcpu.pending_mmio = false;
+            let reason = s.vcpu.run.u32(EXIT_REASON);
             if reason as u64 != KVM_EXIT_MMIO {
                 return Err(format!("unexpected native KVM exit {reason}"));
             }
-            s.pending_mmio = true;
-            let len = s.run.u32(MMIO_LEN);
-            let write = s.run.byte(MMIO_WRITE);
-            if s.run.word(MMIO_ADDR) != ring::DOORBELL_GPA || len != 4 || write != 1 {
+            s.vcpu.pending_mmio = true;
+            let len = s.vcpu.run.u32(MMIO_LEN);
+            let write = s.vcpu.run.byte(MMIO_WRITE);
+            if s.vcpu.run.word(MMIO_ADDR) != ring::DOORBELL_GPA || len != 4 || write != 1 {
                 return Err("invalid native MMIO".into());
             }
-            let op = s.run.u32(MMIO_DATA);
+            let op = s.vcpu.run.u32(MMIO_DATA);
             rx.drain(s.load(ring::TX_PRODUCER), |cursor, dst| {
                 for (i, b) in dst.iter_mut().enumerate() {
                     // SAFETY: the modulo index stays in the fixed TX ring within this

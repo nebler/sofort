@@ -59,7 +59,7 @@ building.
 | `JITK_VMM_BINARY` (macOS) | `vmm/darwin-<inputs>/jitk-vmm` | [`vmm/build.ts`](vmm/build.ts); libkrun shared in `vmm/libkrun-darwin-<patches>/` |
 | `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` (macOS) | `hyperlight/darwin-arm64-<inputs>/` | [`bench/hyperlight/build.ts`](bench/hyperlight/build.ts) from that source; `cargo fetch --locked`, then offline build |
 | `JITK_SHARD_BINARY` (Linux) | `shard/linux-arm64-<inputs>/real` | shard `real` from this checkout, pinned toolchain; `cargo fetch --locked`, then offline build |
-| `JITK_SHARD_SNAPSHOT` (Linux) | `shard-snapshot/linux-arm64-glue-2m-<key>/helpers` | `make -C arch/jitk/shard snapshot` (needs KVM; not part of `deps`); key = ring kernel + helper hash, see [`shard/README.md`](shard/README.md) |
+| `JITK_SHARD_SNAPSHOT` | `shard-snapshot/{linux,darwin}-arm64-glue-2m-<key>/helpers` | `make -C arch/jitk/shard snapshot` (Linux: KVM, prepared by `real`; macOS: Hypervisor.framework, prepared by the shard's `hvf` tool; not part of `deps`); key = ring kernel + helper hash, see [`shard/README.md`](shard/README.md) |
 
 The cache root is `$JITK_CACHE`, else `$XDG_CACHE_HOME/jitk`, else
 `~/.cache/jitk`. It sits outside every checkout, so all clones and worktrees

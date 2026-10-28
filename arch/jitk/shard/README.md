@@ -1,13 +1,15 @@
 # jitk-shard: device-free nested-KVM spike
 
-`jitk-shard` is a library with one CLI entry point, `real`. `snapshot`, `arena`,
-`inputs`, `payload`, `streams` and `entropy` are portable; `kvm`, `owner`,
-`lease`, `clock`, `ipc` and `ipc_service` contain the Linux arm64 runtime. Shard-local
-UAPI constants live in `constants`, which re-exports the ring and IPC ABI from
-the jitk-abi crate (`../abi`). Offline preparation, fixtures,
-probes and measurement drivers belong to the `real` binary under `src/bin/harness`;
-they are not library modules. (The synthetic ABI-v0 assembly baseline was
-deleted in R12; it is at tag `pre-dead-code-2026-10-28`.)
+`jitk-shard` is a library with two CLI entry points, `real` (Linux) and `hvf`
+(macOS). `snapshot`, `arena`, `inputs`, `payload`, `streams`, `entropy`, `hv`
+and `slot` are portable; `kvm`, `owner`, `lease`, `ipc` and `ipc_service`
+contain the Linux arm64 runtime, `hvf` the macOS backend (see "Hypervisor
+seam" below). Shard-local UAPI constants live in `constants`, which re-exports
+the ring and IPC ABI from the jitk-abi crate (`../abi`). Offline preparation,
+fixtures, probes and measurement drivers belong to the `real` binary under
+`src/bin/harness` (and `src/bin/hvf.rs`); they are not library modules. (The
+synthetic ABI-v0 assembly baseline was deleted in R12; it is at tag
+`pre-dead-code-2026-10-28`.)
 
 Every build uses the one Rust pin, `rust_toolchain` in
 [`../tools/deps.json`](../tools/deps.json) (`$(CARGO_PIN)` in make,
@@ -145,6 +147,86 @@ The existing R6 ledger harness works with the configured thread count and also
 records cgroup `memory.peak`; its `spawn-cg` is built from
 [`../linux/spawn-cg.c`](../linux/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
+
+## Hypervisor seam (R10 #5) and the HVF backend
+
+`slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
+class regions (immutable extents read-only on the host and in the VM), bind,
+the ring record decoder and reply path, and reset, admission sampling, trim
+and verify with the pristine invariant (`slot/reset.rs`). `slot/tests.rs` runs
+those state machines on any host with a fake backend. Behind the seam
+(`hv.rs`):
+
+| | KVM (`kvm/`, Linux) | HVF (`hvf.rs`, macOS) |
+| --- | --- | --- |
+| `Vm` | one VM fd per slot, memslots | one VM per process, so one slot per engine process |
+| memory reset | pagemap: copy private pages + DC CIVAC, or `MADV_DONTNEED` | copy both extents + DC CIVAC (`MemoryReset::Copy`), or fresh mappings (`Remap`) |
+| `Vcpu::run` | `KVM_RUN`, MMIO doorbell completed by `settle`, lease check + `immediate_exit` | `hv_vcpu_run`, doorbell data abort completed in place, CNTP RAZ/WI |
+| register file | `KVM_GET_REG_LIST` ids (`JTKREGS2`) | recorded table, probed at startup (`JTKHVF02`) |
+| kick | lease signal | `hvf::Kicker` (`hv_vcpus_exit`) |
+
+`kvm::Slot` is `Slot<KvmVm>` with the same constructors, labels and call order
+as before; the native worker stays KVM-only. The job clock, the per-run LOG
+budget and quarantine reasons live in the generic slot, so HVF has them too:
+`Slot::set_clock` registers a `clock::Clock` cell (the owner pool does this on
+Linux; `clock_advances_inside_a_run` checks it on HVF), and
+`Slot::quarantine_reason` is what the IPC QUARANTINED message carries
+(`failed_reset_quarantines_with_reason`). HVF has no IPC loop yet (phase 2),
+so nothing sends QUARANTINED there.
+
+On macOS arm64, `make snapshot` builds the same two classes as on Linux, prepared
+by the `hvf` tool (darwin-arm64 cache entries; `.mem` has KVM's format, `.regs`
+is HVF's). `make test-hvf` runs `src/hvf/tests.rs` on them (~4 s warm; signed
+by `hvf-run.sh`): corpus `return 2` / `one_tool` with a byte+register verify
+after every reset, the spike's leak mix (globals, arena dirtying, OOM, canaries),
+`kick`, the hostile cache-off check, non-executable writable extents, the
+register probe, and host writes to immutable RAM.
+
+**Register coverage (risk 2).** HVF has no register enumeration, so the first
+vCPU of a process probes every core, SIMD and system register id on a
+throwaway vCPU (~2 ms) and fails closed unless the result equals
+`hvf::SYS_REGISTERS` (`probe_check_fails_closed`). On macOS 26.6.1 / M4 Pro that
+is 173 system registers: the spike's 107, the 13 VMM-settable ID registers, and
+53 undocumented implementation-defined ones (S3_4_C15_\*, S3_6_C15_\*). Those
+53 cannot be restored: any write, even of the value just read, makes the next
+`hv_vcpu_run` fail with `HV_UNSUPPORTED`. They are `Checked`: every guest MSR
+and MRS to them traps to the VMM (`impdef_registers_are_out_of_guest_reach`),
+and the verify compares them with their values at vCPU creation.
+
+**Reset vs a cache-off guest (risk 1).** Measured on the M4 Pro: a guest with
+its MMU and caches off sees the host's uncleaned stores, and the host sees all
+of its stores, so data was coherent in both directions. What was stale is
+instruction fetch: after a reset that keeps the physical pages, a fixture ran
+the previous fixture's code from the I-cache in 6–14 of 40 runs (0 with an
+I-cache invalidate or fresh pages). That is what the spike's unfinished check
+tripped over. Now:
+- the writable extents are mapped without execute permission (`Region::Writable`),
+  so no instruction fetch, and no I-cache line, ever comes from tenant-writable
+  memory (`writable_extents_never_execute`; fixtures get one executable page
+  until the next reset);
+- the default reset copies both extents and cleans every line to the point of
+  coherency (DC CIVAC, which macOS executes at EL0; `sys_dcache_flush` is a
+  no-op). It relies on the architectural DC CIVAC definition, not on the
+  coherency measured above. `Remap` relies instead on XNU handing a VM only
+  pages that are coherent at PoC, which XNU needs for its own isolation.
+
+glue-2m, `return 2`, p50 over 1,000 runs, M4 Pro at load 5–6 (`hvf bench`):
+
+| reset | reset | run | run + reset |
+| --- | ---: | ---: | ---: |
+| spike (memcpy only, unsafe for instruction fetch) | 29 µs | 24 µs | 53 µs |
+| **Copy + DC CIVAC (default)** | 71 µs | 24 µs | **96 µs** (one_tool 107 µs) |
+| Remap (fresh mappings; next run refaults) | 22 µs | 190 µs | 212 µs |
+
+For the record, DC CIVAC over the 1.39 MiB is ~42 µs, an I-cache invalidate
+(`sys_icache_invalidate`) ~90 µs; the non-executable mapping makes the latter
+unnecessary.
+
+Open: the kernel should `tlbi vmalle1` (risk 3) and could `ic ialluis` once
+the CHECKPOINT doorbell returns. KVM has no per-memslot execute control, and
+its copy path keeps the physical pages, so a tenant's arena code can survive in
+the I-cache there too, unless the CPU has CTR_EL0.DIC. A kernel `ic ialluis`
+would close both. Not done here: it would change `kernel/.READY`.
 
 ## Native TypeScript harness
 

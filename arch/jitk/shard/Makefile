@@ -27,6 +27,16 @@ test-kvm: snapshot
 	$(CARGO_PIN) build --release --locked --offline --bin real
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
 
+# macOS arm64: the Hypervisor.framework backend's tests (src/hvf/tests.rs) on
+# the prepared HVF snapshots (`make snapshot` builds them on the Mac too); the
+# test binary is signed with the hypervisor entitlement by hvf-run.sh. HVF
+# allows one VM per process, so the tests run on one thread. HVF_TEST_ARGS
+# (e.g. --nocapture) goes to the test binary; HVF_TESTS narrows the filter.
+HVF_TESTS ?= hvf::
+.PHONY: test-hvf
+test-hvf: snapshot
+	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="$(CURDIR)/hvf-run.sh" $(CARGO_PIN) test --locked --offline --lib $(HVF_TESTS) -- --ignored --test-threads=1 $(HVF_TEST_ARGS)
+
 # src/kvm_abi.rs (the KVM UAPI constants) is checked in; abi-gen.ts derives it.
 abi:
 	"$(call jitk_artifact,JITK_NODE)" abi-gen.ts

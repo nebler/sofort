@@ -340,7 +340,7 @@ impl Managed {
         assert_eq!(self.cpu.canary(), 0, "stale RAM canary");
         self.seed = self.cpu.bind(job.generation, &job.source, entropy);
         self.lease = self.lease.arm(job.generation, job.deadline_ns);
-        self.cpu.lease = Some(self.lease.clone());
+        self.cpu.set_lease(self.lease.clone());
         self.activity = Activity::Running;
         self.started = Instant::now();
         self.waited = None;
