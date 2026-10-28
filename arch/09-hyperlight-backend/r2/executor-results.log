@@ -1,3 +1,0 @@
-(node:1205) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
-(Use `node-real --trace-warnings ...` to show where the warning was created)
-{"checks":6,"status":"PASS","pool":{"tokens":0,"creating":0,"parked":0,"live":0,"maxTokens":1,"maxCreating":1,"closed":true}}

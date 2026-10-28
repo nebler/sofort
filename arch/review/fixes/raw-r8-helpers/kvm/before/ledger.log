@@ -1,8 +1,0 @@
-{"phase": "before", "rep": 0, "n": 1, "current": 36864000}
-{"phase": "before", "rep": 0, "n": 16, "current": 50081792}
-{"phase": "before", "rep": 0, "n": 32, "current": 63754240}
-{"phase": "before", "rep": 0, "n": 64, "current": 87040000}
-{"phase": "before", "rep": 1, "n": 1, "current": 38064128}
-{"phase": "before", "rep": 1, "n": 16, "current": 50216960}
-{"phase": "before", "rep": 1, "n": 32, "current": 62533632}
-{"phase": "before", "rep": 1, "n": 64, "current": 88981504}

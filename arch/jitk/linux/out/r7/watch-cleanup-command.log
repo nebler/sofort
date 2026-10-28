@@ -1,3 +1,0 @@
-JITK_GATE {"gate": "suite_startup", "event": "start"}
-JITK_GATE {"gate":"injected_stall","event":"start"}
-JITK_TIMEOUT TimeoutError('gate injected_stall: no completed-work progress for 0.6s (last completed=-1)'); log=test.log

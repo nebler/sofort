@@ -1,5 +1,0 @@
-{
-  "path": "src/syscalls/rt_sigaction.rs",
-  "source": "pub fn call(a: &[usize]) -> isize {\n    let _ = a;\n    -38\n}\n",
-  "mode": "live"
-}

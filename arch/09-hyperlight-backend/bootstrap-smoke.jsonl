@@ -1,2 +1,0 @@
-{"t":"call","id":0,"ns":"math","fn":"add","args":[20,22]}
-{"t":"done","result":42}

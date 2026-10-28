@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-fstat/mutant-wrong-size/kernel-08c9ddf25878902e8693297711566cf516643489c87cc3294671144f0f2cd8b7.bin", "sha256": "08c9ddf25878902e8693297711566cf516643489c87cc3294671144f0f2cd8b7", "bytes": 553840}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
-    Finished `release` profile [optimized] target(s) in 0.88s

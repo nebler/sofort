@@ -1,8 +1,0 @@
-jitk: delegating executor/dependencies (see /Users/noah/.t3/worktrees/sofort/t3-5d99119a/arch/jitk/executor/README.md)
-
-added 49 packages in 2s
-jitk: delegating mcp/build (see /Users/noah/.t3/worktrees/sofort/t3-5d99119a/arch/jitk/mcp/README.md)
-"/tmp/jitk-09/node-real" "/opt/homebrew/lib/node_modules/npm/bin/npm-cli.js" ci --ignore-scripts --no-audit --no-fund --prefer-offline --cache "/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T//jitk-npm-cache"
-
-added 95 packages in 575ms
-for f in jitk.mjs server.mjs test.mjs bench.mjs providers/*.mjs; do "/tmp/jitk-09/node-real" --check $f || exit 1; done

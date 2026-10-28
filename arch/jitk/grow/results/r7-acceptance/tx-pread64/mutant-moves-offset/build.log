@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-pread64/mutant-moves-offset/kernel-ccecdd43007bc20c2a4c357859b1e2638395cb18a6f8b72d8d552b498d69f2e0.bin", "sha256": "ccecdd43007bc20c2a4c357859b1e2638395cb18a6f8b72d8d552b498d69f2e0", "bytes": 553840}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
-    Finished `release` profile [optimized] target(s) in 0.99s

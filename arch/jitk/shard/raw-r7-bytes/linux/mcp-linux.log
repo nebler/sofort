@@ -1,2 +1,0 @@
-jitk-mcp: execute disabled; native Linux KVM ring profiles; warm=0
-{"status":"PASS","nativeCalls":9,"checks":["byte-output","exit42","two-file-generations","160k-output","path/base64-rejection","unknown-profile","deadline-kill","stopped-worker"]}

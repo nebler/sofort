@@ -1,6 +1,0 @@
-[package]
-name = "r9json"
-version = "0.0.0"
-edition = "2024"
-[dependencies]
-jitk-shard = { path = "/Users/noah/code/sofort/.claude/worktrees/agent-a214807b8e2e71ea3/arch/jitk/shard" }

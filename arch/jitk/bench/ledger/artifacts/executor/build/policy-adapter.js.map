@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../policy-adapter.ts"],
-  "sourcesContent": ["// Thin loader only: area 07 owns every policy rule and its canonical subtree.\nimport {fileURLToPath} from 'node:url';\nconst canonical=new URL('../policy/policy.mjs',import.meta.url);\nexport const policySource=fileURLToPath(canonical);\nexport const rules:any=await import(policySource);\nexport type Tool={\n  args:(args:unknown[])=>unknown[]; reads:'none'|'public'|'private'; egress:boolean; writes:boolean;\n  endorsable?:boolean; approval?:'always'; timeoutMs:number;\n  invoke:(args:any,credential:any,context:{signal:AbortSignal;idempotencyKey:string})=>Promise<any>;\n  output:(result:any)=>any;\n};\nexport type Issuer={issue:(scope:{run:string;scope:string;ttlMs:number})=>Promise<any>;revoke:(credential:any)=>Promise<void>};\nexport type PolicyConfig={tools?:Record<string,Record<string,Tool>>;issuer?:Issuer;limits?:{calls?:number;outstanding?:number;denials?:number}};\n// Compatibility functions receive no credentials. Credentialed tools use explicit\n// host Tool.invoke declarations; tokens never become provider or guest arguments.\nexport const noCredentials:Issuer={issue:async()=>undefined,revoke:async()=>{}};\n"],
-  "mappings": ";AACA,SAAQ,qBAAoB;AAC5B,IAAM,YAAU,IAAI,IAAI,wBAAuB,YAAY,GAAG;AACvD,IAAM,eAAa,cAAc,SAAS;AAC1C,IAAM,QAAU,MAAM,OAAO;AAW7B,IAAM,gBAAqB,EAAC,OAAM,YAAS,QAAU,QAAO,YAAS;AAAC,EAAC;",
-  "names": []
-}

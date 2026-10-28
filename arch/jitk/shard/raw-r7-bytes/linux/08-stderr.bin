@@ -1,3 +1,0 @@
-Error: in prepare, near "SELEC": syntax error
-  SELEC v FROM n;
-  ^--- error here

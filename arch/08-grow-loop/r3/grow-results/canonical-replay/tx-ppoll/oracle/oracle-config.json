@@ -1,9 +1,0 @@
-{
-  "argv": [
-    "ppoll"
-  ],
-  "expected_hex": "70696e670a2070706f6c6c204f4b0a",
-  "stdin_hex": "70696e670a",
-  "samples": 1,
-  "injections": []
-}

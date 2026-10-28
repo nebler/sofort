@@ -1,9 +1,0 @@
-{
-  loadBefore: '2:36  up  3:50, 2 users, load averages: 26.91 69.25 52.91',
-  loadAfter: '2:36  up  3:50, 2 users, load averages: 26.91 69.25 52.91',
-  watchdogDeadlineMs: 250,
-  hostEventLoopBlockedMs: 1500,
-  observedReapAfterHostUnblockMs: 1509.562417,
-  reaped: true,
-  killLatency: 'UNVERIFIED: host event loop intentionally blocked'
-}

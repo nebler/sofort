@@ -1,8 +1,0 @@
-hello jitk fdt=0000000083e00000
-{"v":2,"kind":"sys.enter","seq":1,"nr":29,"pc":4194500,"args":[1,21523,4198400,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"sys.exit","seq":1,"ret":-25,"output":"4141414141414141"}
-{"v":2,"kind":"sys.enter","seq":2,"nr":29,"pc":4194516,"args":[18446744073709551615,21523,4198400,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"sys.exit","seq":2,"ret":-25,"output":"4141414141414141"}
-{"v":2,"kind":"sys.enter","seq":3,"nr":94,"pc":4194592,"args":[1,21523,4198400,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"done","seq":3,"code":1}
-exit=0000000000000001

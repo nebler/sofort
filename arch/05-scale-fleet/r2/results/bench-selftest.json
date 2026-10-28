@@ -1,8 +1,0 @@
-{
-  "success_cases": 32,
-  "negative_cases": 3,
-  "children_remaining": 0,
-  "result": "PASS",
-  "uptime_before": "2:29  up  3:43, 2 users, load averages: 101.66 47.30 29.40",
-  "uptime_after": "2:29  up  3:43, 2 users, load averages: 111.22 50.19 30.52"
-}

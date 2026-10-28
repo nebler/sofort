@@ -1,3 +1,0 @@
-   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-05/r3/kernel)
-    Finished `release` profile [optimized] target(s) in 12.68s
-{"image": "/private/tmp/jitk-05/r3/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}

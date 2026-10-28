@@ -1,5 +1,0 @@
-{"event":"environment","pid":27215,"threads":1,"nested":true,"loadavg":"1.24 0.50 0.22 1/180 27215","uptime":"511.36 2877.35","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026"}
-{"event":"sample","i":0,"reset_ns":70126,"run_ns":37505531,"exits":1,"calls":0,"owner_reply_ns":0}
-{"event":"sample","i":1,"reset_ns":3050296,"run_ns":35705586,"exits":1,"calls":0,"owner_reply_ns":0}
-{"event":"sample","i":2,"reset_ns":2704791,"run_ns":37435446,"exits":1,"calls":0,"owner_reply_ns":0}
-{"event":"summary","fixture":"canary","n":3,"reset":{"n":3,"p50_ns":2704791,"p99_ns":3050296},"run_to_done":{"n":3,"p50_ns":37435446,"p99_ns":37505531},"reset_bind_run":{"n":3,"p50_ns":44661806,"p99_ns":46947424},"owner_reply":{"n":3,"p50_ns":0,"p99_ns":0},"cpu_ns":130390875,"wall_ns":130463447,"vm_exits":3,"calls":0,"fresh_entropy_count":3,"math_random_distinct":1}

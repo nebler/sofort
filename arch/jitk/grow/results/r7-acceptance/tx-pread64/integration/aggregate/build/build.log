@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-pread64/integration/aggregate/build/kernel-b2feb8b4928d2a091eafa704cfe883970746d6c94903452687597fc108f159e7.bin", "sha256": "b2feb8b4928d2a091eafa704cfe883970746d6c94903452687597fc108f159e7", "bytes": 1998974}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
-    Finished `release` profile [optimized] target(s) in 1.54s
