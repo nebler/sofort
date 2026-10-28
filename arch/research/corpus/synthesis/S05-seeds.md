@@ -2376,3 +2376,49 @@ All starts, demos and kill thresholds below are **I/E**, not work already perfor
 | [C05-platforms:L160](/Users/noah/code/sofort/arch/research/connect26/05-platforms.md:160) · core | C07 · 19:00 | Audience, advertising | Wish | "generating content for LLMs and agents to consume" | An advertiser asks about dual human/machine audiences for video. | A concrete agent-consumed-video task and representation/metadata experiment would be needed. Compare with ordinary text/transcripts; an advertiser's question alone establishes no empty market. |
 | [C05-platforms:L161](/Users/noah/code/sofort/arch/research/connect26/05-platforms.md:161) · core | C07 · 19:00 | Anthony / Runway CPO | Limit / Prediction | "I have not seen as much focus on that on the video side yet" | Runway has not seen equivalent attention to machine-oriented video; this is a tentative observation, not a proven market gap. | Validate a specific machine-consumable-video task before designing formats or tools. The speaker's limited observation is an information gap, not proof of vacancy. |
 
+## Ranked projects — all twenty
+
+**I/E — Reading the scores:** a = specificity/buildability; b = speaker credibility plus independent corroboration; c = field emptiness for the exact artifact, all 1–5. The six builder scores are **C / A / G / V / S / N**: cool, stack adjacency, real gap, value, survives better models, not GrowOS. Field emptiness and real gap are separate: an occupied upstream fix can still be useful. Scores are judgments; the ordering gives added weight to a cheap decisive result and to the builder's request to explore non-infrastructure work. No score asserts a validated market.
+
+| Rank | Project | Size / plausible outcome | a | b | c | C / A / G / V / S / N | I — decisive constraint |
+|---|---|---|---|---|---|---|---|
+| 1 | **P01 — Tailor once versus keep editing** | Big field study; Small prototype | 5 | 3 | 3 | 4 / 4 / 3 / 4 / 5 / 5 | Real households must prefer the outcome; editing frequency is not the success metric. |
+| 2 | **P02 — Executable personal-app retirement** | Big narrow library; Small template | 4 | 4 | 3 | 4 / 5 / 3 / 4 / 5 / 5 | Existing export/static fallback may make a recipe sufficient. |
+| 3 | **P03 — Blind product-insight rediscovery** | Tiny protocol; Small corpus | 5 | 3 | 3 | 5 / 5 / 3 / 4 / 4 / 5 | Need uncontaminated pre-insight artifacts and reliable blind utility judgments. |
+| 4 | P06 — One provider-owned semantic fake | Tiny upstream package/PR | 4 | 4 | 2 | 3 / 5 / 2 / 4 / 5 / 5 | Provider participation and a genuinely missing operation. |
+| 5 | P07 — On-phone private-classifier parity | Small experiment/recipe | 4 | 4 | 2 | 4 / 4 / 2 / 4 / 4 / 5 | Private workload, real device, newer model baseline. |
+| 6 | P08 — Paid-account ownership evidence | Small tool or Tiny vault template | 5 | 2 | 2 | 3 / 5 / 2 / 3 / 5 / 5 | A note in the password manager may solve everything. |
+| 7 | P04 — Author applicability editor | Small upstream UI/fixtures | 4 | 3 | 2 | 3 / 5 / 2 / 4 / 5 / 5 | Delphi owner corrections may already be enough. |
+| 8 | P05 — Persona 3 catchup adapter | Small upstream game contribution | 5 | 2 | 1 | 5 / 3 / 1 / 4 / 5 / 5 | The broad idea is taken; check current game support. |
+| 9 | P13 — Cancel/steer/late-effect fixtures | Tiny upstream PR | 5 | 4 | 1 | 3 / 5 / 1 / 4 / 5 / 4 | Reproduce a current adapter bug before adding a test. |
+| 10 | P11 — Rare-needed instruction retirement | Tiny skill-up extension | 5 | 4 | 2 | 3 / 5 / 2 / 4 / 3 / 5 | Preserve originating rare failures and exposure counts. |
+| 11 | P19 — Reference/remake controller comparison | Small adapter/Tiny recipe | 4 | 2 | 1 | 5 / 4 / 1 / 3 / 5 / 5 | Replay and state comparison already exist; quantify reset variance. |
+| 12 | P09 — Recipient-side Final Cut acceptance | Small workflow fixture | 4 | 3 | 1 | 4 / 3 / 1 / 4 / 5 / 5 | Must find value beyond PostLab media readiness. |
+| 13 | P17 — Delayed unaided repair study | Tiny self-study; Big with participants | 4 | 3 | 1 | 4 / 4 / 1 / 4 / 5 / 5 | Existing skill-formation research; own-project delayed transfer only. |
+| 14 | P10 — Environment-paired routing cases | Tiny benchmark contribution | 5 | 3 | 2 | 4 / 5 / 2 / 4 / 3 / 5 | Strong execution-grounded router baselines already exist. |
+| 15 | P20 — One creator's media extension | Ambiguous → Small extension | 4 | 2 | 1 | 4 / 4 / 1 / 4 / 5 / 5 | Powermove already builds the editor; identify one real repeated task. |
+| 16 | P18 — Friendship mural recipe | Small art weekend/Tiny write-up | 5 | 2 | 1 | 5 / 3 / 1 / 3 / 5 / 5 | Local delight can justify the work despite minimal novelty. |
+| 17 | P12 — Fixed-scope versus scope-expansion costs | Tiny blog/dataset | 5 | 4 | 1 | 3 / 5 / 1 / 4 / 5 / 5 | Useful-output denominator, not a new FinOps product. |
+| 18 | P16 — Test-policy outcome ablation | Tiny benchmark extension | 5 | 3 | 1 | 3 / 5 / 1 / 3 / 3 / 5 | External acceptance must be independent of treatment. |
+| 19 | P15 — Private/public projection fixtures | Tiny Copybara contribution | 5 | 3 | 1 | 3 / 5 / 1 / 3 / 5 / 5 | Need a real failing export policy; generic projection is mature. |
+| 20 | P14 — Cases versus commentary transfer | Ambiguous research protocol | 3 | 3 | 2 | 4 / 2 / 2 / 4 / 3 / 5 | Expert access and confound control dominate a solo side project. |
+
+## Top three and the next concrete bet
+
+1. **P01 — Tailor once versus keep editing.** **Q:** “How do you actually make lives better?” — Sunil, [V12 51:00](https://www.youtube.com/watch?v=gPBw5Cr9VJo&t=3060s). **Q:** “I spent it like an hour ... appealing to my family. And I'm good.” — Ben/Modem, [V80 1:33](https://www.youtube.com/watch?v=HDdbU10r7Js&t=5580s). **I:** recruit a handful of households around one existing coordination problem before writing a generator. A result favoring one-time tailoring would change what to build; a result favoring the ordinary tool saves a month of building.
+2. **P02 — Executable personal-app retirement.** **Q:** “You can make software more disposable.” — Max Kanat-Alexander, [V79 10:00](https://www.youtube.com/watch?v=bU5gDVyu_28&t=600s). **I:** implement one party-planning template with export, a meaningful static fallback, a restore rehearsal and explicit dependency declarations. A library is justified only if the same contract helps several real temporary apps. The new evidence sharpens an earlier exit-drill idea; it does not make migration infrastructure empty.
+3. **P03 — Blind product-insight rediscovery.** **Q:** “create an isolated environment ... similar or better.” — Theo, [V14 1:14](https://www.youtube.com/watch?v=H0H_zhKnu3U&t=4440s). **I:** obtain three pre-insight examples and run the cheapest clean experiment. The win is finding the hint or context that changes the outcome, or demonstrating that the model already succeeds—not preserving a claim that human taste is permanently special.
+
+## Most surprising signal
+
+**Q:** Ben/Modem customized a family-facing display for an hour and concluded, “And I'm good.” **I:** the overlooked consumer product may be **a tool that becomes right once and then stays quiet**. The same corpus repeatedly predicts perpetual agents, self-editing systems and more generation. This anecdote suggests an alternative unit of value: completed tailoring, followed by ordinary use. It is only one practitioner's family example, so P01 is deliberately a demand experiment rather than a product claim. Geoff's “society at large does not want an assistant” makes the assumption worth testing; it does not prove a population preference. [Source: V80 1:31–1:33](https://www.youtube.com/watch?v=HDdbU10r7Js&t=5460s).
+
+**F/I — Most surprising search result:** the apparently ideal long-break game-recap seed already has both [Savecraft](https://savecraft.gg/) and a remarkably close [GameBuddy implementation](https://github.com/Priyansh-Shukla/Gamebuddy). This is why the game project survives as an adapter, not a new company-shaped category. “I wish this existed” is strong evidence of a person's desire and weak evidence of absence.
+
+## Five-line TL;DR
+
+**I:** Start with a family-app experiment: useful one-time tailoring may matter more than continuous editing.  
+**I:** Max's disposability argument yields a concrete retirement/export/fallback template, conditional on existing tools falling short.  
+**I:** Theo's hidden-insight wish yields a cheap blind experiment; accept successful alternative designs and null results.  
+**F/I:** Most infrastructure and several lovely consumer ideas already have builders; favor adapters, fixtures and measured contributions.  
+**F:** The report retains 1,917 ledger rows across all 96 available transcripts; two of the 98 inventory videos lack usable captions.
