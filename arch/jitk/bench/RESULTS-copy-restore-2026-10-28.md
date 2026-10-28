@@ -143,10 +143,48 @@ sampled again after `idle-trim + 0.5 s`. Process `RssAnon` and the memcg `memory
   `executor/ipc/shard-host.sh`.
 - Mac: `make deps build`; the `delegate` suites `executor`, `protocol`, `mcp` and `shard` pass.
 
+## 5. Post-review hardening (security review M1, M2, L2)
+- **Sampled content check on the live path (M1).** `Slot::admit()` is now the only way to
+  a bind. Every `sample-every`th admission of a slot (default 1,024; 0 = off) runs a content
+  check:
+  - both writable extents are compared byte for byte with the file;
+  - pagemap must show no private page in the immutable extents (a byte compare there would
+    fault 30 MiB of host PTEs into every sampled slot);
+  - every register and the MP state must match.
+
+  On a mismatch it logs `SECURITY`, counts (`SAMPLE_FAILURES`), resets the slot on the
+  discard path and checks again. A second mismatch quarantines the slot. One check costs
+  **0.30–0.32 ms** (release, nested, glue-2m, 3 runs of 20), which is **~0.3 µs per admission
+  amortized**: about 0.1% of the 0.28 ms owner CPU of a `return 2`.
+- **Coverage asserted (M2).** Snapshot loading rejects register ids outside the reset's
+  coverage: SVE, unknown classes, PAC keys, PMU/SPE, MTE, and SVE/SME controls.
+  `Slot::new` asserts that the vCPU init features are exactly PSCI 0.2, and that KVM's live
+  register list equals the snapshot's.
+- **Slot-scoped reset failures (L2).** A rejected ioctl or madvise during a reset or trim
+  quarantines that slot only. Its lease is still acknowledged, so the watchdog does not
+  escalate, and the owner keeps serving its other slots. Every later START on the slot
+  completes with `slot_unavailable` without binding.
+- Tests: `sampled_admission_check_catches_a_lying_pristine_flag` corrupts RAM, then a
+  register, behind the flag, and checks the sampling cadence. It also checks that a private
+  immutable page quarantines the slot. `reset_failure_quarantines_only_its_slot` injects a
+  real `KVM_SET_ONE_REG` rejection (test builds only) on the RELEASE path and on the
+  `finish()` path, with a co-located slot on the same owner. A unit test covers the
+  register-coverage predicate.
+- Re-run in a fresh scratch tree: `make -C shard test` 34/34, `test-kvm` 12/12 (both
+  classes), `shard-host.sh` (`build/shard-check.js`) PASS with 140 assertions; clippy and
+  rustfmt clean. Mac `delegate shard test`: 16/16.
+
 ## Risks and limits
 - **No metal.** The clean-to-PoC step matters only without FEAT_S2FWB. On this nested host,
   the uncached-guest probe also passed without it, so the hazard it closes was reasoned
   about, not reproduced. Its cost is included in the 74 µs reset.
+- **The discard path depends on KVM's clean-on-map, which was reasoned, not reproduced.**
+  Without S2FWB, the discard path counts on KVM cleaning each freshly CoW'd page to PoC
+  before installing its stage-2 entry. That comes from KVM's source; under nesting no
+  uncached-read difference showed up on either path. On metal without FEAT_S2FWB (e.g.
+  Neoverse N1), both paths should be checked with
+  `hostile_guest_writes_and_registers_never_reach_the_next_run`, whose probe reads with the
+  MMU and caches off.
 - **Trust in the snapshot file is unchanged.** Copy-restore reads the same file that clean
   guest pages map. Modifying or truncating it on disk affects both paths alike.
 - **The guest's own pages, not KVM state, are covered.** Reset covers RAM, the register
