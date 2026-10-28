@@ -38,7 +38,9 @@ build: deps
 	+@$(DELEGATE) executor build
 	+@$(DELEGATE) mcp build
 	+@$(DELEGATE) grow build
+# The layering lint (tools/layering.ts) runs first: guest <- engine <- host <- research.
 test: deps
+	@"$(ROOT)/tools/.work/bin/layering" --self-test
 	+@$(DELEGATE) kernel test
 	+@$(DELEGATE) vmm test
 	+@$(DELEGATE) vmm/sandbox test

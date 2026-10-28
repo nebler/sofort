@@ -28,7 +28,7 @@ From this directory:
 make doctor         # host check (above)
 make deps           # pinned Node/npm, zig, VMM, Hyperlight source/worker/snapshot → jitk cache
 make build          # kernel → VMM → protocol generated JS → executor
-make test           # every root suite plus sandbox, policy, Hyperlight adapter
+make test           # layering lint, then every root suite plus sandbox, policy, Hyperlight adapter
 make bench          # canonical load-aware area-06 harness
 make demo           # executor result → deleted syscall regrowth → Lua
 make linux-nested   # area-05 nested-KVM functional suite
@@ -115,6 +115,12 @@ Owner entrypoints are a subtree `Makefile` target or a same-named shell script:
 `protocol/{build,test}`, `grow/{test,grow,demo}`, `bench/{test,bench}`, and
 `linux/{test,nested}`. Adaptations to existing documented owner scripts live
 only in `docs/delegate.py`. H2 is sequential and stops at the first failure.
+`make test` first runs the layering lint ([`tools/layering.ts`](tools/layering.ts)):
+guest code references only guest code, the Rust engine (`shard/src`, `vmm/src`)
+only engine or guest code, and the import closure of the product entry points
+(MCP server, executor, policy, protocol dispatcher) contains no bench, grow,
+linux, docs, tools or tslib file, no evidence path and no `.READY` name. Its
+`KNOWN` list holds today's four exceptions, each with the change that removes it.
 `make test` includes the Linux README's full nested functional suite on kvm-dev
 (QEMU only for the explicit `JITK_NESTED_BACKEND=qemu`); `make linux-nested`
 runs that suite alone.
