@@ -6,7 +6,7 @@
 //   hard:  curl/git/tar/xz; rustup with the pinned toolchains, targets and
 //          components; macOS: Xcode clang, ld.lld, llvm-objcopy; Linux: cc,
 //          clang, ld.lld, llvm-objcopy
-//   soft:  the evidence store (evidence/manifest.json); clippy/rustfmt (kernel make check/fmt); the deps cache (`make deps`, which `make build` runs anyway); Docker
+//   soft:  the evidence store (evidence/manifest.json); clippy/rustfmt (abi test, kernel make check/fmt); the deps cache (`make deps`, which `make build` runs anyway); Docker
 //          (GrowOS and, for now, the Linux VMM build); macOS: the Linux dev
 //          VM (JITK_NESTED_SSH) and its /dev/kvm; Linux: /dev/kvm access
 import { accessSync, constants, existsSync, statSync } from 'node:fs';
@@ -104,9 +104,10 @@ async function rust(): Promise<Item[]> {
   ];
   if (mac) {
     checks.push(toolchain(p.hyperlight_toolchain, 'Hyperlight baseline, make deps', p.hyperlight_targets, ['rust-src']));
-    // Only the kernel's `make check` (clippy) and `make fmt` (rustfmt).
-    checks.push(toolchain(p.rust_toolchain, 'kernel make check/fmt only', [], ['clippy', 'rustfmt'], 'warn', ' lint'));
   }
+  // clippy and rustfmt: `make -C abi test` (part of `make test` and `make ci`),
+  // the kernel's `make check` and `make fmt`.
+  checks.push(toolchain(p.rust_toolchain, 'abi test, kernel make check/fmt', [], ['clippy', 'rustfmt'], 'warn', ' lint'));
   return [ok('rustup', which('rustup')), ...(await Promise.all(checks))];
 }
 
