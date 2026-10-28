@@ -324,12 +324,14 @@ mod tests {
     #[test]
     fn messages_wait_for_credit_record_by_record() {
         let mut e = endpoint();
-        let big = Message::new(REPLY, 0, 1, 1, vec![b'x'; 70 * PAYLOAD]);
-        assert!(!e.send(&big).unwrap(), "70 records do not fit 64 slots");
+        let small = Message::new(REPLY, 0, 1, 1, vec![b'x'; 10 * PAYLOAD]);
+        let big = Message::new(REPLY, 0, 1, 2, vec![b'x'; 64 * PAYLOAD]);
+        assert!(e.send(&small).unwrap());
+        assert!(!e.send(&big).unwrap(), "54 of its 64 records fit");
         assert_eq!(e.tx, CAPACITY);
         e.cursor(TX_CONSUMER).store(CAPACITY, Release);
         assert!(e.send(&big).unwrap());
-        assert_eq!((e.tx, e.sent), (70, 0));
+        assert_eq!((e.tx, e.sent), (74, 0));
     }
     #[test]
     fn private_cursor_shadows_and_wrapped_records() {
