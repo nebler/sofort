@@ -14,10 +14,15 @@ export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:nu
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(code:string,names:string[]):string {
-  // Only JSON string data is ASCII escaped: preserve raw templates/regex tokens.
-  const wire=`return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
+  const wire=shardWire(code,names);
   if(Buffer.byteLength(wire)>IPC.sourceBytes)throw Error(`shard source limit including trusted adapters (${IPC.sourceBytes} bytes)`);
   return wire;
+}
+/** The START source for a guest body, unchecked; the parity corpus sizes its
+ *  source boundary cases with it (executor/parity/cases.ts). */
+export function shardWire(code:string,names:string[]):string {
+  // Only JSON string data is ASCII escaped: preserve raw templates/regex tokens.
+  return `return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
 }
 
 export class ShardBackend implements Engine {

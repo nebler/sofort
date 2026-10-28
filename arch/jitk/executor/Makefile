@@ -6,6 +6,11 @@ build test demo:
 test-shard:
 	./run.sh shard-test
 
+# The backend-parity corpus (parity/README.md) on this host's backends.
+.PHONY: parity
+parity:
+	./run.sh parity
+
 TS_TOOLS := ipc/run-ssh.ts ipc/measure-helpers.ts ipc/summarize-helpers.ts fixtures/shard-peer.ts
 include ../tools/scriptc.mk
 # The hostile peer runs on Linux: cross-built with zig on the Mac (run-ssh
