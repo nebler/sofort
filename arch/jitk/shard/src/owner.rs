@@ -297,7 +297,10 @@ struct Managed {
     policy_sent: [u64; 32],
 }
 impl Managed {
-    fn reset(&mut self) -> ResetReport {
+    /// Reset this slot. A failed reset quarantines only this slot (kvm::reset);
+    /// the lease is acknowledged either way, since the vCPU is stopped and will
+    /// never run again, so the watchdog does not escalate to the whole shard.
+    fn reset(&mut self) -> Result<ResetReport, kvm::Quarantined> {
         let reset = self.cpu.reset();
         if self.activity == Activity::Running {
             self.lease.acknowledge_reset();
@@ -307,16 +310,19 @@ impl Managed {
         reset
     }
     /// One reset per lifecycle: reset unless the slot is idle and still pristine
-    /// since its last reset (or creation). A running slot is never pristine.
-    fn reset_unless_pristine(&mut self) -> Option<ResetReport> {
-        if self.activity == Activity::Idle && self.cpu.is_pristine() {
-            return None;
+    /// since its last reset (or creation), or quarantined. A running slot is
+    /// never pristine.
+    fn reset_unless_pristine(&mut self) {
+        if self.activity == Activity::Idle && (self.cpu.is_pristine() || self.cpu.is_quarantined())
+        {
+            return;
         }
-        Some(self.reset())
+        let _ = self.reset(); // a failure quarantined the slot; admit() refuses it
     }
-    fn begin(&mut self, job: Job, entropy: &mut File) {
+    /// Admit and bind a job. A quarantined slot fails the job instead.
+    fn begin(&mut self, job: Job, entropy: &mut File) -> Result<(), RunError> {
         let cpu_start = kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID); // No parallel-owner double count.
-        let reset = self.reset_unless_pristine();
+        let reset = self.cpu.admit().map_err(|_| RunError::SlotUnavailable)?;
         assert!(self.cpu.is_pristine());
         assert_eq!(self.cpu.canary(), 0, "stale RAM canary");
         self.seed = self.cpu.bind(job.generation, &job.source, entropy);
@@ -341,6 +347,7 @@ impl Managed {
         if let Some(entry) = job.entry {
             self.cpu.redirect_entry(entry);
         }
+        Ok(())
     }
     fn drive(&mut self, until: DriveUntil) -> Result<Progress, RunError> {
         loop {
@@ -406,7 +413,25 @@ impl Managed {
         match cmd {
             Command::Start(_, job) => {
                 assert!(self.activity == Activity::Idle);
-                self.begin(job, entropy);
+                let generation = job.generation;
+                if let Err(e) = self.begin(job, entropy) {
+                    // Nothing was bound and no lease armed: fail just this job.
+                    let completion = Completion {
+                        result: Err(e),
+                        seed: [0; 16],
+                        metrics: Metrics::default(),
+                        stopped_ns: kvm::monotonic_ns(),
+                        reset_done_ns: 0,
+                    };
+                    events
+                        .send(Event::Done {
+                            slot: id,
+                            generation,
+                            completion,
+                        })
+                        .unwrap();
+                    return false;
+                }
             }
             Command::Reply(_, generation, request) => {
                 if self.activity == Activity::Idle || generation != self.cpu.generation {
@@ -473,7 +498,9 @@ impl Managed {
             && !matches!(result, Err(RunError::Deadline { .. }));
         let mut reset_done_ns = 0;
         if result.is_err() && !retain {
-            self.cpu.reset(); // includes MMIO completion, discard, registers, clearing immediate_exit
+            // MMIO completion, memory, registers, immediate_exit. A failure
+            // quarantines this slot; its lease is acknowledged all the same.
+            let _ = self.cpu.reset();
             self.lease.acknowledge_reset();
             self.activity = Activity::Idle;
             reset_done_ns = kvm::monotonic_ns();
@@ -574,7 +601,7 @@ impl Worker {
                     // An errored run was already reset in finish(); its RELEASE
                     // costs nothing. The next begin() finds the slot pristine.
                     s.reset_unless_pristine();
-                    if matches!(cmd, Command::Reset(_)) {
+                    if matches!(cmd, Command::Reset(_)) && !s.cpu.is_quarantined() {
                         // Offline verification: the pristine flag must imply
                         // every byte of RAM and every register.
                         assert!(s.cpu.pristine(), "RAM differs from the snapshot");
@@ -822,6 +849,47 @@ mod tests {
         assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
         pool.reset(0);
         assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        pool.shutdown().unwrap();
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn reset_failure_quarantines_only_its_slot() {
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        // Two slots on one owner thread: a failure must not take down the other.
+        let mut pool = Pool::new(Kvm::new(), snapshot, 2, 1);
+        let fail = kvm::test_guest::FAIL_RESET_GENERATION;
+        pool.start(0, job(fail, None, 5_000));
+        assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
+        pool.cancel(0); // the RELEASE reset: KVM rejects a register write
+        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        for generation in [2, 3] {
+            pool.start(1, job(generation, None, 5_000));
+            assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
+        }
+        // The quarantined slot fails every later job without binding it.
+        for generation in [fail + 1, fail + 2] {
+            pool.start(0, job(generation, None, 5_000));
+            let c = completion(&mut pool);
+            assert!(
+                matches!(c.result, Err(RunError::SlotUnavailable)),
+                "{:?}",
+                c.result
+            );
+            pool.cancel(0);
+            assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        }
+        // A run that errors also resets in finish(): that path quarantines too,
+        // and still acknowledges the lease (shutdown checks every lease).
+        pool.start(1, job(fail, Some(kvm::test_guest::cpu_off()), 300));
+        assert!(matches!(
+            completion(&mut pool).result,
+            Err(RunError::Deadline { .. })
+        ));
+        pool.start(1, job(fail + 1, None, 5_000));
+        assert!(matches!(
+            completion(&mut pool).result,
+            Err(RunError::SlotUnavailable)
+        ));
         pool.shutdown().unwrap();
     }
     #[test]

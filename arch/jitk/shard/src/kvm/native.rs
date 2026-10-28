@@ -140,7 +140,7 @@ impl NativeVm {
         entropy: &mut File,
     ) -> Result<Output, String> {
         let s = &mut self.slot;
-        s.reset();
+        s.admit().map_err(|e| e.to_string())?;
         if self.input.is_some() {
             Input::unbind(s).map_err(|e| e.to_string())?;
             self.input = None;

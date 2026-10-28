@@ -31,8 +31,10 @@ mod platform;
 mod reset;
 use libc::{ioctl, mprotect};
 pub use platform::{Kvm, raise_fds};
-use platform::{Mapping, OneReg, Region, call, check};
-pub use reset::{Discard, ResetPolicy, ResetReport};
+use platform::{Mapping, OneReg, Region, call, check, try_call};
+pub use reset::{
+    Discard, QUARANTINED, Quarantined, ResetPolicy, ResetReport, SAMPLE_FAILURES, SAMPLED,
+};
 
 pub struct Request {
     pub id: u64,
@@ -40,10 +42,16 @@ pub struct Request {
 }
 #[derive(Debug)]
 pub enum RunError {
-    MemoryBound { address: u64 },
+    MemoryBound {
+        address: u64,
+    },
     GuestFatal,
+    /// The slot was quarantined after a failed reset; it never runs again.
+    SlotUnavailable,
     GuestProtocol(&'static str),
-    Deadline { deadline_ns: u64 },
+    Deadline {
+        deadline_ns: u64,
+    },
 }
 impl std::fmt::Display for RunError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -54,6 +62,9 @@ impl std::fmt::Display for RunError {
             Self::Deadline { .. } => write!(f, "deadline_exceeded"),
             Self::GuestProtocol(message) => write!(f, "guest_protocol: {message}"),
             Self::GuestFatal => write!(f, "guest_fatal: guest stopped without a completion"),
+            Self::SlotUnavailable => {
+                write!(f, "slot_unavailable: quarantined after a failed reset")
+            }
         }
     }
 }
@@ -90,6 +101,10 @@ pub struct Slot {
     /// Reused reset buffers: private page offsets and raw pagemap entries.
     dirty: Vec<usize>,
     entries: Vec<u8>,
+    /// Why a failed reset or content check took this slot out of service.
+    quarantined: Option<String>,
+    /// Admissions so far: every policy.sample_every-th is content-checked.
+    admits: u64,
 }
 impl Slot {
     fn create(kvm: &Kvm, file: &File, class: Option<arena::Class>) -> Self {
@@ -130,6 +145,14 @@ impl Slot {
         let mut init = [0u32; 8];
         call(&vm, KVM_ARM_PREFERRED_TARGET, init.as_mut_ptr() as u64);
         init[1] |= 1 << KVM_ARM_VCPU_PSCI_0_2;
+        // The reset covers exactly this vCPU: PSCI 0.2 and nothing else (no SVE,
+        // SME, PMU, PAC or MTE feature, and no in-kernel irqchip is created).
+        // Any other feature would add guest-writable state outside its restore.
+        assert_eq!(
+            init[1..],
+            [1 << KVM_ARM_VCPU_PSCI_0_2, 0, 0, 0, 0, 0, 0],
+            "unsupported vCPU init features"
+        );
         call(&cpu, KVM_ARM_VCPU_INIT, init.as_ptr() as u64);
         let run = Mapping::new(&cpu, kvm.run_size, libc::MAP_SHARED);
         Self {
@@ -154,6 +177,8 @@ impl Slot {
             reset_at: Instant::now(),
             dirty: Vec::new(),
             entries: Vec::new(),
+            quarantined: None,
+            admits: 0,
         }
     }
     /// Create an unpartitioned boot VM for trusted offline snapshot preparation.
@@ -169,6 +194,17 @@ impl Slot {
     }
     pub fn with_policy(kvm: &Kvm, snapshot: Arc<Snapshot>, policy: ResetPolicy) -> Self {
         let mut s = Self::create(kvm, &snapshot.memory, Some(snapshot.class));
+        // The reset restores the snapshot's register list. That must be all the
+        // state this vCPU exposes: KVM's live list equals the snapshot's, and
+        // snapshot loading already rejected any id class the reset does not cover.
+        let mut live = s.reg_ids();
+        let mut saved: Vec<u64> = snapshot.regs.iter().map(|r| r.id).collect();
+        live.sort_unstable();
+        saved.sort_unstable();
+        assert!(
+            live == saved,
+            "vCPU register list differs from the snapshot's"
+        );
         // Full restore, ID registers included: KVM accepts their values only
         // before the first KVM_RUN. Resets restore all but reset::invariant().
         s.restore_regs(&snapshot.regs);
@@ -184,23 +220,29 @@ impl Slot {
         self.resident.set(true);
     }
     fn set_bytes(&self, id: u64, b: &[u8]) {
+        self.try_set_bytes(id, b).expect("KVM_SET_ONE_REG");
+    }
+    fn try_set_bytes(&self, id: u64, b: &[u8]) -> io::Result<()> {
         self.pristine.set(false);
         let r = OneReg {
             id,
             addr: b.as_ptr() as u64,
         };
-        call(&self.cpu, KVM_SET_ONE_REG, &r as *const _ as u64);
+        try_call(&self.cpu, KVM_SET_ONE_REG, &r as *const _ as u64).map(|_| ())
+    }
+    fn reg_ids(&self) -> Vec<u64> {
+        let mut list = vec![0u64; 2049];
+        list[0] = 2048;
+        call(&self.cpu, KVM_GET_REG_LIST, list.as_mut_ptr() as u64);
+        list[1..=list[0] as usize].to_vec()
     }
     fn set(&self, id: u64, v: u64) {
         self.set_bytes(id, &v.to_le_bytes());
     }
     /// Capture this stopped vCPU's complete KVM register set.
     pub fn capture(&self) -> Vec<Register> {
-        let mut list = vec![0u64; 2049];
-        list[0] = 2048;
-        call(&self.cpu, KVM_GET_REG_LIST, list.as_mut_ptr() as u64);
         let mut regs = Vec::new();
-        for &id in &list[1..=list[0] as usize] {
+        for id in self.reg_ids() {
             let n = 1usize << ((id >> 52) & 15);
             assert!(n <= 256);
             let mut data = vec![0u8; n];
@@ -552,6 +594,8 @@ impl Drop for Slot {
 /// EL1 fixtures from guest/reset-attack.S for the reset tests.
 #[cfg(test)]
 pub(crate) mod test_guest {
+    /// A slot bound with this generation has its next reset rejected by KVM.
+    pub const FAIL_RESET_GENERATION: u64 = 0x5eed_0000_0000;
     core::arch::global_asm!(include_str!("../../guest/reset-attack.S"));
     macro_rules! fixture {
         ($name:ident, $start:ident, $end:ident) => {
@@ -611,6 +655,8 @@ mod tests {
             reset_at: std::time::Instant::now(),
             dirty: Vec::new(),
             entries: Vec::new(),
+            quarantined: None,
+            admits: 0,
         }
     }
     fn record(s: &Slot, kind: u16, id: u64, payload: &[u8]) {
@@ -654,6 +700,7 @@ mod tests {
             copy_limit,
             idle_trim: None,
             verify: true,
+            sample_every: 0,
         };
         [("copy", verify(RAM / 4096)), ("discard", verify(0))]
     }
@@ -757,7 +804,7 @@ mod tests {
                 );
                 let saved = s.bytes(0, 4096);
                 assert!(present(s.ram.ptr as usize));
-                let r = s.reset();
+                let r = s.reset().unwrap();
                 if name == "copy" {
                     assert_eq!((r.discard, r.private), (None, pages), "{name}");
                 } else {
@@ -787,12 +834,12 @@ mod tests {
             for (name, policy) in policies() {
                 let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
                 assert!(probe(&mut s), "{name}: fresh slot");
-                s.reset();
+                s.reset().unwrap();
                 for round in 0..3 {
                     // Every writable byte and every reachable register class.
                     attack(&mut s, test_guest::fill());
                     assert!(!s.is_pristine());
-                    let r = s.reset(); // verify: RAM + every register + MP state
+                    let r = s.reset().unwrap(); // verify: RAM + every register + MP state
                     if name == "copy" {
                         // The fill dirties every writable page but its code page;
                         // redirect_entry dirtied that one.
@@ -804,13 +851,13 @@ mod tests {
                     let regs = s.register_mismatches();
                     assert!(regs.is_empty(), "{name} round {round}: {regs:#x?}");
                     assert!(probe(&mut s), "{name} round {round}: guest view");
-                    s.reset();
+                    s.reset().unwrap();
                 }
                 // PSCI SYSTEM_OFF leaves the vCPU STOPPED; the reset makes it
                 // RUNNABLE, or the probe's KVM_RUN would sleep.
                 s.redirect_entry(test_guest::system_off());
                 assert!(matches!(s.exit(), Err(RunError::GuestProtocol(_))));
-                s.reset();
+                s.reset().unwrap();
                 assert!(probe(&mut s), "{name}: after SYSTEM_OFF");
                 s.shutdown().unwrap();
             }
@@ -827,10 +874,11 @@ mod tests {
                 copy_limit: limit,
                 idle_trim: None,
                 verify: true,
+                sample_every: 0,
             };
             let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
             attack(&mut s, test_guest::fill());
-            let r = s.reset();
+            let r = s.reset().unwrap();
             if copies {
                 assert_eq!((r.discard, r.private as usize), (None, n), "limit {limit}");
                 assert!(s.is_resident());
@@ -846,6 +894,77 @@ mod tests {
     }
     #[test]
     #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn sampled_admission_check_catches_a_lying_pristine_flag() {
+        let kvm = Kvm::new();
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let policy = |sample_every| ResetPolicy {
+            copy_limit: RAM / 4096,
+            idle_trim: None,
+            verify: false,
+            sample_every,
+        };
+        // Flip one byte of a restored arena page without touching the flag.
+        let corrupt = |s: &Slot| {
+            let p = s.ram.ptr.wrapping_add(snapshot.class.start() + 4096);
+            // SAFETY: test-only write inside a writable extent of a stopped slot.
+            unsafe { p.write_volatile(!p.read_volatile()) };
+        };
+        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy(3));
+        attack(&mut s, test_guest::fill());
+        s.reset().unwrap(); // copy path: the arena pages stay mapped and private
+        corrupt(&s);
+        assert!(
+            s.is_pristine(),
+            "the flag cannot see a write behind its back"
+        );
+        s.admit().unwrap(); // admissions 1 and 2 are not sampled
+        s.admit().unwrap();
+        assert!(!s.pristine());
+        s.admit().unwrap(); // 3: sampled, found, discard-reset, re-checked
+        assert!(s.pristine() && s.register_mismatches().is_empty());
+        assert!(probe(&mut s));
+
+        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy(1));
+        // A register changed behind the flag's back (raw ioctl, not set_bytes).
+        let v = 0x41u64;
+        let r = super::OneReg {
+            id: 0x6030_0000_0013_de82, // TPIDR_EL0
+            addr: &v as *const u64 as u64,
+        };
+        super::call(
+            &s.cpu,
+            crate::constants::kvm::KVM_SET_ONE_REG,
+            &r as *const _ as u64,
+        );
+        assert!(s.is_pristine() && !s.register_mismatches().is_empty());
+        s.admit().unwrap();
+        assert!(s.register_mismatches().is_empty());
+        // Cost of one sampled check on a clean slot (reported in the results doc).
+        let t = std::time::Instant::now();
+        for _ in 0..20 {
+            assert_eq!(s.content_mismatch(), None);
+        }
+        println!("SAMPLED_CHECK_NS {}", t.elapsed().as_nanos() / 20);
+
+        // A private page in an immutable extent cannot be repaired by a reset:
+        // the slot is quarantined and never admitted again.
+        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy(1));
+        let page = s.ram.ptr.wrapping_add(0x10000);
+        // SAFETY: test-only: unprotect one immutable page of this stopped slot and
+        // rewrite one byte with its own value, which still makes the page private.
+        unsafe {
+            check(
+                libc::mprotect(page.cast(), 4096, libc::PROT_READ | libc::PROT_WRITE),
+                "mprotect",
+            );
+            page.write_volatile(page.read_volatile());
+        }
+        assert!(s.admit().is_err() && s.is_quarantined());
+        assert!(s.admit().is_err() && s.reset().is_err());
+        s.shutdown().unwrap();
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
     fn trim_releases_private_pages_and_stays_pristine() {
         let kvm = Kvm::new();
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
@@ -853,12 +972,13 @@ mod tests {
             copy_limit: RAM / 4096,
             idle_trim: Some(std::time::Duration::ZERO),
             verify: true,
+            sample_every: 0,
         };
         let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
         assert_eq!(anonymous_kib(&s), 0, "fresh slot");
         assert_eq!(s.trim_due(), None, "nothing to trim");
         attack(&mut s, test_guest::fill());
-        s.reset();
+        s.reset().unwrap();
         let held = anonymous_kib(&s);
         assert_eq!(
             held,

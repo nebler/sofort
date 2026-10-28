@@ -18,6 +18,16 @@ pub(super) fn call(fd: &File, op: u64, arg: u64) -> c_int {
     // pointer.
     check(unsafe { ioctl(fd.as_raw_fd(), op as _, arg) }, "KVM ioctl")
 }
+/// As call(), but a failure is the caller's to handle (slot-scoped reset errors).
+pub(super) fn try_call(fd: &File, op: u64, arg: u64) -> io::Result<c_int> {
+    // SAFETY: as for call(): every caller passes a KVM UAPI operation with a
+    // live, correctly sized scalar or C-layout argument that ioctl does not retain.
+    let r = unsafe { ioctl(fd.as_raw_fd(), op as _, arg) };
+    if r < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    Ok(r)
+}
 pub fn raise_fds() {
     check(
         // SAFETY: The rlimit value is initialized with the C layout; RLIMIT_NOFILE
