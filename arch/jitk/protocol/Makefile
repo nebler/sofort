@@ -12,5 +12,5 @@ vm: .work/bin/watchdog
 hostile: .work/bin/watchdog
 	$(NODE) hostile/run.mjs
 
-TS_TOOLS := make-vectors.ts watchdog.ts report.ts
+TS_TOOLS := make-vectors.ts watchdog.ts
 include ../tools/scriptc.mk
