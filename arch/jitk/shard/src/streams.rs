@@ -130,7 +130,7 @@ impl Receiver {
                         return Err("invalid JSON LOG escape");
                     }
                     self.log_bytes += n;
-                    if self.log_bytes > 16384 {
+                    if self.log_bytes > ring::LOG_BYTES {
                         return Err("LOG budget");
                     }
                     if std::env::var_os("JITK_NATIVE_DIAGNOSTICS").is_some() {

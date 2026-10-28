@@ -209,6 +209,10 @@ pub mod ring {
     pub const MAX_ARGS: usize = 32;
     /// Aggregate native stdout+stderr capture cap.
     pub const OUTPUT_LIMIT: usize = 1024 * 1024;
+    /// LOG payload bytes per run (kernel diagnostics; tenant code has no LOG
+    /// path). More fails that run: the shard's stderr is bounded for its
+    /// whole lifetime, so a compromised kernel must not flood it.
+    pub const LOG_BYTES: usize = 16384;
     /// Read-only archive bytes at ARCHIVE_GPA (native profile; `ARCHIVE_BYTES`).
     pub const ARCHIVE_LIMIT: usize = 4 * 1024 * 1024;
     /// Bytes the kernel returns from `read(FD_REPAIR)`: generation u64,
