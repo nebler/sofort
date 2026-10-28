@@ -21,7 +21,7 @@ case "${JITK_RING_CLASS:-glue-2m}" in
   glue-4m) class_flags='--cfg ring_glue_4m' ;;
   *) echo "unsupported ring memory class: $JITK_RING_CLASS" >&2; exit 1 ;;
 esac
-export RUSTFLAGS="${RUSTFLAGS:-} --check-cfg=cfg(ring_glue_4m) $class_flags -C link-arg=--defsym=__ring_arena=0x81800000"
+export RUSTFLAGS="${RUSTFLAGS:-} --check-cfg=cfg(ring_glue_4m) $class_flags"
 mkdir -p dist/ring
 cargo "+$RUST_TOOLCHAIN" build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}

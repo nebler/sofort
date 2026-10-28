@@ -5,7 +5,8 @@ import type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
 import {failure} from './engine.js';
 import {executionBody} from './code.js';
 import {AdmissionQueue} from './pool.js';
-import {IPC,SharedChannel,monotonicNs,type Message} from './shard-ipc.js';
+import {ARENA_CLASSES} from './abi.js';
+import {ABI_VERSION,IPC,SharedChannel,checkReady,monotonicNs,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)). */
@@ -15,7 +16,7 @@ const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).to
 export function shardSource(code:string,names:string[]):string {
   // Only JSON string data is ASCII escaped: preserve raw templates/regex tokens.
   const wire=`return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
-  if(Buffer.byteLength(wire)>8192)throw Error('shard source limit including trusted adapters (8192 bytes)');
+  if(Buffer.byteLength(wire)>IPC.sourceBytes)throw Error(`shard source limit including trusted adapters (${IPC.sourceBytes} bytes)`);
   return wire;
 }
 
@@ -37,7 +38,7 @@ export class ShardBackend implements Engine {
   private readonly onExit=()=>this.child.kill('SIGKILL');
   constructor(readonly options:ShardOptions) {
     if(process.platform!=='linux')throw Error('shard backend requires Linux');
-    verifyPreparedSnapshot(options.snapshot);
+    verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
     this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
@@ -59,7 +60,8 @@ export class ShardBackend implements Engine {
   }
   private receive(m:Message) {
     if(m.kind===IPC.ready){
-      if(this.didReady||m.slot||m.generation||m.id||m.bytes.length)throw Error('shard IPC ready schema');
+      if(this.didReady)throw Error('shard IPC ready schema');
+      checkReady(m);
       this.didReady=true;clearTimeout(this.startup);this.resolveReady();return;
     }
     if(!this.didReady||m.slot>=this.generations.length||m.generation===0n)throw Error('shard IPC peer slot/state');
@@ -193,7 +195,7 @@ export class ShardSession implements Session {
   receive(m:Message) {
     const run=this.run;
     if(++run.records>35)throw Error('shard IPC per-run message bound');
-    if(m.kind===IPC.call){if(m.id<1||m.id>32||m.bytes.length>1024)throw Error('shard IPC call bound');}
+    if(m.kind===IPC.call){if(m.id<1||m.id>IPC.calls||m.bytes.length>IPC.callBytes)throw Error('shard IPC call bound');}
     else if(m.kind===IPC.done){if(m.id||m.bytes.length>16352)throw Error('shard IPC completion bound');}
     else if(m.kind===IPC.error){if(m.id||m.bytes.length>512)throw Error('shard IPC error bound');}
     else if(m.kind===IPC.stats){if(m.id||m.bytes.length<32||m.bytes.length>288||m.bytes.readBigUInt64LE(24)>32n||m.bytes.length!==32+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
@@ -205,7 +207,7 @@ export class ShardSession implements Session {
     if(run.phase==='releasing')return; // draining this generation while reset is in progress
     if(run.phase!=='running')throw Error('shard IPC run state');
     if(m.kind===IPC.call){
-      if(m.id!==run.nextWire++||m.id>32||m.bytes.length>1024)throw Error('shard IPC call identity/size');
+      if(m.id!==run.nextWire++||m.id>IPC.calls||m.bytes.length>IPC.callBytes)throw Error('shard IPC call identity/size');
       this.guest(()=>this.call(m.bytes,m.id));
     }else if(m.kind===IPC.stats){
       if(m.id||run.stats||m.bytes.length<32)throw Error('shard IPC metrics schema');
@@ -245,10 +247,10 @@ export class ShardSession implements Session {
     const source=Buffer.from(shardSource(code,Object.keys(job.tools)),'ascii');
     const remaining=Math.max(0,this.deadline-Date.now());
     if(remaining>60000)throw Error('shard deadline limit (60000 ms)');
-    const payload=Buffer.alloc(24+source.length);
+    const payload=Buffer.alloc(IPC.startHeaderBytes+source.length);
     this.run.admittedDeadlineNs=this.backend.now()+BigInt(Math.floor(remaining*1e6));
     payload.writeBigUInt64LE(this.run.admittedDeadlineNs,0);
-    payload.writeUInt32LE(32,8);payload.writeUInt32LE(1024,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(2*1048576,20);source.copy(payload,24);
+    payload.writeUInt32LE(IPC.calls,8);payload.writeUInt32LE(IPC.callBytes,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(ARENA_CLASSES['glue-2m'].admissionBytes,20);source.copy(payload,IPC.startHeaderBytes);
     this.run.phase='running';await this.write(IPC.start,0,payload);
   }
   async reply(id:number,r:Reply):Promise<void> {
@@ -263,7 +265,7 @@ export class ShardSession implements Session {
     });
     this.run.wires.delete(id);this.run.budget.reply(id);
     let payload=Buffer.from(text);
-    if(payload.length>1024)payload=Buffer.from('{"err":{"code":"LIMIT","message":"shard tool reply limit (1024 bytes)"}}');
+    if(payload.length>IPC.replyBytes)payload=Buffer.from(`{"err":{"code":"LIMIT","message":"shard tool reply limit (${IPC.replyBytes} bytes)"}}`);
     await this.write(IPC.reply,wire,payload);
   }
   kill() {

@@ -1,6 +1,7 @@
 //! Bounded late-bound files encoded using the kernel's existing RO archive.
+use crate::constants::ring;
 use std::collections::{BTreeMap, VecDeque};
-pub const MAX_ARCHIVE: usize = 4 * 1024 * 1024;
+pub const MAX_ARCHIVE: usize = ring::ARCHIVE_LIMIT;
 pub const MAX_FILES: usize = 64;
 pub const MAX_REQUEST: usize = MAX_ARCHIVE + 16384;
 pub struct Run {
@@ -53,7 +54,7 @@ pub fn decode(bytes: &[u8]) -> Result<Run, &'static str> {
         return Err("invalid tool profile");
     }
     let argc = r.u16()?;
-    if argc == 0 || argc > 32 {
+    if argc == 0 || argc > ring::MAX_ARGS {
         return Err("native argc bound");
     }
     let mut args = Vec::with_capacity(argc);
@@ -61,7 +62,7 @@ pub fn decode(bytes: &[u8]) -> Result<Run, &'static str> {
     for _ in 0..argc {
         let a = r.text()?;
         arg_bytes += a.len() + 1;
-        if arg_bytes > 8192 {
+        if arg_bytes > ring::SOURCE_LIMIT {
             return Err("native argv budget");
         }
         args.push(a);

@@ -1,14 +1,22 @@
 //! Experimental v2 subset. See shard/ABI-R6.md; never linked into default.
-use crate::{ring_abi::*, syscalls::nr};
+use crate::abi::ring::*;
+use crate::syscalls::nr;
 use core::sync::atomic::{
     AtomicU64,
     Ordering::{Acquire, Release},
 };
-pub const CTRL: usize = CONTROL_GPA;
-const TX: usize = TX_GPA;
-const RX: usize = RX_GPA;
+pub const CTRL: usize = CONTROL_GPA as usize;
+const TX: usize = TX_GPA as usize;
+const RX: usize = RX_GPA as usize;
 const SIZE: usize = RING_BYTES;
-const LIMIT: usize = 1024;
+const LIMIT: usize = REPLY_BYTES;
+// assert! conditions keep their source text: the length of each stringified
+// condition is in the image, and an unchanged image is the refactor oracle
+// (ARCH.md). The literals they still spell are tied to the ABI here.
+// (fs.rs spells the archive bound.)
+const _: () = assert!(
+    MAX_CALLS == 32 && MAX_ARGS == 32 && JSON_UTF8 == 1 && ARCHIVE_LIMIT == 4 * 1024 * 1024
+);
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum PendingState {
     Free,
@@ -23,12 +31,12 @@ struct Pending {
     len: usize,
     bytes: [u8; LIMIT],
 }
-static mut PENDING: [Pending; 32] = [Pending {
+static mut PENDING: [Pending; MAX_CALLS] = [Pending {
     state: PendingState::Free,
     kind: 0,
     len: 0,
     bytes: [0; LIMIT],
-}; 32];
+}; MAX_CALLS];
 static mut NEXT: usize = 1;
 static mut INPUT: usize = 0;
 static mut CANARY: u64 = 0;
@@ -87,8 +95,8 @@ pub unsafe fn init(_: usize) {
     // SAFETY: Called once at EL1 with the control page mapped and the stopped host having
     // published the ABI header.
     unsafe {
-        assert_eq!((CTRL as *const u32).read(), 0x324b544a);
-        assert_eq!(((CTRL + 4) as *const u16).read(), 2);
+        assert_eq!((CTRL as *const u32).read(), MAGIC);
+        assert_eq!(((CTRL + 4) as *const u16).read(), RING_VERSION);
     }
 }
 /// # Safety
@@ -119,7 +127,7 @@ unsafe fn send(kind: u16, flags: u16, id: u64, payload: &[u8]) {
         h[16..24].copy_from_slice(&id.to_le_bytes());
         h[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
         if kind == CALL {
-            h[28..].copy_from_slice(&1u32.to_le_bytes());
+            h[28..].copy_from_slice(&CALL_CAP.to_le_bytes());
         }
         copy_ring(TX, prod, &mut h, true);
         // No allocator or unbounded stack copy. The user range was checked.
@@ -162,7 +170,7 @@ pub unsafe fn service() {
             assert!(
                 genid == load(GENERATION) && (1..=32).contains(&id) && (kind == RET || kind == ERR)
             );
-            assert_eq!(u32::from_le_bytes(h[28..].try_into().unwrap()), 1);
+            assert_eq!(u32::from_le_bytes(h[28..].try_into().unwrap()), CALL_CAP);
             let p = &mut PENDING[id - 1];
             assert_eq!(p.state, PendingState::Waiting);
             copy_ring(RX, cons + HEADER_BYTES, &mut p.bytes[..n], false);
@@ -241,7 +249,7 @@ pub unsafe fn write(b: &[u8]) {
                 at += 6;
             }
             json[at..at + 2].copy_from_slice(b"\"}");
-            send(LOG, 1, 0, &json[..at + 2]);
+            send(LOG, JSON_UTF8, 0, &json[..at + 2]);
         }
     }
 }
@@ -325,10 +333,10 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             if CANARY == 0 || REPAIR_READ {
                 return Some(-9);
             }
-            if len < 32 {
+            if len < REPAIR_BYTES {
                 return Some(-22);
             }
-            let mut b = [0u8; HEADER_BYTES];
+            let mut b = [0u8; REPAIR_BYTES];
             b[..8].copy_from_slice(&load(GENERATION).to_le_bytes());
             b[8..24].copy_from_slice(&{ crate::SEED });
             b[24..].copy_from_slice(&load(EPOCH_NS).to_le_bytes());
@@ -343,10 +351,10 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
                 core::ptr::write_volatile((CTRL + SEED + i) as *mut u8, 0);
                 core::ptr::write_volatile(b.as_mut_ptr().add(8 + i), 0);
             }
-            return Some(32);
+            return Some(REPAIR_BYTES as isize);
         }
         if fd == FD_FINISH && n == nr::WRITE {
-            if len > RECORD_BYTES - HEADER_BYTES {
+            if len > DONE_BYTES {
                 return Some(-22);
             }
             let Some(pa) = crate::user::access(addr, len, false) else {
@@ -360,7 +368,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             }
             send(
                 DONE,
-                1,
+                JSON_UTF8,
                 0,
                 core::slice::from_raw_parts(pa as *const u8, len),
             );
@@ -374,7 +382,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
         }
         let id = fd - FD_CALL_BASE;
         if n == nr::WRITE {
-            if len > LIMIT || id != NEXT || PENDING[id - 1].state != PendingState::Free {
+            if len > CALL_BYTES || id != NEXT || PENDING[id - 1].state != PendingState::Free {
                 return Some(-22);
             }
             let Some(pa) = crate::user::access(addr, len, false) else {
@@ -384,7 +392,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             NEXT += 1;
             send(
                 CALL,
-                1,
+                JSON_UTF8,
                 id as u64,
                 core::slice::from_raw_parts(pa as *const u8, len),
             );
@@ -408,8 +416,6 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
 }
 
 // R7 native feature bundle: byte streams, native entry, late-bound RO archive.
-const NATIVE_FEATURES: u64 = 7;
-const OUTPUT_LIMIT: usize = 1024 * 1024;
 static mut OUTPUT: [usize; 2] = [0; 2];
 static mut OUTPUT_LIMITED: bool = false;
 /// # Safety
@@ -439,7 +445,7 @@ pub unsafe fn native_checkpoint() {
 /// # Safety
 /// The host-published source block stays immutable for the run. Returned string references are
 /// discarded by stopped snapshot reset before the host may replace those bytes.
-pub unsafe fn native_args(args: &mut [&'static str; 32]) -> usize {
+pub unsafe fn native_args(args: &mut [&'static str; MAX_ARGS]) -> usize {
     // SAFETY: The host-published source block stays immutable for the run. Returned string
     // references are discarded by stopped snapshot reset before the host may replace those
     // bytes.
@@ -468,7 +474,7 @@ pub unsafe fn native_output(fd: usize, addr: usize, len: usize) -> isize {
         if len == 0 {
             return 0;
         }
-        if len > 1024 * 1024 {
+        if len > OUTPUT_LIMIT {
             return -22;
         }
         let Some(pa) = crate::user::access(addr, len, false) else {

@@ -8,7 +8,7 @@ import {IPC,type Message} from './shard-ipc.js';
 
 // Resolved from the bundle in executor/build/.
 type Row=[kind:'call'|'done',name:string,outcome:'ok'|'node'|'shard',payload:string];
-const corpus=(JSON.parse(readFileSync(new URL('../../protocol/guest-payloads.json',import.meta.url),'utf8')) as {cases:Row[]}).cases;
+const corpus=(JSON.parse(readFileSync(new URL('../../abi/guest-payloads.json',import.meta.url),'utf8')) as {cases:Row[]}).cases;
 class FakeShard implements ShardHost {
   sent:Message[]=[];
   freed:ShardSession[]=[];

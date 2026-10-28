@@ -88,7 +88,9 @@ mod mmu {pub fn physical(n:usize)->usize{n}}
 mod user {pub const FS:usize=0;pub const FS_LEN:usize=0;}
 mod console {pub unsafe fn native()->bool{false}pub unsafe fn load(_:usize)->u64{0}}
 `;
-  for (const [file, name] of [['ring_abi.rs', 'ring_abi'], ['fs.rs', 'fs'], ['fs_checks.rs', 'checks']]) {
+  // The ring ABI crate, mounted as the kernel mounts it (src/main.rs).
+  harness += `#[allow(unused_attributes)] #[path=${json(join(ROOT, '../abi/src/lib.rs'), 0)}] mod abi;`;
+  for (const [file, name] of [['fs.rs', 'fs'], ['fs_checks.rs', 'checks']]) {
     harness += `#[path=${json(join(ROOT, 'src', file), 0)}] mod ${name};`;
   }
   writeFileSync(join(work, 'check.rs'), harness);

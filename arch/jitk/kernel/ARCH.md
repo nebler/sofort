@@ -19,7 +19,9 @@ This was a refactor with no behaviour change. All eight image variants
 - `user.rs`: user image mapping, the Linux initial stack (argv, envp, auxv),
   the user pointer check `access`, stdout framing, and `syscall_entry!` (the
   core half of the syscall trap).
-- `console.rs`: virtio-mmio console protocol. `ring.rs`, `ring_abi.rs`,
+- `console.rs`: virtio-mmio console protocol. `ring.rs`, `abi` (the
+  `../abi` crate's `src/lib.rs`, mounted by `#[path]` so the image stays
+  byte-identical; `mmu_ring.rs` defines the linker's `__ring_arena` from it),
   `wait_ring.rs`: ring transport, its control-page clock, and the WAIT doorbell
   protocol.
 - `memory.rs`: the user virtual layout. Physical placement is re-exported from arch.
@@ -141,7 +143,7 @@ The 03 table does not include the **ring/shard path**:
 
 | Shard x86 work | Days |
 |---|---:|
-| `arch/x86_64/mmu_ring.rs` (arena relocation, the same `LAYOUT` marker) plus x86 GPAs in a new ring ABI revision (`ring_abi.rs` and shard `ABI-R7.md` hard-code aarch64 GPAs) | 1.5–2.5 |
+| `arch/x86_64/mmu_ring.rs` (arena relocation, the same `LAYOUT` marker) plus x86 GPAs as a second `abi::layout::Layout` (the jitk-abi crate; `ABI-R7.md` documents the aarch64 one) | 1.5–2.5 |
 | shard `src/kvm/mod.rs` (778 lines: `KVM_ARM_VCPU_INIT`/PSCI and ONE_REG restore become SREGS/REGS/MSRS/XSAVE/LAPIC plus CPUID2/TSC), `snapshot.rs` register format (arm64 ONE_REG IDs), `prepare` | 4–6 |
 | ring payload rebuild for x86 (`payload/ring-rng`), shard KVM gates | 1.5–2.5 |
 | **Shard subtotal** | **7–11** |

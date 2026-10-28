@@ -4,7 +4,8 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {helperHash,fileHash} from './prepared-helpers.mjs';
+import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
+import {ABI_VERSION} from './abi.js';
 import {ShardBackend,type ShardMetrics} from './shard-backend.js';
 import {SharedChannel,IPC,monotonicNs,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
@@ -136,7 +137,7 @@ const peer=join(scratch,'peer');
 function peerSnapshot(mode:string) {
   const base=join(scratch,mode);
   for(const ext of ['mem','regs','layout'])writeFileSync(base+'.'+ext,'fixture');
-  writeFileSync(base+'.identity',JSON.stringify({version:1,helperSha256:helperHash,files:Object.fromEntries(['mem','regs','layout'].map(ext=>[ext,fileHash(base+'.'+ext)]))}));
+  writeFileSync(base+'.identity',JSON.stringify({version:IDENTITY_VERSION,abiVersion:ABI_VERSION,helperSha256:helperHash,files:Object.fromEntries(['mem','regs','layout'].map(ext=>[ext,fileHash(base+'.'+ext)]))}));
   return base;
 }
 const fixture=fileURLToPath(new URL('../.work/bin/fixtures/shard-peer',import.meta.url));
@@ -146,6 +147,14 @@ try {
   const startupPool=new SandboxPool(startup,0,1);
   try{const r=await new MicroVMExecutor(startupPool,()=> 'allow',20).execute('return 1',{});check(r.error==='Execution aborted or timed out','abort escapes stalled shard startup');}
   finally{await startupPool.close();}
+  // A shard announcing another ABI version in READY is refused, not used.
+  const otherAbi=new ShardBackend({binary:peer,snapshot:peerSnapshot('bad-abi'),slots:1,owners:1});
+  const otherAbiPool=new SandboxPool(otherAbi,0,1);
+  try{
+    const refused=await otherAbi.ready.then(()=>undefined,(e:Error)=>e);
+    check(refused?.message.includes(`shard ABI version ${ABI_VERSION+1} does not match the executor's ABI version ${ABI_VERSION}`),'READY with another ABI version is refused');
+    const r=await new MicroVMExecutor(otherAbiPool,()=> 'allow',1000).execute('return 1',{});check(r.error!==undefined&&r.result===undefined,'no execution on a refused shard');
+  } finally{await otherAbiPool.close();}
   const stalled=new ShardBackend({binary:peer,snapshot:peerSnapshot('backpressure'),slots:1,owners:1});
   const stalledPool=new SandboxPool(stalled,0,1);
   const stalledExecutor=new MicroVMExecutor(stalledPool,()=> 'allow',100);

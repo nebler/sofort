@@ -1,7 +1,7 @@
 //! Offline shared-memory echo peer.
+use jitk_shard::constants::{ABI_VERSION, ipc::OUTBOUND};
 use jitk_shard::ipc::{self, Endpoint, Message};
 use std::{collections::VecDeque, io};
-const OUTBOUND: usize = 64 * 35 + 1;
 fn invalid(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
@@ -17,7 +17,8 @@ pub(super) fn run(mode: &str) -> io::Result<()> {
     // SAFETY: this binary startup path uniquely adopts the Node-supplied
     // memfd and eventfds 3/4/5 before any owner threads are started.
     let mut endpoint = unsafe { Endpoint::inherited()? };
-    let mut out = VecDeque::from([Message::new(ipc::READY, 0, 0, 0, Vec::new())]);
+    let ready = Message::new(ipc::READY, 0, 0, 0, ABI_VERSION.to_le_bytes().to_vec());
+    let mut out = VecDeque::from([ready]);
     loop {
         while let Some(m) = endpoint.receive()? {
             if mode != "echo" {

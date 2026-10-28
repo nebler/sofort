@@ -82,7 +82,7 @@ impl Input {
         let r = Region {
             slot: ring::INPUT_SLOT,
             flags: 0,
-            gpa: ring::INPUT_GPA,
+            gpa: ring::ARCHIVE_GPA,
             size: 0,
             addr: 0,
         };
@@ -97,7 +97,7 @@ impl Input {
         let r = Region {
             slot: ring::INPUT_SLOT,
             flags: crate::constants::kvm::KVM_MEM_READONLY as u32,
-            gpa: ring::INPUT_GPA,
+            gpa: ring::ARCHIVE_GPA,
             size: self.len as u64,
             addr: self.ptr as u64,
         };

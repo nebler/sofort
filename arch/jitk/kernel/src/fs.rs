@@ -208,9 +208,9 @@ fn archive() -> &'static [u8] {
     // discards all references before rebinding.
     unsafe {
         if crate::console::native() {
-            let len = crate::console::load(crate::ring_abi::ARCHIVE_BYTES) as usize;
+            let len = crate::console::load(crate::abi::ring::ARCHIVE_BYTES) as usize;
             assert!((16..=4 * 1024 * 1024).contains(&len));
-            return core::slice::from_raw_parts(crate::ring_abi::ARCHIVE_GPA as *const u8, len);
+            return core::slice::from_raw_parts(crate::abi::ring::ARCHIVE_GPA as *const u8, len);
         }
     }
     // SAFETY: The packer-owned archive is immutable and kernel-only. In native mode the

@@ -12,12 +12,18 @@
 #include <sys/mman.h>
 #include <sys/eventfd.h>
 #include <time.h>
+#include "bridge_abi.h" /* generated from the jitk-abi crate */
 
-#define CAP 64u
-#define PAYLOAD 16384u
-#define RECORD (32u + PAYLOAD)
+#define CAP JITK_IPC_CAPACITY
+#define PAYLOAD JITK_IPC_PAYLOAD
+#define HEADER JITK_IPC_HEADER_BYTES
+#define LENGTH_AT JITK_IPC_LENGTH_AT
+#define RESERVED_AT JITK_IPC_RESERVED_AT
+#define RECORD (HEADER + PAYLOAD)
 #define REGION (CAP * RECORD)
-#define BYTES (4096u + 2u * REGION)
+#define DATA JITK_IPC_DATA
+#define BYTES (DATA + 2u * REGION)
+_Static_assert(BYTES == JITK_IPC_BYTES, "IPC memfd size");
 _Static_assert(ATOMIC_LLONG_LOCK_FREE == 2, "IPC requires lock-free u64 atomics");
 typedef struct {
   napi_env env;
@@ -54,15 +60,15 @@ static napi_value send_record(napi_env env, napi_callback_info info) {
   if(!buffer)return fail(env,"IPC send requires Buffer");
   napi_get_buffer_info(env,arg,&data,&n);
   const uint8_t *p=data;
-  if(n<32 || n>RECORD || word(p+20)!=n-32 || word(p+24) || word(p+28))return fail(env,"invalid local IPC record");
-  uint64_t consumed=atomic_load_explicit(cursor(b,128),memory_order_acquire);
+  if(n<HEADER || n>RECORD || word(p+LENGTH_AT)!=n-HEADER || word(p+RESERVED_AT) || word(p+RESERVED_AT+4))return fail(env,"invalid local IPC record");
+  uint64_t consumed=atomic_load_explicit(cursor(b,JITK_IPC_SHARD_CONSUMED),memory_order_acquire);
   if(consumed<b->peer || consumed>b->tx || b->tx-consumed>CAP || b->tx==UINT64_MAX)return fail(env,"invalid peer IPC consumer");
   b->peer=consumed;
   bool ok=b->tx-consumed<CAP;
   if(ok) {
-    uint8_t *slot=b->mem+4096+(b->tx%CAP)*RECORD;
+    uint8_t *slot=b->mem+DATA+(b->tx%CAP)*RECORD;
     memcpy(slot,p,n); // length is private and checked; unpublished bytes are irrelevant
-    atomic_store_explicit(cursor(b,64),++b->tx,memory_order_release);
+    atomic_store_explicit(cursor(b,JITK_IPC_NODE_PRODUCED),++b->tx,memory_order_release);
     signal_peer(b);
   }
   napi_get_boolean(env,ok,&out); return out;
@@ -70,19 +76,19 @@ static napi_value send_record(napi_env env, napi_callback_info info) {
 static napi_value drain(napi_env env, napi_callback_info info) {
   size_t argc=0; Bridge *b=receiver(env,info,&argc,NULL); if(!b)return NULL;
   napi_value out; napi_create_array(env,&out);
-  uint64_t produced=atomic_load_explicit(cursor(b,192),memory_order_acquire);
+  uint64_t produced=atomic_load_explicit(cursor(b,JITK_IPC_SHARD_PRODUCED),memory_order_acquire);
   if(produced<b->rx || produced-b->rx>CAP)return fail(env,"invalid peer IPC producer");
   uint32_t count=0;
   while(b->rx<produced) {
     // Copy the entire bounded slot before interpreting any hostile field (TOCTOU safe).
     uint8_t copy[RECORD];
-    memcpy(copy,b->mem+4096+REGION+(b->rx%CAP)*RECORD,RECORD);
-    uint32_t n=word(copy+20);
-    if(n>PAYLOAD || word(copy+24) || word(copy+28))return fail(env,"invalid peer IPC record");
-    napi_value bytes; napi_create_buffer_copy(env,32+n,copy,NULL,&bytes);
+    memcpy(copy,b->mem+DATA+REGION+(b->rx%CAP)*RECORD,RECORD);
+    uint32_t n=word(copy+LENGTH_AT);
+    if(n>PAYLOAD || word(copy+RESERVED_AT) || word(copy+RESERVED_AT+4))return fail(env,"invalid peer IPC record");
+    napi_value bytes; napi_create_buffer_copy(env,HEADER+n,copy,NULL,&bytes);
     napi_set_element(env,out,count++,bytes); b->rx++;
   }
-  if(count) { atomic_store_explicit(cursor(b,256),b->rx,memory_order_release); signal_peer(b); }
+  if(count) { atomic_store_explicit(cursor(b,JITK_IPC_NODE_CONSUMED),b->rx,memory_order_release); signal_peer(b); }
   return out;
 }
 static void poll_closed(uv_handle_t *handle) {

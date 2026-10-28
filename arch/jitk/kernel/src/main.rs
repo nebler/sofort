@@ -9,9 +9,14 @@ mod console;
 #[cfg(feature = "transport-ring")]
 #[path = "ring.rs"]
 mod console;
-mod memory;
+// The ring ABI crate (../abi), mounted as a module rather than a Cargo
+// dependency: a dependency changes this crate's metadata hash and with it
+// codegen, so the images would no longer be byte-identical (ARCH.md).
 #[cfg(feature = "transport-ring")]
-mod ring_abi;
+#[allow(unused_attributes, dead_code)]
+#[path = "../../abi/src/lib.rs"]
+mod abi;
+mod memory;
 mod syscalls;
 mod trace;
 #[cfg_attr(
@@ -98,7 +103,7 @@ pub unsafe fn off() -> ! {
     // SAFETY: Execution is at EL1; the FINISH doorbell or PSCI SYSTEM_OFF call is terminal
     // and cannot return to user code.
     unsafe {
-        arch::doorbell(ring_abi::FINISH);
+        arch::doorbell(crate::abi::ring::FINISH);
     }
     #[cfg(not(feature = "transport-ring"))]
     // SAFETY: Execution is at EL1; the FINISH doorbell or PSCI SYSTEM_OFF call is terminal

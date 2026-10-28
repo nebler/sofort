@@ -17,7 +17,7 @@ script=$(cat "$jitk/kernel/ring-bootstrap.js")
   JITK_ELF="$jitk/kernel/payload/qjs-ring" \
   JITK_SCRIPT="$script" \
   JITK_TOOLS_DIR="$jitk/kernel/.work/bin" \
-  RUSTFLAGS="--check-cfg=cfg(ring_glue_4m) -C link-arg=--defsym=__ring_arena=0x81800000" \
+  RUSTFLAGS="--check-cfg=cfg(ring_glue_4m)" \
     cargo "+$pin" build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 )
 ${OBJCOPY:-llvm-objcopy} -O binary "$here/target-kernel/aarch64-unknown-none/release/jitk-02" "$here/out/kernel-ring.bin"

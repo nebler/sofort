@@ -1,6 +1,7 @@
 //! Negotiated R7 native TX decoder. All cursors and budgets are host shadows.
 use crate::constants::ring;
-pub use ring::{MAX_RECORD, NATIVE_FEATURES as FEATURES, OUTPUT_LIMIT, RING_BYTES};
+use ring::{HEADER_BYTES, RecordHeader};
+pub use ring::{NATIVE_FEATURES as FEATURES, OUTPUT_LIMIT, RECORD_BYTES, RING_BYTES};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Output {
@@ -54,35 +55,25 @@ impl Receiver {
         }
         while self.consumed < produced {
             let remaining = produced - self.consumed;
-            if remaining < 32 || self.completion.is_some() {
+            if remaining < HEADER_BYTES as u64 || self.completion.is_some() {
                 return Err("trailing or truncated record");
             }
-            let mut h = [0; 32];
+            let mut h = [0; HEADER_BYTES];
             copy(self.consumed, &mut h);
-            let len = u32::from_le_bytes(h[..4].try_into().unwrap()) as usize;
-            let kind = u16::from_le_bytes(h[4..6].try_into().unwrap());
-            let flags = u16::from_le_bytes(h[6..8].try_into().unwrap());
-            let generation = u64::from_le_bytes(h[8..16].try_into().unwrap());
-            let offset = u64::from_le_bytes(h[16..24].try_into().unwrap());
-            let n = u32::from_le_bytes(h[24..28].try_into().unwrap()) as usize;
-            let cap = u32::from_le_bytes(h[28..32].try_into().unwrap());
-            if !(32..=MAX_RECORD).contains(&len)
-                || !len.is_multiple_of(8)
-                || len as u64 > remaining
-                || n > MAX_RECORD - 32
-                || len != (32 + n + 7) & !7
-                || generation != self.generation
-                || cap != 0
-            {
+            let h = RecordHeader::decode(&h);
+            // remaining <= RING_BYTES (checked above), so it fits in usize.
+            if !h.framed(remaining as usize) || h.generation != self.generation || h.cap != 0 {
                 return Err("invalid native header");
             }
+            let (len, kind, flags, offset, n) =
+                (h.len as usize, h.kind, h.flags, h.id, h.n as usize);
             self.records += 1;
             if self.records > 65536 {
                 return Err("native record budget");
             }
             // Allocation is at most 16,352 bytes, regardless of guest lengths.
-            let mut b = vec![0; len - 32];
-            copy(self.consumed + 32, &mut b);
+            let mut b = vec![0; len - HEADER_BYTES];
+            copy(self.consumed + HEADER_BYTES as u64, &mut b);
             if b[n..].iter().any(|b| *b != 0) {
                 return Err("nonzero padding");
             }
@@ -179,7 +170,7 @@ impl Receiver {
 
 #[cfg(test)]
 mod tests {
-    use super::{MAX_RECORD, Output, RING_BYTES, Receiver};
+    use super::{Output, RECORD_BYTES, RING_BYTES, Receiver};
     fn record(kind: u16, offset: u64, b: &[u8]) -> Vec<u8> {
         let mut v = vec![0; (32 + b.len() + 7) & !7];
         let len = v.len() as u32;
@@ -304,7 +295,7 @@ mod tests {
             }
             let mut r = Receiver::new(9, 99).unwrap();
             let _ = r.drain(b.len() as u64, |at, dst| {
-                assert!(dst.len() <= MAX_RECORD);
+                assert!(dst.len() <= RECORD_BYTES);
                 let at = at as usize;
                 assert!(at <= b.len() && dst.len() <= b.len() - at);
                 dst.copy_from_slice(&b[at..at + dst.len()]);
