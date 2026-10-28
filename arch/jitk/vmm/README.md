@@ -78,17 +78,19 @@ the same policy inside the worker; production supervisors pass a profile to
 avoid that per-VM cost. `JITK_VMM_TIMING=1` adds stderr setup timing on macOS;
 it never disables confinement or changes stdout.
 
-Linux aarch64: run `.work/bin/build` natively with `/dev/kvm` available for
-execution (compilation alone needs no KVM). A Docker build and nested-KVM
-verification use the same pinned patch build:
+Linux aarch64: run `.work/bin/build` natively (or `make -C arch/jitk deps`,
+which builds the same jitk cache entry) with `/dev/kvm` available for
+execution (compilation alone needs no KVM). From the Mac, the linux suite has
+kvm-dev build it: `linux/nested/build.ts` ships exactly the fingerprinted inputs
+and the cross-built `.work/linux/build`, which builds them with
+`JITK_VMM_ROOT` naming the shipped tree, into kvm-dev's cache. There is no
+Docker build. Nested-KVM verification:
 
 ```
-sh build-linux.sh
 .work/bin/tests/nested-kvm
 ```
 
-Docker uses `rust:1.95-slim` for `linux/arm64`; its writable mounts are confined
-to `/tmp/jitk-01`. The nested test reads area 07's prepared
+The nested test reads area 07's prepared
 `/tmp/jitk-07/kvm/{vmlinuz,base.cpio.gz}` and writes a private overlay under
 `/tmp/jitk-01/r3/nested`. It uses the same QEMU HVF `virtualization=on` setup.
 On Linux, seccomp and Landlock are mandatory; unsupported Landlock fails

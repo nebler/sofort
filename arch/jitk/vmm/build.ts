@@ -2,28 +2,32 @@ import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSy
 import { basename, join, resolve } from 'node:path';
 import { platform } from 'node:os';
 import { check, dump, environment, output, readJSON, run, sha } from './lib.ts';
-import { libkrunDir, vmmBuildDir, vmmInputs, withLock } from '../tslib/deps.ts';
-const root = process.env.JITK_VMM_ROOT || import.meta.dirname;
+import { libkrunDir, pins, vmmBuildDir, vmmInputs, withLock } from '../tslib/deps.ts';
+// JITK_VMM_ROOT: the vmm tree to build. A scriptc binary's import.meta.dirname
+// is the checkout it was compiled in, so the Linux builder that the Mac ships
+// to kvm-dev (linux/nested/build.ts) names the shipped copy here.
+const root = resolve(process.env.JITK_VMM_ROOT || import.meta.dirname);
+// The arch/jitk tree around root; its tools/deps.json carries the Rust pin.
+const jitk = resolve(root, '..');
 const revision = 'a1d8616765da03980f3be1bb8714bfdd3842f33c';
 const mac = platform() === 'darwin';
-// Default: the jitk cache entry keyed by this checkout's VMM inputs, with
-// the patched libkrun shared per patch set (../tslib/deps.ts). An explicit
+// Default: the jitk cache entry keyed by root's VMM inputs, with the patched
+// libkrun shared per patch set (../tslib/deps.ts). An explicit
 // JITK_VMM_BUILD keeps its own libkrun/ unless JITK_VMM_LIBKRUN names one.
 const explicitOut = process.env.JITK_VMM_BUILD || '';
-const out = resolve(explicitOut || vmmBuildDir());
-const lib = resolve(process.env.JITK_VMM_LIBKRUN || (explicitOut ? join(out, 'libkrun') : libkrunDir()));
+const out = resolve(explicitOut || vmmBuildDir(jitk));
+const lib = resolve(process.env.JITK_VMM_LIBKRUN || (explicitOut ? join(out, 'libkrun') : libkrunDir(jitk)));
 if (process.argv.includes('--print-binary')) {
   console.log(join(out, 'jitk-vmm'));
   process.exit(0);
 }
 const env = environment();
-env.RUSTUP_TOOLCHAIN = '1.95.0';
+env.RUSTUP_TOOLCHAIN = pins(jitk).rust_toolchain;
 env.CARGO_PROFILE_RELEASE_PANIC = 'abort';
 async function command(args: string[]): Promise<void> {
   await run(args, { env, inherit: true });
 }
-// Inputs are only fingerprinted for this checkout's own sources.
-const inputs = resolve(root) === resolve(import.meta.dirname) ? vmmInputs() : '';
+const inputs = vmmInputs(jitk);
 function upToDate(): boolean {
   const recorded = join(out, 'build.json');
   if (!inputs || !existsSync(recorded) || !existsSync(join(out, 'jitk-vmm'))) {

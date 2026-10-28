@@ -17,10 +17,11 @@ if [[ ${1:-} == --nested ]]; then
  esac
  if [[ -n ${JITK_CANONICAL_VMM:-} ]]; then
   ./tool.sh stage-canonical "$JITK_CANONICAL_VMM" | tee "$JITK_LINUX_OUT/build.log"
-  CC="${CC:-zig cc -target aarch64-linux-musl}" ./tool.sh build-probes
-  ${CC:-zig cc -target aarch64-linux-musl} -O2 -Wall -Wextra -Werror spawn-cg.c -o "$JITK_WORK/spawn-cg"
+  CC="${CC:-$ROOT/../tools/zig-cc.sh -target aarch64-linux-musl}" ./tool.sh build-probes
+  ${CC:-$ROOT/../tools/zig-cc.sh -target aarch64-linux-musl} -O2 -Wall -Wextra -Werror spawn-cg.c -o "$JITK_WORK/spawn-cg"
  else
-  ./docker-build.sh 2>&1 | tee "$JITK_LINUX_OUT/build.log"
+  # kvm-dev builds the Linux VMM, spawn-cg and the probes (nested/build.ts).
+  ./tool.sh build-ssh "$JITK_WORK" "$JITK_LINUX_OUT" 2>&1 | tee "$JITK_LINUX_OUT/build.log"
  fi
  ./tool.sh build-kernel 2>&1 | tee "$JITK_LINUX_OUT/kernel-build.log"
  ./tool.sh build-faults

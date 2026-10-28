@@ -11,12 +11,12 @@ tools:
 	+@$(MAKE) -s -C "$(ROOT)/docs" tools
 	+@$(MAKE) -s -C "$(ROOT)/tools" tools
 # Pinned external artifacts built once into the shared jitk cache; see
-# README.md. Both: Node/npm, zig. macOS: VMM, Hyperlight source, worker and snapshot.
-# Linux: the shard binary (`make -C shard snapshot` adds the
+# README.md. Both: Node/npm, zig, the VMM. macOS: Hyperlight source, worker and
+# snapshot. Linux: the shard binary (`make -C shard snapshot` adds the
 # prepared snapshots).
 deps: tools
-ifeq ($(shell uname -s),Darwin)
 	+@$(MAKE) -s -C "$(ROOT)/vmm" .work/bin/build
+ifeq ($(shell uname -s),Darwin)
 	+@$(MAKE) -s -C "$(ROOT)/bench" build/hyperlight-build
 endif
 	@$(DEPS) build

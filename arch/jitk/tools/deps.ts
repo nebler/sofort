@@ -7,7 +7,8 @@
 //   JITK_ZIG                   ziglang.org tarball, sha256-checked (the static
 //                              aarch64 Linux cross-linker; ../tools/zig-cc.sh)
 //   HYPERLIGHT_JS_SRC          hyperlight-js fetched by full commit
-//   JITK_VMM_BINARY            vmm/build.ts (the canonical VMM builder; macOS)
+//   JITK_VMM_BINARY            vmm/build.ts (the canonical libkrun VMM builder;
+//                              HVF on macOS, KVM on Linux)
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
 //   JITK_SHARD_BINARY          shard `real` from source, pinned toolchain (Linux)
 // JITK_SHARD_SNAPSHOT (Linux) needs KVM and is built by

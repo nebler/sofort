@@ -13,7 +13,7 @@ export interface OracleOptions {
   // Shared file tree: the directory jitk packs as the guest's read-only `/`.
   // The oracle materialises the packed archive, checks that it re-packs to the
   // same bytes, bind-mounts it read-only and runs the payload chrooted into it
-  // with cwd `/` (oracle-root.c). Exclusive with `resources`.
+  // with cwd `/` (oracle-root.rs). Exclusive with `resources`.
   tree?: string;
   annotate?: boolean;
   // Linux calibration with the guest's memory capacity (KiB of address space).

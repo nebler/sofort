@@ -2,10 +2,13 @@ include ../tools/pin.mk
 include ../tools/deps.mk
 .DEFAULT_GOAL := test
 
-# Library tests anywhere; the native census regression needs Linux arm64 KVM
-# (and skips, naming the import step, while its pinned census inputs are absent).
-.PHONY: test
+# Library tests anywhere (on Linux, tests/kvm_abi.rs also checks the checked-in
+# KVM constants against the host UAPI headers with $$CC or cc); the native
+# census regression needs Linux arm64 KVM (and skips, naming the import step,
+# while its pinned census inputs are absent).
+.PHONY: test abi
 test:
+	"$(call jitk_artifact,JITK_NODE)" abi-gen.ts --check
 	$(CARGO_PIN) test --locked --offline
 	@if [ "$$(uname -s)" = Linux ]; then ./tool.sh check-native-r7; else echo 'shard: check-native-r7 skipped: needs Linux arm64 KVM'; fi
 
@@ -23,6 +26,10 @@ snapshot:
 test-kvm: snapshot
 	$(CARGO_PIN) build --release --locked --offline --bin real
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
+
+# src/kvm_abi.rs (the KVM UAPI constants) is checked in; abi-gen.ts derives it.
+abi:
+	"$(call jitk_artifact,JITK_NODE)" abi-gen.ts
 
 SOURCES := $(wildcard *.ts) $(TSLIB_SOURCES)
 .PHONY: build build-linux clean

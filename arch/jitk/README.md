@@ -85,10 +85,13 @@ one-time scriptc install in `tools/` uses a PATH npm when there is one,
 otherwise [`tools/npm.sh`](tools/npm.sh) bootstraps the pinned Node into the
 cache. LLVM
 `ld.lld` on `PATH` for the VMM test guests, and network access for Node, zig,
-crates and Git sources on first use. `make doctor` checks all of these. `make test`'s `linux` suite still needs the kvm-dev VM and Docker; see
+crates and Git sources on first use. `make doctor` checks all of these. `make
+test`'s `linux` suite needs the kvm-dev VM, which builds the Linux VMM natively;
+Docker is only needed by grow's `jitk-oracle:08` oracle runs. See
 [`linux/README.md`](linux/README.md).
 
-On Linux arm64 (kvm-dev) `make deps` builds Node, zig and the shard binary, and the
+On Linux arm64 (kvm-dev) `make deps` builds Node, zig, the libkrun VMM and the
+shard binary, and the
 shard suites run from a clean clone with no variables set; see
 [`shard/README.md`](shard/README.md) "Clean clone on Linux arm64".
 
@@ -112,8 +115,9 @@ Owner entrypoints are a subtree `Makefile` target or a same-named shell script:
 `protocol/{build,test}`, `grow/{test,grow,demo}`, `bench/{test,bench}`, and
 `linux/{test,nested}`. Adaptations to existing documented owner scripts live
 only in `docs/delegate.py`. H2 is sequential and stops at the first failure.
-`make test` includes the Linux README's full nested functional suite, requiring
-Docker/QEMU; `make linux-nested` runs that suite alone.
+`make test` includes the Linux README's full nested functional suite on kvm-dev
+(QEMU only for the explicit `JITK_NESTED_BACKEND=qemu`); `make linux-nested`
+runs that suite alone.
 Security module unit/policy tests and the baseline adapter test use their exact
 README commands; they do not substitute for integrated containment H5.
 Public demo/benchmark targets require canonical input markers. Marker preflight

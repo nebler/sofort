@@ -250,7 +250,8 @@ guest's own file tree. `oracle.ts` packs the fixture's `resources` exactly as
 `prepare.ts` does, materialises that archive (`kernel/packer.ts unpack`, files
 0444, directories 0555), checks it re-packs to the same bytes, bind-mounts it
 read-only into the unchanged `jitk-oracle:08` image and runs the payload under
-`oracle-root` (static C, `make build`): open the payload, `chroot` into the tree,
+`oracle-root` (`oracle-root.rs`, no_std Rust on the pinned toolchain's static
+aarch64 musl, `make build`): open the payload, `chroot` into the tree,
 cwd `/`, drop to 65534:65534 without groups, `execveat`. That container runs as
 root with `--cap-drop ALL` plus only `SYS_CHROOT`, `SETUID`, `SETGID` and
 `no-new-privileges`; strace's launcher prelude is split off into

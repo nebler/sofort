@@ -22,8 +22,9 @@ import { watchRun } from "./watch.ts";
 export function quote(text: string): string {
   return "'" + text.replace(/'/g, "'\\''") + "'";
 }
-export async function runSsh(workArgument: string, log: string): Promise<void> {
-  const work = canonical(workArgument);
+// The existing nested VM's ssh wrapper: JITK_NESTED_SSH, else kvm-dev/ssh.sh
+// beside the repository's common git directory.
+export async function sshWrapper(): Promise<string> {
   let ssh = process.env.JITK_NESTED_SSH || "";
   if (ssh) {
     ssh = canonical(ssh);
@@ -46,16 +47,20 @@ export async function runSsh(workArgument: string, log: string): Promise<void> {
     existsSync(ssh),
     "existing nested VM required: set JITK_NESTED_SSH to its ssh wrapper; see linux/README.md",
   );
+  return ssh;
+}
+// A per-checkout, per-process scratch directory, created on the remote host.
+// Default: jitk-suite in the remote user's home, made absolute by the remote
+// shell in the same round trip that creates it; JITK_NESTED_SSH_DIR overrides.
+export async function remoteScratch(ssh: string, suffix = ""): Promise<string> {
   const identity = digest(Buffer.from(ROOT)).slice(0, 12);
-  // Default: jitk-suite in the remote user's home, made absolute by the remote
-  // shell in the same round trip that creates the run directory.
   const remoteRoot = process.env.JITK_NESTED_SSH_DIR || "";
   check(
     remoteRoot === "" ||
       (remoteRoot.startsWith("/") && !remoteRoot.split("/").includes("..")),
     "JITK_NESTED_SSH_DIR must be an absolute remote scratch directory",
   );
-  const leaf = identity + "-" + process.pid;
+  const leaf = identity + "-" + process.pid + suffix;
   const target = remoteRoot
     ? quote(remoteRoot + "/" + leaf)
     : '"$HOME"/jitk-suite/' + leaf;
@@ -70,6 +75,12 @@ export async function runSsh(workArgument: string, log: string): Promise<void> {
     remote.startsWith("/") && remote.endsWith("/" + leaf),
     "remote run directory " + remote + " is not absolute",
   );
+  return remote;
+}
+export async function runSsh(workArgument: string, log: string): Promise<void> {
+  const work = canonical(workArgument);
+  const ssh = await sshWrapper();
+  const remote = await remoteScratch(ssh);
   const files: { source: string; name: string }[] = [
     { source: join(ROOT, "build/linux/linux-tools"), name: "linux-tools" },
   ];

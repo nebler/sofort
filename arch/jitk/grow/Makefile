@@ -32,10 +32,13 @@ build/oracle-profile: oracle-profile.ts oracle-trace.ts lib.ts $(TSLIB_SOURCES) 
 	mkdir -p build
 	PATH="$(dir $(ZIG)):$$PATH" SCRIPTC_TARGET=aarch64-linux-musl $(SCRIPTC) build oracle-profile.ts -o $@
 
-# Shared-tree launcher (static aarch64 musl), mounted into the unchanged oracle image.
-build/oracle-root: oracle-root.c
+# Shared-tree launcher (static aarch64 musl), mounted into the unchanged oracle
+# image. The pinned toolchain's aarch64-unknown-linux-musl target links it with
+# its own musl (libc.a, crt objects) through rust-lld: no C toolchain. Needs
+# `rustup target add --toolchain $(RUST_TOOLCHAIN) aarch64-unknown-linux-musl`.
+build/oracle-root: oracle-root.rs
 	mkdir -p build
-	$(ZIG) cc -target aarch64-linux-musl -static -Os -Wall -Werror $< -o $@
+	rustc +$(RUST_TOOLCHAIN) --edition=2024 --target aarch64-unknown-linux-musl -D warnings -C panic=abort -C opt-level=s -C strip=symbols -C target-feature=+crt-static -C link-self-contained=yes -C linker=rust-lld -C linker-flavor=ld.lld --remap-path-prefix=$(CURDIR)=arch/jitk/grow $< -o $@
 
 oracle: build/oracle-profile build/oracle-root
 

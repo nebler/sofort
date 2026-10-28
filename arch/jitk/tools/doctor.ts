@@ -138,7 +138,7 @@ function native(): Item[] {
 }
 
 async function docker(): Promise<Item> {
-  const why = 'only needed for GrowOS (jitk-oracle:08) and, until it changes, the Linux VMM build (linux suite)';
+  const why = 'only needed for GrowOS (jitk-oracle:08) oracle runs';
   if (!mac) {
     return which('docker') ? ok('docker', 'not needed on a Linux host') : ok('docker', 'absent; not needed on a Linux host');
   }
