@@ -62,8 +62,6 @@ const shard:Difference[]=[
   ...['t-timer','t-timer-zero'].map((id):Difference=>({case:id,backends:['shard'],expect:{error:'GUEST_ERROR',match:"'setTimeout' is not defined"},limit:'kernel/ring-bootstrap.js (no timers)',
     reason:'the ring profile has deliberately no timers'})),
   {case:'t-timer-typeof',backends:['shard'],expect:{ok:['undefined','undefined']},limit:'kernel/ring-bootstrap.js (no timers)',reason:'the ring profile has deliberately no timers'},
-  {case:'t-clock-advances',backends:['shard'],expect:{ok:false},limit:'abi ring ctrl::EPOCH_NS/MONOTONIC_NS (set once per START)',
-    reason:'the guest clock is the admission-time value and does not advance during a job (CUTOVER-PLAN §2.4 "real clocks inside a job" is open)'},
   ...['t-stack-overflow','t-stack-overflow-caught'].map((id):Difference=>({case:id,backends:['shard'],expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi arena::STACK_BYTES',value:0x20000,
     reason:'both paths end the guest on unbounded recursion; the shard reports it as a guest_fatal ERROR record (class GUEST_ERROR), the console path as EOF (SANDBOX)'})),
   {case:'t-done-over-limit',backends:['shard'],expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi ring::DONE_BYTES',value:IPC.doneBytes,

@@ -106,6 +106,9 @@ pub struct Slot {
     quarantined: Option<String>,
     /// Admissions so far: every policy.sample_every-th is content-checked.
     admits: u64,
+    /// The shard clock's cell for this slot (owner::Pool): refreshes the
+    /// guest's MONOTONIC_NS word while the vCPU runs.
+    pub(crate) clock: Option<crate::clock::Cell>,
 }
 impl Slot {
     fn create(kvm: &Kvm, file: &File, class: Option<arena::Class>) -> Self {
@@ -180,6 +183,7 @@ impl Slot {
             entries: Vec::new(),
             quarantined: None,
             admits: 0,
+            clock: None,
         }
     }
     /// Create an unpartitioned boot VM for trusted offline snapshot preparation.
@@ -417,6 +421,12 @@ impl Slot {
                 });
             }
             self.wrote_ram(); // the guest may write RAM and registers
+            // While the guard lives the shard clock may refresh MONOTONIC_NS;
+            // its drop waits out an in-progress store (clock.rs).
+            let _ticking = self
+                .clock
+                .as_ref()
+                .map(|c| c.enter(self.atomic(ring::MONOTONIC_NS)));
             // SAFETY: this owner has the live vCPU/run mappings; no guest RAM
             // reference spans KVM_RUN, which takes a zero scalar argument.
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
@@ -656,6 +666,7 @@ mod tests {
             entries: Vec::new(),
             quarantined: None,
             admits: 0,
+            clock: None,
         }
     }
     fn record(s: &Slot, kind: u16, id: u64, payload: &[u8]) {

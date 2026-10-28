@@ -2,6 +2,7 @@
 //! Waiting slots retain no execution stack. The reactor sends bounded commands;
 //! the watchdog shares only generation-fenced leases and eventfd wakeups.
 use crate::{
+    clock::{self, Clock},
     constants::ring,
     kvm::{self, Kvm, Request, ResetPolicy, ResetReport, RunError, Slot, Snapshot},
     lease::{Lease, Wake, Watchdog},
@@ -97,6 +98,8 @@ pub struct Pool {
     events: Receiver<Event>,
     watchdog: Watchdog,
     slots: usize,
+    // Dropped after the owners have stopped (Drop runs shutdown first).
+    _clock: Clock,
 }
 impl Pool {
     pub fn new(kvm: Arc<Kvm>, snapshot: Arc<Snapshot>, slots: usize, owners: usize) -> Self {
@@ -118,6 +121,7 @@ impl Pool {
         );
         let wakes: Vec<_> = (0..owners).map(|_| Wake::new()).collect();
         let watchdog = Watchdog::start(slots, &wakes, 100);
+        let clock = Clock::start(slots);
         let (tx, events) = mpsc::sync_channel(slots + owners);
         let mut mailboxes = Vec::new();
         let mut joins = Vec::new();
@@ -133,6 +137,10 @@ impl Pool {
                 .step_by(owners)
                 .map(|id| watchdog.slot(id))
                 .collect::<Vec<_>>();
+            let clocks = (owner..slots)
+                .step_by(owners)
+                .map(|id| clock.cell(id))
+                .collect::<Vec<_>>();
             let (kvm, snapshot, tx, w) = (kvm.clone(), snapshot.clone(), tx.clone(), wake.clone());
             joins.push(
                 thread::Builder::new()
@@ -145,6 +153,7 @@ impl Pool {
                             snapshot,
                             policy,
                             leases,
+                            clocks,
                             commands: rx,
                             events: Events { tx, notify },
                             wake: w,
@@ -161,6 +170,7 @@ impl Pool {
             events,
             watchdog,
             slots,
+            _clock: clock,
         }
     }
     pub fn shutdown(&mut self) -> io::Result<()> {
@@ -527,6 +537,7 @@ struct Worker {
     snapshot: Arc<Snapshot>,
     policy: ResetPolicy,
     leases: Vec<Lease>,
+    clocks: Vec<clock::Cell>,
     commands: Receiver<Command>,
     events: Events,
     wake: Wake,
@@ -579,7 +590,8 @@ impl Worker {
                 let i = id / self.owners;
                 assert_eq!(id % self.owners, self.owner);
                 if slots[i].is_none() {
-                    let cpu = Slot::with_policy(&self.kvm, self.snapshot.clone(), self.policy);
+                    let mut cpu = Slot::with_policy(&self.kvm, self.snapshot.clone(), self.policy);
+                    cpu.clock = Some(self.clocks[i].clone());
                     slots[i] = Some(Managed {
                         cpu,
                         lease: self.leases[i].clone(),
