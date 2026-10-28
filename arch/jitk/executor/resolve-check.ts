@@ -7,7 +7,12 @@ const b:Backend={kind:'jitk',memoryLimitMB:32,park:async()=>s};
 const pool=new SandboxPool(b,0,1),ex=new MicroVMExecutor(pool,()=> 'allow');
 const result=await ex.execute('return 2',[]);
 assert.equal(result.result,2);assert.equal(kills,0,'execute resolved before even SIGKILL');
-assert.equal(pool.snapshot().tokens,1);await assert.rejects(()=>pool.acquire(),/saturated/);
+assert.equal(pool.snapshot().tokens,1);
+{ // The charged token makes the next caller wait (not shed); abort removes it.
+  const ac=new AbortController(),next=pool.acquire(ac.signal);
+  await new Promise(r=>setImmediate(r));assert.equal(pool.snapshot().waiting,1);
+  ac.abort();await assert.rejects(()=>next,/aborted/);assert.equal(pool.snapshot().waiting,0);
+}
 await new Promise(r=>setImmediate(r));assert.equal(kills,1);
 vmmReap();await new Promise(r=>setImmediate(r));assert.equal(pool.snapshot().tokens,1,'watchdog still owns capacity');
 watchdogReap();await new Promise(r=>setImmediate(r));assert.equal(pool.snapshot().tokens,0);

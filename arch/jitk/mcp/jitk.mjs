@@ -35,7 +35,7 @@ const TIMEOUT = 'Execution aborted or timed out';
 export function classify(error, cancelled) {
   if (error === TIMEOUT) return cancelled ? 'CANCELLED' : 'TIMEOUT';
   if (/policy denied|approval required/.test(error)) return 'POLICY';
-  if (/limit|budget|saturated|out of memory|stack overflow/i.test(error)) return 'LIMIT';
+  if (/limit|budget|saturated|overloaded|out of memory|stack overflow/i.test(error)) return 'LIMIT';
   if (/sandbox exited|protocol [A-Z_]+|invalid frame|unknown frame/.test(error)) return 'SANDBOX';
   return 'GUEST_ERROR';
 }

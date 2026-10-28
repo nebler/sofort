@@ -83,9 +83,14 @@ parked reserve. `resolve-check.ts` proves this with independently delayed reaps;
 
 `pool.drain()` explicitly waits for deferred disposals when a caller needs to
 pace cold sequential work without exhausting its capacity. `pool.close()`
-awaits startups, both child reaps and deferred disposals. Acquisitions can wait
-for an existing background refill, bounded by maxLive and AbortSignal; actual
-capacity exhaustion sheds with `pool saturated`. Warm pools require supplied
+awaits startups, both child reaps and deferred disposals. When no VM is parked
+and no capacity is free (tokens stay charged through reap or shard reset),
+`acquire` waits in a bounded FIFO queue (`maxWaiting`, default max(64, 4 × maxLive)).
+Freed capacity goes to the head waiter, and abort or deadline removes a waiter.
+Closing the pool or a backend death rejects them. Only a full queue sheds, with
+`OverloadedError` (`code: 'OVERLOADED'`). `ShardBackend.park` queues the same
+way (`ShardOptions.maxWaiting`). `refillConcurrency` defaults to maxLive for the
+shard backend and to 2 VMM boots for process backends. Warm pools require supplied
 G1 evidence strictly below 2% idle core. The shipped parking receipt binds
 the measured VMM/kernel hashes; different artifacts need fresh G1 evidence. Lifecycle hooks observe kill/reaped;
 RunOptions.onTiming observes start/acquired/runSent/firstCall/firstRet/done/resolve.
