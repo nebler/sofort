@@ -861,5 +861,22 @@ impl hv::Vcpu for HvfVcpu {
     }
 }
 
+/// Host state a confined engine process can no longer read (Seatbelt denies
+/// sysctl): the zygote reads it once before forking, and every child inherits
+/// the cached value.
+pub(crate) fn warm() {
+    dcache_line();
+}
+
+mod child;
+/// jitk-vmm's confinement (vmm/sandbox, owner 07), compiled into the engine
+/// unchanged: the HVF children enter the same Seatbelt profile, in the same
+/// order (before the VM exists), as the libkrun VMM.
+#[allow(dead_code, clippy::all)]
+#[path = "../../vmm/sandbox/mod.rs"]
+mod confine;
+mod conn;
+pub mod zygote;
+
 #[cfg(test)]
 mod tests;
