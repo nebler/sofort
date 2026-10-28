@@ -891,13 +891,8 @@ pub(crate) fn warm() {
 }
 
 mod child;
-/// jitk-vmm's confinement (vmm/sandbox, owner 07), compiled into the engine
-/// unchanged: the HVF children enter the same Seatbelt profile, in the same
-/// order (before the VM exists), as the libkrun VMM.
-#[allow(dead_code, clippy::all)]
-#[path = "../../vmm/sandbox/mod.rs"]
-mod confine;
 mod conn;
+pub mod console;
 pub mod native;
 mod seatbelt;
 pub mod zygote;

@@ -10,7 +10,7 @@
 //! in the tests); consecutive runs of one profile reuse the slot with a
 //! reset, as on Linux.
 //!
-//! Before any VM exists the worker enters vmm/sandbox's jitk.sb for the
+//! Before any VM exists the worker enters jitk.sb for the
 //! profiles' directory and drops fork (RLIMIT_NPROC 0, as an engine process):
 //! no file outside it, no write, network, exec or fork. Every snapshot is
 //! loaded and its descriptors opened before that.
@@ -209,7 +209,7 @@ impl Worker {
 
 /// jitk.sb for `images` (the profiles' directory), then no fork.
 fn confine(images: &Path) -> io::Result<()> {
-    let blob = super::seatbelt::compile(super::confine::SEATBELT_PROFILE, images)?;
+    let blob = super::seatbelt::compile(super::seatbelt::PROFILE, images)?;
     super::seatbelt::apply(&blob)?;
     super::child::confine()
 }

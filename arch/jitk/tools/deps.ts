@@ -323,7 +323,7 @@ async function buildShard(env: Record<string, string>): Promise<void> {
       copyFileSync(join(settings.CARGO_TARGET_DIR, 'release', name), join(stage, name));
       chmodSync(join(stage, name), 0o755);
       if (mac) {
-        await run(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(JITK_ROOT, 'vmm/hypervisor.entitlements'), join(stage, name)], { env, timeout: 120 });
+        await run(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(JITK_ROOT, 'shard/hypervisor.entitlements'), join(stage, name)], { env, timeout: 120 });
       }
       dumpJSON(join(stage, 'manifest.json'), {
         artifact: 'shard',

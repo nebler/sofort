@@ -77,7 +77,7 @@ async function main(): Promise<void> {
     mkdirSync(dirname(worker), { recursive: true });
     copy(built, worker);
   }
-  await command(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(root, '../../vmm/hypervisor.entitlements'), worker], env);
+  await command(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(root, '../../shard/hypervisor.entitlements'), worker], env);
   mkdirSync(dirname(snapshot), { recursive: true });
   check(!existsSync(snapshot), 'Snapshot output already exists; choose a fresh HYPERLIGHT_SNAPSHOT');
   await command([worker, 'save', snapshot], env, 30);

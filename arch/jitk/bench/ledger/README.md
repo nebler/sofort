@@ -41,7 +41,7 @@ First run `make -C .. build`. Run from this directory, with Node `/tmp/jitk-09/n
 ../build/ledger analyze-cpu cpu-raw.json
 ../build/ledger-waves # supplemental N=60 cells, releasing the lock after each cell
 clang -O2 -framework Hypervisor hvf_control.c -o artifacts/hvf-control
-codesign --force --sign - --entitlements ../../vmm/hypervisor.entitlements artifacts/hvf-control
+codesign --force --sign - --entitlements ../../shard/hypervisor.entitlements artifacts/hvf-control
 /usr/bin/lockf -k /tmp/sofort-bench.lock ../build/hvf-control
 ../build/ledger-report
 ../build/ledger-verify

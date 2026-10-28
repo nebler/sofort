@@ -122,10 +122,11 @@ export function cargoPath(path: string): string {
 
 // The production shard binary, built from source with the pinned toolchain:
 // shard `real` on Linux (KVM), shard `hvf` on macOS (the HVF engine, signed
-// with the hypervisor entitlement; it compiles in vmm/sandbox's Seatbelt
-// confinement).
+// with the hypervisor entitlement; its Seatbelt profile is
+// shard/src/hvf/jitk.sb). Both also serve `watchdog` (the process backends'
+// deadline watchdog); `hvf console` runs the console kernel profile.
 export function shardInputs(): string {
-  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest'), 'vmm/sandbox/mod.rs', 'vmm/sandbox/jitk.sb', 'vmm/hypervisor.entitlements'];
+  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest'), 'shard/hypervisor.entitlements'];
   return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, hostPlatform()]);
 }
 // The shard binary's name on this host.
@@ -198,7 +199,7 @@ export function hyperlightSourceDir(): string {
 
 export function hyperlightInputs(): string {
   const p = pins();
-  const files = ['bench/hyperlight/Cargo.toml', 'bench/hyperlight/Cargo.lock', 'bench/hyperlight/worker.rs', 'bench/hyperlight/load_linux.rs', 'bench/hyperlight/bootstrap.js', 'bench/hyperlight/build.ts', 'vmm/hypervisor.entitlements'];
+  const files = ['bench/hyperlight/Cargo.toml', 'bench/hyperlight/Cargo.lock', 'bench/hyperlight/worker.rs', 'bench/hyperlight/load_linux.rs', 'bench/hyperlight/bootstrap.js', 'bench/hyperlight/build.ts', 'shard/hypervisor.entitlements'];
   return fingerprint(JITK_ROOT, files, [p.hyperlight_js.commit, p.hyperlight_toolchain, hostPlatform()]);
 }
 

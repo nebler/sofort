@@ -38,3 +38,7 @@ pub mod slot;
 #[cfg(unix)]
 pub mod snapshot;
 pub mod streams;
+/// The process backends' shared deadline watchdog (`hvf watchdog`, `real
+/// watchdog`); executor/backend.ts.
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub mod watchdog;

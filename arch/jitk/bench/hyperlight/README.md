@@ -20,7 +20,7 @@ an unverified PATH launcher. `make build` compiles `build.ts` with the bench
 package's pinned scriptc 0.4.5, then runs the native `../build/hyperlight-build`.
 It stages the adapter crate beside a
 symlink to `HYPERLIGHT_JS_SRC`, builds offline/locked, signs with canonical
-`../../vmm/hypervisor.entitlements`, then creates a tenant-free snapshot.
+`../../shard/hypervisor.entitlements`, then creates a tenant-free snapshot.
 
 `HYPERLIGHT_BUILD_DIR` defaults to this directory's `build/`; output overrides
 `HYPERLIGHT_WORKER` and `HYPERLIGHT_SNAPSHOT` select the worker and snapshot.

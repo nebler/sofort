@@ -1,13 +1,15 @@
-//! The zygote's Seatbelt confinement (jitk.sb + `zygote.sb`), with libsandbox's
-//! compile and apply entry points as vmm/sandbox uses them. jitk.sb itself
-//! stays vmm/sandbox's, compiled in unchanged.
+//! The engine's Seatbelt confinement: `jitk.sb` (every engine process, the
+//! native worker, the console runner) and the zygote's `zygote.sb` on top,
+//! through libsandbox's compile and apply entry points.
 use std::{
     ffi::{CStr, CString, c_char, c_int},
     io,
     path::Path,
 };
 
-/// The zygote's grants on top of vmm/sandbox's jitk.sb.
+/// Deny by default; read only the `IMAGES` directory; one sysctl.
+pub const PROFILE: &str = include_str!("jitk.sb");
+/// The zygote's grants on top of jitk.sb.
 pub const ZYGOTE_RULES: &str = include_str!("zygote.sb");
 
 #[repr(C)]
@@ -18,7 +20,7 @@ struct Profile {
 }
 #[link(name = "sandbox")]
 unsafe extern "C" {
-    // Private but long-stable libsandbox exports (vmm/sandbox/mod.rs).
+    // Private but long-stable libsandbox exports.
     fn sandbox_create_params() -> *mut u8;
     fn sandbox_set_param(p: *mut u8, k: *const c_char, v: *const c_char) -> c_int;
     fn sandbox_free_params(p: *mut u8);
@@ -91,4 +93,19 @@ pub fn apply(blob: &[u8]) -> io::Result<()> {
         )));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    /// jitk.sb grants exactly the image directory and one sysctl.
+    #[test]
+    fn profile_is_minimal() {
+        let rules: Vec<_> = super::PROFILE
+            .lines()
+            .map(str::trim)
+            .filter(|l| l.starts_with("(allow"))
+            .collect();
+        assert_eq!(rules.len(), 2, "{rules:?}");
+        assert!(super::PROFILE.contains("(deny default)"));
+    }
 }
