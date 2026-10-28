@@ -1,6 +1,6 @@
-import type {Backend,Sandbox} from './backend.js';
+import type {Engine as Backend,Session} from './engine.js';
 export type ParkingGate={idleCorePercent:number;evidence:string};
-export type PoolOptions={refillConcurrency?:number;maxWaiting?:number;parkingGate?:ParkingGate;onEvent?:(event:'kill'|'reaped',sandbox:Sandbox,atMs:number)=>void};
+export type PoolOptions={refillConcurrency?:number;maxWaiting?:number;parkingGate?:ParkingGate;onEvent?:(event:'kill'|'reaped',sandbox:Session,atMs:number)=>void};
 // 05/06: refill latency in seconds; cap includes parked, running, creating/reaping.
 export function recommendedWarmCount(lambda:number,refillP99Seconds:number,burst:number,cap:number):number {
   if([lambda,refillP99Seconds,burst,cap].some(x=>!Number.isFinite(x)||x<0))throw Error('invalid sizing inputs');
@@ -42,8 +42,8 @@ export class AdmissionQueue<T> {
   rejectAll(e:Error) {for(const w of this.waiters.splice(0))w.reject(e);}
 }
 export class SandboxPool {
-  private parked:Sandbox[]=[];
-  private live=new Set<Sandbox>();
+  private parked:Session[]=[];
+  private live=new Set<Session>();
   private tokens=0;
   private creating=0;
   private maxTokens=0;
@@ -51,9 +51,9 @@ export class SandboxPool {
   private closed=false;
   private lifecycle=new AbortController();
   private disposals=new Set<Promise<void>>();
-  private startups=new Set<Promise<Sandbox>>();
+  private startups=new Set<Promise<Session>>();
   private warming?:Promise<void>;
-  private queue:AdmissionQueue<Sandbox>;
+  private queue:AdmissionQueue<Session>;
   readonly refillConcurrency:number;
   constructor(readonly backend:Backend,readonly warmCount:number,readonly maxLive:number,readonly options:PoolOptions={}) {
     if(!Number.isInteger(warmCount)||!Number.isInteger(maxLive)||warmCount<0||maxLive<1||warmCount>maxLive)throw Error('invalid pool size');
@@ -70,13 +70,13 @@ export class SandboxPool {
   }
   snapshot(){return {tokens:this.tokens,creating:this.creating,parked:this.parked.length,live:this.live.size,waiting:this.queue.length,maxTokens:this.maxTokens,maxCreating:this.maxCreating,maxWaiting:this.queue.maxSeen,closed:this.closed};}
   private canStart(){return !this.closed&&this.tokens<this.maxLive&&this.creating<this.refillConcurrency;}
-  private async start(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
+  private async start(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(!this.canStart())throw Error('pool saturated'); // callers check canStart(); never reached from acquire
     this.tokens++;this.creating++;
     this.maxTokens=Math.max(this.tokens,this.maxTokens);this.maxCreating=Math.max(this.creating,this.maxCreating);
     const p=Promise.resolve().then(()=>this.backend.park(signal?AbortSignal.any([signal,this.lifecycle.signal]):this.lifecycle.signal,deadline));
     this.startups.add(p);
-    let s:Sandbox;
+    let s:Session;
     try{s=await p;}
     catch(e){this.tokens--;throw e;}
     finally{this.creating--;this.startups.delete(p);this.pump();}
@@ -88,7 +88,7 @@ export class SandboxPool {
     if(this.closed){s.kill();await s.exited;throw Error('pool closed');}
     return s;
   }
-  private async prepare(s:Sandbox,deadline?:number):Promise<Sandbox> {
+  private async prepare(s:Session,deadline?:number):Promise<Session> {
     if(deadline!==undefined)try{await s.armDeadline?.(deadline);}catch(e){s.kill();await s.exited;throw e;}
     return s;
   }
@@ -119,7 +119,7 @@ export class SandboxPool {
     };
     this.warming=fill().finally(()=>{this.warming=undefined;});return this.warming;
   }
-  async acquire(signal?:AbortSignal,deadline?:number):Promise<Sandbox> {
+  async acquire(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(this.closed||signal?.aborted)throw Error('pool closed/aborted');
     // FIFO: nobody overtakes an earlier waiter, even when capacity just freed.
     if(!this.queue.length){
@@ -130,13 +130,13 @@ export class SandboxPool {
     // reset). Wait for it in order; only a full queue is backpressure.
     const waiting=this.queue.wait(signal,deadline);this.pump();return waiting;
   }
-  retire(s:Sandbox,beforeKill:()=>void=()=>{}):void {
+  retire(s:Session,beforeKill:()=>void=()=>{}):void {
     // Keep s in live (and its token charged) until both owned children close.
     const task=new Promise<void>(resolve=>setImmediate(()=>{beforeKill();void this.release(s).catch(()=>{}).finally(resolve);}));
     this.disposals.add(task);void task.finally(()=>this.disposals.delete(task));
   }
   async drain():Promise<void>{await Promise.all([...this.disposals]);}
-  async release(s:Sandbox):Promise<void> {
+  async release(s:Session):Promise<void> {
     if(!this.live.has(s))return;
     try{this.options.onEvent?.('kill',s,performance.now());}catch{}
     s.kill();await s.exited;

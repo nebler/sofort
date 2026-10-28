@@ -6,32 +6,36 @@ const skip=testPrerequisite();
 if(skip){console.log(JSON.stringify({checks:13,status:'SKIP',reason:skip}));process.exit(0);}
 const {worker,snapshot}=hyperlightConfig();
 let checks=0;
+// Drive one session directly: the typed Session API, no executor policy layer.
 async function execute(code:string,tools:Record<string,(...args:any[])=>any>={},timeout=3000) {
   const b=new HyperlightBackend(worker,snapshot,timeout),s=await b.park();
   const calls:any[]=[],logs:any[]=[];
   try {
-    await s.send({t:'run',code,ns:{test:Object.keys(tools)}});
+    await s.start({kind:'js',source:`async()=>{${code}\n}`,tools:{test:Object.keys(tools)},prelude:''});
     for (;;) {
-      const m:any=await s.read();
-      if(m.t==='done')return {m,calls,logs};
-      if(m.t==='log'){logs.push(m);continue;}
-      assert.equal(m.t,'call');assert.equal(m.id,calls.length+1);calls.push(m);
-      try {await s.send({t:'ret',id:m.id,ok:await tools[m.fn](...m.args)});}
-      catch(e) {await s.send({t:'ret',id:m.id,err:{code:'DENIED',message:'policy denied'}});}
+      const ev=await s.next();
+      if(ev.kind==='done')return {ok:ev.ok,calls,logs};
+      // A guest throw completes the run; anything else is a session failure.
+      if(ev.kind==='fail'){if(ev.cause==='guest'&&!/^protocol /.test(ev.message))return {fail:ev.message,calls,logs};throw Error(ev.message);}
+      if(ev.kind==='log'){logs.push(ev);continue;}
+      assert.equal(ev.id,calls.length+1);calls.push(ev);
+      try {await s.reply(ev.id,{ok:await tools[ev.fn](...ev.args)});}
+      catch(e) {await s.reply(ev.id,{err:{code:'DENIED',message:'policy denied'}});}
     }
   }finally{s.kill();await s.exited;}
 }
-assert.equal((await execute('return 2;')).m.ok,2);checks++;
-assert.equal((await execute('return await test.echo(2);',{echo:async x=>x})).m.ok,2);checks++;
+assert.equal((await execute('return 2;')).ok,2);checks++;
+assert.equal((await execute('return await test.echo(2);',{echo:async x=>x})).ok,2);checks++;
 const batch=await execute('return await Promise.all(Array.from({length:10},(_,i)=>test.echo(i)));',
   {echo:async x=>{await new Promise(r=>setTimeout(r,5));return x;}});
-assert.deepEqual(batch.m.ok,Array.from({length:10},(_,i)=>i));assert.equal(batch.calls.length,10);checks++;
-assert.equal((await execute('try {await test.no();} catch(e) {return e.code;}',{no:()=>{throw Error();}})).m.ok,'DENIED');checks++;
+assert.deepEqual(batch.ok,Array.from({length:10},(_,i)=>i));assert.equal(batch.calls.length,10);checks++;
+assert.equal((await execute('try {await test.no();} catch(e) {return e.code;}',{no:()=>{throw Error();}})).ok,'DENIED');checks++;
 assert.equal((await execute('console.warn("héllo"); return 2;')).logs[0].msg,'héllo');checks++;
-assert.equal((await execute('throw Error("guest failure");')).m.err.message,'guest failure');checks++;
+assert.equal((await execute('throw Error("guest failure");')).fail,'Error: guest failure');checks++;
 await assert.rejects(()=>execute('while(true){}',{},100));checks++;
+// The v1 run schema still applies behind start(): a reserved namespace is refused.
 const b=new HyperlightBackend(worker,snapshot),s=await b.park();
-try {await assert.rejects(()=>s.send({t:'run',code:'return 2;',ns:{},extra:true}));checks++;}
+try {await assert.rejects(()=>s.start({kind:'js',source:'async()=>2',tools:{print:[]},prelude:''}));checks++;}
 finally{s.kill();await s.exited;}
 const controller=new AbortController();controller.abort();
 await assert.rejects(()=>b.park(controller.signal));checks++;

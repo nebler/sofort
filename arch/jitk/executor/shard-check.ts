@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import {ProtocolError} from '../protocol/dispatcher.js';
 import {mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -89,9 +88,9 @@ try {
   // Block Node across the lease deadline. The watchdog must reset independently.
   const sandbox=await backend.park();await sandbox.armDeadline!(Date.now()+120);
   const before=metrics.length;
-  await sandbox.send({t:'run',code:'while(true){}',ns:{}});
+  await sandbox.start({kind:'js',source:'async()=>{while(true){}}',tools:{},prelude:''});
   const blockUntil=performance.now()+300;while(performance.now()<blockUntil){}
-  await assert.rejects(sandbox.read(),/deadline_exceeded/);assertions++;
+  {const ev=await sandbox.next();assert.ok(ev.kind==='fail'&&ev.cause==='deadline'&&/deadline_exceeded/.test(ev.message),JSON.stringify(ev));assertions++;}
   const deadline=metrics.slice(before).find(m=>m.resetDoneNs>0n);check(!!deadline,'watchdog reset receipt while Node was blocked');
   check(deadline!.resetDoneNs>=deadline!.deadlineNs&&deadline!.resetDoneNs-deadline!.deadlineNs<50000000n,'responsive-owner deadline reset within 50 ms (nested)');
   sandbox.kill();await sandbox.exited;
@@ -158,9 +157,9 @@ try {
     const hostile=new ShardBackend({binary:peer,snapshot:peerSnapshot(mode),slots:1,owners:1});
     try {
       const started=performance.now();
-      const s=await hostile.park();await s.armDeadline!(Date.now()+3000);await s.send({t:'run',code:'return 1',ns:{tools:['echo']}});
+      const s=await hostile.park();await s.armDeadline!(Date.now()+3000);await s.start({kind:'js',source:'async()=>1',tools:{tools:['echo']},prelude:''});
       // The duplicate case may deliver its first valid call before poisoning the batch.
-      await assert.rejects((async()=>{for(let i=0;i<3;i++)await s.read();})(),e=>e instanceof ProtocolError||(e instanceof Error&&((e as any).code==='SHARD_IPC'||/^(shard IPC|protocol )/.test(e.message))));assertions++;
+      {let ev=await s.next();for(let i=0;i<2&&ev.kind!=='fail';i++)ev=await s.next();assert.ok(ev.kind==='fail'&&/IPC|^protocol /.test(ev.message),mode+': '+JSON.stringify(ev));assertions++;}
       check(performance.now()-started<2000,`Node promptly rejects hostile ${mode}`);
     } finally {await hostile.close();}
   }
