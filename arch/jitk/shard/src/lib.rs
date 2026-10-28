@@ -1,4 +1,6 @@
-//! Linux arm64 shard: verified snapshots, owner-thread VM lifecycle and bounded IPC.
+//! jitk shard: verified snapshots, hypervisor-neutral slots behind the `hv`
+//! seam, the Linux arm64 KVM backend with owner-thread VM lifecycle and
+//! bounded IPC, and the macOS Hypervisor.framework backend.
 //!
 //! The two CLI binaries own all fixture, attack and measurement orchestration.
 #![deny(clippy::undocumented_unsafe_blocks)]
@@ -8,10 +10,12 @@
 compile_error!("the jitk shard's Linux KVM backend supports aarch64 only");
 
 pub mod arena;
-#[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+#[cfg(unix)]
 pub mod clock;
 pub mod constants;
 pub mod entropy;
+#[cfg(unix)]
+pub mod hv;
 pub mod inputs;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod ipc;
@@ -21,8 +25,13 @@ pub mod ipc_service;
 pub mod kvm;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod lease;
+#[cfg(unix)]
+pub mod memory;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod owner;
 pub mod payload;
+#[cfg(unix)]
+pub mod slot;
+#[cfg(unix)]
 pub mod snapshot;
 pub mod streams;
