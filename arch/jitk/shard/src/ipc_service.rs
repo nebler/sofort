@@ -1,118 +1,16 @@
 //! Reactor for the selectable Node executor backend. No providers, credentials
 //! or policy rules live here; only admission and transport bounds are checked.
-use crate::constants::{ABI_VERSION, ipc as wire, ring};
+//! The per-slot state machine is `service`'s, shared with the HVF zygote.
+use crate::constants::ABI_VERSION;
+use crate::service::{self, Cancel, State, enqueue, invalid, ipc_charge, released};
 use crate::{
     ipc::{self, Endpoint, Message},
     kvm::{self, Kvm, Request, Snapshot},
     owner::{Event, Job, Mode, Pool},
-    payload,
 };
 use std::{collections::VecDeque, io, sync::Arc};
-const MAX_SLOTS: usize = wire::MAX_SLOTS;
-const OUTBOUND: usize = wire::OUTBOUND;
+const MAX_SLOTS: usize = crate::constants::ipc::MAX_SLOTS;
 pub use crate::constants::ipc::STATS;
-#[derive(Clone, Copy, PartialEq)]
-enum Phase {
-    Idle,
-    Running,
-    Done,
-    Resetting,
-    /// Reported QUARANTINED: never admits again; any message for it is a Node bug.
-    Quarantined,
-}
-struct State {
-    generation: u64,
-    phase: Phase,
-    next: u64,
-    pending: u32,
-}
-impl Default for State {
-    fn default() -> Self {
-        Self {
-            generation: 0,
-            phase: Phase::Idle,
-            next: 1,
-            pending: 0,
-        }
-    }
-}
-fn invalid(message: &'static str) -> io::Error {
-    io::Error::new(io::ErrorKind::InvalidData, message)
-}
-fn ipc_charge(class: crate::arena::Class) -> io::Result<u32> {
-    if class != crate::arena::Class::Glue2m {
-        return Err(invalid("IPC supports only verified glue-2m snapshots"));
-    }
-    Ok(class.admission_bytes())
-}
-fn admission(m: &Message, now: u64, charge: u32) -> io::Result<(u64, String)> {
-    let b = &m.bytes;
-    if m.id != 0 || b.len() < wire::START_HEADER_BYTES {
-        return Err(invalid("IPC admission header"));
-    }
-    let deadline = ipc::u64_at(b, 0);
-    if deadline > now.saturating_add(wire::DEADLINE_HORIZON_NS)
-        || ipc::u32_at(b, 8) as usize != ring::MAX_CALLS
-        || ipc::u32_at(b, 12) as usize != ring::CALL_BYTES
-        || ipc::u32_at(b, 20) != charge
-    {
-        return Err(invalid("IPC admission limits/deadline"));
-    }
-    let n = ipc::u32_at(b, 16) as usize;
-    let source = &b[wire::START_HEADER_BYTES..];
-    if n > ring::SOURCE_LIMIT
-        || source.len() != n
-        || source.iter().any(|b| !b.is_ascii() || *b == 0)
-    {
-        return Err(invalid("IPC source bound/encoding"));
-    }
-    Ok((
-        deadline,
-        String::from_utf8(source.to_vec()).map_err(|_| invalid("IPC source UTF-8"))?,
-    ))
-}
-/// The message ending a resetting generation: RELEASED, or QUARANTINED with
-/// the reason when the reset took the slot out of service. Node then stops
-/// counting the slot as capacity; a later message for it fails the service.
-fn released(s: &mut State, slot: usize, quarantined: Option<String>) -> io::Result<Message> {
-    if s.phase != Phase::Resetting {
-        return Err(invalid("IPC unexpected reset"));
-    }
-    s.pending = 0;
-    let Some(why) = quarantined else {
-        s.phase = Phase::Idle;
-        return Ok(Message::new(
-            ipc::RELEASED,
-            slot,
-            s.generation,
-            0,
-            Vec::new(),
-        ));
-    };
-    s.phase = Phase::Quarantined;
-    let mut reason: Vec<u8> = why
-        .bytes()
-        .map(|b| if (0x20..0x7f).contains(&b) { b } else { b'?' })
-        .collect();
-    reason.truncate(wire::ERROR_BYTES);
-    if reason.is_empty() {
-        reason = b"quarantined".to_vec();
-    }
-    Ok(Message::new(
-        ipc::QUARANTINED,
-        slot,
-        s.generation,
-        0,
-        reason,
-    ))
-}
-fn enqueue(out: &mut VecDeque<Message>, m: Message) -> io::Result<()> {
-    if out.len() >= OUTBOUND {
-        return Err(invalid("IPC outbound queue bound"));
-    }
-    out.push_back(m);
-    Ok(())
-}
 pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) -> io::Result<()> {
     if slots == 0
         || slots > MAX_SLOTS
@@ -213,15 +111,7 @@ impl Reactor {
         let s = &mut self.states[id];
         match m.kind {
             ipc::START => {
-                if s.phase != Phase::Idle || m.generation != s.generation + 1 {
-                    return Err(invalid("IPC admission generation/state"));
-                }
-                let (deadline, source) = admission(&m, kvm::monotonic_ns(), self.charge)?;
-                *s = State {
-                    generation: m.generation,
-                    phase: Phase::Running,
-                    ..State::default()
-                };
+                let (deadline, source) = s.start(&m, kvm::monotonic_ns(), self.charge)?;
                 self.pool.start(
                     id,
                     Job {
@@ -235,23 +125,7 @@ impl Reactor {
                 );
             }
             ipc::REPLY => {
-                // A reply already in flight may arrive after a watchdog result.
-                // Its generation must still match; it can never target a reused slot.
-                if m.generation != s.generation
-                    || m.id == 0
-                    || m.id > 32
-                    || m.bytes.is_empty()
-                    || m.bytes.len() > ring::REPLY_BYTES
-                    || !payload::printable(&m.bytes)
-                {
-                    return Err(invalid("IPC reply schema/generation"));
-                }
-                let bit = 1u32 << (m.id - 1);
-                if s.pending & bit == 0 {
-                    return Err(invalid("IPC duplicate/unknown reply"));
-                }
-                s.pending &= !bit;
-                if s.phase == Phase::Running {
+                if s.reply(&m)? {
                     self.pool.reply(
                         id,
                         m.generation,
@@ -262,25 +136,13 @@ impl Reactor {
                     );
                 }
             }
-            ipc::CANCEL => {
-                if m.id != 0 || !m.bytes.is_empty() {
-                    return Err(invalid("IPC cancel schema"));
-                }
-                if s.phase == Phase::Idle && m.generation == s.generation + 1 {
-                    s.generation = m.generation;
-                    enqueue(
-                        &mut self.outbound,
-                        Message::new(ipc::RELEASED, id, s.generation, 0, Vec::new()),
-                    )?;
-                } else if m.generation == s.generation
-                    && matches!(s.phase, Phase::Running | Phase::Done)
-                {
-                    s.phase = Phase::Resetting;
-                    self.pool.cancel(id);
-                } else {
-                    return Err(invalid("IPC cancel generation/state"));
-                }
-            }
+            ipc::CANCEL => match s.cancel(&m)? {
+                Cancel::Unstarted => enqueue(
+                    &mut self.outbound,
+                    Message::new(ipc::RELEASED, id, s.generation, 0, Vec::new()),
+                )?,
+                Cancel::Reset => self.pool.cancel(id),
+            },
             _ => return Err(invalid("IPC message direction/kind")),
         }
         Ok(())
@@ -296,27 +158,15 @@ impl Reactor {
                 if generation != s.generation {
                     return Err(invalid("IPC owner generation"));
                 }
-                if s.phase == Phase::Resetting {
-                    return Ok(());
-                }
-                if s.phase != Phase::Running {
-                    return Err(invalid("IPC owner call state"));
-                }
                 // Owners forward only bounded printable calls (payload::forwarded);
                 // a mismatch here is a shard bug, so it fails the whole service.
                 for request in requests {
-                    if request.id != s.next
-                        || request.id > 32
-                        || !payload::forwarded(crate::constants::ring::CALL, &request.bytes)
-                    {
-                        return Err(invalid("IPC guest call schema/id"));
+                    if s.call(request.id, &request.bytes)? {
+                        enqueue(
+                            &mut self.outbound,
+                            Message::new(ipc::CALL, slot, generation, request.id, request.bytes),
+                        )?;
                     }
-                    s.next += 1;
-                    s.pending |= 1u32 << (request.id - 1);
-                    enqueue(
-                        &mut self.outbound,
-                        Message::new(ipc::CALL, slot, generation, request.id, request.bytes),
-                    )?;
                 }
             }
             Event::Done {
@@ -328,29 +178,21 @@ impl Reactor {
                 if generation != s.generation {
                     return Err(invalid("IPC owner completion generation"));
                 }
-                if s.phase == Phase::Resetting {
+                if !s.complete()? {
                     return Ok(());
-                }
-                if s.phase != Phase::Running {
-                    return Err(invalid("IPC duplicate completion"));
-                }
-                s.phase = Phase::Done;
-                let mut metrics =
-                    Vec::with_capacity(32 + 8 * completion.metrics.policy_round_trips.len());
-                for n in [
-                    completion.metrics.cpu_ns,
-                    completion.stopped_ns,
-                    completion.reset_done_ns,
-                    completion.metrics.policy_round_trips.len() as u64,
-                ] {
-                    metrics.extend_from_slice(&n.to_le_bytes());
-                }
-                for n in &completion.metrics.policy_round_trips {
-                    metrics.extend_from_slice(&n.to_le_bytes());
                 }
                 enqueue(
                     &mut self.outbound,
-                    Message::new(STATS, slot, generation, 0, metrics),
+                    service::stats(
+                        slot,
+                        generation,
+                        [
+                            completion.metrics.cpu_ns,
+                            completion.stopped_ns,
+                            completion.reset_done_ns,
+                        ],
+                        &completion.metrics.policy_round_trips,
+                    ),
                 )?;
                 let (kind, bytes) = match completion.result {
                     Ok(text) => (ipc::DONE, text.into_bytes()),
@@ -368,62 +210,5 @@ impl Reactor {
             Event::Parked { .. } => return Err(invalid("IPC fixture event in service")),
         }
         Ok(())
-    }
-}
-#[cfg(test)]
-mod tests {
-    use super::{Phase, State, admission, ipc_charge, released};
-    use crate::ipc::{self, Message};
-    #[test]
-    fn ipc_rejects_unsupported_snapshot_classes() {
-        assert_eq!(ipc_charge(crate::arena::Class::Glue2m).unwrap(), 2 << 20);
-        assert!(ipc_charge(crate::arena::Class::Glue4m).is_err());
-    }
-    #[test]
-    fn malformed_admissions() {
-        let mut m = Message::new(ipc::START, 0, 1, 0, vec![0; 24]);
-        assert!(admission(&m, 0, 2 << 20).is_err());
-        m.bytes[0..8].copy_from_slice(&1u64.to_le_bytes());
-        m.bytes[8..12].copy_from_slice(&32u32.to_le_bytes());
-        m.bytes[12..16].copy_from_slice(&1024u32.to_le_bytes());
-        m.bytes[20..24].copy_from_slice(&(2u32 * 1024 * 1024).to_le_bytes());
-        assert!(admission(&m, 0, 2 << 20).is_ok());
-        m.bytes[16..20].copy_from_slice(&u32::MAX.to_le_bytes());
-        assert!(admission(&m, 0, 2 << 20).is_err());
-        m.bytes[16..20].fill(0);
-        m.id = 1;
-        assert!(admission(&m, 0, 2 << 20).is_err());
-    }
-    #[test]
-    fn a_quarantined_reset_ends_its_slot() {
-        let resetting = || State {
-            generation: 5,
-            phase: Phase::Resetting,
-            next: 3,
-            pending: 1,
-        };
-        let mut s = resetting();
-        let m = released(&mut s, 2, None).unwrap();
-        assert_eq!(
-            (m.kind, m.slot, m.generation, m.bytes.len()),
-            (ipc::RELEASED, 2, 5, 0)
-        );
-        assert!(s.phase == Phase::Idle && s.pending == 0);
-        // Only a resetting slot can be released.
-        assert!(released(&mut s, 2, None).is_err());
-        let mut s = resetting();
-        let why = format!("reset failed: \u{1}{}", "x".repeat(600));
-        let m = released(&mut s, 2, Some(why)).unwrap();
-        assert_eq!((m.kind, m.generation), (ipc::QUARANTINED, 5));
-        assert_eq!(m.bytes.len(), crate::constants::ipc::ERROR_BYTES);
-        assert!(m.bytes.starts_with(b"reset failed: ?x"));
-        assert!(s.phase == Phase::Quarantined);
-        // Never released again: a later CANCEL/START for it is a Node bug.
-        assert!(released(&mut s, 2, None).is_err());
-        let mut s = resetting();
-        assert_eq!(
-            released(&mut s, 0, Some(String::new())).unwrap().bytes,
-            b"quarantined"
-        );
     }
 }

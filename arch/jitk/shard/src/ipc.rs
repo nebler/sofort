@@ -35,44 +35,8 @@ fn validate_memory(file: &File) -> io::Result<()> {
     }
     Ok(())
 }
-pub fn u32_at(b: &[u8], at: usize) -> u32 {
-    u32::from_le_bytes(b[at..at + 4].try_into().unwrap())
-}
-pub fn u64_at(b: &[u8], at: usize) -> u64 {
-    u64::from_le_bytes(b[at..at + 8].try_into().unwrap())
-}
-#[derive(Debug)]
-pub struct Message {
-    pub kind: u32,
-    pub slot: u32,
-    pub generation: u64,
-    pub id: u32,
-    pub bytes: Vec<u8>,
-}
-impl Message {
-    pub fn new(kind: u32, slot: usize, generation: u64, id: u64, bytes: Vec<u8>) -> Self {
-        Self {
-            kind,
-            slot: slot as u32,
-            generation,
-            id: id as u32,
-            bytes,
-        }
-    }
-    fn decode(copy: &[u8; RECORD]) -> io::Result<Self> {
-        let n = u32_at(copy, 20) as usize;
-        if n > PAYLOAD || u64_at(copy, 24) != 0 {
-            return Err(invalid("IPC record length/reserved"));
-        }
-        Ok(Self {
-            kind: u32_at(copy, 0),
-            slot: u32_at(copy, 4),
-            generation: u64_at(copy, 8),
-            id: u32_at(copy, 16),
-            bytes: copy[32..32 + n].to_vec(),
-        })
-    }
-}
+// The record envelope is transport-independent (service.rs).
+pub use crate::service::{Message, u32_at, u64_at};
 #[derive(Clone)]
 pub struct Notify(std::sync::Arc<File>);
 impl Notify {
@@ -198,12 +162,7 @@ impl Endpoint {
         if self.tx - consumed == CAPACITY {
             return Ok(false);
         }
-        let mut header = [0u8; 32];
-        header[0..4].copy_from_slice(&message.kind.to_le_bytes());
-        header[4..8].copy_from_slice(&message.slot.to_le_bytes());
-        header[8..16].copy_from_slice(&message.generation.to_le_bytes());
-        header[16..20].copy_from_slice(&message.id.to_le_bytes());
-        header[20..24].copy_from_slice(&(message.bytes.len() as u32).to_le_bytes());
+        let header = message.header();
         let at = DATA + REGION + (self.tx % CAPACITY) as usize * RECORD;
         // SAFETY: The header and bounded payload are disjoint from the fixed mapped
         // TX slot; checked consumer credit gives this SPSC producer ownership until
