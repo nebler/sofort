@@ -17,7 +17,8 @@ export type GuestEvent=
   | {kind:'fail';cause:'guest'|'limit'|'deadline'|'engine';message:string};
 export type Reply={ok:unknown}|{err:{code:string;message:string}};
 /** parked: no job yet; running: started, no outcome yet; done: the guest
- *  completed (or threw); ended: failed, killed or reset. */
+ *  completed (or threw) and the session is intact; ended: failed, killed,
+ *  reset or exited. */
 export type Phase='parked'|'running'|'done'|'ended';
 export interface Session {
   readonly phase:Phase;

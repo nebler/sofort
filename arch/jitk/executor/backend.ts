@@ -200,7 +200,7 @@ class ProcessSession implements Session {
   }
   get phase():Phase {
     const state=this.dispatcher.snapshot().state;
-    return state==='done'?'done':this.error||state==='dead'?'ended':state==='running'?'running':'parked';
+    return this.error||state==='dead'?'ended':state==='done'?'done':state==='running'?'running':'parked';
   }
   /** The next dispatcher-validated v1 frame (park() reads `ready` with it). */
   frame():Promise<unknown> {

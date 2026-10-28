@@ -144,7 +144,7 @@ export class ShardSession implements Session {
   }
   get phase():Phase {
     const p=this.run.phase;
-    return p==='parked'||p==='running'||p==='done'?(this.failure&&p!=='done'?'ended':p):'ended';
+    return this.failure||p==='releasing'||p==='released'?'ended':p;
   }
   async armDeadline(deadline:number) {
     if(!Number.isFinite(deadline)||Date.now()>=deadline)throw Error('Execution timed out');

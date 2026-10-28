@@ -115,7 +115,7 @@ export async function sandboxChecks():Promise<number> {
     const shard=new FakeShard(),s=await shard.running(0);
     shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));
     shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.error,0,Buffer.from(text));
-    assert.deepEqual(await s.next(),{kind:'fail',cause,message:text});checks++;
+    assert.deepEqual(await s.next(),{kind:'fail',cause,message:text});assert.equal(s.phase,'ended',text);checks++;
   }
   // The run's namespace schema is the v1 one: a reserved name fails this generation.
   {
