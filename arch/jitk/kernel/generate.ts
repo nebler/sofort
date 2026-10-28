@@ -85,15 +85,22 @@ export function generate(root: string, out: string, arch: string): void {
 export function buildArgs(root: string, out: string, arch: string): void {
   const ring = process.env.CARGO_FEATURE_TRANSPORT_RING !== undefined;
   const bootstrap = ring ? 'ring-bootstrap.js' : '../protocol/bootstrap.js';
+  // --stack-size: the user stack below the argv strings (user.rs) is 96 KiB, smaller than
+  // QuickJS's 1 MiB default, so unbounded recursion faulted the guest before
+  // QuickJS's own check. 80 KiB leaves 16 KiB of guard headroom for C frames between
+  // checks and for building the catchable InternalError (executor/parity t-stack-*:
+  // JSON, regexp, Proxy, sort and parser recursion all throw). A JS frame costs
+  // ~0.7 KiB, so tenant recursion stops near 100 frames; a deeper limit needs a
+  // bigger user stack.
   const args = process.env.JITK_ARGV_JSON !== undefined
     ? JSON.parse(process.env.JITK_ARGV_JSON) as unknown
-    : ['qjs', '--std', '--memory-limit', '16777216', '-e', process.env.JITK_SCRIPT || readFileSync(join(root, bootstrap), 'utf8')];
+    : ['qjs', '--std', '--memory-limit', '16777216', '--stack-size', '81920', '-e', process.env.JITK_SCRIPT || readFileSync(join(root, bootstrap), 'utf8')];
   check(Array.isArray(args) && args.length > 0 && args.length <= 32 && args.every((a: unknown) => typeof a === 'string' && !a.includes('\0')), 'invalid argv');
   const argv = args as string[];
   check(argv.reduce((sum, arg) => sum + Buffer.byteLength(arg) + 1, 0) < 30000, 'argv too large');
   const canonical = process.env.JITK_ARGV_JSON === undefined && process.env.JITK_SCRIPT === undefined && !ring;
   const rust = canonical
-    ? 'pub const ARGV: &[&str] = &["qjs","--std","--memory-limit","16777216","-e",include_str!(concat!(env!("CARGO_MANIFEST_DIR"),"/../protocol/bootstrap.js"))];\n'
+    ? 'pub const ARGV: &[&str] = &["qjs","--std","--memory-limit","16777216","--stack-size","81920","-e",include_str!(concat!(env!("CARGO_MANIFEST_DIR"),"/../protocol/bootstrap.js"))];\n'
     : 'pub const ARGV: &[&str] = &' + JSON.stringify(argv).replace(/,(?=")/g, ', ').replaceAll('\\b', '\\u{8}').replaceAll('\\f', '\\u{c}') + ';\n';
   appendFileSync(join(out, 'packed.rs'), rust);
   generate(root, out, arch);

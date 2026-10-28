@@ -36,6 +36,10 @@ const hyperlight:Difference[]=[
     reason:'allocation failure in the 16 MiB guest heap aborts the worker instead of raising a QuickJS out-of-memory error'},
   {case:'t-log-undefined',backends:['hyperlight-js'],expect:{ok:1,logs:['u ']},limit:HL,
     reason:'console joins JSON.stringify results, which drops undefined'},
+  ...['t-stack-overflow','t-stack-overflow-caught','t-stack-after-overflow','t-stack-overflow-paths'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'SANDBOX',match:'protocol EOF'},limit:HL,
+    reason:'unbounded recursion overruns the worker stack before QuickJS\'s stack limit; jitk sets --stack-size below its guest stack (kernel/generate.ts)'})),
+  {case:'t-stack-overflow-json',backends:['hyperlight-js'],expect:{ok:null},limit:HL,
+    reason:'the worker stack holds 500 nested JSON.stringify levels, so nothing throws'},
   {case:'t-log-unserializable',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'BigInt'},limit:HL,
     reason:'console calls JSON.stringify without a fallback, so a BigInt argument throws in the tenant'},
 ];
@@ -67,8 +71,6 @@ const shard:Difference[]=[
   ...['t-timer','t-timer-zero'].map((id):Difference=>({case:id,backends:ring,expect:{error:'GUEST_ERROR',match:"'setTimeout' is not defined"},limit:'kernel/ring-bootstrap.js (no timers)',
     reason:'the ring profile has deliberately no timers'})),
   {case:'t-timer-typeof',backends:ring,expect:{ok:['undefined','undefined']},limit:'kernel/ring-bootstrap.js (no timers)',reason:'the ring profile has deliberately no timers'},
-  ...['t-stack-overflow','t-stack-overflow-caught'].map((id):Difference=>({case:id,backends:ring,expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi arena::STACK_BYTES',value:0x20000,
-    reason:'both paths end the guest on unbounded recursion; the shard reports it as a guest_fatal ERROR record (class GUEST_ERROR), the console path as EOF (SANDBOX)'})),
   {case:'t-done-over-limit',backends:ring,expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi ring::DONE_BYTES',value:IPC.doneBytes,
     reason:'a completion over one ring record cannot be written; the guest stops without DONE'},
   // Logs are ring CALL records: they share the call budget and the record size.
@@ -84,9 +86,6 @@ const shard:Difference[]=[
 
 // Known bugs, listed so the run stays green while they are open. Each is in
 // the R14 parity report; fix and delete.
-const bugs:Difference[]=[
-  {case:'t-timer',backends:['jitk'],platforms:['linux'],expect:{error:'TIMEOUT'},limit:'BUG: libkrun on Linux (kvm-dev, nested KVM)',
-    reason:'a setTimeout with a delay never fires in the Linux libkrun guest (setTimeout 0 does, and Date.now advances), so the run hits its deadline; the Mac libkrun guest is fine. Not checked on metal'},
-];
+const bugs:Difference[]=[];
 
 export const ALLOWLIST:Difference[]=[...hyperlight,...shard,...bugs];

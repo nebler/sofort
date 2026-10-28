@@ -134,9 +134,9 @@ export const CASES:Case[]=[
   {id:'t-memory-256k',source:'targeted: ARENA_CLASSES',code:'return new Uint8Array(256*1024).length',expect:{ok:256*1024}},
   {id:'t-memory-over-arena',source:'targeted: ARENA_CLASSES',code:`return new Uint8Array(${2*ARENA_CLASSES['glue-2m'].arenaBytes}).length`,expect:{ok:2*ARENA_CLASSES['glue-2m'].arenaBytes}},
   {id:'t-memory-64m',source:'targeted: memoryLimitMB',code:'return new Uint8Array(64*1024*1024).length',expect:{error:'LIMIT',match:'out of memory'}},
-  // Finding (R14): unbounded recursion ends the guest (protocol EOF) on the v1
-  // QuickJS payload, even inside try; a catchable InternalError would be better.
-  {id:'t-stack-overflow',source:'targeted: error classes',code:'function f(){return f()}return f()',expect:{error:'SANDBOX',match:'protocol EOF'}},
+  // Unbounded recursion: QuickJS's --stack-size limit (kernel/generate.ts) throws a
+  // catchable InternalError before the 96 KiB guest stack runs out.
+  {id:'t-stack-overflow',source:'targeted: error classes',code:'function f(){return f()}return f()',expect:{error:'LIMIT',match:'InternalError: stack overflow'}},
   // Targeted: completion size (ring::DONE_BYTES)
   {id:'t-done-near-limit',source:'targeted: IPC.doneBytes',code:`return 'x'.repeat(${IPC.doneBytes-1024})`,expect:{ok:'x'.repeat(IPC.doneBytes-1024)}},
   {id:'t-done-over-limit',source:'targeted: IPC.doneBytes',code:`return 'x'.repeat(${IPC.doneBytes})`,expect:{ok:'x'.repeat(IPC.doneBytes)}},
@@ -148,7 +148,10 @@ export const CASES:Case[]=[
   {id:'t-log-values',source:'targeted: log formatting',code:'console.log({a:1},[1,"b"],null,true,3.5);return 1',expect:{ok:1,logs:['{"a":1} [1,"b"] null true 3.5']}},
   {id:'t-log-undefined',source:'targeted: log formatting',code:'console.log("u",undefined);return 1',expect:{ok:1,logs:['u undefined']}},
   {id:'t-log-unserializable',source:'targeted: log formatting',code:'console.log("n",1n);return 1',expect:{ok:1,logs:['n [unserializable]']}},
-  {id:'t-stack-overflow-caught',source:'targeted: error classes',code:'function f(){return f()}try{f()}catch(e){return e.name}',expect:{error:'SANDBOX',match:'protocol EOF'}},
+  {id:'t-stack-overflow-caught',source:'targeted: error classes',code:'function f(){return f()}try{f()}catch(e){return e.name}',expect:{ok:'InternalError'}},
+  {id:'t-stack-overflow-json',source:'targeted: error classes',code:'let a=[];for(let i=0;i<500;i++)a=[a];try{JSON.stringify(a)}catch(e){return e.name}',expect:{ok:'InternalError'}},
+  {id:'t-stack-after-overflow',source:'targeted: error classes',code:'function f(n){return f(n+1)}try{f(0)}catch{}function g(n){return n?g(n-1)+1:0}return g(50)',expect:{ok:50}},
+  {id:'t-stack-overflow-paths',source:'targeted: error classes',code:'const r=[],t=g=>{try{g();r.push("none")}catch(e){r.push(e.name)}};let a=[];for(let i=0;i<500;i++)a=[a];t(()=>String(a));t(()=>JSON.parse("[".repeat(5000)));t(()=>(0,eval)("(".repeat(5000)+"1"+")".repeat(5000)));const p=new Proxy({},{get:(o,k,q)=>q[k]});t(()=>p.x);t(()=>/(a|b)*c/.test("ab".repeat(100000)));function s(){[2,1].sort(s)}t(s);async function f(){return await f()}try{await f()}catch(e){r.push(e.name)}return r',expect:{ok:['InternalError','SyntaxError','SyntaxError','InternalError','InternalError','InternalError','InternalError']}},
   // Targeted: error classes
   {id:'t-syntax-error',source:'targeted: error classes',code:'return (',expect:{error:'GUEST_ERROR'}},
   {id:'t-reference-error',source:'targeted: error classes',code:'return nope',expect:{error:'GUEST_ERROR',match:'ReferenceError'}},
