@@ -120,11 +120,17 @@ export function cargoPath(path: string): string {
   return path + ':' + join(process.env.CARGO_HOME || join(process.env.HOME || homedir(), '.cargo'), 'bin');
 }
 
-// The production shard binary (shard `real`), built from source with the
-// pinned toolchain; Linux only.
+// The production shard binary, built from source with the pinned toolchain:
+// shard `real` on Linux (KVM), shard `hvf` on macOS (the HVF engine, signed
+// with the hypervisor entitlement; it compiles in vmm/sandbox's Seatbelt
+// confinement).
 export function shardInputs(): string {
-  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest')];
+  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest'), 'vmm/sandbox/mod.rs', 'vmm/sandbox/jitk.sb', 'vmm/hypervisor.entitlements'];
   return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, hostPlatform()]);
+}
+// The shard binary's name on this host.
+export function shardBinaryName(): string {
+  return platform() === 'darwin' ? 'hvf' : 'real';
 }
 
 export function shardDir(): string {
@@ -202,16 +208,14 @@ export function hyperlightDir(): string {
 
 export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_ZIG', 'JITK_VMM_BINARY', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
 
-// Hyperlight's HVF baseline is a macOS artifact; the KVM shard binary and its
-// prepared snapshot are Linux artifacts. The libkrun VMM is built natively on
-// both hosts (HVF on macOS, KVM on Linux; the Mac's linux suite has kvm-dev
-// build the Linux one, linux/nested/build.ts).
+// Hyperlight's HVF baseline is a macOS artifact. The shard binary and its
+// prepared snapshot exist on both hosts (KVM `real` on Linux, the HVF engine
+// `hvf` on macOS). The libkrun VMM is built natively on both hosts (HVF on
+// macOS, KVM on Linux; the Mac's linux suite has kvm-dev build the Linux one,
+// linux/nested/build.ts).
 export function applicable(name: string): boolean {
   if (name.startsWith('HYPERLIGHT_')) {
     return platform() === 'darwin';
-  }
-  if (name.startsWith('JITK_SHARD_')) {
-    return platform() === 'linux';
   }
   return true;
 }
@@ -250,7 +254,7 @@ export function cachePath(name: string): string {
     return join(hyperlightDir(), 'snapshot');
   }
   if (name === 'JITK_SHARD_BINARY') {
-    return join(shardDir(), 'real');
+    return join(shardDir(), shardBinaryName());
   }
   if (name === 'JITK_SHARD_SNAPSHOT') {
     return snapshotBase('glue-2m');

@@ -32,6 +32,7 @@ pub mod memory;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod owner;
 pub mod payload;
+pub mod service;
 #[cfg(unix)]
 pub mod slot;
 #[cfg(unix)]

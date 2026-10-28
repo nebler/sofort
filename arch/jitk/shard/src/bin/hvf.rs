@@ -5,6 +5,14 @@
 //!   hvf prepare KERNEL_IMAGE SNAPSHOT_BASE   boot to CHECKPOINT, write BASE.{mem,regs,layout}
 //!   hvf bench SNAPSHOT_BASE FIXTURE N [copy|remap|unclean]
 //!                                            N runs in one slot, reset between runs
+//!   hvf ipc SNAPSHOT_BASE SLOTS [POLICY]     the engine: Node's IPC on fd 3 (a
+//!                                            stream socket), one confined process
+//!                                            per slot (hvf/zygote.rs)
+//!   hvf confine SNAPSHOT_BASE                Seatbelt check: a confined and an
+//!                                            unconfined forked child try HVF, the
+//!                                            snapshot directory, files, network,
+//!                                            exec; exits 1 unless only the
+//!                                            confined one is denied
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 fn main() {
     mac::run();
@@ -42,13 +50,67 @@ mod mac {
                     m => panic!("unknown reset mode {m}"),
                 },
             ),
+            "ipc" => {
+                let policy = ResetPolicy::parse(arg(4)).unwrap_or_else(|e| {
+                    eprintln!("{e}");
+                    std::process::exit(2)
+                });
+                let slots = arg(3).parse().unwrap_or(0);
+                if let Err(e) = jitk_shard::hvf::zygote::run(arg(2), slots, policy) {
+                    eprintln!("hvf ipc: {e}");
+                    std::process::exit(1);
+                }
+            }
+            "confine" => confine(arg(2)),
             _ => {
                 eprintln!(
-                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean]"
+                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE"
                 );
                 std::process::exit(2);
             }
         }
+    }
+
+    /// The Seatbelt profile must deny the confined child everything but HVF
+    /// and its snapshot directory, and the control must be allowed all of it
+    /// (so a denial is the profile's, not this host's).
+    fn confine(base: &str) {
+        let report = jitk_shard::hvf::zygote::confinement(base).unwrap_or_else(|e| {
+            eprintln!("hvf confine: {e}");
+            std::process::exit(1)
+        });
+        println!("{report}");
+        let rows: Vec<&str> = report
+            .trim_matches(|c| c == '[' || c == ']')
+            .split("},{")
+            .collect();
+        let field = |row: &str, k: &str| {
+            let at = row.find(&format!("\"{k}\":")).expect("probe field") + k.len() + 3;
+            row[at..].starts_with("true")
+        };
+        let always = ["applied", "hvf_run", "read_snapshot_dir"];
+        let denied = [
+            "read_etc_hosts",
+            "read_home",
+            "write_tmp",
+            "tcp_connect_localhost",
+            "udp_send",
+            "spawn_true",
+        ];
+        let ok = rows.len() == 2
+            && always
+                .iter()
+                .all(|k| field(rows[0], k) && field(rows[1], k))
+            && denied
+                .iter()
+                .all(|k| field(rows[0], k) && !field(rows[1], k));
+        if !ok {
+            eprintln!(
+                "hvf confine: FAIL (row 0 unconfined must allow all, row 1 confined must deny {denied:?})"
+            );
+            std::process::exit(1);
+        }
+        eprintln!("hvf confine: PASS");
     }
 
     /// As the KVM harness's `prepare`: the image must carry exactly one ring

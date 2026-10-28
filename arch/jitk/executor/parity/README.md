@@ -28,12 +28,15 @@ One question with one answer: do the backends agree? (R10 change #7, R9 N6,
 
 | Where | Command | Backends |
 |---|---|---|
-| Mac | `make -C arch/jitk test` (or `make -C arch/jitk/executor parity`) | `jitk` (libkrun), `hyperlight-js` |
+| Mac | `make -C arch/jitk test` (or `make -C arch/jitk/executor parity`) | `jitk` (libkrun), `hyperlight-js`, `hvf` |
 | Linux arm64 KVM host, clean clone | `make -C arch/jitk test-linux` | `jitk` (libkrun on Linux), `shard` |
 | Mac, using kvm-dev | `make -C arch/jitk/executor parity-ssh` | both of the above, then the cross-host compare |
 
 `JITK_PARITY_BACKENDS=jitk,shard` selects backends; a selected backend that
-cannot start fails the run. `JITK_PARITY_CASES=<regex>` filters case ids.
+cannot start fails the run. `hvf` is the shard's ring engine on
+Hypervisor.framework (`../shard/src/hvf/zygote.rs`): same kernel, prepared
+helpers, IPC and limits, so the ring profile's allowlist entries name both
+`shard` and `hvf` and neither has entries of its own. `JITK_PARITY_CASES=<regex>` filters case ids.
 Each run writes `executor/.work/parity/<platform>-<arch>.json`
 (`JITK_PARITY_OUT` overrides). Messages are kept in the report but not diffed.
 

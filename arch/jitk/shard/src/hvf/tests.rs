@@ -1,4 +1,4 @@
-//! Th        let step = s.exit().unwrap_or_else(|e| panic!("{name}: {e}")); HVF backend. The ignored tests need macOS arm64, a binary signed with
+//! The HVF backend. The ignored tests need macOS arm64, a binary signed with
 //! the hypervisor entitlement (hvf-run.sh) and prepared HVF snapshots in
 //! JITK_SHARD_TEST_SNAPSHOT(S) (`make -C arch/jitk/shard test-hvf` does all
 //! three). HVF allows one VM per process, so they take `VM` in turn.
@@ -606,4 +606,109 @@ fn failed_reset_quarantines_with_reason() {
         "{why}"
     );
     assert!(s.admit().is_err());
+}
+
+use crate::service::{
+    CALL, CANCEL, DONE, ERROR, Message, QUARANTINED, READY, RELEASED, REPLY, START, STATS,
+};
+/// The zygote's side of one engine child (child.rs) over a socket pair.
+struct Peer(super::conn::Conn);
+impl Peer {
+    fn send(&mut self, m: Message) {
+        super::conn::send(self.0.fd(), &m).unwrap();
+    }
+    fn recv(&mut self) -> Message {
+        loop {
+            if let Some(m) = self.0.next().unwrap() {
+                return m;
+            }
+            assert!(self.0.fill().unwrap(), "engine child closed its socket");
+        }
+    }
+    fn start(&mut self, generation: u64, source: &str, deadline_ms: u64) {
+        let mut b = vec![0; crate::constants::ipc::START_HEADER_BYTES];
+        let deadline = crate::clock::ipc_ns() + deadline_ms * 1_000_000;
+        b[0..8].copy_from_slice(&deadline.to_le_bytes());
+        b[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
+        b[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
+        b[16..20].copy_from_slice(&(source.len() as u32).to_le_bytes());
+        b[20..24].copy_from_slice(&(2u32 << 20).to_le_bytes());
+        b.extend_from_slice(source.as_bytes());
+        self.send(Message::new(START, 0, generation, 0, b));
+    }
+    /// STATS, then the completion's kind and text.
+    fn completion(&mut self, generation: u64) -> (u32, String) {
+        let stats = self.recv();
+        assert_eq!((stats.kind, stats.generation), (STATS, generation));
+        let m = self.recv();
+        assert_eq!(m.generation, generation);
+        (m.kind, String::from_utf8(m.bytes).unwrap())
+    }
+    fn cancel(&mut self, generation: u64) -> Message {
+        self.send(Message::new(CANCEL, 0, generation, 0, vec![]));
+        let m = self.recv();
+        assert_eq!(m.generation, generation);
+        m
+    }
+}
+
+#[test]
+#[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
+fn engine_child_runs_kicks_and_quarantines() {
+    let _vm = vm_lock();
+    let (ours, theirs) = super::conn::pair().unwrap();
+    let zygote = std::thread::spawn(move || {
+        let mut p = Peer(super::conn::Conn::new(ours, 64));
+        assert_eq!(p.recv().kind, READY);
+        p.start(1, fixture("return2").0, 5000);
+        assert_eq!(p.completion(1), (DONE, "{\"ok\":2}".into()));
+        assert_eq!(p.cancel(1).kind, RELEASED);
+        // A tool call goes to the zygote and its reply (an echo, as the
+        // fixture drivers answer) resumes the guest.
+        p.start(2, fixture("one_tool").0, 5000);
+        let call = p.recv();
+        assert_eq!((call.kind, call.id), (CALL, 1));
+        p.send(Message::new(REPLY, 0, 2, 1, call.bytes));
+        assert_eq!(p.completion(2), (DONE, "{\"ok\":42}".into()));
+        assert_eq!(p.cancel(2).kind, RELEASED);
+        // The reader's deadline kicks a spinning guest.
+        let t = std::time::Instant::now();
+        p.start(3, "while(true){}", 30);
+        assert_eq!(p.completion(3), (ERROR, "deadline_exceeded".into()));
+        let late = t.elapsed();
+        assert!(
+            late < std::time::Duration::from_millis(200),
+            "deadline after {late:?}"
+        );
+        assert_eq!(p.cancel(3).kind, RELEASED);
+        // A CANCEL kicks a spinning guest at once.
+        p.start(4, "while(true){}", 5000);
+        std::thread::sleep(std::time::Duration::from_millis(20));
+        assert_eq!(p.cancel(4).kind, RELEASED);
+        // The slot is clean after both kicks.
+        p.start(5, fixture("canary").0, 5000);
+        assert_eq!(p.completion(5), (DONE, "{\"ok\":0}".into()));
+        assert_eq!(p.cancel(5).kind, RELEASED);
+        // A failed reset is reported QUARANTINED with its reason; the slot
+        // never runs again.
+        let g = test_guest::FAIL_RESET_GENERATION;
+        p.start(g, fixture("return2").0, 5000);
+        assert_eq!(p.completion(g), (DONE, "{\"ok\":2}".into()));
+        let q = p.cancel(g);
+        let why = String::from_utf8_lossy(&q.bytes).into_owned();
+        assert!(
+            q.kind == QUARANTINED && why.starts_with("reset failed"),
+            "{why}"
+        );
+        p.start(g + 1, fixture("return2").0, 5000);
+        let (kind, text) = p.completion(g + 1);
+        assert!(
+            kind == ERROR && text.starts_with("slot_unavailable"),
+            "{text}"
+        );
+        // Dropping the socket ends serve().
+    });
+    let result = super::child::serve(theirs, 0, snapshot(), verified(), None);
+    zygote.join().unwrap();
+    result.unwrap();
 }

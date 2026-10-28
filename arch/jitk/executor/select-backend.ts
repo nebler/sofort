@@ -23,11 +23,22 @@ function artifactPath(dir:string,keys:string[],defaults:string[],env:string):str
 export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:string;integrated:boolean} {
   const selected=process.env.JITK_BACKEND??'jitk';
   if(selected==='shard'){
-    if(process.platform!=='linux')throw Error('shard backend requires Linux');
+    if(process.platform!=='linux')throw Error('shard backend requires Linux (on macOS: JITK_BACKEND=hvf)');
     const binary=process.env.JITK_SHARD_BINARY??jitk+'shard/target/release/real';
     const snapshot=process.env.JITK_SHARD_SNAPSHOT;
     if(!snapshot)throw Error('shard backend requires JITK_SHARD_SNAPSHOT=/absolute/path/to/prepared-base');
     return {backend:new ShardBackend({binary,snapshot}),selection:'experimental Linux KVM shard / shared-memory Node policy',integrated:false};
+  }
+  // The same ring engine on Hypervisor.framework (shard/src/hvf/zygote.rs):
+  // JITK_SHARD_BINARY is the signed `hvf` engine and JITK_SHARD_SNAPSHOT a
+  // darwin-arm64 prepared snapshot (make -C arch/jitk deps; make -C
+  // arch/jitk/shard snapshot). JITK_HVF_SLOTS engine processes (default 8).
+  if(selected==='hvf'){
+    if(process.platform!=='darwin'||process.arch!=='arm64')throw Error('hvf backend requires macOS arm64');
+    const binary=process.env.JITK_SHARD_BINARY,snapshot=process.env.JITK_SHARD_SNAPSHOT;
+    if(!binary||!snapshot)throw Error('hvf backend requires JITK_SHARD_BINARY (the signed hvf engine) and JITK_SHARD_SNAPSHOT (make -C arch/jitk deps; make -C arch/jitk/shard snapshot)');
+    const slots=Number(process.env.JITK_HVF_SLOTS??8);
+    return {backend:new ShardBackend({binary,snapshot,slots}),selection:'experimental macOS HVF engine (one confined process per slot) / socket Node policy',integrated:false};
   }
   if(selected!=='jitk')throw Error('unsupported JITK_BACKEND: '+selected);
   const vmmReady=existsSync(jitk+'vmm/.READY'),kernelReady=existsSync(jitk+'kernel/.READY');

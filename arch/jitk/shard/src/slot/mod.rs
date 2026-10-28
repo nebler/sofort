@@ -1,4 +1,4 @@
-//! Hypervisor-neutral slot: guest RAM over a snapshot's memory .map(|c| c.enter(control_word(&self.ram, ring::MONOTONIC_NS)));lasses, the
+//! Hypervisor-neutral slot: guest RAM over a snapshot's memory classes, the
 //! bind header, the ring record decoder and reply path, and (reset.rs) reset,
 //! admission checks and verification. Generic over `hv::Vm`; the KVM and HVF
 //! specifics live behind it (`kvm`, `hvf`).

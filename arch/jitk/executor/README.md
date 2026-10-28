@@ -10,8 +10,8 @@ runs one `Job` (`start`, `next` -> typed `GuestEvent`s, `reply`), and
 capacity is free. `Engine.limits` reports what a session admits (memory class,
 concurrent sessions and starts, deadline horizon, and per JS job the tool
 calls, call/reply/completion bytes, logs, source size, timers, arena): the
-jitk-abi ring limits (`abi.ts`) for the shard, protocol v1 (`LIMIT`) for the
-process backends. The executor, the pool and the MCP server read these instead
+jitk-abi ring limits (`abi.ts`) for the shard and the HVF engine, protocol v1
+(`LIMIT`) for the process backends. The executor, the pool and the MCP server read these instead
 of hard-coding them or branching on the backend kind.
 
 A job is `js` (tenant code and tool names, run by `MicroVMExecutor`) or
@@ -147,9 +147,10 @@ scope/revocation and redaction. This suite supplies explicit host effects.
 20 R2 cases, Cloudflare generated wrappers and TanStack, 30×64 reverse-order
 concurrent calls, hostile transport, host ack, independent watchdog and pool
 lifecycle. The backend-parity corpus (`parity/README.md`, `./run.sh parity`)
-runs one case list on every available Engine: `jitk` and 09's Hyperlight
-adapter (kind `hyperlight-js`, the benchmark baseline) on the Mac, `jitk` and
-the shard on Linux (`make -C arch/jitk test-linux`).
+runs one case list on every available Engine: `jitk`, 09's Hyperlight
+adapter (kind `hyperlight-js`, the benchmark baseline) and the HVF engine
+(kind `hvf`) on the Mac, `jitk` and the shard on Linux
+(`make -C arch/jitk test-linux`).
 
 `breakdown-results.json` is an E4 diagnostic (50 samples, 5 excluded warmups),
 with phase p50/p90/p99, every uptime, 06's load gate result per sample, and
@@ -232,3 +233,37 @@ and console logs are supported through adapters. Clocks during uninterrupted
 CPU work, timers, `/cap`, large values, cancellation of a busy vCPU and broad
 shadow parity remain cutover blockers. The exact test/parity table and nested
 measurements are in [RESULTS-R7-ipc.md](../shard/RESULTS-R7-ipc.md).
+
+## Experimental macOS HVF engine (R10 #10)
+
+The same ring engine on Hypervisor.framework, selectable on macOS arm64; `jitk`
+(libkrun) stays the default and is not frozen:
+
+```sh
+make -C .. deps                # pinned Node + the signed `hvf` engine (JITK_SHARD_BINARY)
+make -C ../shard snapshot      # darwin-arm64 prepared snapshots (JITK_SHARD_SNAPSHOT)
+JITK_BACKEND=hvf ./run.sh build    # JITK_HVF_SLOTS engine processes (default 8)
+```
+
+`ShardBackend` is the engine on both hosts (kind `shard` on Linux, `hvf` on
+macOS): the same START/REPLY/CANCEL and CALL/STATS/DONE/ERROR/RELEASED/
+QUARANTINED messages, generations, ABI version and `Engine.limits`
+(`shardLimits`, the jitk-abi ring profile). Only the transport differs: on
+macOS the 32-byte-header records travel back to back over the stream socket
+Node's spawn creates for a `pipe` stdio entry (`PipeChannel`, `shard-ipc.ts`;
+no native addon), and deadlines are on `process.hrtime`, which the engine
+reads as CLOCK_MONOTONIC_RAW. HVF allows one VM per process, so the engine
+(`../shard/src/hvf/zygote.rs`) is a single-threaded zygote that forks one
+engine process per slot; each enters vmm/sandbox's Seatbelt profile before
+creating its VM (`make -C ../shard test-hvf` runs `hvf confine`: files,
+network and exec denied, HVF allowed). The zygote kills an engine process
+whose run outlives its deadline by 100 ms; a dead engine process fails its run
+and its slot is QUARANTINED. `close()` closes the socket and the zygote reaps
+every engine process.
+
+`run.sh test` runs `shard-check.ts` on the HVF engine whenever
+`JITK_SHARD_SNAPSHOT` is available (the Linux-only memfd and hostile-peer
+sections are skipped; the macOS-only section kills, stops and reaps engine
+processes), and the parity corpus includes `hvf` by default on the Mac. Per-run
+cost against libkrun: `node build/engine-bench.js` (offline; see
+`../shard/README.md` "HVF engine").

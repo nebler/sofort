@@ -34,6 +34,15 @@ pub fn clock_ns(clock: libc::clockid_t) -> u64 {
 pub fn monotonic_ns() -> u64 {
     clock_ns(libc::CLOCK_MONOTONIC)
 }
+/// The clock of IPC deadlines and STATS times on macOS: CLOCK_MONOTONIC_RAW,
+/// which is mach_continuous_time, the base of Node's process.hrtime (libuv),
+/// so the executor and the HVF engine compare deadlines on one clock. (macOS's
+/// CLOCK_MONOTONIC is another base, at µs resolution; on Linux the IPC clock
+/// is CLOCK_MONOTONIC, through the executor's native binding.)
+#[cfg(target_os = "macos")]
+pub fn ipc_ns() -> u64 {
+    clock_ns(libc::CLOCK_MONOTONIC_RAW)
+}
 
 /// Guest clock resolution while a vCPU runs (Date.now() is in ms).
 pub const TICK: Duration = Duration::from_millis(1);

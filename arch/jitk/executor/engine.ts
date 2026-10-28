@@ -99,7 +99,7 @@ export type Limits={
   native?:NativeLimits;
 };
 export interface Engine {
-  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard'|'native';
+  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard'|'hvf'|'native';
   close?():Promise<void>;
   readonly limits:Limits;
   park(signal?:AbortSignal,deadline?:number):Promise<Session>;

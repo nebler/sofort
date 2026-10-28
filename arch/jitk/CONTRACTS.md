@@ -52,3 +52,13 @@ fn compile_profile(images: &Path, out: &Path) -> Result<()>   // macOS, run once
     - Console-abuse runs: 270/270.
   - **Nested KVM:** CHECKS-PASS (210 fault runs), CONSOLE-PASS (270 runs), SECCOMP-PASS and INIT-DONE all pass.
   - **No CLI or contract change.**
+
+## sandbox ↔ HVF engine (07 → shard), 2026-10-28
+- The shard's HVF engine (`shard/src/hvf.rs`) compiles `vmm/sandbox/mod.rs` in unchanged, through `#[path]`, as `vmm/` does, and uses the confirmed API only: the zygote calls `compile_profile(snapshot dir, tmp)` and `Sandbox::prepare(canonical .mem path, Some(profile), None)` once; every forked engine process calls `before_build()` before it creates its VM and `after_build()` after. The profile is `jitk.sb` with `IMAGES` = the prepared snapshot's directory.
+- What the engine relies on (checked by `hvf confine`, run by `make -C shard test-hvf`): under the profile, hv_vm_create/hv_vcpu_run, mmap of the inherited snapshot descriptor and reads in `IMAGES` work; file reads elsewhere, writes, TCP/UDP and exec fail with EPERM. The engine reads `hw.cachelinesize` before confinement (the profile allows only `hw.pagesize_compat`).
+- A change to `mod.rs` or `jitk.sb` rebuilds the engine (`tslib/deps.ts` shardInputs).
+
+## executor ↔ shard IPC on macOS (04 ↔ shard), 2026-10-28
+- `ShardBackend` spawns `hvf ipc SNAPSHOT SLOTS` with fd 3 a stream socket (spawn's `pipe` stdio entry). Records are `executor/ipc/ABI.md`'s (32-byte header, ≤16,384 payload bytes) back to back; kinds, generations, ordering, bounds and READY's ABI version are unchanged. No memfd/eventfd, no addon.
+- Deadlines and STATS times: Node `process.hrtime` = the engine's `CLOCK_MONOTONIC_RAW` (mach_continuous_time). Not macOS `CLOCK_MONOTONIC`, which has another base.
+- Closing the socket ends the engine; the zygote reaps its engine processes. Node SIGKILLs it after 1 s otherwise.

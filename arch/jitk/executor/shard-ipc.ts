@@ -17,7 +17,10 @@ function binding():Bridge {
   if(process.platform!=='linux')throw Error('shard backend requires Linux');
   return bridge??=createRequire(import.meta.url)('./shard-ipc.node') as Bridge;
 }
-export function monotonicNs():bigint {return binding().now();}
+/** The clock of START deadlines and STATS times: CLOCK_MONOTONIC on Linux (the
+ *  native binding); on macOS process.hrtime, which is mach_continuous_time, the
+ *  HVF engine's CLOCK_MONOTONIC_RAW (shard/src/clock.rs ipc_ns). */
+export function monotonicNs():bigint {return process.platform==='darwin'?process.hrtime.bigint():binding().now();}
 export function record(m:Message):Buffer {
   if(!Number.isInteger(m.kind)||m.kind<0||m.kind>0xffffffff||!Number.isInteger(m.slot)||m.slot<0||m.slot>=IPC.slots||m.generation<0n||m.generation>=1n<<62n||!Number.isInteger(m.id)||m.id<0||m.id>0xffffffff||m.bytes.length>IPC.payload)throw Error('shard IPC local envelope');
   const b=Buffer.alloc(IPC.headerBytes+m.bytes.length);
@@ -29,7 +32,7 @@ export function message(b:Buffer):Message {
 }
 /** uv_poll watches an eventfd. All payloads cross sealed memfd SPSC queues;
  * callbacks receive private native copies, never views into the hostile mmap. */
-export class SharedChannel {
+export class SharedChannel implements Channel {
   readonly native:Native;
   readonly fds:readonly number[];
   private pending:{bytes:Buffer;resolve:()=>void;reject:(e:Error)=>void}[]=[];
@@ -55,6 +58,46 @@ export class SharedChannel {
   fail(e:Error) {
     if(this.error)return;this.error=e;this.native.close();
     for(const p of this.pending.splice(0))p.reject(e);this.failed(e);
+  }
+  close() {this.fail(Error('shard IPC closed'));}
+}
+/** What ShardBackend needs from a transport. */
+export type Channel={send(m:Message):Promise<void>;close():void};
+/** macOS (the HVF engine, shard/src/hvf/zygote.rs): the same records, back to
+ *  back over the stream socket Node's spawn creates for a 'pipe' stdio entry.
+ *  Input is parsed from one bounded buffer (a record plus a read); writes past
+ *  IPC.outbound unflushed records fail the channel, as SharedChannel's do. */
+export class PipeChannel implements Channel {
+  private input:Buffer=Buffer.alloc(0);
+  private unflushed=0;
+  private error?:Error;
+  constructor(private socket:import('node:stream').Duplex,private receive:(m:Message)=>void,private failed:(e:Error)=>void) {
+    socket.on('data',(b:Buffer)=>{try{this.data(b);}catch(e){this.fail(e instanceof Error?e:Error(String(e)));}});
+    socket.on('error',e=>this.fail(e));
+    socket.on('close',()=>this.fail(Error('shard IPC closed by the engine')));
+  }
+  private data(b:Buffer) {
+    if(this.error)return;
+    this.input=this.input.length?Buffer.concat([this.input,b]):b;
+    while(this.input.length>=IPC.headerBytes){
+      const n=this.input.readUInt32LE(20);
+      if(n>IPC.payload)throw Error('shard IPC peer envelope');
+      if(this.input.length<IPC.headerBytes+n)break;
+      // A private copy: message() and the receiver never see the stream buffer.
+      const record=Buffer.from(this.input.subarray(0,IPC.headerBytes+n));
+      this.input=this.input.subarray(IPC.headerBytes+n);
+      this.receive(message(record));
+      if(this.error)return;
+    }
+  }
+  send(m:Message):Promise<void> {
+    if(this.error)return Promise.reject(this.error);
+    if(this.unflushed>=IPC.outbound){const e=Error('shard IPC writer bound');this.fail(e);return Promise.reject(e);}
+    const bytes=record(m);this.unflushed++;
+    return new Promise<void>((resolve,reject)=>this.socket.write(bytes,e=>{this.unflushed--;if(e)reject(e);else if(this.error)reject(this.error);else resolve();}));
+  }
+  fail(e:Error) {
+    if(this.error)return;this.error=e;this.socket.destroy();this.failed(e);
   }
   close() {this.fail(Error('shard IPC closed'));}
 }
