@@ -10,5 +10,5 @@ if [ "$(uname -s)" = Linux ]; then
  set -- -Zpanic_abort_tests -C panic=abort --extern "libc=$l" --extern "utils=$u" -L "dependency=$deps"
  export RUSTC_BOOTSTRAP=1
 fi
-RUSTUP_TOOLCHAIN=${RUSTUP_TOOLCHAIN:-1.95.0} rustc --edition=2024 --test --crate-name jitk_sandbox -A dead_code "$@" "$(dirname "$0")/../mod.rs" -o "$out"
+RUSTUP_TOOLCHAIN=${RUSTUP_TOOLCHAIN:-$(sh "$(dirname "$0")/../../../tools/rust-toolchain.sh")} rustc --edition=2024 --test --crate-name jitk_sandbox -A dead_code "$@" "$(dirname "$0")/../mod.rs" -o "$out"
 "$out"; rm -f "$out"

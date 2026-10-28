@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, environment, run } from './lib.ts';
-import { vmmBuildDir } from '../tslib/deps.ts';
+import { pins, vmmBuildDir } from '../tslib/deps.ts';
 const root = import.meta.dirname;
 const build = process.env.JITK_VMM_BUILD || vmmBuildDir();
 const deps = join(build, 'libkrun/target/release/deps');
@@ -14,4 +14,4 @@ for (const [crate, prefix] of [['libc', 'liblibc-'], ['utils', 'libkrun_utils-']
 const env = environment();
 env.RUSTC_BOOTSTRAP = '1';
 env.CARGO_ENCODED_RUSTFLAGS = flags.join('\x1f');
-await run(['cargo', '+1.95.0', 'clippy', '--manifest-path', join(root, 'Cargo.toml'), '--locked', '--offline', '--all-targets', '--', '-Dwarnings', '-Dclippy::undocumented_unsafe_blocks'], { env, inherit: true });
+await run(['cargo', '+' + pins().rust_toolchain, 'clippy', '--manifest-path', join(root, 'Cargo.toml'), '--locked', '--offline', '--all-targets', '--', '-Dwarnings', '-Dclippy::undocumented_unsafe_blocks'], { env, inherit: true });

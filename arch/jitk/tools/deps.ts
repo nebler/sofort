@@ -5,26 +5,31 @@
 //                              bin/node-real is ad-hoc signed with the
 //                              Hypervisor entitlement and its hash checked
 //   HYPERLIGHT_JS_SRC          hyperlight-js fetched by full commit
-//   JITK_VMM_BINARY            vmm/build.ts (the canonical VMM builder)
+//   JITK_VMM_BINARY            vmm/build.ts (the canonical VMM builder; macOS)
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
+//   JITK_SHARD_BINARY          shard `real` from source, pinned toolchain (Linux)
+// JITK_SHARD_SNAPSHOT (Linux) needs KVM and is built by
+// `make -C arch/jitk/shard snapshot` (shard/snapshot.ts) into the same cache.
 // Every entry is built in a staging directory and renamed into place after
 // its manifest is written, so a present manifest means a complete entry. An
 // artifact whose environment variable is set is never built (explicit wins).
 //
 //   deps [build]        build what is missing, then print the manifest
-//   deps status         print the manifest without building
+//   deps node           build only the Node entry (tools/npm.sh bootstrap)
+//   deps status        print the manifest without building
 //   deps path NAME      print NAME's selected path; exit 1 when missing
 //   deps env            print `export NAME=path` for every selected artifact
 //                       that exists (sh-evaluable; set values are kept)
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { platform } from 'node:os';
 import { dirname, join } from 'node:path';
 import { check, detail } from '../tslib/assert.ts';
 import { shaFile } from '../tslib/hash.ts';
 import { readJSON, dumpJSON } from '../tslib/json.ts';
 import { environment } from '../tslib/process.ts';
-import { capture, run } from '../tslib/subprocess.ts';
-import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, withLock } from '../tslib/deps.ts';
+import { run } from '../tslib/subprocess.ts';
+import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardDir, shardInputs, target, withLock } from '../tslib/deps.ts';
+import { rustToolchain } from '../tslib/rust.ts';
 
 const mac = platform() === 'darwin';
 
@@ -83,8 +88,15 @@ async function buildNode(env: Record<string, string>): Promise<void> {
     await staged(dir, async stage => {
       const url = p.url.split('{version}').join(p.version).split('{platform}').join(plat);
       const tarball = join(stage, 'node.tar.gz');
-      log('node: fetching ' + url);
-      await run(['curl', '-fsSL', '--retry', '3', '-o', tarball, url], { env, timeout: 1200 });
+      // tools/npm.sh's bootstrap hands over the tarball it already fetched.
+      const local = process.env.JITK_NODE_TARBALL || '';
+      if (local) {
+        log('node: using ' + local + ' (' + url + ')');
+        copyFileSync(local, tarball);
+      } else {
+        log('node: fetching ' + url);
+        await run(['curl', '-fsSL', '--retry', '3', '-o', tarball, url], { env, timeout: 1200 });
+      }
       const got = shaFile(tarball);
       check(got === expected, 'node: ' + url + ' sha256 ' + got + ' != pinned ' + expected);
       await run(['tar', '-xzf', tarball, '-C', stage, '--strip-components', '1'], { env, timeout: 600 });
@@ -178,19 +190,6 @@ function hyperlightValid(): boolean {
   return existsSync(cachePath('HYPERLIGHT_WORKER')) && existsSync(join(cachePath('HYPERLIGHT_SNAPSHOT'), 'index.json')) && shaFile(cachePath('HYPERLIGHT_WORKER')) === manifest.worker_sha256 && manifest.inputs_sha256 === hyperlightInputs();
 }
 
-async function toolchain(env: Record<string, string>, name: string, targets: string[]): Promise<Record<string, string>> {
-  const install = 'rustup toolchain install ' + name + ' --profile minimal --component rust-src' + targets.map(t => ' --target ' + t).join('');
-  const listed = await capture(['rustup', 'component', 'list', '--installed', '--toolchain', name], { env, timeout: 120 });
-  check(listed.returncode === 0, 'Rust toolchain ' + name + ' is not installed; prerequisite: `' + install + '`');
-  const components = listed.stdout.toString().split('\n');
-  for (const needed of ['rust-src', ...targets.map(t => 'rust-std-' + t)]) {
-    check(components.some(line => line.trim() === needed || line.trim().startsWith(needed + '-')), 'Rust toolchain ' + name + ' lacks ' + needed + '; prerequisite: `' + install + '`');
-  }
-  const cargo = await text(['rustup', 'which', '--toolchain', name, 'cargo'], env);
-  const rustc = await text(['rustup', 'which', '--toolchain', name, 'rustc'], env);
-  return { CARGO: cargo, RUSTC: rustc };
-}
-
 async function buildHyperlight(env: Record<string, string>): Promise<void> {
   if (hyperlightValid()) {
     log('hyperlight: cached ' + hyperlightDir());
@@ -199,7 +198,7 @@ async function buildHyperlight(env: Record<string, string>): Promise<void> {
   const builder = join(JITK_ROOT, 'bench/build/hyperlight-build');
   check(existsSync(builder), 'hyperlight: ' + builder + ' missing; run `make -C arch/jitk deps` (it compiles the builder first)');
   const p = pins();
-  const tools = await toolchain(env, p.hyperlight_toolchain, p.hyperlight_targets);
+  const tools = await rustToolchain(env, p.hyperlight_toolchain, p.hyperlight_targets, ['rust-src']);
   // One lock: the Cargo target directory is shared by every input set.
   await withLock('hyperlight-' + hostPlatform(), async () => {
     if (hyperlightValid()) {
@@ -237,6 +236,54 @@ async function buildHyperlight(env: Record<string, string>): Promise<void> {
   });
 }
 
+// --- shard (Linux) -----------------------------------------------------------
+
+function shardValid(): boolean {
+  const marker = completeMarker('JITK_SHARD_BINARY');
+  if (!existsSync(marker)) {
+    return false;
+  }
+  const manifest = readJSON<Record<string, string>>(marker);
+  return existsSync(cachePath('JITK_SHARD_BINARY')) && shaFile(cachePath('JITK_SHARD_BINARY')) === manifest.binary_sha256 && manifest.inputs_sha256 === shardInputs();
+}
+
+// shard `real` from this checkout's sources with the pinned toolchain; the
+// Cargo target directory is shared by every input set.
+async function buildShard(env: Record<string, string>): Promise<void> {
+  if (shardValid()) {
+    log('shard: cached ' + shardDir());
+    return;
+  }
+  const pin = pins().rust_toolchain;
+  const tools = await rustToolchain(env, pin, [], []);
+  await withLock('shard-' + hostPlatform(), async () => {
+    if (shardValid()) {
+      return;
+    }
+    const dir = shardDir();
+    await staged(dir, async stage => {
+      const settings: Record<string, string> = { ...env, ...tools, RUSTUP_TOOLCHAIN: pin, CARGO_TARGET_DIR: join(cacheRoot(), 'shard', 'target-' + hostPlatform()) };
+      delete settings.RUSTFLAGS;
+      const cwd = join(JITK_ROOT, 'shard');
+      log('shard: building ' + dir);
+      // The one networked step: the locked crate sources, then offline.
+      await run([tools.CARGO, 'fetch', '--locked'], { cwd, env: settings, inherit: true, timeout: 1800 });
+      await run([tools.CARGO, 'build', '--release', '--locked', '--offline', '--bin', 'real'], { cwd, env: settings, inherit: true, timeout: 3600 });
+      copyFileSync(join(settings.CARGO_TARGET_DIR, 'release/real'), join(stage, 'real'));
+      chmodSync(join(stage, 'real'), 0o755);
+      dumpJSON(join(stage, 'manifest.json'), {
+        artifact: 'shard',
+        inputs_sha256: shardInputs(),
+        toolchain: pin,
+        rustc: await text([tools.RUSTC, '--version'], settings),
+        binary_sha256: shaFile(join(stage, 'real')),
+        cargo_target: settings.CARGO_TARGET_DIR
+      });
+    });
+    log('shard: built ' + dir);
+  });
+}
+
 // --- reporting ---------------------------------------------------------------
 
 function status(): Record<string, unknown> {
@@ -248,7 +295,7 @@ function status(): Record<string, unknown> {
     }
     const path = process.env[name] || cachePath(name);
     const row: Record<string, unknown> = { source: explicit(name) ? 'environment' : 'cache', path, present: explicit(name) ? existsSync(path) : cached(name) };
-    if (row.present && statSync(path).isFile()) {
+    if (row.present && existsSync(path) && statSync(path).isFile()) {
       row.sha256 = shaFile(path);
     }
     if (!explicit(name) && existsSync(completeMarker(name))) {
@@ -269,8 +316,11 @@ async function build(): Promise<void> {
   if (!explicit('JITK_NODE') || !explicit('JITK_NPM_CLI')) {
     await buildNode(env);
   }
-  if (!explicit('JITK_VMM_BINARY')) {
+  if (applicable('JITK_VMM_BINARY') && !explicit('JITK_VMM_BINARY')) {
     await buildVmm(env);
+  }
+  if (applicable('JITK_SHARD_BINARY') && !explicit('JITK_SHARD_BINARY')) {
+    await buildShard(env);
   }
   if (mac && (!explicit('HYPERLIGHT_JS_SRC') || !explicit('HYPERLIGHT_WORKER') || !explicit('HYPERLIGHT_SNAPSHOT'))) {
     await fetchSource(env);
@@ -279,7 +329,8 @@ async function build(): Promise<void> {
     }
   }
   for (const name of ARTIFACTS) {
-    if (applicable(name)) {
+    // The prepared snapshot needs KVM and has its own target.
+    if (applicable(name) && target(name) === DEPS_TARGET) {
       requireArtifact(name);
     }
   }
@@ -290,6 +341,8 @@ async function main(): Promise<void> {
   const command = process.argv[2] || 'build';
   if (command === 'build') {
     await build();
+  } else if (command === 'node') {
+    await buildNode(environment());
   } else if (command === 'status') {
     console.log(JSON.stringify(status(), null, 2));
   } else if (command === 'path') {

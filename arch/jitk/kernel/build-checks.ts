@@ -2,6 +2,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, ch
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { check, capture, run, json, environment } from './lib.ts';
+import { pins } from '../tslib/deps.ts';
 
 const ROOT = import.meta.dirname;
 function workspace(): string {
@@ -21,7 +22,7 @@ try {
   chmodSync(join(tools, 'prepare'), 0o755);
   cpSync(join(ROOT, '.work/bin/build-args'), join(tools, 'build-args'));
   const exe = join(work, 'build');
-  await run(['rustc', '+1.95.0', '--edition=2024', join(ROOT, 'build.rs'), '-o', exe]);
+  await run(['rustc', '+' + pins().rust_toolchain, '--edition=2024', join(ROOT, 'build.rs'), '-o', exe]);
   const env = environment();
   env.CARGO_MANIFEST_DIR = work;
   env.OUT_DIR = out;
@@ -71,7 +72,7 @@ mod user {pub const FS:usize=0;pub const FS_LEN:usize=0;}
 #[path=${json(join(ROOT, 'src/fs.rs'), 0)}] mod fs;
 fn main(){ ${body} }`;
   writeFileSync(join(work, 'check.rs'), harness);
-  const result = await capture(['rustc', '+1.95.0', '--edition=2024', join(work, 'check.rs'), '-o', join(work, 'check')]);
+  const result = await capture(['rustc', '+' + pins().rust_toolchain, '--edition=2024', join(work, 'check.rs'), '-o', join(work, 'check')]);
   check(result.returncode !== 0 && result.stderr.toString().includes('lifetime may not live long enough'), 'mutable Open escaped the safe API');
 } finally {
   rmSync(work, { recursive: true, force: true });
@@ -92,7 +93,7 @@ mod console {pub unsafe fn native()->bool{false}pub unsafe fn load(_:usize)->u64
   }
   writeFileSync(join(work, 'check.rs'), harness);
   for (const features of [[], ['--cfg', 'feature="transport-ring"']]) {
-    await run(['rustc', '+1.95.0', '--edition=2024', '--test', ...features, join(work, 'check.rs'), '-o', join(work, 'check')], { inherit: true });
+    await run(['rustc', '+' + pins().rust_toolchain, '--edition=2024', '--test', ...features, join(work, 'check.rs'), '-o', join(work, 'check')], { inherit: true });
     await run([join(work, 'check')], { inherit: true });
   }
 } finally {
@@ -102,7 +103,7 @@ work = workspace();
 try {
   const harness = '#![allow(dead_code, reason="Boot wrapper is unused by host parser checks.")]\n' + [['arch/aarch64/fdt.rs', 'fdt'], ['arch/aarch64/fdt_checks.rs', 'checks']].map(row => `#[path=${json(join(ROOT, 'src', row[0]), 0)}] mod ${row[1]};`).join('\n');
   writeFileSync(join(work, 'test.rs'), harness);
-  await run(['rustc', '+1.95.0', '--edition=2024', '--test', join(work, 'test.rs'), '-o', join(work, 'test')], { inherit: true });
+  await run(['rustc', '+' + pins().rust_toolchain, '--edition=2024', '--test', join(work, 'test.rs'), '-o', join(work, 'test')], { inherit: true });
   await run([join(work, 'test')], { inherit: true });
 } finally {
   rmSync(work, { recursive: true, force: true });

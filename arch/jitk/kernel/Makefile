@@ -20,7 +20,7 @@ test: build tools bench-gate
 
 .PHONY: fmt check
 fmt: .work/bin/format
-	cargo +1.95.0 fmt
+	$(CARGO_PIN) fmt
 	.work/bin/format
 check:
 	sh check.sh
