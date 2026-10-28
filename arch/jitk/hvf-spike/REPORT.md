@@ -68,6 +68,33 @@ per-run path.
 Deletable afterwards (R10's counts roughly hold): libkrun patches 705 lines; `vmm` source and scripts
 ~1.2k; protocol v1 code ~1.1k (+4.1 MiB vectors); console-only kernel paths ~730; the 546 MB libkrun cache.
 
+Status 2026-10-28 (HVF is the Mac default): `vmm/` (patches, launcher, sandbox, tests) and
+`linux/` (the libkrun-on-Linux nested kit) are deleted. Kept, because they are not libkrun's:
+`shard/src/hvf/jitk.sb` (the engine's Seatbelt profile, from `vmm/sandbox`),
+`shard/src/watchdog.rs` (the process backends' watchdog, from `vmm/src`), and protocol v1:
+`protocol/dispatcher.ts` is also the frame checker of the ring path (`shard-backend.ts`) and the
+decoder of Hyperlight's adapter, `protocol/bootstrap.js` is compiled into the console kernel, and
+the vectors test that decoder. The console kernel profile stays alive on HVF through
+`hvf console` (`shard/src/hvf/console.rs`) for GrowOS, `scriptc-corpus`, the kernel suite and
+the protocol VM tests, which need its stdin, path syscalls and inline `\x1e` trace.
+
+Console-only kernel paths for the follow-up (lines today): `src/console.rs` 325,
+`src/arch/aarch64/wait.rs` 139, `fdt.rs` 232 + `fdt_checks.rs` 102, `mmu.rs` 155, `boot.S` 35
+(988 in files), plus about 120 lines of `not(feature = "transport-ring")` branches in `main.rs`,
+`arch/aarch64/mod.rs` (the `mmio` module, `BootInfo`, `boot`, `irq_init`, `system_off`),
+`user.rs`, `syscalls.rs`, `memory.rs`, `fs_checks.rs` and `syscalls/{brk,mmap,munmap}.rs`; then
+`protocol/bootstrap.js` (134) with `kernel/generate.ts`'s console argv and `build.rs`'s
+rerun line, `payload/qjs` (2.4 MB) and `hvf console` itself (~600). Deletable now, without
+moving anything: the GIC half of `wait.rs` (`init`'s GICD/GICR programming, `ack`'s ICC loop,
+the `TICK == 0` untimed-WFI branch; ~45 lines) and `fdt.rs`'s GIC node parse, since no
+launcher runs the console kernel with `jitk.tick_us=0` any more (libkrun did); the FDT's GIC
+node and `c.dist/c.redist != 0` check then go together with `console.rs`'s IRQ number.
+What removes the rest: GrowOS's trace (`sys.enter/exit/missing` records) as an uncapped
+host-visible ring channel instead of console stdout, a ring build with `grow-trace` and `probe`,
+kernel regression/fs_diff/grow_contract rewritten against `hvf native-worker` /
+`shard/native.ts` (as `check-native-hvf` already compares the native corpus with Linux), and
+the protocol VM tests dropped (the ring path has `shard-check.ts`).
+
 ## Risks
 1. **Reset vs a cache-off guest kernel (open).** In the hostile test, the host's view of guest memory
    missed stores the guest made with caches off. KVM's reset handles this with an explicit clean.
