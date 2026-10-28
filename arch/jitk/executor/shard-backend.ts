@@ -87,8 +87,8 @@ export class ShardBackend implements Engine {
     // All slots busy or resetting: wait in FIFO order; released() hands over.
     const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sessions.has(i));
     const s=slot<0?await this.queue.wait(signal,deadline):this.claim(slot);
-    if(signal?.aborted){s.kill();await s.exited;throw Error('aborted');}
-    if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.kill();await s.exited;throw e;}
+    if(signal?.aborted){s.release();await s.released;throw Error('aborted');}
+    if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.release();await s.released;throw e;}
     return s;
   }
   private claim(slot:number):ShardSession {
@@ -136,8 +136,8 @@ type ShardRun={
  * Records decode straight into GuestEvents: one parse under the protocol
  * limits, the v1 field validators and a RunBudget; no v1 frames. */
 export class ShardSession implements Session {
-  readonly exited:Promise<void>;
-  private resolveExit!:()=>void;
+  readonly released:Promise<void>;
+  private resolveReleased!:()=>void;
   private run:ShardRun={phase:'parked',budget:new RunBudget(),wires:new Map(),nextWire:1,records:0,stats:false,admittedDeadlineNs:0n};
   private deadline?:number;
   private failure?:Fail;
@@ -146,7 +146,7 @@ export class ShardSession implements Session {
   private stopped:Promise<never>;
   private rejectStopped!:(e:Error)=>void;
   constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint) {
-    this.exited=new Promise(resolve=>{this.resolveExit=resolve;});
+    this.released=new Promise(resolve=>{this.resolveReleased=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
   }
   get phase():Phase {
@@ -158,7 +158,7 @@ export class ShardSession implements Session {
     if(this.deadline!==undefined&&this.deadline!==deadline)throw Error('deadline already armed');
     this.deadline=deadline;
   }
-  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveExit();}
+  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveReleased();}
   private emit(e:GuestEvent) {
     if(this.waiter){const w=this.waiter;this.waiter=undefined;w(e);}
     else {if(this.events.length>=34)throw Error('shard receive queue bound');this.events.push(e);}
@@ -170,7 +170,7 @@ export class ShardSession implements Session {
     const w=this.waiter;this.waiter=undefined;w?.(f);
   }
   /** Fail this generation only: end the reader and reset the slot via CANCEL. */
-  private abandon(e:Error) {this.end({kind:'fail',cause:'guest',message:e.message});this.kill();}
+  private abandon(e:Error) {this.end({kind:'fail',cause:'guest',message:e.message});this.release();}
   private guest(handle:()=>void) {
     try{handle();}catch(e){this.abandon(Error('protocol '+(e instanceof ProtocolError?e.code:'HOST_ERROR')));}
   }
@@ -207,7 +207,7 @@ export class ShardSession implements Session {
     else if(m.kind!==IPC.released)throw Error('shard IPC direction/kind');
     if(m.kind===IPC.released){
       if(run.phase!=='releasing'||m.id||m.bytes.length)throw Error('shard IPC release schema/state');
-      run.phase='released';this.backend.released(this);this.resolveExit();return;
+      run.phase='released';this.backend.released(this);this.resolveReleased();return;
     }
     if(run.phase==='releasing')return; // draining this generation while reset is in progress
     if(run.phase!=='running')throw Error('shard IPC run state');
@@ -273,7 +273,7 @@ export class ShardSession implements Session {
     if(payload.length>IPC.replyBytes)payload=Buffer.from(`{"err":{"code":"LIMIT","message":"shard tool reply limit (${IPC.replyBytes} bytes)"}}`);
     await this.write(IPC.reply,wire,payload);
   }
-  kill() {
+  release() {
     if(this.run.phase==='released'||this.run.phase==='releasing')return;
     this.run.phase='releasing';
     this.end({kind:'fail',cause:'engine',message:'sandbox exited'});this.rejectStopped(Error(this.failure!.message));

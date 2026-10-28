@@ -89,7 +89,7 @@ Closing the pool or a backend death rejects them. Only a full queue sheds, with
 way (`ShardOptions.maxWaiting`). `refillConcurrency` defaults to maxLive for the
 shard backend and to 2 VMM boots for process backends. Warm pools require supplied
 G1 evidence strictly below 2% idle core. The shipped parking receipt binds
-the measured VMM/kernel hashes; different artifacts need fresh G1 evidence. Lifecycle hooks observe kill/reaped;
+the measured VMM/kernel hashes; different artifacts need fresh G1 evidence. Lifecycle hooks observe release/released (`Session.release()`, `Session.released`);
 RunOptions.onTiming observes start/acquired/runSent/firstCall/firstRet/done/resolve.
 Hooks are diagnostic and exceptions cannot affect admission or results.
 

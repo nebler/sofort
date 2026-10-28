@@ -78,7 +78,7 @@ try {
   {const ev=await sandbox.next();assert.ok(ev.kind==='fail'&&ev.cause==='deadline'&&/deadline_exceeded/.test(ev.message),JSON.stringify(ev));assertions++;}
   const deadline=metrics.slice(before).find(m=>m.resetDoneNs>0n);check(!!deadline,'watchdog reset receipt while Node was blocked');
   check(deadline!.resetDoneNs>=deadline!.deadlineNs&&deadline!.resetDoneNs-deadline!.deadlineNs<50000000n,'responsive-owner deadline reset within 50 ms (nested)');
-  sandbox.kill();await sandbox.exited;
+  sandbox.release();await sandbox.released;
   r=await execute('return 42');check(!r.error&&r.result===42,'clean reuse after expiry');
 } finally {await pool.close();}
 
@@ -100,15 +100,15 @@ try {
     const aborted=one.park(ac.signal);await queued();
     await assert.rejects(one.park(),e=>e instanceof OverloadedError&&e.code==='OVERLOADED');assertions++;
     ac.abort();await assert.rejects(aborted,/aborted/);assertions++;
-    const next=one.park();held.kill();const s=await next;
+    const next=one.park();held.release();const s=await next;
     check((s as any).slot===0&&(s as any).generation===2n,'reset slot hands off to the head park() waiter');
-    s.kill();await s.exited;
+    s.release();await s.released;
     const pool1=new SandboxPool(one,0,1),ex1=new MicroVMExecutor(pool1,()=> 'allow',5000);let errors=0;
     // No drain(): the R9 probe shape that used to hit 'pool saturated' ~12x/run.
     for(let i=0;i<50;i++){const r=await ex1.execute('return 2',{});if(r.error||r.result!==2)errors++;}
     await pool1.drain();check(errors===0,'sequential executor on 1 shard slot: 50 runs, no admission error');
     const busy=await one.park(),waiting=one.park().then(()=>undefined,(e:Error)=>e);await queued();
-    await one.close();check(/shard backend closed/.test(String(await waiting)),'shard death rejects queued park() waiters');busy.kill();
+    await one.close();check(/shard backend closed/.test(String(await waiting)),'shard death rejects queued park() waiters');busy.release();
   } finally {await one.close();}
 }
 

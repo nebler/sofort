@@ -9,14 +9,14 @@ const delay=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 const tick=()=>new Promise(r=>setImmediate(r));
 class Fake implements Backend {
   readonly memoryLimitMB=32;
-  activeStarts=0;maxStarts=0;instances:(Session&{reap:()=>void;kills:number})[]=[];dead?:Error;
+  activeStarts=0;maxStarts=0;instances:(Session&{reap:()=>void;releases:number})[]=[];dead?:Error;
   constructor(readonly autoReap=true,readonly kind:Backend['kind']='process',readonly startMs=10,readonly reapMs=20){}
   async park(signal?:AbortSignal):Promise<Session> {
     if(this.dead)throw this.dead;
     this.activeStarts++;this.maxStarts=Math.max(this.maxStarts,this.activeStarts);
     let reap!:()=>void;
-    const exited=new Promise<void>(r=>{reap=r;});
-    const s={phase:'parked' as const,exited,reap,kills:0,start:async()=>{},next:async()=>({kind:'fail' as const,cause:'engine' as const,message:'fake'}),reply:async()=>{},kill:()=>{s.kills++;if(this.autoReap)setTimeout(reap,this.reapMs);}};
+    const released=new Promise<void>(r=>{reap=r;});
+    const s={phase:'parked' as const,released,reap,releases:0,start:async()=>{},next:async()=>({kind:'fail' as const,cause:'engine' as const,message:'fake'}),reply:async()=>{},release:()=>{s.releases++;if(this.autoReap)setTimeout(reap,this.reapMs);}};
     this.instances.push(s);
     try {
       await delay(this.startMs);
@@ -43,9 +43,9 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
  // The reaping VM still owns the only token: the next caller waits, not sheds.
  const order:number[]=[],next=track(p.acquire(),order,0);
  await delay(30);assert.deepEqual(order,[]);assert.equal(p.snapshot().waiting,1);
- assert.equal(b.instances[0].kills,1);b.instances[0].reap();await release;
+ assert.equal(b.instances[0].releases,1);b.instances[0].reap();await release;
  await delay(30);assert.deepEqual(order,[0]);assert(next.s&&next.s!==s);
- next.s.kill();b.instances[1].reap();await next.s.exited;await tick();
+ next.s.release();b.instances[1].reap();await next.s.released;await tick();
  assert.equal(p.snapshot().tokens,0);await p.close();
  rows.push({name:'capacity held until reap; next acquire waits for it',ok:true,snapshot:p.snapshot()});
 }
@@ -81,11 +81,11 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
  const b=new Fake(false),p=new SandboxPool(b,0,1,{maxWaiting:5}),first=await p.acquire(),order:number[]=[];
  const waiters=Array.from({length:5},(_,i)=>track(p.acquire(),order,i));
  for(let i=0;i<5;i++){
-  const held=i?waiters[i-1].s!:first;held.kill();b.instances[i].reap();
+  const held=i?waiters[i-1].s!:first;held.release();b.instances[i].reap();
   while(order.length<i+1)await delay(1);
  }
  assert.deepEqual(order,[0,1,2,3,4]);
- waiters[4].s!.kill();b.instances[5].reap();await tick();await p.close();
+ waiters[4].s!.release();b.instances[5].reap();await tick();await p.close();
  rows.push({name:'FIFO: waiters admitted in arrival order',ok:true,order});
 }
 {
@@ -94,9 +94,9 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
  const err=await p.acquire().then(()=>undefined,e=>e);
  assert(err instanceof OverloadedError);assert.equal(err.code,'OVERLOADED');assert.match(String(err),/OverloadedError: pool overloaded/);
  assert.equal(p.snapshot().waiting,2);
- held.kill();b.instances[0].reap();while(!a.s)await delay(1);
- a.s.kill();b.instances[1].reap();while(!c.s)await delay(1);
- c.s.kill();b.instances[2].reap();await tick();await p.close();assert.deepEqual(order,[0,1]);
+ held.release();b.instances[0].reap();while(!a.s)await delay(1);
+ a.s.release();b.instances[1].reap();while(!c.s)await delay(1);
+ c.s.release();b.instances[2].reap();await tick();await p.close();assert.deepEqual(order,[0,1]);
  rows.push({name:'bounded queue: beyond maxWaiting rejects OverloadedError',ok:true});
 }
 {
@@ -107,9 +107,9 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
  ac.abort();await tick();assert.match(String(aborted.e),/aborted/);assert.equal(p.snapshot().waiting,2);
  await delay(40);assert.match(String(timed.e),/timed out/);assert.equal(p.snapshot().waiting,1);
  // The aborted and expired waiters left no trace: the next release goes to `after`.
- held.kill();b.instances[0].reap();while(!after.s)await delay(1);
+ held.release();b.instances[0].reap();while(!after.s)await delay(1);
  assert.deepEqual(order,[0,2,1]);assert.equal(b.instances.length,2);
- after.s.kill();b.instances[1].reap();await tick();assert.equal(p.snapshot().tokens,0);await p.close();
+ after.s.release();b.instances[1].reap();await tick();assert.equal(p.snapshot().tokens,0);await p.close();
  rows.push({name:'abort / deadline while waiting removes the waiter',ok:true});
 }
 {

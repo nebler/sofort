@@ -22,7 +22,7 @@ async function execute(code:string,tools:Record<string,(...args:any[])=>any>={},
       try {await s.reply(ev.id,{ok:await tools[ev.fn](...ev.args)});}
       catch(e) {await s.reply(ev.id,{err:{code:'DENIED',message:'policy denied'}});}
     }
-  }finally{s.kill();await s.exited;}
+  }finally{s.release();await s.released;}
 }
 assert.equal((await execute('return 2;')).ok,2);checks++;
 assert.equal((await execute('return await test.echo(2);',{echo:async x=>x})).ok,2);checks++;
@@ -36,7 +36,7 @@ await assert.rejects(()=>execute('while(true){}',{},100));checks++;
 // The v1 run schema still applies behind start(): a reserved namespace is refused.
 const b=new HyperlightBackend(worker,snapshot),s=await b.park();
 try {await assert.rejects(()=>s.start({kind:'js',source:'async()=>2',tools:{print:[]},prelude:''}));checks++;}
-finally{s.kill();await s.exited;}
+finally{s.release();await s.released;}
 const controller=new AbortController();controller.abort();
 await assert.rejects(()=>b.park(controller.signal));checks++;
 assert.throws(()=>parseFrame('{"t":"log","level":"info","msg":"\x7f"}'));checks++;

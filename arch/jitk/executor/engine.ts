@@ -23,7 +23,7 @@ export type Phase='parked'|'running'|'done'|'ended';
 export interface Session {
   readonly phase:Phase;
   /** Resolves once the session's capacity is free again (process reaped, slot reset). */
-  readonly exited:Promise<void>;
+  readonly released:Promise<void>;
   armDeadline?(deadline:number):Promise<void>;
   readonly deadlineReceipt?:{deadline:number;firedAt:number;killAt:number};
   start(job:Job):Promise<void>;
@@ -31,8 +31,8 @@ export interface Session {
   next():Promise<GuestEvent>;
   /** Answer the call event with this id; each id exactly once. */
   reply(id:number,r:Reply):Promise<void>;
-  /** Idempotent kill/reset. */
-  kill():void;
+  /** Idempotent: kill the process or reset the slot; `released` resolves after. */
+  release():void;
 }
 export interface Engine {
   readonly kind:'jitk'|'process'|'hyperlight-js'|'shard';

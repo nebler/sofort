@@ -15,10 +15,10 @@ try {
   // separate watchdog must kill the child while Node cannot run timers.
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,1500);
   let timer:ReturnType<typeof setTimeout>|undefined;
-  const reaped=await Promise.race([s.exited.then(()=>true),new Promise<boolean>(resolve=>{timer=setTimeout(()=>resolve(false),500);})]);
+  const reaped=await Promise.race([s.released.then(()=>true),new Promise<boolean>(resolve=>{timer=setTimeout(()=>resolve(false),500);})]);
   clearTimeout(timer);assert(reaped,'external watchdog must fire independently of host event loop');
   assert(s.deadlineReceipt,'external watchdog must report its own kill timestamp');
   assert.equal(s.deadlineReceipt.deadline,deadline);
   const result={receipt:s.deadlineReceipt,killOvershootMs:s.deadlineReceipt.killAt-deadline,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),watchdogDeadlineMs:250,hostEventLoopBlockedMs:1500,observedReapAfterHostUnblockMs:performance.now()-start,reaped};
   writeFileSync(receiptPath('watchdog-check-results.json'),JSON.stringify(result,null,2)+'\n');console.log(result);
-}finally{s.kill();await s.exited;}
+}finally{s.release();await s.released;}

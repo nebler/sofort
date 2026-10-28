@@ -60,7 +60,7 @@ export async function createJitk(cfg) {
   // warm() is idempotent and bounded by warm/maxLive/refillConcurrency.
   const backend = {kind: inner.kind, memoryLimitMB: inner.memoryLimitMB, close: () => inner.close?.(), async park(signal, deadline) {
     const s = await inner.park(signal, deadline);
-    void s.exited.then(() => refill());
+    void s.released.then(() => refill());
     return s;
   }};
   const pool = new SandboxPool(backend, cfg.warm, Math.max(cfg.maxLive, cfg.warm, 1), {parkingGate: selected.gate});

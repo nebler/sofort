@@ -40,7 +40,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     const baseContext={executionId:crypto.randomUUID(),signal:controller.signal};
     const getContext=():Context=>Object.freeze({...baseContext,provenance:Object.freeze([...labels])});
     const ctx=getContext();
-    let sandbox:Session|undefined;let kill:(()=>void)|undefined;let live=true;let run:any;
+    let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;
     let firstCall=true,firstRet=true;
     try {
       if(code.length>LIMIT.code)throw new Error('code limit');
@@ -71,7 +71,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       }
       run=rules.createRun({tools,deadline,limits:this.security.limits});
       sandbox=await this.pool.acquire(ctx.signal,deadline);mark('acquired');const s=sandbox;
-      kill=()=>s.kill();ctx.signal.addEventListener('abort',kill,{once:true});
+      stop=()=>s.release();ctx.signal.addEventListener('abort',stop,{once:true});
       if(expired())abort();
       if(ctx.signal.aborted)throw new Error('aborted');
       await s.armDeadline?.(deadline);
@@ -96,7 +96,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           if(run.tainted.untrusted)labels.add('tool-untrusted');
           if(expired())abort();
           if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
-        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.kill();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.kill());}
+        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.release());}
       };
       while(true){
         // Events are validated by the session's engine adapter (bytes, schema,
@@ -119,7 +119,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       live=false;if(run){run.dead=true;run.approvals.clear();}
       clearTimeout(timer);options.signal?.removeEventListener('abort',abort);
       // Remove the abort→SIGKILL listener before cancelling host tool work.
-      if(kill)ctx.signal.removeEventListener('abort',kill);
+      if(stop)ctx.signal.removeEventListener('abort',stop);
       // setImmediate runs after the execute promise's subscribers. No kill,
       // reap, refill or tool cancellation occurs on a successful result path.
       if(sandbox)this.pool.retire(sandbox,()=>controller.abort());
