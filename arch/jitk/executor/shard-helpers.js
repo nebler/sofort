@@ -23,8 +23,11 @@ globalThis.__jitkPrepared={
       });
       pending.add(p);p.then(()=>pending.delete(p),()=>pending.delete(p));return p;
     };
+    // Formatting as protocol/bootstrap.js: JSON per argument, String() of the
+    // result (so undefined prints), a placeholder for unserializable values.
+    const part=x=>{if(typeof x==='string')return x;try{return String(JSON.stringify(x));}catch{return '[unserializable]';}};
     const console=Object.fromEntries(['log','info','warn','error','debug'].map(level=>[level,(...a)=>{
-      const p=transport.echo('log',level,a.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' '));
+      const p=transport.echo('log',level,a.map(part).join(' '));
       p.catch(()=>{});logs.push(p);
     }]));
     const providers=names.map(name=>new Proxy(Object.create(null),{get:(_t,k)=>k==='then'?undefined:(...a)=>call(name,k,a)}));
@@ -34,6 +37,8 @@ globalThis.__jitkPrepared={
       return result;
     } catch(e) {
       throw {name:String(e&&e.name||'Error').slice(0,128),message:String(e&&e.message||e).slice(0,4096)};
-    } finally {await Promise.allSettled([...pending]);await Promise.all(logs);}
+    // A log the ring refuses (call budget or bytes) is dropped, as v1 drops
+    // logs past its bounds; every sent log is acknowledged before DONE.
+    } finally {await Promise.allSettled([...pending]);await Promise.allSettled(logs);}
   }
 };
