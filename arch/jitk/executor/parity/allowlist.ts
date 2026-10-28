@@ -36,6 +36,10 @@ const hyperlight:Difference[]=[
     reason:'allocation failure in the 16 MiB guest heap aborts the worker instead of raising a QuickJS out-of-memory error'},
   {case:'t-log-undefined',backends:['hyperlight-js'],expect:{ok:1,logs:['u ']},limit:HL,
     reason:'console joins JSON.stringify results, which drops undefined'},
+  ...['t-stack-overflow','t-stack-overflow-caught','t-stack-after-overflow','t-stack-overflow-paths'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'SANDBOX',match:'protocol EOF'},limit:HL,
+    reason:'unbounded recursion overruns the worker stack before QuickJS\'s stack limit; jitk sets --stack-size below its guest stack (kernel/generate.ts)'})),
+  {case:'t-stack-overflow-json',backends:['hyperlight-js'],expect:{ok:null},limit:HL,
+    reason:'the worker stack holds 500 nested JSON.stringify levels, so nothing throws'},
   {case:'t-log-unserializable',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'BigInt'},limit:HL,
     reason:'console calls JSON.stringify without a fallback, so a BigInt argument throws in the tenant'},
 ];
@@ -64,8 +68,6 @@ const shard:Difference[]=[
   {case:'t-timer-typeof',backends:['shard'],expect:{ok:['undefined','undefined']},limit:'kernel/ring-bootstrap.js (no timers)',reason:'the ring profile has deliberately no timers'},
   {case:'t-clock-advances',backends:['shard'],expect:{ok:false},limit:'abi ring ctrl::EPOCH_NS/MONOTONIC_NS (set once per START)',
     reason:'the guest clock is the admission-time value and does not advance during a job (CUTOVER-PLAN §2.4 "real clocks inside a job" is open)'},
-  ...['t-stack-overflow','t-stack-overflow-caught'].map((id):Difference=>({case:id,backends:['shard'],expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi arena::STACK_BYTES',value:0x20000,
-    reason:'both paths end the guest on unbounded recursion; the shard reports it as a guest_fatal ERROR record (class GUEST_ERROR), the console path as EOF (SANDBOX)'})),
   {case:'t-done-over-limit',backends:['shard'],expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi ring::DONE_BYTES',value:IPC.doneBytes,
     reason:'a completion over one ring record cannot be written; the guest stops without DONE'},
   // Logs are ring CALL records: they share the call budget and the record size.
