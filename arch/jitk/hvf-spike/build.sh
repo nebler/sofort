@@ -4,8 +4,6 @@
 # engine. Nothing outside hvf-spike/ is written except kernel/.work/bin (the
 # kernel's own ignored build tools).
 #   build.sh            kernel image (plain ring-bootstrap.js) + engine
-#   HELPERS=1 build.sh  splice executor helpers before the checkpoint, as
-#                       shard/snapshot.ts does (needs node)
 set -eu
 here=$(cd "$(dirname "$0")" && pwd)
 jitk=$(cd "$here/.." && pwd)
@@ -13,9 +11,6 @@ pin=$(sh "$jitk/tools/rust-toolchain.sh")
 mkdir -p "$here/out"
 make -s -C "$jitk/kernel" .work/bin/prepare .work/bin/build-args
 script=$(cat "$jitk/kernel/ring-bootstrap.js")
-if [ "${HELPERS:-0}" = 1 ]; then
-  script=$(cd "$jitk" && node --experimental-strip-types "$here/splice.mjs")
-fi
 (
   cd "$jitk/kernel"
   CARGO_TARGET_DIR="$here/target-kernel" \
