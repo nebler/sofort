@@ -34,7 +34,7 @@ doctor:
 ci:
 	@sh "$(ROOT)/tools/ci.sh"
 help:
-	@printf '%s\n' 'doctor: check this host (run first)' 'ci: every Linux arm64 check (CI entrypoint)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'test-linux: the backend-parity corpus on a Linux KVM host (shard + libkrun)' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
+	@printf '%s\n' 'doctor: check this host (run first)' 'ci: every Linux arm64 check (CI entrypoint)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite (macOS: with the shard HVF suite, make -C shard test-hvf)' 'test-linux: the backend-parity corpus on a Linux KVM host (shard + libkrun)' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
 build: deps
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) vmm build
@@ -60,6 +60,9 @@ test: deps
 	+@$(DELEGATE) bench test
 	+@$(DELEGATE) bench/hyperlight test
 	+@$(DELEGATE) linux test
+ifeq ($(shell uname -s),Darwin)
+	+@$(DELEGATE) shard test-hvf
+endif
 # Linux arm64 KVM host, from a clean clone: the backend-parity corpus
 # (executor/parity/README.md) on the shard and on libkrun, then the shard's
 # library tests, the shard-only executor suite (executor/shard-check.ts) and
