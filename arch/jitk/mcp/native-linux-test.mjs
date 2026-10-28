@@ -1,11 +1,12 @@
-// Real SDK -> MCP -> persistent native ring worker. Offline kvm-dev only.
+// Real SDK -> MCP -> persistent native ring worker: Linux arm64 KVM (`real`) or
+// macOS arm64 HVF (`hvf`). Offline; JITK_NATIVE_BINARY and JITK_NATIVE_PROFILES.
 import assert from 'node:assert/strict';
 import {mkdtempSync, writeFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StdioClientTransport} from '@modelcontextprotocol/sdk/client/stdio.js';
-assert.equal(process.platform,'linux'); assert.equal(process.arch,'arm64');
+assert.ok(['linux','darwin'].includes(process.platform)); assert.equal(process.arch,'arm64');
 const dir=mkdtempSync(join(tmpdir(),'jitk-native-mcp-'));
 const config=join(dir,'config.json');
 writeFileSync(config,JSON.stringify({execute:false,timeoutMs:1000,warm:0,providers:[],

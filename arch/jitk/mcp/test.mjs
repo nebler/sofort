@@ -70,7 +70,7 @@ async function allGone(pids, label) {
   ok('text content mirrors structuredContent', JSON.parse(full.content[0].text).result === 3 && full.isError === false, full);
 
   const native = await client.callTool({name: 'run', arguments: {tool: 'lua', args: ['-e', 'print(2)'], files: {}}});
-  ok('native run without Linux profiles returns UNSUPPORTED', native.isError && native.structuredContent.error.code === 'UNSUPPORTED', native);
+  ok('native run without configured profiles returns UNSUPPORTED', native.isError && native.structuredContent.error.code === 'UNSUPPORTED', native);
   const {resources} = await client.listResources();
   const doc = resources.find(x => x.uri === 'jitk://resources/code-mode.md');
   ok('resources/list', doc?.mimeType === 'text/markdown', resources);

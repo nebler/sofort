@@ -61,7 +61,7 @@ Backend selection is explicit:
 
 | Host | execute | run |
 |---|---|---|
-| macOS v1 | existing libkrun/HVF executor | UNSUPPORTED |
+| macOS arm64 | existing libkrun/HVF executor | persistent HVF engine `hvf native-worker` (`../shard/src/hvf/native.rs`), the same ring ABI R7, profiles prepared by `hvf prepare`; UNSUPPORTED without native config |
 | Linux arm64 | existing libkrun executor until policy cutover | persistent shard `real native-worker`, KVM ring ABI R7 |
 | Other hosts / missing native config | existing execute selection rules | UNSUPPORTED |
 
@@ -98,7 +98,8 @@ scheduler. It does not add per-call helper processes or claim lease parity.
 
 Portable validation: `$JITK_NODE native-test.mjs` (MCP input decoding) and the
 executor's `native-check.ts` (the native Engine on a stand-in worker speaking the
-same frames). Real Linux SDK validation (after `../executor/run.sh build`):
+same frames). Real SDK validation (after `../executor/run.sh build`; on the Mac
+JITK_NATIVE_BINARY is the signed `hvf` engine and the profiles are HVF-prepared):
 ```sh
 JITK_NATIVE_BINARY=/absolute/path/to/shard/target/release/real \
 JITK_NATIVE_PROFILES='{"lua":"/absolute/prepared/lua"}' \

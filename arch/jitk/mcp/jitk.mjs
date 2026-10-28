@@ -44,7 +44,7 @@ export async function createJitk(cfg) {
   if (cfg.execute === false) {
     const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
     return {
-    selection: 'execute disabled; native Linux KVM ring profiles', warmed: Promise.resolve(),
+    selection: 'execute disabled; native ring profiles', warmed: Promise.resolve(),
     run: async () => ({error: {code: 'UNSUPPORTED', message: 'execute backend disabled by server configuration'}, logs: []}),
     runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits, close: () => native.close(),
     };
