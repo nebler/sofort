@@ -21,7 +21,7 @@
 /// snapshot format. The shard sends it in READY and the prepared snapshot
 /// `.identity` records it; Node and the shard refuse a mismatch. Bump it with
 /// any change to a value in this crate.
-pub const ABI_VERSION: u32 = 8;
+pub const ABI_VERSION: u32 = 9;
 
 pub mod layout {
     //! Guest physical memory layout, per architecture.
@@ -209,6 +209,10 @@ pub mod ring {
     pub const MAX_ARGS: usize = 32;
     /// Aggregate native stdout+stderr capture cap.
     pub const OUTPUT_LIMIT: usize = 1024 * 1024;
+    /// LOG payload bytes per run (kernel diagnostics; tenant code has no LOG
+    /// path). More fails that run: the shard's stderr is bounded for its
+    /// whole lifetime, so a compromised kernel must not flood it.
+    pub const LOG_BYTES: usize = 16384;
     /// Read-only archive bytes at ARCHIVE_GPA (native profile; `ARCHIVE_BYTES`).
     pub const ARCHIVE_LIMIT: usize = 4 * 1024 * 1024;
     /// Bytes the kernel returns from `read(FD_REPAIR)`: generation u64,
@@ -440,6 +444,10 @@ pub mod ipc {
     pub const READY: u32 = 20;
     pub const PING: u32 = 21;
     pub const STATS: u32 = 22;
+    /// In place of RELEASED: the reset failed and the slot is out of service
+    /// for the shard's lifetime (never admits again). Payload: the reason,
+    /// at most ERROR_BYTES printable ASCII bytes.
+    pub const QUARANTINED: u32 = 23;
 
     pub const READY_BYTES: usize = 4;
     /// Physical sandbox slots per shard.
@@ -454,7 +462,8 @@ pub mod ipc {
     /// STATS payload: four u64 then at most STATS_ROUND_TRIPS u64.
     pub const STATS_FIXED_BYTES: usize = 32;
     pub const STATS_ROUND_TRIPS: usize = super::ring::MAX_CALLS;
-    /// Records one generation may send: one per call, STATS, DONE/ERROR, RELEASED.
+    /// Records one generation may send: one per call, STATS, DONE/ERROR,
+    /// RELEASED or QUARANTINED.
     pub const RECORDS_PER_GENERATION: usize = super::ring::MAX_CALLS + 3;
     /// Outbound queue bound: every slot's generation plus READY.
     pub const OUTBOUND: usize = MAX_SLOTS * RECORDS_PER_GENERATION + 1;

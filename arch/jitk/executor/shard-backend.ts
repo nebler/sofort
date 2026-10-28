@@ -9,8 +9,11 @@ import {ARENA_CLASSES} from './abi.js';
 import {ABI_VERSION,IPC,SharedChannel,checkReady,monotonicNs,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
-/** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)). */
-export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void};
+/** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are gone for the shard's lifetime. */
+export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:number;slots:number};
+/** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
+ *  onQuarantine observes lost capacity; without it each loss is one stderr line. */
+export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void};
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(code:string,names:string[]):string {
@@ -43,6 +46,8 @@ export class ShardBackend implements Engine {
   private sessions=new Map<number,ShardSession>();
   private queue:AdmissionQueue<ShardSession>;
   private generations:bigint[];
+  /** Slots the shard reported QUARANTINED: never claimed again. */
+  private lost=new Set<number>();
   private dead?:Error;
   private resolveReady!:()=>void;
   private rejectReady!:(e:Error)=>void;
@@ -94,7 +99,7 @@ export class ShardBackend implements Engine {
     if(this.dead)throw this.dead;
     if(signal?.aborted)throw Error('aborted');
     // All slots busy or resetting: wait in FIFO order; released() hands over.
-    const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sessions.has(i));
+    const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sessions.has(i)&&!this.lost.has(i));
     const s=slot<0?await this.queue.wait(signal,deadline):this.claim(slot);
     if(signal?.aborted){s.release();await s.released;throw Error('aborted');}
     if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.release();await s.released;throw e;}
@@ -106,11 +111,22 @@ export class ShardBackend implements Engine {
     const s=new ShardSession(this,slot,generation);this.sessions.set(slot,s);return s;
   }
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
-  released(s:ShardSession) {
+  /** Physical slots, and those lost to quarantine (capacity is slots - lost). */
+  get capacity() {return {slots:this.generations.length,lost:this.lost.size};}
+  released(s:ShardSession,quarantine?:string) {
     if(this.sessions.get(s.slot)!==s)throw Error('shard release identity');this.sessions.delete(s.slot);
+    if(quarantine!==undefined){this.quarantined(s,quarantine);return;}
     // The slot just finished its reset: give it straight to the head waiter.
     const w=this.queue.shift();if(!w)return;
     try{w.resolve(this.claim(s.slot));}catch(e){w.reject(e as Error);}
+  }
+  /** The slot never returns: account for it, report it, fail the shard once none is left. */
+  private quarantined(s:ShardSession,reason:string) {
+    this.lost.add(s.slot);
+    const q:ShardQuarantine={slot:s.slot,generation:s.generation,reason,lost:this.lost.size,slots:this.generations.length};
+    if(this.options.onQuarantine)try{this.options.onQuarantine(q);}catch{}
+    else process.stderr.write(`jitk shard: slot ${q.slot} quarantined (${reason}); capacity ${q.slots-q.lost}/${q.slots}\n`);
+    if(this.lost.size===this.generations.length)this.die(Error(`shard capacity lost: all ${q.slots} slots quarantined`));
   }
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}
@@ -213,10 +229,12 @@ export class ShardSession implements Session {
     else if(m.kind===IPC.done){if(m.id||m.bytes.length>16352)throw Error('shard IPC completion bound');}
     else if(m.kind===IPC.error){if(m.id||m.bytes.length>512)throw Error('shard IPC error bound');}
     else if(m.kind===IPC.stats){if(m.id||m.bytes.length<32||m.bytes.length>288||m.bytes.readBigUInt64LE(24)>32n||m.bytes.length!==32+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
-    else if(m.kind!==IPC.released)throw Error('shard IPC direction/kind');
-    if(m.kind===IPC.released){
-      if(run.phase!=='releasing'||m.id||m.bytes.length)throw Error('shard IPC release schema/state');
-      run.phase='released';this.backend.released(this);this.resolveReleased();return;
+    else if(m.kind!==IPC.released&&m.kind!==IPC.quarantined)throw Error('shard IPC direction/kind');
+    // RELEASED, or QUARANTINED with its reason, ends the generation Node cancelled.
+    if(m.kind===IPC.released||m.kind===IPC.quarantined){
+      const reason=m.kind===IPC.quarantined?m.bytes.toString('latin1'):undefined;
+      if(run.phase!=='releasing'||m.id||(reason===undefined?m.bytes.length:!/^[\x20-\x7e]+$/.test(reason)||m.bytes.length>IPC.errorBytes))throw Error('shard IPC release schema/state');
+      run.phase='released';this.backend.released(this,reason);this.resolveReleased();return;
     }
     if(run.phase==='releasing')return; // draining this generation while reset is in progress
     if(run.phase!=='running')throw Error('shard IPC run state');

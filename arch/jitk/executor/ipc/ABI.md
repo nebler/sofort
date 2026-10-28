@@ -1,4 +1,4 @@
-# Node ↔ shard shared-memory IPC, revision 2 (ABI version 8)
+# Node ↔ shard shared-memory IPC, revision 2 (ABI version 9)
 
 Every number below is defined once in the jitk-abi crate (`../../abi`,
 `ipc` and `ring` modules); `bridge_abi.h` and `../abi.ts` are generated from it.
@@ -43,6 +43,7 @@ the entire shard connection closed.
 | Shard DONE=17 | id=0, <=16352 printable ASCII bytes, no outstanding calls; Node requires JSON `{"ok":value}` or `{"err":{"name":...,"message":...}}` |
 | Shard ERROR=18 | id=0, <=512 diagnostic bytes; lease failure/memory bound/fatal guest |
 | Shard RELEASED=19 | id=0, no payload; owner has completed stopped reset, slot may admit its next generation |
+| Shard QUARANTINED=23 | id=0, 1..512 printable ASCII bytes (the reason); in place of RELEASED: the reset failed, the slot never admits again. Node stops counting it as capacity, reports it (`onQuarantine`, else one stderr line) and fails the shard once every slot is lost |
 | Shard READY=20 | ABI version u32 LE (exactly 4 bytes), once per connection after loading the snapshot (whose `.identity` must carry the same `abiVersion`) and starting owners/watchdog |
 | Shard STATS=22 | id=0; owner CPU ns, stopped ns, reset-completed ns, count (u64 each), count<=32 u64 owner-observed policy round trips; once before DONE/ERROR |
 
@@ -61,7 +62,8 @@ envelope, identity, order and state violations still close the whole shard
 connection. `abi/guest-payloads.json` is the shared acceptance corpus for
 both sides' tests. Log records get only a null
 acknowledgement. Logical tool IDs exclude logs; Node privately maps them back
-to physical ring IDs. Oversized provider replies become a bounded LIMIT error.
+to physical ring IDs. Oversized provider replies become a bounded LIMIT error; a call over the ring
+record size reaches the guest as the same LIMIT error (prepared helpers).
 
 The generic writer retains at most 2,241 records. Production messages have
 smaller per-kind bounds above. Rust's outbound queue is capped at 2,241 records;

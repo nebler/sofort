@@ -6,7 +6,7 @@ import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
 import {ABI_VERSION} from './abi.js';
-import {ShardBackend,type ShardMetrics} from './shard-backend.js';
+import {ShardBackend,type ShardMetrics,type ShardQuarantine} from './shard-backend.js';
 import {SharedChannel,IPC,monotonicNs,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
 import {SandboxPool,OverloadedError} from './pool.js';
@@ -146,6 +146,23 @@ try {
     for(let i=0;i<32;i++){const r=await stalledExecutor.execute('return 1',{});check(!r.error&&r.result===1,'hostile peer fills TX credits');await stalledPool.drain();}
     const r=await stalledExecutor.execute('return 1',{});check(r.error==='Execution aborted or timed out','abort escapes blocked admission write');
   } finally {await stalledPool.close();}
+  // QUARANTINED: Node stops counting the slot, reports it, and fails the shard
+  // once no slot is left (the peer quarantines every slot it resets).
+  {
+    const lost:ShardQuarantine[]=[];
+    const q=new ShardBackend({binary:peer,snapshot:peerSnapshot('quarantine'),slots:2,owners:1,onQuarantine:x=>lost.push(x)});
+    const qPool=new SandboxPool(q,0,2);
+    try {
+      const r=await new MicroVMExecutor(qPool,()=> 'allow',2000).execute('return 1',{});await qPool.drain();
+      check(!r.error&&r.result===1,'a run whose reset quarantines its slot still completes');
+      check(lost.length===1&&lost[0].slot===0&&lost[0].reason==='reset failed: fixture'&&lost[0].lost===1&&lost[0].slots===2,'QUARANTINED reaches onQuarantine with its reason and lost capacity');
+      check(q.capacity.lost===1,'backend capacity counts the quarantined slot');
+      const s=await q.park();check((s as any).slot===1,'a quarantined slot is never claimed again');
+      s.release();await s.released;
+      check(q.capacity.lost===2&&lost.length===2,'second quarantine reported');
+      await assert.rejects(q.park(),/shard capacity lost: all 2 slots quarantined/);assertions++;
+    } finally {await qPool.close();}
+  }
   for(const mode of ['producer','consumer','length','reserved','slot','generation','kind','identity','duplicate','json','nonascii','completion','stats']) {
     const hostile=new ShardBackend({binary:peer,snapshot:peerSnapshot(mode),slots:1,owners:1});
     try {

@@ -118,7 +118,11 @@ a second generation-fenced CAS claims escalation and `pidfd_send_signal(SIGKILL)
 kills the shard. A reset cannot reuse a slot after escalation has claimed it.
 The receiving reactor fails the shard closed on unexpected watchdog exit;
 production supervision must also cover a stalled reactor/watchdog. No per-VM/call helper or
-waiting thread is added. The reactor queues are bounded owner commands/events.
+waiting thread is added. One `jitk-clock` thread per pool (`clock.rs`) keeps guest time
+real: every 1 ms it stores CLOCK_MONOTONIC into the MONOTONIC_NS control word of each
+slot whose vCPU is inside KVM_RUN (the ring kernel reads that word for every
+clock_gettime), and it parks while none is. It writes only inside that window, and
+leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
 Real-guest commands (all emit JSONL):

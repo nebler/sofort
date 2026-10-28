@@ -37,6 +37,12 @@ pub use reset::{
     Discard, QUARANTINED, Quarantined, ResetPolicy, ResetReport, SAMPLE_FAILURES, SAMPLED,
 };
 
+/// `JITK_SHARD_DIAGNOSTICS` set: print JS-profile guest LOG records to stderr
+/// (offline debugging; Node starts the shard without it).
+fn diagnostics() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var_os("JITK_SHARD_DIAGNOSTICS").is_some())
+}
 pub struct Request {
     pub id: u64,
     pub bytes: Vec<u8>,
@@ -106,6 +112,11 @@ pub struct Slot {
     quarantined: Option<String>,
     /// Admissions so far: every policy.sample_every-th is content-checked.
     admits: u64,
+    /// LOG payload bytes this generation; bounded by ring::LOG_BYTES.
+    log_bytes: usize,
+    /// The shard clock's cell for this slot (owner::Pool): refreshes the
+    /// guest's MONOTONIC_NS word while the vCPU runs.
+    pub(crate) clock: Option<crate::clock::Cell>,
 }
 impl Slot {
     fn create(kvm: &Kvm, file: &File, class: Option<arena::Class>) -> Self {
@@ -180,6 +191,8 @@ impl Slot {
             entries: Vec::new(),
             quarantined: None,
             admits: 0,
+            log_bytes: 0,
+            clock: None,
         }
     }
     /// Create an unpartitioned boot VM for trusted offline snapshot preparation.
@@ -340,6 +353,7 @@ impl Slot {
         // or any host write since the last reset, has touched.
         assert!(self.pristine.get(), "bind requires a pristine slot");
         self.generation = generation;
+        self.log_bytes = 0;
         self.store(0, ring::JS_VERSION);
         self.store(ring::GENERATION, generation);
         self.store(
@@ -417,6 +431,12 @@ impl Slot {
                 });
             }
             self.wrote_ram(); // the guest may write RAM and registers
+            // While the guard lives the shard clock may refresh MONOTONIC_NS;
+            // its drop waits out an in-progress store (clock.rs).
+            let _ticking = self
+                .clock
+                .as_ref()
+                .map(|c| c.enter(self.atomic(ring::MONOTONIC_NS)));
             // SAFETY: this owner has the live vCPU/run mappings; no guest RAM
             // reference spans KVM_RUN, which takes a zero scalar argument.
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
@@ -518,7 +538,18 @@ impl Slot {
                     if id != 0 || cap != 0 {
                         return Err(RunError::GuestProtocol("log identity"));
                     }
-                    eprintln!("guest: {}", String::from_utf8_lossy(&payload));
+                    // Kernel diagnostics; tenant code cannot emit LOG, a
+                    // compromised kernel can flood it. Shard stderr is bounded
+                    // for the shard's lifetime (Node kills it past 64 KiB), so
+                    // a flood fails this run only, and the text reaches stderr
+                    // only when diagnostics are requested.
+                    self.log_bytes += n;
+                    if self.log_bytes > ring::LOG_BYTES {
+                        return Err(RunError::GuestProtocol("LOG budget"));
+                    }
+                    if diagnostics() {
+                        eprintln!("guest: {}", String::from_utf8_lossy(&payload));
+                    }
                 }
                 _ => return Err(RunError::GuestProtocol("unknown TX kind")),
             }
@@ -656,6 +687,8 @@ mod tests {
             entries: Vec::new(),
             quarantined: None,
             admits: 0,
+            log_bytes: 0,
+            clock: None,
         }
     }
     fn record(s: &Slot, kind: u16, id: u64, payload: &[u8]) {
@@ -669,8 +702,9 @@ mod tests {
         b[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
         b[28..32].copy_from_slice(&(if kind == 1 { 1u32 } else { 0 }).to_le_bytes());
         b[32..32 + payload.len()].copy_from_slice(payload);
-        s.copy(REQUEST, &b);
-        s.store(ring::TX_PRODUCER, len as u64);
+        // At the guest's TX cursor (records already decoded stay consumed).
+        s.copy(REQUEST + s.tx, &b);
+        s.store(ring::TX_PRODUCER, (s.tx + len) as u64);
     }
     fn test_snapshots() -> Vec<Arc<Snapshot>> {
         let bases = std::env::var("JITK_SHARD_TEST_SNAPSHOTS").unwrap();
@@ -1053,6 +1087,23 @@ mod tests {
         s.copy(0, &[5, 6, 7, 8]);
         assert_eq!(&saved[..], &[1, 2, 3, 4]);
         assert_eq!(&s.bytes(0, 4)[..], &[5, 6, 7, 8]);
+    }
+    #[test]
+    fn log_flood_fails_only_its_run() {
+        // A compromised kernel writing LOG records: up to ring::LOG_BYTES of
+        // payload per run decodes (and prints nothing), the next byte is a run
+        // error, never a shard failure.
+        let mut s = slot();
+        let chunk = vec![b'x'; 4096];
+        for _ in 0..ring::LOG_BYTES / chunk.len() {
+            record(&s, ring::LOG, 0, &chunk);
+            assert!(s.decode_exit(ring::SUBMIT).is_ok());
+        }
+        record(&s, ring::LOG, 0, b"x");
+        assert!(matches!(
+            s.decode_exit(ring::SUBMIT),
+            Err(RunError::GuestProtocol("LOG budget"))
+        ));
     }
     #[test]
     fn malformed_guest_records_are_run_errors() {

@@ -289,6 +289,9 @@ impl Slot {
     pub fn is_quarantined(&self) -> bool {
         self.quarantined.is_some()
     }
+    pub fn quarantine_reason(&self) -> Option<&str> {
+        self.quarantined.as_deref()
+    }
     fn try_reset(&mut self) -> io::Result<ResetReport> {
         let t = Instant::now();
         self.shutdown()?; // completes pending MMIO

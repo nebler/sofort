@@ -15,7 +15,7 @@ use crate::constants::ipc::{
     BYTES, DATA, RECORD, REGION, RX_CONSUMER, RX_PRODUCER, TX_CONSUMER, TX_PRODUCER,
 };
 pub use crate::constants::ipc::{
-    CALL, CANCEL, CAPACITY, DONE, ERROR, PAYLOAD, PING, READY, RELEASED, REPLY, START,
+    CALL, CANCEL, CAPACITY, DONE, ERROR, PAYLOAD, PING, QUARANTINED, READY, RELEASED, REPLY, START,
 };
 
 use libc::{fcntl, mmap, munmap, poll, pollfd as PollFd, read, write};

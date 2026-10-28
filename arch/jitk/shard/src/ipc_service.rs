@@ -17,6 +17,8 @@ enum Phase {
     Running,
     Done,
     Resetting,
+    /// Reported QUARANTINED: never admits again; any message for it is a Node bug.
+    Quarantined,
 }
 struct State {
     generation: u64,
@@ -67,6 +69,41 @@ fn admission(m: &Message, now: u64, charge: u32) -> io::Result<(u64, String)> {
     Ok((
         deadline,
         String::from_utf8(source.to_vec()).map_err(|_| invalid("IPC source UTF-8"))?,
+    ))
+}
+/// The message ending a resetting generation: RELEASED, or QUARANTINED with
+/// the reason when the reset took the slot out of service. Node then stops
+/// counting the slot as capacity; a later message for it fails the service.
+fn released(s: &mut State, slot: usize, quarantined: Option<String>) -> io::Result<Message> {
+    if s.phase != Phase::Resetting {
+        return Err(invalid("IPC unexpected reset"));
+    }
+    s.pending = 0;
+    let Some(why) = quarantined else {
+        s.phase = Phase::Idle;
+        return Ok(Message::new(
+            ipc::RELEASED,
+            slot,
+            s.generation,
+            0,
+            Vec::new(),
+        ));
+    };
+    s.phase = Phase::Quarantined;
+    let mut reason: Vec<u8> = why
+        .bytes()
+        .map(|b| if (0x20..0x7f).contains(&b) { b } else { b'?' })
+        .collect();
+    reason.truncate(wire::ERROR_BYTES);
+    if reason.is_empty() {
+        reason = b"quarantined".to_vec();
+    }
+    Ok(Message::new(
+        ipc::QUARANTINED,
+        slot,
+        s.generation,
+        0,
+        reason,
     ))
 }
 fn enqueue(out: &mut VecDeque<Message>, m: Message) -> io::Result<()> {
@@ -324,17 +361,9 @@ impl Reactor {
                     Message::new(kind, slot, generation, 0, bytes),
                 )?;
             }
-            Event::Reset { slot } => {
-                let s = &mut self.states[slot];
-                if s.phase != Phase::Resetting {
-                    return Err(invalid("IPC unexpected reset"));
-                }
-                s.phase = Phase::Idle;
-                s.pending = 0;
-                enqueue(
-                    &mut self.outbound,
-                    Message::new(ipc::RELEASED, slot, s.generation, 0, Vec::new()),
-                )?;
+            Event::Reset { slot, quarantined } => {
+                let m = released(&mut self.states[slot], slot, quarantined)?;
+                enqueue(&mut self.outbound, m)?;
             }
             Event::Parked { .. } => return Err(invalid("IPC fixture event in service")),
         }
@@ -343,7 +372,7 @@ impl Reactor {
 }
 #[cfg(test)]
 mod tests {
-    use super::{admission, ipc_charge};
+    use super::{Phase, State, admission, ipc_charge, released};
     use crate::ipc::{self, Message};
     #[test]
     fn ipc_rejects_unsupported_snapshot_classes() {
@@ -364,5 +393,37 @@ mod tests {
         m.bytes[16..20].fill(0);
         m.id = 1;
         assert!(admission(&m, 0, 2 << 20).is_err());
+    }
+    #[test]
+    fn a_quarantined_reset_ends_its_slot() {
+        let resetting = || State {
+            generation: 5,
+            phase: Phase::Resetting,
+            next: 3,
+            pending: 1,
+        };
+        let mut s = resetting();
+        let m = released(&mut s, 2, None).unwrap();
+        assert_eq!(
+            (m.kind, m.slot, m.generation, m.bytes.len()),
+            (ipc::RELEASED, 2, 5, 0)
+        );
+        assert!(s.phase == Phase::Idle && s.pending == 0);
+        // Only a resetting slot can be released.
+        assert!(released(&mut s, 2, None).is_err());
+        let mut s = resetting();
+        let why = format!("reset failed: \u{1}{}", "x".repeat(600));
+        let m = released(&mut s, 2, Some(why)).unwrap();
+        assert_eq!((m.kind, m.generation), (ipc::QUARANTINED, 5));
+        assert_eq!(m.bytes.len(), crate::constants::ipc::ERROR_BYTES);
+        assert!(m.bytes.starts_with(b"reset failed: ?x"));
+        assert!(s.phase == Phase::Quarantined);
+        // Never released again: a later CANCEL/START for it is a Node bug.
+        assert!(released(&mut s, 2, None).is_err());
+        let mut s = resetting();
+        assert_eq!(
+            released(&mut s, 0, Some(String::new())).unwrap().bytes,
+            b"quarantined"
+        );
     }
 }
