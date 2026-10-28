@@ -10,6 +10,8 @@ use crate::snapshot::Snapshot;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 static VM: Mutex<()> = Mutex::new(());
+/// A fixture outcome: the guest stops without a completion.
+const FATAL: &str = "guest_fatal";
 fn vm_lock() -> MutexGuard<'static, ()> {
     VM.lock().unwrap_or_else(|e| e.into_inner())
 }
@@ -60,8 +62,10 @@ fn fixture(name: &str) -> (&'static str, &'static str) {
         "return2" => (include_str!("../../fixtures/return2.js"), "{\"ok\":2}"),
         "one_tool" => (include_str!("../../fixtures/one_tool.js"), "{\"ok\":42}"),
         "promise10" => (include_str!("../../fixtures/promise10.js"), "{\"ok\":45}"),
-        // Out of memory on glue-2m, as the KVM shard's driver also expects.
-        "json64k" => (include_str!("../../fixtures/json64k.js"), OOM),
+        // Out of memory on glue-2m. On the helper snapshots the guest then
+        // stops without a completion (guest_fatal), on KVM as here (checked
+        // with `real hostile BASE json64k` on kvm-dev, 2026-10-28).
+        "json64k" => (include_str!("../../fixtures/json64k.js"), FATAL),
         // Dirties much of the arena and leaves a tenant global behind.
         "stress" => (
             "globalThis.__tenantCanary=1;let a=[];for(let i=0;i<2000;i++)a.push({i,s:'x'+i});return a.length;",
@@ -91,7 +95,10 @@ fn run(s: &mut Slot<HvfVm>, generation: u64, name: &str) -> u64 {
         &mut std::fs::File::open("/dev/urandom").unwrap(),
     );
     loop {
-        let step = s.exit().unwrap_or_else(|e| panic!("{name}: {e}"));
+        let step = match s.exit() {
+            Err(RunError::GuestFatal) if expected == FATAL => break,
+            r => r.unwrap_or_else(|e| panic!("{name}: {e}")),
+        };
         if step.op == ring::FINISH {
             assert!(s.repaired(), "{name}: missing repair acknowledgement");
             assert_eq!(step.finish.as_deref(), Some(expected), "{name}");

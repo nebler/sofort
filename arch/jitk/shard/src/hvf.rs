@@ -268,8 +268,8 @@ fn probed() -> Result<&'static Probe, String> {
     let probe = PROBE.get_or_init(|| {
         let mut id = 0u64;
         let mut exit = ptr::null();
-        // SAFETY: out-pointers are live locals; NULL is the default vCPU config.
         check(
+            // SAFETY: out-pointers are live locals; NULL is the default vCPU config.
             unsafe { hv_vcpu_create(&mut id, &mut exit, ptr::null_mut()) },
             "hv_vcpu_create (probe)",
         )
@@ -497,9 +497,9 @@ const GRANULE: u64 = 16384;
 impl hv::Vm for HvfVm {
     type Vcpu = HvfVcpu;
     unsafe fn map(&mut self, gpa: u64, host: *mut u8, len: usize, kind: Region) -> io::Result<()> {
-        // SAFETY: the caller keeps host..host+len live for the VM's lifetime;
-        // HVF only records the translation.
         check(
+            // SAFETY: the caller keeps host..host+len live for the VM's lifetime;
+            // HVF only records the translation.
             unsafe { hv_vm_map(host.cast(), gpa, len, Self::flags(kind)) },
             "hv_vm_map",
         )
@@ -509,8 +509,8 @@ impl hv::Vm for HvfVm {
         probed().map_err(io::Error::other)?;
         let mut id = 0u64;
         let mut exit = ptr::null();
-        // SAFETY: out-pointers are live locals; NULL is the default vCPU config.
         check(
+            // SAFETY: out-pointers are live locals; NULL is the default vCPU config.
             unsafe { hv_vcpu_create(&mut id, &mut exit, ptr::null_mut()) },
             "hv_vcpu_create",
         )?;
@@ -527,8 +527,8 @@ impl hv::Vm for HvfVm {
     fn restore_memory(&mut self, m: &Memory<'_, State>) -> io::Result<ResetReport> {
         let mut report = ResetReport::default();
         if let Some((gpa, len)) = self.exec.take() {
-            // SAFETY: a range of a writable extent this VM maps.
             check(
+                // SAFETY: a range of a writable extent this VM maps.
                 unsafe { hv_vm_protect(gpa, len, Self::flags(Region::Writable)) },
                 "hv_vm_protect",
             )?;
@@ -581,8 +581,8 @@ impl hv::Vm for HvfVm {
         // SAFETY: the caller's range lies in a writable extent of the slot's RAM
         // mapping; libkern cleans and invalidates it to PoU.
         unsafe { sys_icache_invalidate(host.cast(), len) };
-        // SAFETY: granules of a writable extent this VM maps.
         check(
+            // SAFETY: granules of a writable extent this VM maps.
             unsafe { hv_vm_protect(start, (end - start) as usize, READ | WRITE | EXEC) },
             "hv_vm_protect",
         )?;
@@ -614,8 +614,8 @@ impl HvfVcpu {
     fn read(&self, ids: impl Iterator<Item = u16>) -> io::Result<Vec<(u16, u64)>> {
         ids.map(|r| {
             let mut v = 0;
-            // SAFETY: own vCPU on its creating thread; live out-pointer.
             check(
+                // SAFETY: own vCPU on its creating thread; live out-pointer.
                 unsafe { hv_vcpu_get_sys_reg(self.id, r, &mut v) },
                 "hv_vcpu_get_sys_reg",
             )
@@ -624,8 +624,8 @@ impl HvfVcpu {
         .collect()
     }
     fn set_sys(&self, r: u16, v: u64) -> io::Result<()> {
-        // SAFETY: own vCPU on its creating thread.
         check(
+            // SAFETY: own vCPU on its creating thread.
             unsafe { hv_vcpu_set_sys_reg(self.id, r, v) },
             "hv_vcpu_set_sys_reg",
         )
@@ -657,8 +657,8 @@ impl HvfVcpu {
                 streaming: s.sme.0,
                 za: s.sme.1,
             };
-            // SAFETY: own vCPU; live pointer.
             check(
+                // SAFETY: own vCPU; live pointer.
                 unsafe { hv_vcpu_set_sme_state(self.id, &sme) },
                 "hv_vcpu_set_sme_state",
             )?;
@@ -667,8 +667,8 @@ impl HvfVcpu {
             self.set(i as u32, *v)?;
         }
         for (i, q) in s.simd.iter().enumerate() {
-            // SAFETY: own vCPU on its creating thread; q is 16 readable bytes.
             check(
+                // SAFETY: own vCPU on its creating thread; q is 16 readable bytes.
                 unsafe { jitk_hvf_set_q(self.id, i as u32, q.as_ptr()) },
                 "hv_vcpu_set_simd_fp_reg",
             )?;
@@ -677,8 +677,8 @@ impl HvfVcpu {
             self.set_sys(r, v)?;
         }
         // A vtimer exit masks the timer (run_once); snapshots run unmasked.
-        // SAFETY: own vCPU on its creating thread.
         check(
+            // SAFETY: own vCPU on its creating thread.
             unsafe { hv_vcpu_set_vtimer_mask(self.id, false) },
             "hv_vcpu_set_vtimer_mask",
         )
@@ -760,17 +760,17 @@ impl hv::Vcpu for HvfVcpu {
     fn save(&self) -> io::Result<State> {
         let mut core = [0u64; CORE];
         for (i, v) in core.iter_mut().enumerate() {
-            // SAFETY: own vCPU on its creating thread; live out-pointer.
             check(
+                // SAFETY: own vCPU on its creating thread; live out-pointer.
                 unsafe { hv_vcpu_get_reg(self.id, i as u32, v) },
                 "hv_vcpu_get_reg",
             )?;
         }
         let mut simd = [[0u8; 16]; SIMD];
         for (i, q) in simd.iter_mut().enumerate() {
-            // SAFETY: own vCPU on its creating thread; q is a live 16-byte
-            // out-buffer with the layout of hv_simd_fp_uchar16_t.
             check(
+                // SAFETY: own vCPU on its creating thread; q is a live 16-byte
+                // out-buffer with the layout of hv_simd_fp_uchar16_t.
                 unsafe { hv_vcpu_get_simd_fp_reg(self.id, i as u32, q) },
                 "hv_vcpu_get_simd_fp_reg",
             )?;
