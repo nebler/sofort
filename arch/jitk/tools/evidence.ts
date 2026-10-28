@@ -3,10 +3,12 @@
 //   export [--commit REV]  copy every file the rule moves into the store,
 //                          verify, and merge it into evidence/manifest.json
 //   verify                 every manifest entry in the store with its sha256
-//   fetch [--to DIR] PATH|GLOB...  restore files (in place, or below DIR) from
-//                          the store, or from git at the
-//                          recorded commit when the store lacks them (also
-//                          fills the store); sha256-checked either way
+//   fetch [--to DIR | --ignore] PATH|GLOB...
+//                          restore files (in place, or below DIR) from the
+//                          store, or from git at the recorded commit when the
+//                          store lacks them (also fills the store);
+//                          sha256-checked either way; --ignore also lists
+//                          them in info/exclude
 //   remove                 git rm manifest entries still tracked, only after
 //                          the store copy and the working file both verify
 //   check                  the guard: tracked evidence > 64 KiB not in the
@@ -155,8 +157,8 @@ function select(manifest: Manifest, args: string[]): Entry[] {
   return manifest.files.filter(entry => patterns.some(p => p.test(entry.path)));
 }
 
-// Restored evidence is untracked; list it in the repository's info/exclude so
-// it stays out of `git status` and the delegate's git-state guard.
+// --ignore: list restored (untracked) paths in info/exclude, which every
+// worktree of the repository shares, so they stay out of `git status`.
 function ignore(paths: string[]): void {
   const exclude = resolve(ROOT, git(ROOT, ['rev-parse', '--git-path', 'info/exclude']).trim());
   const text = existsSync(exclude) ? readFileSync(exclude, 'utf8') : '';
@@ -172,10 +174,10 @@ function ignore(paths: string[]): void {
 function fetch(argv: string[]): number {
   const at = argv.indexOf('--to');
   const destination = at >= 0 ? resolve(argv[at + 1]) : ROOT;
-  const args = at >= 0 ? [...argv.slice(0, at), ...argv.slice(at + 2)] : argv;
+  const args = (at >= 0 ? [...argv.slice(0, at), ...argv.slice(at + 2)] : argv).filter(arg => arg !== '--ignore');
   const manifest = readManifest(ROOT);
   if (!manifest || args.length === 0) {
-    console.error(manifest ? 'usage: evidence fetch [--to DIR] PATH|GLOB...' : 'evidence: no ' + MANIFEST);
+    console.error(manifest ? 'usage: evidence fetch [--to DIR | --ignore] PATH|GLOB...' : 'evidence: no ' + MANIFEST);
     return 1;
   }
   const entries = select(manifest, args);
@@ -214,7 +216,7 @@ function fetch(argv: string[]): number {
     writeFileSync(target, data);
     chmodSync(target, entry.mode === '100755' ? 0o755 : 0o644);
   }
-  if (destination === ROOT) {
+  if (destination === ROOT && argv.includes('--ignore')) {
     ignore(entries.map(entry => entry.path));
   }
   console.log('evidence: ' + entries.length + ' matched: ' + fromStore + ' from store, ' + fromGit + ' from git, ' + present + ' already present' + (failures ? ', ' + failures + ' FAILED' : ''));

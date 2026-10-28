@@ -20,7 +20,7 @@ Build the tool with `make -C arch/jitk tools`, then run
 
 | Command | Does |
 |---|---|
-| `fetch PATH\|DIR\|GLOB...` | Restores files in place from the store, or from git at the recorded commit if the store lacks them; that also fills the store. The sha256 is checked either way. Restored paths are added to the repo's `info/exclude`. `--to DIR` restores below DIR instead. |
+| `fetch PATH\|DIR\|GLOB...` | Restores files in place from the store, or from git at the recorded commit if the store lacks them; that also fills the store. The sha256 is checked either way. Restored files are untracked. `--ignore` also adds them to `info/exclude`, which all worktrees share. `--to DIR` restores below DIR instead. |
 | `verify` | Checks every manifest entry is in the store with the right hash. `make -C arch/jitk doctor` runs it and only warns when the store is missing. |
 | `plan [--list]` | Shows what the rule below would move or keep in the current tree. |
 | `export [--commit REV]` | Copies every file the rule moves into the store, re-hashes it, and merges it into the manifest. Each file must be identical at REV (default HEAD). |
