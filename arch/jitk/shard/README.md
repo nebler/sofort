@@ -293,6 +293,21 @@ child, dead-child quarantine, malformed admissions, no orphans); the parity
 corpus on `hvf` (85 cases: 63 ok, 22 allowlisted, 0 undocumented; every
 allowlisted case is a ring-profile limit shared with the Linux shard).
 
+Per run through the canonical executor (`node ../executor/build/engine-bench.js`;
+sequential executes, libkrun with 2 warm VMMs, HVF unwarmed with 8 engine
+processes; CPU = user+sys of Node and every engine process, N runs minus 0
+runs), M4 Pro, macOS 26.6.1, load average 6.1–7.0 (shared machine), two runs:
+
+| | wall p50 / p99, `return 2` | wall p50 / p99, one tool call | CPU per run |
+| --- | ---: | ---: | ---: |
+| libkrun (`jitk`, cold VMM per run), n=300 per case | 1.35–1.42 / 15.7–18.2 ms | 1.49–1.60 / 16.4–19.6 ms | 8.5–8.8 CPU-ms |
+| **HVF engine (`hvf`)**, n=2000 per case | **0.153 / 0.35–0.38 ms** | **0.28–0.29 / 0.87–0.89 ms** | **0.44 CPU-ms** |
+
+libkrun's p50 hides its VMM boot behind the warm pool; its CPU does not
+(every run boots and reaps one VMM). The HVF per-run CPU includes Node's
+side (the executor, policy, IPC), the zygote's forwarding and the engine
+process's run and reset (~100 µs of it, per `hvf bench` above).
+
 ## Native TypeScript harness
 
 `make build build-linux` builds the pinned scriptc 0.4.5 tools for Mac and static

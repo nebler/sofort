@@ -7,7 +7,7 @@
 //   node build/engine-bench.js run KIND N      one measured process (internal)
 //
 // Each KIND runs in its own Node process, sequentially, one execute() at a
-// time through a SandboxPool (2 warm, 4 live) and MicroVMExecutor, per case:
+// time through a SandboxPool (4 live; libkrun 2 warm) and MicroVMExecutor, per case:
 // `return 2` and one tool call. Wall: execute() start to result, p50/p99
 // after 10 warmups. CPU: /usr/bin/time's user+sys of that process and every
 // process it waited for (Node, the VMMs, the HVF zygote and the engine
@@ -33,7 +33,9 @@ async function measure(kind:string,n:number) {
   process.env.JITK_BACKEND=kind==='jitk'?'jitk':'hvf';
   const selected=selectBackend();
   const engine:Backend=selected.backend;
-  const pool=new SandboxPool(engine,2,4,selected.gate?{parkingGate:selected.gate}:{});
+  // Warm parking needs a parking-gate receipt (libkrun has one); an HVF park
+  // is a slot claim, so it runs unwarmed, as the shard does.
+  const pool=selected.gate?new SandboxPool(engine,2,4,{parkingGate:selected.gate}):new SandboxPool(engine,0,4);
   const ex=new MicroVMExecutor(pool,()=> 'allow',10000);
   const out:Record<string,unknown>={kind,n,selection:selected.selection};
   try {
