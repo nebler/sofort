@@ -1,7 +1,7 @@
 # The research summary: every round, 27–28 October 2026
 
-This file covers all the research done in this thread: **10 rounds, 64 reports from GPT-6.1-Sol and Opus 5.5 agents,
-and 2 local spikes.** Round 10 (`stack/`) has its own summary: [stack/SUMMARY.md](stack/SUMMARY.md). Each round has its own folder under `arch/research/`, and each report has full sources.
+This file covers all the research done in this thread: **11 rounds, 69 reports from GPT-6.1-Sol and Opus 5.5 agents,
+and 2 local spikes.** Rounds 10 (`stack/`) and 11 (`connect26/`) have their own summaries: [stack/SUMMARY.md](stack/SUMMARY.md), [connect26/SUMMARY.md](connect26/SUMMARY.md). Each round has its own folder under `arch/research/`, and each report has full sources.
 
 Every claim follows the reports' label convention:
 - **verified** means I checked it myself in the primary source;
@@ -72,6 +72,12 @@ by the "rigor beats conciseness" post (Foldkit/Effect/Alchemy) and Infinity. Gen
 narrow boundary checks survive, mostly as upstream contributions. Post-merge integration's broad novelty claim is
 withdrawn (Graft, LUCI, Mogplex). Replaygate's effects-as-values variant is Foldkit's own roadmap (#622/#626). See
 [stack/SUMMARY.md](stack/SUMMARY.md).
+
+**Round 11 update (`connect26/`, 28 October):** all 13 Cloudflare Connect 2026 talks transcribed and mined for
+predictions, wishes and pain (about 560 signals). There were no strong predictions. Every pick checks a lifecycle
+transition named by a hurt team: version skew (Artifacts), hibernation (Agents SDK), tenant moves (Ramp), sampling
+(TELUS), and plan/flag changes (VSCO). Seed line: "building got cheap, but owning it is still kind of a problem". See
+[connect26/SUMMARY.md](connect26/SUMMARY.md).
 
 ---
 
@@ -640,6 +646,7 @@ All checked by me in primary sources on 2026-10-28.
 | `flip2/` | 7 | 01-kernels, 02-distributed, 03-propose-check, 04-codemode, 05-numerics-data, 06-sweep |
 | `split/` | 8 | 01-pi, 02-compat, 03-brain, 04-hands, 05-workspace, 06-economics |
 | `deep/` | 9 | 01-pain, 02-primitives, 03-language, 04-wasm, 05-agentweb, 06-tooling |
+| `connect26/` | 11 | transcripts/ (13 talks), 01-agentweb, 02-storage, 03-durable, 04-customers, 05-platforms, SUMMARY |
 | `stack/` | 10 | 01-hardware, 02-runtime, 03-languages, 04-data, 05-distributed, 06-frontend, 07-infra-ops, 08-selfext-agents, 09-selfext-apps, 10-rigor-flip, SUMMARY |
 
 Local evidence (not in git):
