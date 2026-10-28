@@ -1,12 +1,0 @@
-MEM enter seq=1 n=214 a0=0 a1=4096
-MEM exit seq=1 ret=6815744
-MEM enter seq=2 n=214 a0=6823936 a1=4095
-MEM exit seq=2 ret=6823936
-MEM enter seq=3 n=222 a0=6815744 a1=4096
-MEM exit seq=3 ret=-22
-MEM enter seq=4 n=222 a0=0 a1=4096
-MEM exit seq=4 ret=8388608
-MEM enter seq=5 n=222 a0=0 a1=2097172
-arena mmap ENOMEM bytes=0000000000201000 capacity=00000000000ce000
-MEM exit seq=5 ret=-12
-FAULT esr=0000000092000046 far=0000000000000000 pc=00000000004593c8

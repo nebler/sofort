@@ -1,6 +1,0 @@
-openat(AT_FDCWD, "/home/dev/r6-census/fixtures/data/input.txt", O_RDONLY|O_LARGEFILE) = 3
-dup3(3, 0, 0)                           = 0
-read(0, "alpha 2\nbeta 5\nalpha 3\n", 65536) = 23
-read(0, "", 65513)                      = 0
-write(1, "\37\213\10\0\0\0\0\0\0\3K\314)\310HT0\342JJ-IT0\345J\4s\215\271\0I"..., 39) = 39
-+++ exited with 0 +++

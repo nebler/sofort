@@ -1,198 +1,0 @@
-Cloning into '/work/vmm/libkrun'...
-Updating files:  14% (65/440)Updating files:  15% (66/440)Updating files:  15% (70/440)Updating files:  16% (71/440)Updating files:  17% (75/440)Updating files:  18% (80/440)Updating files:  19% (84/440)Updating files:  20% (88/440)Updating files:  21% (93/440)Updating files:  22% (97/440)Updating files:  23% (102/440)Updating files:  23% (104/440)Updating files:  24% (106/440)Updating files:  25% (110/440)Updating files:  26% (115/440)Updating files:  27% (119/440)Updating files:  28% (124/440)Updating files:  29% (128/440)Updating files:  30% (132/440)Updating files:  31% (137/440)Updating files:  32% (141/440)Updating files:  33% (146/440)Updating files:  34% (150/440)Updating files:  35% (154/440)Updating files:  36% (159/440)Updating files:  37% (163/440)Updating files:  38% (168/440)Updating files:  39% (172/440)Updating files:  40% (176/440)Updating files:  41% (181/440)Updating files:  42% (185/440)Updating files:  43% (190/440)Updating files:  44% (194/440)Updating files:  45% (198/440)Updating files:  46% (203/440)Updating files:  47% (207/440)Updating files:  47% (208/440)Updating files:  48% (212/440)Updating files:  49% (216/440)Updating files:  50% (220/440)Updating files:  51% (225/440)Updating files:  52% (229/440)Updating files:  53% (234/440)Updating files:  54% (238/440)Updating files:  55% (242/440)Updating files:  56% (247/440)Updating files:  57% (251/440)Updating files:  58% (256/440)Updating files:  59% (260/440)Updating files:  60% (264/440)Updating files:  61% (269/440)Updating files:  62% (273/440)Updating files:  63% (278/440)Updating files:  64% (282/440)Updating files:  65% (286/440)Updating files:  65% (288/440)Updating files:  66% (291/440)Updating files:  67% (295/440)Updating files:  68% (300/440)Updating files:  69% (304/440)Updating files:  70% (308/440)Updating files:  71% (313/440)Updating files:  72% (317/440)Updating files:  73% (322/440)Updating files:  74% (326/440)Updating files:  75% (330/440)Updating files:  76% (335/440)Updating files:  77% (339/440)Updating files:  78% (344/440)Updating files:  79% (348/440)Updating files:  80% (352/440)Updating files:  81% (357/440)Updating files:  82% (361/440)Updating files:  83% (366/440)Updating files:  83% (367/440)Updating files:  84% (370/440)Updating files:  85% (374/440)Updating files:  86% (379/440)Updating files:  87% (383/440)Updating files:  88% (388/440)Updating files:  89% (392/440)Updating files:  90% (396/440)Updating files:  91% (401/440)Updating files:  92% (405/440)Updating files:  93% (410/440)Updating files:  93% (411/440)Updating files:  94% (414/440)Updating files:  95% (418/440)Updating files:  96% (423/440)Updating files:  97% (427/440)Updating files:  98% (432/440)Updating files:  99% (436/440)Updating files: 100% (440/440)Updating files: 100% (440/440), done.
-HEAD is now at a1d86167 init/dhcp: gate retry and lease renewal behind a runtime config
-make: Entering directory '/work/vmm/libkrun'
-cargo build --locked --release -p libkrun 
-    Updating crates.io index
-    Updating git repository `https://github.com/mtjhrc/ffier.git`
- Downloading crates ...
-  Downloaded acpi_tables v0.2.1
-  Downloaded cfg_aliases v0.2.1
-  Downloaded utf8parse v0.2.2
-  Downloaded tracing-attributes v0.1.31
-  Downloaded virtue v0.0.18
-  Downloaded vmm-sys-util v0.15.0
-  Downloaded kvm-ioctls v0.25.0
-  Downloaded zerocopy-derive v0.8.47
-  Downloaded vm-memory v0.18.0
-  Downloaded imago v0.2.4
-  Downloaded aho-corasick v1.1.4
-  Downloaded regex v1.12.3
-  Downloaded rand v0.10.2
-  Downloaded memchr v2.8.0
-  Downloaded kvm-bindings v0.14.1
-  Downloaded virtio-bindings v0.2.7
-  Downloaded flate2 v1.1.9
-  Downloaded zerocopy v0.8.47
-  Downloaded syn v2.0.117
-  Downloaded crossbeam-channel v0.5.15
-  Downloaded getrandom v0.4.2
-  Downloaded regex-syntax v0.8.10
-  Downloaded nix v0.30.1
-  Downloaded bincode v2.0.1
-  Downloaded vm-fdt v0.3.0
-  Downloaded tracing-core v0.1.36
-  Downloaded tracing v0.1.44
-  Downloaded serde_core v1.0.228
-  Downloaded proc-macro2 v1.0.106
-  Downloaded miniz_oxide v0.8.9
-  Downloaded log v0.4.29
-  Downloaded linux-loader v0.14.0
-  Downloaded unicode-ident v1.0.24
-  Downloaded thiserror v2.0.18
-  Downloaded rand_core v0.10.1
-  Downloaded regex-automata v0.4.14
-  Downloaded quote v1.0.45
-  Downloaded once_cell v1.21.4
-  Downloaded maybe-async v0.2.11
-  Downloaded env_logger v0.11.9
-  Downloaded crossbeam-utils v0.8.21
-  Downloaded crc32fast v1.5.0
-  Downloaded jiff v0.2.23
-  Downloaded chacha20 v0.10.0
-  Downloaded caps v0.5.6
-  Downloaded libc v0.2.186
-  Downloaded bitflags v2.11.0
-  Downloaded thiserror-impl v2.0.18
-  Downloaded simd-adler32 v0.3.8
-  Downloaded semver v1.0.27
-  Downloaded pin-project-lite v0.2.17
-  Downloaded libloading v0.8.9
-  Downloaded is_terminal_polyfill v1.70.2
-  Downloaded env_filter v1.0.0
-  Downloaded colorchoice v1.0.5
-  Downloaded cfg-if v1.0.4
-  Downloaded bitflags v1.3.2
-  Downloaded autocfg v1.5.0
-  Downloaded anstyle-parse v0.2.7
-  Downloaded anstyle v1.0.14
-  Downloaded unty v0.0.4
-  Downloaded rustc_version v0.4.1
-  Downloaded page_size v0.6.0
-  Downloaded memoffset v0.9.1
-  Downloaded bincode_derive v2.0.1
-  Downloaded anstyle-query v1.1.5
-  Downloaded anstream v0.6.21
-  Downloaded adler2 v2.0.1
-   Compiling libc v0.2.186
-   Compiling proc-macro2 v1.0.106
-   Compiling unicode-ident v1.0.24
-   Compiling quote v1.0.45
-   Compiling cfg-if v1.0.4
-   Compiling autocfg v1.5.0
-   Compiling cfg_aliases v0.2.1
-   Compiling thiserror v2.0.18
-   Compiling crossbeam-utils v0.8.21
-   Compiling bitflags v2.11.0
-   Compiling bitflags v1.3.2
-   Compiling log v0.4.29
-   Compiling semver v1.0.27
-   Compiling memchr v2.8.0
-   Compiling zerocopy v0.8.47
-   Compiling nix v0.30.1
-   Compiling once_cell v1.21.4
-   Compiling regex-syntax v0.8.10
-   Compiling memoffset v0.9.1
-   Compiling rustc_version v0.4.1
-   Compiling aho-corasick v1.1.4
-   Compiling virtue v0.0.18
-   Compiling simd-adler32 v0.3.8
-   Compiling kvm-ioctls v0.25.0
-   Compiling getrandom v0.4.2
-   Compiling rand_core v0.10.1
-   Compiling crossbeam-channel v0.5.15
-   Compiling adler2 v2.0.1
-   Compiling miniz_oxide v0.8.9
-   Compiling bincode_derive v2.0.1
-   Compiling regex-automata v0.4.14
-   Compiling imago v0.2.4
-   Compiling tracing-core v0.1.36
-   Compiling pin-project-lite v0.2.17
-   Compiling syn v2.0.117
-   Compiling vmm-sys-util v0.15.0
-   Compiling utf8parse v0.2.2
-   Compiling crc32fast v1.5.0
-   Compiling unty v0.0.4
-   Compiling anstyle-parse v0.2.7
-   Compiling page_size v0.6.0
-   Compiling chacha20 v0.10.0
-   Compiling krun-arch-gen v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/arch_gen)
-   Compiling kvm-bindings v0.14.1
-   Compiling regex v1.12.3
-   Compiling colorchoice v1.0.5
-   Compiling anstyle v1.0.14
-   Compiling is_terminal_polyfill v1.70.2
-   Compiling anstyle-query v1.1.5
-   Compiling anstream v0.6.21
-   Compiling krun-utils v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/utils)
-   Compiling rand v0.10.2
-   Compiling env_filter v1.0.0
-   Compiling caps v0.5.6
-   Compiling libloading v0.8.9
-   Compiling krun-polly v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/polly)
-   Compiling vm-fdt v0.3.0
-   Compiling jiff v0.2.23
-   Compiling libkrun v2.0.0-dev (/work/vmm/libkrun/src/libkrun)
-   Compiling virtio-bindings v0.2.7
-   Compiling bincode v2.0.1
-   Compiling flate2 v1.1.9
-   Compiling thiserror-impl v2.0.18
-   Compiling zerocopy-derive v0.8.47
-   Compiling tracing-attributes v0.1.31
-   Compiling maybe-async v0.2.11
-   Compiling env_logger v0.11.9
-   Compiling tracing v0.1.44
-   Compiling vm-memory v0.18.0
-   Compiling krun-smbios v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/smbios)
-   Compiling linux-loader v0.14.0
-   Compiling krun-kernel v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/kernel)
-   Compiling acpi_tables v0.2.1
-   Compiling krun-arch v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/arch)
-   Compiling krun-devices v0.1.0-2.0.0-dev (/work/vmm/libkrun/src/devices)
-    Finished `release` profile [optimized] target(s) in 4m 30s
-cp target/release/libkrun.so target/release/libkrun.so.2.0.0
-make: Leaving directory '/work/vmm/libkrun'
-warning: constant `SEATBELT_PROFILE` is never used
-  --> /vmm/src/../sandbox/mod.rs:20:11
-   |
-20 | pub const SEATBELT_PROFILE: &str = include_str!("jitk.sb");
-   |           ^^^^^^^^^^^^^^^^
-   |
-   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
-
-warning: 1 warning emitted
-
-warning: constant `SEATBELT_PROFILE` is never used
-  --> /vmm/tests/../src/../sandbox/mod.rs:20:11
-   |
-20 | pub const SEATBELT_PROFILE: &str = include_str!("jitk.sb");
-   |           ^^^^^^^^^^^^^^^^
-   |
-   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
-
-warning: function `compile_profile` is never used
-   --> /vmm/tests/../src/../sandbox/mod.rs:100:8
-    |
-100 | pub fn compile_profile(_images: &Path, _out: &Path) -> Result<(), E> {
-    |        ^^^^^^^^^^^^^^^
-
-warning: 2 warnings emitted
-
-{
-  "revision": "a1d8616765da03980f3be1bb8714bfdd3842f33c",
-  "patches_sha256": {
-    "libkrun-robustness.diff": "3c6daab28fd98eab8b0312aa7647502e3eb6657bf1db8a432854cbba0250fc33",
-    "thread-hook.diff": "036853a6682da88e67ddf70f3f756c0a8bc0dd4bd4eadbef79dc91ba09681af9",
-    "control-rx.diff": "80a2a49909945a09eb16766f110ddc3f4ac8cef6c65c28afee26ee0c26983d54",
-    "native-build.diff": "3d6f896f5621980d10b5f293c39481ed28786b8b594b73c3a89d41f7214bb295"
-  },
-  "panic": "abort",
-  "features": [],
-  "sandbox_ready": true,
-  "binary": "/work/vmm/jitk-vmm",
-  "binary_sha256": "b6361878d4334b4f617f37a464305c2f2605c1f6f98f4aa5981e10c8f265fce3",
-  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
-}
-   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-05/r4/anyname/linux/.work/kernel)
-    Finished `release` profile [optimized] target(s) in 40.02s
-{"image": "/private/tmp/jitk-05/r4/anyname/linux/.work/kernel-a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364.bin", "sha256": "a7c39ab5679e75d3242f6f318cd5367ff866380e8f509085e974a49f1b6a6364", "bytes": 2924544}

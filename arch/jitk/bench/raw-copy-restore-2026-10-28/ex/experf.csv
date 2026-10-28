@@ -1,6 +1,0 @@
-before,1,kvm:kvm_mmio=2.00,kvm:kvm_exit=281.89,kvm:kvm_guest_fault=257.00,syscalls:sys_enter_ioctl=518.13,syscalls:sys_enter_pread64=0.00,syscalls:sys_enter_madvise=4.14,kvm:kvm_unmap_hva_range=80.00
-after,1,kvm:kvm_mmio=2.00,kvm:kvm_exit=2.10,kvm:kvm_guest_fault=2.00,syscalls:sys_enter_ioctl=201.00,syscalls:sys_enter_pread64=2.00,syscalls:sys_enter_madvise=0.15,kvm:kvm_unmap_hva_range=0.00
-before,2,kvm:kvm_mmio=2.00,kvm:kvm_exit=282.19,kvm:kvm_guest_fault=257.00,syscalls:sys_enter_ioctl=518.13,syscalls:sys_enter_pread64=0.00,syscalls:sys_enter_madvise=4.13,kvm:kvm_unmap_hva_range=80.00
-after,2,kvm:kvm_mmio=2.00,kvm:kvm_exit=2.09,kvm:kvm_guest_fault=2.00,syscalls:sys_enter_ioctl=201.00,syscalls:sys_enter_pread64=2.00,syscalls:sys_enter_madvise=0.14,kvm:kvm_unmap_hva_range=0.00
-before,3,kvm:kvm_mmio=2.00,kvm:kvm_exit=281.69,kvm:kvm_guest_fault=257.00,syscalls:sys_enter_ioctl=518.14,syscalls:sys_enter_pread64=0.00,syscalls:sys_enter_madvise=4.15,kvm:kvm_unmap_hva_range=80.00
-after,3,kvm:kvm_mmio=2.00,kvm:kvm_exit=2.11,kvm:kvm_guest_fault=2.00,syscalls:sys_enter_ioctl=201.00,syscalls:sys_enter_pread64=2.00,syscalls:sys_enter_madvise=0.14,kvm:kvm_unmap_hva_range=0.00

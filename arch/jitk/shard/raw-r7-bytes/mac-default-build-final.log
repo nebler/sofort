@@ -1,7 +1,0 @@
-   Compiling jitk-02 v0.3.0 (/Users/noah/.t3/worktrees/sofort/t3-9f21ceb8/arch/jitk/kernel)
-    Finished `release` profile [optimized] target(s) in 2.37s
-Traceback (most recent call last):
-  File "/Users/noah/.t3/worktrees/sofort/t3-9f21ceb8/arch/jitk/kernel/artifact.py", line 19, in <module>
-    assert hashlib.sha256(source.read_bytes()).hexdigest()==contract['source_sha256'], 'stale verification: '+contract['name']
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError: stale verification: close

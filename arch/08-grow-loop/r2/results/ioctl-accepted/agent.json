@@ -1,1 +1,0 @@
-{"path":"kernel/src/syscalls/ioctl.rs","source":"pub fn call(a: &[usize]) -> isize {\n    let fd = match a.first() {\n        Some(&fd) => fd,\n        None => return -9,\n    };\n    if fd > 2 {\n        return -9;\n    }\n    match a.get(1) {\n        Some(&0x5413) => -25,\n        _ => -38,\n    }\n}\n"}

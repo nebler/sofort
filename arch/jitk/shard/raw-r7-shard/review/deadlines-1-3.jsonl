@@ -1,4 +1,0 @@
-{"event":"environment","pid":125097,"threads":5,"owners":4,"watchdog_processes":1,"nested":true,"loadavg":"3.52 3.14 1.96 2/175 125097","uptime":"43028.98 251544.72","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026"}
-{"event":"deadline_armed","n":1,"deadline_ns":43031983820163}
-{"event":"deadline","slot":0,"generation":2,"deadline_ns":43031983820163,"stop_latency_ns":3853075,"reset_error_latency_ns":7095757}
-{"event":"deadline_summary","n":1,"stop":{"n":1,"p50_ns":3853075,"p99_ns":3853075},"reset_error":{"n":1,"p50_ns":7095757,"p99_ns":7095757},"max_reset_error_ns":7095757,"reused_cleanly":1}

@@ -1,1 +1,0 @@
-{"type": "object", "properties": {"path": {"type": "string", "enum": ["kernel/src/syscalls/ppoll.rs"]}, "source": {"type": "string"}}, "required": ["path", "source"], "additionalProperties": false}

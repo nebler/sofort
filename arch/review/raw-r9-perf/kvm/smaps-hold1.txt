@@ -1,5 +1,0 @@
-564 KiB  c75fa494d000-c75fa4a00000 rw-p 00000000 00:00 0                          [heap]
-288 KiB  f6166f800000-f6166f940000 rw-p 01800000 fd:01 2891857                    /home/dev/perf-r9-2026-10-27/snap/helpers.mem
-48 KiB  f6167dc0c000-f6167e450000 rw-p 00000000 00:00 0 
-24 KiB  c75f9486a000-c75f94870000 r--p 000aa000 fd:01 2891929                    /home/dev/perf-r9-2026-10-27/bin/real
-16 KiB  f6167e612000-f6167e61e000 rw-p 00000000 00:00 0 

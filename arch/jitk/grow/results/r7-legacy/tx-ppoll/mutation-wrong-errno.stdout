@@ -1,4 +1,0 @@
-{"v":2,"kind":"sys.enter","seq":1,"nr":73,"pc":4194508,"args":[4198400,1,0,0,8,0],"input":"0000000001000000","timeout":null}
-{"v":2,"kind":"sys.exit","seq":1,"ret":-14,"output":"0000000001000000"}
-{"v":2,"kind":"sys.enter","seq":2,"nr":94,"pc":4194764,"args":[1,1,0,0,8,0],"input":null,"timeout":null}
-{"v":2,"kind":"done","seq":2,"code":1}

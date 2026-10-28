@@ -1,5 +1,7 @@
 # Minimal KVM shard — 2026-10-25
 
+> Raw evidence linked here moved out of git (R10 W0.1): restore it with `arch/jitk/tools/.work/bin/evidence fetch <path>`; see [evidence/README.md](../../../evidence/README.md).
+
 Owner `w2-shard`; scope `arch/jitk/shard/`. This is the assembly-fixture spike
 for architecture gates 2, 4 (basic) and 5. **All timing is nested HVF → KVM,
 indicative only.** No real jitk kernel or QuickJS density claim follows.

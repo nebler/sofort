@@ -1,7 +1,0 @@
-{
-  "python_commit": "f5f9f562",
-  "python_controller": "E1 grow loop before removal",
-  "scriptc": "0.4.5",
-  "oracle_image": "sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a",
-  "scope": "grow only; external kernel build tooling is owned by another port"
-}

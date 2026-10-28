@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-legacy/tx-rt_sigaction/mutant-pointer-sensitive/kernel-873e1fecf14baecc7026aa97694d2bdf56663055fe4f566c0adcbf9d76978717.bin", "sha256": "873e1fecf14baecc7026aa97694d2bdf56663055fe4f566c0adcbf9d76978717", "bytes": 532520}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-e0aroc2s/kernel)
-    Finished `release` profile [optimized] target(s) in 0.92s

@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-pread64/integration/missing-table/build/kernel-0deb72b1e88217912474a7df20e056576b0b85376386a83de172c0563bb96321.bin", "sha256": "0deb72b1e88217912474a7df20e056576b0b85376386a83de172c0563bb96321", "bytes": 1998974}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
-    Finished `release` profile [optimized] target(s) in 1.32s

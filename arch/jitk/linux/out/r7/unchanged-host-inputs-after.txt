@@ -1,2 +1,0 @@
-ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341  arch/jitk/kernel/payload/qjs
-23ffc4114cff036370bf30b10f727da7fbb23774e3f23c05eb4baeb26c4f1616  /tmp/jitk-01/r3/darwin/jitk-vmm

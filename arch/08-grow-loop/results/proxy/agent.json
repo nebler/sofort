@@ -1,1 +1,0 @@
-{"path":"kernel/src/syscalls/ioctl.rs","source":"// Proxy syscall handler; no host syscall is invoked here.\npub fn ioctl(fd: i64, request: u64, _arg: u64) -> i64 {\n    if !(0..=2).contains(&fd) {\n        return -9;\n    }\n    if request == 0x5413 {\n        return -25;\n    }\n    -38\n}\n"}

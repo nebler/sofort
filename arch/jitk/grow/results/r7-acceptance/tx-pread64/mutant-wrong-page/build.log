@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-pread64/mutant-wrong-page/kernel-6b06db2e225f3c16eb37b34c3614f2ab6c4e5e7bcbcf8bf292e4d57d434618b7.bin", "sha256": "6b06db2e225f3c16eb37b34c3614f2ab6c4e5e7bcbcf8bf292e4d57d434618b7", "bytes": 553840}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
-    Finished `release` profile [optimized] target(s) in 1.01s

@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/scratch/2026-10-23-is-there-a-way-we-5a54f52b/arch/jitk/grow/results/canonical-r3/qjs-after/kernel-4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee.bin", "sha256": "4fe4bb495bf423e6bc7f7a76932fd7a3069f5352c2ba3550f43c5ff5b8b035ee", "bytes": 2924544}
-   Compiling jitk-02 v0.3.0 (/private/tmp/jitk-08/r3/runs/canonical-r3/kernel)
-    Finished `release` profile [optimized] target(s) in 1.83s

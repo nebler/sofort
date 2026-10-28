@@ -1,4 +1,0 @@
-{
-  "path": "src/syscalls/pread64.rs",
-  "source": "// Positional reads never alter the open descriptor's seek position.\nuse crate::{fs, syscalls::copyout};\npub fn call(a: &[usize]) -> isize {\n    if (a[3] as i64) < 0 { return -22; }\n    let fd = a[0] as u32 as usize;\n    if fd <= 2 { return -29; }\n    let f = match fs::get(fd) { Ok(f) if f.read => f, Ok(_) => return -9, Err(e) => return e };\n    if a[2] > isize::MAX as usize || a[1].checked_add(a[2]).is_none() { return -14; }\n    if a[3].checked_add(a[2]).is_none_or(|end| end > i64::MAX as usize) { return -22; }\n    let n = match fs::node(f.node) { Ok(n) => n, Err(e) => return e };\n    if n.dir { return -21; }\n    let d = fs::data(&n);\n    let start = a[3].min(d.len());\n    let count = a[2].min(d.len() - start);\n    if count == 0 { return 0; }\n    match copyout(a[1], &d[start..start + count]) { Ok(()) => count as isize, Err(e) => e }\n}\n"
-}

@@ -1,5 +1,7 @@
 # Evidence archive plan (lead decision required)
 
+> Done in R10 W0.1 (2026-10-28) for everything here except `arch/research/`: the evidence now lives in a local content-addressed store with `evidence/manifest.json`. Tag `evidence-in-tree-2026-10-28` is the last commit with the files in the tree. The rule and the `evidence fetch` materializer are in [evidence/README.md](../../../evidence/README.md).
+
 Inventory at the R8 hygiene base (`bb95bf2` review; tracked file sizes rechecked in this worktree, 2026-10-26). No evidence was moved or deleted. Paths below are repository-relative; citations abbreviate the `arch/jitk/` prefix unless shown explicitly.
 
 Before any move: create a durable immutable archive with per-file SHA-256 and a manifest containing original path, size, source commit, toolchain and reproduction command; verify a fresh restore; update every cited link; provide an exact-path materializer where code reads the evidence. Lead approval and storage selection remain outstanding.

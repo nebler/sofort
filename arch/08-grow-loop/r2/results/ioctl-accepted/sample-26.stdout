@@ -1,15 +1,0 @@
-hello jitk fdt=0000000083e00000
-{"v":2,"kind":"sys.enter","seq":1,"nr":29,"pc":4194500,"args":[1,21523,4198400,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"sys.exit","seq":1,"ret":-25,"output":"4141414141414141"}
-{"v":2,"kind":"sys.enter","seq":2,"nr":29,"pc":4194516,"args":[18446744073709551615,21523,4198400,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"sys.exit","seq":2,"ret":-9,"output":"4141414141414141"}
-{"v":2,"kind":"sys.enter","seq":3,"nr":29,"pc":4194532,"args":[999,21523,4198400,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"sys.exit","seq":3,"ret":-9,"output":"4141414141414141"}
-{"v":2,"kind":"sys.enter","seq":4,"nr":64,"pc":4194560,"args":[1,4198400,8,0,0,0],"input":"4141414141414141","timeout":null}
-AAAAAAAA{"v":2,"kind":"sys.exit","seq":4,"ret":8,"output":null}
-{"v":2,"kind":"sys.enter","seq":5,"nr":64,"pc":4194576,"args":[1,4194596,10,0,0,0],"input":"20696f63746c204f4b0a","timeout":null}
- ioctl OK
-{"v":2,"kind":"sys.exit","seq":5,"ret":10,"output":null}
-{"v":2,"kind":"sys.enter","seq":6,"nr":94,"pc":4194596,"args":[0,4194596,10,0,0,0],"input":null,"timeout":null}
-{"v":2,"kind":"done","seq":6,"code":0}
-exit=0000000000000000

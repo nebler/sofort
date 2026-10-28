@@ -1,3 +1,0 @@
-{"image": "/Users/noah/.t3/worktrees/sofort/t3-c8b22fdc/arch/jitk/grow/results/r7-acceptance/tx-fstat/mutant-false-success/kernel-1735e4129dda2a94b356fd47ff6530f5cedf864e3a83e62483e52df2d15ede2f.bin", "sha256": "1735e4129dda2a94b356fd47ff6530f5cedf864e3a83e62483e52df2d15ede2f", "bytes": 553840}
-   Compiling jitk-02 v0.3.0 (/private/var/folders/4x/9xsch0y129j47fl92k4zx9cm0000gn/T/jitk-grow-j9twrw5c/kernel)
-    Finished `release` profile [optimized] target(s) in 0.94s

@@ -1,6 +1,0 @@
-    PID    PPID     ELAPSED COMMAND
-  71150   71149       07:55 flock /home/dev/bench.lock sh -c arch/jitk/shard/target/release/real prepare arch/jitk/kernel/dist/kernel-ring.bin final-r7 >raw/prepare.jsonl 2>raw/prepare.stderr && arch/jitk/shard/target/release/real bench old-r6 rng_negative 32 >raw/negative-old.jsonl 2>raw/negative-old.stderr && arch/jitk/shard/target/release/real bench final-r7 rng_negative 32 >raw/negative-new.jsonl 2>raw/negative-new.stderr && arch/jitk/shard/target/release/real bench final-r7 canary 10000 >raw/canary-10000.jsonl 2>raw/canary-10000.stderr
-  78801   78800       04:59 flock /home/dev/bench.lock sudo -n env JITK_LEDGER_ROOT=/home/dev/r7-rng JITK_LEDGER_CGROUP=/sys/fs/cgroup/r7-rng JITK_LEDGER_SNAPSHOT=final-r7 JITK_LEDGER_FIXTURES=return2 one_tool promise10 python3 arch/jitk/shard/harness/ledger-r6.py
-  80839   80766       02:26 arch/jitk/shard/target/release/real bench final-r7 canary 10000
-  80976   80975       01:33 flock /home/dev/bench.lock sh arch/jitk/shard/harness/mutate-libc-r7-rng.sh
- 20:42:16 up 10:55,  4 users,  load average: 1.06, 1.19, 0.77

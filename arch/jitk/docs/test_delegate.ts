@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { delegate } from './dispatch.ts';
@@ -48,4 +48,32 @@ for (let test = 0; test < 6; test += 1) {
     rmSync(temporary, { recursive: true, force: true });
   }
 }
-console.log('6 delegate tests passed');
+// The evidence guard: tracked evidence above 64 KiB under arch/ refuses the
+// suite until it is moved or listed as kept in evidence/manifest.json.
+{
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'jitk-delegate-')));
+  const root = join(temporary, 'arch/jitk');
+  const owner = join(root, 'kernel');
+  try {
+    mkdirSync(join(owner, 'results'), { recursive: true });
+    writeFileSync(join(owner, 'README.md'), 'fixture owner');
+    writeFileSync(join(owner, 'Makefile'), 'test:\n\tmkdir -p .work; touch .work/ran\n');
+    writeFileSync(join(owner, 'results/small.json'), '{}');
+    writeFileSync(join(temporary, '.gitignore'), '.work/\n');
+    const git = (args: string[]): string => output(['git', '-C', temporary, ...args]);
+    git(['init', '-q']);
+    git(['add', '.']);
+    check(await delegate('kernel', 'test', root) === 0, 'small evidence refused');
+    writeFileSync(join(owner, 'results/raw.json'), 'x'.repeat(65 * 1024));
+    git(['add', '.']);
+    rmSync(join(owner, '.work'), { recursive: true, force: true });
+    check(await delegate('kernel', 'test', root) === 1, 'oversized evidence passed the guard');
+    check(!existsSync(join(owner, '.work/ran')), 'suite ran despite the guard');
+    mkdirSync(join(temporary, 'evidence'));
+    writeFileSync(join(temporary, 'evidence/manifest.json'), JSON.stringify({ schema: 1, store: '', rule: '', files: [], kept: [{ path: 'arch/jitk/kernel/results/raw.json', bytes: 66560, reason: 'fixture' }] }));
+    check(await delegate('kernel', 'test', root) === 0, 'kept evidence refused');
+  } finally {
+    rmSync(temporary, { recursive: true, force: true });
+  }
+}
+console.log('7 delegate tests passed');

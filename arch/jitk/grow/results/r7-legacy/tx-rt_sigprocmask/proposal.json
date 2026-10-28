@@ -1,5 +1,0 @@
-{
-  "path": "src/syscalls/rt_sigprocmask.rs",
-  "source": "// Lua profile: no signal delivery or thread state. No user pointers are touched.\n// This is an explicit ENOSYS contract, never a claim of Linux signal support.\npub fn call(_: &[usize]) -> isize { -38 }\n",
-  "mode": "replay"
-}

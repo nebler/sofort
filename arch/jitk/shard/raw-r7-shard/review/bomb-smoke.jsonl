@@ -1,4 +1,0 @@
-{"event":"environment","pid":121812,"threads":5,"owners":4,"watchdog_processes":1,"nested":true,"loadavg":"0.05 0.41 0.65 1/176 121812","uptime":"42385.21 249557.81","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026"}
-{"event":"contained","i":0,"result":{"err":{"name":"InternalError","message":"out of memory"}}}
-{"event":"contained","i":1,"result":{"err":{"name":"InternalError","message":"out of memory"}}}
-{"event":"contained","i":2,"result":{"err":{"name":"InternalError","message":"out of memory"}}}

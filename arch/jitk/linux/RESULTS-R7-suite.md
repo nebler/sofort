@@ -1,5 +1,7 @@
 # R7 suite: replace the stalled second-QEMU path
 
+> Raw evidence linked here moved out of git (R10 W0.1): restore it with `arch/jitk/tools/.work/bin/evidence fetch <path>`; see [evidence/README.md](../../../evidence/README.md).
+
 Agent: `r7-suite`. Worktree: `/Users/noah/.t3/worktrees/sofort/t3-c7592349`.
 Branch: `t3/diagnose-nested-test-stall`. Date: 2026-10-25.
 

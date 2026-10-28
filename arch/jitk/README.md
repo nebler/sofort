@@ -5,6 +5,8 @@ that grows the restricted Linux syscall surface used by static guest programs.
 See [architecture](docs/ARCHITECTURE.md), [evidence and claims](docs/CLAIMS.md),
 [kill criteria](docs/KILL-CRITERIA.md), and the live
 [final integration report](../10-minimalist-critic/R4.md).
+Raw run evidence lives outside git; `tools/.work/bin/evidence fetch <path>`
+restores any file listed in [the manifest](../../evidence/README.md).
 
 First step on a new host, from the repository root:
 

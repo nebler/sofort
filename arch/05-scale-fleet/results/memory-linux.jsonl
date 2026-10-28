@@ -1,3 +1,0 @@
-{"mode": "anonymous-copy", "n": 32, "size_mib": 8, "dirty_mib": 1, "mapping_totals_kib": {"Rss": 262144, "Pss": 262144, "Private_Dirty": 262144, "Shared_Clean": 0, "Shared_Dirty": 0}, "source_unchanged": true}
-{"mode": "file-private", "n": 32, "size_mib": 8, "dirty_mib": 1, "mapping_totals_kib": {"Rss": 262144, "Pss": 39936, "Private_Dirty": 32768, "Shared_Clean": 229376, "Shared_Dirty": 0}, "source_unchanged": true}
-{"mode": "memfd", "n": 32, "size_mib": 8, "dirty_mib": 1, "mapping_totals_kib": {"Rss": 262144, "Pss": 39936, "Private_Dirty": 32768, "Shared_Clean": 0, "Shared_Dirty": 229376}, "source_unchanged": true}

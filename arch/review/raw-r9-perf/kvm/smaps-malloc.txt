@@ -1,9 +1,0 @@
-== default
-288 KiB  f0496de00000-f0496df40000 rw-p 01800000 fd:01 2891857                    /home/dev/perf-r9-2026-10-27/snap/helpers.mem
-52 KiB  b79e53f9e000-b79e54000000 rw-p 00000000 00:00 0                          [heap]
-== MALLOC_TRIM_THRESHOLD_=0 MALLOC_MMAP_THRESHOLD_=65536
-288 KiB  e0e813800000-e0e813940000 rw-p 01800000 fd:01 2891857                    /home/dev/perf-r9-2026-10-27/snap/helpers.mem
-52 KiB  c49444181000-c49444200000 rw-p 00000000 00:00 0                          [heap]
-== MALLOC_TRIM_THRESHOLD_=0
-564 KiB  b3658386b000-b36583a00000 rw-p 00000000 00:00 0                          [heap]
-288 KiB  fb911e000000-fb911e140000 rw-p 01800000 fd:01 2891857                    /home/dev/perf-r9-2026-10-27/snap/helpers.mem
