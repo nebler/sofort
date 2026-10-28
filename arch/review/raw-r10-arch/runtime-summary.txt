@@ -1,0 +1,10 @@
+kernel image (src, excl *_checks)                                          3908 lines  (inline #[cfg(test)] 0)
+  of which console-only (console, wait, fdt, mmu, boot.S)                   886 lines  (inline #[cfg(test)] 0)
+  of which ring-only (ring, ring_abi, wait_ring, mmu_ring, boot-ring.S)     855 lines  (inline #[cfg(test)] 0)
+shard lib + ipc service (excl synthetic, harness)                          5840 lines  (inline #[cfg(test)] 1936)
+vmm/src (libkrun launcher + watchdog)                                       557 lines  (inline #[cfg(test)] 0)
+vmm/sandbox/mod.rs                                                          791 lines  (inline #[cfg(test)] 133)
+executor runtime (+policy.mjs, bridge.c)                                   1311 lines  (inline #[cfg(test)] 0)
+protocol (dispatcher.ts + 2 bootstraps)                                     424 lines  (inline #[cfg(test)] 0)
+mcp server                                                                  299 lines  (inline #[cfg(test)] 0)
+RUNTIME TOTAL 13130 of which inline Rust tests 2069
