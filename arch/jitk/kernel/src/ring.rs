@@ -319,9 +319,12 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             assert_eq!({ NEXT }, 1);
             assert_eq!({ INPUT }, 0);
             crate::arch::doorbell(CHECKPOINT); // offline CHECKPOINT, after bootstrap
-            // A reset VM resumes here: drop guest TLB entries cached before the
-            // host restored memory (hvf-spike/REPORT.md risk 3).
+            // A reset VM resumes here: drop guest TLB entries and instructions
+            // cached before the host restored memory (hvf-spike/REPORT.md risk 3;
+            // KVM's copy reset keeps the physical pages, so without CTR_EL0.DIC
+            // the previous job's code could still run from the I-cache).
             crate::mmu::flush();
+            crate::arch::invalidate_icache();
             boot_info();
             assert_eq!({ CANARY }, 0);
             CANARY = load(GENERATION);
@@ -441,6 +444,7 @@ pub unsafe fn native_checkpoint() {
         crate::arch::doorbell(CHECKPOINT);
         // A reset VM resumes here; see the glue CHECKPOINT above.
         crate::mmu::flush();
+        crate::arch::invalidate_icache();
         boot_info();
         assert!(native());
         assert!(load(OUTPUT_BYTES) <= OUTPUT_LIMIT as u64);

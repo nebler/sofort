@@ -139,6 +139,17 @@ pub unsafe fn sync_icache(start: usize, end: usize) {
     }
 }
 
+/// Invalidate the whole local I-cache, e.g. after the host rewrote guest memory.
+/// # Safety
+/// EL1 only; no other requirement.
+#[inline(always)]
+pub unsafe fn invalidate_icache() {
+    // SAFETY: IC IALLU only invalidates instruction caches; it lends no references.
+    unsafe {
+        asm!("dsb ish", "ic iallu", "dsb ish", "isb");
+    }
+}
+
 /// Install the exception vectors and drop to EL0 at `entry` with stack `sp`.
 /// # Safety
 /// sp and entry name validated user mappings. EL1 owns initialized tables and no kernel
