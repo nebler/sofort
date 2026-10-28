@@ -10,8 +10,9 @@
 //   JITK_VMM_BINARY            vmm/build.ts (the canonical libkrun VMM builder;
 //                              HVF on macOS, KVM on Linux)
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
-//   JITK_SHARD_BINARY          shard `real` from source, pinned toolchain (Linux)
-// JITK_SHARD_SNAPSHOT (Linux) needs KVM and is built by
+//   JITK_SHARD_BINARY          shard `real` (Linux) or the HVF engine `hvf`
+//                              (macOS, signed) from source, pinned toolchain
+// JITK_SHARD_SNAPSHOT needs KVM or HVF and is built by
 // `make -C arch/jitk/shard snapshot` (shard/snapshot.ts) into the same cache.
 // Every entry is built in a staging directory and renamed into place after
 // its manifest is written, so a present manifest means a complete entry. An
@@ -33,7 +34,7 @@ import { shaFile } from '../tslib/hash.ts';
 import { readJSON, dumpJSON } from '../tslib/json.ts';
 import { environment } from '../tslib/process.ts';
 import { run } from '../tslib/subprocess.ts';
-import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardDir, shardInputs, target, withLock, zigDir } from '../tslib/deps.ts';
+import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardBinaryName, shardDir, shardInputs, target, withLock, zigDir } from '../tslib/deps.ts';
 import { rustToolchain } from '../tslib/rust.ts';
 
 const mac = platform() === 'darwin';
@@ -283,7 +284,7 @@ async function buildHyperlight(env: Record<string, string>): Promise<void> {
   });
 }
 
-// --- shard (Linux) -----------------------------------------------------------
+// --- shard ------------------------------------------------------------------
 
 function shardValid(): boolean {
   const marker = completeMarker('JITK_SHARD_BINARY');
@@ -294,8 +295,10 @@ function shardValid(): boolean {
   return existsSync(cachePath('JITK_SHARD_BINARY')) && shaFile(cachePath('JITK_SHARD_BINARY')) === manifest.binary_sha256 && manifest.inputs_sha256 === shardInputs();
 }
 
-// shard `real` from this checkout's sources with the pinned toolchain; the
-// Cargo target directory is shared by every input set.
+// shard `real` (Linux) or `hvf` (macOS, the HVF engine) from this checkout's
+// sources with the pinned toolchain; the Cargo target directory is shared by
+// every input set. `hvf` is ad-hoc signed with the hypervisor entitlement
+// before it is hashed.
 async function buildShard(env: Record<string, string>): Promise<void> {
   if (shardValid()) {
     log('shard: cached ' + shardDir());
@@ -315,15 +318,20 @@ async function buildShard(env: Record<string, string>): Promise<void> {
       log('shard: building ' + dir);
       // The one networked step: the locked crate sources, then offline.
       await run([tools.CARGO, 'fetch', '--locked'], { cwd, env: settings, inherit: true, timeout: 1800 });
-      await run([tools.CARGO, 'build', '--release', '--locked', '--offline', '--bin', 'real'], { cwd, env: settings, inherit: true, timeout: 3600 });
-      copyFileSync(join(settings.CARGO_TARGET_DIR, 'release/real'), join(stage, 'real'));
-      chmodSync(join(stage, 'real'), 0o755);
+      const name = shardBinaryName();
+      await run([tools.CARGO, 'build', '--release', '--locked', '--offline', '--bin', name], { cwd, env: settings, inherit: true, timeout: 3600 });
+      copyFileSync(join(settings.CARGO_TARGET_DIR, 'release', name), join(stage, name));
+      chmodSync(join(stage, name), 0o755);
+      if (mac) {
+        await run(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(JITK_ROOT, 'vmm/hypervisor.entitlements'), join(stage, name)], { env, timeout: 120 });
+      }
       dumpJSON(join(stage, 'manifest.json'), {
         artifact: 'shard',
+        binary: name,
         inputs_sha256: shardInputs(),
         toolchain: pin,
         rustc: await text([tools.RUSTC, '--version'], settings),
-        binary_sha256: shaFile(join(stage, 'real')),
+        binary_sha256: shaFile(join(stage, name)),
         cargo_target: settings.CARGO_TARGET_DIR
       });
     });

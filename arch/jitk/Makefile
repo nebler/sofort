@@ -12,8 +12,8 @@ tools:
 	+@$(MAKE) -s -C "$(ROOT)/tools" tools
 # Pinned external artifacts built once into the shared jitk cache; see
 # README.md. Both: Node/npm, zig, the VMM. macOS: Hyperlight source, worker and
-# snapshot. Linux: the shard binary (`make -C shard snapshot` adds the
-# prepared snapshots).
+# snapshot. Both: the shard binary (Linux `real`, macOS the HVF engine `hvf`;
+# `make -C shard snapshot` adds the prepared snapshots).
 deps: tools
 	+@$(MAKE) -s -C "$(ROOT)/vmm" .work/bin/build
 ifeq ($(shell uname -s),Darwin)
@@ -52,6 +52,11 @@ test: deps
 	+@$(DELEGATE) vmm test
 	+@$(DELEGATE) vmm/sandbox test
 	+@$(DELEGATE) protocol test
+ifeq ($(shell uname -s),Darwin)
+	@# The HVF engine's prepared snapshots, for the executor suite and the
+	@# parity corpus's hvf backend (executor/parity/README.md).
+	+@$(MAKE) -s -C "$(ROOT)/shard" snapshot
+endif
 	+@$(DELEGATE) executor test
 	+@$(DELEGATE) executor parity
 	+@$(DELEGATE) executor/policy test
