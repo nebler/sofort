@@ -42,8 +42,12 @@ export JITK_NODE=/absolute/path/to/node
 ./run.sh test
 ./run.sh demo
 ./run.sh bench
-./run.sh certify  # final integrated gate; emits .READY only on success
+./run.sh hvf-parking-gate   # macOS: the HVF engine's G1 receipt (make hvf-parking-gate: only when stale)
 ```
+
+(`./run.sh certify`, the libkrun integrated gate that wrote `.READY`, went
+with libkrun on 2026-10-28; the existing `.READY` is that gate's last
+receipt.)
 
 `package.json` exposes the same build/test/demo/bench scripts. `build` checks
 strict TypeScript and creates Node ESM bundles in `build/`. Production entry:
@@ -56,28 +60,29 @@ maximum active tools, phase timings and uptime; no model credentials are needed.
 
 ## Artifact selection and confinement
 
-`selectBackend()` independently adopts `vmm/.READY` and `kernel/.READY`.
-The root is derived from the emitted module's location, so renamed checkouts
-work. Local conventional build outputs and relative JSON marker paths are used.
-Set `JITK_VMM_BINARY=/absolute/path/to/jitk-vmm` and/or
-`JITK_KERNEL_IMAGE=/absolute/path/to/kernel.bin` to select built artifacts.
-Overrides are hashed and recorded; automatic selections verify marker hashes.
-Missing artifacts fail with build/override instructions. Selection, hashes and
-parking evidence are written to `integration-selection.json`.
+`selectBackend()` picks the ring engine for this host: the HVF engine on
+macOS arm64 (the default there, `JITK_BACKEND=hvf`) and the KVM shard on
+Linux arm64 (the default there, `JITK_BACKEND=shard`), from
+`JITK_SHARD_BINARY` (the signed `hvf` / `real` binary) and
+`JITK_SHARD_SNAPSHOT` (a prepared snapshot base; `run.sh` and the delegate
+take both from the jitk cache: `make -C .. deps`, `make -C ../shard
+snapshot`). It reads no `.READY` marker. The selection, the engine's and the
+snapshot identity's hashes and the parking gate are written to
+`integration-selection.json` (`.work/`, `JITK_RECORD=1`: here). Missing
+artifacts fail with build instructions. (`JITK_BACKEND=jitk`, libkrun's
+`JitkBackend` with its stderr sandbox acknowledgement and precompiled
+Seatbelt profile, was removed on 2026-10-28.)
 
-The canonical JitkBackend requires both the exact stderr host acknowledgement
-`{"sandbox":"ok"}\n` and validated guest READY before it exposes a parked
-sandbox. fd2 is always a pipe (Linux FSIZE=0). A guest cannot supply the ack.
-For macOS the supervisor compiles 07's profile once per VMM/image-directory
-combination on the current OS, then passes `--sandbox-profile` to every worker.
-An explicit profile may be supplied. Legacy R2 launchers must explicitly set `requireSandboxAck:false`.
-The CLI keeps --image/--mem-mib, and the VMM supplies random seed and epoch by
-default. Deadlines are enforced by one shared native watchdog per executor, the
-`--watchdog` mode of `jitk-vmm` (`vmm/src/watchdog.rs`; set `watchdog`, `JITK_WATCHDOG` or
-`JITK_VMM_BINARY` for non-jitk backends). It is a separate process, so it fires while a tool
-blocks Node, but it is spawned once instead of per VM (the former per-VM Python script cost
-~20–40 ms per cold start). It tracks exits via pidfd/kqueue, waits for its acknowledgement
-before a run is sent, and SIGKILLs every tracked VM on malformed input or EOF.
+`ProcessBackend` remains for engines that speak protocol v1 on stdio (09's
+Hyperlight adapter, kind `hyperlight-js`, and test peers). Deadlines are
+enforced by one shared native watchdog per executor, the `watchdog` mode of
+the engine binary (`../shard/src/watchdog.rs`, formerly `jitk-vmm --watchdog`;
+set `watchdog` or `JITK_WATCHDOG` to override `JITK_SHARD_BINARY`). It is a
+separate process, so it fires while a tool blocks Node, but it is spawned
+once instead of per process (the former per-VM Python script cost ~20–40 ms
+per cold start). It tracks exits via pidfd/kqueue, waits for its
+acknowledgement before a run is sent, and SIGKILLs every tracked process on
+malformed input or EOF.
 
 Host callbacks still run on Node. Blocking them delays Promise settlement and
 AbortSignal delivery until Node resumes; killing the VM cannot unblock a host
@@ -144,13 +149,18 @@ scope/revocation and redaction. This suite supplies explicit host effects.
 
 ## Evidence
 
-`test.log` and JSON results record loads and artifact selection. Tests cover the
-20 R2 cases, Cloudflare generated wrappers and TanStack, 30×64 reverse-order
-concurrent calls, hostile transport, host ack, independent watchdog and pool
-lifecycle. The backend-parity corpus (`parity/README.md`, `./run.sh parity`)
-runs one case list on every available Engine: `jitk`, 09's Hyperlight
+`test.log` and JSON results record loads and artifact selection (the recorded
+ones are libkrun's, before 2026-10-28). Tests cover the 20 R2 cases,
+Cloudflare generated wrappers and TanStack, 30 reverse-order concurrent-call
+fan-outs (64 calls, or the engine's call budget when smaller: 32 on the ring
+profile today), hostile transport, independent watchdog and pool lifecycle,
+on this host's default engine. Checks at a limit read `Engine.limits` (log
+count, call budget; the Cloudflare wrapper gets a never-firing `setTimeout`
+on an engine without timers), so they follow the ring profile as it is
+lifted. The backend-parity corpus (`parity/README.md`, `./run.sh parity`)
+runs one case list on every available Engine: 09's Hyperlight
 adapter (kind `hyperlight-js`, the benchmark baseline) and the HVF engine
-(kind `hvf`) on the Mac, `jitk` and the shard on Linux
+(kind `hvf`) on the Mac, the shard on Linux
 (`make -C arch/jitk test-linux`).
 
 `breakdown-results.json` is an E4 diagnostic (50 samples, 5 excluded warmups),
@@ -163,19 +173,20 @@ done=ret→validated done, resolve=done→caller continuation. Refill is exclude
 and recorded separately. Published performance comparisons belong only to
 `../bench/RESULTS.md`, the canonical load-aware table.
 
-`.READY` is written only after final tests and the demo pass with canonical
-VMM/kernel markers, shared protocol and 07 policy. Production Linux timing and
-sustained capacity are not established by macOS functional executor tests.
+`.READY` was written by the libkrun-era certification (`certify.mjs`,
+removed with libkrun) and is kept unchanged as its receipt. Production Linux
+timing and sustained capacity are not established by macOS functional
+executor tests.
 
-## Experimental Linux shard backend (R7)
+## Linux shard backend (R7; the Linux default)
 
-`jitk` remains the default on every platform. On Linux arm64, select the new
-backend explicitly:
+The KVM shard is the default engine on Linux arm64 (`JITK_BACKEND=shard`
+names it):
 
 ```sh
 make -C .. deps                # pinned Node + shard binary (JITK_NODE, JITK_SHARD_BINARY)
 make -C ../shard snapshot      # prepared helper snapshot (JITK_SHARD_SNAPSHOT)
-JITK_BACKEND=shard ./run.sh build
+./run.sh build
 ```
 
 `run.sh` takes `JITK_NODE`, `JITK_SHARD_BINARY` and `JITK_SHARD_SNAPSHOT` from
@@ -189,9 +200,8 @@ The `.identity` sidecar binds the helper-source SHA-256, the ring kernel
 SHA-256 and the `.mem/.regs/.layout` hashes. The executor checks it before spawning a shard; old snapshots or changed
 helpers fail with a clear reprepare error. Never replace active snapshot files.
 Helper objects and globals are guest memory restored on every generation.
-No image or libkrun default changes. MCP reads the same `JITK_BACKEND` selection;
-use `"warm":0` for this experimental backend (a new parking receipt is not yet
-certified). Call `pool.close()` to reap the one shard and its independent watchdog.
+MCP reads the same selection; use `"warm":0` on Linux (no parking receipt is
+certified for the KVM shard). Call `pool.close()` to reap the one shard.
 
 Node has no mmap API. `ipc/bridge.c` is a small Linux N-API addon, built only
 when the shard is selected or its tests are requested. It needs a C11 compiler
@@ -229,21 +239,23 @@ On a Linux host, `sh ipc/shard-host.sh` is the same check without SSH. It never
 manages the VM lifecycle. Mac `make test` without this opt-in stays unchanged.
 
 The ring profile has smaller source, call, reply and live-memory bounds than
-libkrun. Small codec values, Unicode, concurrent tools, structured tool errors
-and console logs are supported through adapters. Clocks during uninterrupted
-CPU work, timers, `/cap`, large values, cancellation of a busy vCPU and broad
-shadow parity remain cutover blockers. The exact test/parity table and nested
+the protocol v1 contract (libkrun's, the parity corpus's `expect`). Small
+codec values, Unicode, concurrent tools, structured tool errors and console
+logs are supported through adapters. Timers, large values and the other
+differences are the parity allowlist's ring entries
+([parity/README.md](parity/README.md)). The exact test/parity table and nested
 measurements are in [RESULTS-R7-ipc.md](../shard/RESULTS-R7-ipc.md).
 
-## Experimental macOS HVF engine (R10 #10)
+## macOS HVF engine (R10 #10; the macOS default)
 
-The same ring engine on Hypervisor.framework, selectable on macOS arm64; `jitk`
-(libkrun) stays the default and is not frozen:
+The same ring engine on Hypervisor.framework, the default on macOS arm64
+since 2026-10-28 (`JITK_BACKEND=hvf` names it; libkrun, the former default, is
+deleted):
 
 ```sh
 make -C .. deps                # pinned Node + the signed `hvf` engine (JITK_SHARD_BINARY)
 make -C ../shard snapshot      # darwin-arm64 prepared snapshots (JITK_SHARD_SNAPSHOT)
-JITK_BACKEND=hvf ./run.sh build    # JITK_HVF_SLOTS engine processes (default 8)
+./run.sh build                 # JITK_HVF_SLOTS engine processes (default 8)
 ```
 
 `ShardBackend` is the engine on both hosts (kind `shard` on Linux, `hvf` on
@@ -255,7 +267,7 @@ Node's spawn creates for a `pipe` stdio entry (`PipeChannel`, `shard-ipc.ts`;
 no native addon), and deadlines are on `process.hrtime`, which the engine
 reads as CLOCK_MONOTONIC_RAW. HVF allows one VM per process, so the engine
 (`../shard/src/hvf/zygote.rs`) is a single-threaded zygote that forks one
-engine process per slot. The zygote enters vmm/sandbox's Seatbelt profile
+engine process per slot. The zygote enters the engine's Seatbelt profile (jitk.sb)
 plus fork and signalling its children before its first fork; each engine
 process inherits it and drops the fork grant before creating its VM
 (`make -C ../shard test-hvf` runs `hvf confine`: files, writes, network and
@@ -271,7 +283,7 @@ every engine process.
 `JITK_SHARD_SNAPSHOT` is available (the Linux-only memfd and hostile-peer
 sections are skipped; the macOS-only section kills, stops and reaps engine
 processes), and the parity corpus includes `hvf` by default on the Mac. Per-run
-cost against libkrun: `node build/engine-bench.js` (offline; see
+cost: `node build/engine-bench.js` (offline; see
 `../shard/README.md` "HVF engine").
 
 Warm parking (G1 on HVF). A pool keeps sessions parked only with a parking
@@ -284,8 +296,8 @@ libkrun's G1 run carries all 1000) with a 3 s parked-in-WAIT pause every
 100th. It writes `.work/hvf-parking-gate.json` (`JITK_RECORD=1`:
 `hvf-parking-gate.json` here), binding the engine binary's sha256, the
 snapshot's `.identity` sha256 and the slots. `select-backend` (so the MCP
-server's `warm`) returns it as the gate for `JITK_BACKEND=hvf` only when all
-three match (`JITK_HVF_PARKING_GATE` names one explicitly); a rebuilt engine
+server's `warm`) returns it as the gate for the HVF engine only when all
+three match (`JITK_HVF_PARKING_GATE` names one explicitly); a rebuilt engine (`make -C arch/jitk test` measures one when stale, `make hvf-parking-gate`)
 needs a new run. Measured 2026-10-28, M4 Pro, macOS 26.6.1, load 3.7–4.6:
 8 slots, 0.00 CPU-s in 10.0 s for 9 processes (below `ps` resolution),
 1000/1000 exchanges in 32 runs (p50 5.7 ms per 32-call run without a pause).

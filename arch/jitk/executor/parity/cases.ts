@@ -1,7 +1,8 @@
 // The backend-parity corpus (R10 #7, R9 N6): one list of cases that
 // parity-check.ts runs on every available Engine through the canonical
-// MicroVMExecutor. `expect` is the product contract (what the shipping `jitk`
-// path does); a backend that differs needs an entry in allowlist.ts.
+// MicroVMExecutor. `expect` is the product contract (protocol v1's limits, what
+// the former libkrun path did and the ring profile is lifted toward); a
+// backend that differs needs an entry in allowlist.ts.
 //
 // Sources: executor/verify.ts (v-), bench/hyperlight checks (h-),
 // bench/cases.json (b-), executor/shard-check.ts (s-), mcp/test.mjs (m-), and

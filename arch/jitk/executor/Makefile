@@ -6,6 +6,13 @@ build test demo:
 test-shard:
 	./run.sh shard-test
 
+# macOS: the HVF engine's parking gate (hvf-parking-gate.ts), measured into
+# .work/ unless a receipt for this engine binary and snapshot is current, so
+# warm pools (MCP's default warm 2) run on the default engine.
+.PHONY: hvf-parking-gate
+hvf-parking-gate:
+	./run.sh hvf-parking-gate --if-stale
+
 # The backend-parity corpus (parity/README.md) on this host's backends.
 # parity-ssh (Mac): `make test-linux` on kvm-dev, then this host's corpus and
 # the cross-host compare of both reports in .work/parity/, then the native

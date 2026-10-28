@@ -90,7 +90,7 @@ export type Limits={
   memoryMB?:number;
   /** Sessions the engine runs at once (Infinity: one process each, the pool bounds them). */
   sessions:number;
-  /** park() calls worth running at once: a slot claim is cheap, a VMM boot is not. */
+  /** park() calls worth running at once: a slot claim is cheap, a process start is not. */
   parallelStarts:number;
   /** Longest run deadline the engine admits, in ms. */
   deadlineMs:number;
@@ -99,7 +99,7 @@ export type Limits={
   native?:NativeLimits;
 };
 export interface Engine {
-  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard'|'hvf'|'native';
+  readonly kind:'process'|'hyperlight-js'|'shard'|'hvf'|'native';
   close?():Promise<void>;
   readonly limits:Limits;
   park(signal?:AbortSignal,deadline?:number):Promise<Session>;

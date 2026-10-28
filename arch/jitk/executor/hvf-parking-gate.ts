@@ -22,11 +22,17 @@ import {MicroVMExecutor,SandboxPool} from './executor.js';
 import {ShardBackend} from './shard-backend.js';
 import {IPC} from './shard-ipc.js';
 import {receiptPath} from './receipt-path.js';
+import {hvfGate} from './select-backend.js';
 
 const EXCHANGES=1000,IDLE_S=10,PAUSE_EVERY=100,PAUSE_MS=3000;
 const binary=process.env.JITK_SHARD_BINARY,snapshot=process.env.JITK_SHARD_SNAPSHOT;
 if(process.platform!=='darwin'||process.arch!=='arm64'||!binary||!snapshot)throw Error('hvf-parking-gate needs macOS arm64, JITK_SHARD_BINARY (the signed hvf engine) and JITK_SHARD_SNAPSHOT');
 const slots=Number(process.env.JITK_HVF_SLOTS??8);
+// `--if-stale` (make test): keep a receipt select-backend still accepts.
+if(process.argv.includes('--if-stale')&&hvfGate(binary,snapshot,slots)){
+  console.log('hvf-parking-gate: the receipt for this engine and snapshot is current: '+hvfGate(binary,snapshot,slots)!.evidence);
+  process.exit(0);
+}
 const sha=(path:string)=>createHash('sha256').update(readFileSync(path)).digest('hex');
 const sh=(cmd:string,args:string[])=>execFileSync(cmd,args,{encoding:'utf8'}).trim();
 const load=()=>sh('/usr/sbin/sysctl',['-n','vm.loadavg']);
