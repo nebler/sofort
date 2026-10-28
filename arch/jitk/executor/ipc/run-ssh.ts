@@ -1,5 +1,5 @@
 // Runs the executor's Linux shard check on the kvm-dev VM: ships this tree's
-// sources (no evidence directories, nothing over 1 MiB) and runs
+// sources (no evidence directories, nothing over 1 MiB but the named payloads) and runs
 // ipc/shard-host.sh there, which takes Node, the shard binary and the
 // prepared snapshots from the remote jitk cache (`make deps`, `make -C shard
 // snapshot`). JITK_SSH_TARGET=test-linux runs `make test-linux` (the parity
@@ -19,13 +19,15 @@ const identity = sha(Buffer.from(root)).slice(0, 12);
 const remoteRoot = process.env.JITK_SHARD_REMOTE_ROOT || 'jitk-ssh';
 check(/^[A-Za-z0-9_./-]+$/.test(remoteRoot) && !remoteRoot.split('/').includes('..'), 'JITK_SHARD_REMOTE_ROOT must be a plain path without ..');
 const remote = remoteRoot + '/test-' + identity;
-const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.md']);
-const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs-ring']);
+const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.diff', '.md']);
+// Named files ship at any size: the tracked QuickJS payloads (kernel/payload) exceed 1 MiB.
+const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs', 'qjs-ring', '.READY']);
 const ignored = new Set(['target', 'node_modules', 'build', 'dist', '.work', '.scriptc', 'results', 'test-results', 'out']);
 function sources(directory: string): string[] {
   const paths: string[] = [];
   for (const name of readdirSync(directory).sort()) {
-    if (ignored.has(name) || name.startsWith('raw') || name.startsWith('._')) {
+    // raw* names are evidence, except patches (vmm/patches/raw-direct-load.diff).
+    if (ignored.has(name) || (name.startsWith('raw') && extname(name) !== '.diff') || name.startsWith('._')) {
       continue;
     }
     const path = join(directory, name);
@@ -35,7 +37,7 @@ function sources(directory: string): string[] {
     }
     if (stat.isDirectory()) {
       paths.push(...sources(path));
-    } else if (stat.isFile() && stat.size <= 1048576 && (extensions.has(extname(path)) || named.has(name))) {
+    } else if (stat.isFile() && (named.has(name) || (stat.size <= 1048576 && extensions.has(extname(path))))) {
       paths.push(path);
     }
   }
