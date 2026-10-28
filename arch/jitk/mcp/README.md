@@ -86,13 +86,19 @@ UNSUPPORTED. With execute enabled, its warm pool and policy behavior stay the
 same. Native tools are separate whole-program runs and have no JS tool grants.
 
 The native worker persists across calls, with one reusable VM per profile and
-one owner thread; concurrent calls return LIMIT while busy. A Node deadline or
+one owner thread. It is an executor Engine (`executor/native-backend.ts`,
+`NativeBackend`) running `Job{kind:'native'}` sessions; `run` goes through a
+one-session pool and `NativeExecutor`, so concurrent calls wait in FIFO order
+(bounded; a full queue returns LIMIT) instead of failing while busy. The run
+tool's bounds come from the engine's `limits.native`. A Node deadline or
 client cancellation kills the entire worker. Subsequent native calls return
 SANDBOX until the MCP server restarts. This is intentionally explicit, pending
 integration with the separately owned shard watchdog leases and multi-owner
 scheduler. It does not add per-call helper processes or claim lease parity.
 
-Portable validation: `$JITK_NODE native-test.mjs`. Real Linux SDK validation:
+Portable validation: `$JITK_NODE native-test.mjs` (MCP input decoding) and the
+executor's `native-check.ts` (the native Engine on a stand-in worker speaking the
+same frames). Real Linux SDK validation (after `../executor/run.sh build`):
 ```sh
 JITK_NATIVE_BINARY=/absolute/path/to/shard/target/release/real \
 JITK_NATIVE_PROFILES='{"lua":"/absolute/prepared/lua"}' \

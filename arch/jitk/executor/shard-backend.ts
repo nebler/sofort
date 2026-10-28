@@ -1,7 +1,7 @@
 import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
-import {ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
-import type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
+import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
+import type {Engine,GuestEvent,Job,Limits,Phase,Reply,Session} from './engine.js';
 import {failure} from './engine.js';
 import {executionBody} from './code.js';
 import {AdmissionQueue} from './pool.js';
@@ -25,9 +25,18 @@ export function shardWire(code:string,names:string[]):string {
   return `return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
 }
 
+/** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots. */
+export function shardLimits(slots:number):Limits {
+  const arena=ARENA_CLASSES['glue-2m'];
+  return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
+    // Logs are ring CALL records: they share the call budget and the record size.
+    js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:IPC.replyBytes,doneBytes:IPC.doneBytes,
+      logs:IPC.calls,logBytes:IPC.callBytes,timers:false,arenaBytes:arena.arenaBytes}};
+}
+
 export class ShardBackend implements Engine {
   readonly kind='shard' as const;
-  readonly memoryLimitMB=2;
+  readonly limits:Limits;
   readonly ready:Promise<void>;
   readonly child:ChildProcess;
   private channel:SharedChannel;
@@ -46,7 +55,7 @@ export class ShardBackend implements Engine {
     verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
-    this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
+    this.limits=shardLimits(slots);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
     this.channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));
     // Exactly these descriptors and a credential-free environment are inherited.
@@ -87,8 +96,8 @@ export class ShardBackend implements Engine {
     // All slots busy or resetting: wait in FIFO order; released() hands over.
     const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sessions.has(i));
     const s=slot<0?await this.queue.wait(signal,deadline):this.claim(slot);
-    if(signal?.aborted){s.kill();await s.exited;throw Error('aborted');}
-    if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.kill();await s.exited;throw e;}
+    if(signal?.aborted){s.release();await s.released;throw Error('aborted');}
+    if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.release();await s.released;throw e;}
     return s;
   }
   private claim(slot:number):ShardSession {
@@ -136,8 +145,8 @@ type ShardRun={
  * Records decode straight into GuestEvents: one parse under the protocol
  * limits, the v1 field validators and a RunBudget; no v1 frames. */
 export class ShardSession implements Session {
-  readonly exited:Promise<void>;
-  private resolveExit!:()=>void;
+  readonly released:Promise<void>;
+  private resolveReleased!:()=>void;
   private run:ShardRun={phase:'parked',budget:new RunBudget(),wires:new Map(),nextWire:1,records:0,stats:false,admittedDeadlineNs:0n};
   private deadline?:number;
   private failure?:Fail;
@@ -146,7 +155,7 @@ export class ShardSession implements Session {
   private stopped:Promise<never>;
   private rejectStopped!:(e:Error)=>void;
   constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint) {
-    this.exited=new Promise(resolve=>{this.resolveExit=resolve;});
+    this.released=new Promise(resolve=>{this.resolveReleased=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
   }
   get phase():Phase {
@@ -158,7 +167,7 @@ export class ShardSession implements Session {
     if(this.deadline!==undefined&&this.deadline!==deadline)throw Error('deadline already armed');
     this.deadline=deadline;
   }
-  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveExit();}
+  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveReleased();}
   private emit(e:GuestEvent) {
     if(this.waiter){const w=this.waiter;this.waiter=undefined;w(e);}
     else {if(this.events.length>=34)throw Error('shard receive queue bound');this.events.push(e);}
@@ -170,7 +179,7 @@ export class ShardSession implements Session {
     const w=this.waiter;this.waiter=undefined;w?.(f);
   }
   /** Fail this generation only: end the reader and reset the slot via CANCEL. */
-  private abandon(e:Error) {this.end({kind:'fail',cause:'guest',message:e.message});this.kill();}
+  private abandon(e:Error) {this.end({kind:'fail',cause:'guest',message:e.message});this.release();}
   private guest(handle:()=>void) {
     try{handle();}catch(e){this.abandon(Error('protocol '+(e instanceof ProtocolError?e.code:'HOST_ERROR')));}
   }
@@ -207,7 +216,7 @@ export class ShardSession implements Session {
     else if(m.kind!==IPC.released)throw Error('shard IPC direction/kind');
     if(m.kind===IPC.released){
       if(run.phase!=='releasing'||m.id||m.bytes.length)throw Error('shard IPC release schema/state');
-      run.phase='released';this.backend.released(this);this.resolveExit();return;
+      run.phase='released';this.backend.released(this);this.resolveReleased();return;
     }
     if(run.phase==='releasing')return; // draining this generation while reset is in progress
     if(run.phase!=='running')throw Error('shard IPC run state');
@@ -246,6 +255,7 @@ export class ShardSession implements Session {
   }
   async start(job:Job):Promise<void> {
     if(this.failure)throw Error(this.failure.message);
+    if(job.kind!=='js')throw Error('the shard runs JS jobs only');
     if(this.run.phase!=='parked'||this.deadline===undefined)throw Error('shard run requires admission deadline');
     const code=executionBody(job,true);
     this.host(()=>{checkCode(code);checkTools(job.tools);});
@@ -273,7 +283,7 @@ export class ShardSession implements Session {
     if(payload.length>IPC.replyBytes)payload=Buffer.from(`{"err":{"code":"LIMIT","message":"shard tool reply limit (${IPC.replyBytes} bytes)"}}`);
     await this.write(IPC.reply,wire,payload);
   }
-  kill() {
+  release() {
     if(this.run.phase==='released'||this.run.phase==='releasing')return;
     this.run.phase='releasing';
     this.end({kind:'fail',cause:'engine',message:'sandbox exited'});this.rejectStopped(Error(this.failure!.message));

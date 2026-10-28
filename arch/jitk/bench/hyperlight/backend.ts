@@ -1,4 +1,5 @@
-import type {Backend, Session} from '../../executor/backend.ts';
+import type {Backend, Limits, Session} from '../../executor/backend.ts';
+import {v1Limits} from '../../executor/engine.ts';
 
 export type BaselineBackend = Omit<Backend,'kind'> & {readonly kind:'hyperlight-js'};
 // Share the executor's process lifecycle, canonical dispatcher and independent
@@ -7,13 +8,14 @@ export type BaselineBackend = Omit<Backend,'kind'> & {readonly kind:'hyperlight-
 export class HyperlightBackend implements BaselineBackend {
   readonly kind = 'hyperlight-js' as const;
   readonly isolation = 'strict-single-use' as const;
-  readonly memoryLimitMB = 16;
+  /** Protocol v1 in a 16 MiB guest heap, without event-loop timers. */
+  readonly limits:Limits;
   constructor(readonly worker:string, readonly snapshot:string,
-    readonly watchdogMs=5000) {}
+    readonly watchdogMs=5000) {this.limits = v1Limits(16, watchdogMs, false);}
   async park(signal?:AbortSignal):Promise<Session> {
     if(signal?.aborted)throw Error('aborted');
     const {ProcessBackend}=await import(new URL('../../executor/build/backend.js',import.meta.url).href);
-    return new ProcessBackend(this.kind,this.worker,['strict',this.snapshot],this.memoryLimitMB,
+    return new ProcessBackend(this.kind,this.worker,['strict',this.snapshot],this.limits.memoryMB,
       {lifetimeMs:this.watchdogMs,startupMs:this.watchdogMs}).park(signal);
   }
 }

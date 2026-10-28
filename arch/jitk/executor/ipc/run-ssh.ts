@@ -19,13 +19,18 @@ const identity = sha(Buffer.from(root)).slice(0, 12);
 const remoteRoot = process.env.JITK_SHARD_REMOTE_ROOT || 'jitk-ssh';
 check(/^[A-Za-z0-9_./-]+$/.test(remoteRoot) && !remoteRoot.split('/').includes('..'), 'JITK_SHARD_REMOTE_ROOT must be a plain path without ..');
 const remote = remoteRoot + '/test-' + identity;
-const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.md']);
-const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs-ring']);
+const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.diff', '.md']);
+// .READY markers ship as they are: the VMM build refuses to compile without vmm/sandbox/.READY.
+const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs', 'qjs-ring', '.READY']);
+// Tracked sources over the 1 MiB evidence cap: the kernel payload's QuickJS (2.3 MiB).
+const large = new Set(['qjs']);
 const ignored = new Set(['target', 'node_modules', 'build', 'dist', '.work', '.scriptc', 'results', 'test-results', 'out']);
+// raw* names are evidence, except patches (vmm/patches/raw-direct-load.diff).
+const evidence = (name: string) => name.startsWith('raw') && !['.diff', '.patch'].includes(extname(name));
 function sources(directory: string): string[] {
   const paths: string[] = [];
   for (const name of readdirSync(directory).sort()) {
-    if (ignored.has(name) || name.startsWith('raw') || name.startsWith('._')) {
+    if (ignored.has(name) || evidence(name) || name.startsWith('._')) {
       continue;
     }
     const path = join(directory, name);
@@ -35,7 +40,7 @@ function sources(directory: string): string[] {
     }
     if (stat.isDirectory()) {
       paths.push(...sources(path));
-    } else if (stat.isFile() && stat.size <= 1048576 && (extensions.has(extname(path)) || named.has(name))) {
+    } else if (stat.isFile() && (stat.size <= 1048576 || large.has(name)) && (extensions.has(extname(path)) || named.has(name))) {
       paths.push(path);
     }
   }

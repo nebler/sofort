@@ -89,7 +89,7 @@ const unreachable=async()=>{throw Error('declared Tool.invoke is used');};
 const mcpProviders=Object.entries(demo).map(([name,fns])=>({name,fns:Object.fromEntries(Object.keys(fns as object).map(fn=>[fn,unreachable]))}));
 
 /** The pool owns no backend: closing a case pool must not stop a shared shard. */
-const borrowed=(b:Backend):Backend=>({kind:b.kind,memoryLimitMB:b.memoryLimitMB,park:(s,d)=>b.park(s,d)});
+const borrowed=(b:Backend):Backend=>({kind:b.kind,limits:b.limits,park:(s,d)=>b.park(s,d)});
 
 async function runBackend(kind:Kind,engine:Backend,cases:Case[]):Promise<Record<string,Outcome>> {
   const {counter,fns}=fixtures();

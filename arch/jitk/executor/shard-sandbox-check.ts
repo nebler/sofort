@@ -51,7 +51,7 @@ export async function sandboxChecks():Promise<number> {
       const cancel=shard.sent.filter(m=>m.kind===IPC.cancel);
       assert.deepEqual(cancel.map(m=>[m.slot,m.generation]),[[0,1n]],name+': CANCEL for that generation only');
       shard.deliver(hostile,IPC.released);
-      await hostile.exited;assert.deepEqual(shard.freed,[hostile],name+': slot released after reset');
+      await hostile.released;assert.deepEqual(shard.freed,[hostile],name+': slot released after reset');
     }
     assert.equal(shard.fault,undefined,name+': shard connection survives');
     // The sibling on the same shard is unaffected and completes normally.
@@ -92,7 +92,7 @@ export async function sandboxChecks():Promise<number> {
     await assert.rejects(s.reply(1,{ok:1}),/shard unknown reply/,'each id answered once');
     shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.done,0,Buffer.from('{"err":{"name":"TypeError","message":"x"}}'));
     assert.deepEqual(await s.next(),{kind:'fail',cause:'guest',message:'TypeError: x'});
-    assert.equal(s.phase,'done','a guest throw is a completed run');s.kill();assert.equal(s.phase,'ended');
+    assert.equal(s.phase,'done','a guest throw is a completed run');s.release();assert.equal(s.phase,'ended');
     assert.equal(shard.fault,undefined);checks++;
   }
   // Host replies pass the same output limits as v1 frames; a bad one fails only

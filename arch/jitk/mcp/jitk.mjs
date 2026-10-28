@@ -42,25 +42,25 @@ export function classify(error, cancelled) {
 
 export async function createJitk(cfg) {
   if (cfg.execute === false) {
-    const native = createNativeRunner(cfg.native, cfg.timeoutMs);
+    const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
     return {
     selection: 'execute disabled; native Linux KVM ring profiles', warmed: Promise.resolve(),
     run: async () => ({error: {code: 'UNSUPPORTED', message: 'execute backend disabled by server configuration'}, logs: []}),
-    runNative: (input, signal) => native.run(input, signal), close: () => native.close(),
+    runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits, close: () => native.close(),
     };
   }
   const {MicroVMExecutor, SandboxPool} = await import(new URL('executor.js', build).href);
   const {selectBackend} = await import(new URL('select-backend.js', build).href);
   const selected = selectBackend();
   if (cfg.warm && !selected.gate) throw Error('warm pool needs G1 parking evidence (see executor/README.md) or "warm": 0');
-  const native = createNativeRunner(cfg.native, cfg.timeoutMs);
+  const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
   const inner = selected.backend;
   // Refill on every VM exit, not only after a run: the watchdog's lifetime bound
   // (60 s) also reaps idle parked VMs, and the next execute must still find one parked.
   // warm() is idempotent and bounded by warm/maxLive/refillConcurrency.
-  const backend = {kind: inner.kind, memoryLimitMB: inner.memoryLimitMB, close: () => inner.close?.(), async park(signal, deadline) {
+  const backend = {kind: inner.kind, limits: inner.limits, close: () => inner.close?.(), async park(signal, deadline) {
     const s = await inner.park(signal, deadline);
-    void s.exited.then(() => refill());
+    void s.released.then(() => refill());
     return s;
   }};
   const pool = new SandboxPool(backend, cfg.warm, Math.max(cfg.maxLive, cfg.warm, 1), {parkingGate: selected.gate});
@@ -76,16 +76,24 @@ export async function createJitk(cfg) {
   // otherwise costs ~7-10 ms instead of ~3 ms. Its VM is refilled like any other.
   const warmed = refill().then(() => executor.execute('return 0', providers)).then(() => refill());
   return {
-    pool, executor, providers, selection: selected.selection, warmed,
+    pool, executor, providers, selection: selected.selection, warmed, limits: inner.limits,
     async run(code, signal) {
       const r = await executor.execute(code, providers, {signal});
       if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
       return {error: {code: classify(r.error, signal?.aborted === true), message: r.error}, logs: r.logs};
     },
-    runNative: (input, signal) => native.run(input, signal),
+    runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits,
     close: () => { closing = true; return Promise.all([pool.close(), native.close()]); },
   };
 }
+
+// The execute engine's own per-run limits (Engine.limits), for the MCP tool description.
+export const describeLimits = limits => {
+  const js = limits?.js;
+  if (!js) return '';
+  return ` Per run: ${js.calls} tool calls, ${js.logs} console lines, tool replies up to ${js.replyBytes} bytes, ` +
+    `source up to ${js.sourceBytes} bytes, ${js.timers ? 'timers available' : 'no timers (setTimeout is undefined)'}.`;
+};
 
 // One line per guest function, for the MCP tool description.
 export const describeTools = tools => Object.entries(tools).flatMap(([ns, fns]) =>

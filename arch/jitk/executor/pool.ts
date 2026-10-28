@@ -1,6 +1,6 @@
 import type {Engine as Backend,Session} from './engine.js';
 export type ParkingGate={idleCorePercent:number;evidence:string};
-export type PoolOptions={refillConcurrency?:number;maxWaiting?:number;parkingGate?:ParkingGate;onEvent?:(event:'kill'|'reaped',sandbox:Session,atMs:number)=>void};
+export type PoolOptions={refillConcurrency?:number;maxWaiting?:number;parkingGate?:ParkingGate;onEvent?:(event:'release'|'released',sandbox:Session,atMs:number)=>void};
 // 05/06: refill latency in seconds; cap includes parked, running, creating/reaping.
 export function recommendedWarmCount(lambda:number,refillP99Seconds:number,burst:number,cap:number):number {
   if([lambda,refillP99Seconds,burst,cap].some(x=>!Number.isFinite(x)||x<0))throw Error('invalid sizing inputs');
@@ -57,10 +57,10 @@ export class SandboxPool {
   readonly refillConcurrency:number;
   constructor(readonly backend:Backend,readonly warmCount:number,readonly maxLive:number,readonly options:PoolOptions={}) {
     if(!Number.isInteger(warmCount)||!Number.isInteger(maxLive)||warmCount<0||maxLive<1||warmCount>maxLive)throw Error('invalid pool size');
-    // A shard slot is a snapshot restore, so every slot may be admitted at once.
-    // A process backend boots a whole VMM (several CPU-ms, R9 1c/1d): two
-    // concurrent launches pace a burst; queued callers wait rather than fail.
-    this.refillConcurrency=options.refillConcurrency??(backend.kind==='shard'?maxLive:2);
+    // The engine says how many park() calls pay off at once: every shard slot
+    // (a snapshot restore), two VMM boots (several CPU-ms each, R9 1c/1d) for a
+    // process backend. Queued callers wait rather than fail.
+    this.refillConcurrency=options.refillConcurrency??Math.min(maxLive,backend.limits.parallelStarts);
     if(!Number.isInteger(this.refillConcurrency)||this.refillConcurrency<1)throw Error('invalid refill concurrency');
     // A waiter costs a closure and its own deadline bounds the wait; the bound
     // only turns a sustained overload into a fast, typed rejection.
@@ -81,15 +81,15 @@ export class SandboxPool {
     catch(e){this.tokens--;throw e;}
     finally{this.creating--;this.startups.delete(p);this.pump();}
     this.live.add(s);
-    void s.exited.then(()=>{
+    void s.released.then(()=>{
       // The capacity token remains charged through SIGKILL until process close.
       this.live.delete(s);this.parked=this.parked.filter(x=>x!==s);this.tokens--;this.pump();
     });
-    if(this.closed){s.kill();await s.exited;throw Error('pool closed');}
+    if(this.closed){s.release();await s.released;throw Error('pool closed');}
     return s;
   }
   private async prepare(s:Session,deadline?:number):Promise<Session> {
-    if(deadline!==undefined)try{await s.armDeadline?.(deadline);}catch(e){s.kill();await s.exited;throw e;}
+    if(deadline!==undefined)try{await s.armDeadline?.(deadline);}catch(e){s.release();await s.released;throw e;}
     return s;
   }
   /** Hand freed capacity to waiters in order: a parked VM first, otherwise a
@@ -130,24 +130,24 @@ export class SandboxPool {
     // reset). Wait for it in order; only a full queue is backpressure.
     const waiting=this.queue.wait(signal,deadline);this.pump();return waiting;
   }
-  retire(s:Session,beforeKill:()=>void=()=>{}):void {
+  retire(s:Session,beforeRelease:()=>void=()=>{}):void {
     // Keep s in live (and its token charged) until both owned children close.
-    const task=new Promise<void>(resolve=>setImmediate(()=>{beforeKill();void this.release(s).catch(()=>{}).finally(resolve);}));
+    const task=new Promise<void>(resolve=>setImmediate(()=>{beforeRelease();void this.release(s).catch(()=>{}).finally(resolve);}));
     this.disposals.add(task);void task.finally(()=>this.disposals.delete(task));
   }
   async drain():Promise<void>{await Promise.all([...this.disposals]);}
   async release(s:Session):Promise<void> {
     if(!this.live.has(s))return;
-    try{this.options.onEvent?.('kill',s,performance.now());}catch{}
-    s.kill();await s.exited;
-    try{this.options.onEvent?.('reaped',s,performance.now());}catch{}
+    try{this.options.onEvent?.('release',s,performance.now());}catch{}
+    s.release();await s.released;
+    try{this.options.onEvent?.('released',s,performance.now());}catch{}
     // Never reuse a completed VM. Refill is bounded and off the result path.
     if(!this.closed)void this.warm().catch(()=>{});
   }
   async close():Promise<void> {
-    this.closed=true;this.lifecycle.abort();this.queue.rejectAll(Error('pool closed'));for(const s of this.live)s.kill();
+    this.closed=true;this.lifecycle.abort();this.queue.rejectAll(Error('pool closed'));for(const s of this.live)s.release();
     await this.backend.close?.();
     await Promise.allSettled([...this.startups]);await this.warming?.catch(()=>{});
-    await Promise.all([...this.live].map(s=>s.exited));await this.drain();
+    await Promise.all([...this.live].map(s=>s.released));await this.drain();
   }
 }
