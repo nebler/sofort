@@ -6,7 +6,7 @@
 //   hard:  curl/git/tar/xz; rustup with the pinned toolchains, targets and
 //          components; macOS: Xcode clang, ld.lld, llvm-objcopy; Linux: cc,
 //          clang, ld.lld, llvm-objcopy
-//   soft:  the deps cache (`make deps`, which `make build` runs anyway); Docker
+//   soft:  clippy/rustfmt (kernel make check/fmt); the deps cache (`make deps`, which `make build` runs anyway); Docker
 //          (GrowOS and, for now, the Linux VMM build); macOS: the Linux dev
 //          VM (JITK_NESTED_SSH) and its /dev/kvm; Linux: /dev/kvm access
 import { accessSync, constants, existsSync, statSync } from 'node:fs';
@@ -68,12 +68,12 @@ function basics(): Item[] {
 }
 
 // One toolchain with the targets and components the build needs from it.
-async function toolchain(name: string, why: string, targets: string[], components: string[]): Promise<Item> {
-  const label = 'rust ' + name;
+async function toolchain(name: string, why: string, targets: string[], components: string[], level: 'warn' | 'FAIL' = 'FAIL', suffix = ''): Promise<Item> {
+  const label = 'rust ' + name + suffix;
   const listed = await probe(['rustup', 'component', 'list', '--installed', '--toolchain', name], 20);
   if (!listed) {
     const install = 'rustup toolchain install ' + name + ' --profile minimal' + components.map(c => ' --component ' + c).join('') + targets.map(t => ' --target ' + t).join('');
-    return problem('FAIL', label, 'not installed (' + why + ')', install);
+    return problem(level, label, 'not installed (' + why + ')', install);
   }
   const lines = listed.split('\n').map(line => line.trim());
   const has = (piece: string): boolean => lines.some(line => line === piece || line.startsWith(piece + '-'));
@@ -89,7 +89,7 @@ async function toolchain(name: string, why: string, targets: string[], component
   if (absentComponents.length > 0) {
     fixes.push('rustup component add --toolchain ' + name + ' ' + absentComponents.join(' '));
   }
-  return problem('FAIL', label, 'lacks ' + [...absentTargets, ...absentComponents].join(', ') + ' (' + why + ')', fixes.join(' && '));
+  return problem(level, label, 'lacks ' + [...absentTargets, ...absentComponents].join(', ') + ' (' + why + ')', fixes.join(' && '));
 }
 
 async function rust(): Promise<Item[]> {
@@ -98,11 +98,13 @@ async function rust(): Promise<Item[]> {
   }
   const p = pins();
   const checks = [
-    // The kernel (aarch64-unknown-none) everywhere; kernel check.sh / format.ts on the Mac.
-    toolchain(p.rust_toolchain, 'tools/deps.json rust_toolchain', ['aarch64-unknown-none'], mac ? ['clippy', 'rustfmt'] : [])
+    // The kernel (aarch64-unknown-none) everywhere.
+    toolchain(p.rust_toolchain, 'tools/deps.json rust_toolchain', ['aarch64-unknown-none'], [])
   ];
   if (mac) {
     checks.push(toolchain(p.hyperlight_toolchain, 'Hyperlight baseline, make deps', p.hyperlight_targets, ['rust-src']));
+    // Only the kernel's `make check` (clippy) and `make fmt` (rustfmt).
+    checks.push(toolchain(p.rust_toolchain, 'kernel make check/fmt only', [], ['clippy', 'rustfmt'], 'warn', ' lint'));
   }
   return [ok('rustup', which('rustup')), ...(await Promise.all(checks))];
 }
