@@ -1,4 +1,4 @@
-//! Experimental v2 subset. See shard/ABI-R6.md; never linked into default.
+//! The ring transport (shard/ABI-R7.md, ring version 3); never linked into default.
 use crate::abi::ring::*;
 use crate::syscalls::nr;
 use core::sync::atomic::{
@@ -9,36 +9,17 @@ pub const CTRL: usize = CONTROL_GPA as usize;
 const TX: usize = TX_GPA as usize;
 const RX: usize = RX_GPA as usize;
 const SIZE: usize = RING_BYTES;
-const LIMIT: usize = REPLY_BYTES;
-// assert! conditions keep their source text: the length of each stringified
-// condition is in the image, and an unchanged image is the refactor oracle
-// (ARCH.md). The literals they still spell are tied to the ABI here.
-// (fs.rs spells the archive bound.)
-const _: () = assert!(
-    MAX_CALLS == 32 && MAX_ARGS == 32 && JSON_UTF8 == 1 && ARCHIVE_LIMIT == 4 * 1024 * 1024
-);
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum PendingState {
-    Free,
-    Waiting,
-    Ready,
-    Consumed,
-}
-#[derive(Clone, Copy)]
-struct Pending {
-    state: PendingState,
-    kind: u16,
-    len: usize,
-    bytes: [u8; LIMIT],
-}
-static mut PENDING: [Pending; MAX_CALLS] = [Pending {
-    state: PendingState::Free,
-    kind: 0,
-    len: 0,
-    bytes: [0; LIMIT],
-}; MAX_CALLS];
+const _: () = assert!(MAX_ARGS == 32 && JSON_UTF8 == 1 && ARCHIVE_LIMIT == 4 * 1024 * 1024);
+// Calls sent whose final reply record the guest has not read yet: one bit per
+// call id (bit i-1 is id i). The guest never buffers a reply: RET/ERR records
+// stay in the RX ring until read(FD_REPLY) copies them to user memory.
+static mut WAITING: [u64; MAX_CALLS / 64] = [0; MAX_CALLS / 64];
+static mut OUTSTANDING: usize = 0;
 static mut NEXT: usize = 1;
+static mut LOGS: usize = 0;
+// SOURCE bytes read so far, and bytes of the RX head record already read.
 static mut INPUT: usize = 0;
+static mut HEAD_AT: usize = 0;
 static mut CANARY: u64 = 0;
 static mut REPAIR_READ: bool = false;
 
@@ -107,7 +88,7 @@ unsafe fn send(kind: u16, flags: u16, id: u64, payload: &[u8]) {
     // writes; host consumption follows release publication, and no local ring reference
     // spans a doorbell.
     unsafe {
-        let len = (HEADER_BYTES + payload.len() + 7) & !7;
+        let len = record_len(payload.len());
         assert!(len <= RECORD_BYTES);
         let mut prod = load(TX_PRODUCER) as usize;
         loop {
@@ -119,16 +100,16 @@ unsafe fn send(kind: u16, flags: u16, id: u64, payload: &[u8]) {
             crate::arch::doorbell(SUBMIT);
             prod = load(TX_PRODUCER) as usize;
         }
-        let mut h = [0u8; HEADER_BYTES];
-        h[..4].copy_from_slice(&(len as u32).to_le_bytes());
-        h[4..6].copy_from_slice(&kind.to_le_bytes());
-        h[6..8].copy_from_slice(&flags.to_le_bytes());
-        h[8..16].copy_from_slice(&load(GENERATION).to_le_bytes());
-        h[16..24].copy_from_slice(&id.to_le_bytes());
-        h[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
-        if kind == CALL {
-            h[28..].copy_from_slice(&CALL_CAP.to_le_bytes());
+        let mut h = RecordHeader {
+            len: len as u32,
+            kind,
+            flags,
+            generation: load(GENERATION),
+            id,
+            n: payload.len() as u32,
+            cap: if kind == CALL { CALL_CAP } else { 0 },
         }
+        .encode();
         copy_ring(TX, prod, &mut h, true);
         // No allocator or unbounded stack copy. The user range was checked.
         for (i, b) in payload.iter().enumerate() {
@@ -140,69 +121,73 @@ unsafe fn send(kind: u16, flags: u16, id: u64, payload: &[u8]) {
         store(TX_PRODUCER, prod.checked_add(len).unwrap() as u64);
     }
 }
+/// One JSON message as consecutive records: full MORE fragments, then the rest.
 /// # Safety
-/// The sole masked-IRQ vCPU owns pending/RX state. Acquire observes host publication; checked
-/// header/payload/padding bounds precede copies, and release returns consumed bytes.
-pub unsafe fn service() {
-    // SAFETY: The sole masked-IRQ vCPU owns pending/RX state. Acquire observes host
-    // publication; checked header/payload/padding bounds precede copies, and release returns
-    // consumed bytes.
+/// As `send`; payload stays readable until the last fragment is copied.
+unsafe fn send_message(kind: u16, id: u64, payload: &[u8]) {
+    // SAFETY: as send's; each fragment is copied before the next one is taken.
+    unsafe {
+        let last = payload.len().saturating_sub(1) / MAX_PAYLOAD;
+        for (i, chunk) in payload.chunks(MAX_PAYLOAD).enumerate() {
+            let more = if i < last { MORE } else { 0 };
+            send(kind, JSON_UTF8 | more, id, chunk);
+        }
+        if payload.is_empty() {
+            send(kind, JSON_UTF8, id, &[]);
+        }
+    }
+}
+/// The unread RX head record, checked against its framing and this run: its
+/// header and its cursor.
+/// # Safety
+/// The sole masked-IRQ vCPU owns RX consumption; acquire observes host publication.
+unsafe fn head() -> Option<(RecordHeader, usize)> {
+    // SAFETY: The sole masked-IRQ vCPU owns RX consumption; header bytes are copied out of
+    // the ring before any check, and the bounds below precede every payload copy.
     unsafe {
         let prod = load(RX_PRODUCER) as usize;
-        let mut cons = load(RX_CONSUMER) as usize;
+        let cons = load(RX_CONSUMER) as usize;
         assert!(prod >= cons && prod - cons <= SIZE && prod.is_multiple_of(8));
-        while cons < prod {
-            assert!(prod - cons >= HEADER_BYTES);
-            let mut h = [0u8; HEADER_BYTES];
-            copy_ring(RX, cons, &mut h, false);
-            let len = u32::from_le_bytes(h[..4].try_into().unwrap()) as usize;
-            let kind = u16::from_le_bytes(h[4..6].try_into().unwrap());
-            let flags = u16::from_le_bytes(h[6..8].try_into().unwrap());
-            let genid = u64::from_le_bytes(h[8..16].try_into().unwrap());
-            let id = u64::from_le_bytes(h[16..24].try_into().unwrap()) as usize;
-            let n = u32::from_le_bytes(h[24..28].try_into().unwrap()) as usize;
-            assert!(
-                (HEADER_BYTES..=RECORD_BYTES).contains(&len)
-                    && len.is_multiple_of(8)
-                    && len <= prod - cons
-            );
-            assert!(n <= LIMIT && len == (HEADER_BYTES + n + 7) & !7 && flags == 1);
-            assert!(
-                genid == load(GENERATION) && (1..=32).contains(&id) && (kind == RET || kind == ERR)
-            );
-            assert_eq!(u32::from_le_bytes(h[28..].try_into().unwrap()), CALL_CAP);
-            let p = &mut PENDING[id - 1];
-            assert_eq!(p.state, PendingState::Waiting);
-            copy_ring(RX, cons + HEADER_BYTES, &mut p.bytes[..n], false);
-            let mut padding = [0u8; 7];
-            copy_ring(
-                RX,
-                cons + HEADER_BYTES + n,
-                &mut padding[..len - HEADER_BYTES - n],
-                false,
-            );
-            assert!(padding.iter().all(|b| *b == 0));
-            p.len = n;
-            p.kind = kind;
-            p.state = PendingState::Ready;
-            cons += len;
+        if cons == prod {
+            return None;
         }
-        store(RX_CONSUMER, cons as u64);
+        assert!(prod - cons >= HEADER_BYTES);
+        let mut b = [0u8; HEADER_BYTES];
+        copy_ring(RX, cons, &mut b, false);
+        let h = RecordHeader::decode(&b);
+        assert!(h.framed(prod - cons) && h.flags & !MORE == JSON_UTF8);
+        assert!(h.generation == load(GENERATION));
+        // A MORE fragment is full, so it has no padding to check.
+        assert!(h.flags & MORE == 0 || h.n as usize == MAX_PAYLOAD);
+        let mut padding = [0u8; 7];
+        let n = h.n as usize;
+        copy_ring(
+            RX,
+            cons + HEADER_BYTES + n,
+            &mut padding[..h.len as usize - HEADER_BYTES - n],
+            false,
+        );
+        assert!(padding.iter().all(|b| *b == 0));
+        Some((h, cons))
     }
 }
 /// # Safety
-/// Only this masked-IRQ context reads pending/input state; iteration ends before any state
-/// mutation or doorbell.
-pub unsafe fn available() -> bool {
-    // SAFETY: Only this masked-IRQ context reads pending/input state; iteration ends before
-    // any state mutation or doorbell.
+/// Only the masked-IRQ context calls it, after copying the head record's payload.
+unsafe fn pop(h: &RecordHeader, cons: usize) {
+    // SAFETY: release returns the consumed head record's bytes to the host.
     unsafe {
-        !native()
-            && (INPUT < load(SOURCE_BYTES) as usize
-                || (&*core::ptr::addr_of!(PENDING))
-                    .iter()
-                    .any(|p| p.state == PendingState::Ready))
+        HEAD_AT = 0;
+        store(RX_CONSUMER, (cons + h.len as usize) as u64);
     }
+}
+/// RX records stay in the ring until the guest reads them (`read`,
+/// `FD_REPLY`), so there is nothing to move here.
+pub unsafe fn service() {}
+/// # Safety
+/// Only this masked-IRQ context reads RX/input state; no state mutation or doorbell.
+pub unsafe fn available() -> bool {
+    // SAFETY: Only this masked-IRQ context reads RX/input state.
+    unsafe { !native() && (INPUT < load(SOURCE_BYTES) as usize || head().is_some()) }
 }
 /// # Safety
 /// The mapped feature word is aligned and host-published; native mode is immutable for this run.
@@ -211,22 +196,39 @@ pub unsafe fn eof() -> bool {
     // immutable for this run.
     unsafe { native() }
 }
+/// fd 0 of the JS profile: the SOURCE message, then end of file. Blocks (WAIT)
+/// while the host has not yet put its next record on RX.
 pub unsafe fn read(dst: &mut [u8]) -> usize {
-    // SAFETY: The host-published source bytes stay immutable until stopped reset. INPUT is
-    // owned by this masked-IRQ context and dst is disjoint from control memory.
+    // SAFETY: The sole masked-IRQ vCPU owns RX consumption and INPUT/HEAD_AT; dst is
+    // disjoint from transport memory and each copy is bounded by the checked head record.
     unsafe {
         if native() {
             return 0;
         }
-        let len = load(SOURCE_BYTES) as usize;
-        assert!(len <= SOURCE_LIMIT);
-        let n = dst.len().min(len - INPUT);
-        dst[..n].copy_from_slice(core::slice::from_raw_parts(
-            (CTRL + SOURCE_OFFSET + INPUT) as *const u8,
-            n,
-        ));
-        INPUT += n;
-        n
+        let total = load(SOURCE_BYTES) as usize;
+        assert!(total <= SOURCE_LIMIT);
+        loop {
+            if INPUT == total || dst.is_empty() {
+                return 0;
+            }
+            let Some((h, cons)) = head() else {
+                crate::wait::park_for(u64::MAX, true);
+                continue;
+            };
+            let n = h.n as usize;
+            let last = h.flags & MORE == 0;
+            assert!(h.kind == SOURCE && h.id == 0 && h.cap == 0);
+            assert!(HEAD_AT < n && INPUT - HEAD_AT + n <= total);
+            assert_eq!(last, INPUT - HEAD_AT + n == total);
+            let k = dst.len().min(n - HEAD_AT);
+            copy_ring(RX, cons + HEADER_BYTES + HEAD_AT, &mut dst[..k], false);
+            INPUT += k;
+            HEAD_AT += k;
+            if HEAD_AT == n {
+                pop(&h, cons);
+            }
+            return k;
+        }
     }
 }
 /// # Safety
@@ -283,15 +285,36 @@ pub unsafe fn hex(n: usize) {
     // has copied it.
     unsafe { write(&b) }
 }
+/// Whether call `id` (1..=MAX_CALLS) still waits for its final reply record.
+/// # Safety
+/// The masked-IRQ context owns WAITING.
+unsafe fn waiting(id: usize) -> bool {
+    // SAFETY: The masked-IRQ context owns WAITING; id is checked first.
+    unsafe { (1..=MAX_CALLS).contains(&id) && WAITING[(id - 1) / 64] & (1 << ((id - 1) % 64)) != 0 }
+}
+/// # Safety
+/// The masked-IRQ context owns WAITING; id is in 1..=MAX_CALLS.
+unsafe fn set_waiting(id: usize, on: bool) {
+    // SAFETY: The masked-IRQ context owns WAITING; the caller checked id.
+    unsafe {
+        let bit = 1u64 << ((id - 1) % 64);
+        if on {
+            WAITING[(id - 1) / 64] |= bit;
+        } else {
+            WAITING[(id - 1) / 64] &= !bit;
+        }
+    }
+}
 
-// Ring-only pseudo-fds, intercepted before the unchanged Linux dispatcher.
-// 100 checkpoint; 101 repair bytes; 102 finish; 129..160 bounded call ids.
+// Ring-only pseudo-fds, intercepted before the unchanged Linux dispatcher:
+// 100 checkpoint; 101 repair bytes; 102 finish; 103 console; 104 replies;
+// 129..=4224 call ids.
 /// # Safety
 /// Entered only from the sole masked-IRQ EL1 trap with PAN cleared. User ranges are checked
-/// before access; run state is exclusive and no pending borrow crosses a doorbell.
+/// before access; run state is exclusive and no ring borrow crosses a doorbell.
 pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
     // SAFETY: Entered only from the sole masked-IRQ EL1 trap with PAN cleared. User ranges
-    // are checked before access; run state is exclusive and no pending borrow crosses a
+    // are checked before access; run state is exclusive and no ring borrow crosses a
     // doorbell.
     unsafe {
         if native() {
@@ -309,7 +332,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
         if n != nr::READ && n != nr::WRITE {
             return None;
         }
-        if !(FD_CHECKPOINT..=FD_FINISH).contains(&fd)
+        if !(FD_CHECKPOINT..=FD_REPLY).contains(&fd)
             && !(FD_CALL_FIRST..=FD_CALL_LAST).contains(&fd)
         {
             return None;
@@ -366,58 +389,82 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             let Some(pa) = crate::user::access(addr, len, false) else {
                 return Some(-14);
             };
-            if (&*core::ptr::addr_of!(PENDING))
-                .iter()
-                .any(|p| p.state == PendingState::Waiting || p.state == PendingState::Ready)
-            {
+            if OUTSTANDING != 0 {
                 return Some(-16);
             }
-            send(
-                DONE,
-                JSON_UTF8,
-                0,
-                core::slice::from_raw_parts(pa as *const u8, len),
-            );
+            send_message(DONE, 0, core::slice::from_raw_parts(pa as *const u8, len));
             crate::arch::doorbell(FINISH);
             loop {
                 core::hint::spin_loop()
             }
         }
-        if !(FD_CALL_FIRST..=FD_CALL_LAST).contains(&fd) {
-            return Some(-9);
-        }
-        let id = fd - FD_CALL_BASE;
-        if n == nr::WRITE {
-            if len > CALL_BYTES || id != NEXT || PENDING[id - 1].state != PendingState::Free {
+        if fd == FD_CONSOLE && n == nr::WRITE {
+            if len > CONSOLE_BYTES {
                 return Some(-22);
+            }
+            if LOGS >= MAX_LOGS {
+                return Some(-28);
             }
             let Some(pa) = crate::user::access(addr, len, false) else {
                 return Some(-14);
             };
-            PENDING[id - 1].state = PendingState::Waiting;
-            NEXT += 1;
-            send(
-                CALL,
-                JSON_UTF8,
-                id as u64,
+            LOGS += 1;
+            send_message(
+                CONSOLE,
+                0,
                 core::slice::from_raw_parts(pa as *const u8, len),
             );
-            Some(len as isize)
-        } else {
-            service();
-            let p = &mut PENDING[id - 1];
-            if p.state != PendingState::Ready {
+            return Some(len as isize);
+        }
+        if fd == FD_REPLY && n == nr::READ {
+            let Some((h, cons)) = head() else {
                 return Some(-11);
-            }
-            if len < p.len {
+            };
+            let (id, k) = (h.id as usize, h.n as usize);
+            assert!((h.kind == RET || h.kind == ERR) && h.cap == CALL_CAP && waiting(id));
+            assert_eq!({ HEAD_AT }, 0);
+            if len < REPLY_PREFIX_BYTES + k {
                 return Some(-22);
             }
-            if let Err(e) = crate::syscalls::copyout(addr, &p.bytes[..p.len]) {
-                return Some(e);
+            let Some(pa) = crate::user::access(addr, REPLY_PREFIX_BYTES + k, true) else {
+                return Some(-14);
+            };
+            let dst = core::slice::from_raw_parts_mut(pa as *mut u8, REPLY_PREFIX_BYTES + k);
+            dst[..4].copy_from_slice(&(id as u32).to_le_bytes());
+            dst[4..6].copy_from_slice(&h.kind.to_le_bytes());
+            dst[6..8].copy_from_slice(&h.flags.to_le_bytes());
+            copy_ring(
+                RX,
+                cons + HEADER_BYTES,
+                &mut dst[REPLY_PREFIX_BYTES..],
+                false,
+            );
+            pop(&h, cons);
+            if h.flags & MORE == 0 {
+                set_waiting(id, false);
+                OUTSTANDING -= 1;
             }
-            p.state = PendingState::Consumed;
-            Some(if p.kind == RET { p.len as isize } else { -5 })
+            return Some((REPLY_PREFIX_BYTES + k) as isize);
         }
+        if !(FD_CALL_FIRST..=FD_CALL_LAST).contains(&fd) || n != nr::WRITE {
+            return Some(-9);
+        }
+        let id = fd - FD_CALL_BASE;
+        if len > CALL_BYTES || id != NEXT || OUTSTANDING >= MAX_OUTSTANDING {
+            return Some(-22);
+        }
+        let Some(pa) = crate::user::access(addr, len, false) else {
+            return Some(-14);
+        };
+        set_waiting(id, true);
+        OUTSTANDING += 1;
+        NEXT += 1;
+        send_message(
+            CALL,
+            id as u64,
+            core::slice::from_raw_parts(pa as *const u8, len),
+        );
+        Some(len as isize)
     }
 }
 
@@ -461,7 +508,7 @@ pub unsafe fn native_args(args: &mut [&'static str; MAX_ARGS]) -> usize {
     unsafe {
         let count = load(ARGC) as usize;
         let len = load(SOURCE_BYTES) as usize;
-        assert!((1..=32).contains(&count) && len <= SOURCE_LIMIT);
+        assert!((1..=32).contains(&count) && len <= ARGV_BYTES);
         let bytes = core::slice::from_raw_parts((CTRL + SOURCE_OFFSET) as *const u8, len);
         let mut at = 0;
         for arg in &mut args[..count] {

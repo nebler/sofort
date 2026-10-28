@@ -142,6 +142,7 @@ pub unsafe fn sync_icache(start: usize, end: usize) {
 /// Invalidate the whole local I-cache, e.g. after the host rewrote guest memory.
 /// # Safety
 /// EL1 only; no other requirement.
+#[cfg(feature = "transport-ring")]
 #[inline(always)]
 pub unsafe fn invalidate_icache() {
     // SAFETY: IC IALLU only invalidates instruction caches; it lends no references.
