@@ -1,37 +1,32 @@
 //! Ring-only stage 1. All mutable backing lives in the selected stage-2 arena.
 use core::arch::asm;
 
-pub const ARENA: usize = crate::ring_abi::ARENA_GPA;
-#[cfg(not(ring_glue_4m))]
-pub const ARENA_BYTES: usize = 1_310_720;
-#[cfg(ring_glue_4m)]
-pub const ARENA_BYTES: usize = 2_883_584;
+use crate::abi::arena::{BRK_BYTES, CANARY_BYTES, Class, DATA_BYTES, STACK_BYTES};
+
+const CLASS: Class = if cfg!(ring_glue_4m) {
+    Class::Glue4m
+} else {
+    Class::Glue2m
+};
+pub const ARENA: usize = crate::abi::ring::ARENA_GPA as usize;
+pub const ARENA_BYTES: usize = CLASS.bytes();
 const ARENA_TABLES: usize = ARENA_BYTES.div_ceil(0x200000);
 const END: usize = ARENA + ARENA_BYTES;
-const STACK: usize = END - 4096 - 0x20000;
-const BRK_BYTES: usize = 0x10000;
-const DATA_BYTES: usize = 0x10000;
+const STACK: usize = END - CANARY_BYTES - STACK_BYTES;
 const AF: u64 = 1 << 10;
 const SH: u64 = 3 << 8;
 const RO: u64 = 1 << 7;
 const PXN: u64 = 1 << 53;
 const UXN: u64 = 1 << 54;
 const ADDRESS: u64 = 0x0000fffffffff000;
+// link.ld places .data, .bss and the stack at this absolute symbol, so the
+// image's arena is the ABI's arena GPA without a linker --defsym.
+core::arch::global_asm!(".globl __ring_arena", ".set __ring_arena, {arena}", arena = const ARENA);
 
 // Also identifies the physical layout to the offline snapshot preparer.
 #[used]
 #[unsafe(link_section = ".rodata.arena")]
-static LAYOUT: [u64; 9] = [
-    0x414e4552414b544a,
-    2,
-    if cfg!(ring_glue_4m) { 4 } else { 2 },
-    ARENA as u64,
-    ARENA_BYTES as u64,
-    crate::ring_abi::TRANSPORT_BYTES as u64,
-    DATA_BYTES as u64,
-    BRK_BYTES as u64,
-    0x20000,
-];
+static LAYOUT: [u64; crate::abi::arena::LAYOUT_WORDS] = CLASS.layout();
 #[repr(C, align(4096))]
 #[derive(Clone, Copy)]
 struct Table([u64; 512]);
@@ -88,13 +83,13 @@ pub unsafe fn init() {
         );
         ROOT.0[0] = table(&raw const LOW);
         ROOT.0[2] = table(&raw const RAM);
-        LOW.0[crate::ring_abi::DOORBELL_GPA / 0x200000] =
-            crate::ring_abi::DOORBELL_GPA as u64 | 1 | AF | 4 | PXN | UXN;
+        LOW.0[crate::abi::ring::DOORBELL_GPA as usize / 0x200000] =
+            crate::abi::ring::DOORBELL_GPA | 1 | AF | 4 | PXN | UXN;
         // Immutable RAM is read-only even through the kernel's identity alias.
         for i in 0..16 {
             let pa = crate::memory::RAM_GPA as u64 + i as u64 * 0x200000;
             let writable = (ARENA as u64..END as u64).contains(&pa)
-                || pa == (crate::ring_abi::CONTROL_GPA & !0x1fffff) as u64;
+                || pa == crate::abi::ring::CONTROL_GPA & !0x1fffff;
             RAM.0[i] = pa | 1 | AF | SH | PXN | UXN | if writable { 0 } else { RO };
         }
         // Late-bound native archives have their own read-only stage-2 memslot

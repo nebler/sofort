@@ -183,6 +183,6 @@ pub unsafe fn doorbell(op: u32) {
     // publication.
     unsafe {
         asm!("dmb ishst", "str {op:w}, [{addr}]", op=in(reg)op,
-             addr=in(reg)crate::ring_abi::DOORBELL_GPA, options(nostack));
+             addr=in(reg)crate::abi::ring::DOORBELL_GPA, options(nostack));
     }
 }
