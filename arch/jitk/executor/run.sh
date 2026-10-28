@@ -19,6 +19,7 @@ case "${1:-test}" in
   "$TASK_NODE" build/resolve-check.js
   "$TASK_NODE" build/sandbox-check.js
   "$TASK_NODE" build/transport-check.js
+  "$TASK_NODE" build/shard-sandbox-check.js
   "$TASK_NODE" build/watchdog-check.js
   "$TASK_NODE" build/verify.js
   "$TASK_NODE" build/wrapper-conformance.js
