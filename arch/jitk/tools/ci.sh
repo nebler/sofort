@@ -178,7 +178,7 @@ else
   step 'shard-host.sh' sh "$JITK/executor/ipc/shard-host.sh"
   step 'vmm test' locked make -s -C "$JITK/vmm" test
   # The backend-parity target (R10 #7) lands separately; run it once present.
-  if make -s -C "$JITK" -n test-linux >/dev/null 2>&1; then
+  if grep -Eq '^test-linux[[:space:]]*:' "$JITK/Makefile"; then
     step 'test-linux' make -s -C "$JITK" test-linux
   else
     skip test-linux 'no test-linux target in this checkout yet'

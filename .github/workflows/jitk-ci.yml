@@ -48,6 +48,7 @@ jobs:
           done
           if [ -n "$missing" ]; then
             sudo apt-get update -q
+            # shellcheck disable=SC2086 # one word per package
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends $missing
           fi
           # tools/npm.sh prefers a PATH npm; drop the image's Node so the
