@@ -1,5 +1,8 @@
 //! Bounded, verified snapshot metadata; no VM or guest execution is needed to load it.
-use crate::{arena, constants::ring::RAM_BYTES as RAM};
+use crate::{
+    arena,
+    constants::{ABI_VERSION, ring::RAM_BYTES as RAM},
+};
 use std::{
     fs::File,
     io::{self, Read},
@@ -88,6 +91,25 @@ pub(crate) fn read_metadata(reader: impl Read, limit: usize) -> io::Result<Vec<u
 fn snapshot_error(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
+/// The `abiVersion` of a prepared snapshot's `.identity` JSON (written by
+/// shard/snapshot.ts, whose other fields Node verifies). Exactly one
+/// `"abiVersion": <u32>` member; anything else is no version.
+pub(crate) fn identity_abi_version(identity: &[u8]) -> Option<u32> {
+    const KEY: &str = "\"abiVersion\"";
+    let text = std::str::from_utf8(identity).ok()?;
+    if text.matches(KEY).count() != 1 {
+        return None;
+    }
+    let rest = text[text.find(KEY)? + KEY.len()..]
+        .trim_start()
+        .strip_prefix(':')?
+        .trim_start();
+    let digits = rest.bytes().take_while(u8::is_ascii_digit).count();
+    if !rest[digits..].trim_start().starts_with([',', '}']) {
+        return None;
+    }
+    rest[..digits].parse().ok()
+}
 /// Why a KVM register id lies outside the state the slot reset covers, if it
 /// does. The reset restores the register list and RAM bytes of a PSCI-only
 /// AArch64 vCPU; a snapshot from a vCPU with more features fails to load:
@@ -155,6 +177,23 @@ impl Snapshot {
         self.regs.iter().map(|reg| (reg.id, reg.data.as_slice()))
     }
 
+    /// [`Self::load`] a prepared snapshot whose `.identity` names this shard's
+    /// ABI version (the production IPC path; offline harness snapshots have
+    /// no identity).
+    pub fn load_identified(base: &str) -> io::Result<Arc<Self>> {
+        let identity = read_metadata(File::open(format!("{base}.identity"))?, 4096)?;
+        match identity_abi_version(&identity) {
+            Some(ABI_VERSION) => Self::load(base),
+            found => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!(
+                    "prepared snapshot ABI version {} is not this shard's ABI version {ABI_VERSION}; run make -C arch/jitk/shard snapshot",
+                    found.map_or("missing".to_string(), |v| v.to_string())
+                ),
+            )),
+        }
+    }
+
     pub fn load(base: &str) -> io::Result<Arc<Self>> {
         let memory = File::open(format!("{base}.mem"))?;
         if memory.metadata()?.len() != RAM as u64 {
@@ -184,8 +223,38 @@ impl Snapshot {
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_registers, read_metadata, uncovered_register};
+    use super::{identity_abi_version, parse_registers, read_metadata, uncovered_register};
+    use crate::constants::ABI_VERSION;
     use std::io::{self, Read};
+    #[test]
+    fn identity_abi_version_is_exact() {
+        let identity = |v: &str| {
+            format!(
+                "{{\n  \"version\": 2,\n  \"abiVersion\": {v},\n  \"helperSha256\": \"00\"\n}}\n"
+            )
+        };
+        assert_eq!(
+            identity_abi_version(identity(&ABI_VERSION.to_string()).as_bytes()),
+            Some(ABI_VERSION)
+        );
+        // A deliberately mismatched version is reported as itself, so
+        // load_identified refuses it.
+        assert_eq!(identity_abi_version(identity("7").as_bytes()), Some(7));
+        assert_ne!(Some(7), Some(ABI_VERSION));
+        for bad in ["\"8\"", "8.5", "-8", "", "99999999999"] {
+            assert_eq!(
+                identity_abi_version(identity(bad).as_bytes()),
+                None,
+                "{bad}"
+            );
+        }
+        assert_eq!(identity_abi_version(b"{\"version\": 1}"), None);
+        assert_eq!(
+            identity_abi_version(b"{\"abiVersion\": 8, \"abiVersion\": 8}"),
+            None
+        );
+        assert_eq!(identity_abi_version(b"{\"abiVersion\": 8}"), Some(8));
+    }
     #[test]
     fn snapshot_metadata_reads_are_bounded_before_allocation() {
         struct Endless {

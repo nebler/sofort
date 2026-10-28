@@ -1,5 +1,6 @@
 //! Reactor for the selectable Node executor backend. No providers, credentials
 //! or policy rules live here; only admission and transport bounds are checked.
+use crate::constants::{ABI_VERSION, ipc as wire, ring};
 use crate::{
     ipc::{self, Endpoint, Message},
     kvm::{self, Kvm, Request, Snapshot},
@@ -7,8 +8,8 @@ use crate::{
     payload,
 };
 use std::{collections::VecDeque, io, sync::Arc};
-const MAX_SLOTS: usize = 64;
-const OUTBOUND: usize = MAX_SLOTS * 35 + 1;
+const MAX_SLOTS: usize = wire::MAX_SLOTS;
+const OUTBOUND: usize = wire::OUTBOUND;
 pub use crate::constants::ipc::STATS;
 #[derive(Clone, Copy, PartialEq)]
 enum Phase {
@@ -44,24 +45,28 @@ fn ipc_charge(class: crate::arena::Class) -> io::Result<u32> {
 }
 fn admission(m: &Message, now: u64, charge: u32) -> io::Result<(u64, String)> {
     let b = &m.bytes;
-    if m.id != 0 || b.len() < 24 {
+    if m.id != 0 || b.len() < wire::START_HEADER_BYTES {
         return Err(invalid("IPC admission header"));
     }
     let deadline = ipc::u64_at(b, 0);
-    if deadline > now.saturating_add(60_000_000_000)
-        || ipc::u32_at(b, 8) != 32
-        || ipc::u32_at(b, 12) != 1024
+    if deadline > now.saturating_add(wire::DEADLINE_HORIZON_NS)
+        || ipc::u32_at(b, 8) as usize != ring::MAX_CALLS
+        || ipc::u32_at(b, 12) as usize != ring::CALL_BYTES
         || ipc::u32_at(b, 20) != charge
     {
         return Err(invalid("IPC admission limits/deadline"));
     }
     let n = ipc::u32_at(b, 16) as usize;
-    if n > 8192 || b.len() != 24 + n || b[24..].iter().any(|b| !b.is_ascii() || *b == 0) {
+    let source = &b[wire::START_HEADER_BYTES..];
+    if n > ring::SOURCE_LIMIT
+        || source.len() != n
+        || source.iter().any(|b| !b.is_ascii() || *b == 0)
+    {
         return Err(invalid("IPC source bound/encoding"));
     }
     Ok((
         deadline,
-        String::from_utf8(b[24..].to_vec()).map_err(|_| invalid("IPC source UTF-8"))?,
+        String::from_utf8(source.to_vec()).map_err(|_| invalid("IPC source UTF-8"))?,
     ))
 }
 fn enqueue(out: &mut VecDeque<Message>, m: Message) -> io::Result<()> {
@@ -97,7 +102,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     if current_parent != parent {
         return Err(invalid("IPC parent unavailable"));
     }
-    let snapshot = Snapshot::load(base)?;
+    let snapshot = Snapshot::load_identified(base)?;
     let charge = ipc_charge(snapshot.class)?;
     // SAFETY: this binary startup path uniquely adopts the Node-supplied
     // memfd and eventfds 3/4/5 before any owner threads are started.
@@ -119,7 +124,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     };
     enqueue(
         &mut reactor.outbound,
-        Message::new(ipc::READY, 0, 0, 0, Vec::new()),
+        Message::new(ipc::READY, 0, 0, 0, ABI_VERSION.to_le_bytes().to_vec()),
     )?;
     let result = reactor.run(&mut endpoint);
     if let Err(e) = &result {
@@ -199,7 +204,7 @@ impl Reactor {
                     || m.id == 0
                     || m.id > 32
                     || m.bytes.is_empty()
-                    || m.bytes.len() > 1024
+                    || m.bytes.len() > ring::REPLY_BYTES
                     || !payload::printable(&m.bytes)
                 {
                     return Err(invalid("IPC reply schema/generation"));

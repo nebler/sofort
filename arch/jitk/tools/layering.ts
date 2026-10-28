@@ -1,8 +1,9 @@
-// Layering lint (R10 §3): `guest` <- `engine` <- `host` <- `research`; nothing
+// Layering lint (R10 §3): `abi` <- `guest` <- `engine` <- `host` <- `research`; nothing
 // points the other way, and the host runtime reads no coordination marker or
 // evidence directory. An import/path scan in the style of kernel/arch-lint.ts.
 //
 // Layers, by path below arch/jitk:
+//   abi       abi/ (the jitk-abi crate and its payload corpus), except abi/src/bin
 //   guest     kernel/src, the guest bootstraps, shard/guest, shard/fixtures
 //   engine    shard/src (Rust), vmm/src, vmm/sandbox/mod.rs
 //   host      executor (incl. policy), protocol, mcp
@@ -17,8 +18,9 @@
 // executor/build/), and Rust `#[path]`, `include_str!`, `include_bytes!`.
 //
 // Rules:
-//   guest     references only guest files
-//   engine    references only engine or guest files
+//   abi       references only abi files
+//   guest     references only guest or abi files
+//   engine    references only engine, guest or abi files
 //   runtime   the runtime closure contains only host or guest files
 //   evidence  guest, engine and runtime files reference no evidence path
 //   marker    runtime files do not name `.READY`
@@ -39,8 +41,6 @@ const KNOWN: [string, string][] = [
     'parking gate read from evidence at run time (R9 N22: becomes a typed manifest field)'],
   ['marker executor/select-backend.ts: .READY',
     'backend selection reads vmm/kernel .READY markers (R9 N22)'],
-  ['engine shard/src/payload.rs -> protocol/guest-payloads.json',
-    'the shard embeds the guest payload table owned by protocol/ (R10 W1.1: jitk-abi)'],
 ];
 const RUNTIME_ENTRIES = ['mcp/server.mjs', 'mcp/jitk.mjs', 'mcp/native.mjs', 'executor/executor.ts', 'executor/select-backend.ts', 'executor/policy/policy.mjs', 'protocol/dispatcher.ts'];
 const LEAVES = ['protocol/dispatcher.ts', 'executor/policy/policy.mjs'];
@@ -52,6 +52,7 @@ const EVIDENCE_IN_LITERAL = /(?:^|\/)(?:raw[-\w]*|results|out|ledger|evidence)\/
 export function layer(rel: string): string {
   const parts = rel.split('/');
   if (parts.slice(0, -1).some((part) => EVIDENCE.test(part))) return 'evidence';
+  if (parts[0] === 'abi' && !rel.startsWith('abi/src/bin/')) return 'abi';
   if (rel.startsWith('kernel/src/') || rel.startsWith('shard/guest/') || rel.startsWith('shard/fixtures/') || GUEST_FILES.includes(rel)) return 'guest';
   if ((rel.startsWith('shard/src/') && rel.endsWith('.rs')) || rel.startsWith('vmm/src/') || rel === 'vmm/sandbox/mod.rs' || rel === 'vmm/sandbox/jitk.sb') return 'engine';
   if (parts[0] === 'executor' || parts[0] === 'protocol' || parts[0] === 'mcp') return 'host';
@@ -169,8 +170,9 @@ export function lint(root: string): string[] {
     const kind = layer(from);
     for (const to of tos) {
       const toKind = layer(to);
-      if (kind === 'guest' && toKind !== 'guest') found.push(`guest ${from} -> ${to}`);
-      if (kind === 'engine' && toKind !== 'engine' && toKind !== 'guest') found.push(`${toKind === 'evidence' ? 'evidence' : 'engine'} ${from} -> ${to}`);
+      if (kind === 'abi' && toKind !== 'abi') found.push(`abi ${from} -> ${to}`);
+      if (kind === 'guest' && toKind !== 'guest' && toKind !== 'abi') found.push(`guest ${from} -> ${to}`);
+      if (kind === 'engine' && !['engine', 'guest', 'abi'].includes(toKind)) found.push(`${toKind === 'evidence' ? 'evidence' : 'engine'} ${from} -> ${to}`);
     }
   }
   // Runtime closure: stop at a research file (report the edge, not its subtree).
@@ -203,6 +205,7 @@ export function lint(root: string): string[] {
 
 function selfTest(): void {
   check(layer('kernel/src/fs.rs') === 'guest' && layer('shard/src/owner.rs') === 'engine' && layer('executor/pool.ts') === 'host', 'self-test: layers');
+  check(layer('abi/src/lib.rs') === 'abi' && layer('abi/guest-payloads.json') === 'abi' && layer('abi/src/bin/abi-gen.rs') === 'research', 'self-test: abi layer');
   check(layer('bench/run.ts') === 'research' && layer('kernel/tests/demo.ts') === 'research' && layer('shard/raw-r6/x.json') === 'evidence', 'self-test: research/evidence');
   const ts = references('a.ts', "import {x} from './x.js';\nexport * from '../y.js';\n// import z from './z.js';\nconst u = new URL('../p.mjs', import.meta.url);\nimport('./d.js');\nimport 'node:fs';");
   check(ts.map((r) => r.spec).join(' ') === './x.js ../y.js ./d.js ../p.mjs', 'self-test: ts references ' + ts.map((r) => r.spec).join(' '));

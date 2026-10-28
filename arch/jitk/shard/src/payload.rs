@@ -12,7 +12,7 @@ pub fn printable(bytes: &[u8]) -> bool {
 pub fn forwarded(kind: u16, bytes: &[u8]) -> bool {
     let max = match kind {
         ring::CALL => ring::CALL_BYTES,
-        ring::DONE => ring::MAX_PAYLOAD,
+        ring::DONE => ring::DONE_BYTES,
         _ => return false,
     };
     bytes.len() <= max && printable(bytes)
@@ -21,13 +21,13 @@ pub fn forwarded(kind: u16, bytes: &[u8]) -> bool {
 pub(crate) mod tests {
     use super::forwarded;
     use crate::constants::ring;
-    /// `protocol/guest-payloads.json`, shared with the executor's Node tests.
+    /// `abi/guest-payloads.json`, shared with the executor's Node tests.
     /// Rows are one per line: `[kind, name, outcome, payload]`, where each
     /// payload code point is one byte. Only the escapes JSON.stringify emits
     /// for that file (`\"`, `\\`, `\uXXXX`) are decoded.
     pub(crate) fn corpus() -> Vec<(u16, String, String, Vec<u8>)> {
         let mut rows = Vec::new();
-        for line in include_str!("../../protocol/guest-payloads.json").lines() {
+        for line in include_str!("../../abi/guest-payloads.json").lines() {
             let Some(row) = line.strip_prefix('[') else {
                 continue;
             };
@@ -83,8 +83,8 @@ pub(crate) mod tests {
     fn bounds() {
         assert!(forwarded(ring::CALL, &[b'x'; ring::CALL_BYTES]));
         assert!(!forwarded(ring::CALL, &[b'x'; ring::CALL_BYTES + 1]));
-        assert!(forwarded(ring::DONE, &[b'x'; ring::MAX_PAYLOAD]));
-        assert!(!forwarded(ring::DONE, &[b'x'; ring::MAX_PAYLOAD + 1]));
+        assert!(forwarded(ring::DONE, &[b'x'; ring::DONE_BYTES]));
+        assert!(!forwarded(ring::DONE, &[b'x'; ring::DONE_BYTES + 1]));
         assert!(!forwarded(ring::LOG, b"x"));
     }
 }

@@ -1,5 +1,6 @@
 pub mod native;
 pub use crate::clock::{clock_ns, monotonic_ns};
+use crate::constants::ring::RecordHeader;
 use crate::snapshot::Register;
 pub use crate::snapshot::Snapshot;
 use crate::{
@@ -343,11 +344,11 @@ impl Slot {
         self.store(ring::GENERATION, generation);
         self.store(
             ring::RING_LIMITS,
-            ring::RING_BYTES as u64 | ((ring::MAX_RECORD as u64) << 32),
+            ring::RING_BYTES as u64 | ((ring::RECORD_BYTES as u64) << 32),
         );
         self.store(
             ring::CALL_LIMITS,
-            ring::MAX_CALLS | ((ring::RING_BYTES as u64) << 32),
+            ring::MAX_CALLS as u64 | ((ring::RING_BYTES as u64) << 32),
         );
         let mut seed = [0u8; 16];
         entropy.read_exact(&mut seed).unwrap();
@@ -462,26 +463,21 @@ impl Slot {
             if prod - self.tx < ring::HEADER_BYTES {
                 return Err(RunError::GuestProtocol("truncated TX header"));
             }
-            let h = self.ring_copy(REQUEST, self.tx, ring::HEADER_BYTES);
-            let len = u32::from_le_bytes(h[..4].try_into().unwrap()) as usize;
-            let kind = u16::from_le_bytes(h[4..6].try_into().unwrap());
-            let flags = u16::from_le_bytes(h[6..8].try_into().unwrap());
-            let generation = u64::from_le_bytes(h[8..16].try_into().unwrap());
-            let id = u64::from_le_bytes(h[16..24].try_into().unwrap());
-            let n = u32::from_le_bytes(h[24..28].try_into().unwrap()) as usize;
-            let cap = u32::from_le_bytes(h[28..].try_into().unwrap());
-            // Header slices above have fixed, host-selected lengths. Their conversions
+            // The copy has the fixed, host-selected header length, so the conversion
             // cannot fail; guest values are validated before indexing the payload.
-            if !(ring::HEADER_BYTES..=ring::MAX_RECORD).contains(&len)
-                || !len.is_multiple_of(8)
-                || len > prod - self.tx
-                || n > ring::MAX_PAYLOAD
-                || len != (ring::HEADER_BYTES + n + 7) & !7
-                || flags != ring::JSON_UTF8
-                || generation != self.generation
+            let h = RecordHeader::decode(
+                &self
+                    .ring_copy(REQUEST, self.tx, ring::HEADER_BYTES)
+                    .try_into()
+                    .unwrap(),
+            );
+            if !h.framed(prod - self.tx)
+                || h.flags != ring::JSON_UTF8
+                || h.generation != self.generation
             {
                 return Err(RunError::GuestProtocol("TX record header"));
             }
+            let (len, kind, id, n, cap) = (h.len as usize, h.kind, h.id, h.n as usize, h.cap);
             // Copy once, then validate/use this owner-private copy.
             let mut payload = self.ring_copy(
                 REQUEST,
@@ -494,9 +490,9 @@ impl Slot {
             payload.truncate(n);
             match kind {
                 ring::CALL => {
-                    if !(1..=ring::MAX_CALLS).contains(&id)
+                    if !(1..=ring::MAX_CALLS as u64).contains(&id)
                         || id != u64::from(self.seen.count_ones()) + 1
-                        || cap != 1
+                        || cap != ring::CALL_CAP
                         || !crate::payload::forwarded(ring::CALL, &payload)
                     {
                         return Err(RunError::GuestProtocol("call identity/schema"));
@@ -550,24 +546,27 @@ impl Slot {
         }
         self.rx_consumed = cons;
         let n = r.bytes.len();
-        let len = (ring::HEADER_BYTES + n + 7) & !7;
+        let len = ring::record_len(n);
         if self.rx - cons + len > ring::RING_BYTES {
             return Err(RunError::GuestProtocol("RX credit exhausted"));
         }
         // The trusted broker/fixture must answer a previously decoded request once.
-        assert!((1..=ring::MAX_CALLS).contains(&r.id) && n <= ring::CALL_BYTES);
+        assert!((1..=ring::MAX_CALLS as u64).contains(&r.id) && n <= ring::REPLY_BYTES);
         let bit = 1u32 << (r.id - 1);
         assert_eq!(self.replied & bit, 0);
         assert_ne!(self.seen & bit, 0);
         let mut b = vec![0u8; len];
-        b[..4].copy_from_slice(&(len as u32).to_le_bytes());
-        b[4..6].copy_from_slice(&ring::RET.to_le_bytes());
-        b[6..8].copy_from_slice(&ring::JSON_UTF8.to_le_bytes());
-        b[8..16].copy_from_slice(&self.generation.to_le_bytes());
-        b[16..24].copy_from_slice(&r.id.to_le_bytes());
-        b[24..28].copy_from_slice(&(n as u32).to_le_bytes());
-        b[28..32].copy_from_slice(&1u32.to_le_bytes());
-        b[32..32 + n].copy_from_slice(&r.bytes);
+        let h = RecordHeader {
+            len: len as u32,
+            kind: ring::RET,
+            flags: ring::JSON_UTF8,
+            generation: self.generation,
+            id: r.id,
+            n: n as u32,
+            cap: ring::CALL_CAP,
+        };
+        b[..ring::HEADER_BYTES].copy_from_slice(&h.encode());
+        b[ring::HEADER_BYTES..ring::HEADER_BYTES + n].copy_from_slice(&r.bytes);
         for (i, x) in b.iter().enumerate() {
             self.copy(REPLY + (self.rx + i) % ring::RING_BYTES, &[*x]);
         }

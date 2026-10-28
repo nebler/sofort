@@ -3,7 +3,8 @@
 `jitk-shard` is a library with one CLI entry point, `real`. `snapshot`, `arena`,
 `inputs`, `payload`, `streams` and `entropy` are portable; `kvm`, `owner`,
 `lease`, `clock`, `ipc` and `ipc_service` contain the Linux arm64 runtime. Shard-local
-layout and UAPI constants live in `constants`. Offline preparation, fixtures,
+UAPI constants live in `constants`, which re-exports the ring and IPC ABI from
+the jitk-abi crate (`../abi`). Offline preparation, fixtures,
 probes and measurement drivers belong to the `real` binary under `src/bin/harness`;
 they are not library modules. (The synthetic ABI-v0 assembly baseline was
 deleted in R12; it is at tag `pre-dead-code-2026-10-28`.)
