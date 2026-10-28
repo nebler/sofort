@@ -17,5 +17,6 @@ for(const fields of [{slot:1},{generation:1n},{id:1}]){
 }
 // Geometry the bridge (bridge_abi.h) and ipc/ABI.md also state.
 assert.equal(IPC.headerBytes+IPC.payload,16416);checks++;
-assert.equal(IPC.outbound,IPC.slots*IPC.recordsPerGeneration+1);checks++;
+assert.equal(IPC.outbound,IPC.slots*(IPC.outstanding+IPC.logs+3)+1);checks++;
+assert.equal(IPC.messagesPerGeneration,IPC.calls+IPC.logs+3);checks++;
 console.log(JSON.stringify({suite:'abi',status:'PASS',checks,abiVersion:ABI_VERSION}));
