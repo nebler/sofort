@@ -137,7 +137,8 @@ real deadlines SNAPSHOT_BASE staggered 8   # 2W slots; parked expiry interrupts 
 arena pages and 20 ring pages, then write immutable RAM; retain its stopped
 private pages for cgroup accounting. Ordinary `arena_attack` errors reset first.
 The existing R6 ledger harness works with the configured thread count and also
-records cgroup `memory.peak`. `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
+records cgroup `memory.peak`; its `spawn-cg` is built from
+[`../linux/spawn-cg.c`](../linux/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
 
 ## Native TypeScript harness
