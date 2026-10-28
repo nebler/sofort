@@ -118,9 +118,10 @@ export async function build(work: string, out: string, elf: string, argv: string
 
 let selectedHost: string | undefined;
 export function selectHost(): void {
-  // Explicit JITK_VMM_BINARY, else the deps cache; later steps read the env.
-  const value = requireArtifact('JITK_VMM_BINARY');
-  process.env.JITK_VMM_BINARY = value;
+  // Explicit JITK_SHARD_BINARY (the signed hvf engine), else the deps cache;
+  // later steps read the env. Guests run under its console runner.
+  const value = requireArtifact('JITK_SHARD_BINARY');
+  process.env.JITK_SHARD_BINARY = value;
   selectedHost = realpathSync(value);
   accessSync(selectedHost, constants.X_OK);
 }
@@ -133,7 +134,7 @@ export function host(): string {
 }
 
 export function hostCommand(image: string): string[] {
-  return [host(), '--image', resolve(image)];
+  return [host(), 'console', '--image', resolve(image)];
 }
 
 export function checkHost(info: GuestInfo, stderr: Buffer): void {

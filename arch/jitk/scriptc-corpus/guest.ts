@@ -105,8 +105,9 @@ export async function guest(elf: string, dir: string, timeout = 10, target = 'ta
   writeFileSync(join(dir, 'kernel-build.log'), Buffer.concat([result.stdout, result.stderr]));
   if (result.returncode !== 0 || result.timeout || !existsSync(join(out, 'kernel.bin'))) return { buildError: result.timeout ? 'timeout' : 'rc=' + result.returncode };
   check(embedded(readFileSync(join(out, 'kernel.bin')), pack(readFileSync(elf)).flat), 'stale-payload-embedding: kernel.bin does not contain this ELF');
-  const vmm = requireArtifact('JITK_VMM_BINARY');
-  const vm = await capture([vmm, '--image', join(out, 'kernel.bin')], { timeout });
+  // The console kernel on the HVF engine's console runner (shard/src/hvf/console.rs).
+  const vmm = requireArtifact('JITK_SHARD_BINARY');
+  const vm = await capture([vmm, 'console', '--image', join(out, 'kernel.bin')], { timeout });
   const observed = observe(vm.stdout);
   const text = vm.stdout.toString('latin1');
   const fault = /\x1eFAULT (esr=[0-9a-f]+ far=[0-9a-f]+ pc=[0-9a-f]+)/.exec(text);

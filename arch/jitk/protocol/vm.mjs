@@ -18,8 +18,10 @@ export function selection() {
   source='integrated kernel READY';
  }
  if(process.env.JITK_IMAGE){image=process.env.JITK_IMAGE;source='explicit JITK_IMAGE override';}
- const host=process.env.JITK_VMM||'/tmp/jitk-02/r2/host';
- const cli=process.env.JITK_VMM_CLI||'02-r2';
+ // The console kernel on the HVF engine's console runner (`hvf console`).
+ const host=process.env.JITK_SHARD_BINARY;
+ if(!host)throw Error('set JITK_SHARD_BINARY to the signed hvf engine (make -C arch/jitk deps)');
+ const cli='hvf-console';
  const originalImage=image, contents=readFileSync(image), imageSha256=createHash('sha256').update(contents).digest('hex');
  mkdirSync('/tmp/jitk-03/r3',{recursive:true});image='/tmp/jitk-03/r3/kernel-'+imageSha256+'.bin';
  if(!existsSync(image))writeFileSync(image,contents);
@@ -31,7 +33,7 @@ export const stats=xs=>{
 };
 export async function vm(config,act) {
  const started=performance.now();
- const child=spawn(config.host,config.cli==='01-vmm'?['--image',config.image,'--mem-mib','32']:[config.image],
+ const child=spawn(config.host,['console','--image',config.image],
   {stdio:'pipe',detached:true,env:{PATH:'/usr/bin:/bin'}});
  let watchdogFired=false,watchdog,ended=false,queued=0,error,readyAt,doneAt;
  let fault,stderr='',bytes=0,kernel=[],frames=[],done,hostEffects=0;

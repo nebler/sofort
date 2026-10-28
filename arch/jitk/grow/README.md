@@ -9,7 +9,7 @@ from the shared `../tslib/` through `lib.ts`.
 
 ```sh
 make -C arch/jitk/grow build test
-export JITK_VMM_BINARY=/absolute/path/to/jitk-vmm
+export JITK_SHARD_BINARY=/absolute/path/to/hvf   # the signed HVF engine; default: the jitk cache
 arch/jitk/grow/build/grow --run-id unique-name --validate-only
 arch/jitk/grow/build/grow --run-id sqlite-check --validate-only \
   --target fstat --target pread64 --samples 30 \
@@ -113,7 +113,10 @@ normal operation requires the already available pinned image.
 
 Prerequisites: Node/npm for the pinned compiler, Zig for the Linux binary,
 Rust 1.95.0 with aarch64-unknown-none, clang/ld.lld/LLVM objcopy, the existing
-Docker image and a confined VMM explicitly selected via `JITK_VMM_BINARY`.
+Docker image and the HVF engine (`JITK_SHARD_BINARY`, default the jitk cache):
+guests boot under its console runner, `hvf console --image` (macOS arm64;
+until 2026-10-28 the libkrun `jitk-vmm`, so recorded VMM pins are libkrun's).
+The `--vmm PATH` options of the experiment drivers below name that binary.
 The kernel build uses its native scriptc tooling; grow executes no Python.
 The independent Rust host assertions are preserved unchanged in trusted
 `host-tests.rs`, checked against `host-tests-origin.json`, and compiled directly
@@ -125,7 +128,7 @@ Experiment scripts are native subcommands:
 ```sh
 arch/jitk/grow/build/experiments --help
 arch/jitk/grow/build/experiments run-e1 --phase pilot --workers 3 --prefix fresh-e1 \
-  --vmm /absolute/jitk-vmm --sqlite-elf /absolute/sqlite3-static --database /absolute/demo.db
+  --vmm /absolute/hvf --sqlite-elf /absolute/sqlite3-static --database /absolute/demo.db
 arch/jitk/grow/build/experiments verify-receipts --meta /absolute/E1-pilot.json --require-complete
 arch/jitk/grow/build/experiments seal-receipts --meta /absolute/E1-pilot.json --artifacts
 arch/jitk/grow/build/experiments summarize --meta /absolute/E0-environment.json \
@@ -166,16 +169,16 @@ E2/E3 use native experiment tools with mandatory validate-only execution:
 make -C arch/jitk/grow build build/e2 build/e3 build/auto-grow test
 grow=arch/jitk/grow/build
 $grow/e2 --run-id TRIALS --validate-only --red-team simplest --n 5 \
-  --vmm /absolute/jitk-vmm --sqlite-elf /absolute/sqlite3-static \
+  --vmm /absolute/hvf --sqlite-elf /absolute/sqlite3-static \
   --database /absolute/demo.db
-JITK_VMM_BINARY=/absolute/jitk-vmm $grow/e2 grade --run-id GRADE --validate-only \
+JITK_SHARD_BINARY=/absolute/hvf $grow/e2 grade --run-id GRADE --validate-only \
   --trials TRIALS[,TRIALS2] --sqlite-elf /absolute/sqlite3-static \
   --database /absolute/demo.db
-JITK_VMM_BINARY=/absolute/jitk-vmm $grow/e3 --run-id MUTANT_ID --validate-only \
+JITK_SHARD_BINARY=/absolute/hvf $grow/e3 --run-id MUTANT_ID --validate-only \
   --sqlite-elf /absolute/sqlite3-static --database /absolute/demo.db
 $grow/auto-grow prepare --profiles /absolute/NEW_PROFILES \
   --fresh /absolute/MUTANT_ID/fresh --database /absolute/demo.db
-$grow/auto-grow batch --run-id UNIQUE --validate-only --vmm /absolute/jitk-vmm \
+$grow/auto-grow batch --run-id UNIQUE --validate-only --vmm /absolute/hvf \
   --profiles /absolute/NEW_PROFILES --sqlite-elf /absolute/sqlite3-static \
   --database /absolute/demo.db
 ```
@@ -231,9 +234,9 @@ grow=arch/jitk/grow/build
 $grow/phase2 traces  --out /abs/TRACES                 # visible corpus seed traces
 $grow/phase2 prepare --profiles /abs/PROFILES --traces /abs/TRACES \
   --fresh /abs/E3_RUN/fresh --database /abs/demo.db   # autoprofile + calibrations
-JITK_VMM_BINARY=/abs/jitk-vmm $grow/phase2 replay --target T --profiles /abs/PROFILES \
+JITK_SHARD_BINARY=/abs/hvf $grow/phase2 replay --target T --profiles /abs/PROFILES \
   --out /abs/OUT --handler FILE.rs                      # model-free grading
-$grow/phase2 batch --run-id ID --validate-only --vmm /abs/jitk-vmm \
+$grow/phase2 batch --run-id ID --validate-only --vmm /abs/hvf \
   --profiles /abs/PROFILES --sqlite-elf /abs/sqlite3-static --database /abs/demo.db
 $grow/phase2 assemble --accepted DIR --out /abs/GROWN_KERNEL
 ```

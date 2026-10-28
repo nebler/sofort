@@ -38,7 +38,7 @@ async function main(argv: string[]): Promise<void> {
   if (command === 'run-e0' || command === 'run-e1') {
     const prefix = options['--prefix'] || command + '-' + Date.now();
     check(/^[a-zA-Z0-9_-]+$/.test(prefix), 'invalid prefix');
-    const runOptions: RunOptions = { phase: options['--phase'] || 'pilot', workers: Number(options['--workers'] || 3), prefix, vmm: resolve(options['--vmm'] || requireArtifact('JITK_VMM_BINARY')), sqlite: resolve(options['--sqlite-elf'] || '/tmp/growos-inputs-20261026/sqlite3-static'), database: resolve(options['--database'] || join(ROOT, 'results/r7-grow/demo.db')) };
+    const runOptions: RunOptions = { phase: options['--phase'] || 'pilot', workers: Number(options['--workers'] || 3), prefix, vmm: resolve(options['--vmm'] || requireArtifact('JITK_SHARD_BINARY')), sqlite: resolve(options['--sqlite-elf'] || '/tmp/growos-inputs-20261026/sqlite3-static'), database: resolve(options['--database'] || join(ROOT, 'results/r7-grow/demo.db')) };
     if (command === 'run-e0') {
       await runE0(runOptions);
     } else {
