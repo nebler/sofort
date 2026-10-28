@@ -8,6 +8,8 @@
 //!   hvf ipc SNAPSHOT_BASE SLOTS [POLICY]     the engine: Node's IPC on fd 3 (a
 //!                                            stream socket), one confined process
 //!                                            per slot (hvf/zygote.rs)
+//!   hvf native-worker TOOL=BASE...           the persistent native worker
+//!                                            (shard/ABI-R7.md; hvf/native.rs)
 //!   hvf confine SNAPSHOT_BASE                confinement check: an unconfined
 //!                                            control, an engine process and the
 //!                                            zygote, each confined as in
@@ -64,9 +66,15 @@ mod mac {
                 }
             }
             "confine" => confine(arg(2)),
+            "native-worker" => {
+                if let Err(e) = jitk_shard::hvf::native::worker(&a[2..]) {
+                    eprintln!("hvf native-worker: {e}");
+                    std::process::exit(1);
+                }
+            }
             _ => {
                 eprintln!(
-                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE"
+                    "usage: hvf prepare KERNEL_IMAGE BASE | hvf bench BASE FIXTURE N [copy|remap|unclean] | hvf ipc BASE SLOTS [POLICY] | hvf confine BASE | hvf native-worker TOOL=BASE..."
                 );
                 std::process::exit(2);
             }

@@ -383,15 +383,20 @@ fn hostile_cache_off_guest_never_reaches_the_next_run() {
 #[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
 fn writable_extents_never_execute() {
     let _vm = vm_lock();
-    for mode in [MemoryReset::Copy, MemoryReset::Remap] {
-        let mut s = slot(snapshot(), mode);
+    for (snapshot, mode) in snapshots()
+        .into_iter()
+        .flat_map(|s| [(s.clone(), MemoryReset::Copy), (s, MemoryReset::Remap)])
+    {
+        let mut s = slot(snapshot, mode);
         let canary = ring::RAM_GPA + s.snapshot().class.canary() as u64;
-        // br x4 (arena start); movz x5, #0x81d0, lsl #16; br x5 (control page);
+        let control = ring::RAM_GPA + CTRL as u64;
+        assert_eq!(control & 0xffff, 0, "control page GPA fits one movz");
+        // br x4 (arena start); movz x5, #control, lsl #16; br x5 (control page);
         // movz x6, canary; br x6 (the fixture page, after a reset).
         let (lo, hi) = (canary & 0xffff, canary >> 16);
         for code in [
             vec![0xd61f_0080u32],
-            vec![0xd2b0_3a05, 0xd61f_00a0],
+            vec![0xd2a0_0005 | ((control >> 16) as u32) << 5, 0xd61f_00a0],
             vec![
                 0xd2a0_0006 | (hi as u32) << 5,
                 0xf280_0006 | (lo as u32) << 5,
@@ -408,15 +413,16 @@ fn writable_extents_never_execute() {
                 hv::Vcpu::redirect(&mut s.vcpu, canary, 0, 0).unwrap();
             }
             let e = s.exit().err().map(|e| e.to_string());
+            let class = s.snapshot().class.name();
             assert_eq!(
                 e.as_deref(),
                 Some("guest_protocol: unexpected guest exception"),
-                "{mode:?} {code:x?}"
+                "{class} {mode:?} {code:x?}"
             );
             assert_eq!(
                 s.vcpu.syndrome >> 26,
                 0x20,
-                "{mode:?}: instruction abort from EL1"
+                "{class} {mode:?}: instruction abort from EL1"
             );
         }
     }
@@ -436,20 +442,27 @@ fn immutable_host_write_child() {
 #[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
 fn immutable_host_writes_fault() {
     use std::os::unix::process::ExitStatusExt;
-    let status = std::process::Command::new(std::env::current_exe().unwrap())
-        .args([
-            "--exact",
-            "hvf::tests::immutable_host_write_child",
-            "--ignored",
-        ])
-        .env("JITK_IMMUTABLE_WRITE_CHILD", "1")
-        .output()
+    snapshots(); // both classes are present
+    for base in std::env::var("JITK_SHARD_TEST_SNAPSHOTS")
         .unwrap()
-        .status;
-    assert!(
-        matches!(status.signal(), Some(10 | 11)),
-        "immutable write must fault: {status:?}"
-    );
+        .split(':')
+    {
+        let status = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "hvf::tests::immutable_host_write_child",
+                "--ignored",
+            ])
+            .env("JITK_IMMUTABLE_WRITE_CHILD", "1")
+            .env("JITK_SHARD_TEST_SNAPSHOT", base)
+            .output()
+            .unwrap()
+            .status;
+        assert!(
+            matches!(status.signal(), Some(10 | 11)),
+            "{base}: immutable write must fault: {status:?}"
+        );
+    }
 }
 
 /// An EL1 fixture (MMU off) that installs its own vector table, then MSRs or
@@ -530,6 +543,71 @@ fn impdef_registers_are_out_of_guest_reach() {
         reachable.is_empty(),
         "guest-reachable registers the reset cannot restore: {reachable:04x?}"
     );
+}
+
+/// The native profile's input archive (native.rs, `HvfVm::map_input`): an
+/// EL1 fixture reads the bytes at ARCHIVE_GPA; a store there and a branch
+/// there fault; once unmapped, a read faults too. Both classes.
+#[test]
+#[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
+fn input_archive_is_read_only_and_never_executes() {
+    let _vm = vm_lock();
+    let archive = ring::ARCHIVE_GPA;
+    assert_eq!(archive & 0xffff, 0, "archive GPA fits one movz");
+    let movz = |rd: u32, gpa: u64| 0xd2a0_0000 | ((gpa >> 16) as u32) << 5 | rd;
+    let code = |words: &[u32]| -> Vec<u8> { words.iter().flat_map(|w| w.to_le_bytes()).collect() };
+    // x1 = archive; x0 = [x1]; x2 = RAM_GPA; [x2] = x0 (read-only RAM: ends the run).
+    let read = code(&[
+        movz(1, archive),
+        0xf940_0020,
+        movz(2, ring::RAM_GPA),
+        0xf900_0040,
+    ]);
+    let write = code(&[movz(1, archive), 0xf900_0021]); // [x1] = x1
+    let branch = code(&[movz(1, archive), 0xd61f_0020]); // br x1
+    for snapshot in snapshots() {
+        let class = snapshot.class.name();
+        let mut s = slot(snapshot, MemoryReset::Copy);
+        let bytes: Vec<u8> = (0..20_000u32).map(|i| (i * 7 + 3) as u8).collect();
+        let input = super::native::Input::new(&bytes).unwrap();
+        assert_eq!(input.len, 32768, "rounded to the 16 KiB granule");
+        // SAFETY: input outlives the translation (unmapped below).
+        unsafe { s.vm.map_input(input.ptr, input.len) }.unwrap();
+        s.redirect_entry(&read);
+        assert!(
+            matches!(s.exit(), Err(RunError::MemoryBound { address }) if address == ring::RAM_GPA),
+            "{class}: read fixture"
+        );
+        assert_eq!(
+            s.vcpu.reg(0),
+            u64::from_le_bytes(bytes[..8].try_into().unwrap()),
+            "{class}: the guest reads the archive"
+        );
+        s.reset().unwrap();
+        s.redirect_entry(&write);
+        assert!(
+            matches!(s.exit(), Err(RunError::MemoryBound { address }) if address == archive),
+            "{class}: a store to the archive faults"
+        );
+        s.reset().unwrap();
+        s.redirect_entry(&branch);
+        assert_eq!(
+            s.exit().err().map(|e| e.to_string()).as_deref(),
+            Some("guest_protocol: unexpected guest exception"),
+            "{class}: a branch into the archive"
+        );
+        assert_eq!(s.vcpu.syndrome >> 26, 0x20, "{class}: instruction abort");
+        s.reset().unwrap();
+        s.vm.unmap_input(input.len).unwrap();
+        s.redirect_entry(&read);
+        assert!(
+            matches!(s.exit(), Err(RunError::MemoryBound { address }) if address == archive),
+            "{class}: an unmapped archive faults"
+        );
+        s.reset().unwrap();
+        drop(s);
+        drop(input);
+    }
 }
 
 /// The shard clock (clock.rs) keeps guest time moving inside one HVF run: a
