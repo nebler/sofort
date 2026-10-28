@@ -1,7 +1,7 @@
 import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
-import {ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
-import type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
+import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
+import type {Engine,GuestEvent,Job,Limits,Phase,Reply,Session} from './engine.js';
 import {failure} from './engine.js';
 import {executionBody} from './code.js';
 import {AdmissionQueue} from './pool.js';
@@ -25,9 +25,18 @@ export function shardWire(code:string,names:string[]):string {
   return `return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
 }
 
+/** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots. */
+export function shardLimits(slots:number):Limits {
+  const arena=ARENA_CLASSES['glue-2m'];
+  return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
+    // Logs are ring CALL records: they share the call budget and the record size.
+    js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:IPC.replyBytes,doneBytes:IPC.doneBytes,
+      logs:IPC.calls,logBytes:IPC.callBytes,timers:false,arenaBytes:arena.arenaBytes}};
+}
+
 export class ShardBackend implements Engine {
   readonly kind='shard' as const;
-  readonly memoryLimitMB=2;
+  readonly limits:Limits;
   readonly ready:Promise<void>;
   readonly child:ChildProcess;
   private channel:SharedChannel;
@@ -46,7 +55,7 @@ export class ShardBackend implements Engine {
     verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
-    this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
+    this.limits=shardLimits(slots);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
     this.channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));
     // Exactly these descriptors and a credential-free environment are inherited.

@@ -58,7 +58,7 @@ export async function createJitk(cfg) {
   // Refill on every VM exit, not only after a run: the watchdog's lifetime bound
   // (60 s) also reaps idle parked VMs, and the next execute must still find one parked.
   // warm() is idempotent and bounded by warm/maxLive/refillConcurrency.
-  const backend = {kind: inner.kind, memoryLimitMB: inner.memoryLimitMB, close: () => inner.close?.(), async park(signal, deadline) {
+  const backend = {kind: inner.kind, limits: inner.limits, close: () => inner.close?.(), async park(signal, deadline) {
     const s = await inner.park(signal, deadline);
     void s.released.then(() => refill());
     return s;
@@ -76,7 +76,7 @@ export async function createJitk(cfg) {
   // otherwise costs ~7-10 ms instead of ~3 ms. Its VM is refilled like any other.
   const warmed = refill().then(() => executor.execute('return 0', providers)).then(() => refill());
   return {
-    pool, executor, providers, selection: selected.selection, warmed,
+    pool, executor, providers, selection: selected.selection, warmed, limits: inner.limits,
     async run(code, signal) {
       const r = await executor.execute(code, providers, {signal});
       if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
@@ -86,6 +86,14 @@ export async function createJitk(cfg) {
     close: () => { closing = true; return Promise.all([pool.close(), native.close()]); },
   };
 }
+
+// The execute engine's own per-run limits (Engine.limits), for the MCP tool description.
+export const describeLimits = limits => {
+  const js = limits?.js;
+  if (!js) return '';
+  return ` Per run: ${js.calls} tool calls, ${js.logs} console lines, tool replies up to ${js.replyBytes} bytes, ` +
+    `source up to ${js.sourceBytes} bytes, ${js.timers ? 'timers available' : 'no timers (setTimeout is undefined)'}.`;
+};
 
 // One line per guest function, for the MCP tool description.
 export const describeTools = tools => Object.entries(tools).flatMap(([ns, fns]) =>

@@ -7,7 +7,6 @@ import type {Session} from './engine.js';
 import {SandboxPool} from './pool.js';
 import {rules,noCredentials,type PolicyConfig} from './policy-adapter.js';
 import {performance} from 'node:perf_hooks';
-import {LIMIT} from '../protocol/dispatcher.js';
 export * from './backend.js';
 export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
@@ -43,7 +42,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;
     let firstCall=true,firstRet=true;
     try {
-      if(code.length>LIMIT.code)throw new Error('code limit');
+      if(code.length>this.pool.backend.limits.js.code)throw new Error('code limit');
       if(options.connectors?.length)throw new Error('connector RPC unsupported: adapt to ResolvedProvider');
       const source=Array.isArray(providersOrFns)?providersOrFns:[{name:'codemode',fns:providersOrFns}];
       const providers=source.map(p=>{
@@ -128,7 +127,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     }
   }
   async createContext(config:IsolateConfig):Promise<IsolateContext> {
-    if(config.memoryLimit!==undefined&&config.memoryLimit!==this.pool.backend.memoryLimitMB)throw new Error('memory limit requires a matching backend pool');
+    if(config.memoryLimit!==undefined&&config.memoryLimit!==this.pool.backend.limits.memoryMB)throw new Error('memory limit requires a matching backend pool');
     const lifetime=new AbortController();let running=false;let active:Promise<ExecuteResult>|undefined;
     const fns=Object.fromEntries(Object.entries(config.bindings).map(([key,b])=>[key,async(...args:unknown[])=>b.execute(args[0])]));
     // TanStack passes a stripped JS function body. Expose exact binding keys;

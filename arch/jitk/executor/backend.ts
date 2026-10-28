@@ -5,10 +5,10 @@ import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {Dispatcher, LIMIT, type Frame} from '../protocol/dispatcher.js';
-import {failure,type Engine,type GuestEvent,type Job,type Phase,type Reply,type Session} from './engine.js';
+import {failure,v1Limits,type Engine,type GuestEvent,type Job,type Limits,type Phase,type Reply,type Session} from './engine.js';
 import {executionBody} from './code.js';
 
-export type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
+export type {Engine,GuestEvent,JsLimits,Job,Limits,Phase,Reply,Session} from './engine.js';
 /** The public name for an engine (codemode/TanStack/MCP callers construct these). */
 export type Backend=Engine;
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
@@ -82,8 +82,10 @@ function watchdogBinary(options:ProcessOptions):string {
   return bin;
 }
 export class ProcessBackend implements Backend {
+  /** Protocol v1; a run lives at most the watchdog lifetime. */
+  readonly limits:Limits;
   constructor(readonly kind:Backend['kind'],readonly command:string,readonly argv:string[],
-    readonly memoryLimitMB=32,readonly options:ProcessOptions={}) {}
+    memoryMB=32,readonly options:ProcessOptions={}) {this.limits=v1Limits(memoryMB,options.lifetimeMs??60000);}
   async park(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(signal?.aborted)throw Error('aborted');
     const child=spawn(this.command,this.argv,{stdio:'pipe',detached:true,cwd:this.options.cwd,

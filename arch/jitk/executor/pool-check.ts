@@ -3,14 +3,16 @@ import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {SandboxPool,OverloadedError,recommendedWarmCount} from './pool.js';
-import type {Backend,Session} from './backend.js';
+import type {Backend,Limits,Session} from './backend.js';
+import {v1Limits} from './engine.js';
+import {shardLimits} from './shard-backend.js';
 const gate={idleCorePercent:0,evidence:'deterministic fake backend, no guest CPU'};
 const delay=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 const tick=()=>new Promise(r=>setImmediate(r));
 class Fake implements Backend {
-  readonly memoryLimitMB=32;
+  readonly limits:Limits;
   activeStarts=0;maxStarts=0;instances:(Session&{reap:()=>void;releases:number})[]=[];dead?:Error;
-  constructor(readonly autoReap=true,readonly kind:Backend['kind']='process',readonly startMs=10,readonly reapMs=20){}
+  constructor(readonly autoReap=true,readonly kind:Backend['kind']='process',readonly startMs=10,readonly reapMs=20){this.limits=kind==='shard'?shardLimits(64):v1Limits(32,60000);}
   async park(signal?:AbortSignal):Promise<Session> {
     if(this.dead)throw this.dead;
     this.activeStarts++;this.maxStarts=Math.max(this.maxStarts,this.activeStarts);
@@ -64,10 +66,14 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
  assert.equal(p.snapshot().tokens,0);rows.push({name:'close aborts in-flight launches',ok:true,snapshot:p.snapshot()});
 }
 {
- // Default launch concurrency: every slot for a shard, two VMM boots otherwise.
+ // Default launch concurrency: the engine's limits.parallelStarts (every slot for a
+ // shard, two VMM boots otherwise), capped at maxLive; no backend-kind branch.
  assert.equal(new SandboxPool(new Fake(true,'shard'),0,64).refillConcurrency,64);
  assert.equal(new SandboxPool(new Fake(true,'jitk'),0,64).refillConcurrency,2);
- rows.push({name:'refillConcurrency default = slots (shard), 2 (process)',ok:true});
+ assert.equal(new SandboxPool(new Fake(true,'shard'),0,8).refillConcurrency,8);
+ const custom=new Fake();(custom as {limits:Limits}).limits={...custom.limits,parallelStarts:5};
+ assert.equal(new SandboxPool(custom,0,64).refillConcurrency,5);
+ rows.push({name:'refillConcurrency default = min(maxLive, limits.parallelStarts)',ok:true});
 }
 {
  // A sequential caller on one slot (the R9 probe shape): release without

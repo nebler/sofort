@@ -2,6 +2,7 @@
 // Each engine adapter decodes its own transport (v1 frames for the process
 // backends, binary IPC records for the shard) and validates all guest content
 // before an event exists. Bad guest content ends that session only, as 'fail'.
+import {LIMIT} from '../protocol/dispatcher.js';
 export type Job={kind:'js';
   /** Tenant code: a codemode function expression or a TanStack body wrapper. */
   source:string;
@@ -34,11 +35,49 @@ export interface Session {
   /** Idempotent: kill the process or reset the slot; `released` resolves after. */
   release():void;
 }
+/** What one session of an engine admits for a JS job. Each engine reports its
+ *  own: the jitk-abi ring limits (abi.ts) for the shard, protocol v1 (LIMIT)
+ *  for the process backends. Callers read these instead of hard-coding them. */
+export type JsLimits={
+  /** Tenant source characters before the trusted adapters. */
+  code:number;
+  /** Guest source the engine accepts including its trusted adapters. */
+  sourceBytes:number;
+  /** Tool calls per run. */
+  calls:number;
+  /** One encoded call, one tool reply, the completion value. */
+  callBytes:number;
+  replyBytes:number;
+  doneBytes:number;
+  /** Console lines per run, and bytes per line. */
+  logs:number;
+  logBytes:number;
+  /** Whether the guest has event-loop timers (setTimeout). */
+  timers:boolean;
+  /** Writable guest arena, when the engine has a fixed one. */
+  arenaBytes?:number;
+};
+export type Limits={
+  /** Guest RAM class in MiB. */
+  memoryMB:number;
+  /** Sessions the engine runs at once (Infinity: one process each, the pool bounds them). */
+  sessions:number;
+  /** park() calls worth running at once: a slot claim is cheap, a VMM boot is not. */
+  parallelStarts:number;
+  /** Longest run deadline the engine admits, in ms. */
+  deadlineMs:number;
+  js:JsLimits;
+};
 export interface Engine {
   readonly kind:'jitk'|'process'|'hyperlight-js'|'shard';
   close?():Promise<void>;
-  readonly memoryLimitMB:number;
+  readonly limits:Limits;
   park(signal?:AbortSignal,deadline?:number):Promise<Session>;
+}
+/** Protocol v1 limits (protocol/dispatcher.ts LIMIT) of a process backend. */
+export function v1Limits(memoryMB:number,deadlineMs:number,timers=true):Limits {
+  return {memoryMB,sessions:Infinity,parallelStarts:2,deadlineMs,js:{code:LIMIT.code,sourceBytes:LIMIT.code,calls:LIMIT.calls,
+    callBytes:LIMIT.frame,replyBytes:LIMIT.frame,doneBytes:LIMIT.frame,logs:LIMIT.logs,logBytes:LIMIT.log,timers}};
 }
 /** A session failure from an Error (an adapter's own failure path). */
 export function failure(e:unknown):Extract<GuestEvent,{kind:'fail'}> {

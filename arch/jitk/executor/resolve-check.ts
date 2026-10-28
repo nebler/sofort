@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {MicroVMExecutor,SandboxPool,type Backend,type Session} from './executor.js';
+import {v1Limits} from './engine.js';
 let vmmReap!:()=>void,watchdogReap!:()=>void,releases=0;
 const vmm=new Promise<void>(r=>vmmReap=r),watchdog=new Promise<void>(r=>watchdogReap=r);
 const s:Session={phase:'parked',released:Promise.all([vmm,watchdog]).then(()=>{}),start:async()=>{},next:async()=>({kind:'done',ok:2}),reply:async()=>{},release:()=>{releases++;}};
-const b:Backend={kind:'jitk',memoryLimitMB:32,park:async()=>s};
+const b:Backend={kind:'jitk',limits:v1Limits(32,60000),park:async()=>s};
 const pool=new SandboxPool(b,0,1),ex=new MicroVMExecutor(pool,()=> 'allow');
 const result=await ex.execute('return 2',[]);
 assert.equal(result.result,2);assert.equal(releases,0,'execute resolved before even its release');

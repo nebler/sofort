@@ -8,7 +8,7 @@ import {Server} from '@modelcontextprotocol/sdk/server/index.js';
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
 import {CallToolRequestSchema, ListToolsRequestSchema, ListResourcesRequestSchema,
   ReadResourceRequestSchema, McpError, ErrorCode} from '@modelcontextprotocol/sdk/types.js';
-import {loadConfig, createJitk, describeTools} from './jitk.mjs';
+import {loadConfig, createJitk, describeTools, describeLimits} from './jitk.mjs';
 
 const PREFIX = 'jitk://resources/', MAX_RESOURCE = 1 << 20;
 
@@ -49,7 +49,7 @@ function mcpServer(jitk, cfg) {
     name: 'execute',
     description: `Run JavaScript in a fresh single-use microVM (QuickJS, no network, no filesystem). ` +
       `The code is an async function body: use await and \`return\` a JSON value. console.log output is returned as logs. ` +
-      `Deadline ${cfg.timeoutMs} ms. Host tools (call with await; Promise.all runs them concurrently):\n${describeTools(cfg.tools)}\n` +
+      `Deadline ${cfg.timeoutMs} ms.${describeLimits(jitk.limits)} Host tools (call with await; Promise.all runs them concurrently):\n${describeTools(cfg.tools)}\n` +
       `Errors carry a code: TIMEOUT, POLICY, LIMIT, SANDBOX, CANCELLED or GUEST_ERROR.`,
     inputSchema: {type: 'object', properties: {code: {type: 'string', description: 'JavaScript async function body'}},
       required: ['code'], additionalProperties: false},

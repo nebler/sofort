@@ -57,10 +57,10 @@ export class SandboxPool {
   readonly refillConcurrency:number;
   constructor(readonly backend:Backend,readonly warmCount:number,readonly maxLive:number,readonly options:PoolOptions={}) {
     if(!Number.isInteger(warmCount)||!Number.isInteger(maxLive)||warmCount<0||maxLive<1||warmCount>maxLive)throw Error('invalid pool size');
-    // A shard slot is a snapshot restore, so every slot may be admitted at once.
-    // A process backend boots a whole VMM (several CPU-ms, R9 1c/1d): two
-    // concurrent launches pace a burst; queued callers wait rather than fail.
-    this.refillConcurrency=options.refillConcurrency??(backend.kind==='shard'?maxLive:2);
+    // The engine says how many park() calls pay off at once: every shard slot
+    // (a snapshot restore), two VMM boots (several CPU-ms each, R9 1c/1d) for a
+    // process backend. Queued callers wait rather than fail.
+    this.refillConcurrency=options.refillConcurrency??Math.min(maxLive,backend.limits.parallelStarts);
     if(!Number.isInteger(this.refillConcurrency)||this.refillConcurrency<1)throw Error('invalid refill concurrency');
     // A waiter costs a closure and its own deadline bounds the wait; the bound
     // only turns a sustained overload into a fast, typed rejection.
