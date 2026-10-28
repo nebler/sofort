@@ -273,3 +273,20 @@ sections are skipped; the macOS-only section kills, stops and reaps engine
 processes), and the parity corpus includes `hvf` by default on the Mac. Per-run
 cost against libkrun: `node build/engine-bench.js` (offline; see
 `../shard/README.md` "HVF engine").
+
+Warm parking (G1 on HVF). A pool keeps sessions parked only with a parking
+gate (`SandboxPool` `parkingGate`). `./run.sh hvf-parking-gate`
+(`hvf-parking-gate.ts`, offline) measures the HVF engine as kernel/.READY's G1
+measures a libkrun VM: every slot parked for 10 s (CPU of the zygote and all
+engine processes by `ps`, below 2% of a core), then 1000 checked tool-call
+exchanges through the executor, 32 per run (the ring profile's call budget;
+libkrun's G1 run carries all 1000) with a 3 s parked-in-WAIT pause every
+100th. It writes `.work/hvf-parking-gate.json` (`JITK_RECORD=1`:
+`hvf-parking-gate.json` here), binding the engine binary's sha256, the
+snapshot's `.identity` sha256 and the slots. `select-backend` (so the MCP
+server's `warm`) returns it as the gate for `JITK_BACKEND=hvf` only when all
+three match (`JITK_HVF_PARKING_GATE` names one explicitly); a rebuilt engine
+needs a new run. Measured 2026-10-28, M4 Pro, macOS 26.6.1, load 3.7–4.6:
+8 slots, 0.00 CPU-s in 10.0 s for 9 processes (below `ps` resolution),
+1000/1000 exchanges in 32 runs (p50 5.7 ms per 32-call run without a pause).
+No `.READY` is involved or changed.

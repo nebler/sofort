@@ -33,8 +33,8 @@ async function measure(kind:string,n:number) {
   process.env.JITK_BACKEND=kind==='jitk'?'jitk':'hvf';
   const selected=selectBackend();
   const engine:Backend=selected.backend;
-  // Warm parking needs a parking-gate receipt (libkrun has one); an HVF park
-  // is a slot claim, so it runs unwarmed, as the shard does.
+  // Warm parking needs a parking-gate receipt: libkrun has one; HVF has one
+  // once hvf-parking-gate.ts measured this engine binary, else it runs unwarmed.
   const pool=selected.gate?new SandboxPool(engine,2,4,{parkingGate:selected.gate}):new SandboxPool(engine,0,4);
   const ex=new MicroVMExecutor(pool,()=> 'allow',10000);
   const out:Record<string,unknown>={kind,n,selection:selected.selection};

@@ -14,6 +14,7 @@ import {ShardBackend,type ShardMetrics,type ShardQuarantine,type ShardRestore,ty
 import {PipeChannel,SharedChannel,IPC,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
 import {SandboxPool,OverloadedError} from './pool.js';
+import {hvfGate} from './select-backend.js';
 import {transportChecks} from './shard-ipc-check.js';
 import {sourceChecks} from './shard-source-check.js';
 
@@ -272,6 +273,37 @@ if(hvf){
       check(killed===5&&/crash loop/.test(stderr),`a crash loop fails the engine after ${killed} kills: ${stderr.trim()}`);
       await assert.rejects(one.park(),/shard IPC closed by the engine|sandbox exited: shard/);assertions++;
     } finally {await one.close();}
+  }
+  // Warm parking (hvf-parking-gate.ts): select-backend takes a gate receipt
+  // only for the engine binary and snapshot it measured, with at least the
+  // slots asked for. The receipts here are synthetic test inputs in a
+  // scratch directory, never a receipt path the executor reads.
+  {
+    const dir=mkdtempSync(join(tmpdir(),'jitk-hvf-gate-')),path=join(dir,'gate.json');
+    const sha=(p:string)=>execFileSync('/usr/bin/shasum',['-a','256',p],{encoding:'utf8'}).split(' ')[0];
+    const receipt={engine:'hvf',status:'PASS',exchanges:1000,idle_core_percent:0,slots:8,engine_sha256:sha(binary),snapshot_identity_sha256:sha(snapshot+'.identity')};
+    const saved=process.env.JITK_HVF_PARKING_GATE;
+    try {
+      process.env.JITK_HVF_PARKING_GATE=path;
+      const gate=(r:object,slots=8)=>{writeFileSync(path,JSON.stringify(r));return hvfGate(binary,snapshot,slots);};
+      check(gate(receipt)?.evidence===path,'a matching HVF gate receipt is accepted');
+      check(!gate({...receipt,engine_sha256:'0'.repeat(64)})&&!gate({...receipt,snapshot_identity_sha256:'0'.repeat(64)})&&!gate(receipt,9)&&
+        !gate({...receipt,idle_core_percent:2})&&!gate({...receipt,exchanges:999})&&!gate({...receipt,status:'FAIL'}),
+        'another engine, snapshot, more slots, 2% idle, fewer exchanges or a FAIL is not');
+      // Parked HVF sessions serve as unparked ones do.
+      const g=gate(receipt)!;
+      const warm=new ShardBackend({binary,snapshot,slots:2});
+      const wpool=new SandboxPool(warm,2,2,{parkingGate:g}),wex=new MicroVMExecutor(wpool,()=> 'allow',5000);
+      try {
+        await wpool.warm();
+        check(wpool.snapshot().parked===2,'the warm pool parks both HVF slots');
+        const rs=await Promise.all([5,6].map(i=>wex.execute(`return await codemode.echo(${i})`,{echo:async x=>x})));
+        check(rs.every((r,i)=>!r.error&&r.result===i+5),'parked HVF sessions run: '+JSON.stringify(rs));
+      } finally {await wpool.close();await warm.close();}
+    } finally {
+      if(saved===undefined)delete process.env.JITK_HVF_PARKING_GATE;else process.env.JITK_HVF_PARKING_GATE=saved;
+      rmSync(dir,{recursive:true,force:true});
+    }
   }
   // close() lets the zygote reap its engine processes: none is left behind.
   const three=new ShardBackend({binary,snapshot,slots:3});

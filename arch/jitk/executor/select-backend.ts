@@ -20,6 +20,21 @@ function artifactPath(dir:string,keys:string[],defaults:string[],env:string):str
   for(const key of keys)if(typeof data[key]==='string'&&!data[key].startsWith('/')&&existsSync(dir+data[key]))return dir+data[key];
   throw Error(`missing built artifact in ${dir}; build that subtree or set ${env} to its absolute path`);
 }
+/** The HVF engine's parking gate (hvf-parking-gate.ts): a PASS receipt for
+ *  this engine binary and prepared snapshot, measured with at least these
+ *  slots: JITK_HVF_PARKING_GATE when set (only it), else the .work receipt or a
+ *  recorded executor/hvf-parking-gate.json. None: the pool runs unwarmed. */
+export function hvfGate(binary:string,snapshot:string,slots:number):ParkingGate|undefined {
+  const explicit=process.env.JITK_HVF_PARKING_GATE;
+  const paths=explicit?[explicit]:[here+'.work/hvf-parking-gate.json',here+'hvf-parking-gate.json'];
+  for(const path of paths)if(existsSync(path)){
+    const m=JSON.parse(readFileSync(path,'utf8'));
+    if(m.engine==='hvf'&&m.status==='PASS'&&m.exchanges>=1000&&m.idle_core_percent<2&&slots<=m.slots&&
+      m.engine_sha256===artifact(binary).sha256&&m.snapshot_identity_sha256===artifact(snapshot+'.identity').sha256)
+      return {idleCorePercent:m.idle_core_percent,evidence:path};
+  }
+  return undefined;
+}
 export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:string;integrated:boolean} {
   const selected=process.env.JITK_BACKEND??'jitk';
   if(selected==='shard'){
@@ -38,7 +53,7 @@ export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:str
     const binary=process.env.JITK_SHARD_BINARY,snapshot=process.env.JITK_SHARD_SNAPSHOT;
     if(!binary||!snapshot)throw Error('hvf backend requires JITK_SHARD_BINARY (the signed hvf engine) and JITK_SHARD_SNAPSHOT (make -C arch/jitk deps; make -C arch/jitk/shard snapshot)');
     const slots=Number(process.env.JITK_HVF_SLOTS??8);
-    return {backend:new ShardBackend({binary,snapshot,slots}),selection:'experimental macOS HVF engine (one confined process per slot) / socket Node policy',integrated:false};
+    return {backend:new ShardBackend({binary,snapshot,slots}),gate:hvfGate(binary,snapshot,slots),selection:'experimental macOS HVF engine (one confined process per slot) / socket Node policy',integrated:false};
   }
   if(selected!=='jitk')throw Error('unsupported JITK_BACKEND: '+selected);
   const vmmReady=existsSync(jitk+'vmm/.READY'),kernelReady=existsSync(jitk+'kernel/.READY');
