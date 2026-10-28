@@ -118,6 +118,7 @@ export const CASES:Case[]=[
   {id:'t-reply-limit-to-guest',source:'targeted: IPC.replyBytes',code:'try{return (await t.big(2000)).length}catch(e){return e.code}',tools:T,expect:{ok:2000}},
   // Targeted: call arguments (ring::CALL_BYTES) and the call budget (ring::MAX_CALLS)
   {id:'t-call-args-over-limit',source:'targeted: IPC.callBytes',code:`return (await t.echo('x'.repeat(${IPC.callBytes}))).length`,tools:T,expect:{ok:IPC.callBytes}},
+  {id:'t-call-limit-to-guest',source:'targeted: IPC.callBytes',code:`try{return (await t.echo('x'.repeat(${IPC.callBytes}))).length}catch(e){return e.code}`,tools:T,expect:{ok:IPC.callBytes}},
   {id:'t-calls-at-budget',source:'targeted: IPC.calls',code:`let n=0;for(let i=0;i<${IPC.calls};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:IPC.calls}},
   {id:'t-calls-over-budget',source:'targeted: IPC.calls',code:`let n=0;for(let i=0;i<${IPC.calls+1};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:IPC.calls+1}},
   // Targeted: timers (the ring profile has none)

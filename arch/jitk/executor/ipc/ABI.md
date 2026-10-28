@@ -62,7 +62,8 @@ envelope, identity, order and state violations still close the whole shard
 connection. `abi/guest-payloads.json` is the shared acceptance corpus for
 both sides' tests. Log records get only a null
 acknowledgement. Logical tool IDs exclude logs; Node privately maps them back
-to physical ring IDs. Oversized provider replies become a bounded LIMIT error.
+to physical ring IDs. Oversized provider replies become a bounded LIMIT error; a call over the ring
+record size reaches the guest as the same LIMIT error (prepared helpers).
 
 The generic writer retains at most 2,241 records. Production messages have
 smaller per-kind bounds above. Rust's outbound queue is capped at 2,241 records;
