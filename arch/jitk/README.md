@@ -101,15 +101,19 @@ shard suites run from a clean clone with no variables set; see
 
 `make ci` ([`tools/ci.sh`](tools/ci.sh)) is the single entrypoint for a clean
 Linux arm64 host. It runs `doctor` and `deps` (a failure stops the run). Then
-the layering lint, `abi test`, the kernel build and host checks, `docs test`,
-shard `make test`, protocol, the executor checks that need no VMM backend,
-policy, the MCP build and native test, the sandbox unit test, tslib, bench, grow
-and every scriptc build. With a usable `/dev/kvm` it also runs `shard snapshot`,
-`shard test-kvm`, `executor/ipc/shard-host.sh` and the Linux `vmm test`, all
-under `$JITK_BENCH_LOCK`, plus `make test-linux` once that target exists. It
-ends by checking that the git checkout is still clean. Every skipped part
-prints its reason. The libkrun console-backend suites (`kernel/.READY` pins the
-Mac-built image), Hyperlight and HVF stay in the Mac's `make test`. The run
+the layering lint, `abi test`, the kernel build, a check that the built image
+has `kernel/.READY`'s hash (Linux builds the Mac's bytes; see
+[`kernel/ARCH.md`](kernel/ARCH.md) "Image identity"), the kernel host checks,
+`docs test`, shard `make test`, protocol, the executor checks that need no VMM
+backend, policy, the MCP build and native test, the sandbox unit test, tslib,
+bench, grow and every scriptc build. With a usable `/dev/kvm` it also runs
+`shard snapshot`, `shard test-kvm`, `executor/ipc/shard-host.sh`, the Linux
+`vmm test`, the libkrun executor checks (`verify`, `wrapper-conformance`,
+`api-check`, `policy-check`) and `mcp test`, all under `$JITK_BENCH_LOCK`, plus
+`make test-linux` once that target exists. It ends by checking that the git
+checkout is still clean. Every skipped part prints its reason. The kernel
+regression and fs_diff suites (libkrun console path, Homebrew `ld.lld`),
+Hyperlight and HVF stay in the Mac's `make test`. The run
 exits 1 if any step failed. `JITK_CI_KVM=0` skips the KVM part and
 `JITK_CI_KVM=1` requires it.
 
