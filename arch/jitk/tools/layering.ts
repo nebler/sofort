@@ -33,8 +33,6 @@ import { check } from '../tslib/assert.ts';
 import { files } from '../tslib/fs.ts';
 
 const KNOWN: [string, string][] = [
-  ['runtime executor/executor.ts -> bench/hyperlight/backend.ts',
-    'the product API re-exports the Hyperlight comparison backend (R10 W0.3 moves it out)'],
   ['evidence executor/select-backend.ts: kernel/evidence/parking-0.json',
     'parking gate read from evidence at run time (R9 N22: becomes a typed manifest field)'],
   ['marker executor/select-backend.ts: .READY',

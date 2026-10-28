@@ -11,7 +11,6 @@ import {LIMIT} from '../protocol/dispatcher.js';
 export * from './backend.js';
 export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
-export {HyperlightBackend} from '../bench/hyperlight/backend.js';
 export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
 export type Context=Readonly<{executionId:string;signal:AbortSignal;provenance:readonly Label[]}>;

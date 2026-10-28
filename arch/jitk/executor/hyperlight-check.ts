@@ -5,7 +5,9 @@ import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
-import {MicroVMExecutor,SandboxPool,HyperlightBackend,type Backend} from './executor.js';
+import {MicroVMExecutor,SandboxPool,type Backend} from './executor.js';
+// Hyperlight is a research comparison backend (bench/), not part of the product API.
+import {HyperlightBackend} from '../bench/hyperlight/backend.ts';
 const d=JSON.parse(readFileSync(new URL('../../bench/hyperlight/adapter.json',import.meta.url),'utf8'));
 const base=fileURLToPath(new URL('../../bench/hyperlight/',import.meta.url));
 const worker=resolve(base,process.env.HYPERLIGHT_WORKER??d.strict_argv[0]);
