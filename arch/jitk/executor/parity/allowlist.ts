@@ -81,9 +81,6 @@ const shard:Difference[]=[
 
 // Known bugs, listed so the run stays green while they are open. Each is in
 // the R14 parity report; fix and delete.
-const bugs:Difference[]=[
-  {case:'t-timer',backends:['jitk'],platforms:['linux'],expect:{error:'TIMEOUT'},limit:'BUG: libkrun on Linux (kvm-dev, nested KVM)',
-    reason:'a setTimeout with a delay never fires in the Linux libkrun guest (setTimeout 0 does, and Date.now advances), so the run hits its deadline; the Mac libkrun guest is fine. Not checked on metal'},
-];
+const bugs:Difference[]=[];
 
 export const ALLOWLIST:Difference[]=[...hyperlight,...shard,...bugs];
