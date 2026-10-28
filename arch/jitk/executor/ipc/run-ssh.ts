@@ -19,13 +19,13 @@ const identity = sha(Buffer.from(root)).slice(0, 12);
 const remoteRoot = process.env.JITK_SHARD_REMOTE_ROOT || 'jitk-ssh';
 check(/^[A-Za-z0-9_./-]+$/.test(remoteRoot) && !remoteRoot.split('/').includes('..'), 'JITK_SHARD_REMOTE_ROOT must be a plain path without ..');
 const remote = remoteRoot + '/test-' + identity;
-const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.md']);
-const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs-ring']);
+const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.diff', '.md']);
+const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs-ring', '.READY']);
 const ignored = new Set(['target', 'node_modules', 'build', 'dist', '.work', '.scriptc', 'results', 'test-results', 'out']);
 function sources(directory: string): string[] {
   const paths: string[] = [];
   for (const name of readdirSync(directory).sort()) {
-    if (ignored.has(name) || name.startsWith('raw') || name.startsWith('._')) {
+    if (ignored.has(name) || name.startsWith('._')) {
       continue;
     }
     const path = join(directory, name);
@@ -34,6 +34,10 @@ function sources(directory: string): string[] {
       continue;
     }
     if (stat.isDirectory()) {
+      // raw-* evidence directories stay local (vmm/patches/raw-*.diff ships).
+      if (name.startsWith('raw')) {
+        continue;
+      }
       paths.push(...sources(path));
     } else if (stat.isFile() && stat.size <= 1048576 && (extensions.has(extname(path)) || named.has(name))) {
       paths.push(path);
