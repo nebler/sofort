@@ -38,23 +38,26 @@ An adapter `.READY` alone is not enough: include the descriptor. Use
 `--hyperlight-adapter PATH` or `HYPERLIGHT_ADAPTER`; `--no-hyperlight` selects
 a jitk-only run. There is no cross-owner scratch fallback.
 
-Kernel and VMM selection is independent of the checkout basename. Defaults are
-`kernel/dist/kernel.bin` (also `kernel/build/kernel.bin`) and
-`vmm/build/jitk-vmm` (also `vmm/target/release/jitk-vmm`), relative to this
-harness's parent tree. Override with `--vmm PATH --image PATH`,
-`JITK_VMM_BINARY`, or `JITK_IMAGE`. Missing inputs fail with an actionable error.
+Kernel and engine selection is independent of the checkout basename. Defaults are
+`kernel/dist/kernel.bin` (also `kernel/build/kernel.bin`) and the HVF engine
+from the jitk cache (`JITK_SHARD_BINARY`). Override with `--vmm PATH --image PATH`,
+`JITK_SHARD_BINARY`, or `JITK_IMAGE`. Missing inputs fail with an actionable error.
 Use `--scratch-dir PATH` or `JITK_BENCH_TMP` for frozen run directories; the
 default is the system temporary directory. No other area's artifacts are guessed.
 
-Binaries, image, Hyperlight snapshot and an available READY executor runtime
-are copied into a private run directory. Seatbelt is compiled once for that
-image directory, and host sandbox acknowledgement is mandatory.
-`--sandbox-profile PATH` uses an explicit profile; `auto` compiles one.
-`sandbox-apply/on` and `/off` measure only the precompiled `sandbox_apply` call
-against a no-call clock baseline, plus profile-read + apply as a separate metric.
-Executor rows use the canonical READY runtime or `--executor-root PATH`; they
-require an absolute `--node PATH` or `NODE`. No PATH shim or legacy executor is
-selected. Pool preparation and cleanup remain outside response latency.
+The `jitk-*` rows boot a fresh console-kernel VM per process with the HVF
+engine's console runner, `hvf console --image` (until 2026-10-28 the libkrun
+VMM; every recorded result here is libkrun's). The engine, image, Hyperlight
+snapshot and an available READY executor runtime are copied into a private
+run directory. The runner compiles and enters jitk.sb itself; host sandbox
+acknowledgement is mandatory. (The libkrun-only `sandbox-apply/on|off` rows,
+which timed `sandbox_apply` of the VMM's precompiled profile, and
+`--sandbox-profile` went with libkrun.) Executor rows run the executor's
+default engine, the ring engine (`hvf ipc` with the cache's prepared snapshot,
+`JITK_SHARD_SNAPSHOT`), from the canonical READY runtime or `--executor-root
+PATH`; they require an absolute `--node PATH` or `NODE`. No PATH shim or
+legacy executor is selected. Pool preparation and cleanup remain outside
+response latency.
 
 ## Data contract
 
@@ -87,9 +90,8 @@ attempt is retained with UTC time, load and stderr; sampled failures are never
 replaced silently. A persistent admission failure stops the run explicitly.
 
 Explicit validated pins survive another owner's marker rebuild: `--vmm PATH
---image PATH --sandbox-profile auto --executor-root VALIDATED_RUNTIME_ROOT
---hyperlight-adapter OWNER09_DESCRIPTOR`. `auto` compiles the profile once for
-this run's frozen image and requires host sandbox acknowledgement. These are
+--image PATH --executor-root VALIDATED_RUNTIME_ROOT
+--hyperlight-adapter OWNER09_DESCRIPTOR`. These are
 recorded as explicit overrides, never mislabeled as an automatic READY choice.
 
 The exact R3 measurement source is preserved with the area-06 R3 evidence,
@@ -99,10 +101,10 @@ inputs by the harness. R4 removes the historical executable copies from this
 subtree. After R3 collection, interruption cleanup was fixed and verified;
 see `verification.json`. Numerical R3 result cells remain unchanged.
 
-## v2 recertification
+## v2 recertification (libkrun, historical)
 
-`build/recertify --vmm V2 --baseline BASELINE --image IMAGE --scratch-dir SCRATCH
---output OUTPUT` uses this controller's exact `sample`, load gate, assertions,
+`build/recertify` (deleted 2026-10-28 with libkrun: it compared two libkrun
+VMM builds) used this controller's exact `sample`, load gate, assertions,
 resource accounting and watchdog. It runs cold return2, parked raw one_tool,
 parked raw promise10_5ms and parked memory, n=60/build/case. Each complete block
 randomizes the cases and the order of the two adjacent builds within each case.

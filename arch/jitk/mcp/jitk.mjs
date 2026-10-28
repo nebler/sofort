@@ -55,9 +55,10 @@ export async function createJitk(cfg) {
   if (cfg.warm && !selected.gate) throw Error('warm pool needs G1 parking evidence (see executor/README.md) or "warm": 0');
   const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
   const inner = selected.backend;
-  // Refill on every VM exit, not only after a run: the watchdog's lifetime bound
-  // (60 s) also reaps idle parked VMs, and the next execute must still find one parked.
-  // warm() is idempotent and bounded by warm/maxLive/refillConcurrency.
+  // Refill on every session release, not only after a run: an engine may also end
+  // an idle parked session (a lifetime bound, a quarantined slot), and the next
+  // execute must still find one parked. warm() is idempotent and bounded by
+  // warm/maxLive/refillConcurrency.
   const backend = {kind: inner.kind, limits: inner.limits, close: () => inner.close?.(), async park(signal, deadline) {
     const s = await inner.park(signal, deadline);
     void s.released.then(() => refill());

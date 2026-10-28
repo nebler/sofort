@@ -8,7 +8,7 @@ import { report } from './report.ts';
 import { test } from './test-suite.ts';
 
 export function defaults(): Config {
-  return { samples: 30, load_threshold: 6, gate_budget: 10, gate_poll: 1, max_extra_rounds: 0, seed: 603, only: null, vmm: null, image: null, sandbox_profile: null, scratch_dir: null, node: null, no_hyperlight: false, executor_root: null, hyperlight_adapter: null, smoke: false, test: false, report: null, output: null };
+  return { samples: 30, load_threshold: 6, gate_budget: 10, gate_poll: 1, max_extra_rounds: 0, seed: 603, only: null, vmm: null, image: null, scratch_dir: null, node: null, no_hyperlight: false, executor_root: null, hyperlight_adapter: null, smoke: false, test: false, report: null, output: null };
 }
 function parseArgs(argv: string[]): Config {
   const args = defaults();
@@ -16,7 +16,7 @@ function parseArgs(argv: string[]): Config {
   const booleans = ['no_hyperlight', 'smoke', 'test'];
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--help' || argv[i] === '-h') {
-      console.log('usage: run [--samples N] [--load-threshold N] [--gate-budget S] [--gate-poll S] [--max-extra-rounds N] [--seed N] [--only REGEX] [--vmm PATH] [--image PATH] [--sandbox-profile PATH] [--scratch-dir PATH] [--node PATH] [--no-hyperlight] [--executor-root PATH] [--hyperlight-adapter PATH] [--smoke] [--test] [--report JSON] [--output JSON]');
+      console.log('usage: run [--samples N] [--load-threshold N] [--gate-budget S] [--gate-poll S] [--max-extra-rounds N] [--seed N] [--only REGEX] [--vmm PATH] [--image PATH] [--scratch-dir PATH] [--node PATH] [--no-hyperlight] [--executor-root PATH] [--hyperlight-adapter PATH] [--smoke] [--test] [--report JSON] [--output JSON]');
       process.exit(0);
     }
     const parts = argv[i].split('=');
@@ -79,9 +79,6 @@ export function main(): void {
     machine: { platform: `${platform()}-${release()}-${arch()}`, cpu_count: cpus().length, uptime: command(['/usr/bin/uptime']), sysctl: command(['/usr/sbin/sysctl', 'hw.model', 'hw.memsize', 'hw.ncpu', 'kern.hv.max_address_spaces']), vm_stat: command(['/usr/bin/vm_stat']), runtime: 'scriptc 0.4.5', timezone: [command(['/bin/date', '+%Z'])] }, missing };
   if (!selection.executor.integrated) {
     missing.push('integrated executor READY');
-  }
-  if (!selection.sandbox_probe) {
-    missing.push('precompiled sandbox on/off');
   }
   if (!selection.hyperlight) {
     missing.push('Hyperlight adapter');

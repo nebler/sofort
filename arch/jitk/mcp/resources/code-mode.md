@@ -1,8 +1,8 @@
 # Code mode on jitk
 
 Call the `execute` tool with `{code}`: the body of an async JavaScript function.
-It runs in a fresh, single-use microVM (QuickJS on the jitk kernel) and is
-destroyed afterwards. Nothing persists between calls except host tool state.
+It runs in a fresh microVM session (QuickJS on the jitk kernel) whose memory is
+reset to a pristine snapshot afterwards. Nothing persists between calls except host tool state.
 
 - `return` a JSON value; it comes back as `result`. `console.log` lines come back as `logs`.
 - Host tools are globals named by namespace: `await math.add(1, 2)`.
@@ -15,7 +15,7 @@ destroyed afterwards. Nothing persists between calls except host tool state.
 
 | code | meaning |
 |---|---|
-| TIMEOUT | the deadline passed; the VM was killed |
+| TIMEOUT | the deadline passed; the run was stopped |
 | POLICY | a host tool call was denied (schema, taint rule, or approval required) |
 | LIMIT | size, call-budget, memory, or pool-capacity limit |
 | SANDBOX | the VM exited or violated the protocol |

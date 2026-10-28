@@ -1,8 +1,7 @@
 import { propagate, Interrupted } from '../lib.ts';
-import { join, resolve, dirname, isAbsolute } from 'node:path';
-import { existsSync, readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, renameSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import { loadavg, cpus, platform, release, tmpdir } from 'node:os';
+import { join, resolve, isAbsolute } from 'node:path';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs';
+import { loadavg, cpus, platform, release } from 'node:os';
 import { options, check, readJSON, dump, sha, utc, command, clockNS, now, median, Random, detail } from '../lib.ts';
 import { sleep, usage } from '../native.ts';
 import { Worker, CASES, HERE as CONTROLLER, ROOT as JITK, gate, startWatch, cleanup, type Frame } from '../controller.ts';
@@ -28,32 +27,22 @@ interface JitkConfig {
   launcher: string;
   parkingEvidence: string;
   hyperlight: { worker: string; snapshot: string };
-  sandboxProfile?: string;
+  snapshot: string;
 }
+// The jitk arms: the console kernel on the HVF engine's console runner
+// (`hvf console`; until 2026-10-28 the libkrun VMM) for the raw cold/parked
+// rows, the ring engine (`hvf ipc`, the executor's default) for the executor
+// rows.
 function jitkConfig(): JitkConfig {
-  const cfg: JitkConfig = { vmm: resolve(artifactPath('JITK_VMM_BINARY')), image: resolve(process.env.JITK_KERNEL_IMAGE || process.env.JITK_IMAGE || join(JITK, 'kernel/dist/kernel.bin')), launcher: '01-vmm', parkingEvidence: join(JITK, 'kernel/.READY'), hyperlight: { worker: WORKER, snapshot: SNAPSHOT } };
+  const cfg: JitkConfig = { vmm: resolve(artifactPath('JITK_SHARD_BINARY')), image: resolve(process.env.JITK_KERNEL_IMAGE || process.env.JITK_IMAGE || join(JITK, 'kernel/dist/kernel.bin')), launcher: 'hvf-console', parkingEvidence: join(JITK, 'kernel/.READY'), hyperlight: { worker: WORKER, snapshot: SNAPSHOT }, snapshot: artifactPath('JITK_SHARD_SNAPSHOT') };
   for (const key of ['vmm', 'image']) {
     const path = key === 'vmm' ? cfg.vmm : cfg.image;
-    check(existsSync(path), 'Missing canonical ' + key + ': ' + path + '; run make -C arch/jitk deps build, or set JITK_VMM_BINARY and JITK_KERNEL_IMAGE (or JITK_IMAGE)');
+    check(existsSync(path), 'Missing canonical ' + key + ': ' + path + '; run make -C arch/jitk deps build, or set JITK_SHARD_BINARY and JITK_KERNEL_IMAGE (or JITK_IMAGE)');
   }
   return cfg;
 }
 function jitkArgv(cfg: JitkConfig): string[] {
-  const argv = [String(cfg.vmm), '--image', String(cfg.image), '--mem-mib', '32'];
-  if (process.platform === 'darwin') {
-    const folder = mkdtempSync(join(tmpdir(), 'jitk-hyperlight-'));
-    const profile = join(folder, 'profile.sbbin');
-    try {
-      execFileSync(cfg.vmm, ['--compile-profile', profile, '--images', dirname(cfg.image)], { timeout: 30000, stdio: 'pipe' });
-      cfg.sandboxProfile = profile;
-    } catch (error) {
-      propagate(error);
-      rmSync(folder, { recursive: true, force: true });
-      throw error;
-    }
-    argv.push('--sandbox-profile', profile);
-  }
-  return argv;
+  return [String(cfg.vmm), 'console', '--image', String(cfg.image)];
 }
 class Suite {
   executor = existsSync(join(JITK, 'executor/.READY'));
@@ -75,9 +64,6 @@ class Suite {
   close(): void {
     if (this.clone) {
       this.clone.close();
-    }
-    if (this.cfg.sandboxProfile) {
-      rmSync(this.cfg.sandboxProfile, { force: true });
     }
   }
   sample(mode: string, caseName: string): Frame {
@@ -136,10 +122,7 @@ class Suite {
   }
 }
 function memorySample(kind: string, count: number, cfg: JitkConfig): Frame {
-  const argv = kind === 'jitk' ? [String(cfg.vmm), '--image', String(cfg.image), '--mem-mib', '32'] : kind === 'hl-strict' ? [WORKER, 'strict', SNAPSHOT] : [WORKER, 'hold', SNAPSHOT, String(count)];
-  if (kind === 'jitk' && cfg.sandboxProfile) {
-    argv.push('--sandbox-profile', cfg.sandboxProfile);
-  }
+  const argv = kind === 'jitk' ? jitkArgv(cfg) : kind === 'hl-strict' ? [WORKER, 'strict', SNAPSHOT] : [WORKER, 'hold', SNAPSHOT, String(count)];
   const worker = new Worker(argv);
   try {
     worker.ready(kind === 'jitk');

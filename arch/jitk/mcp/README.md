@@ -18,11 +18,19 @@ deadline (`jitk.mjs`, `server.mjs`, `native.mjs`).
 - **Resources**: every file under `resources/` (config `resources`) is listed and
   readable as `jitk://resources/<path relative to root>`; `..` and symlink escapes
   are rejected. The root is a plain directory, so it can be packed into the guest as is.
-- **Warm pool**: `warm` VMs (default 2) are parked at startup and refilled whenever
-  any VM exits, including idle VMs reaped at the watchdog's 60 s lifetime bound. An
-  `execute` therefore takes the parked path. One throwaway run at startup JIT-compiles
-  the executor path; this cut the first client call from ~9 ms to ~5 ms. Warm parking needs the executor's G1
-  evidence. The current `kernel/.READY` G1 wording is accepted here as 0% idle.
+- **Engine**: the executor's default, the ring engine: the HVF engine on macOS
+  arm64, the KVM shard on Linux (`../executor/select-backend.ts`; set
+  `JITK_SHARD_BINARY` and `JITK_SHARD_SNAPSHOT`, which `make` takes from the
+  jitk cache). Its limits (`Engine.limits`, the ring profile: today 32 calls and
+  logs, 1 KiB per call/reply, 8 KiB source, no timers) are what the server
+  describes. Until 2026-10-28 the Mac default was libkrun.
+- **Warm pool**: `warm` sessions (default 2) are parked at startup and refilled
+  whenever one is released. An `execute` therefore takes the parked path. One
+  throwaway run at startup JIT-compiles the executor path; this cut the first
+  client call from ~9 ms to ~5 ms. Warm parking needs the engine's G1 parking
+  gate: on the HVF engine `../executor/hvf-parking-gate.ts`'s receipt for this
+  engine binary and snapshot (`make -C ../executor hvf-parking-gate`; `make
+  test` refreshes it); the Linux shard has none yet, so use `"warm": 0` there.
 - **Transports**: stdio by default. `server.mjs --http PORT` serves stateless
   Streamable HTTP on 127.0.0.1 only, with Host checking against DNS rebinding.
   It has no authentication.
@@ -61,11 +69,11 @@ Backend selection is explicit:
 
 | Host | execute | run |
 |---|---|---|
-| macOS arm64 | existing libkrun/HVF executor | persistent HVF engine `hvf native-worker` (`../shard/src/hvf/native.rs`), the same ring ABI R7, profiles prepared by `hvf prepare`; UNSUPPORTED without native config |
-| Linux arm64 | existing libkrun executor until policy cutover | persistent shard `real native-worker`, KVM ring ABI R7 |
+| macOS arm64 | the HVF engine (`hvf ipc`) | persistent HVF engine `hvf native-worker` (`../shard/src/hvf/native.rs`), the same ring ABI R7, profiles prepared by `hvf prepare`; UNSUPPORTED without native config |
+| Linux arm64 | the KVM shard (`real ipc`) | persistent shard `real native-worker`, KVM ring ABI R7 |
 | Other hosts / missing native config | existing execute selection rules | UNSUPPORTED |
 
-A Linux native-only configuration avoids requiring libkrun artifacts:
+A Linux native-only configuration needs no prepared JS snapshot:
 ```json
 {
   "execute": false,

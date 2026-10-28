@@ -1,7 +1,7 @@
 import { readFileSync, existsSync, mkdirSync, mkdtempSync, realpathSync, copyFileSync, cpSync, readdirSync, statSync, symlinkSync, lstatSync } from 'node:fs';
 import { resolve, join, dirname, relative, isAbsolute, basename, extname } from 'node:path';
 import { loadavg, tmpdir } from 'node:os';
-import { execFileSync } from 'node:child_process';
+
 import { check, equal, now, clockNS, readJSON, sha, command, median } from './lib.ts';
 import { start, poll, read, write, close, wait, sleep, usage, childrenCPU, pollMany, type Child } from './native.ts';
 import { kill, killDescendants } from './processes.ts';
@@ -240,7 +240,6 @@ export interface Config {
   only: string | null;
   vmm: string | null;
   image: string | null;
-  sandbox_profile: string | null;
   scratch_dir: string | null;
   node: string | null;
   no_hyperlight: boolean;
@@ -279,7 +278,6 @@ function artifact(value: string | null, env: string, candidates: string[], label
 export interface SelectionConfig {
   vmm: string | null;
   image: string | null;
-  sandbox_profile: string | null;
   scratch_dir: string | null;
   hyperlight_adapter: string | null;
   no_hyperlight: boolean;
@@ -288,34 +286,24 @@ export interface SelectionConfig {
 }
 export function choose(args: SelectionConfig): Frame {
   const image = artifact(args.image, 'JITK_IMAGE', [join(ROOT, 'kernel/dist/kernel.bin'), join(ROOT, 'kernel/build/kernel.bin')], 'kernel image');
-  const vmm = artifact(args.vmm, 'JITK_VMM_BINARY', [cachePath('JITK_VMM_BINARY'), join(ROOT, 'vmm/build/jitk-vmm'), join(ROOT, 'vmm/target/release/jitk-vmm')], 'VMM');
-  const selection: Frame = { kernel_source: args.image || process.env.JITK_IMAGE ? 'explicit override' : 'canonical kernel', vmm_source: args.vmm || process.env.JITK_VMM_BINARY ? 'explicit override' : 'canonical VMM' };
+  // The `jitk-*` rows: a fresh console-profile VM per process on the HVF
+  // engine's console runner (`hvf console`, shard/src/hvf/console.rs; until
+  // 2026-10-28 the libkrun VMM). It compiles and enters jitk.sb itself and
+  // acknowledges on stderr. The ring engine is measured by the executor rows.
+  const vmm = artifact(args.vmm, 'JITK_SHARD_BINARY', [cachePath('JITK_SHARD_BINARY')], 'HVF engine');
+  const selection: Frame = { kernel_source: args.image || process.env.JITK_IMAGE ? 'explicit override' : 'canonical kernel', vmm_source: args.vmm || process.env.JITK_SHARD_BINARY ? 'explicit override' : 'canonical HVF engine (hvf console)' };
   const scratch = args.scratch_dir || process.env.JITK_BENCH_TMP || tmpdir();
   mkdirSync(scratch, { recursive: true });
   const frozen = realpathSync(mkdtempSync(join(scratch, 'jitk-bench-')));
-  for (const [key, source, name] of [['image', image, 'kernel.bin'], ['vmm', vmm, 'jitk-vmm']]) {
+  for (const [key, source, name] of [['image', image, 'kernel.bin'], ['vmm', vmm, 'hvf']]) {
     selection['source_' + key] = source;
     selection[key + '_sha256'] = sha(source);
     copyFileSync(source, join(frozen, name));
     selection[key] = join(frozen, name);
     check(sha(selection[key]) === selection[key + '_sha256'], 'artifact changed while copying');
   }
-  selection.argv = [selection.vmm, '--image', selection.image, '--mem-mib', '32'];
-  const profile = join(frozen, 'jitk.sbbin');
-  if (args.sandbox_profile && args.sandbox_profile !== 'auto') {
-    copyFileSync(args.sandbox_profile, profile);
-  } else {
-    execFileSync(selection.vmm, ['--compile-profile', profile, '--images', frozen], { timeout: 30000, stdio: 'pipe' });
-  }
+  selection.argv = [selection.vmm, 'console', '--image', selection.image];
   selection.require_sandbox_ack = true;
-  selection.sandbox_profile = profile;
-  selection.sandbox_profile_sha256 = sha(profile);
-  selection.argv.push('--sandbox-profile', profile);
-  if (process.platform === 'darwin') {
-    const probe = join(frozen, 'sandbox-probe');
-    execFileSync('/usr/bin/clang', ['-O2', join(HERE, 'sandbox_probe.c'), '-lsandbox', '-o', probe]);
-    selection.sandbox_probe = { binary: probe, profile, profile_sha256: sha(profile), source: 'canonical precompiled profile; sandbox_apply call only, no VM' };
-  }
   const adapter = args.hyperlight_adapter || process.env.HYPERLIGHT_ADAPTER || join(HERE, 'hyperlight/adapter.json');
   if (existsSync(adapter) && !args.no_hyperlight) {
     const hl = readJSON<Frame>(adapter);
@@ -372,14 +360,17 @@ export function choose(args: SelectionConfig): Frame {
       hashes[relative(exe, f)] = sha(f);
     }
   }
-  selection.executor = { source: base, integrated, build: join(exe, 'build'), node_modules: modules, runtime_sha256: hashes };
+  // The executor rows run the ring engine (the executor's default): the HVF
+  // engine copied above and the prepared snapshot from the deps cache.
+  const snapshot = process.env.JITK_SHARD_SNAPSHOT || cachePath('JITK_SHARD_SNAPSHOT');
+  selection.executor = { source: base, integrated, build: join(exe, 'build'), node_modules: modules, runtime_sha256: hashes, engine: selection.vmm, snapshot, snapshot_identity_sha256: existsSync(snapshot + '.identity') ? sha(snapshot + '.identity') : null };
   selection.node = args.node || process.env.NODE || null;
   if (selection.node) {
     check(isAbsolute(selection.node), '--node/NODE must be an absolute Node executable path');
     selection.node_runtime = command([selection.node, '-p', 'JSON.stringify({execPath:process.execPath,version:process.version})']);
   }
   selection.harness_sha256 = {};
-  for (const f of ['run.ts', 'controller.ts', 'lib.ts', 'native.ts', 'native.c', 'ffi.json', 'cases.json', 'executor.mjs', 'watchdog.ts', 'sandbox_probe.c', 'processes.ts']) {
+  for (const f of ['run.ts', 'controller.ts', 'lib.ts', 'native.ts', 'native.c', 'ffi.json', 'cases.json', 'executor.mjs', 'watchdog.ts', 'processes.ts']) {
     selection.harness_sha256[f] = sha(join(HERE, f));
   }
   return selection;
@@ -408,11 +399,6 @@ export function makeSpecs(s: Frame): Spec[] {
     add('jitk-refill', String(c), c);
   }
   add('jitk-parked-memory', 'one_tool');
-  if (s.sandbox_probe) {
-    for (const name of ['on', 'off']) {
-      add('sandbox-apply', name);
-    }
-  }
   if (s.hyperlight) {
     for (const mode of ['hl-strict', 'hl-strict-parked', 'hl-clone']) {
       for (const name of Object.keys(CASES)) {
@@ -476,15 +462,6 @@ function refill(s: Frame, concurrency: number): Frame {
 export function sample(spec: Spec, s: Frame, clone: Worker | null): Frame {
   const mode = spec.mode;
   const caseName = spec.case;
-  if (mode === 'sandbox-apply') {
-    const cfg = s.sandbox_probe;
-    const worker = new Worker([cfg.binary, cfg.profile, caseName]);
-    try {
-      return worker.recv();
-    } finally {
-      worker.close();
-    }
-  }
   if (mode === 'jitk-refill') {
     return refill(s, Number(spec.concurrency));
   }
