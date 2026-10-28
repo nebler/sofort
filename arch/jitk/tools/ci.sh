@@ -4,7 +4,8 @@
 #   1. doctor, deps                       (a failure here stops the run)
 #   2. host suites and builds, no KVM     (every step runs; failures collected)
 #   3. KVM suites, when /dev/kvm is rw    (shard snapshot/test-kvm/shard-host,
-#      the Linux VMM test, `make test-linux` once that target exists)
+#      the Linux VMM test, the libkrun executor and MCP suites,
+#      `make test-linux` once that target exists)
 #   4. the checkout is still clean        (tests write only ignored paths)
 # Each skipped step prints why. Exit 1 when any step failed.
 #   JITK_CI_KVM=auto|0|1   auto (default): KVM steps when /dev/kvm is usable;
@@ -91,16 +92,38 @@ kernel_checks() {
     .work/bin/tests/test_packer && .work/bin/tests/test_handlers && .work/bin/tests/test_fs &&
     "$JITK_NODE" tests/ring-bootstrap-check.mjs
 }
+# The Linux-built default image is byte-identical to the promoted Mac image
+# (kernel/ARCH.md "Image identity"); the libkrun suites below rely on it.
+kernel_identity() {
+  "$JITK_NODE" -e '
+    const { createHash } = require("node:crypto"), { readFileSync } = require("node:fs");
+    const [ready, image] = process.argv.slice(1);
+    const want = JSON.parse(readFileSync(ready, "utf8")).sha256;
+    const got = createHash("sha256").update(readFileSync(image)).digest("hex");
+    console.log("kernel/dist/kernel.bin " + got + (got === want ? " = " : " != ") + "kernel/.READY " + want);
+    if (got !== want) process.exit(1);
+  ' "$JITK/kernel/.READY" "$JITK/kernel/dist/kernel.bin"
+}
 executor_build() {
   "$JITK_NODE" "$JITK_NPM_CLI" ci --prefix "$JITK/executor" --ignore-scripts --no-audit --no-fund --prefer-offline --cache "$JITK_NPM_CACHE" &&
     make -s -C "$JITK/executor" build tools
 }
 # The executor checks that need no VMM backend (run.sh test's list minus the
-# libkrun/Hyperlight ones skipped below).
+# libkrun ones in the KVM part and Hyperlight, skipped below).
 executor_checks() {
   for check in abi-check prepared-check pool-check resolve-check sandbox-check transport-check shard-sandbox-check watchdog-check; do
     echo "executor: $check"
     "$JITK_NODE" "$JITK/executor/build/$check.js" || return 1
+  done
+}
+# The rest of run.sh test's list: libkrun on /dev/kvm (KVM part below), each
+# under the bench lock. They boot kernel/dist/kernel.bin, which must match
+# kernel/.READY's hash; a Linux build produces the Mac's bytes (kernel/ARCH.md
+# "Image identity").
+executor_libkrun_checks() {
+  for check in verify wrapper-conformance api-check policy-check; do
+    echo "executor: $check"
+    locked "$JITK_NODE" "$JITK/executor/build/$check.js" || return 1
   done
 }
 policy_checks() {
@@ -122,6 +145,7 @@ grow_checks() {
 step layering "$JITK/tools/.work/bin/layering" --self-test
 step 'abi test' make -s -C "$JITK/abi" test
 step 'kernel build' make -s -C "$JITK/kernel" build
+step 'kernel image = .READY' kernel_identity
 step 'kernel host checks' kernel_checks
 skip 'kernel regression, fs_diff' 'boots the libkrun console kernel and links probes with /opt/homebrew ld.lld; Mac make test'
 step 'docs test' make -s -C "$JITK/docs" test
@@ -129,11 +153,9 @@ step 'shard test' make -s -C "$JITK/shard" test
 step 'protocol test' make -s -C "$JITK/protocol" test tools
 step 'executor build' executor_build
 step 'executor checks' executor_checks
-skip 'executor verify/api/policy/wrapper' 'libkrun console backend pinned by kernel/.READY to the Mac-built image; Mac make test'
 skip 'executor hyperlight-check' 'Hyperlight worker and snapshot are macOS deps'
 step 'executor/policy test' policy_checks
 step 'mcp build, native-test' mcp_checks
-skip 'mcp test' 'drives the libkrun console backend (same kernel/.READY pin); Mac make test'
 step 'vmm/sandbox unit' sandbox_unit
 step 'tslib test' make -s -C "$JITK/tslib" test
 step 'scriptc builds' make -s -C "$JITK" tools
@@ -168,7 +190,7 @@ if [ -z "${JITK_BENCH_LOCK:-}" ]; then
 fi
 export JITK_BENCH_LOCK
 locked() { flock -w "${JITK_SHARD_LOCK_WAIT:-900}" "$JITK_BENCH_LOCK" "$@"; }
-kvm_steps='shard snapshot|shard test-kvm|shard-host.sh|vmm test|test-linux'
+kvm_steps='shard snapshot|shard test-kvm|shard-host.sh|vmm test|executor verify/api/policy/wrapper|mcp test|test-linux'
 if [ -n "$kvm_why" ]; then
   echo "$kvm_steps" | tr '|' '\n' | while read -r name; do skip "$name" "$kvm_why"; done
 else
@@ -177,6 +199,8 @@ else
   # shard-host.sh takes the bench lock itself around the executor suite.
   step 'shard-host.sh' sh "$JITK/executor/ipc/shard-host.sh"
   step 'vmm test' locked make -s -C "$JITK/vmm" test
+  step 'executor verify/api/policy/wrapper' executor_libkrun_checks
+  step 'mcp test' locked make -s -C "$JITK/mcp" test
   # The backend-parity target (R10 #7) lands separately; run it once present.
   if grep -Eq '^test-linux[[:space:]]*:' "$JITK/Makefile"; then
     step 'test-linux' make -s -C "$JITK" test-linux

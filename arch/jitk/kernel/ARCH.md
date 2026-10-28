@@ -80,9 +80,19 @@ These choices keep the generated code unchanged. Change them only if relinking i
 - `mmio::*` and `doorbell` carry no inline attributes, the same as the
   functions they replaced. The other primitives are `#[inline(always)]`
   because they replace inline `asm!` blocks.
+- `-C metadata` is pinned. `.cargo/config.toml` runs rustc through
+  `rustc-pin.sh`, which replaces cargo's value for the `jitk_02` crate with
+  the one cargo computed on the Mac for `.READY`'s image. Cargo hashes the
+  build-script unit into that value, and build scripts are host units, so the
+  build host's triple used to leak into every symbol hash. That moved two
+  monomorphized functions and made a kvm-dev build 23 bytes different from the
+  Mac's. With the pin, Linux and macOS hosts build the same bytes. Building
+  with `JITK_CRATE_METADATA=cargo` (after touching `src/main.rs`) shows
+  cargo's per-host value again.
 
 To check identity, build every variant before and after a change and compare
-SHA-256 values. The default image is pinned in `.READY`. Ring images are not
+SHA-256 values. The default image is pinned in `.READY`, and a Linux arm64 host
+must build the same hash (`make -C arch/jitk ci` uses it). Ring images are not
 pinned; the shard prepares snapshots from whichever image it is given.
 
 ## Linux ABI data
