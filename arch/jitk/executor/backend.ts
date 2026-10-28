@@ -5,10 +5,10 @@ import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {Dispatcher, LIMIT, type Frame} from '../protocol/dispatcher.js';
-import {failure,type Engine,type GuestEvent,type Job,type Phase,type Reply,type Session} from './engine.js';
+import {failure,v1Limits,type Engine,type GuestEvent,type Job,type Limits,type Phase,type Reply,type Session} from './engine.js';
 import {executionBody} from './code.js';
 
-export type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
+export type {Engine,GuestEvent,JsJob,JsLimits,Job,Limits,NativeJob,NativeLimits,Phase,Reply,Session} from './engine.js';
 /** The public name for an engine (codemode/TanStack/MCP callers construct these). */
 export type Backend=Engine;
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
@@ -82,21 +82,23 @@ function watchdogBinary(options:ProcessOptions):string {
   return bin;
 }
 export class ProcessBackend implements Backend {
+  /** Protocol v1; a run lives at most the watchdog lifetime. */
+  readonly limits:Limits;
   constructor(readonly kind:Backend['kind'],readonly command:string,readonly argv:string[],
-    readonly memoryLimitMB=32,readonly options:ProcessOptions={}) {}
+    memoryMB=32,readonly options:ProcessOptions={}) {this.limits=v1Limits(memoryMB,options.lifetimeMs??60000);}
   async park(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(signal?.aborted)throw Error('aborted');
     const child=spawn(this.command,this.argv,{stdio:'pipe',detached:true,cwd:this.options.cwd,
       env:{PATH:'/usr/bin:/bin',...LINUX_MALLOC_ENV,...this.options.env}});
     const s=new ProcessSession(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
-    const abort=()=>s.kill();signal?.addEventListener('abort',abort,{once:true});
+    const abort=()=>s.release();signal?.addEventListener('abort',abort,{once:true});
     const timer=setTimeout(abort,this.options.startupMs??5000);
     try {
       const [first]:any[]=await Promise.all([s.frame(),s.confined,s.watchdogReady]);
       if(first.t!=='ready'||first.v!==1)throw Error('bad ready');
       if(signal?.aborted)throw Error('aborted');
       return s;
-    }catch(e){s.kill();await s.exited;throw e;}
+    }catch(e){s.release();await s.released;throw e;}
     finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
   }
 }
@@ -129,7 +131,7 @@ export class JitkBackend extends ProcessBackend {
 /** A VMM or worker process speaking protocol v1 on stdio. The v1 Dispatcher is
  *  this adapter's decoder: frames exist only here and become GuestEvents. */
 class ProcessSession implements Session {
-  readonly exited:Promise<void>;
+  readonly released:Promise<void>;
   readonly confined:Promise<void>;
   readonly watchdogReady:Promise<void>;
   deadlineReceipt?:{deadline:number;firedAt:number;killAt:number};
@@ -147,7 +149,7 @@ class ProcessSession implements Session {
     this.deadline=deadline;
     let acknowledge=()=>{};
     this.confined=requireSandboxAck?new Promise<void>((resolve,reject)=>{acknowledge=resolve;this.rejectConfined=reject;}):Promise.resolve();
-    this.dispatcher=new Dispatcher({kill:f=>{this.fail(Error('protocol '+f.code));this.kill();},
+    this.dispatcher=new Dispatcher({kill:f=>{this.fail(Error('protocol '+f.code));this.release();},
       message:m=>{
         const w=this.waiters.shift();
         if(w)w.resolve(m);
@@ -158,13 +160,13 @@ class ProcessSession implements Session {
         }
       }});
     const closed=new Promise<void>(resolve=>child.once('close',()=>{this.fail(Error('sandbox exited'),true);resolve();}));
-    child.once('error',e=>{this.fail(e);this.kill();});
+    child.once('error',e=>{this.fail(e);this.release();});
     child.stdout.on('data',(b:Buffer)=>{try{this.dispatcher.feed(b);}catch{/* dispatcher kills */}});
     child.stdout.once('end',()=>{try{this.dispatcher.eof();}catch{/* dispatcher kills */}});
     child.stdin.on('error',()=>{});
     let stderr=0;
     let hostLines='';
-    child.stderr.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536){this.fail(Error('stderr limit'));this.kill();return;}
+    child.stderr.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536){this.fail(Error('stderr limit'));this.release();return;}
       hostLines+=b.toString('utf8');let pos;
       while((pos=hostLines.indexOf('\n'))!==-1){const line=hostLines.slice(0,pos);hostLines=hostLines.slice(pos+1);if(line==='{"sandbox":"ok"}')acknowledge();}
     });
@@ -172,14 +174,14 @@ class ProcessSession implements Session {
     if(child.pid) {
       const pid=child.pid;
       this.watchdogReady=watchdog.ready.then(()=>{
-        watchdog.add(pid,lifetimeMs,m=>{this.deadlineReceipt=m;this.fail(Error('Execution timed out'));},e=>{this.fail(e);this.kill();});
+        watchdog.add(pid,lifetimeMs,m=>{this.deadlineReceipt=m;this.fail(Error('Execution timed out'));},e=>{this.fail(e);this.release();});
         if(deadline!==undefined)return watchdog.arm(pid,deadline);
       });
-      this.watchdogReady.catch(e=>{this.fail(e);this.kill();});
+      this.watchdogReady.catch(e=>{this.fail(e);this.release();});
       // Reaped VMMs leave the watchdog at once; it also drops exits itself (pidfd/kqueue).
       void closed.then(()=>watchdog.del(pid));
     }
-    this.exited=closed;
+    this.released=closed;
   }
   async armDeadline(deadline:number):Promise<void> {
     if(!Number.isFinite(deadline))throw Error('invalid deadline');
@@ -213,6 +215,7 @@ class ProcessSession implements Session {
     return p.then(m=>{if(this.fatalError)throw this.error;return m;});
   }
   async start(job:Job):Promise<void> {
+    if(job.kind!=='js')throw Error('process engines run JS jobs only');
     await this.send({t:'run',code:executionBody(job),ns:job.tools});
   }
   async next():Promise<GuestEvent> {
@@ -228,7 +231,7 @@ class ProcessSession implements Session {
   private send(frame:unknown):Promise<void> {
     // A single writer retains <=1 encoded frame, independent of pipe pressure.
     // Producers (<=64 admitted calls) keep their result until write completion.
-    if(++this.writes>65){this.writes--;this.kill();return Promise.reject(Error('writer producer limit'));}
+    if(++this.writes>65){this.writes--;this.release();return Promise.reject(Error('writer producer limit'));}
     const p=this.output.then(async()=>{
       if(frame&&typeof frame==='object'&&(frame as any).t==='ret'&&this.dispatcher.snapshot().state==='done')return;
       if(this.error)throw this.error;
@@ -236,10 +239,10 @@ class ProcessSession implements Session {
       this.dispatcher.send(frame,bytes=>{wire=bytes;return true;});
       await new Promise<void>((resolve,reject)=>this.child.stdin.write(wire!,e=>e?reject(e):resolve()));
     });
-    this.output=p.catch(e=>{this.fail(e);this.kill();});
+    this.output=p.catch(e=>{this.fail(e);this.release();});
     return p.finally(()=>{this.writes--;});
   }
-  kill():void {
+  release():void {
     try{if(this.child.pid)process.kill(-this.child.pid,'SIGKILL');}catch{}
   }
 }

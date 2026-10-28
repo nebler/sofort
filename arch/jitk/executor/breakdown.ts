@@ -21,13 +21,13 @@ try{
   const marks:Partial<Record<TimingEvent|'callerResolve',number>>={};lifecycle={};
   const r=await ex.execute('return await api.echo(2)',[{name:'api',fns:{echo:async x=>x}}],{onTiming:(event,at)=>marks[event]=at});
   marks.callerResolve=performance.now();assert.equal(r.result,2);assert(!r.error);
-  assert.equal(lifecycle.kill,undefined,'SIGKILL must follow caller resolution');
-  await new Promise<void>((resolve,reject)=>{const deadline=performance.now()+5000;const poll=()=>{if(lifecycle.reaped)resolve();else if(performance.now()>deadline)reject(Error('disposal did not reap within 5s'));else setTimeout(poll,1);};poll();});
+  assert.equal(lifecycle.release,undefined,'SIGKILL must follow caller resolution');
+  await new Promise<void>((resolve,reject)=>{const deadline=performance.now()+5000;const poll=()=>{if(lifecycle.released)resolve();else if(performance.now()>deadline)reject(Error('disposal did not reap within 5s'));else setTimeout(poll,1);};poll();});
   const m=marks as Record<string,number>;
   if(i>=5)rows.push({load,gate,refillWaitMs,marks,...lifecycle,
    acquire:m.acquired-m.start,sendRun:m.runSent-m.acquired,firstCall:m.firstCall-m.runSent,
    ret:m.firstRet-m.firstCall,done:m.done-m.firstRet,resolve:m.callerResolve-m.done,
-   execute:m.callerResolve-m.start,killAfterResolve:lifecycle.kill-m.callerResolve,reapAfterResolve:lifecycle.reaped-m.callerResolve});
+   execute:m.callerResolve-m.start,killAfterResolve:lifecycle.release-m.callerResolve,reapAfterResolve:lifecycle.released-m.callerResolve});
  }
 }finally{await pool.close();}
 const stats=(key:string)=>{const a=rows.map(r=>r[key]).sort((a,b)=>a-b);return {n:a.length,median:a[Math.ceil(a.length*.5)-1],p90:a[Math.ceil(a.length*.9)-1],p99:a[Math.ceil(a.length*.99)-1]};};

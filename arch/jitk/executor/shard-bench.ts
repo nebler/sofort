@@ -43,7 +43,7 @@ try {
   for(let i=0;i<20;i++){
     const s=await backend.park();await s.armDeadline!(Date.now()+100);await s.start({kind:'js',source:'async()=>{while(true){}}',tools:{},prelude:''});
     const until=performance.now()+200;while(performance.now()<until){}
-    {const ev=await s.next();assert.ok(ev.kind==='fail'&&/deadline_exceeded/.test(ev.message));}s.kill();await s.exited;
+    {const ev=await s.next();assert.ok(ev.kind==='fail'&&/deadline_exceeded/.test(ev.message));}s.release();await s.released;
   }
   const stop=rows.map(m=>Number(m.stoppedNs-m.deadlineNs)/1e6),reset=rows.map(m=>Number(m.resetDoneNs-m.deadlineNs)/1e6);
   console.log(json({event:'deadlines',nested:true,n:rows.length,nodeBlockedMs:200,stopMs:distribution(stop),resetMs:distribution(reset),receipts:rows,end:env()}));

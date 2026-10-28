@@ -1,7 +1,14 @@
 //! Bounded, verified snapshot metadata; no VM or guest execution is needed to load it.
+//!
+//! A snapshot is `BASE.mem` (guest RAM, the same format on every hypervisor),
+//! `BASE.layout` (the arena class) and `BASE.regs`, the register file of the
+//! hypervisor that prepared it (`hv::ArchState`: `Registers` for KVM,
+//! `hvf::State` for HVF). Each register format has its own magic, so a
+//! snapshot prepared on one hypervisor fails to load on the other.
 use crate::{
     arena,
     constants::{ABI_VERSION, ring::RAM_BYTES as RAM},
+    hv::ArchState,
 };
 use std::{
     fs::File,
@@ -20,12 +27,33 @@ impl Register {
         &self.data
     }
 }
-pub struct Snapshot {
+/// A KVM register file (`JTKREGS2`): every id KVM_GET_REG_LIST names.
+pub struct Registers(pub(crate) Vec<Register>);
+impl std::ops::Deref for Registers {
+    type Target = [Register];
+    fn deref(&self) -> &[Register] {
+        &self.0
+    }
+}
+impl ArchState for Registers {
+    fn decode(bytes: &[u8]) -> io::Result<Self> {
+        parse_registers(bytes).map(Self)
+    }
+    fn encode(&self) -> Vec<u8> {
+        let mut out = b"JTKREGS2".to_vec();
+        for r in &self.0 {
+            out.extend_from_slice(&r.id.to_le_bytes());
+            out.extend_from_slice(&(r.data.len() as u64).to_le_bytes());
+            out.extend_from_slice(&r.data);
+        }
+        out
+    }
+}
+pub struct Snapshot<S = Registers> {
     pub memory: File,
     pub class: arena::Class,
-    pub(crate) regs: Vec<Register>,
+    pub(crate) regs: S,
     /// Read-only view of `memory`, the source of copy-restore resets.
-    #[cfg(target_os = "linux")]
     pub(crate) reference: Reference,
 }
 /// One `PROT_READ`, `MAP_SHARED` view of the snapshot file, shared by every slot
@@ -33,18 +61,14 @@ pub struct Snapshot {
 /// later `mprotect(PROT_WRITE)` of this view: nothing in the process can write
 /// the bytes a reset copies from. Its clean pages are the same page-cache pages
 /// that back untouched guest RAM.
-#[cfg(target_os = "linux")]
 pub(crate) struct Reference {
     ptr: *const u8,
 }
 // SAFETY: the view is immutable for its whole lifetime (read-only file, read-only
 // shared mapping) and only raw-pointer reads are exposed.
-#[cfg(target_os = "linux")]
 unsafe impl Send for Reference {}
 // SAFETY: as for Send; concurrent reads of immutable bytes do not race.
-#[cfg(target_os = "linux")]
 unsafe impl Sync for Reference {}
-#[cfg(target_os = "linux")]
 impl Reference {
     pub(crate) fn map(memory: &File) -> io::Result<Self> {
         use std::os::fd::AsRawFd;
@@ -70,7 +94,6 @@ impl Reference {
         self.ptr
     }
 }
-#[cfg(target_os = "linux")]
 impl Drop for Reference {
     fn drop(&mut self) {
         // SAFETY: this owns the original mapping; every Slot that reads through it
@@ -171,10 +194,15 @@ fn parse_registers(b: &[u8]) -> io::Result<Vec<Register>> {
     }
     Ok(regs)
 }
-impl Snapshot {
+impl Snapshot<Registers> {
     /// Borrow immutable register values from this verified snapshot.
     pub fn registers(&self) -> impl Iterator<Item = (u64, &[u8])> {
         self.regs.iter().map(|reg| (reg.id, reg.data.as_slice()))
+    }
+}
+impl<S: ArchState> Snapshot<S> {
+    pub fn regs(&self) -> &S {
+        &self.regs
     }
 
     /// [`Self::load`] a prepared snapshot whose `.identity` names this shard's
@@ -210,9 +238,8 @@ impl Snapshot {
             return Err(snapshot_error("snapshot/layout mismatch"));
         }
         let b = read_metadata(File::open(format!("{base}.regs"))?, 8 + 2048 * (16 + 256))?;
-        let regs = parse_registers(&b)?;
+        let regs = S::decode(&b)?;
         Ok(Arc::new(Self {
-            #[cfg(target_os = "linux")]
             reference: Reference::map(&memory)?,
             memory,
             regs,

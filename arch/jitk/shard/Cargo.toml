@@ -7,7 +7,7 @@ rust-version = "1.95"
 [dependencies]
 jitk-abi = { path = "../abi" }
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(unix)'.dependencies]
 libc = "=0.2.186"
 
 [profile.release]
