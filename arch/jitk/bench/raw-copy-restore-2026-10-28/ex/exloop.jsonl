@@ -1,0 +1,12 @@
+{"rep":1,"variant":"before","case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":1515.542,"nodeUserUs":993.68,"nodeSysUs":521.862,"wallUsPerRun":41940.0897}}
+{"rep":1,"variant":"before","case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":1270.238,"nodeUserUs":865.124,"nodeSysUs":405.114,"wallUsPerRun":39838.371119999996}}
+{"rep":1,"variant":"after","case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":1222.894,"nodeUserUs":522.386,"nodeSysUs":700.508,"wallUsPerRun":2149.7580620000003}}
+{"rep":1,"variant":"after","case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":629.254,"nodeUserUs":253.82,"nodeSysUs":375.434,"wallUsPerRun":1140.84768}}
+{"rep":2,"variant":"before","case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":1598.926,"nodeUserUs":1005.614,"nodeSysUs":593.312,"wallUsPerRun":42546.927668}}
+{"rep":2,"variant":"before","case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":1183.05,"nodeUserUs":774.652,"nodeSysUs":408.398,"wallUsPerRun":39057.55581400001}}
+{"rep":2,"variant":"after","case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":803.196,"nodeUserUs":239.186,"nodeSysUs":564.01,"wallUsPerRun":1514.371138}}
+{"rep":2,"variant":"after","case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":551.072,"nodeUserUs":190.736,"nodeSysUs":360.336,"wallUsPerRun":987.206594}}
+{"rep":3,"variant":"before","case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":1610.544,"nodeUserUs":958.598,"nodeSysUs":651.946,"wallUsPerRun":42398.545741999995}}
+{"rep":3,"variant":"before","case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":1150.136,"nodeUserUs":744.67,"nodeSysUs":405.466,"wallUsPerRun":39218.211967999996}}
+{"rep":3,"variant":"after","case":"one_tool","r":{"n":500,"code":"return (await codemode.echo(41))+1","nodeUsPerRun":909.942,"nodeUserUs":347.994,"nodeSysUs":561.948,"wallUsPerRun":1664.8853480000002}}
+{"rep":3,"variant":"after","case":"return2","r":{"n":500,"code":"return 2","nodeUsPerRun":539.52,"nodeUserUs":204.582,"nodeSysUs":334.938,"wallUsPerRun":974.240564}}

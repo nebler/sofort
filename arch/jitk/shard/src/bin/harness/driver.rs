@@ -91,14 +91,17 @@ pub fn run(
         proc_read("/proc/uptime").trim(),
         proc_read("/proc/version").trim()
     );
-    let slots = if matches!(mode, "hold" | "deadlines") {
+    let slots = if matches!(mode, "hold" | "deadlines" | "idle") {
         n
     } else if mode == "stress" {
         64.min(n)
     } else {
         1
     };
-    let mut pool = Pool::new(kvm, snapshot, slots, owners);
+    // Offline scenarios take the shard's reset policy from the environment.
+    let policy =
+        kvm::ResetPolicy::parse(&std::env::var("JITK_SHARD_RESET").unwrap_or_default()).unwrap();
+    let mut pool = Pool::notified(kvm, snapshot, slots, owners, None, policy);
     (|| {
         if mode == "deadlines" {
             if name == "staggered" {
@@ -122,6 +125,7 @@ pub fn run(
         match mode {
             "hold" => scenario.hold(&mut pool, a.get(5).map(String::as_str)),
             "hostile" => scenario.hostile(&mut pool),
+            "idle" => scenario.idle(&mut pool, policy),
             _ => {
                 assert_eq!(mode, "bench");
                 scenario.bench(&mut pool);
@@ -221,6 +225,76 @@ impl Scenario<'_> {
             "{{\"event\":\"released\",\"n\":{n},\"threads\":{},\"lost\":0}}",
             owners + 1
         );
+    }
+    /// Run the fixture once in each of n slots and release them (one reset
+    /// each), then report process anonymous memory and the memcg charge right
+    /// after the resets and again once idle trimming is due.
+    fn idle(&self, pool: &mut Pool, policy: kvm::ResetPolicy) {
+        let n = self.n;
+        let memory = || {
+            let status = proc_read("/proc/self/status");
+            let anon = status
+                .lines()
+                .find_map(|l| l.strip_prefix("RssAnon:"))
+                .map_or(0, |v| {
+                    v.trim()
+                        .trim_end_matches(" kB")
+                        .trim()
+                        .parse::<u64>()
+                        .unwrap()
+                });
+            let cgroup = proc_read("/proc/self/cgroup");
+            let path = cgroup.trim().strip_prefix("0::").unwrap_or("");
+            let current = proc_read(&format!("/sys/fs/cgroup{path}/memory.current"));
+            (anon, current.trim().parse::<u64>().unwrap_or(0) / 1024)
+        };
+        let before = memory();
+        for slot in 0..n {
+            pool.start(
+                slot,
+                job(
+                    2,
+                    &self.source,
+                    Mode::Run,
+                    kvm::monotonic_ns() + 30_000_000_000,
+                    false,
+                ),
+            );
+        }
+        for _ in 0..n {
+            let Event::Done { completion, .. } = pool.recv() else {
+                panic!("expected completion");
+            };
+            assert_eq!(completion.result.unwrap(), (self.expected)(self.name));
+        }
+        for slot in 0..n {
+            pool.cancel(slot);
+            assert!(matches!(pool.recv(), Event::Reset { .. }));
+        }
+        let hot = memory();
+        let wait = policy.idle_trim.unwrap_or_default() + Duration::from_millis(500);
+        thread::sleep(wait);
+        let trimmed = memory();
+        println!(
+            "{{\"event\":\"idle\",\"n\":{n},\"fixture\":{:?},\"idle_trim_ms\":{},\"waited_ms\":{},\"rss_anon_kib\":[{},{},{}],\"memcg_kib\":[{},{},{}],\"hot_anon_kib_per_slot\":{},\"released_anon_kib_per_slot\":{}}}",
+            self.name,
+            policy.idle_trim.map_or(-1, |d| d.as_millis() as i64),
+            wait.as_millis(),
+            before.0,
+            hot.0,
+            trimmed.0,
+            before.1,
+            hot.1,
+            trimmed.1,
+            hot.0.saturating_sub(before.0) / n as u64,
+            hot.0.saturating_sub(trimmed.0) / n as u64
+        );
+        if policy.idle_trim.is_some() {
+            assert!(
+                trimmed.0 < hot.0,
+                "idle trimming released no anonymous memory"
+            );
+        }
     }
     fn hostile(&self, pool: &mut Pool) {
         let name = self.name;
@@ -337,9 +411,18 @@ impl Scenario<'_> {
             tools.push(m.tool_ns);
             rtts.push(m.wait_to_finish_ns);
             all.push(t.elapsed().as_nanos() as u64);
+            let reset = m.reset.unwrap_or_default();
             println!(
-                "{{\"event\":\"sample\",\"i\":{i},\"reset_ns\":{},\"run_ns\":{},\"exits\":{},\"calls\":{},\"owner_reply_ns\":{},\"cpu_ns\":{},\"wait_to_finish_ns\":{},\"result\":{r}}}",
-                m.reset_ns, m.run_ns, m.exits, m.calls, m.tool_ns, m.cpu_ns, m.wait_to_finish_ns
+                "{{\"event\":\"sample\",\"i\":{i},\"reset_ns\":{},\"reset_private\":{},\"reset_discard\":\"{:?}\",\"run_ns\":{},\"exits\":{},\"calls\":{},\"owner_reply_ns\":{},\"cpu_ns\":{},\"wait_to_finish_ns\":{},\"result\":{r}}}",
+                m.reset_ns,
+                reset.private,
+                reset.discard,
+                m.run_ns,
+                m.exits,
+                m.calls,
+                m.tool_ns,
+                m.cpu_ns,
+                m.wait_to_finish_ns
             );
         }
         println!(
@@ -364,8 +447,12 @@ fn stress(
     fixture: fn(&str) -> String,
     expected: fn(&str) -> &'static str,
 ) {
-    let names = ["return2", "one_tool", "promise10"];
+    // bomb dirties the whole arena, so its slot's next reset takes the discard
+    // path; the rotation moves every fixture across every slot.
+    let names = ["return2", "one_tool", "promise10", "bomb"];
+    let pick = |first: usize, slot: usize| names[(first / slots + slot) % names.len()];
     let mut completed = 0;
+    let (mut copies, mut discards) = (0, 0); // begin() resets by path
     let mut entropy = HashSet::new();
     for first in (0..n).step_by(slots) {
         let batch_start = Instant::now();
@@ -377,7 +464,7 @@ fn stress(
                 "{}{}",
                 include_str!("../../../fixtures/stress.js")
                     .replace("$MARKER", &format!("{marker:?}")),
-                fixture(names[(first + slot) % names.len()])
+                fixture(pick(first, slot))
             );
             pool.start(
                 slot,
@@ -405,11 +492,16 @@ fn stress(
                     assert_eq!(generation, (first + slot + 2) as u64);
                     assert!(entropy.insert(completion.seed));
                     max_run_ns = max_run_ns.max(completion.metrics.run_ns);
+                    match completion.metrics.reset.map(|r| r.discard.is_some()) {
+                        Some(false) => copies += 1,
+                        Some(true) => discards += 1,
+                        None => {}
+                    }
                     assert_eq!(
                         completion.result.as_ref().unwrap_or_else(|error| panic!(
                             "stress completed={completed} slot={slot} generation={generation} batch_ns={} run_ns={} error={error}",
                             batch_start.elapsed().as_nanos(), completion.metrics.run_ns)),
-                        expected(names[(first + slot) % names.len()])
+                        expected(pick(first, slot))
                     );
                     completed += 1;
                 }
@@ -425,7 +517,7 @@ fn stress(
         verify_reset(pool, slot);
     }
     println!(
-        "{{\"event\":\"stress\",\"runs\":{completed},\"slots\":{slots},\"canary_leaks\":0,\"cross_talk\":0,\"fresh_entropy\":{}}}",
+        "{{\"event\":\"stress\",\"runs\":{completed},\"slots\":{slots},\"canary_leaks\":0,\"cross_talk\":0,\"fresh_entropy\":{},\"copy_resets\":{copies},\"discard_resets\":{discards}}}",
         entropy.len()
     );
 }

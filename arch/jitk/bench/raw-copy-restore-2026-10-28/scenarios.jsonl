@@ -1,0 +1,12 @@
+{"file":"hostile-arena_attack-copy-limit_0_verify.jsonl","contained":50,"last":{"event":"contained","i":49,"run_ns":67749310,"error":"memory_bound: write outside class arena at 0x80000000"}}
+{"file":"hostile-arena_attack-verify.jsonl","contained":50,"last":{"event":"contained","i":49,"run_ns":68467518,"error":"memory_bound: write outside class arena at 0x80000000"}}
+{"file":"hostile-bomb-copy-limit_0_verify.jsonl","contained":50,"last":{"event":"contained","i":49,"run_ns":28522310,"result":{"err":{"name":"InternalError","message":"out of memory"}}}}
+{"file":"hostile-bomb-verify.jsonl","contained":50,"last":{"event":"contained","i":49,"run_ns":12093576,"result":{"err":{"name":"InternalError","message":"out of memory"}}}}
+{"file":"hostile-json64k-copy-limit_0_verify.jsonl","contained":50,"last":{"event":"contained","i":49,"run_ns":31656813,"result":{"err":{"name":"InternalError","message":"out of memory"}}}}
+{"file":"hostile-json64k-verify.jsonl","contained":50,"last":{"event":"contained","i":49,"run_ns":14966272,"result":{"err":{"name":"InternalError","message":"out of memory"}}}}
+{"file":"stress-discard-verify.jsonl","contained":0,"last":{"event":"stress","runs":2048,"slots":64,"canary_leaks":0,"cross_talk":0,"fresh_entropy":2048}}
+{"file":"stress-verify.jsonl","contained":0,"last":{"event":"stress","runs":10240,"slots":64,"canary_leaks":0,"cross_talk":0,"fresh_entropy":10240}}
+{"file":"idle-discard.jsonl","contained":0,"last":{"event":"idle","n":64,"fixture":"one_tool","idle_trim_ms":-1,"waited_ms":500,"rss_anon_kib":[4816,8924,8924],"memcg_kib":[14276,29664,29664],"hot_anon_kib_per_slot":64,"released_anon_kib_per_slot":0}}
+{"file":"idle-off.jsonl","contained":0,"last":{"event":"idle","n":64,"fixture":"one_tool","idle_trim_ms":-1,"waited_ms":500,"rss_anon_kib":[4816,29148,29148],"memcg_kib":[11744,50044,50044],"hot_anon_kib_per_slot":380,"released_anon_kib_per_slot":0}}
+{"file":"idle-trim.jsonl","contained":0,"last":{"event":"idle","n":64,"fixture":"one_tool","idle_trim_ms":500,"waited_ms":1000,"rss_anon_kib":[216,28708,8488],"memcg_kib":[6880,49816,28636],"hot_anon_kib_per_slot":445,"released_anon_kib_per_slot":315}}
+{"file":"stress-verify rerun with path counts","last":{"event":"stress","runs":10240,"slots":64,"canary_leaks":0,"cross_talk":0,"fresh_entropy":10240,"copy_resets":7632,"discard_resets":2544}}
