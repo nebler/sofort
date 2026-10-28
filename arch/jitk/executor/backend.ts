@@ -15,7 +15,7 @@ export interface Sandbox {
   kill():void;
 }
 export interface Backend {
-  readonly kind:'jitk'|'local-qjs'|'hyperlight-js'|'shard';
+  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard';
   close?():Promise<void>;
   readonly memoryLimitMB:number;
   park(signal?:AbortSignal,deadline?:number):Promise<Sandbox>;
@@ -107,13 +107,6 @@ export class ProcessBackend implements Backend {
       return s;
     }catch(e){s.kill();await s.exited;throw e;}
     finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
-  }
-}
-// UNSAFE development backend: QuickJS std/os can access the host filesystem.
-export class LocalProcessQjsBackend extends ProcessBackend {
-  constructor(qjs:string,memoryLimitMB=32,options:ProcessOptions={}) {
-    super('local-qjs',qjs,['--memory-limit',String(memoryLimitMB*1048576),'--stack-size','524288','--std','-e',
-      readFileSync(new URL('../../protocol/bootstrap.js',import.meta.url),'utf8')],memoryLimitMB,options);
   }
 }
 const profiles=new Map<string,string>();

@@ -201,12 +201,6 @@ macro_rules! syscall_entry {
     ($frame:expr) => {{
         use crate::arch::frame;
         let f: &mut [usize] = $frame;
-        #[cfg(feature = "trace")]
-        {
-            crate::console::print("\x1esys ");
-            crate::console::hex(f[frame::NR]);
-            crate::console::print("\n");
-        }
         let n = f[frame::NR];
         let args: [usize; 6] = f[frame::ARGS..frame::ARGS + 6].try_into().unwrap();
         // ring::syscall checks every user range before access.

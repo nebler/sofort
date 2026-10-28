@@ -58,14 +58,6 @@ pub mod ring {
     pub const OUTPUT_BYTES: usize = 0x260;
     pub const SOURCE_OFFSET: usize = 0x400;
 }
-/// Legacy synthetic ABI-v0 geometry, consumed only by its binary.
-pub mod synthetic {
-    pub const RAM: usize = 2 << 20;
-    pub const CTRL: usize = 0x4000;
-    pub const REQUEST: usize = 0x8000;
-    pub const REPLY: usize = 0x10000;
-    pub const ARENA: usize = 0x20000;
-}
 pub mod ipc {
     pub const CAPACITY: u64 = 64;
     pub const PAYLOAD: usize = 16384;

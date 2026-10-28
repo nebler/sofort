@@ -60,12 +60,6 @@ unsafe extern "C" fn kernel_main(boot: usize) -> ! {
                     info.console_irq()
                 },
             );
-            #[cfg(feature = "trace")]
-            {
-                console::print("\x1eirq ");
-                console::hex(_irq as usize);
-                console::print("\n");
-            }
         }
         // The ring control page replaces the boot handoff.
         #[cfg(feature = "transport-ring")]

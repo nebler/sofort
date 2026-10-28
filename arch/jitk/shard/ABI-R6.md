@@ -7,8 +7,7 @@ R7 entropy amendment: the control layout is unchanged; the ring-only payload and
 run-entry repair now follow items 1 and 9 below. R6 measurements remain historical.
 
 `kernel --features transport-ring` and shard binary `real` are a separate pair.
-The original `jitk-shard` binary still runs fixture ABI v0. Neither format is
-interchangeable. The default kernel's virtio path is unchanged.
+The fixture ABI v0 binary was deleted in R12 (tag `pre-dead-code-2026-10-28`). The default kernel's virtio path is unchanged.
 
 ## Implemented wire contract
 

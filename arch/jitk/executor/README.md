@@ -45,9 +45,6 @@ Set `JITK_VMM_BINARY=/absolute/path/to/jitk-vmm` and/or
 Overrides are hashed and recorded; automatic selections verify marker hashes.
 Missing artifacts fail with build/override instructions. Selection, hashes and
 parking evidence are written to `integration-selection.json`.
-`local-qjs` is available only through explicit `JITK_BACKEND=local-qjs` and is
-unsafe: std/os has host filesystem access. Set `QJS` to its absolute executable. Its bootstrap is read directly from
-`../protocol/bootstrap.js` and executed with `--std -e`.
 
 The canonical JitkBackend requires both the exact stderr host acknowledgement
 `{"sandbox":"ok"}\n` and validated guest READY before it exposes a parked

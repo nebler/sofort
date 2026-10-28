@@ -9,7 +9,7 @@ and one number table. No core file needs editing, with one exception noted under
 This was a refactor with no behaviour change. All eight image variants
 (default, grow-trace, trace, trace+grow-trace, ring glue-2m/4m, ring native
 2m/4m) are byte-identical to `f3f14f0f`. The default image is still
-`e3d774eb…` (`.READY`).
+`e3d774eb…` (`.READY`). The unused `trace` feature was deleted later (R12).
 
 ## What is core
 

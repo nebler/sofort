@@ -6,7 +6,6 @@ edition = "2024"
 default = ["qjs"]
 qjs = []
 transport-ring = ["qjs"]
-trace = []
 grow-trace = []
 probe = ["qjs"]
 [profile.release]
