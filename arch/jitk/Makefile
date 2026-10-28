@@ -5,7 +5,7 @@ DOCS_BIN := $(ROOT)/docs/.work/bin
 DELEGATE = "$(DOCS_BIN)/delegate"
 DEPS = "$(ROOT)/tools/.work/bin/deps"
 
-.PHONY: help doctor build test bench demo linux-nested loc tools deps deps-status
+.PHONY: help doctor build test bench demo linux-nested loc tools deps deps-status ci
 # The delegate guard, LOC counter and deps tool are scriptc binaries.
 tools:
 	+@$(MAKE) -s -C "$(ROOT)/docs" tools
@@ -28,8 +28,13 @@ deps-status: tools
 doctor:
 	+@$(MAKE) -s -C "$(ROOT)/tools" tools
 	@"$(ROOT)/tools/.work/bin/doctor"
+# CI on a Linux arm64 host (tools/ci.sh; .github/workflows/jitk-ci.yml): doctor,
+# deps, the Linux-capable suites and builds, the KVM suites when /dev/kvm is
+# usable; each skip says why.
+ci:
+	@sh "$(ROOT)/tools/ci.sh"
 help:
-	@printf '%s\n' 'doctor: check this host (run first)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
+	@printf '%s\n' 'doctor: check this host (run first)' 'ci: every Linux arm64 check (CI entrypoint)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
 build: deps
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) vmm build
