@@ -3,6 +3,7 @@ import { isAbsolute, join, resolve, dirname, extname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { check, output, capture, environment } from './lib.ts';
 import { cacheDefaults, requireArtifact } from '../tslib/deps.ts';
+import { guard } from '../tslib/evidence.ts';
 
 export const ROOT = resolve(import.meta.dirname, '..');
 
@@ -98,6 +99,14 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
   if (guarded && subtree === 'linux' && !env.JITK_NESTED_SSH) {
     const common = output(['git', '-C', root, 'rev-parse', '--path-format=absolute', '--git-common-dir']).trim();
     env.JITK_NESTED_SSH = join(dirname(common), 'kvm-dev/ssh.sh');
+  }
+  // Bulk evidence lives in the store (evidence/README.md at the repo root):
+  // refuse to test a tree that tracks new evidence above 64 KiB.
+  const oversized = guarded ? guard(output(['git', '-C', root, 'rev-parse', '--show-toplevel']).trim()) : [];
+  if (oversized.length) {
+    console.error(`jitk: ${subtree}/${action} refused: tracked evidence above 64 KiB belongs in the evidence store (evidence/README.md; tools/.work/bin/evidence export, then remove), or in "kept" of evidence/manifest.json when a build/test reads it:`);
+    console.error(oversized.join('\n'));
+    return 1;
   }
   const before = guarded ? gitSnapshot(root) : [];
   let status = 0;

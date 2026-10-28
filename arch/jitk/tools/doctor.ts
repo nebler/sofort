@@ -6,7 +6,7 @@
 //   hard:  curl/git/tar/xz; rustup with the pinned toolchains, targets and
 //          components; macOS: Xcode clang, ld.lld, llvm-objcopy; Linux: cc,
 //          clang, ld.lld, llvm-objcopy
-//   soft:  clippy/rustfmt (kernel make check/fmt); the deps cache (`make deps`, which `make build` runs anyway); Docker
+//   soft:  the evidence store (evidence/manifest.json); clippy/rustfmt (kernel make check/fmt); the deps cache (`make deps`, which `make build` runs anyway); Docker
 //          (GrowOS and, for now, the Linux VMM build); macOS: the Linux dev
 //          VM (JITK_NESTED_SSH) and its /dev/kvm; Linux: /dev/kvm access
 import { accessSync, constants, existsSync, statSync } from 'node:fs';
@@ -14,6 +14,7 @@ import { platform } from 'node:os';
 import { dirname, join } from 'node:path';
 import { detail } from '../tslib/assert.ts';
 import { DEPS_TARGET, JITK_ROOT, cacheRoot, cargoPath, hostPlatform, pins } from '../tslib/deps.ts';
+import { readManifest, repoRoot, storeRoot, verifyStore } from '../tslib/evidence.ts';
 import { environment } from '../tslib/process.ts';
 import { capture, output } from '../tslib/subprocess.ts';
 
@@ -218,11 +219,30 @@ function localKvm(): Item {
   }
 }
 
+// The evidence store behind evidence/manifest.json (R10 W0.1). Optional:
+// only reading moved raw evidence needs it.
+function evidenceStore(): Item {
+  try {
+    const manifest = readManifest(repoRoot(JITK_ROOT));
+    if (!manifest) {
+      return ok('evidence store', 'no evidence/manifest.json');
+    }
+    const problems = verifyStore(manifest);
+    if (problems.length === 0) {
+      return ok('evidence store', String(manifest.files.length) + ' manifest entries verified in ' + storeRoot());
+    }
+    const state = existsSync(storeRoot()) ? String(problems.length) + ' of ' + String(manifest.files.length) + ' manifest entries missing or wrong in ' + storeRoot() : storeRoot() + ' missing';
+    return problem('warn', 'evidence store', state + ' (only reading moved raw evidence needs it)', 'arch/jitk/tools/.work/bin/evidence fetch <path> (falls back to git), or copy the store from another host');
+  } catch (error) {
+    return problem('warn', 'evidence store', 'check failed: ' + detail(error), 'arch/jitk/tools/.work/bin/evidence verify');
+  }
+}
+
 async function main(): Promise<void> {
   const started = Date.now();
   const one = async (item: Promise<Item>): Promise<Item[]> => [await item];
   const tasks: Promise<Item[]>[] = [rust(), cache(), one(docker()), mac ? one(devVm()) : one(Promise.resolve(localKvm()))];
-  const local = [...basics(), ...native()];
+  const local = [...basics(), ...native(), evidenceStore()];
   const items: Item[] = [];
   for (const item of local) {
     items.push(item);
