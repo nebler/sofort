@@ -62,3 +62,14 @@ Labels:
 - **I**: inference.
 
 Use neutral wording for isolation/security topics. Long output is expected; aim for completeness over polish.
+
+## Addendum for playlist 3 (2026-10-28): the ambition lens
+Also read `arch/research/corpus/BRIEF-ambition.md`. In addition to the types above, tag:
+- **Ambition**: any statement of a very large, crazy or "impossible" possibility. This includes "imagine if…", "one day
+  we could…", "nobody would attempt…", "this used to take 100 engineer-years", and science-fiction framing.
+- **Bottleneck**: what a speaker says remains hard when code is free. Examples: data, the physical world, trust,
+  verification, compute, coordination, taste.
+
+For each of your top 5 candidates, add one line for the one-shot test ("could a next-generation model build this from
+one prompt? If yes, where is the non-code value?") and one line for the ambition rung (tool, product, category,
+field infrastructure, or field-changing).
