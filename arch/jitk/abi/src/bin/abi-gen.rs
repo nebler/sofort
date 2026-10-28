@@ -4,8 +4,9 @@
 //!   executor/ipc/bridge_abi.h         IPC geometry for the N-API bridge
 //!   kernel/ring-bootstrap.js          from kernel/ring-bootstrap.js.in
 //!   kernel/payload/ring-rng/checkpoint.h  from checkpoint.h.in
+//!   executor/shard-helpers.js         from shard-helpers.js.in (prepared guest helpers)
 //!
-//! The two guest files are templates (`{{NAME}}` placeholders, `{{! ...}}`
+//! The three guest files are templates (`{{NAME}}` placeholders, `{{! ...}}`
 //! comment lines) so that their output stays byte-identical to the checked-in
 //! guest sources that the ring kernel image and the snapshot helper hash
 //! embed. `abi-gen [ROOT]` writes; `abi-gen --check [ROOT]` fails on any stale
@@ -195,6 +196,7 @@ fn main() -> ExitCode {
     ];
     for (out, template) in [
         ("kernel/ring-bootstrap.js", "kernel/ring-bootstrap.js.in"),
+        ("executor/shard-helpers.js", "executor/shard-helpers.js.in"),
         (
             "kernel/payload/ring-rng/checkpoint.h",
             "kernel/payload/ring-rng/checkpoint.h.in",

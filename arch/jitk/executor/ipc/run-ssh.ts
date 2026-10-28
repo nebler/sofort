@@ -2,7 +2,9 @@
 // sources (no evidence directories, nothing over 1 MiB) and runs
 // ipc/shard-host.sh there, which takes Node, the shard binary and the
 // prepared snapshots from the remote jitk cache (`make deps`, `make -C shard
-// snapshot`). Settings: JITK_NESTED_SSH (the ssh.sh wrapper),
+// snapshot`). JITK_SSH_TARGET=test-linux runs `make test-linux` (the parity
+// corpus, executor/parity/README.md) instead and copies its report back to
+// .work/parity/linux-arm64.json. Settings: JITK_NESTED_SSH (the ssh.sh wrapper),
 // JITK_SHARD_REMOTE_ROOT (scratch root, relative to the remote home unless
 // absolute; default jitk-ssh), JITK_SHARD_BENCH=1, JITK_SHARD_OUTPUT.
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -17,7 +19,7 @@ const identity = sha(Buffer.from(root)).slice(0, 12);
 const remoteRoot = process.env.JITK_SHARD_REMOTE_ROOT || 'jitk-ssh';
 check(/^[A-Za-z0-9_./-]+$/.test(remoteRoot) && !remoteRoot.split('/').includes('..'), 'JITK_SHARD_REMOTE_ROOT must be a plain path without ..');
 const remote = remoteRoot + '/test-' + identity;
-const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb']);
+const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.md']);
 const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs-ring']);
 const ignored = new Set(['target', 'node_modules', 'build', 'dist', '.work', '.scriptc', 'results', 'test-results', 'out']);
 function sources(directory: string): string[] {
@@ -40,9 +42,14 @@ function sources(directory: string): string[] {
   return paths;
 }
 const files: string[] = [join(root, 'arch/jitk/Makefile')];
-for (const part of ['tools', 'tslib', 'docs', 'kernel', 'shard', 'executor', 'protocol', 'bench/hyperlight', 'mcp']) {
+// abi: the crate the shard and kernel build from; vmm: the libkrun builder (`make deps`).
+for (const part of ['tools', 'tslib', 'docs', 'abi', 'kernel', 'vmm', 'shard', 'executor', 'protocol', 'bench/hyperlight', 'mcp']) {
   files.push(...sources(join(root, 'arch/jitk', part)).sort());
 }
+// The parity corpus imports the benchmark workloads.
+files.push(join(root, 'arch/jitk/bench/cases.json'));
+const target = process.env.JITK_SSH_TARGET || 'shard';
+check(target === 'shard' || target === 'test-linux', 'JITK_SSH_TARGET must be shard or test-linux');
 // The hostile peer is cross-compiled locally; remote builds need no zig.
 await run(['make', '-C', executor, '.work/bin/fixtures/shard-peer']);
 files.push(join(executor, '.work/bin/fixtures/shard-peer'));
@@ -58,7 +65,10 @@ function quote(value: string): string {
 await run([ssh, 'mkdir -p ' + quote(remote) + ' && cd ' + quote(remote) + ' && tar xf -'], { input: readFileSync(archive), timeout: 60 });
 const benchmark = process.env.JITK_SHARD_BENCH === '1';
 const lockWait = benchmark ? 1800 : 600;
-const commands = `set -eu
+const report = remote + '/arch/jitk/executor/.work/parity/linux-arm64.json';
+const commands = target === 'test-linux' ? `set -eu
+JITK_BENCH_LOCK=\${JITK_BENCH_LOCK:-/home/dev/bench.lock} JITK_SHARD_LOCK_WAIT=${lockWait} make -C ${quote(remote)}/arch/jitk test-linux
+` : `set -eu
 JITK_SHARD_BENCH=${benchmark ? '1' : '0'} JITK_SHARD_LOCK_WAIT=${lockWait} sh ${quote(remote)}/arch/jitk/executor/ipc/shard-host.sh
 `;
 const sourceHashes: Record<string, string> = {};
@@ -87,4 +97,14 @@ if (benchmark && result.returncode === 0) {
   writeFileSync(join(destination, 'bench-final.jsonl'), measurements.join('\n') + '\n');
 }
 console.log(log.slice(-8000));
+// The parity report exists once the corpus ran, even if a later shard test failed.
+if (target === 'test-linux') {
+  const fetched = await capture([ssh, 'cat ' + quote(report)], { timeout: 60 });
+  if (fetched.returncode === 0) {
+    const local = join(executor, '.work/parity/linux-arm64.json');
+    mkdirSync(dirname(local), { recursive: true });
+    writeFileSync(local, fetched.stdout);
+    console.log('jitk: parity report ' + local);
+  }
+}
 process.exitCode = result.returncode;

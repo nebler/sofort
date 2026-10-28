@@ -127,8 +127,10 @@ scope/revocation and redaction. This suite supplies explicit host effects.
 `test.log` and JSON results record loads and artifact selection. Tests cover the
 20 R2 cases, Cloudflare generated wrappers and TanStack, 30×64 reverse-order
 concurrent calls, hostile transport, host ack, independent watchdog and pool
-lifecycle. `hyperlight-check.ts` imports 09's canonical adapter, accepted as a
-Backend with kind `hyperlight-js`; this is the benchmark baseline.
+lifecycle. The backend-parity corpus (`parity/README.md`, `./run.sh parity`)
+runs one case list on every available Engine: `jitk` and 09's Hyperlight
+adapter (kind `hyperlight-js`, the benchmark baseline) on the Mac, `jitk` and
+the shard on Linux (`make -C arch/jitk test-linux`).
 
 `breakdown-results.json` is an E4 diagnostic (50 samples, 5 excluded warmups),
 with phase p50/p90/p99, every uptime, 06's load gate result per sample, and

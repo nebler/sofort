@@ -24,24 +24,13 @@ const pool=new SandboxPool(backend,0,8,{refillConcurrency:8});
 const executor=new MicroVMExecutor(pool,()=> 'allow',5000);
 const execute=async(code:string,fns:Record<string,(...a:any[])=>Promise<any>>={})=>{const result=await executor.execute(code,fns);await pool.drain();return result;};
 try {
-  let r=await execute('return 2');check(!r.error&&r.result===2,'return2');
-  r=await execute('return await codemode.echo(41)',{echo:async x=>x+1});check(!r.error&&r.result===42,'Node provider reply replaces synthetic echo');
-  for(const name of ['tools','run','__jitk_ring_custom']){r=await executor.execute(`return await ${name}.echo(3)`,[{name,fns:{echo:async x=>Number(x)+1}}]);await pool.drain();check(!r.error&&r.result===4,'provider namespace '+name);}
-  r=await execute('throw null');check(!!r.error&&r.error.includes('Error: null'),'primitive thrown values');
-  r=await execute('codemode.echo();return 2',{echo:async()=>{await new Promise(resolve=>setTimeout(resolve,10));return 1;}});check(!!r.error&&r.error.includes('unawaited calls at completion'),'unawaited calls cannot return success');
+  // Guest semantics and limits shared with the other backends (results, Unicode,
+  // bytes, tool errors, denial, logs, reply/call/source bounds, hostile JSON) are
+  // parity corpus cases (parity/cases.ts, `make test-linux`). This suite keeps what
+  // only the shard has: restore, slot concurrency, failure domains, IPC peers.
   let active=0,maxActive=0;
-  r=await execute('return await Promise.all(Array.from({length:10},(_,i)=>codemode.echo(i)))',{echo:async x=>{maxActive=Math.max(maxActive,++active);await new Promise(resolve=>setTimeout(resolve,(10-x)*2));active--;return x*2;}});
+  let r=await execute('return await Promise.all(Array.from({length:10},(_,i)=>codemode.echo(i)))',{echo:async x=>{maxActive=Math.max(maxActive,++active);await new Promise(resolve=>setTimeout(resolve,(10-x)*2));active--;return x*2;}});
   assert.deepEqual(r.result,Array.from({length:10},(_,i)=>i*2));check(!r.error&&maxActive===10,'out-of-order concurrent tool replies');
-  r=await execute('return await codemode.echo("Grüße 😀")',{echo:async x=>x});check(!r.error&&r.result==='Grüße 😀','scalar Unicode');
-  r=await execute('return String.raw`Grüße 😀`');check(!r.error&&r.result==='Grüße 😀','raw Unicode source semantics');
-  r=await execute('const v=await codemode.echo(new Uint8Array([0,127,128,255]));return Array.from(v)',{echo:async x=>{assert.ok(x instanceof Uint8Array);return x;}});assert.deepEqual(r.result,[0,127,128,255]);check(!r.error,'codemode binary round trip');
-  r=await execute('try{await codemode.fail()}catch(e){return [e.code,e.message]}',{fail:async()=>{throw Error('provider failure');}});check(!r.error&&JSON.stringify(r.result)==='["TOOL_ERROR","Error: provider failure"]','structured tool errors');
-  const denied=new MicroVMExecutor(pool,()=> 'deny',5000);
-  r=await denied.execute('try{await codemode.echo(1)}catch(e){return e.code}',{echo:async()=>{throw Error('must not invoke');}});await pool.drain();check(!r.error&&r.result==='DENIED','policy denial delivered to guest');
-  r=await execute('console.log("hello",2);console.warn("warning");return 7');check(!r.error&&r.result===7&&JSON.stringify(r.logs)==='["hello 2","[warn] warning"]','console logs');
-  r=await execute('return await codemode.large()',{large:async()=> 'x'.repeat(2000)});check(!!r.error&&r.error.includes('shard tool reply limit'),'bounded oversized reply is an explicit error');
-  r=await execute('return await Promise.all(Array.from({length:33},()=>codemode.echo()))',{echo:async()=>0});check(!!r.error&&r.error.includes('call budget'),'32-call ring budget');
-  r=await execute('const a='+JSON.stringify('x'.repeat(8000))+';return a.length');check(!!r.error&&r.error.includes('shard source limit'),'source admission bound');
   r=await execute('globalThis.__jitkPrepared.codec.marker=42;globalThis.btoa=()=>"poison";globalThis.helperCanary=42;return 1');
   check(!r.error&&r.result===1,'tenant can mutate prepared helper/global');
   r=await execute('return [globalThis.__jitkPrepared.codec.marker===undefined,btoa("a"),typeof globalThis.helperCanary]');
@@ -53,20 +42,15 @@ try {
   await pool.drain();check(results.every((r,i)=>!r.error&&r.result===i),'eight concurrent generations');
   // R9 N1: guest payloads that Node rejects fail only their own sandbox. A sibling
   // on the same shard holds a tool call open across all of them, then completes.
+  // The JSON-level cases (depth 32/33, unsafe number, lone surrogate) are
+  // parity corpus cases; these raw ring writes exist only on the shard.
   {
-    const nest=(k:number)=>'['.repeat(k)+'0'+']'.repeat(k);
     const raw=(fd:number,text:string)=>`const b=new Uint8Array(${JSON.stringify([...Buffer.from(text,'latin1')])});os.write(${fd},b.buffer,0,b.length);return await new Promise(()=>{});`;
     const ns=[{name:'ns',fns:{fn:async(x:unknown)=>x}}];
     const pid=backend.child.pid;
     let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
     const sibling=executor.execute('return await codemode.wait(7)',{wait:async x=>{await gate;return x;}});
-    r=await executor.execute(`return await ns.fn(${nest(30)})`,ns);
-    check(!r.error&&JSON.stringify(r.result)===nest(30),'R9 82-byte depth-32 call is valid input');
     for(const [name,code,expected] of [
-      ['depth-33 array',`return await ns.fn(${nest(31)})`,/protocol DEPTH/],
-      ['depth-33 object',`return await ns.fn(${'{"a":'.repeat(31)}0${'}'.repeat(31)})`,/protocol DEPTH/],
-      ['unsafe number','return await ns.fn(2**60)',/protocol NUMBER/],
-      ['lone surrogate','return await ns.fn("\\ud800")',/protocol UNICODE/],
       ['raw invalid JSON call',raw(129,'[bad]'),/protocol JSON/],
       ['raw control-byte call',raw(129,'["call","ns","fn",["\x01"]]'),/guest_protocol/],
       ['raw non-ASCII call',raw(129,'["call","ns","fn",["\xff"]]'),/guest_protocol/],

@@ -8,7 +8,7 @@ case "$TASK_NODE" in /*) ;; *) echo 'JITK_NODE must be an absolute Node >=24 exe
 "$TASK_NODE" -e 'if(Number(process.versions.node.split(".")[0])<24)throw Error("Node >=24 required")'
 "$TASK_NODE" node_modules/typescript/bin/tsc -p tsconfig.json
 "$TASK_NODE" build.mjs
-if [ "$(uname -s)" = Linux ] && { [ "${JITK_BACKEND:-}" = shard ] || [ "${1:-}" = shard-test ] || [ -n "${JITK_SHARD_SNAPSHOT:-}" ]; }; then
+if [ "$(uname -s)" = Linux ] && { [ "${JITK_BACKEND:-}" = shard ] || [ "${1:-}" = shard-test ] || [ "${1:-}" = parity ] || [ -n "${JITK_SHARD_SNAPSHOT:-}" ]; }; then
   JITK_NODE="$TASK_NODE" sh ipc/build.sh
 fi
 case "${1:-test}" in
@@ -26,7 +26,6 @@ case "${1:-test}" in
   "$TASK_NODE" build/wrapper-conformance.js
   "$TASK_NODE" build/api-check.js
   "$TASK_NODE" build/policy-check.js
-  "$TASK_NODE" build/hyperlight-check.js
   if [ "${JITK_SHARD_TEST:-}" = ssh ]; then
     make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh
   elif [ "$(uname -s)" = Linux ] && [ -n "${JITK_SHARD_SNAPSHOT:-}" ]; then
@@ -36,8 +35,10 @@ case "${1:-test}" in
  shard-test)
   if [ "${JITK_SHARD_TEST:-}" = ssh ]; then make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh; else "$TASK_NODE" build/shard-check.js; fi
   ;;
+ parity) "$TASK_NODE" build/parity-check.js ;;
+ parity-compare) "$TASK_NODE" build/parity-check.js compare .work/parity/*.json ;;
  certify) "$TASK_NODE" certify.mjs ;;
  demo) "$TASK_NODE" build/demo.js ;;
  bench) "$TASK_NODE" build/breakdown.js ;;
- *) echo 'usage: run.sh [build|test|shard-test|demo|bench]' >&2; exit 2;;
+ *) echo 'usage: run.sh [build|test|shard-test|parity|parity-compare|demo|bench]' >&2; exit 2;;
 esac

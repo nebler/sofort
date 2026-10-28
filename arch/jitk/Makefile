@@ -5,7 +5,7 @@ DOCS_BIN := $(ROOT)/docs/.work/bin
 DELEGATE = "$(DOCS_BIN)/delegate"
 DEPS = "$(ROOT)/tools/.work/bin/deps"
 
-.PHONY: help doctor build test bench demo linux-nested loc tools deps deps-status
+.PHONY: help doctor build test test-linux bench demo linux-nested loc tools deps deps-status
 # The delegate guard, LOC counter and deps tool are scriptc binaries.
 tools:
 	+@$(MAKE) -s -C "$(ROOT)/docs" tools
@@ -29,7 +29,7 @@ doctor:
 	+@$(MAKE) -s -C "$(ROOT)/tools" tools
 	@"$(ROOT)/tools/.work/bin/doctor"
 help:
-	@printf '%s\n' 'doctor: check this host (run first)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
+	@printf '%s\n' 'doctor: check this host (run first)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'test-linux: the backend-parity corpus on a Linux KVM host (shard + libkrun)' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
 build: deps
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) vmm build
@@ -48,12 +48,34 @@ test: deps
 	+@$(DELEGATE) vmm/sandbox test
 	+@$(DELEGATE) protocol test
 	+@$(DELEGATE) executor test
+	+@$(DELEGATE) executor parity
 	+@$(DELEGATE) executor/policy test
 	+@$(DELEGATE) mcp test
 	+@$(DELEGATE) grow test
 	+@$(DELEGATE) bench test
 	+@$(DELEGATE) bench/hyperlight test
 	+@$(DELEGATE) linux test
+# Linux arm64 KVM host, from a clean clone: the backend-parity corpus
+# (executor/parity/README.md) on the shard and on libkrun, then the shard's
+# library tests, the shard-only executor suite (executor/shard-check.ts) and
+# the KVM tests. Writes executor/.work/parity/linux-arm64.json for the
+# cross-host compare. On a shared host set JITK_BENCH_LOCK (kvm-dev:
+# /home/dev/bench.lock) so the KVM timing tests do not overlap a benchmark.
+test-linux: deps
+	@[ "$$(uname -s)" = Linux ] || { echo 'test-linux needs a Linux arm64 KVM host (from the Mac: make -C executor parity-ssh)' >&2; exit 2; }
+	+@$(MAKE) -s -C "$(ROOT)/shard" snapshot
+	+@$(DELEGATE) kernel build
+	+@$(DELEGATE) protocol build
+	+@$(DELEGATE) executor dependencies
+	@# The image just built from this tree: kernel/.READY records the Mac build's
+	@# hash, and a Linux-hosted build lays out a few functions differently.
+	+@JITK_KERNEL_IMAGE="$(ROOT)/kernel/dist/kernel.bin" $(DELEGATE) executor parity
+	+@$(MAKE) -s -C "$(ROOT)/shard" test
+	+@$(MAKE) -s -C "$(ROOT)/executor" .work/bin/fixtures/shard-peer
+	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/executor" test-shard
+	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/shard" test-kvm
+# Timing-sensitive KVM suites wait for the shared bench lock when one is named.
+LOCKED = $(if $(JITK_BENCH_LOCK),flock -w $${JITK_SHARD_LOCK_WAIT:-600} "$(JITK_BENCH_LOCK)")
 bench: deps
 	+@$(DELEGATE) bench bench
 demo: deps

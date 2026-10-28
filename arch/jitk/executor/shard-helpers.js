@@ -16,15 +16,24 @@ globalThis.__jitkPrepared={
   },
   async run(transport,body,names) {
     const logs=[],pending=new Set();
+    // Tool calls and logs share the ring's call ids; count them to stop logging
+    // once none is left (a refused send still costs an Error in the arena).
+    let sent=0;
     const call=(ns,fn,args)=>{
+      sent++;
       const p=transport.echo('call',ns,fn,args).then(r=>{
         if(Object.hasOwn(r,'err')){const e=new Error(r.err.message);e.code=r.err.code;throw e;}
         return r.ok;
       });
       pending.add(p);p.then(()=>pending.delete(p),()=>pending.delete(p));return p;
     };
+    // Formatting as protocol/bootstrap.js: JSON per argument, String() of the
+    // result (so undefined prints), a placeholder for unserializable values.
+    const part=x=>{if(typeof x==='string')return x;try{return String(JSON.stringify(x));}catch{return '[unserializable]';}};
     const console=Object.fromEntries(['log','info','warn','error','debug'].map(level=>[level,(...a)=>{
-      const p=transport.echo('log',level,a.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' '));
+      if(sent>=32)return;
+      sent++;
+      const p=transport.echo('log',level,a.map(part).join(' '));
       p.catch(()=>{});logs.push(p);
     }]));
     const providers=names.map(name=>new Proxy(Object.create(null),{get:(_t,k)=>k==='then'?undefined:(...a)=>call(name,k,a)}));
@@ -34,6 +43,8 @@ globalThis.__jitkPrepared={
       return result;
     } catch(e) {
       throw {name:String(e&&e.name||'Error').slice(0,128),message:String(e&&e.message||e).slice(0,4096)};
-    } finally {await Promise.allSettled([...pending]);await Promise.all(logs);}
+    // A log the ring refuses (call budget or bytes) is dropped, as v1 drops
+    // logs past its bounds; every sent log is acknowledged before DONE.
+    } finally {await Promise.allSettled([...pending]);await Promise.allSettled(logs);}
   }
 };
