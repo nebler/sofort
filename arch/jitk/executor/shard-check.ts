@@ -92,8 +92,8 @@ try {
     // No drain(): the R9 probe shape that used to hit 'pool saturated' ~12x/run.
     for(let i=0;i<50;i++){const r=await ex1.execute('return 2',{});if(r.error||r.result!==2)errors++;}
     await pool1.drain();check(errors===0,'sequential executor on 1 shard slot: 50 runs, no admission error');
-    const busy=await one.park(),waiting=one.park();await queued();
-    await one.close();await assert.rejects(waiting,/shard backend closed/);assertions++;busy.kill();
+    const busy=await one.park(),waiting=one.park().then(()=>undefined,(e:Error)=>e);await queued();
+    await one.close();check(/shard backend closed/.test(String(await waiting)),'shard death rejects queued park() waiters');busy.kill();
   } finally {await one.close();}
 }
 
