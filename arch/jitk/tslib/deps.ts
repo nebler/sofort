@@ -23,6 +23,7 @@ export const SNAPSHOT_TARGET = 'make -C arch/jitk/shard snapshot';
 
 export interface Pins {
   node: { version: string; url: string; tarball_sha256: Record<string, string>; darwin_signed_name: string; darwin_signed_sha256: string };
+  zig: { version: string; url: string; zig_platform: Record<string, string>; tarball_sha256: Record<string, string> };
   hyperlight_js: { repository: string; commit: string };
   hyperlight_toolchain: string;
   hyperlight_targets: string[];
@@ -165,6 +166,19 @@ export function nodeDir(): string {
   return join(cacheRoot(), 'node', 'v' + pins().node.version + '-' + hostPlatform());
 }
 
+// The ziglang.org release tree (zig plus its lib/), the cross-linker for the
+// static aarch64 Linux scriptc builds and the `zig cc` C cross-builds.
+export function zigDir(): string {
+  return join(cacheRoot(), 'zig', pins().zig.version + '-' + hostPlatform());
+}
+
+// The zig to run: $ZIG (the Makefiles' variable) wins, then JITK_ZIG's usual
+// resolution (explicit value, else the cache entry, else an error naming
+// `make -C arch/jitk deps`). ../tools/zig-cc.sh is the shell twin.
+export function zigPath(): string {
+  return process.env.ZIG || requireArtifact('JITK_ZIG');
+}
+
 export function hyperlightSourceDir(): string {
   return join(cacheRoot(), 'src', 'hyperlight-js-' + pins().hyperlight_js.commit);
 }
@@ -179,7 +193,7 @@ export function hyperlightDir(): string {
   return join(cacheRoot(), 'hyperlight', hostPlatform() + '-' + hyperlightInputs().slice(0, 16));
 }
 
-export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_VMM_BINARY', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
+export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_ZIG', 'JITK_VMM_BINARY', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
 
 // Hyperlight's HVF baseline and the libkrun/HVF VMM are macOS artifacts (the
 // Linux VMM is built by the linux suite in Docker); the KVM shard binary and
@@ -212,6 +226,9 @@ export function cachePath(name: string): string {
   if (name === 'JITK_NPM_CLI') {
     return join(nodeDir(), 'lib/node_modules/npm/bin/npm-cli.js');
   }
+  if (name === 'JITK_ZIG') {
+    return join(zigDir(), 'zig');
+  }
   if (name === 'JITK_VMM_BINARY') {
     return join(vmmBuildDir(), 'jitk-vmm');
   }
@@ -237,6 +254,9 @@ export function cachePath(name: string): string {
 export function completeMarker(name: string): string {
   if (name === 'JITK_NODE' || name === 'JITK_NPM_CLI') {
     return join(nodeDir(), 'jitk-manifest.json');
+  }
+  if (name === 'JITK_ZIG') {
+    return join(zigDir(), 'jitk-manifest.json');
   }
   if (name === 'JITK_VMM_BINARY') {
     return join(vmmBuildDir(), 'build.json');

@@ -6,7 +6,11 @@ SCRIPTC := $(JITK_TOOLS)/node_modules/.bin/scriptc
 # Static aarch64 Linux builds: SCRIPTC_TARGET=aarch64-linux-musl, zig cc as
 # the linker, and this runtime pack (SCRIPTC_RUNTIME_PACK).
 SCRIPTC_RUNTIME_LINUX := $(JITK_TOOLS)/node_modules/@scriptc/runtime-linux-arm64-musl
-ZIG ?= $(or $(shell command -v zig),$(HOME)/.local/share/zig-0.16.0/zig)
+# zig (deps.json "zig"): an explicit ZIG or JITK_ZIG wins, then the deps cache
+# entry. Resolved once, on first use, so Makefiles that never run zig need no
+# cache entry.
+include $(JITK_TOOLS)/deps.mk
+ZIG ?= $(eval ZIG := $(call jitk_artifact,JITK_ZIG))$(ZIG)
 # The pinned Rust toolchain (deps.json rust_toolchain): every Makefile cargo
 # call is $(CARGO_PIN). rustup's bin directory is appended to PATH for hosts
 # whose non-login shells lack it (kvm-dev over ssh).

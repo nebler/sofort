@@ -1,11 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync, symlinkSync, appendFileSync, chmodSync, realpathSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { capture, run, dump, readJSON, check, environment, copyTree, files, sha } from './lib.ts';
+import { capture, run, dump, readJSON, check, environment, copyTree, files, sha, scriptcRepo } from './lib.ts';
 import { pack } from '../kernel/packer.ts';
 import { guestStdout } from './guest-output.ts';
 import { guest, stream, identical, errno, embedded, type Stream } from './guest.ts';
 import { writeProfile, MUTATING } from './writes.ts';
+import { zigPath } from '../tslib/deps.ts';
 
 const ROOT = resolve(import.meta.dirname);
 const WORK = join(ROOT, '.work');
@@ -201,7 +202,7 @@ async function program(name: string): Promise<void> {
   try {
     const elf = join(dir, 'program');
     const buildEnv = environment();
-    buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
+    buildEnv.PATH = dirname(zigPath()) + ':' + env.PATH;
     buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
     buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
     if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
@@ -376,7 +377,7 @@ async function prepare(): Promise<void> {
   if (!seed) seed = existsSync(seedPath) ? readFileSync(seedPath, 'utf8').trim() : randomBytes(32).toString('hex');
   if (!existsSync(seedPath)) { writeFileSync(seedPath, seed); chmodSync(seedPath, 0o600); }
   if (!existsSync(join(SOURCE, 'package.json'))) {
-    const repo = process.env.SCRIPTC_REPO || '/Users/noah/scriptc';
+    const repo = scriptcRepo();
     check((await run(['git', '-C', repo, 'rev-parse', 'v0.4.5'], { timeout: 5 })).stdout.toString().trim() === REV, 'tag mismatch');
     mkdirSync(SOURCE, { recursive: true });
     await run(['git', '-C', repo, 'archive', REV, '-o', join(WORK, 'source.tar')], { timeout: 15 });
@@ -418,7 +419,7 @@ async function rerunProgram(base: Row, target: string, kernel: string, benign: s
     check(hash(text) === base.source, 'corpus source drift: ' + base.name);
     const elf = join(dir, 'program');
     const buildEnv = environment();
-    buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
+    buildEnv.PATH = dirname(zigPath()) + ':' + env.PATH;
     buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
     buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
     if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
@@ -528,7 +529,7 @@ async function writes(): Promise<void> {
       try {
         const elf = join(dir, 'program');
         const buildEnv = environment();
-        buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + env.PATH;
+        buildEnv.PATH = dirname(zigPath()) + ':' + env.PATH;
         buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
         buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
         buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');

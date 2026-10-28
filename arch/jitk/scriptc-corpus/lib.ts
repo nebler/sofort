@@ -14,6 +14,12 @@ export { output } from '../tslib/subprocess.ts';
 export type { Result, Options } from '../tslib/subprocess.ts';
 export { PythonRandom } from '../tslib/random.ts';
 
+// The local scriptc checkout the pinned corpus is archived from (and the Node
+// reference container mounts): $SCRIPTC_REPO, default ~/scriptc.
+export function scriptcRepo(): string {
+  return process.env.SCRIPTC_REPO || (process.env.HOME || '') + '/scriptc';
+}
+
 // A timed-out child is sampled before its process group is killed, so a stall
 // can be told apart from the lost child-exit wakeup (SCRIPTC-GAPS.md).
 function sample(command: string[]): (pid: number) => void {

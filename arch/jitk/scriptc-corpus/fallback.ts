@@ -1,8 +1,9 @@
 import { mkdirSync, readFileSync, writeFileSync, chmodSync, symlinkSync, existsSync, rmSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
-import { run, capture, check, dump, readJSON, sha, environment } from './lib.ts';
+import { run, capture, check, dump, readJSON, sha, environment, scriptcRepo } from './lib.ts';
 import { pack } from '../kernel/packer.ts';
 import { guest, stream, identical } from './guest.ts';
+import { zigPath } from '../tslib/deps.ts';
 
 interface Status { exit: number | null; timeout?: boolean; error?: string | null }
 const root = resolve(import.meta.dirname);
@@ -19,7 +20,7 @@ async function main(): Promise<void> {
   chmodSync(join(job, 'cwd'), 0o777);
   const elf = join(job, 'program');
   const buildEnv = environment();
-  buildEnv.PATH = dirname(process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig') + ':' + buildEnv.PATH;
+  buildEnv.PATH = dirname(zigPath()) + ':' + buildEnv.PATH;
   buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
   buildEnv.SCRIPTC_RUNTIME_PACK = join(root, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
   buildEnv.SCRIPTC_LINKER = join(root, 'zig-link.sh');
@@ -32,7 +33,7 @@ async function main(): Promise<void> {
     '-v', work + ':' + work + ':rw', '-v', source + ':' + source + ':ro'];
   try {
     await run(['docker', 'run', ...common, '-v', root + ':' + root + ':ro',
-      '-v', (process.env.SCRIPTC_REPO || '/Users/noah/scriptc') + ':' + (process.env.SCRIPTC_REPO || '/Users/noah/scriptc') + ':ro',
+      '-v', scriptcRepo() + ':' + scriptcRepo() + ':ro',
       '--entrypoint', 'node', nodeImage, join(root, 'node-reference.ts'), source, join(root, 'allocator-probe.ts'), job], { timeout: 25 });
     const expected = readJSON<Status>(join(job, 'node.json'));
     const out = join(job, 'linux');

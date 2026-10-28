@@ -6,7 +6,7 @@ import { capture, run, environment, sha, check, copyTree, files, type Result } f
 import { pack } from '../kernel/packer.ts';
 import { observe } from '../grow/observations.ts';
 import { guestStdout } from './guest-output.ts';
-import { requireArtifact } from '../tslib/deps.ts';
+import { requireArtifact, zigPath } from '../tslib/deps.ts';
 
 export interface Stream { stdout: string; stderr: string; exit: number | null; timeout: boolean }
 export interface Guest {
@@ -17,7 +17,6 @@ export interface Guest {
 }
 const ROOT = resolve(import.meta.dirname);
 const WORK = join(ROOT, '.work');
-const ZIG = process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig';
 // The single scriptc pin (../tools); the corpus has no node_modules of its own.
 const compiler = join(ROOT, '../tools/node_modules/.bin/scriptc');
 // Packed payload GPA offset inside kernel.bin (link.ld: 0x80080000 - 0x80000000).
@@ -30,7 +29,7 @@ let errnos: Record<string, number> | undefined;
 
 function header(path: string, pattern: RegExp): Record<string, string> {
   const result: Record<string, string> = {};
-  for (const line of readFileSync(join(dirname(ZIG), 'lib/libc/include', path), 'utf8').split('\n')) {
+  for (const line of readFileSync(join(dirname(zigPath()), 'lib/libc/include', path), 'utf8').split('\n')) {
     const match = pattern.exec(line);
     if (match) result[match[1]] = match[2];
   }

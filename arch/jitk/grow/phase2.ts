@@ -21,6 +21,7 @@ import { retryTransaction, type Feedback } from './retries.ts';
 import { observe, requireResult, type Outcome } from './observations.ts';
 import { integration } from './sqlite-profile.ts';
 import { markers, controllerHashes, textCommand } from './experiment-run.ts';
+import { zigPath } from '../tslib/deps.ts';
 
 const CORPUS_ROOT = resolve(ROOT, '../scriptc-corpus');
 const CORPUS_WORK = join(CORPUS_ROOT, '.work');
@@ -68,7 +69,7 @@ export function seedPrograms(csv: string, target: string, count = SEED_PROGRAMS)
 }
 
 async function compileProgram(name: string, elf: string): Promise<void> {
-  const zig = process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig';
+  const zig = zigPath();
   const env: Record<string, string> = { ...SAFE_ENV, PATH: dirname(zig) + ':' + (process.env.PATH || '/usr/bin:/bin'), HOME: process.env.HOME || '/tmp',
     SCRIPTC_TARGET: 'aarch64-linux-musl', SCRIPTC_RUNTIME_PACK: join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl'),
     SCRIPTC_LINKER: join(CORPUS_ROOT, 'zig-link.sh'), SCRIPTC_CACHE_DIR: join(CORPUS_WORK, 'cache'), ZIG: zig };
@@ -169,7 +170,7 @@ async function corpus(kernel: string, id: string, selection: string, filter: str
   // A transaction id is fresh; leftovers come only from an interrupted transaction.
   for (const stale of [id + '.jsonl', id + '-manifest.json', id + '-summary.json', id + '-disk-before.txt', 'kernel-' + id]) rmSync(join(CORPUS_WORK, stale), { recursive: true, force: true });
   const command = [CENSUS, 'rerun', '--from', 'full', '--id', id, '--kernel', kernel, '--selection', selection, '--workers', '2', '--targets', 'target-phase2', '--limit', String(limit), ...filter];
-  const result = await capture(command, { cwd: CORPUS_ROOT, env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', ZIG: process.env.ZIG || '/Users/noah/.local/share/zig-0.16.0/zig', JITK_VMM_BINARY: process.env.JITK_VMM_BINARY || '' }, timeout: 3600 });
+  const result = await capture(command, { cwd: CORPUS_ROOT, env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', ZIG: zigPath(), JITK_VMM_BINARY: process.env.JITK_VMM_BINARY || '' }, timeout: 3600 });
   writeFileSync(out + '.log', Buffer.concat([result.stdout, result.stderr]));
   check(result.returncode === 0, 'corpus rerun failed: ' + id);
   // No program of this split uses the target: the rerun selects nothing and writes no journal.

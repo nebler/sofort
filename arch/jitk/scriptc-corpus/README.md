@@ -28,10 +28,10 @@ experiments → canonical packer/VM pipeline. Completed receipts are resumed;
 ELFs and raw traces are deleted after each receipt. A failure in one program
 does not stop the corpus. Infrastructure or disk-guard failures stop the run.
 
-Requirements: Node 24+, npm, Zig at `$ZIG` (default
-`/Users/noah/.local/share/zig-0.16.0/zig`), Docker with the **existing**
+Requirements: Node 24+, npm, the pinned zig from the deps cache
+(`make -C .. deps`; `ZIG` or `JITK_ZIG` overrides it), Docker with the **existing**
 `jitk-oracle:08` image and the existing `node:24-bookworm` image, and the local
-scriptc checkout (`$SCRIPTC_REPO`, default `/Users/noah/scriptc`). The pinned
+scriptc checkout (`$SCRIPTC_REPO`, default `~/scriptc`). The pinned
 corpus is extracted with `git archive` from tag v0.4.5, commit
 `4ee477d11eb9a71f0a018e5f5bed171a954fc2f7`; local uncommitted corpus additions
 are excluded. The snapshot's node_modules points to the checkout's installed
