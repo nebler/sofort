@@ -3,6 +3,10 @@
 //! The two CLI binaries own all fixture, attack and measurement orchestration.
 #![deny(clippy::undocumented_unsafe_blocks)]
 
+// The KVM backend and its UAPI constants (constants::kvm) are arm64 only.
+#[cfg(all(target_os = "linux", not(target_arch = "aarch64")))]
+compile_error!("the jitk shard's Linux KVM backend supports aarch64 only");
+
 pub mod arena;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod clock;

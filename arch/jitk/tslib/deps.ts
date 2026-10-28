@@ -115,7 +115,7 @@ export function cargoPath(path: string): string {
 // The production shard binary (shard `real`), built from source with the
 // pinned toolchain; Linux only.
 export function shardInputs(): string {
-  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi.c', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest')];
+  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/abi-gen.ts',...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest')];
   return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, hostPlatform()]);
 }
 
