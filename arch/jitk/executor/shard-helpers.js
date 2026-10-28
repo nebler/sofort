@@ -16,7 +16,11 @@ globalThis.__jitkPrepared={
   },
   async run(transport,body,names) {
     const logs=[],pending=new Set();
+    // Tool calls and logs share the ring's call ids; count them to stop logging
+    // once none is left (a refused send still costs an Error in the arena).
+    let sent=0;
     const call=(ns,fn,args)=>{
+      sent++;
       const p=transport.echo('call',ns,fn,args).then(r=>{
         if(Object.hasOwn(r,'err')){const e=new Error(r.err.message);e.code=r.err.code;throw e;}
         return r.ok;
@@ -27,6 +31,8 @@ globalThis.__jitkPrepared={
     // result (so undefined prints), a placeholder for unserializable values.
     const part=x=>{if(typeof x==='string')return x;try{return String(JSON.stringify(x));}catch{return '[unserializable]';}};
     const console=Object.fromEntries(['log','info','warn','error','debug'].map(level=>[level,(...a)=>{
+      if(sent>=32)return;
+      sent++;
       const p=transport.echo('log',level,a.map(part).join(' '));
       p.catch(()=>{});logs.push(p);
     }]));
