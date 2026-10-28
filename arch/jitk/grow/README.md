@@ -101,8 +101,8 @@ fatal-output diagnostics through the same native helpers.
 
 The in-container driver is also scriptc TypeScript (`oracle-profile.ts`). `make
 build` cross-compiles **static aarch64 Linux musl** using `SCRIPTC_TARGET` and the
-pinned matching runtime pack. Set `ZIG` to override
-`/Users/noah/.local/share/zig-0.16.0/zig`. The host mounts `build/oracle-profile`
+pinned matching runtime pack, linked by the pinned zig from the deps cache
+(`make -C .. deps`; `ZIG` or `JITK_ZIG` overrides it). The host mounts `build/oracle-profile`
 into the **existing** `jitk-oracle:08` image and selects it via `--entrypoint`.
 The image was neither rebuilt nor retagged. Its pinned identity is
 `sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a`.

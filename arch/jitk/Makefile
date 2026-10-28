@@ -5,14 +5,14 @@ DOCS_BIN := $(ROOT)/docs/.work/bin
 DELEGATE = "$(DOCS_BIN)/delegate"
 DEPS = "$(ROOT)/tools/.work/bin/deps"
 
-.PHONY: help build test bench demo linux-nested loc tools deps deps-status
+.PHONY: help doctor build test bench demo linux-nested loc tools deps deps-status
 # The delegate guard, LOC counter and deps tool are scriptc binaries.
 tools:
 	+@$(MAKE) -s -C "$(ROOT)/docs" tools
 	+@$(MAKE) -s -C "$(ROOT)/tools" tools
 # Pinned external artifacts built once into the shared jitk cache; see
-# README.md. macOS: Node/npm, VMM, Hyperlight source, worker and snapshot.
-# Linux: Node/npm and the shard binary (`make -C shard snapshot` adds the
+# README.md. Both: Node/npm, zig. macOS: VMM, Hyperlight source, worker and snapshot.
+# Linux: the shard binary (`make -C shard snapshot` adds the
 # prepared snapshots).
 deps: tools
 ifeq ($(shell uname -s),Darwin)
@@ -22,8 +22,14 @@ endif
 	@$(DEPS) build
 deps-status: tools
 	@$(DEPS) status
+# Host check: toolchains, native tools, deps cache, Docker, the Linux dev VM;
+# one line per item with its fix (tools/doctor.ts). Fails only on hard
+# requirements.
+doctor:
+	+@$(MAKE) -s -C "$(ROOT)/tools" tools
+	@"$(ROOT)/tools/.work/bin/doctor"
 help:
-	@printf '%s\n' 'deps: pinned Node/npm, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
+	@printf '%s\n' 'doctor: check this host (run first)' 'deps: pinned Node/npm, zig, VMM, Hyperlight into the jitk cache' 'build: kernel, VMM, executor, MCP server' 'test: every subtree suite' 'bench: canonical area-06 harness' 'demo: executor, syscall regrowth, Lua (H2)' 'linux-nested: area-05 nested KVM suite' 'loc: owned-source inventory'
 build: deps
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) vmm build

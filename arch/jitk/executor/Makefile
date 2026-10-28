@@ -15,7 +15,7 @@ include ../tools/scriptc.mk
 ifeq ($(shell uname -s),Linux)
 	$(SCRIPTC) build $< -o $@
 else
-	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(CURDIR)/zig-cc.sh $(SCRIPTC) build $< -o $@
+	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(JITK_TOOLS)/zig-cc.sh $(SCRIPTC) build $< -o $@
 endif
 
 bench:

@@ -4,6 +4,8 @@
 //   JITK_NODE / JITK_NPM_CLI   nodejs.org tarball, sha256-checked; on macOS
 //                              bin/node-real is ad-hoc signed with the
 //                              Hypervisor entitlement and its hash checked
+//   JITK_ZIG                   ziglang.org tarball, sha256-checked (the static
+//                              aarch64 Linux cross-linker; ../tools/zig-cc.sh)
 //   HYPERLIGHT_JS_SRC          hyperlight-js fetched by full commit
 //   JITK_VMM_BINARY            vmm/build.ts (the canonical VMM builder; macOS)
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
@@ -17,6 +19,8 @@
 //   deps [build]        build what is missing, then print the manifest
 //   deps node           build only the Node entry (tools/npm.sh bootstrap)
 //   deps status        print the manifest without building
+//   deps verify        re-check every applicable entry (hashes, pins) and print
+//                      one JSON row per artifact; exit 1 when any is not ok
 //   deps path NAME      print NAME's selected path; exit 1 when missing
 //   deps env            print `export NAME=path` for every selected artifact
 //                       that exists (sh-evaluable; set values are kept)
@@ -28,7 +32,7 @@ import { shaFile } from '../tslib/hash.ts';
 import { readJSON, dumpJSON } from '../tslib/json.ts';
 import { environment } from '../tslib/process.ts';
 import { run } from '../tslib/subprocess.ts';
-import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardDir, shardInputs, target, withLock } from '../tslib/deps.ts';
+import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardDir, shardInputs, target, withLock, zigDir } from '../tslib/deps.ts';
 import { rustToolchain } from '../tslib/rust.ts';
 
 const mac = platform() === 'darwin';
@@ -123,6 +127,48 @@ async function buildNode(env: Record<string, string>): Promise<void> {
       dumpJSON(join(stage, 'jitk-manifest.json'), manifest);
     });
     log('node: built ' + dir);
+  });
+}
+
+// --- zig --------------------------------------------------------------------
+
+function zigValid(): boolean {
+  if (!existsSync(completeMarker('JITK_ZIG'))) {
+    return false;
+  }
+  const manifest = readJSON<Record<string, string>>(completeMarker('JITK_ZIG'));
+  return existsSync(cachePath('JITK_ZIG')) && manifest.version === pins().zig.version && shaFile(cachePath('JITK_ZIG')) === manifest.zig_sha256;
+}
+
+async function buildZig(env: Record<string, string>): Promise<void> {
+  if (zigValid()) {
+    log('zig: cached ' + zigDir());
+    return;
+  }
+  const p = pins().zig;
+  const plat = hostPlatform();
+  const expected = p.tarball_sha256[plat];
+  check(Boolean(expected) && Boolean(p.zig_platform[plat]), 'deps.json pins no zig tarball for ' + plat + '; set JITK_ZIG to a zig ' + p.version);
+  await withLock('zig-' + p.version + '-' + plat, async () => {
+    if (zigValid()) {
+      return;
+    }
+    const dir = zigDir();
+    await staged(dir, async stage => {
+      const url = p.url.split('{version}').join(p.version).split('{zig_platform}').join(p.zig_platform[plat]);
+      const tarball = join(stage, 'zig.tar.xz');
+      log('zig: fetching ' + url);
+      await run(['curl', '-fsSL', '--retry', '3', '-o', tarball, url], { env, timeout: 1200 });
+      const got = shaFile(tarball);
+      check(got === expected, 'zig: ' + url + ' sha256 ' + got + ' != pinned ' + expected);
+      await run(['tar', '-xJf', tarball, '-C', stage, '--strip-components', '1'], { env, timeout: 600 });
+      rmSync(tarball);
+      const binary = join(stage, 'zig');
+      const version = await text([binary, 'version'], env);
+      check(version === p.version, 'zig: ' + binary + ' reports ' + version + ' != pinned ' + p.version);
+      dumpJSON(join(stage, 'jitk-manifest.json'), { artifact: 'zig', version: p.version, platform: plat, url, tarball_sha256: got, zig_sha256: shaFile(binary) });
+    });
+    log('zig: built ' + dir);
   });
 }
 
@@ -306,6 +352,51 @@ function status(): Record<string, unknown> {
   return { cache: cacheRoot(), artifacts: rows };
 }
 
+function vmmValid(): boolean {
+  if (!cached('JITK_VMM_BINARY')) {
+    return false;
+  }
+  const manifest = readJSON<Record<string, string>>(completeMarker('JITK_VMM_BINARY'));
+  return shaFile(cachePath('JITK_VMM_BINARY')) === manifest.binary_sha256;
+}
+
+// One row per applicable artifact: ok (cache entry complete and its hashes and
+// pins re-checked), environment (explicit value, present), missing (never
+// built, or explicit and absent), stale (built for other inputs or damaged;
+// the target rebuilds it). The doctor (doctor.ts) reads these rows.
+async function verify(env: Record<string, string>): Promise<Record<string, string>[]> {
+  // Entries that hold two artifacts (Node/npm, worker/snapshot) are hashed once.
+  let node: boolean | undefined;
+  let hyperlight: boolean | undefined;
+  const checks: Record<string, () => Promise<boolean>> = {
+    JITK_NODE: async () => (node ??= nodeValid()),
+    JITK_NPM_CLI: async () => (node ??= nodeValid()),
+    JITK_ZIG: async () => zigValid(),
+    JITK_VMM_BINARY: async () => vmmValid(),
+    HYPERLIGHT_JS_SRC: async () => sourceValid(env).catch(() => false),
+    HYPERLIGHT_WORKER: async () => (hyperlight ??= hyperlightValid()),
+    HYPERLIGHT_SNAPSHOT: async () => (hyperlight ??= hyperlightValid()),
+    JITK_SHARD_BINARY: async () => shardValid(),
+    JITK_SHARD_SNAPSHOT: async () => cached('JITK_SHARD_SNAPSHOT')
+  };
+  const rows: Record<string, string>[] = [];
+  for (const name of ARTIFACTS) {
+    if (!applicable(name)) {
+      continue;
+    }
+    const row: Record<string, string> = { name, target: target(name) };
+    if (explicit(name)) {
+      row.path = process.env[name] || '';
+      row.state = existsSync(row.path) || existsSync(row.path + '.identity') ? 'environment' : 'missing';
+    } else {
+      row.path = cachePath(name);
+      row.state = (await checks[name]()) ? 'ok' : existsSync(completeMarker(name)) ? 'stale' : 'missing';
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
 function quote(value: string): string {
   return "'" + value.split("'").join("'\\''") + "'";
 }
@@ -315,6 +406,9 @@ async function build(): Promise<void> {
   mkdirSync(cacheRoot(), { recursive: true });
   if (!explicit('JITK_NODE') || !explicit('JITK_NPM_CLI')) {
     await buildNode(env);
+  }
+  if (!explicit('JITK_ZIG')) {
+    await buildZig(env);
   }
   if (applicable('JITK_VMM_BINARY') && !explicit('JITK_VMM_BINARY')) {
     await buildVmm(env);
@@ -345,6 +439,12 @@ async function main(): Promise<void> {
     await buildNode(environment());
   } else if (command === 'status') {
     console.log(JSON.stringify(status(), null, 2));
+  } else if (command === 'verify') {
+    const rows = await verify(environment());
+    for (const row of rows) {
+      console.log(JSON.stringify(row));
+    }
+    process.exitCode = rows.every(row => row.state === 'ok' || row.state === 'environment') ? 0 : 1;
   } else if (command === 'path') {
     const name = process.argv[3] || '';
     check(ARTIFACTS.includes(name), 'usage: deps path ' + ARTIFACTS.join('|'));
@@ -360,7 +460,7 @@ async function main(): Promise<void> {
       }
     }
   } else {
-    throw new Error('usage: deps [build|status|path NAME|env]');
+    throw new Error('usage: deps [build|node|status|verify|path NAME|env]');
   }
 }
 

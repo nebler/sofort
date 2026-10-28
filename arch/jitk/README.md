@@ -6,10 +6,27 @@ See [architecture](docs/ARCHITECTURE.md), [evidence and claims](docs/CLAIMS.md),
 [kill criteria](docs/KILL-CRITERIA.md), and the live
 [final integration report](../10-minimalist-critic/R4.md).
 
+First step on a new host, from the repository root:
+
+```sh
+make -C arch/jitk doctor
+```
+
+It checks rustup and the pinned toolchains and targets, the native tools
+(Xcode `clang`, `ld.lld`, `llvm-objcopy`; on Linux `cc`, `clang`, `lld`,
+`llvm`), the deps cache for this platform, Docker (only for GrowOS and, for
+now, the Linux VMM build), on the Mac the Linux dev VM (`JITK_NESTED_SSH`,
+default `kvm-dev/ssh.sh`) and its `/dev/kvm`, and on Linux local `/dev/kvm`.
+Every problem is one line ending in the exact fix command. It exits non-zero
+only when a hard requirement is missing (`warn` lines are optional or are
+built by `make deps`, which `make build` runs anyway), in about 2 s
+([`tools/doctor.ts`](tools/doctor.ts)).
+
 From this directory:
 
 ```sh
-make deps           # pinned Node/npm, VMM, Hyperlight source/worker/snapshot → jitk cache
+make doctor         # host check (above)
+make deps           # pinned Node/npm, zig, VMM, Hyperlight source/worker/snapshot → jitk cache
 make build          # kernel → VMM → protocol generated JS → executor
 make test           # every root suite plus sandbox, policy, Hyperlight adapter
 make bench          # canonical load-aware area-06 harness
@@ -35,6 +52,7 @@ building.
 | variable | cache entry | how it is made |
 | --- | --- | --- |
 | `JITK_NODE`, `JITK_NPM_CLI` | `node/v24.22.1-{darwin,linux}-arm64/` | nodejs.org tarball, sha256 pinned in [`tools/deps.json`](tools/deps.json); macOS: `bin/node-real` ad-hoc signed with [`tools/node.entitlements`](tools/node.entitlements) (Hypervisor), signed hash pinned; npm is the tarball's `npm-cli.js` |
+| `JITK_ZIG` | `zig/0.16.0-{darwin,linux}-arm64/zig` | ziglang.org tarball, sha256 pinned in `tools/deps.json`; the static aarch64 Linux cross-linker ([`tools/zig-cc.sh`](tools/zig-cc.sh)) and `zig cc` for C cross-builds. Makefiles read it as `$(ZIG)` ([`tools/pin.mk`](tools/pin.mk)); an explicit `ZIG` or `JITK_ZIG` wins |
 | `HYPERLIGHT_JS_SRC` (macOS) | `src/hyperlight-js-<commit>/` | `git fetch --depth 1` of the pinned commit |
 | `JITK_VMM_BINARY` (macOS) | `vmm/darwin-<inputs>/jitk-vmm` | [`vmm/build.ts`](vmm/build.ts); libkrun shared in `vmm/libkrun-darwin-<patches>/` |
 | `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` (macOS) | `hyperlight/darwin-arm64-<inputs>/` | [`bench/hyperlight/build.ts`](bench/hyperlight/build.ts) from that source; `cargo fetch --locked`, then offline build |
@@ -66,12 +84,11 @@ Rust pin; make reads it as `$(CARGO_PIN)`, shell through
 one-time scriptc install in `tools/` uses a PATH npm when there is one,
 otherwise [`tools/npm.sh`](tools/npm.sh) bootstraps the pinned Node into the
 cache. LLVM
-`ld.lld` on `PATH` for the VMM test guests, zig 0.16 (`ZIG`, see
-`tools/pin.mk`), and network access for Node, crates and Git sources on first
-use. `make test`'s `linux` suite still needs the kvm-dev VM and Docker; see
+`ld.lld` on `PATH` for the VMM test guests, and network access for Node, zig,
+crates and Git sources on first use. `make doctor` checks all of these. `make test`'s `linux` suite still needs the kvm-dev VM and Docker; see
 [`linux/README.md`](linux/README.md).
 
-On Linux arm64 (kvm-dev) `make deps` builds Node and the shard binary, and the
+On Linux arm64 (kvm-dev) `make deps` builds Node, zig and the shard binary, and the
 shard suites run from a clean clone with no variables set; see
 [`shard/README.md`](shard/README.md) "Clean clone on Linux arm64".
 

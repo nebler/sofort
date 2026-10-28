@@ -41,4 +41,4 @@ linux-tools: .work/linux/build .work/linux/tests/check .work/linux/tests/console
 .work/linux/tests/console-abuse: .work/native-linux.o
 .work/linux/%: %.ts $(TS_SOURCES) $(SCRIPTC)
 	mkdir -p $(@D)
-	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(CURDIR)/zig-cc.sh $(SCRIPTC) build $< $(SCRIPTC_FLAGS) -o $@
+	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(JITK_TOOLS)/zig-cc.sh $(SCRIPTC) build $< $(SCRIPTC_FLAGS) -o $@

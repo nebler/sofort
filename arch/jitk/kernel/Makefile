@@ -45,4 +45,4 @@ linux-tools: .work/linux/results-fs/linux-kvm-check .work/linux/payload/ring-rng
 	$(ZIG) cc -target aarch64-linux-musl -c $< -o $@
 .work/linux/%: %.ts $(TS_SOURCES) $(SCRIPTC) .work/native-linux.o
 	mkdir -p $(@D)
-	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(CURDIR)/zig-cc.sh $(SCRIPTC) build $< --ffi native-linux-ffi.json -o $@
+	SCRIPTC_TARGET=aarch64-linux-musl SCRIPTC_RUNTIME_PACK=$(SCRIPTC_RUNTIME_LINUX) SCRIPTC_LINKER=$(JITK_TOOLS)/zig-cc.sh $(SCRIPTC) build $< --ffi native-linux-ffi.json -o $@

@@ -47,13 +47,29 @@ export async function runSsh(workArgument: string, log: string): Promise<void> {
     "existing nested VM required: set JITK_NESTED_SSH to its ssh wrapper; see linux/README.md",
   );
   const identity = digest(Buffer.from(ROOT)).slice(0, 12);
-  const remoteRoot = process.env.JITK_NESTED_SSH_DIR || "/home/dev/jitk-suite";
+  // Default: jitk-suite in the remote user's home, made absolute by the remote
+  // shell in the same round trip that creates the run directory.
+  const remoteRoot = process.env.JITK_NESTED_SSH_DIR || "";
   check(
-    remoteRoot.startsWith("/") && !remoteRoot.split("/").includes(".."),
+    remoteRoot === "" ||
+      (remoteRoot.startsWith("/") && !remoteRoot.split("/").includes("..")),
     "JITK_NESTED_SSH_DIR must be an absolute remote scratch directory",
   );
-  const remote = remoteRoot + "/" + identity + "-" + process.pid;
-  await run([ssh, "mkdir -p " + quote(remote)], { timeout: 20 });
+  const leaf = identity + "-" + process.pid;
+  const target = remoteRoot
+    ? quote(remoteRoot + "/" + leaf)
+    : '"$HOME"/jitk-suite/' + leaf;
+  const remote = (
+    await run([ssh, "mkdir -p " + target + " && cd " + target + " && pwd -P"], {
+      timeout: 20,
+    })
+  ).stdout
+    .toString()
+    .trim();
+  check(
+    remote.startsWith("/") && remote.endsWith("/" + leaf),
+    "remote run directory " + remote + " is not absolute",
+  );
   const files: { source: string; name: string }[] = [
     { source: join(ROOT, "build/linux/linux-tools"), name: "linux-tools" },
   ];
@@ -122,7 +138,7 @@ export async function runSsh(workArgument: string, log: string): Promise<void> {
     "75",
     "-w",
     String(lockTimeout),
-    "/home/dev/bench.lock",
+    process.env.JITK_BENCH_LOCK || "/home/dev/bench.lock",
     "env",
     ...Object.keys(variables).map((key) => key + "=" + variables[key]),
     "sh",

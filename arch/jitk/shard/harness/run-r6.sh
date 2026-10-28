@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-cd /home/dev/r6-shard
+cd "${JITK_R6_ROOT:-$HOME/r6-shard}"
 mkdir -p raw
 export GLIBC_TUNABLES=glibc.malloc.hugetlb=0
 for f in return2 one_tool promise10 json64k; do
