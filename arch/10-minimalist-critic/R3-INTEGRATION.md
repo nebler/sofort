@@ -1,5 +1,7 @@
 # R3 integration — live report (area 10)
 
+> Raw evidence linked here moved out of git (R10 W0.1): restore it with `arch/jitk/tools/.work/bin/evidence fetch <path>`; see [evidence/README.md](../../evidence/README.md).
+
 Started 2026-10-24 01:03 UTC. Owns only `jitk/docs/`, its top-level Makefile and
 README, and this area. Poll budget is 150 minutes per direct task instruction;
 R3-COMMON's shorter 120-minute default is superseded. Poll cadence ~10 minutes.

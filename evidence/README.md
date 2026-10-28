@@ -34,6 +34,11 @@ inputs first. Examples:
 - `fetch arch/jitk/shard/raw-r7-shard` before `shard/evidence.ts analyze-*`
 - `fetch arch/jitk/scriptc-corpus/census.csv` before `make -C arch/jitk/scriptc-corpus audit`
 
+**Docs:** paths in docs were kept as they are, and the manifest resolves them.
+Docs with markdown links into moved files got a one-line fetch note. Docs whose
+sha256 a freeze record pins (`arch/jitk/docs/CLAIMS.md` and `KILL-CRITERIA.md`,
+pinned by `docs/.R4`, and the area-10 R4 docs) were not edited.
+
 ## The rule (`arch/jitk/tslib/evidence.ts` `classify`)
 
 **Scope:** tracked files under `arch/`, except:

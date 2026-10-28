@@ -1,5 +1,7 @@
 # Gate 0 — current jitk macOS memory + CPU ledger
 
+> Raw evidence linked here moved out of git (R10 W0.1): restore it with `arch/jitk/tools/.work/bin/evidence fetch <path>`; see [evidence/README.md](../../../../evidence/README.md).
+
 2026-10-25 · owner `w0-ledger-mac` · writes restricted to this directory · no commits.
 
 **Gate 0 remains OPEN.** The current precompiled-sandbox, RAW-direct-load build costs **7.86694 MiB marginal process footprint per READY VM**, **7.89986 MiB during one_tool wait**, **Page tables (0.35026 MiB/VM) are already inside footprint.** `tkm_private` reports 0.31855 MiB/VM but overlaps page-table accounting and is not additive. Resource cost is **1.00107 MiB per added MiB**. The apparent missing ~3 MiB is reproducible with guest writes invisible to host mapping summaries; it must not be labeled a fixed libkrun heap or fixed HVF VM allocation.
