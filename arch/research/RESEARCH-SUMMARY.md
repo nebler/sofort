@@ -531,7 +531,12 @@ Everything below exists, ships, or was refuted. Don't re-pitch it as new.
 7. **Better models remove reasoning errors, not missing information, permission, finite resources or conflicting interests.**
 8. **Inference dominates today's agent bill.** Infrastructure is 2–15% with frontier models and about 75% with cheap ones.
    Infra savings only matter with cheap models, or as model prices keep falling.
-9. **New things come from building, not from searching.** GrowOS came out of friction while building jitk.
+9. **Openings come from what practitioners say, not from what the web shows.** GrowOS's seed was a podcast: in Next Token
+   Ep 07 (12 Oct 2026, transcript in `next-token-ep07-transcript.txt`) a host predicted that unikernels are "the next one
+   that's going to fall… a kernel and a computer that's built for purpose, almost just in time". Cloudflare's code had
+   nothing like it (`cloudflare-deep.md`), and building jitk turned that into the grow loop. Web searches show what is
+   already built; talks and podcasts show predictions, wishes and pain before anyone ships. (Corrected 2026-10-28: an
+   earlier version said GrowOS came only from friction while building jitk.)
 
 ---
 
