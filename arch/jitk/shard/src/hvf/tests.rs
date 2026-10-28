@@ -708,7 +708,7 @@ fn engine_child_runs_kicks_and_quarantines() {
         );
         // Dropping the socket ends serve().
     });
-    let result = super::child::serve(theirs, 0, snapshot(), verified(), None);
+    let result = super::child::serve(theirs, 0, snapshot(), verified(), false);
     zygote.join().unwrap();
     result.unwrap();
 }

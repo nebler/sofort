@@ -254,9 +254,12 @@ Node's spawn creates for a `pipe` stdio entry (`PipeChannel`, `shard-ipc.ts`;
 no native addon), and deadlines are on `process.hrtime`, which the engine
 reads as CLOCK_MONOTONIC_RAW. HVF allows one VM per process, so the engine
 (`../shard/src/hvf/zygote.rs`) is a single-threaded zygote that forks one
-engine process per slot; each enters vmm/sandbox's Seatbelt profile before
-creating its VM (`make -C ../shard test-hvf` runs `hvf confine`: files,
-network and exec denied, HVF allowed). The zygote kills an engine process
+engine process per slot. The zygote enters vmm/sandbox's Seatbelt profile
+plus fork and signalling its children before its first fork; each engine
+process inherits it and drops the fork grant before creating its VM
+(`make -C ../shard test-hvf` runs `hvf confine`: files, writes, network and
+exec denied to both, fork denied to engine processes, HVF allowed). The
+zygote kills an engine process
 whose run outlives its deadline by 100 ms; a dead engine process fails its run
 and its slot is QUARANTINED, then re-forked and RESTORED (`onRestore`;
 `capacity.lost` counts slots quarantined and not yet restored; a crash loop

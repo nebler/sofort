@@ -4,8 +4,9 @@
 //!
 //! HVF allows one VM per process and runs a vCPU only on its creating thread,
 //! so this process is a zygote: single-threaded, it loads and maps the
-//! verified snapshot, compiles the Seatbelt profile and forks one child per
-//! slot (child.rs), but never creates a VM itself. Each child confines itself
+//! verified snapshot, enters its Seatbelt profile (`zygote_profile`) and
+//! forks one child per slot (child.rs), but never creates a VM itself. Each
+//! child inherits the profile and drops its fork grant (`child::confine`)
 //! before it creates its VM. A fork costs ~1 CPU-ms and ~1.2 MiB per slot,
 //! once; runs reuse the child with a reset.
 //!
@@ -27,7 +28,7 @@
 //! Re-forks are budgeted (`Restores`): more than `restore_budget(slots)`
 //! within `RESTORE_WINDOW_NS` is a crash loop, and the engine fails closed
 //! instead of spinning.
-use super::{State, child, confine::Sandbox, conn::Conn};
+use super::{State, child, conn::Conn};
 use crate::clock;
 use crate::constants::{ABI_VERSION, ipc as wire, ring};
 use crate::service::{
@@ -120,7 +121,6 @@ pub struct Zygote {
     children: Vec<Child>,
     snapshot: Arc<Snapshot<State>>,
     policy: ResetPolicy,
-    sandbox: Sandbox,
     charge: u32,
     restores: Restores,
 }
@@ -146,24 +146,28 @@ fn threads() -> io::Result<i32> {
     Ok(info.pti_threadnum)
 }
 
-/// The Seatbelt sandbox every child enters: vmm/sandbox's jitk.sb (deny by
-/// default; read only the image directory, here the snapshot's), compiled
-/// once by this process for the snapshot's directory.
-pub fn sandbox(base: &str) -> io::Result<Sandbox> {
-    let other = |e: Box<dyn std::error::Error>| io::Error::other(e.to_string());
+/// The Seatbelt profile the zygote enters before its first fork, compiled
+/// for the snapshot's directory: vmm/sandbox's jitk.sb (deny by default;
+/// read only the image directory, here the snapshot's; one sysctl) plus
+/// `zygote.sb` (fork, signal its children). No other file, no write, network
+/// or exec. Engine processes inherit it (macOS refuses a second
+/// sandbox_apply) and drop the fork grant themselves (`child::confine`).
+pub fn zygote_profile(base: &str) -> io::Result<Vec<u8>> {
     let image = std::fs::canonicalize(format!("{base}.mem"))?;
     let images = image
         .parent()
         .ok_or_else(|| invalid("snapshot directory"))?;
-    let blob = std::env::temp_dir().join(format!("jitk-hvf-{}.sbbin", std::process::id()));
-    super::confine::compile_profile(images, &blob).map_err(other)?;
-    let prepared = Sandbox::prepare(&image, Some(blob.as_path()), None).map_err(other);
-    let _ = std::fs::remove_file(&blob);
-    prepared
+    let source = format!(
+        "{}\n{}",
+        super::confine::SEATBELT_PROFILE,
+        super::seatbelt::ZYGOTE_RULES
+    );
+    super::seatbelt::compile(&source, images)
 }
 
 impl Zygote {
-    /// Adopt Node's socket (fd 3), load the snapshot, fork `slots` children
+    /// Adopt Node's socket (fd 3), load the snapshot, confine this process
+    /// (`zygote.sb`), fork `slots` children
     /// and wait for each to report READY.
     pub fn start(base: &str, slots: usize, policy: ResetPolicy) -> io::Result<Self> {
         if slots == 0 || slots > wire::MAX_SLOTS {
@@ -182,15 +186,17 @@ impl Zygote {
         super::conn::buffers(node.fd());
         let snapshot = Snapshot::<State>::load_identified(base)?;
         let charge = service::ipc_charge(snapshot.class)?;
-        let sandbox = sandbox(base)?;
         super::warm();
+        // What needs a file outside the snapshot directory or a sysctl is
+        // done: confine this process before the first fork, so every engine
+        // process starts confined too.
+        super::seatbelt::apply(&zygote_profile(base)?)?;
         let mut z = Self {
             node,
             states: (0..slots).map(|_| service::State::default()).collect(),
             children: Vec::with_capacity(slots),
             snapshot,
             policy,
-            sandbox,
             charge,
             restores: Restores::new(restore_budget(slots), RESTORE_WINDOW_NS),
         };
@@ -233,13 +239,7 @@ impl Zygote {
             for c in self.children.iter().filter_map(|c| c.conn.as_ref()) {
                 close(c.fd());
             }
-            let code = match child::serve(
-                theirs,
-                i,
-                self.snapshot.clone(),
-                self.policy,
-                Some(&mut self.sandbox),
-            ) {
+            let code = match child::serve(theirs, i, self.snapshot.clone(), self.policy, true) {
                 Ok(()) => 0,
                 Err(e) => {
                     eprintln!("hvf engine slot {i}: {e}");
@@ -668,17 +668,43 @@ pub fn run(base: &str, slots: usize, policy: ResetPolicy) -> io::Result<()> {
     result
 }
 
-/// What `hvf confine BASE` checks, in a forked child under the production
-/// Seatbelt sandbox and in an unconfined control: HVF still works (a corpus
-/// run), the snapshot's own directory is readable, and nothing else is.
+/// Who a `hvf confine` probe process is.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum Probed {
+    /// The control: allowed everything below.
+    Unconfined,
+    /// An engine process as the zygote forks it: the zygote's profile, then
+    /// `child::confine` (no fork).
+    Engine,
+    /// The zygote: its profile (`zygote_profile`).
+    Zygote,
+}
+impl Probed {
+    pub const ALL: [Probed; 3] = [Probed::Unconfined, Probed::Engine, Probed::Zygote];
+    pub fn name(self) -> &'static str {
+        match self {
+            Probed::Unconfined => "unconfined",
+            Probed::Engine => "engine",
+            Probed::Zygote => "zygote",
+        }
+    }
+}
+
+/// What `hvf confine BASE` checks, in forked children confined as in
+/// production and in an unconfined control (one JSON row each, in
+/// `Probed::ALL` order): an engine process still runs HVF (a corpus run) and
+/// reads its snapshot directory, nothing else (no fork); the zygote can still
+/// fork an engine process (which confines itself, runs HVF and cannot fork),
+/// signal and reap a child, count its own threads and read the snapshot
+/// directory, nothing else.
 pub fn confinement(base: &str) -> io::Result<String> {
-    let mut sandbox = sandbox(base)?;
+    let zygote = zygote_profile(base)?;
     super::warm();
     let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
     let port = listener.local_addr()?.port();
     let snapshot = Snapshot::<State>::load_identified(base)?;
     let mut rows = Vec::new();
-    for confined in [false, true] {
+    for who in Probed::ALL {
         let (ours, theirs) = super::conn::pair()?;
         if threads()? != 1 {
             return Err(invalid(
@@ -689,7 +715,7 @@ pub fn confinement(base: &str) -> io::Result<String> {
         let pid = unsafe { libc::fork() };
         if pid == 0 {
             drop(ours);
-            let row = probe(base, &snapshot, confined.then_some(&mut sandbox), port);
+            let row = probe(base, &snapshot, who, &zygote, port);
             let _ = super::conn::send(
                 theirs.as_raw_fd(),
                 &Message::new(READY, 0, 0, 0, row.into_bytes()),
@@ -698,53 +724,154 @@ pub fn confinement(base: &str) -> io::Result<String> {
             unsafe { libc::_exit(0) }
         }
         drop(theirs);
-        let mut conn = Conn::new(ours, 1);
-        let mut row = None;
-        while row.is_none() && conn.fill()? {
-            row = conn.next()?;
-        }
-        reap(pid);
-        let row = row.ok_or_else(|| invalid("confinement probe child exited without a report"))?;
-        rows.push(String::from_utf8_lossy(&row.bytes).into_owned());
+        rows.push(String::from_utf8_lossy(&report(ours, pid)?).into_owned());
     }
     drop(listener);
     Ok(format!("[{}]", rows.join(",")))
 }
+/// The one record a probe process sends, after it exits.
+fn report(ours: OwnedFd, pid: libc::pid_t) -> io::Result<Vec<u8>> {
+    let mut conn = Conn::new(ours, 1);
+    let mut row = None;
+    while row.is_none() && conn.fill()? {
+        row = conn.next()?;
+    }
+    reap(pid);
+    row.map(|m| m.bytes)
+        .ok_or_else(|| invalid("confinement probe child exited without a report"))
+}
+/// `return 2` in a fresh slot of this process's one VM, then a reset.
+fn hvf_run(snapshot: &Arc<Snapshot<State>>) -> io::Result<()> {
+    use crate::slot::Slot;
+    let mut s = Slot::create(
+        super::HvfVm::create()?,
+        snapshot.clone(),
+        ResetPolicy::default(),
+    )?;
+    let mut entropy = std::io::repeat(7);
+    s.bind(2, include_str!("../../fixtures/return2.js"), &mut entropy);
+    let step = s.exit().map_err(|e| io::Error::other(e.to_string()))?;
+    if step.op != ring::FINISH || step.finish.as_deref() != Some("{\"ok\":2}") {
+        return Err(io::Error::other("return 2 did not finish with 2"));
+    }
+    s.reset().map_err(|e| io::Error::other(e.to_string()))?;
+    Ok(())
+}
+/// What the zygote does per slot: fork a child that runs HVF. A confined
+/// caller's child confines itself as an engine process does
+/// (`child::confine`) and must then be unable to fork.
+fn fork_engine(snapshot: &Arc<Snapshot<State>>, confined: bool) -> io::Result<()> {
+    let (ours, theirs) = super::conn::pair()?;
+    if threads()? != 1 {
+        return Err(invalid("probe must be single-threaded to fork"));
+    }
+    // SAFETY: fork in a single-threaded process (checked above).
+    let pid = unsafe { libc::fork() };
+    if pid < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if pid == 0 {
+        drop(ours);
+        let unforkable = || {
+            // SAFETY: a probe fork; a child that exists exits at once.
+            match unsafe { libc::fork() } {
+                // SAFETY: the forked copy ends without unwinding.
+                0 => unsafe { libc::_exit(0) },
+                pid if pid > 0 => {
+                    reap(pid);
+                    Err(io::Error::other("a confined engine process could fork"))
+                }
+                _ => Ok(()),
+            }
+        };
+        let result = if confined {
+            child::confine()
+                .and_then(|()| hvf_run(snapshot))
+                .and_then(|()| unforkable())
+        } else {
+            hvf_run(snapshot)
+        };
+        let text = match result {
+            Ok(()) => "ok".to_string(),
+            Err(e) => e.to_string(),
+        };
+        let _ = super::conn::send(
+            theirs.as_raw_fd(),
+            &Message::new(READY, 0, 0, 0, text.into_bytes()),
+        );
+        // SAFETY: end the child without unwinding.
+        unsafe { libc::_exit(0) }
+    }
+    drop(theirs);
+    match report(ours, pid)? {
+        b if b == b"ok" => Ok(()),
+        b => Err(io::Error::other(format!(
+            "engine process: {}",
+            String::from_utf8_lossy(&b)
+        ))),
+    }
+}
+/// Kill and reap a child, as the zygote does on escalation.
+fn signal_child() -> io::Result<()> {
+    // SAFETY: fork in a single-threaded probe process; the child only pauses.
+    let pid = unsafe { libc::fork() };
+    if pid < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if pid == 0 {
+        loop {
+            // SAFETY: waits for the parent's signal.
+            unsafe { libc::pause() };
+        }
+    }
+    // SAFETY: own unreaped child.
+    let killed = unsafe { libc::kill(pid, libc::SIGKILL) };
+    let e = io::Error::last_os_error();
+    if killed != 0 {
+        // SAFETY: the kill was refused: the child must still go.
+        unsafe { libc::kill(pid, libc::SIGTERM) };
+    }
+    let how = reap(pid);
+    if killed != 0 {
+        return Err(e);
+    }
+    if how != "signal 9" {
+        return Err(io::Error::other(format!("child ended with {how}")));
+    }
+    Ok(())
+}
 fn probe(
     base: &str,
     snapshot: &Arc<Snapshot<State>>,
-    sandbox: Option<&mut Sandbox>,
+    who: Probed,
+    zygote: &[u8],
     port: u16,
 ) -> String {
-    let confined = sandbox.is_some();
-    let applied = match sandbox {
-        Some(s) => s.before_build().map_err(|e| e.to_string()),
-        None => Ok(()),
+    let applied = match who {
+        Probed::Unconfined => Ok(()),
+        Probed::Engine => super::seatbelt::apply(zygote).and_then(|()| child::confine()),
+        Probed::Zygote => super::seatbelt::apply(zygote),
     };
     let allowed = |r: io::Result<()>| match r {
         Ok(()) => "true".to_string(),
         Err(e) => format!("{{\"denied\":{:?}}}", e.to_string()),
     };
-    let run = || -> io::Result<()> {
-        use crate::slot::Slot;
-        let mut s = Slot::create(
-            super::HvfVm::create()?,
-            snapshot.clone(),
-            ResetPolicy::default(),
-        )?;
-        let mut entropy = std::io::repeat(7);
-        s.bind(2, include_str!("../../fixtures/return2.js"), &mut entropy);
-        let step = s.exit().map_err(|e| io::Error::other(e.to_string()))?;
-        if step.op != ring::FINISH || step.finish.as_deref() != Some("{\"ok\":2}") {
-            return Err(io::Error::other("return 2 did not finish with 2"));
-        }
-        s.reset().map_err(|e| io::Error::other(e.to_string()))?;
-        Ok(())
+    // Forks first, while this process has one thread and no VM.
+    let forked = allowed(fork_engine(snapshot, who != Probed::Unconfined));
+    let signalled = allowed(signal_child());
+    let counted = allowed(threads().map(|_| ()));
+    // The zygote never creates a VM (HVF is not mediated, so it could).
+    let run = match who {
+        Probed::Zygote => "null".to_string(),
+        _ => allowed(hvf_run(snapshot)),
     };
     let own: PathBuf = Path::new(&format!("{base}.identity")).to_path_buf();
     let scratch = std::env::temp_dir().join(format!("jitk-hvf-confine-{}", std::process::id()));
     let ops = [
-        ("hvf_run", allowed(run())),
+        ("fork_engine", forked),
+        ("signal_child", signalled),
+        ("count_threads", counted),
+        ("hvf_run", run),
         (
             "read_snapshot_dir",
             allowed(std::fs::read(&own).map(|_| ())),
@@ -783,8 +910,9 @@ fn probe(
     let _ = std::fs::remove_file(&scratch);
     let fields: Vec<String> = ops.iter().map(|(k, v)| format!("\"{k}\":{v}")).collect();
     format!(
-        "{{\"confined\":{confined},\"applied\":{},{}}}",
-        allowed(applied.map_err(io::Error::other)),
+        "{{\"confined\":\"{}\",\"applied\":{},{}}}",
+        who.name(),
+        allowed(applied),
         fields.join(",")
     )
 }

@@ -248,15 +248,17 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
 ```
 
 - **Zygote.** Checks it has one thread before every fork (`proc_pidinfo`),
-  loads the verified snapshot, compiles vmm/sandbox's `jitk.sb` for the
-  snapshot directory, reads the D-cache line size (sysctl, denied later), and
-  forks one engine process per slot; READY to Node once every child is READY.
+  loads the verified snapshot, reads the D-cache line size (sysctl, denied
+  later), enters its Seatbelt profile (jitk.sb + zygote.sb, "Confinement"
+  below) and forks one engine process per slot; READY to Node once every
+  child is READY.
   It validates every Node message (START admission, REPLY pending bits,
   CANCEL generation) and every child message (call ids in order, STATS
   before one completion, bounded printable DONE, RELEASED/QUARANTINED only
   while resetting) and forwards them; a Node violation fails the engine
   closed, a child violation kills that child.
-- **Engine process.** Enters the Seatbelt profile, then creates its VM, slot
+- **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
+  creates its VM, slot
   and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
   admit (reset unless pristine, sampled check), bind, run to calls or WAIT,
   resume per REPLY, finish (an error resets at once), reset on CANCEL, idle
@@ -286,13 +288,26 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   (`clock::ipc_ns`), which is mach_continuous_time and Node's process.hrtime.
   macOS's CLOCK_MONOTONIC has a different base.
 
-Confinement (REPORT.md risk 4). `hvf confine BASE` (run by `make test-hvf`)
-forks a confined and an unconfined child. Measured on macOS 26.6.1: the
-confined one creates a VM and runs `return 2`, reads its snapshot directory,
-and gets EPERM for /etc/hosts, the home directory listing, a /tmp write, TCP
-and UDP to localhost and exec of /usr/bin/true; the control is allowed all of
-them. The zygote itself is not confined (it must fork; the profile denies
-`process-fork`) and never runs guest code.
+Confinement (REPORT.md risk 4). The zygote confines itself before its first
+fork: vmm/sandbox's `jitk.sb` (deny default, read the snapshot directory, one
+sysctl) plus `src/hvf/zygote.sb` (fork, signal its children). macOS refuses a
+second `sandbox_apply` in a sandboxed process (EPERM, measured, also with the
+Sandbox mac syscall allowed), so an engine process cannot narrow that profile
+with Seatbelt; it inherits it and takes away the fork grant itself with
+RLIMIT_NPROC 0 before it creates its VM (`child::confine`; unprivileged
+processes cannot raise it, and since root is not bound by it the engine
+refuses to run as root). `hvf confine BASE` (run by `make test-hvf`) forks
+three probe processes. Measured on macOS 26.6.1:
+- the unconfined control is allowed everything below;
+- an engine process (zygote profile + `child::confine`) creates a VM and runs
+  `return 2` and reads its snapshot directory; fork fails (EAGAIN), and so do
+  signalling a child and exec; /etc/hosts, the home directory listing, a /tmp
+  write, TCP and UDP to localhost get EPERM;
+- the zygote (its profile) forks an engine process that confines itself, runs
+  `return 2` and then cannot fork; it SIGKILLs and reaps a child and reads its
+  snapshot directory; the same files, writes, network and exec get EPERM.
+Everything the zygote opens (the snapshot files, the Node socket) is open
+before it confines itself, and re-forks reuse them.
 
 Tests: `hvf::tests::engine_child_runs_kicks_and_quarantines` (in-process
 child: tool call round trip, deadline kick within 200 ms, CANCEL of a spinning

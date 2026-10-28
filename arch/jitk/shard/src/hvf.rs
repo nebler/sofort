@@ -876,6 +876,7 @@ mod child;
 #[path = "../../vmm/sandbox/mod.rs"]
 mod confine;
 mod conn;
+mod seatbelt;
 pub mod zygote;
 
 #[cfg(test)]
