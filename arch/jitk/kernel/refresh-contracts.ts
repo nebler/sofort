@@ -26,7 +26,7 @@ const work = mkdtempSync(join(tmpdir(), 'jitk-contract-refresh-'));
 try {
   const kernel = join(work, 'kernel');
   copyTree(root, kernel, ignored);
-  for (const sibling of ['protocol', 'grow', 'bench', 'docs', 'vmm']) {
+  for (const sibling of ['protocol', 'grow', 'bench', 'docs', 'shard']) {
     symlinkSync(resolve(root, '..', sibling), join(work, sibling));
   }
   const env = environment();

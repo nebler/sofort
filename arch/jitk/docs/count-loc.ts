@@ -5,7 +5,7 @@ import { files, sha, json } from './lib.ts';
 
 const skip = new Set(['.git', 'node_modules', 'target', 'vendor', 'payload', 'out', 'build', 'dist', '__pycache__', 'evidence', 'results', '.venv']);
 const extensions = new Set(['.rs', '.S', '.s', '.c', '.h', '.py', '.js', '.mjs', '.ts', '.sh', '.ld', '.sb', '.lua', '.toml']);
-const subtrees = new Set(['kernel', 'vmm', 'executor', 'protocol', 'grow', 'bench', 'linux', 'docs', 'mcp']);
+const subtrees = new Set(['kernel', 'executor', 'protocol', 'grow', 'bench', 'docs', 'mcp']);
 interface Item {
   path: string;
   component: string;
@@ -58,7 +58,7 @@ for (const path of files(ROOT).sort()) {
     continue;
   }
   let component = parts.length > 1 ? parts[0] : 'integration';
-  for (const prefix of ['vmm/sandbox', 'executor/policy', 'bench/hyperlight']) {
+  for (const prefix of ['executor/policy', 'bench/hyperlight']) {
     if (rel.startsWith(prefix + '/')) {
       component = prefix;
     }

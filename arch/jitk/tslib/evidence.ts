@@ -42,7 +42,6 @@ export const CONSUMED: Record<string, string> = {
   'arch/jitk/kernel/payload/qjs': 'kernel build.rs default payload; kernel, linux and grow tests',
   'arch/jitk/kernel/payload/qjs-ring': 'ring kernel build, shard snapshot fingerprint, executor/ipc',
   'arch/jitk/grow/payload/lua-static': 'kernel test fs_diff.ts and grow runtime',
-  'arch/jitk/kernel/results-fs/linux-kvm-check.ts': 'compiled by kernel tools (results-fs/*.ts), run by make -C kernel linux-tools',
 };
 
 export interface Tracked {

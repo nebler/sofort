@@ -5,10 +5,10 @@
 // Layers, by path below arch/jitk:
 //   abi       abi/ (the jitk-abi crate and its payload corpus), except abi/src/bin
 //   guest     kernel/src, the guest bootstraps, shard/guest, shard/fixtures
-//   engine    shard/src (Rust), vmm/src, vmm/sandbox/mod.rs
+//   engine    shard/src (Rust and its Seatbelt profiles)
 //   host      executor (incl. policy), protocol, mcp
-//   research  everything else: bench, grow, linux, scriptc-corpus, docs, tools,
-//             tslib, kernel/shard/vmm tooling and tests
+//   research  everything else: bench, grow, scriptc-corpus, docs, tools,
+//             tslib, kernel/shard tooling and tests
 //   evidence  any raw*/results/out/ledger/evidence directory
 // The host *runtime* is the import closure of the product entry points
 // (RUNTIME_ENTRIES); host checks and tests may use research tooling.
@@ -34,12 +34,9 @@ import { basename, dirname, join, relative, resolve } from 'node:path';
 import { check } from '../tslib/assert.ts';
 import { files } from '../tslib/fs.ts';
 
-const KNOWN: [string, string][] = [
-  ['evidence executor/select-backend.ts: kernel/evidence/parking-0.json',
-    'parking gate read from evidence at run time (R9 N22: becomes a typed manifest field)'],
-  ['marker executor/select-backend.ts: .READY',
-    'backend selection reads vmm/kernel .READY markers (R9 N22)'],
-];
+// (Both 2026-10-28 entries, select-backend reading kernel/evidence/parking-0.json
+// and the vmm/kernel .READY markers, went with the libkrun backend.)
+const KNOWN: [string, string][] = [];
 const RUNTIME_ENTRIES = ['mcp/server.mjs', 'mcp/jitk.mjs', 'mcp/native.mjs', 'executor/executor.ts', 'executor/select-backend.ts', 'executor/policy/policy.mjs', 'protocol/dispatcher.ts'];
 const LEAVES = ['protocol/dispatcher.ts', 'executor/policy/policy.mjs'];
 const GUEST_FILES = ['kernel/ring-bootstrap.js', 'protocol/bootstrap.js'];
@@ -52,7 +49,7 @@ export function layer(rel: string): string {
   if (parts.slice(0, -1).some((part) => EVIDENCE.test(part))) return 'evidence';
   if (parts[0] === 'abi' && !rel.startsWith('abi/src/bin/')) return 'abi';
   if (rel.startsWith('kernel/src/') || rel.startsWith('shard/guest/') || rel.startsWith('shard/fixtures/') || GUEST_FILES.includes(rel)) return 'guest';
-  if ((rel.startsWith('shard/src/') && rel.endsWith('.rs')) || rel.startsWith('vmm/src/') || rel === 'vmm/sandbox/mod.rs' || rel === 'vmm/sandbox/jitk.sb' || rel === 'shard/src/hvf/zygote.sb') return 'engine';
+  if ((rel.startsWith('shard/src/') && rel.endsWith('.rs')) || rel === 'shard/src/hvf/jitk.sb' || rel === 'shard/src/hvf/zygote.sb') return 'engine';
   if (parts[0] === 'executor' || parts[0] === 'protocol' || parts[0] === 'mcp') return 'host';
   return 'research';
 }

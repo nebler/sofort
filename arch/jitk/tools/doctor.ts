@@ -7,7 +7,7 @@
 //          components; macOS: Xcode clang, ld.lld, llvm-objcopy; Linux: cc,
 //          clang, ld.lld, llvm-objcopy
 //   soft:  the evidence store (evidence/manifest.json); clippy/rustfmt (abi test, kernel make check/fmt); the deps cache (`make deps`, which `make build` runs anyway); Docker
-//          (GrowOS and, for now, the Linux VMM build); macOS: the Linux dev
+//          (GrowOS oracle runs); macOS: the Linux dev
 //          VM (JITK_NESTED_SSH) and its /dev/kvm; Linux: /dev/kvm access
 import { accessSync, constants, existsSync, statSync } from 'node:fs';
 import { platform } from 'node:os';
@@ -122,7 +122,7 @@ function native(): Item[] {
     items.push(developer && which('clang') ? ok('clang', which('clang') + ' (' + developer + ')') : problem('FAIL', 'clang', 'no Xcode command line tools', 'xcode-select --install'));
     // Several kernel/grow tests run /opt/homebrew/bin/ld.lld by absolute path.
     const lld = '/opt/homebrew/bin/ld.lld';
-    items.push(existsSync(lld) ? ok('ld.lld', lld) : problem('FAIL', 'ld.lld', lld + ' missing (VMM test guests, kernel/grow probes)', 'brew install lld'));
+    items.push(existsSync(lld) ? ok('ld.lld', lld) : problem('FAIL', 'ld.lld', lld + ' missing (kernel/grow probes, shard native checks)', 'brew install lld'));
     // kernel/build.sh's default objcopy (OBJCOPY overrides it).
     const objcopy = process.env.OBJCOPY || '/opt/homebrew/opt/llvm@22/bin/llvm-objcopy';
     items.push(existsSync(objcopy) || which(objcopy) ? ok('llvm-objcopy', objcopy) : problem('FAIL', 'llvm-objcopy', objcopy + ' missing (kernel image)', 'brew install llvm@22'));
@@ -185,7 +185,7 @@ async function cache(): Promise<Item[]> {
   return items;
 }
 
-// The Linux dev VM the shard/KVM suites and the linux suite drive over ssh.
+// The Linux dev VM the shard/KVM suites (test-linux, parity-ssh) drive over ssh.
 async function devVm(): Promise<Item> {
   let ssh = process.env.JITK_NESTED_SSH || '';
   if (!ssh) {
@@ -195,7 +195,7 @@ async function devVm(): Promise<Item> {
     } catch {}
     ssh = common ? join(dirname(common), 'kvm-dev/ssh.sh') : '';
   }
-  const why = 'only for the shard/KVM and linux suites';
+  const why = 'only for the shard/KVM suites (make -C executor parity-ssh)';
   if (!ssh || !existsSync(ssh)) {
     return problem('warn', 'linux dev VM', 'no ssh wrapper at ' + (ssh || 'kvm-dev/ssh.sh') + '; ' + why, 'export JITK_NESTED_SSH=/path/to/kvm-dev/ssh.sh');
   }

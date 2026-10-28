@@ -1,7 +1,8 @@
 # jitk CI on a GitHub-hosted Linux arm64 runner: `make -C arch/jitk ci`
 # (arch/jitk/tools/ci.sh) runs doctor, deps and every Linux-capable suite and
 # build. GitHub's arm64 runners expose no /dev/kvm, so the KVM suites (shard
-# snapshot/test-kvm, shard-host.sh, vmm test, test-linux) print a skip here;
+# snapshot/test-kvm, shard-host.sh, the executor and MCP suites on the shard,
+# test-linux) print a skip here;
 # they run on a KVM host (kvm-dev, or a self-hosted runner with JITK_CI_KVM=1).
 # See arch/jitk/README.md "CI".
 name: jitk-ci
@@ -68,7 +69,7 @@ jobs:
           rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh)" --profile minimal \
             --component clippy --component rustfmt --target aarch64-unknown-none
 
-      # The jitk deps cache (Node, zig, libkrun VMM, shard binary; entries are
+      # The jitk deps cache (Node, zig, shard binary; entries are
       # content-keyed, so a stale one is rebuilt, never reused) and the cargo
       # registry. Saved even when a later step fails.
       - name: Restore caches

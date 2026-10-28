@@ -1,3 +1,0 @@
-   Compiling jitk-02 v0.3.0 (/Users/noah/code/sofort/arch/jitk/linux/.work/kernel)
-    Finished `release` profile [optimized] target(s) in 2.93s
-{"image": "/Users/noah/code/sofort/arch/jitk/linux/.work/kernel-75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732.bin", "sha256": "75b2abe26021d9d0624b0555a64ed589d251cb7d30aa2965754974f3716d1732", "bytes": 2924584}
