@@ -84,7 +84,7 @@ export const CASES:Case[]=[
   // executor/shard-check.ts (engine semantics; its hostile raw-fd cases stay there)
   {id:'s-provider-reply',source:'executor/shard-check.ts',code:'return await codemode.add1(41)',tools:{codemode:['add1']},expect:{ok:42}},
   ...['tools','run','__jitk_ring_custom'].map((ns):Case=>({id:'s-namespace-'+ns,source:'executor/shard-check.ts',code:`return await ${ns}.add1(3)`,tools:{[ns]:['add1']},expect:{ok:4}})),
-  {id:'s-throw-null',source:'executor/shard-check.ts',code:'throw null',expect:{error:'GUEST_ERROR',match:'null'}},
+  {id:'s-throw-null',source:'executor/shard-check.ts',code:'throw null',expect:{error:'GUEST_ERROR',match:'Error: null'}},
   {id:'s-unawaited-call',source:'executor/shard-check.ts',code:'codemode.delay(10,1);return 2',tools:{codemode:['delay']},expect:{error:'GUEST_ERROR',match:'unawaited calls at completion'}},
   {id:'s-out-of-order',source:'executor/shard-check.ts',code:'return await Promise.all(Array.from({length:10},(_,i)=>codemode.delay((10-i)*2,i*2)))',tools:{codemode:['delay']},expect:{ok:Array.from({length:10},(_,i)=>i*2)}},
   {id:'s-scalar-unicode',source:'executor/shard-check.ts',code:'return await codemode.echo("Grüße 😀")',tools:{codemode:t1},expect:{ok:'Grüße 😀'}},

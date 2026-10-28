@@ -57,7 +57,8 @@ test: deps
 	+@$(DELEGATE) linux test
 # Linux arm64 KVM host, from a clean clone: the backend-parity corpus
 # (executor/parity/README.md) on the shard and on libkrun, then the shard's
-# library and KVM tests. Writes executor/.work/parity/linux-arm64.json for the
+# library tests, the shard-only executor suite (executor/shard-check.ts) and
+# the KVM tests. Writes executor/.work/parity/linux-arm64.json for the
 # cross-host compare. On a shared host set JITK_BENCH_LOCK (kvm-dev:
 # /home/dev/bench.lock) so the KVM timing tests do not overlap a benchmark.
 test-linux: deps
@@ -70,7 +71,11 @@ test-linux: deps
 	@# hash, and a Linux-hosted build lays out a few functions differently.
 	+@JITK_KERNEL_IMAGE="$(ROOT)/kernel/dist/kernel.bin" $(DELEGATE) executor parity
 	+@$(MAKE) -s -C "$(ROOT)/shard" test
-	+@if [ -n "$$JITK_BENCH_LOCK" ]; then flock -w "$${JITK_SHARD_LOCK_WAIT:-600}" "$$JITK_BENCH_LOCK" $(MAKE) -s -C "$(ROOT)/shard" test-kvm; else $(MAKE) -s -C "$(ROOT)/shard" test-kvm; fi
+	+@$(MAKE) -s -C "$(ROOT)/executor" .work/bin/fixtures/shard-peer
+	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/executor" test-shard
+	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/shard" test-kvm
+# Timing-sensitive KVM suites wait for the shared bench lock when one is named.
+LOCKED = $(if $(JITK_BENCH_LOCK),flock -w $${JITK_SHARD_LOCK_WAIT:-600} "$(JITK_BENCH_LOCK)")
 bench: deps
 	+@$(DELEGATE) bench bench
 demo: deps

@@ -39,7 +39,9 @@ Each run writes `executor/.work/parity/<platform>-<arch>.json`
 
 `test-linux` needs `make deps` (Node, the shard, the Linux VMM) and builds the
 prepared snapshots, the kernel and the executor itself. After the corpus it runs
-the shard's library tests and, under `JITK_BENCH_LOCK` when set, its KVM tests.
+the shard's library tests and then, under `JITK_BENCH_LOCK` when set, the
+shard-only executor suite (`shard-check.ts`: restore, slot concurrency, failure
+domains, hostile IPC peers) and the shard's KVM tests.
 
 ## Cross-host compare
 
