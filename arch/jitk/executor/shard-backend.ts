@@ -255,6 +255,7 @@ export class ShardSession implements Session {
   }
   async start(job:Job):Promise<void> {
     if(this.failure)throw Error(this.failure.message);
+    if(job.kind!=='js')throw Error('the shard runs JS jobs only');
     if(this.run.phase!=='parked'||this.deadline===undefined)throw Error('shard run requires admission deadline');
     const code=executionBody(job,true);
     this.host(()=>{checkCode(code);checkTools(job.tools);});

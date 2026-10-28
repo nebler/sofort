@@ -1,18 +1,31 @@
 // The executor's host interface (R10 §3.1): typed guest events, no wire frames.
 // Each engine adapter decodes its own transport (v1 frames for the process
-// backends, binary IPC records for the shard) and validates all guest content
-// before an event exists. Bad guest content ends that session only, as 'fail'.
+// backends, binary IPC records for the shard, JNR7 frames for the native
+// worker) and validates all guest content before an event exists. Bad guest
+// content ends that session only, as 'fail'.
 import {LIMIT} from '../protocol/dispatcher.js';
-export type Job={kind:'js';
+export type JsJob={kind:'js';
   /** Tenant code: a codemode function expression or a TanStack body wrapper. */
   source:string;
   /** Namespace -> tool names; the guest gets exactly these proxies. */
   tools:Record<string,string[]>;
   /** Trusted per-provider preludes, evaluated before source. */
   prelude:string};
+/** A whole static program from a prepared profile; no tool calls. */
+export type NativeJob={kind:'native';
+  /** A prepared profile the engine loaded; it is also argv[0]. */
+  profile:string;
+  /** argv after argv[0]. */
+  args:string[];
+  /** Relative read-only guest paths -> contents. */
+  files:Record<string,Uint8Array>};
+export type Job=JsJob|NativeJob;
 export type GuestEvent=
   | {kind:'call';id:number;ns:string;fn:string;args:unknown[]}
   | {kind:'log';level:string;msg:string}
+  /** Native jobs: the program's output streams, before its 'done'. */
+  | {kind:'stdout'|'stderr';bytes:Uint8Array}
+  /** JS: the guest's JSON value. Native: {exitCode, outputLimited}. */
   | {kind:'done';ok:unknown}
   /** guest: thrown or invalid guest content; limit: a host bound; deadline; engine: transport or process. */
   | {kind:'fail';cause:'guest'|'limit'|'deadline'|'engine';message:string};
@@ -57,19 +70,36 @@ export type JsLimits={
   /** Writable guest arena, when the engine has a fixed one. */
   arenaBytes?:number;
 };
+/** What one native job may carry and produce. */
+export type NativeLimits={
+  /** The prepared profiles a job may name. */
+  profiles:readonly string[];
+  /** Arguments after argv[0], and the bytes of argv including NULs. */
+  args:number;
+  argvBytes:number;
+  /** Input files, bytes per path, components per path, total content bytes. */
+  files:number;
+  pathBytes:number;
+  pathComponents:number;
+  inputBytes:number;
+  /** Combined stdout and stderr; past it the run reports outputLimited. */
+  outputBytes:number;
+};
 export type Limits={
-  /** Guest RAM class in MiB. */
-  memoryMB:number;
+  /** Guest RAM class in MiB, when the engine has a fixed one. */
+  memoryMB?:number;
   /** Sessions the engine runs at once (Infinity: one process each, the pool bounds them). */
   sessions:number;
   /** park() calls worth running at once: a slot claim is cheap, a VMM boot is not. */
   parallelStarts:number;
   /** Longest run deadline the engine admits, in ms. */
   deadlineMs:number;
-  js:JsLimits;
+  /** Present for each job kind the engine runs. */
+  js?:JsLimits;
+  native?:NativeLimits;
 };
 export interface Engine {
-  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard';
+  readonly kind:'jitk'|'process'|'hyperlight-js'|'shard'|'native';
   close?():Promise<void>;
   readonly limits:Limits;
   park(signal?:AbortSignal,deadline?:number):Promise<Session>;

@@ -8,7 +8,7 @@ import {Dispatcher, LIMIT, type Frame} from '../protocol/dispatcher.js';
 import {failure,v1Limits,type Engine,type GuestEvent,type Job,type Limits,type Phase,type Reply,type Session} from './engine.js';
 import {executionBody} from './code.js';
 
-export type {Engine,GuestEvent,JsLimits,Job,Limits,Phase,Reply,Session} from './engine.js';
+export type {Engine,GuestEvent,JsJob,JsLimits,Job,Limits,NativeJob,NativeLimits,Phase,Reply,Session} from './engine.js';
 /** The public name for an engine (codemode/TanStack/MCP callers construct these). */
 export type Backend=Engine;
 export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
@@ -215,6 +215,7 @@ class ProcessSession implements Session {
     return p.then(m=>{if(this.fatalError)throw this.error;return m;});
   }
   async start(job:Job):Promise<void> {
+    if(job.kind!=='js')throw Error('process engines run JS jobs only');
     await this.send({t:'run',code:executionBody(job),ns:job.tools});
   }
   async next():Promise<GuestEvent> {

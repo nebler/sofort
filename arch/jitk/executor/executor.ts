@@ -10,6 +10,7 @@ import {performance} from 'node:perf_hooks';
 export * from './backend.js';
 export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
+export {NativeBackend,NativeExecutor,NativeJobError,NATIVE_LIMITS,encodeNativeJob,type NativeOptions,type NativeResult,type NativeError} from './native-backend.js';
 export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
 export type Context=Readonly<{executionId:string;signal:AbortSignal;provenance:readonly Label[]}>;
@@ -42,7 +43,9 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;
     let firstCall=true,firstRet=true;
     try {
-      if(code.length>this.pool.backend.limits.js.code)throw new Error('code limit');
+      const limits=this.pool.backend.limits.js;
+      if(!limits)throw new Error('engine runs no JS jobs');
+      if(code.length>limits.code)throw new Error('code limit');
       if(options.connectors?.length)throw new Error('connector RPC unsupported: adapt to ResolvedProvider');
       const source=Array.isArray(providersOrFns)?providersOrFns:[{name:'codemode',fns:providersOrFns}];
       const providers=source.map(p=>{
@@ -111,7 +114,8 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
         }else if(ev.kind==='done'){
           mark('done');
           return {result:parse(JSON.stringify(ev.ok)),logs};
-        }else throw Error(ev.message);
+        }else if(ev.kind==='fail')throw Error(ev.message);
+        else throw Error(`engine sent a native ${ev.kind} event to a JS job`);
       }
     }catch(e){if(expired())abort();return {result:undefined,error:ctx.signal.aborted?'Execution aborted or timed out':String(e),logs};}
     finally {

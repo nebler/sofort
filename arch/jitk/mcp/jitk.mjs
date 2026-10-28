@@ -42,18 +42,18 @@ export function classify(error, cancelled) {
 
 export async function createJitk(cfg) {
   if (cfg.execute === false) {
-    const native = createNativeRunner(cfg.native, cfg.timeoutMs);
+    const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
     return {
     selection: 'execute disabled; native Linux KVM ring profiles', warmed: Promise.resolve(),
     run: async () => ({error: {code: 'UNSUPPORTED', message: 'execute backend disabled by server configuration'}, logs: []}),
-    runNative: (input, signal) => native.run(input, signal), close: () => native.close(),
+    runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits, close: () => native.close(),
     };
   }
   const {MicroVMExecutor, SandboxPool} = await import(new URL('executor.js', build).href);
   const {selectBackend} = await import(new URL('select-backend.js', build).href);
   const selected = selectBackend();
   if (cfg.warm && !selected.gate) throw Error('warm pool needs G1 parking evidence (see executor/README.md) or "warm": 0');
-  const native = createNativeRunner(cfg.native, cfg.timeoutMs);
+  const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
   const inner = selected.backend;
   // Refill on every VM exit, not only after a run: the watchdog's lifetime bound
   // (60 s) also reaps idle parked VMs, and the next execute must still find one parked.
@@ -82,7 +82,7 @@ export async function createJitk(cfg) {
       if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
       return {error: {code: classify(r.error, signal?.aborted === true), message: r.error}, logs: r.logs};
     },
-    runNative: (input, signal) => native.run(input, signal),
+    runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits,
     close: () => { closing = true; return Promise.all([pool.close(), native.close()]); },
   };
 }

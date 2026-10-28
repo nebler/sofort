@@ -14,6 +14,14 @@ jitk-abi ring limits (`abi.ts`) for the shard, protocol v1 (`LIMIT`) for the
 process backends. The executor, the pool and the MCP server read these instead
 of hard-coding them or branching on the backend kind.
 
+A job is `js` (tenant code and tool names, run by `MicroVMExecutor`) or
+`native` (a prepared static program, its args and input files, run by
+`NativeExecutor`). `native-backend.ts` is the persistent Linux arm64 ring worker
+(`real native-worker`, `../shard/ABI-R7.md`) as an Engine with one session: a
+native session yields `stdout`, `stderr` and `done {exitCode, outputLimited}`,
+and its `limits.native` carries the profiles and the JNR7 request/output bounds.
+`native-check.ts` runs it on a stand-in worker (`fixtures/native-worker.mjs`).
+
 ## Build, test, demo
 
 Use a real **absolute Node >=24** executable. PATH `node` on this machine may

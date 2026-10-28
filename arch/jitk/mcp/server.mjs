@@ -54,14 +54,16 @@ function mcpServer(jitk, cfg) {
     inputSchema: {type: 'object', properties: {code: {type: 'string', description: 'JavaScript async function body'}},
       required: ['code'], additionalProperties: false},
   };
+  // The native engine's own limits (Engine.limits.native).
+  const nl = jitk.nativeLimits, mib = n => `${n / (1 << 20)} MiB`;
   const run = {
     name: 'run',
     description: 'Run a prepared static native tool in a fresh Linux arm64 KVM microVM. args excludes argv[0]. ' +
-      'files maps relative read-only guest paths to canonical base64 bytes (64 files, 4 MiB archive). ' +
-      'Returns stdout/stderr as {encoding:"base64",data}, exitCode, outputLimited (1 MiB combined cap). ' +
+      `files maps relative read-only guest paths to canonical base64 bytes (${nl.files} files, ${mib(nl.inputBytes)} archive). ` +
+      `Returns stdout/stderr as {encoding:"base64",data}, exitCode, outputLimited (${mib(nl.outputBytes)} combined cap). ` +
       'macOS v1 returns UNSUPPORTED. Configured profiles: ' + Object.keys(cfg.native?.profiles ?? {}).join(', '),
-    inputSchema: {type: 'object', properties: {tool: {type: 'string'}, args: {type: 'array', maxItems: 31, items: {type: 'string'}},
-      files: {type: 'object', maxProperties: 64, additionalProperties: {type: 'string'}}}, required: ['tool'], additionalProperties: false},
+    inputSchema: {type: 'object', properties: {tool: {type: 'string'}, args: {type: 'array', maxItems: nl.args, items: {type: 'string'}},
+      files: {type: 'object', maxProperties: nl.files, additionalProperties: {type: 'string'}}}, required: ['tool'], additionalProperties: false},
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => ({tools: [execute, run]}));
   server.setRequestHandler(CallToolRequestSchema, async (req, extra) => {
