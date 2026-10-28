@@ -1,21 +1,37 @@
+// The ring engine's own suite, on either host: the KVM shard on Linux, the
+// HVF engine on macOS arm64 (shard/src/hvf/zygote.rs; one confined process
+// per slot). Sections that exercise one transport (the memfd queues and their
+// hostile peer fixture on Linux; engine processes on macOS) say so.
 import assert from 'node:assert/strict';
 import {mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {spawn} from 'node:child_process';
+import {execFileSync,spawn,type ChildProcess} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
 import {ABI_VERSION} from './abi.js';
 import {ShardBackend,type ShardMetrics,type ShardQuarantine} from './shard-backend.js';
-import {SharedChannel,IPC,monotonicNs,type Message} from './shard-ipc.js';
+import {PipeChannel,SharedChannel,IPC,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
 import {SandboxPool,OverloadedError} from './pool.js';
 import {transportChecks} from './shard-ipc-check.js';
 import {sourceChecks} from './shard-source-check.js';
 
 const binary=process.env.JITK_SHARD_BINARY!,snapshot=process.env.JITK_SHARD_SNAPSHOT!;
-if(process.platform!=='linux'||!binary||!snapshot)throw Error('shard-check needs Linux, JITK_SHARD_BINARY and JITK_SHARD_SNAPSHOT');
-let assertions=transportChecks()+await sourceChecks();
+const linux=process.platform==='linux',hvf=process.platform==='darwin'&&process.arch==='arm64';
+if(!(linux||hvf)||!binary||!snapshot)throw Error('shard-check needs Linux (KVM) or macOS arm64 (HVF), JITK_SHARD_BINARY and JITK_SHARD_SNAPSHOT');
+let assertions=(linux?transportChecks():0)+await sourceChecks();
+/** The engine's IPC child processes (HVF: the zygote's engine processes, one per slot). */
+const engines=(pid:number)=>execFileSync('/usr/bin/pgrep',['-P',String(pid)],{encoding:'utf8'}).trim().split('\n').filter(Boolean).map(Number).sort((a,b)=>a-b);
+/** Start the engine binary on this host's transport, as ShardBackend does. */
+function engine(args:string[],receive:(m:Message)=>void,failed:(e:Error)=>void):{child:ChildProcess;channel:Channel} {
+  if(linux){
+    const channel=new SharedChannel(receive,failed);
+    return {channel,child:spawn(binary,args,{stdio:['ignore','ignore','pipe',...channel.fds],env:{PATH:'/usr/bin:/bin'}})};
+  }
+  const child=spawn(binary,args,{stdio:['ignore','ignore','pipe','pipe'],env:{PATH:'/usr/bin:/bin'}});
+  return {child,channel:new PipeChannel(child.stdio[3] as import('node:stream').Duplex,receive,failed)};
+}
 function check(value:unknown,message:string){assert.ok(value,message);assertions++;console.log(JSON.stringify({event:'check',name:message}));}
 const metrics:ShardMetrics[]=[];
 const backend=new ShardBackend({binary,snapshot,slots:8,onMetrics:m=>metrics.push(m)});
@@ -69,7 +85,12 @@ try {
   let issued=0,revoked=0;
   const privateExecutor=new MicroVMExecutor(pool,()=> 'allow',5000,{issuer:{issue:async()=>{issued++;return 'HOST_ONLY_TEST_TOKEN';},revoke:async()=>{revoked++;}},tools:{codemode:{secret:{args:a=>a,reads:'private',egress:false,writes:false,timeoutMs:1000,invoke:async(_a,credential)=>{assert.equal(credential,'HOST_ONLY_TEST_TOKEN');return 'private result';},output:v=>v}}}});
   r=await privateExecutor.execute('return await codemode.secret()',{secret:async()=>null});await pool.drain();check(!r.error&&r.result==='private result'&&issued===1&&revoked===1,'canonical policy owns issuance/revocation');
-  const env=readFileSync(`/proc/${backend.child.pid}/environ`,'utf8');check(env==='PATH=/usr/bin:/bin\0','shard has no inherited credentials/environment');
+  if(linux){const env=readFileSync(`/proc/${backend.child.pid}/environ`,'utf8');check(env==='PATH=/usr/bin:/bin\0','shard has no inherited credentials/environment');}
+  else for(const pid of [backend.child.pid!,...engines(backend.child.pid!)]){
+    // ps -E appends the environment to the command line.
+    const line=execFileSync('/bin/ps',['-E','-o','command=','-p',String(pid)],{encoding:'utf8'}).trim();
+    check(line.endsWith(' PATH=/usr/bin:/bin')&&!/ HOME=| USER=| TMPDIR=/.test(line),`engine process ${pid} has no inherited credentials/environment`);
+  }
   // Block Node across the lease deadline. The watchdog must reset independently.
   const sandbox=await backend.park();await sandbox.armDeadline!(Date.now()+120);
   const before=metrics.length;
@@ -77,17 +98,18 @@ try {
   const blockUntil=performance.now()+300;while(performance.now()<blockUntil){}
   {const ev=await sandbox.next();assert.ok(ev.kind==='fail'&&ev.cause==='deadline'&&/deadline_exceeded/.test(ev.message),JSON.stringify(ev));assertions++;}
   const deadline=metrics.slice(before).find(m=>m.resetDoneNs>0n);check(!!deadline,'watchdog reset receipt while Node was blocked');
-  check(deadline!.resetDoneNs>=deadline!.deadlineNs&&deadline!.resetDoneNs-deadline!.deadlineNs<50000000n,'responsive-owner deadline reset within 50 ms (nested)');
+  check(deadline!.resetDoneNs>=deadline!.deadlineNs&&deadline!.resetDoneNs-deadline!.deadlineNs<50000000n,`responsive-owner deadline reset within 50 ms (${linux?'nested':'HVF'})`);
   sandbox.release();await sandbox.released;
   r=await execute('return 42');check(!r.error&&r.result===42,'clean reuse after expiry');
 } finally {await pool.close();}
 
 // Exercise environment selection through the same MCP core used by execute.
 {
-  const previous=process.env.JITK_BACKEND;process.env.JITK_BACKEND='shard';
+  const kind=linux?'shard':'hvf';
+  const previous=process.env.JITK_BACKEND;process.env.JITK_BACKEND=kind;
   const {createJitk}=await import(new URL('../../mcp/jitk.mjs',import.meta.url).href);
   const core=await createJitk({warm:0,maxLive:2,timeoutMs:5000,tools:{tools:{echo:{args:(a:unknown[])=>a,reads:'public',egress:false,writes:false,timeoutMs:1000,invoke:async(a:number[])=>a[0]+1,output:(v:unknown)=>v}}}});
-  try{await core.warmed;const r=await core.run('return await tools.echo(41)');check(r.result===42&&!r.error,'JITK_BACKEND=shard through MCP core');}
+  try{await core.warmed;const r=await core.run('return await tools.echo(41)');check(r.result===42&&!r.error,`JITK_BACKEND=${kind} through MCP core`);}
   finally{await core.close();if(previous===undefined)delete process.env.JITK_BACKEND;else process.env.JITK_BACKEND=previous;}
 }
 
@@ -114,6 +136,9 @@ try {
 
 // Node treats the shard as hostile: private-copy validation, cursor bounds,
 // generations, schemas, direction and duplicate identity must all fail closed.
+// Linux: the hostile peer fixture speaks the memfd queues. (The macOS
+// PipeChannel decodes with the same message() envelope check.)
+if(linux){
 const scratch=mkdtempSync(join(tmpdir(),'jitk-ipc-test-'));
 const peer=join(scratch,'peer');
 // Hostile peers have dummy but internally consistent offline identities. This
@@ -174,14 +199,57 @@ try {
     } finally {await hostile.close();}
   }
 } finally {rmSync(scratch,{recursive:true,force:true});}
+}
+
+// HVF: every slot is a process the zygote supervises. A dead engine process
+// takes only its slot out of service (its run fails as engine, its reset is
+// QUARANTINED with the reason); a run whose process cannot stop at its
+// deadline is killed by the zygote (escalation); close() reaps them all.
+if(hvf){
+  const lost:ShardQuarantine[]=[];
+  const two=new ShardBackend({binary,snapshot,slots:2,onQuarantine:q=>lost.push(q)});
+  try {
+    await two.ready;
+    const zygote=two.child.pid!,children=engines(zygote);
+    check(children.length===2,'one engine process per slot');
+    // A stopped engine process cannot kick its own vCPU: the zygote kills it
+    // ESCALATION (100 ms) after the deadline and reports a deadline.
+    const s=await two.park();await s.armDeadline!(Date.now()+100);
+    const t=performance.now();
+    await s.start({kind:'js',source:'async()=>{while(true){}}',tools:{},prelude:''});
+    await new Promise(r=>setTimeout(r,20));
+    for(const pid of children)process.kill(pid,'SIGSTOP');
+    const ev=await s.next();const waited=performance.now()-t;
+    for(const pid of engines(zygote))process.kill(pid,'SIGCONT');
+    check(ev.kind==='fail'&&ev.cause==='deadline'&&/engine process killed/.test(ev.message),'zygote escalation kills a stuck engine process: '+JSON.stringify(ev));
+    check(waited>=100&&waited<1000,`escalation after the deadline plus 100 ms (${waited.toFixed(0)} ms)`);
+    s.release();await s.released;
+    check(lost.length===1&&/engine process exited \(signal 9\)/.test(lost[0].reason)&&two.capacity.lost===1,'the killed slot is QUARANTINED with its reason: '+JSON.stringify(lost.map(q=>q.reason)));
+    check(engines(zygote).length===1,'the killed engine process is reaped');
+    // The other slot still serves, and an engine process that dies while idle
+    // fails only its next run.
+    const pool2=new SandboxPool(two,0,1),ex2=new MicroVMExecutor(pool2,()=> 'allow',5000);
+    let r=await ex2.execute('return 7',{});await pool2.drain();check(!r.error&&r.result===7,'the surviving slot serves');
+    process.kill(engines(zygote)[0]!,'SIGKILL');await new Promise(r=>setTimeout(r,50));
+    r=await ex2.execute('return 8',{});await pool2.drain();
+    check(!!r.error&&/slot_unavailable: engine process exited/.test(r.error),'a dead engine process fails its next run as engine: '+r.error);
+    check(lost.length===2&&two.capacity.lost===2,'and its slot is QUARANTINED');
+    await pool2.close();
+    await assert.rejects(two.park(),/shard capacity lost: all 2 slots quarantined/);assertions++;
+  } finally {await two.close();}
+  // close() lets the zygote reap its engine processes: none is left behind.
+  const three=new ShardBackend({binary,snapshot,slots:3});
+  await three.ready;const pids=engines(three.child.pid!);await three.close();
+  const alive=pids.filter(pid=>{try{process.kill(pid,0);return true;}catch{return false;}});
+  check(pids.length===3&&alive.length===0,'close() leaves no engine process behind');
+}
 
 // Rust service admission validation: each case is a separate offline fixture
 // process, never a per-call execution helper.
 for(const mode of ['kind','slot','generation','source-length','source-encoding','calls','memory','deadline','reply','cancel','replay']) {
   let resolveReady!:()=>void,failReady!:(e:Error)=>void;
   const ready=new Promise<void>((resolve,reject)=>{resolveReady=resolve;failReady=reject;});
-  const channel=new SharedChannel(m=>{if(m.kind===IPC.ready)resolveReady();},e=>failReady(e));
-  const child=spawn(binary,['ipc',snapshot,'1','1'],{stdio:['ignore','ignore','pipe',...channel.fds],env:{PATH:'/usr/bin:/bin'}});
+  const {child,channel}=engine(linux?['ipc',snapshot,'1','1']:['ipc',snapshot,'1'],m=>{if(m.kind===IPC.ready)resolveReady();},e=>failReady(e));
   child.stderr!.resume();
   const closed=new Promise<number|null>(resolve=>child.once('close',code=>resolve(code)));
   const timer=setTimeout(()=>{child.kill('SIGKILL');failReady(Error('malformed-case timeout'));},3000);
@@ -204,8 +272,9 @@ for(const mode of ['kind','slot','generation','source-length','source-encoding',
     const code=await closed;check(code!==0&&code!==null,`Rust rejects malformed ${mode}`);
   } finally {clearTimeout(timer);child.kill('SIGKILL');channel.close();await closed;}
 }
-// Exercise ring wrap and bidirectional pressure beyond the 64-record capacity.
-{
+// Exercise ring wrap and bidirectional pressure beyond the 64-record capacity
+// (Linux: the memfd queues and the shard's ipc-probe).
+if(linux){
   let resolveReady!:()=>void,resolveAll!:()=>void,rejectAll!:(e:Error)=>void;
   const ready=new Promise<void>(resolve=>{resolveReady=resolve;});
   const all=new Promise<void>((resolve,reject)=>{resolveAll=resolve;rejectAll=reject;});let received=0;
@@ -216,4 +285,4 @@ for(const mode of ['kind','slot','generation','source-length','source-encoding',
   try{await ready;await Promise.all(Array.from({length:2048},(_,i)=>channel.send({kind:IPC.ping,slot:0,generation:0n,id:i+1,bytes:Buffer.alloc(1024,i%256)})));await all;check(received===2048,'shared-memory wrap and backpressure');}
   finally{clearTimeout(timer);child.kill('SIGKILL');channel.close();await closed;}
 }
-console.log(JSON.stringify({suite:'shard',assertions,metrics:metrics.length,status:'PASS'}));
+console.log(JSON.stringify({suite:linux?'shard':'hvf',assertions,metrics:metrics.length,status:'PASS'}));

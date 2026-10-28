@@ -6,7 +6,7 @@ import {failure} from './engine.js';
 import {executionBody} from './code.js';
 import {AdmissionQueue} from './pool.js';
 import {ARENA_CLASSES} from './abi.js';
-import {ABI_VERSION,IPC,SharedChannel,checkReady,monotonicNs,type Message} from './shard-ipc.js';
+import {ABI_VERSION,IPC,PipeChannel,SharedChannel,checkReady,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are gone for the shard's lifetime. */
@@ -37,12 +37,18 @@ export function shardLimits(slots:number):Limits {
       logs:IPC.calls,logBytes:IPC.callBytes,timers:false,arenaBytes:arena.arenaBytes}};
 }
 
+/** The ring engine over the IPC of executor/ipc/ABI.md. On Linux it is the
+ *  KVM shard (kind 'shard': owner threads, shared-memory queues). On macOS
+ *  arm64 it is the HVF engine (kind 'hvf', shard/src/hvf/zygote.rs): the same
+ *  messages over a stream socket to a zygote with one confined engine process
+ *  per slot; `owners` does not apply. Both run the same prepared snapshot
+ *  format, guest kernel and limits. */
 export class ShardBackend implements Engine {
-  readonly kind='shard' as const;
+  readonly kind:'shard'|'hvf'=process.platform==='darwin'?'hvf':'shard';
   readonly limits:Limits;
   readonly ready:Promise<void>;
   readonly child:ChildProcess;
-  private channel:SharedChannel;
+  private channel:Channel;
   private sessions=new Map<number,ShardSession>();
   private queue:AdmissionQueue<ShardSession>;
   private generations:bigint[];
@@ -56,15 +62,21 @@ export class ShardBackend implements Engine {
   private closed=false;
   private readonly onExit=()=>this.child.kill('SIGKILL');
   constructor(readonly options:ShardOptions) {
-    if(process.platform!=='linux')throw Error('shard backend requires Linux');
+    const hvf=process.platform==='darwin';
+    if(process.platform!=='linux'&&!(hvf&&process.arch==='arm64'))throw Error('shard backend requires Linux (KVM) or macOS arm64 (HVF)');
     verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
-    const slots=options.slots??64,owners=options.owners??4;
+    const slots=options.slots??(hvf?8:64),owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
     this.limits=shardLimits(slots);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
-    this.channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));
     // Exactly these descriptors and a credential-free environment are inherited.
-    this.child=spawn(options.binary,['ipc',options.snapshot,String(slots),String(owners)],{stdio:['ignore','ignore','pipe',...this.channel.fds],env:{PATH:'/usr/bin:/bin'}});
+    if(hvf){
+      this.child=spawn(options.binary,['ipc',options.snapshot,String(slots)],{stdio:['ignore','ignore','pipe','pipe'],env:{PATH:'/usr/bin:/bin'}});
+      this.channel=new PipeChannel(this.child.stdio[3] as import('node:stream').Duplex,m=>this.receive(m),e=>this.die(e));
+    }else{
+      const channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));this.channel=channel;
+      this.child=spawn(options.binary,['ipc',options.snapshot,String(slots),String(owners)],{stdio:['ignore','ignore','pipe',...channel.fds],env:{PATH:'/usr/bin:/bin'}});
+    }
     process.once('exit',this.onExit);
     let stderr=0;
     this.child.stderr!.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536)this.die(Error('shard stderr limit'));});
@@ -72,9 +84,13 @@ export class ShardBackend implements Engine {
     this.child.once('close',()=>{process.removeListener('exit',this.onExit);this.die(Error('sandbox exited: shard'));});
     this.startup=setTimeout(()=>this.die(Error('shard startup timeout')),5000);
   }
-  private die(e:Error) {
+  private die(e:Error,graceful=false) {
     if(this.dead)return;this.dead=e;clearTimeout(this.startup);this.rejectReady(e);
-    this.child?.kill('SIGKILL');this.channel?.close();
+    // HVF: closing the socket makes the zygote kill and reap its engine
+    // processes before it exits (no orphans); SIGKILL if it does not, soon.
+    if(graceful&&this.kind==='hvf'&&this.child.exitCode===null&&this.child.signalCode===null)setTimeout(()=>this.child.kill('SIGKILL'),1000).unref();
+    else this.child?.kill('SIGKILL');
+    this.channel?.close();
     for(const s of this.sessions.values())s.failed(e);this.sessions.clear();this.queue.rejectAll(e);
   }
   private receive(m:Message) {
@@ -134,7 +150,7 @@ export class ShardBackend implements Engine {
   async close():Promise<void> {
     if(this.closed)return;this.closed=true;
     const reaped=this.child.exitCode!==null||this.child.signalCode!==null?Promise.resolve():new Promise<void>(resolve=>this.child.once('close',()=>resolve()));
-    this.die(Error('shard backend closed'));await reaped;
+    this.die(Error('shard backend closed'),true);await reaped;
   }
 }
 /** What a session needs from its shard; tests substitute a fake channel. */
