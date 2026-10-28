@@ -6,6 +6,7 @@ import {
   cleanupChild,
 } from "./nested/diagnostics.ts";
 import { runSsh, runQemu } from "./nested/run.ts";
+import { buildSsh } from "./nested/build.ts";
 import { testWatch, watchFixture } from "./nested/test-watch.ts";
 import { suiteMain } from "./suite.ts";
 import {
@@ -43,6 +44,8 @@ async function main(): Promise<void> {
     certify();
   } else if (name === "suite") {
     await suiteMain();
+  } else if (name === "build-ssh") {
+    await buildSsh(String(process.argv[3]), String(process.argv[4]));
   } else if (name === "run-ssh") {
     await runSsh(String(process.argv[3]), String(process.argv[4]));
   } else if (name === "run-qemu") {

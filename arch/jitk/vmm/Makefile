@@ -7,8 +7,10 @@ PROFILE ?= $(CURDIR)/.work/test.sbbin
 JITK_VMM ?=
 SELECT_VMM = vmm="$(JITK_VMM)"; [ -n "$$vmm" ] || vmm=$$(JITK_VMM_BUILD="$(BUILD_DIR)" .work/bin/build --print-binary) || exit 1; \
   [ -x "$$vmm" ] || { echo "vmm: $$vmm is not built; run make -C arch/jitk deps (or make -C arch/jitk/vmm build)" >&2; exit 1; }
-.PHONY: all build test fixtures linux nested
+.PHONY: all build test fixtures nested
 all: build
+# On Linux this is the native build too; from the Mac, the linux suite has
+# kvm-dev build the Linux VMM (../linux/nested/build.ts).
 build: .work/bin/build
 	JITK_VMM_BUILD="$(BUILD_DIR)" .work/bin/build
 fixtures: .work/bin/tests/build-guests
@@ -17,8 +19,6 @@ test: fixtures .work/bin/tests/check .work/bin/build
 	@$(SELECT_VMM); \
 	if [ "$$(uname -s)" = Darwin ]; then echo "$$vmm --compile-profile $(PROFILE)"; "$$vmm" --compile-profile "$(PROFILE)" --images "$(IMAGES)" || exit 1; fi; \
 	echo ".work/bin/tests/check --binary $$vmm"; .work/bin/tests/check --binary "$$vmm" --images "$(IMAGES)" --profile "$(PROFILE)"
-linux:
-	sh build-linux.sh
 nested: .work/bin/tests/nested-kvm
 	.work/bin/tests/nested-kvm
 

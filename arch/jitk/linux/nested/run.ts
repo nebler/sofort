@@ -22,8 +22,9 @@ import { watchRun } from "./watch.ts";
 export function quote(text: string): string {
   return "'" + text.replace(/'/g, "'\\''") + "'";
 }
-export async function runSsh(workArgument: string, log: string): Promise<void> {
-  const work = canonical(workArgument);
+// The existing nested VM's ssh wrapper: JITK_NESTED_SSH, else kvm-dev/ssh.sh
+// beside the repository's common git directory.
+export async function sshWrapper(): Promise<string> {
   let ssh = process.env.JITK_NESTED_SSH || "";
   if (ssh) {
     ssh = canonical(ssh);
@@ -46,13 +47,22 @@ export async function runSsh(workArgument: string, log: string): Promise<void> {
     existsSync(ssh),
     "existing nested VM required: set JITK_NESTED_SSH to its ssh wrapper; see linux/README.md",
   );
+  return ssh;
+}
+// A per-checkout, per-process scratch directory under JITK_NESTED_SSH_DIR.
+export function remoteScratch(suffix = ""): string {
   const identity = digest(Buffer.from(ROOT)).slice(0, 12);
   const remoteRoot = process.env.JITK_NESTED_SSH_DIR || "/home/dev/jitk-suite";
   check(
     remoteRoot.startsWith("/") && !remoteRoot.split("/").includes(".."),
     "JITK_NESTED_SSH_DIR must be an absolute remote scratch directory",
   );
-  const remote = remoteRoot + "/" + identity + "-" + process.pid;
+  return remoteRoot + "/" + identity + "-" + process.pid + suffix;
+}
+export async function runSsh(workArgument: string, log: string): Promise<void> {
+  const work = canonical(workArgument);
+  const ssh = await sshWrapper();
+  const remote = remoteScratch();
   await run([ssh, "mkdir -p " + quote(remote)], { timeout: 20 });
   const files: { source: string; name: string }[] = [
     { source: join(ROOT, "build/linux/linux-tools"), name: "linux-tools" },

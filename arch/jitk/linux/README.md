@@ -25,12 +25,28 @@ the small C helpers. Fault assembly is read from `../vmm/tests/fixtures/`;
 Linux keeps no copies. Paths derive from the script location, so a complete
 kit copy works regardless of its directory name.
 Requires a running approved kvm-dev VM with passwordless sudo, cgroup v2
-memory+cpu controllers and flock; Docker for a fresh VMM build; existing
-Rust 1.95.0 + aarch64-unknown-none, clang, ld.lld, llvm-objcopy, Node/npm for
-scriptc 0.4.5 and Zig on the Mac. `docker-build.sh` first cross-compiles
-`vmm/.work/linux/build` as static aarch64 musl, then mounts the VMM tree
-read-only and runs that tool in `rust:1.95-slim`. Neither the build container
-nor either guest harness requires Python. The runner finds `kvm-dev/ssh.sh` in the main Git checkout, including
+memory+cpu controllers, flock, `cc`, git, make and rustup with the
+`tools/deps.json` `rust_toolchain` pin; on the Mac, that pin +
+aarch64-unknown-none, clang, ld.lld, llvm-objcopy, Node/npm for scriptc 0.4.5
+and Zig. No Docker. `tool.sh build-ssh` (`nested/build.ts`) cross-compiles
+`vmm/.work/linux/build` as static aarch64 musl, ships it with the VMM's
+fingerprinted inputs, `build-linux.sh` and the probe sources to a scratch
+directory on kvm-dev, and runs `build-linux.sh` there under
+`flock -w 600 /home/dev/bench.lock`. The VMM lands in kvm-dev's jitk cache
+(`JITK_NESTED_CACHE` selects another), keyed by the same input fingerprint as
+`make deps` on that host, so unchanged inputs are not rebuilt.
+`jitk-vmm`, `build.json`, `spawn-cg`, `seccomp-probe` and the BPF filters come
+back into `JITK_WORK`, and `build-command.json` records the shipped hashes.
+Compared with the former `rust:1.95-slim` container: the libkrun commit,
+patch set, rustc flags, `panic=abort`, path remap, `sandbox_ready` cfg and the
+rustc pin (`RUSTUP_TOOLCHAIN` from deps.json, now via kvm-dev's rustup) are
+unchanged, and the Cargo registry is kvm-dev's `~/.cargo` instead of a
+container-private one.
+What is no longer pinned is the host C toolchain and glibc: libkrun's C parts,
+the final link and `spawn-cg` use kvm-dev's Ubuntu gcc/glibc instead of the
+image's Debian ones. The binary runs on that host, so this is a provenance
+change, not a compatibility one. Neither the build nor either guest harness
+requires Python. The runner finds `kvm-dev/ssh.sh` in the main Git checkout, including
 from worktrees. `JITK_NESTED_SSH=/absolute/path/to/ssh-wrapper` selects another
 existing equivalent VM; the wrapper accepts one remote shell command.
 It only creates a unique directory under `/home/dev/jitk-suite/`, runs under
