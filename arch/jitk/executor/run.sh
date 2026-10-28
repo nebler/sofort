@@ -37,8 +37,9 @@ case "${1:-test}" in
   if [ "${JITK_SHARD_TEST:-}" = ssh ]; then make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh; else "$TASK_NODE" build/shard-check.js; fi
   ;;
  parity) "$TASK_NODE" build/parity-check.js ;;
+ parity-compare) "$TASK_NODE" build/parity-check.js compare .work/parity/*.json ;;
  certify) "$TASK_NODE" certify.mjs ;;
  demo) "$TASK_NODE" build/demo.js ;;
  bench) "$TASK_NODE" build/breakdown.js ;;
- *) echo 'usage: run.sh [build|test|shard-test|parity|demo|bench]' >&2; exit 2;;
+ *) echo 'usage: run.sh [build|test|shard-test|parity|parity-compare|demo|bench]' >&2; exit 2;;
 esac

@@ -7,9 +7,15 @@ test-shard:
 	./run.sh shard-test
 
 # The backend-parity corpus (parity/README.md) on this host's backends.
-.PHONY: parity
+# parity-ssh (Mac): `make test-linux` on kvm-dev, then this host's corpus and
+# the cross-host compare of both reports in .work/parity/.
+.PHONY: parity parity-ssh
 parity:
 	./run.sh parity
+parity-ssh: .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer
+	JITK_SSH_TARGET=test-linux .work/bin/ipc/run-ssh
+	./run.sh parity
+	./run.sh parity-compare
 
 TS_TOOLS := ipc/run-ssh.ts ipc/measure-helpers.ts ipc/summarize-helpers.ts fixtures/shard-peer.ts
 include ../tools/scriptc.mk

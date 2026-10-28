@@ -61,7 +61,7 @@ test: deps
 # cross-host compare. On a shared host set JITK_BENCH_LOCK (kvm-dev:
 # /home/dev/bench.lock) so the KVM timing tests do not overlap a benchmark.
 test-linux: deps
-	@[ "$$(uname -s)" = Linux ] || { echo 'test-linux needs a Linux arm64 KVM host (from the Mac: tools/test-linux-ssh.sh)' >&2; exit 2; }
+	@[ "$$(uname -s)" = Linux ] || { echo 'test-linux needs a Linux arm64 KVM host (from the Mac: make -C executor parity-ssh)' >&2; exit 2; }
 	+@$(MAKE) -s -C "$(ROOT)/shard" snapshot
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) protocol build
