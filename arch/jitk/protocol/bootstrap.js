@@ -84,6 +84,13 @@ globalThis.console=Object.freeze(Object.fromEntries(['log','info','warn','error'
 globalThis.print=logger('log');
 globalThis.setTimeout=(fn,ms,...args)=>os.setTimeout(()=>fn(...args),ms);
 globalThis.clearTimeout=os.clearTimeout;
+globalThis.setInterval=(fn,ms,...args)=>{
+  const h={};
+  const tick=()=>{h.t=os.setTimeout(tick,ms);fn(...args);};
+  h.t=os.setTimeout(tick,ms);
+  return h;
+};
+globalThis.clearInterval=h=>{if(h&&h.t!==undefined)os.clearTimeout(h.t);};
 
 function receive(m) {
   if (m.t==='run' && state==='parked') {
