@@ -7,7 +7,7 @@ import {MicroVMExecutor,SandboxPool,ProcessBackend} from './executor.js';
 const rows:any[]=[],loadBefore=execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim();
 for(const mode of ['badready','del','trailing','duplicate','unknown','replay']) {
  let effects=0,policies=0;
- const backend=new ProcessBackend('local-qjs',process.execPath,[fileURLToPath(new URL('../fixtures/protocol-peer.mjs',import.meta.url)),mode]);
+ const backend=new ProcessBackend('process',process.execPath,[fileURLToPath(new URL('../fixtures/protocol-peer.mjs',import.meta.url)),mode]);
  const pool=new SandboxPool(backend,0,1),ex=new MicroVMExecutor(pool,()=>{policies++;return 'allow';});
  try {
   const r=await ex.execute('return 2',[{name:'api',fns:{effect:async()=>++effects}}]);

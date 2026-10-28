@@ -5,7 +5,7 @@ import {writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {ProcessBackend} from './backend.js';
 const loadBefore=execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim();
-const backend=new ProcessBackend('local-qjs',process.execPath,[fileURLToPath(new URL('../fixtures/protocol-peer.mjs',import.meta.url)),'watchdog'],32,{lifetimeMs:5000});
+const backend=new ProcessBackend('process',process.execPath,[fileURLToPath(new URL('../fixtures/protocol-peer.mjs',import.meta.url)),'watchdog'],32,{lifetimeMs:5000});
 const s=await backend.park();
 try {
   const deadline=Date.now()+250;

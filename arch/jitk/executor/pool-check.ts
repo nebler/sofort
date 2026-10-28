@@ -10,7 +10,7 @@ const tick=()=>new Promise(r=>setImmediate(r));
 class Fake implements Backend {
   readonly memoryLimitMB=32;
   activeStarts=0;maxStarts=0;instances:(Sandbox&{reap:()=>void;kills:number})[]=[];dead?:Error;
-  constructor(readonly autoReap=true,readonly kind:Backend['kind']='local-qjs',readonly startMs=10,readonly reapMs=20){}
+  constructor(readonly autoReap=true,readonly kind:Backend['kind']='process',readonly startMs=10,readonly reapMs=20){}
   async park(signal?:AbortSignal):Promise<Sandbox> {
     if(this.dead)throw this.dead;
     this.activeStarts++;this.maxStarts=Math.max(this.maxStarts,this.activeStarts);

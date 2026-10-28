@@ -2,7 +2,7 @@ import {receiptPath} from './receipt-path.js';
 import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {JitkBackend,LocalProcessQjsBackend,type Backend} from './backend.js';
+import {JitkBackend,type Backend} from './backend.js';
 import {ShardBackend} from './shard-backend.js';
 import type {ParkingGate} from './pool.js';
 // Every emitted entry lives in executor/build; no checkout-name assumptions.
@@ -22,10 +22,6 @@ function artifactPath(dir:string,keys:string[],defaults:string[],env:string):str
 }
 export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:string;integrated:boolean} {
   const selected=process.env.JITK_BACKEND??'jitk';
-  if(selected==='local-qjs'){
-    if(!process.env.QJS)throw Error('UNSAFE local-qjs requires QJS=/absolute/path/to/qjs');
-    return {backend:new LocalProcessQjsBackend(process.env.QJS),selection:'UNSAFE local-qjs',integrated:false};
-  }
   if(selected==='shard'){
     if(process.platform!=='linux')throw Error('shard backend requires Linux');
     const binary=process.env.JITK_SHARD_BINARY??jitk+'shard/target/release/real';
