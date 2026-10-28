@@ -52,7 +52,7 @@ export function layer(rel: string): string {
   if (parts.slice(0, -1).some((part) => EVIDENCE.test(part))) return 'evidence';
   if (parts[0] === 'abi' && !rel.startsWith('abi/src/bin/')) return 'abi';
   if (rel.startsWith('kernel/src/') || rel.startsWith('shard/guest/') || rel.startsWith('shard/fixtures/') || GUEST_FILES.includes(rel)) return 'guest';
-  if ((rel.startsWith('shard/src/') && rel.endsWith('.rs')) || rel.startsWith('vmm/src/') || rel === 'vmm/sandbox/mod.rs' || rel === 'vmm/sandbox/jitk.sb') return 'engine';
+  if ((rel.startsWith('shard/src/') && rel.endsWith('.rs')) || rel.startsWith('vmm/src/') || rel === 'vmm/sandbox/mod.rs' || rel === 'vmm/sandbox/jitk.sb' || rel === 'shard/src/hvf/zygote.sb') return 'engine';
   if (parts[0] === 'executor' || parts[0] === 'protocol' || parts[0] === 'mcp') return 'host';
   return 'research';
 }
