@@ -1,7 +1,8 @@
 #!/bin/sh
 set -eu
 cd "$(dirname "$0")"
-RUST_TOOLCHAIN=$(sh ../tools/rust-toolchain.sh)
+# The deps.json pin; callers building a copy of this tree outside arch/jitk pass it.
+RUST_TOOLCHAIN=${RUST_TOOLCHAIN:-$(sh ../tools/rust-toolchain.sh)}
 cargo "+$RUST_TOOLCHAIN" fmt --check
 make -s .work/bin/format .work/bin/build-checks .work/bin/arch-lint .work/bin/prepare .work/bin/build-args
 .work/bin/format --check

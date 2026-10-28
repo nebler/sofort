@@ -131,6 +131,7 @@ export async function buildKernel(): Promise<void> {
     CARGO_TARGET_DIR: join(WORK, "kernel-target"),
     JITK_OUT_DIR: WORK,
     JITK_TOOLS_DIR: canonical(tools),
+    RUST_TOOLCHAIN: String(JSON.parse(read(join(ROOT, "../tools/deps.json"))).rust_toolchain),
   });
   if (process.platform === "linux") {
     variables.OBJCOPY = "llvm-objcopy";

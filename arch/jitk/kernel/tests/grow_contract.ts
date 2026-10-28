@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { workspace, copyTree, environment, run, capture, check, dump, readJSON } from '../lib.ts';
 import { ROOT as area, HOST, uptime } from './measure.ts';
+import { pins } from '../../tslib/deps.ts';
 const root = resolve(import.meta.dirname, '..');
 const work = workspace('JITK_GROW_CONTRACT_WORK', 'grow-contract');
 const copy = join(work, 'kernel');
@@ -29,6 +30,7 @@ async function build(name: string, asm: string): Promise<string> {
   env.CARGO_TARGET_DIR = join(work, 'target');
   env.JITK_OUT_DIR = join(work, name);
   env.JITK_TOOLS_DIR = join(root, '.work/bin');
+  env.RUST_TOOLCHAIN = pins().rust_toolchain;
   await run(['sh', join(copy, 'build.sh'), '--features', 'grow-trace'], { env });
   return join(work, name, 'kernel.bin');
 }

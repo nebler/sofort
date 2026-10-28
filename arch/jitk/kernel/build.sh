@@ -3,7 +3,8 @@ set -eu
 # --resources DIR packs DIR read-only as the guest's / (same as JITK_RESOURCES=DIR).
 if [ "${1:-}" = --resources ]; then JITK_RESOURCES=$(cd "$2" && pwd); export JITK_RESOURCES; shift 2; fi
 cd "$(dirname "$0")"
-RUST_TOOLCHAIN=$(sh ../tools/rust-toolchain.sh)
+# The deps.json pin; callers building a copy of this tree outside arch/jitk pass it.
+RUST_TOOLCHAIN=${RUST_TOOLCHAIN:-$(sh ../tools/rust-toolchain.sh)}
 if [ -z "${JITK_TOOLS_DIR:-}" ]; then
   make -s .work/bin/prepare .work/bin/build-args .work/bin/artifact
   JITK_TOOLS_DIR=$PWD/.work/bin

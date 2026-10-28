@@ -1,7 +1,8 @@
 #!/bin/sh
 set -eu
 cd "$(dirname "$0")"
-RUST_TOOLCHAIN=$(sh ../tools/rust-toolchain.sh)
+# The deps.json pin; callers building a copy of this tree outside arch/jitk pass it.
+RUST_TOOLCHAIN=${RUST_TOOLCHAIN:-$(sh ../tools/rust-toolchain.sh)}
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$PWD/target-ring}
 export JITK_ELF=${JITK_ELF:-$PWD/payload/qjs-ring}
 if [ ! -f "$JITK_ELF" ]; then
