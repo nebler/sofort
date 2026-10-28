@@ -11,7 +11,6 @@ pub mod entropy;
 pub mod inputs;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod ipc;
-pub mod ipc_json;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod ipc_service;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
@@ -20,5 +19,6 @@ pub mod kvm;
 pub mod lease;
 #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
 pub mod owner;
+pub mod payload;
 pub mod snapshot;
 pub mod streams;

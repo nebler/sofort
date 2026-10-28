@@ -2,9 +2,9 @@
 //! or policy rules live here; only admission and transport bounds are checked.
 use crate::{
     ipc::{self, Endpoint, Message},
-    ipc_json,
     kvm::{self, Kvm, Request, Snapshot},
     owner::{Event, Job, Mode, Pool},
+    payload,
 };
 use std::{collections::VecDeque, io, sync::Arc};
 const MAX_SLOTS: usize = 64;
@@ -197,8 +197,9 @@ impl Reactor {
                 if m.generation != s.generation
                     || m.id == 0
                     || m.id > 32
+                    || m.bytes.is_empty()
                     || m.bytes.len() > 1024
-                    || !ipc_json::reply(&m.bytes)
+                    || !payload::printable(&m.bytes)
                 {
                     return Err(invalid("IPC reply schema/generation"));
                 }
@@ -258,11 +259,12 @@ impl Reactor {
                 if s.phase != Phase::Running {
                     return Err(invalid("IPC owner call state"));
                 }
+                // Owners forward only bounded printable calls (payload::forwarded);
+                // a mismatch here is a shard bug, so it fails the whole service.
                 for request in requests {
                     if request.id != s.next
                         || request.id > 32
-                        || request.bytes.len() > 1024
-                        || !ipc_json::request(&request.bytes)
+                        || !payload::forwarded(crate::constants::ring::CALL, &request.bytes)
                     {
                         return Err(invalid("IPC guest call schema/id"));
                     }

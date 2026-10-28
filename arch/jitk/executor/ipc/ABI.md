@@ -34,8 +34,8 @@ the entire shard connection closed.
 | Node START=1 | id=0; deadline monotonic ns u64, call cap u32=32, call bytes u32=1024, source bytes u32<=8192, memory reservation u32=2097152, exact ASCII source bytes; deadline no more than 60 s ahead |
 | Node REPLY=2 | physical id 1..32, exactly one `{"ok":value}` or `{"err":{"code":...,"message":...}}`, escaped ASCII JSON <=1024 bytes |
 | Node CANCEL=3 | id=0, no payload; reset before RELEASED; reserved but unstarted slots can release directly |
-| Shard CALL=16 | physical id 1..32 in sequence, <=1024-byte JSON array `["call",namespace,function,args]` or `["log",level,message]` |
-| Shard DONE=17 | id=0, <=16352-byte JSON `{"ok":value}` or `{"err":{"name":...,"message":...}}`; no outstanding calls |
+| Shard CALL=16 | physical id 1..32 in sequence, <=1024 printable ASCII bytes; Node requires JSON `["call",namespace,function,args]` or `["log",level,message]` |
+| Shard DONE=17 | id=0, <=16352 printable ASCII bytes, no outstanding calls; Node requires JSON `{"ok":value}` or `{"err":{"name":...,"message":...}}` |
 | Shard ERROR=18 | id=0, <=512 diagnostic bytes; lease failure/memory bound/fatal guest |
 | Shard RELEASED=19 | id=0, no payload; owner has completed stopped reset, slot may admit its next generation |
 | Shard READY=20 | empty, once per connection after loading snapshot and starting owners/watchdog |
@@ -45,11 +45,16 @@ PING=21 is only accepted by the offline `ipc-probe echo` executable mode; it
 never admits a VM or grants guest access. Tests use it to exercise queue wrap
 and pressure. The production reactor rejects it.
 
-Rust checks admission fields, current generations/phases, reply identities and
-bounded duplicate-free JSON (depth<=32, structural nodes<=4096). Node additionally
-uses the canonical protocol dispatcher for scalar Unicode, duplicate keys,
-JSON numbers, schemas, outstanding calls, wire budgets and frame order, then
-canonical executor policy for every actual tool. Log records get only a null
+Rust checks admission fields, current generations/phases, reply identities,
+payload lengths and printable ASCII; it forwards CALL/DONE/REPLY JSON opaquely
+and never parses it. Node is the only JSON authority: the canonical protocol
+dispatcher checks grammar, depth, scalar Unicode, duplicate keys, JSON numbers,
+schemas, outstanding calls, wire budgets and frame order, then canonical
+executor policy runs for every actual tool. A guest payload that fails those
+checks fails only its own sandbox (Node sends CANCEL for that generation);
+envelope, identity, order and state violations still close the whole shard
+connection. `protocol/guest-payloads.json` is the shared acceptance corpus for
+both sides' tests. Log records get only a null
 acknowledgement. Logical tool IDs exclude logs; Node privately maps them back
 to physical ring IDs. Oversized provider replies become a bounded LIMIT error.
 

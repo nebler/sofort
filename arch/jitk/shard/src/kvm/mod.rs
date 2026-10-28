@@ -459,8 +459,7 @@ impl Slot {
                     if !(1..=ring::MAX_CALLS).contains(&id)
                         || id != u64::from(self.seen.count_ones()) + 1
                         || cap != 1
-                        || n > ring::CALL_BYTES
-                        || !crate::ipc_json::arguments(&payload)
+                        || !crate::payload::forwarded(ring::CALL, &payload)
                     {
                         return Err(RunError::GuestProtocol("call identity/schema"));
                     }
@@ -476,10 +475,10 @@ impl Slot {
                     {
                         return Err(RunError::GuestProtocol("completion identity/order"));
                     }
-                    finish = Some(
-                        String::from_utf8(payload)
-                            .map_err(|_| RunError::GuestProtocol("completion UTF-8"))?,
-                    );
+                    if !crate::payload::forwarded(ring::DONE, &payload) {
+                        return Err(RunError::GuestProtocol("completion bytes"));
+                    }
+                    finish = Some(payload.into_iter().map(char::from).collect());
                 }
                 ring::LOG => {
                     if id != 0 || cap != 0 {
@@ -716,8 +715,24 @@ mod tests {
         record(&s, 5, 0, b"\xff");
         assert!(matches!(
             s.decode_exit(3),
-            Err(RunError::GuestProtocol("completion UTF-8"))
+            Err(RunError::GuestProtocol("completion bytes"))
         ));
+        // Shared Node/shard corpus through the real decoder: only "shard" rows
+        // stop here, as slot-scoped guest errors. Everything else is opaque.
+        for (kind, name, outcome, payload) in crate::payload::tests::corpus() {
+            let mut s = slot();
+            record(&s, kind, u64::from(kind == ring::CALL), &payload);
+            let op = if kind == ring::CALL {
+                ring::SUBMIT
+            } else {
+                ring::FINISH
+            };
+            match s.decode_exit(op) {
+                Ok(_) => assert_ne!(outcome, "shard", "{name}"),
+                Err(RunError::GuestProtocol(_)) => assert_eq!(outcome, "shard", "{name}"),
+                Err(e) => panic!("{name}: {e}"),
+            }
+        }
         for cursor in [1, 8, 32776, u64::MAX] {
             let mut s = slot();
             s.store(ring::TX_PRODUCER, cursor);
@@ -727,7 +742,7 @@ mod tests {
             (1, 0, &b"[]"[..]),
             (1, 33, &b"[]"[..]),
             (1, 2, &b"[]"[..]),
-            (1, 1, &b"[bad]"[..]),
+            (1, 1, &b"[\x01]"[..]),
             (1, 1, &b"[\xff]"[..]),
             (5, 0, &b"\xff"[..]),
             (99, 0, &b""[..]),

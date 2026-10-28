@@ -1,7 +1,7 @@
 # jitk-shard: device-free nested-KVM spike
 
 `jitk-shard` is a library with two CLI entry points. `snapshot`, `arena`,
-`inputs`, `ipc_json`, `streams` and `entropy` are portable; `kvm`, `owner`,
+`inputs`, `payload`, `streams` and `entropy` are portable; `kvm`, `owner`,
 `lease`, `clock`, `ipc` and `ipc_service` contain the Linux arm64 runtime. Shard-local
 layout and UAPI constants live in `constants`. Offline preparation, fixtures,
 probes and measurement drivers belong to the binaries under `src/bin/harness`
