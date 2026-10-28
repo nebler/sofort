@@ -14,6 +14,10 @@ export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$PWD/target}
 export JITK_OUT_DIR=${JITK_OUT_DIR:-$PWD/dist}
 mkdir -p "$JITK_OUT_DIR"
 cargo "+$RUST_TOOLCHAIN" build --locked --offline --release --target aarch64-unknown-none "$@"
-OBJCOPY=${OBJCOPY:-/opt/homebrew/opt/llvm@22/bin/llvm-objcopy}
+# Homebrew's LLVM on the Mac; PATH llvm-objcopy elsewhere (as build-ring.sh).
+if [ -z "${OBJCOPY:-}" ]; then
+  OBJCOPY=/opt/homebrew/opt/llvm@22/bin/llvm-objcopy
+  [ -x "$OBJCOPY" ] || OBJCOPY=llvm-objcopy
+fi
 "$OBJCOPY" -O binary "$CARGO_TARGET_DIR/aarch64-unknown-none/release/jitk-02" "$JITK_OUT_DIR/kernel.bin"
 JITK_ARTIFACT_ROOT="$PWD" "$JITK_TOOLS_DIR/artifact" "$CARGO_TARGET_DIR/aarch64-unknown-none/release/jitk-02" "$JITK_OUT_DIR"
