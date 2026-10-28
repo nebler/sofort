@@ -122,6 +122,8 @@ export const CASES:Case[]=[
   {id:'t-calls-over-budget',source:'targeted: IPC.calls',code:`let n=0;for(let i=0;i<${IPC.calls+1};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:IPC.calls+1}},
   // Targeted: timers (the ring profile has none)
   {id:'t-timer',source:'targeted: timers',code:'await new Promise(r=>setTimeout(r,5));return 1',expect:{ok:1}},
+  {id:'t-timer-zero',source:'targeted: timers',code:'await new Promise(r=>setTimeout(r,0));return 1',expect:{ok:1}},
+  {id:'t-clock-advances',source:'targeted: clocks (CUTOVER-PLAN §2.4)',code:'const a=Date.now();let i=0;while(Date.now()-a<20&&i<1e8)i++;return Date.now()-a>=20',expect:{ok:true}},
   {id:'t-timer-typeof',source:'targeted: timers',code:'return [typeof setTimeout,typeof clearTimeout]',expect:{ok:['function','function']}},
   // Targeted: tenant source (ring::SOURCE_LIMIT includes the trusted adapters) and LIMIT.code
   {id:'t-source-at-limit',source:'targeted: IPC.sourceBytes',code:atSource.code,expect:{ok:atSource.k}},

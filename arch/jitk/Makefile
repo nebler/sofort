@@ -66,7 +66,9 @@ test-linux: deps
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) protocol build
 	+@$(DELEGATE) executor dependencies
-	+@$(DELEGATE) executor parity
+	@# The image just built from this tree: kernel/.READY records the Mac build's
+	@# hash, and a Linux-hosted build lays out a few functions differently.
+	+@JITK_KERNEL_IMAGE="$(ROOT)/kernel/dist/kernel.bin" $(DELEGATE) executor parity
 	+@$(MAKE) -s -C "$(ROOT)/shard" test
 	+@if [ -n "$$JITK_BENCH_LOCK" ]; then flock -w "$${JITK_SHARD_LOCK_WAIT:-600}" "$$JITK_BENCH_LOCK" $(MAKE) -s -C "$(ROOT)/shard" test-kvm; else $(MAKE) -s -C "$(ROOT)/shard" test-kvm; fi
 bench: deps

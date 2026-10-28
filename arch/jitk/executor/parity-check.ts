@@ -156,13 +156,15 @@ export function evaluate(report:Report,cases:Case[]=CASES,allow:Difference[]=ALL
   for(const d of allow)if(!byCase.has(d.case))failures.push(`allowlist: unknown case ${d.case}`);
   const rows:string[][]=[['case',...labels]];
   const used=new Set<Difference>();
+  // Labels are `<platform>/<kind>` (a compare may suffix `#n`).
+  const covers=(d:Difference,label:string)=>d.backends.includes(report.backends[label]!.kind)&&(!d.platforms||d.platforms.includes(label.split('/')[0]!));
+  const entry=(id:string,label:string)=>allow.find(d=>d.case===id&&covers(d,label));
   for(const c of cases){
     const row=[c.id];
     for(const label of labels){
-      const {kind,cases:outcomes}=report.backends[label]!;
-      const o=outcomes[c.id];
+      const o=report.backends[label]!.cases[c.id];
       if(!o){row.push('-');continue;}
-      const d=allow.find(d=>d.case===c.id&&d.backends.includes(kind));
+      const d=entry(c.id,label);
       if(d)used.add(d);
       if(satisfies(o,c.expect)){
         row.push('ok');
@@ -179,11 +181,9 @@ export function evaluate(report:Report,cases:Case[]=CASES,allow:Difference[]=ALL
   for(const c of cases)for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++){
     const [a,b]=[labels[i]!,labels[j]!];const [oa,ob]=[report.backends[a]!.cases[c.id],report.backends[b]!.cases[c.id]];
     if(!oa||!ob||key(oa)===key(ob))continue;
-    const documented=[a,b].some(l=>allow.some(d=>d.case===c.id&&d.backends.includes(report.backends[l]!.kind)));
-    if(!documented)failures.push(`${a} vs ${b} ${c.id}: undocumented difference ${key(oa)} != ${key(ob)}`);
+    if(!entry(c.id,a)&&!entry(c.id,b))failures.push(`${a} vs ${b} ${c.id}: undocumented difference ${key(oa)} != ${key(ob)}`);
   }
-  const ran=new Set(Object.values(report.backends).map(b=>b.kind));
-  const unchecked=allow.filter(d=>!used.has(d)&&d.backends.some(k=>ran.has(k)));
+  const unchecked=allow.filter(d=>!used.has(d)&&labels.some(l=>covers(d,l)));
   for(const d of unchecked)failures.push(`allowlist: ${d.case} for ${d.backends.join(',')} was not exercised`);
   const width=rows[0]!.map((_,i)=>Math.max(...rows.map(r=>r[i]!.length)));
   for(const r of rows)console.log(r.map((x,i)=>x.padEnd(width[i]!)).join('  ').trimEnd());
