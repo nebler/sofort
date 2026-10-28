@@ -228,12 +228,17 @@ tests under the bench lock (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`).
 On a Linux host, `sh ipc/shard-host.sh` is the same check without SSH. It never
 manages the VM lifecycle. Mac `make test` without this opt-in stays unchanged.
 
-The ring profile has smaller source, call, reply and live-memory bounds than
-libkrun. Small codec values, Unicode, concurrent tools, structured tool errors
-and console logs are supported through adapters. Clocks during uninterrupted
-CPU work, timers, `/cap`, large values, cancellation of a busy vCPU and broad
-shadow parity remain cutover blockers. The exact test/parity table and nested
-measurements are in [RESULTS-R7-ipc.md](../shard/RESULTS-R7-ipc.md).
+Since ABI 11 the ring profile has libkrun's source (LIMIT.code), call
+(4,096 per run, 64 open, 2 MiB in flight), reply and completion (LIMIT.frame)
+and log (1,024 lines, one-way) bounds and its timers (setTimeout,
+setInterval and their clear functions); messages stream over the fixed rings
+and IPC records (`../shard/ABI-R7.md`). What still differs is live memory:
+the glue-2m arena leaves a run about 400 KiB of heap, so values much past
+64 KiB (a reply, a 50 KiB call echoed back, a 70 KiB completion) end in a
+QuickJS out-of-memory error, where libkrun has 16 MiB (parity: `b-json1m`,
+`t-memory-over-arena`). `/cap`, cancellation of a busy vCPU and broad shadow
+parity remain cutover blockers. Older measurements are in
+[RESULTS-R7-ipc.md](../shard/RESULTS-R7-ipc.md).
 
 ## Experimental macOS HVF engine (R10 #10)
 
@@ -279,8 +284,8 @@ gate (`SandboxPool` `parkingGate`). `./run.sh hvf-parking-gate`
 (`hvf-parking-gate.ts`, offline) measures the HVF engine as kernel/.READY's G1
 measures a libkrun VM: every slot parked for 10 s (CPU of the zygote and all
 engine processes by `ps`, below 2% of a core), then 1000 checked tool-call
-exchanges through the executor, 32 per run (the ring profile's call budget;
-libkrun's G1 run carries all 1000) with a 3 s parked-in-WAIT pause every
+exchanges through the executor (one run since ABI 11's 4,096-call budget, as
+libkrun's G1 run; 32 per run before) with a 3 s parked-in-WAIT pause every
 100th. It writes `.work/hvf-parking-gate.json` (`JITK_RECORD=1`:
 `hvf-parking-gate.json` here), binding the engine binary's sha256, the
 snapshot's `.identity` sha256 and the slots. `select-backend` (so the MCP

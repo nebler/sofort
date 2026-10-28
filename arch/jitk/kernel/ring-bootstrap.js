@@ -104,11 +104,15 @@ const run=Object.freeze({generation:String(dv.getBigUint64(0,true)),
 // shardWire). read(0) blocks for each record and returns 0 at its end. One
 // streaming decode, so the arena holds the text once.
 let text='', data, units=[], need=0, cp=0;
-const flush=()=>{
-  if(!units.length) return;
-  const s=String.fromCharCode(...units); units=[];
-  if(data===undefined) text+=s; else data+=s;
+const put=s=>{
+  if(data===undefined) {
+    const z=s.indexOf('\0');
+    if(z<0) { text+=s; return; }
+    text+=s.slice(0,z); data=''; s=s.slice(z+1);
+  }
+  data+=s;
 };
+const flush=()=>{ if(units.length) { put(String.fromCharCode(...units)); units=[]; } };
 for(let n;(n=os.read(0,record,0,record.byteLength))>0;) {
   for(let i=0;i<n;i++) {
     const c=bytes[i];
