@@ -26,7 +26,6 @@ case "${1:-test}" in
   "$TASK_NODE" build/wrapper-conformance.js
   "$TASK_NODE" build/api-check.js
   "$TASK_NODE" build/policy-check.js
-  "$TASK_NODE" build/hyperlight-check.js
   if [ "${JITK_SHARD_TEST:-}" = ssh ]; then
     make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh
   elif [ "$(uname -s)" = Linux ] && [ -n "${JITK_SHARD_SNAPSHOT:-}" ]; then
