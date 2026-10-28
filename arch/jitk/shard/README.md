@@ -1,10 +1,11 @@
 # jitk-shard: device-free nested-KVM spike
 
 `jitk-shard` is a library with two CLI entry points, `real` (Linux) and `hvf`
-(macOS). `snapshot`, `arena`, `inputs`, `payload`, `streams`, `entropy`, `hv`
-and `slot` are portable; `kvm`, `owner`, `lease`, `ipc` and `ipc_service`
-contain the Linux arm64 runtime, `hvf` the macOS backend (see "Hypervisor
-seam" below). Shard-local UAPI constants live in `constants`, which re-exports
+(macOS). `snapshot`, `arena`, `inputs`, `payload`, `streams`, `entropy`, `hv`,
+`slot` and `service` (the IPC record and per-slot state machine) are portable;
+`kvm`, `owner`, `lease`, `ipc` and `ipc_service` contain the Linux arm64
+runtime, `hvf` the macOS backend and engine (see "Hypervisor seam" and "HVF
+engine" below). Shard-local UAPI constants live in `constants`, which re-exports
 the ring and IPC ABI from the jitk-abi crate (`../abi`). Offline preparation,
 fixtures, probes and measurement drivers belong to the `real` binary under
 `src/bin/harness` (and `src/bin/hvf.rs`); they are not library modules. (The
@@ -171,12 +172,12 @@ budget and quarantine reasons live in the generic slot, so HVF has them too:
 `Slot::set_clock` registers a `clock::Clock` cell (the owner pool does this on
 Linux; `clock_advances_inside_a_run` checks it on HVF), and
 `Slot::quarantine_reason` is what the IPC QUARANTINED message carries
-(`failed_reset_quarantines_with_reason`). HVF has no IPC loop yet (phase 2),
-so nothing sends QUARANTINED there.
+(`failed_reset_quarantines_with_reason`); on HVF the engine child sends it
+(below).
 
 On macOS arm64, `make snapshot` builds the same two classes as on Linux, prepared
-by the `hvf` tool (darwin-arm64 cache entries; `.mem` has KVM's format, `.regs`
-is HVF's). `make test-hvf` runs `src/hvf/tests.rs` on them (~4 s warm; signed
+by the `hvf` binary from `make -C .. deps` (darwin-arm64 cache entries; `.mem`
+has KVM's format, `.regs` is HVF's). `make test-hvf` runs `src/hvf/tests.rs` on them (~4 s warm; signed
 by `hvf-run.sh`): corpus `return 2` / `one_tool` with a byte+register verify
 after every reset, the spike's leak mix (globals, arena dirtying, OOM, canaries),
 `kick`, the hostile cache-off check, non-executable writable extents, the
@@ -227,6 +228,70 @@ the CHECKPOINT doorbell returns. KVM has no per-memslot execute control, and
 its copy path keeps the physical pages, so a tenant's arena code can survive in
 the I-cache there too, unless the CPU has CTR_EL0.DIC. A kernel `ic ialluis`
 would close both. Not done here: it would change `kernel/.READY`.
+
+## HVF engine (`hvf ipc`, R10 #10 phase 2)
+
+`hvf ipc SNAPSHOT_BASE SLOTS [POLICY]` is the Mac engine the executor drives
+as `JITK_BACKEND=hvf` (`../executor/README.md`). It speaks the Linux shard's
+IPC (`service.rs`: the record envelope and the per-slot state machine that
+`ipc_service` also runs) over a stream socket on fd 3.
+
+```
+Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a VM)
+  PipeChannel                   │ per-slot service::State on both sides,
+                                │ escalation timer, reaps children
+                                ├─socketpair─> engine process, slot 0 (hvf/child.rs)
+                                │                main thread: HvfVm + vCPU + Slot
+                                │                reader: commands, CANCEL/deadline kicks
+                                │                job clock
+                                └─ ... one per slot
+```
+
+- **Zygote.** Checks it has one thread before every fork (`proc_pidinfo`),
+  loads the verified snapshot, compiles vmm/sandbox's `jitk.sb` for the
+  snapshot directory, reads the D-cache line size (sysctl, denied later), and
+  forks one engine process per slot; READY to Node once every child is READY.
+  It validates every Node message (START admission, REPLY pending bits,
+  CANCEL generation) and every child message (call ids in order, STATS
+  before one completion, bounded printable DONE, RELEASED/QUARANTINED only
+  while resetting) and forwards them; a Node violation fails the engine
+  closed, a child violation kills that child.
+- **Engine process.** Enters the Seatbelt profile, then creates its VM, slot
+  and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
+  admit (reset unless pristine, sampled check), bind, run to calls or WAIT,
+  resume per REPLY, finish (an error resets at once), reset on CANCEL, idle
+  trim. A failed reset is QUARANTINED with the reason; the slot then admits
+  nothing (`slot_unavailable`) and the zygote kills the process.
+- **Leases and kicks.** The reader thread holds the running generation's
+  START deadline and kicks the vCPU (`hv_vcpus_exit`) at it, and at once on
+  a CANCEL; the main thread sees `Exit::Interrupted` and ends the run. If the
+  run is still going 100 ms after its deadline (the Linux escalation), or a
+  reset is not reported within 1 s of its CANCEL, the zygote SIGKILLs the
+  process; its run fails as `deadline_exceeded` (or `slot_unavailable`) and
+  the slot is QUARANTINED (`engine process exited (signal 9)`). Node closing
+  the socket ends the zygote, which kills and reaps every child; a child whose
+  socket closes stops its vCPU and exits.
+- **Clock.** IPC deadlines and STATS times are CLOCK_MONOTONIC_RAW
+  (`clock::ipc_ns`), which is mach_continuous_time and Node's process.hrtime.
+  macOS's CLOCK_MONOTONIC has a different base.
+
+Confinement (REPORT.md risk 4). `hvf confine BASE` (run by `make test-hvf`)
+forks a confined and an unconfined child. Measured on macOS 26.6.1: the
+confined one creates a VM and runs `return 2`, reads its snapshot directory,
+and gets EPERM for /etc/hosts, the home directory listing, a /tmp write, TCP
+and UDP to localhost and exec of /usr/bin/true; the control is allowed all of
+them. The zygote itself is not confined (it must fork; the profile denies
+`process-fork`) and never runs guest code.
+
+Tests: `hvf::tests::engine_child_runs_kicks_and_quarantines` (in-process
+child: tool call round trip, deadline kick within 200 ms, CANCEL of a spinning
+guest, clean slot after both, failed reset -> QUARANTINED -> slot_unavailable,
+socket close ends serve); `hvf::conn` and `service` unit tests;
+`../executor/shard-check.ts` on the real binary (restore, concurrency, hostile
+payloads, environment, a blocked-Node deadline, zygote escalation of a stopped
+child, dead-child quarantine, malformed admissions, no orphans); the parity
+corpus on `hvf` (85 cases: 63 ok, 22 allowlisted, 0 undocumented; every
+allowlisted case is a ring-profile limit shared with the Linux shard).
 
 ## Native TypeScript harness
 
