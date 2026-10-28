@@ -11,6 +11,9 @@ if command -v npm >/dev/null 2>&1; then
   exec npm "$@"
 fi
 if [ -n "${JITK_NODE:-}" ] && [ -n "${JITK_NPM_CLI:-}" ]; then
+  # Install scripts run a bare `node` (below); give them this one.
+  PATH=$(dirname -- "$JITK_NODE"):$PATH
+  export PATH
   exec "$JITK_NODE" "$JITK_NPM_CLI" "$@"
 fi
 pin() {
