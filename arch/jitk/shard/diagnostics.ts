@@ -18,6 +18,8 @@ import {
   sleep,
   StreamProcess,
   tool,
+  cargoEnv,
+  runRoot,
   type Json,
 } from "./lib.ts";
 interface Event {
@@ -28,7 +30,7 @@ interface Event {
   [key: string]: unknown;
 }
 export async function waitDeadlineR6(): Promise<void> {
-  const root = "/home/dev/r6-shard";
+  const root = runRoot("JITK_DIAGNOSTICS_ROOT");
   const binary = join(root, "arch/jitk/shard/target/release/real");
   const p = new StreamProcess(
     [binary, "hold", join(root, "final-r6"), "wait", "1024", "3"],
@@ -170,7 +172,7 @@ function copyPilot(source: string, dest: string): void {
   }
 }
 export async function pilotBrk(): Promise<void> {
-  const root = "/home/dev/r7-shard";
+  const root = runRoot("JITK_DIAGNOSTICS_ROOT");
   const pilot = join(root, "pilot-kernel");
   copyPilot(join(root, "arch/jitk/kernel"), pilot);
   const page = join(pilot, "src/arch/aarch64/page_tables.rs");
@@ -187,10 +189,7 @@ export async function pilotBrk(): Promise<void> {
     mkdirSync(out);
     const build = await run(["sh", "build-ring.sh"], {
       cwd: pilot,
-      env: env({
-        PATH: "/home/dev/.cargo/bin:" + process.env.PATH,
-        RUSTUP_TOOLCHAIN: "stable",
-      }),
+      env: env(cargoEnv()),
     });
     writeFileSync(
       join(out, "kernel-build.log"),

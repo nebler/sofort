@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, dump, run, sha, readJSON, SAFE_ENV, type ProcessResult } from './lib.ts';
 import { ROOT } from './runtime.ts';
+import { pins } from '../tslib/deps.ts';
 
 interface HostOrigin {
   python_source_sha256: string;
@@ -74,6 +75,6 @@ export async function hostHandlerTests(work: string, out: string): Promise<Proce
   // Preserve the baseline receipt's source-origin identity. Current fixture
   // bytes are independently checked against the pinned rust_source_sha256.
   dump(join(out, 'host-tests-source.json'), { sha256: origin().python_source_sha256 });
-  await run(['rustc', '+1.95.0', '--edition=2024', '--test', '-A', 'static_mut_refs', source, '-o', binary]);
+  await run(['rustc', '+' + pins().rust_toolchain, '--edition=2024', '--test', '-A', 'static_mut_refs', source, '-o', binary]);
   return await run([binary], { env: { ...SAFE_ENV, ARCHIVE: archive } });
 }

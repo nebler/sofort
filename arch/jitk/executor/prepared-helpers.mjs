@@ -16,11 +16,11 @@ export function fileHash(path) {
   return hash.digest('hex');
 }
 export function verifyPreparedSnapshot(base) {
-  const stale=()=>Error('stale shard snapshot: prepared helper identity mismatch; re-run shard/harness/prepare-helpers.mjs');
+  const stale=()=>Error('stale shard snapshot: prepared helper identity mismatch; run make -C arch/jitk/shard snapshot');
   let identity;
   try{identity=JSON.parse(readFileSync(base+'.identity','utf8'));}catch{throw stale();}
   if(identity.version!==1||identity.helperSha256!==helperHash)throw stale();
   for(const ext of ['mem','regs','layout']){
-    if(identity.files?.[ext]!==fileHash(base+'.'+ext))throw Error('shard snapshot identity mismatch: '+ext+'; prepare a new snapshot');
+    if(identity.files?.[ext]!==fileHash(base+'.'+ext))throw Error('shard snapshot identity mismatch: '+ext+'; run make -C arch/jitk/shard snapshot');
   }
 }

@@ -34,17 +34,19 @@ building.
 
 | variable | cache entry | how it is made |
 | --- | --- | --- |
-| `JITK_NODE`, `JITK_NPM_CLI` | `node/v24.22.1-darwin-arm64/` | nodejs.org tarball, sha256 pinned in [`tools/deps.json`](tools/deps.json); macOS: `bin/node-real` ad-hoc signed with [`tools/node.entitlements`](tools/node.entitlements) (Hypervisor), signed hash pinned; npm is the tarball's `npm-cli.js` |
-| `HYPERLIGHT_JS_SRC` | `src/hyperlight-js-<commit>/` | `git fetch --depth 1` of the pinned commit |
-| `JITK_VMM_BINARY` | `vmm/darwin-<inputs>/jitk-vmm` | [`vmm/build.ts`](vmm/build.ts); libkrun shared in `vmm/libkrun-darwin-<patches>/` |
-| `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` | `hyperlight/darwin-arm64-<inputs>/` | [`bench/hyperlight/build.ts`](bench/hyperlight/build.ts) from that source; `cargo fetch --locked`, then offline build |
+| `JITK_NODE`, `JITK_NPM_CLI` | `node/v24.22.1-{darwin,linux}-arm64/` | nodejs.org tarball, sha256 pinned in [`tools/deps.json`](tools/deps.json); macOS: `bin/node-real` ad-hoc signed with [`tools/node.entitlements`](tools/node.entitlements) (Hypervisor), signed hash pinned; npm is the tarball's `npm-cli.js` |
+| `HYPERLIGHT_JS_SRC` (macOS) | `src/hyperlight-js-<commit>/` | `git fetch --depth 1` of the pinned commit |
+| `JITK_VMM_BINARY` (macOS) | `vmm/darwin-<inputs>/jitk-vmm` | [`vmm/build.ts`](vmm/build.ts); libkrun shared in `vmm/libkrun-darwin-<patches>/` |
+| `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` (macOS) | `hyperlight/darwin-arm64-<inputs>/` | [`bench/hyperlight/build.ts`](bench/hyperlight/build.ts) from that source; `cargo fetch --locked`, then offline build |
+| `JITK_SHARD_BINARY` (Linux) | `shard/linux-arm64-<inputs>/real` | shard `real` from this checkout, pinned toolchain; `cargo fetch --locked`, then offline build |
+| `JITK_SHARD_SNAPSHOT` (Linux) | `shard-snapshot/linux-arm64-glue-2m-<key>/helpers` | `make -C arch/jitk/shard snapshot` (needs KVM; not part of `deps`); key = ring kernel + helper hash, see [`shard/README.md`](shard/README.md) |
 
 The cache root is `$JITK_CACHE`, else `$XDG_CACHE_HOME/jitk`, else
 `~/.cache/jitk`. It sits outside every checkout, so all clones and worktrees
 share one copy and nothing needs ignoring. Entries are keyed by pin or by a
 hash of their inputs (VMM: builder, patches, launcher and sandbox sources,
 `.READY` state; Hyperlight: adapter crate, lockfile, builder, source commit,
-toolchain), so checkouts at different revisions never share a stale build.
+toolchain; shard: its sources and the Rust pin), so checkouts at different revisions never share a stale build.
 Each entry is built in a staging directory, renamed into place after its
 manifest is written, and built under a lock in `locks/`. Expect about 1.8 GB,
 mostly the Hyperlight Cargo target and the libkrun checkout.
@@ -56,14 +58,22 @@ cache path; a missing artifact is an error naming `make -C arch/jitk deps`,
 never a skip. The delegate passes the selected values to every subtree.
 
 Preinstalled prerequisites (not installed by `deps`): macOS arm64 with Xcode
-command-line tools (`clang`, `codesign`, `strip`), `git`, `curl`, `make`, a
-Node/npm on `PATH` for the one-time scriptc install in `tools/`, rustup with
-`1.95.0` and `nightly-2026-10-20` (`rustup toolchain install nightly-2026-10-20
---profile minimal --component rust-src --target aarch64-unknown-none`), LLVM
+command-line tools (`clang`, `codesign`, `strip`), `git`, `curl`, `make`,
+rustup with the `rust_toolchain` pin from `tools/deps.json` (`1.95.0`, the one
+Rust pin; make reads it as `$(CARGO_PIN)`, shell through
+`tools/rust-toolchain.sh`) and `nightly-2026-10-20` (`rustup toolchain install nightly-2026-10-20
+--profile minimal --component rust-src --target aarch64-unknown-none`). The
+one-time scriptc install in `tools/` uses a PATH npm when there is one,
+otherwise [`tools/npm.sh`](tools/npm.sh) bootstraps the pinned Node into the
+cache. LLVM
 `ld.lld` on `PATH` for the VMM test guests, zig 0.16 (`ZIG`, see
 `tools/pin.mk`), and network access for Node, crates and Git sources on first
 use. `make test`'s `linux` suite still needs the kvm-dev VM and Docker; see
 [`linux/README.md`](linux/README.md).
+
+On Linux arm64 (kvm-dev) `make deps` builds Node and the shard binary, and the
+shard suites run from a clean clone with no variables set; see
+[`shard/README.md`](shard/README.md) "Clean clone on Linux arm64".
 
 MCP clients reach jitk through [`mcp/`](mcp/README.md): one `execute` tool that runs
 code-mode JS in a parked single-use VM, plus file-backed skill/doc resources.

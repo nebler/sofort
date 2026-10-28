@@ -7,11 +7,44 @@ layout and UAPI constants live in `constants`. Offline preparation, fixtures,
 probes and measurement drivers belong to the binaries under `src/bin/harness`
 and `src/synthetic`; they are not library modules.
 
+Every build uses the one Rust pin, `rust_toolchain` in
+[`../tools/deps.json`](../tools/deps.json) (`$(CARGO_PIN)` in make,
+`../tools/rust-toolchain.sh` in shell); nothing uses a floating `stable`.
 The pure library tests run on macOS without KVM, Linux headers or guest assembly:
-`cargo +1.95.0 test --locked --offline`. Run
+`make test` (`cargo +1.95.0 test --locked --offline`; the native census check
+below prints a skip line off Linux). Run
 `cargo +1.95.0 clippy --locked --offline --all-targets -- -D warnings` and
 `cargo +1.95.0 fmt --check` there too. Linux-only tests and the native corpus
 still require the KVM gate below. Binary names and CLI commands are unchanged.
+
+### Clean clone on Linux arm64 (kvm-dev)
+
+```sh
+make -C arch/jitk deps             # pinned Node, shard binary (cache)
+make -C arch/jitk/shard snapshot   # prepared helper snapshots (cache)
+make -C arch/jitk/shard test       # Rust tests + native census check
+flock /home/dev/bench.lock make -C arch/jitk/shard test-kvm
+sh arch/jitk/executor/ipc/shard-host.sh   # executor shard suite from the cache
+```
+
+Prerequisites: rustup with `rustup toolchain install 1.95.0 --profile minimal
+--target aarch64-unknown-none` (the commands print it when missing), `cc`,
+`clang`, `llvm-objcopy`, `flock`, network access on first use. No Node is
+needed: `../tools/npm.sh` bootstraps the pinned one into the cache.
+
+`make snapshot` ([`snapshot.ts`](snapshot.ts)) builds one ring kernel per arena
+class (glue-2m, glue-4m) with the executor helpers spliced in before the QuickJS
+checkpoint, prepares it with the cache shard binary, and stores it in the jitk
+cache as `shard-snapshot/linux-arm64-<class>-<key>/helpers.{bin,mem,regs,layout,identity}`.
+The key is `sha256(ring kernel image sha256, helper identity sha256)`, so the
+directory is content-addressed. An index file
+(`shard-snapshot/index/linux-arm64-<class>-<inputs>.json`, keyed by kernel and
+helper sources, toolchain and class) lets consumers find the entry without a
+kernel build. A present entry is reused only after its identity, file hashes and
+kernel hash verify. `test-kvm` and the executor use these unless
+`JITK_SHARD_TEST_SNAPSHOT(S)` / `JITK_SHARD_SNAPSHOT` are set. The shard binary is
+not part of the key: a snapshot-format change must change the kernel or layout
+(checked at load), or this is a stale entry (R9 N15's `abi_version`).
 
 **R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
 results, build/reproduce commands, and remaining gates are in
@@ -54,11 +87,18 @@ See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
 The default QuickJS class remains glue-2m. Late-bound native archives have their
 own read-only stage-1 mapping and reserved read-only KVM memslot 63.
 
-`make -C arch/jitk/shard test` runs the Rust tests **and** rebuilds six fresh
+`make -C arch/jitk/shard test` runs the Rust tests **and**, on Linux, rebuilds six fresh
 native profiles, checks the exact 41-case Linux differential twice, verifies
 fd and relocation-boundary probes, and rejects a mismatched class sidecar.
-It requires Linux arm64 KVM and the pinned census artifacts under
-`/home/dev/r6-census`; missing prerequisites fail the check. The full
+It requires Linux arm64 KVM and the six pinned census binaries (static musl
+builds from the R6 census, sha256-pinned in [`native.ts`](native.ts)). They
+are 0.3–1.4 MB each and no upstream URL serves those bytes, so they are not
+committed or fetched. They live in a content-addressed store,
+`$JITK_NATIVE_CENSUS` or `<jitk cache>/native-census/<sha256>`, filled once with
+`./tool.sh import-census FILE|CENSUS_DIR...` (it keeps only files whose hash
+is pinned). While any is absent, the check prints `SKIP` naming the missing
+tools and the import step. The SQLite fixture (8 KiB) is committed as
+[`harness/census-demo.db`](harness/census-demo.db) with its hash. The full
 `harness/run-r7-shard.sh` gate invokes it too, sharing the runner's outer
 benchmark lock. Standalone `make test` takes its own measurement locks; when
 already holding the lock, explicitly set `JITK_BENCH_LOCK_HELD=1`.
@@ -241,14 +281,16 @@ See [RESULTS.md](RESULTS.md) and `results/` for measurements and exact scope.
 `make build build-linux` builds the pinned scriptc 0.4.5 tools for Mac and static
 Linux aarch64 musl, including the kernel's `.work/linux/prepare` and
 `.work/linux/build-args` needed by the native image builds. Set `ZIG` to override
-the linker installation. Upload `build/linux/shard-tools` and both kernel Linux
-tools with this source tree before running Linux tests. On Linux, `tool.sh`
-automatically selects those kernel tools through `JITK_TOOLS_DIR` (an explicit
-override is still honored);
-Linux needs neither Node nor Python for this component. `./tool.sh NAME ARGS...`
+the linker installation. Uploading `build/linux/shard-tools` and both kernel
+Linux tools is optional: on Linux, `tool.sh` uses an uploaded cross-build when
+present (kernel tools through `JITK_TOOLS_DIR`; an explicit override is still
+honored), and otherwise builds `build/native/shard-tools` and the kernel's
+`.work/bin` tools natively with the same scriptc pin.
+These tools need neither Node nor Python at run time. `./tool.sh NAME ARGS...`
 replaces each Python command using the basename without `.py` (for example
 `./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and
 lock composition come from `../tslib/` through `lib.ts`. `make test` still takes its own measurement
-locks; never put another bench.lock around it. `test-kvm` still expects the
-caller to hold that lock and supply the snapshot environment variables.
+locks (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`); never put another
+lock around it. `test-kvm` expects the caller to hold that lock and takes the
+snapshots from the cache (`make snapshot`) unless the variables are set.
 See `PORT-PARITY.md` and `SCRIPTC-GAPS.md` for comparisons and compiler workarounds.

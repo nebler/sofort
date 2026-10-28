@@ -16,8 +16,15 @@ export function env(extra: Record<string, string> = {}): Record<string, string> 
   return result;
 }
 
-// Serializes a KVM measurement on /home/dev/bench.lock unless the caller
-// already holds it.
+// The host-wide measurement lock every KVM timing run serializes on. The
+// default is the shared kvm-dev convention (agents and harnesses all flock
+// it); JITK_BENCH_LOCK names another host's lock.
+export function benchLock(): string {
+  return process.env.JITK_BENCH_LOCK || '/home/dev/bench.lock';
+}
+
+// Serializes a KVM measurement on benchLock() unless the caller already
+// holds it.
 export function locked(command: string[], wait?: number): string[] {
   if (process.env.JITK_BENCH_LOCK_HELD === '1') {
     return command;
@@ -25,7 +32,7 @@ export function locked(command: string[], wait?: number): string[] {
   return [
     'flock',
     ...(wait === undefined ? [] : ['-w', String(wait)]),
-    '/home/dev/bench.lock',
+    benchLock(),
     ...command,
   ];
 }

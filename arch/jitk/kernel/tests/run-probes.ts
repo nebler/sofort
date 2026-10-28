@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 import { workspace, environment, run, capture, check, dump, sha } from '../lib.ts';
 import { ROOT as evidence, HOST, uptime } from './measure.ts';
 import { pack } from '../packer.ts';
+import { pins } from '../../tslib/deps.ts';
 const root = resolve(import.meta.dirname, '..');
 const work = workspace('JITK_PROBE_WORK', 'probes');
 mkdirSync(join(evidence, 'probes'), { recursive: true });
@@ -47,7 +48,7 @@ for (const name of Object.keys(cases)) {
   env.CARGO_TARGET_DIR = join(work, 'target');
   env.JITK_TOOLS_DIR = join(root, '.work/bin');
   delete env.RUSTFLAGS;
-  await run(['cargo', '+1.95.0', 'build', '--manifest-path', join(root, 'Cargo.toml'), '--release', '--target', 'aarch64-unknown-none', '--features', 'probe'], { env });
+  await run(['cargo', '+' + pins().rust_toolchain, 'build', '--manifest-path', join(root, 'Cargo.toml'), '--release', '--target', 'aarch64-unknown-none', '--features', 'probe'], { env });
   const image = join(work, 'probe-kernel.bin');
   await run(['/opt/homebrew/opt/llvm@22/bin/llvm-objcopy', '-O', 'binary', join(work, 'target/aarch64-unknown-none/release/jitk-02'), image]);
   const result = await capture([HOST, image], { timeout: 5 });

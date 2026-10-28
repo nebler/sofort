@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 cd "$(dirname "$0")"
+# The deps.json pin; callers building a copy of this tree outside arch/jitk pass it.
+RUST_TOOLCHAIN=${RUST_TOOLCHAIN:-$(sh ../tools/rust-toolchain.sh)}
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$PWD/target-ring}
 export JITK_ELF=${JITK_ELF:-$PWD/payload/qjs-ring}
 if [ ! -f "$JITK_ELF" ]; then
@@ -21,6 +23,6 @@ case "${JITK_RING_CLASS:-glue-2m}" in
 esac
 export RUSTFLAGS="${RUSTFLAGS:-} --check-cfg=cfg(ring_glue_4m) $class_flags -C link-arg=--defsym=__ring_arena=0x81800000"
 mkdir -p dist/ring
-cargo build --locked --offline --release --target aarch64-unknown-none --features transport-ring
+cargo "+$RUST_TOOLCHAIN" build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}
 "$OBJCOPY" -O binary "$CARGO_TARGET_DIR/aarch64-unknown-none/release/jitk-02" "${JITK_RING_OUT:-dist/kernel-ring.bin}"

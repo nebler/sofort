@@ -1,23 +1,37 @@
+include ../tools/pin.mk
+include ../tools/deps.mk
+.DEFAULT_GOAL := test
+
+# Library tests anywhere; the native census regression needs Linux arm64 KVM
+# (and skips, naming the import step, while its pinned census inputs are absent).
 .PHONY: test
 test:
-	cargo +stable test --locked --offline
-	./tool.sh check-native-r7
+	$(CARGO_PIN) test --locked --offline
+	@if [ "$$(uname -s)" = Linux ]; then ./tool.sh check-native-r7; else echo 'shard: check-native-r7 skipped: needs Linux arm64 KVM'; fi
 
-# Prepared QuickJS snapshot plus one snapshot from each verified class. The caller
-# holds /home/dev/bench.lock, as for the real harness's other KVM measurements.
+# Prepared helper snapshots (glue-2m, glue-4m) in the jitk cache, content-
+# addressed by ring kernel and helper hash; idempotent (snapshot.ts). Needs
+# `make -C .. deps` (Node, shard binary) first.
+.PHONY: snapshot
+snapshot:
+	"$(call jitk_artifact,JITK_NODE)" snapshot.ts build
+
+# The KVM tests use the cache snapshots unless JITK_SHARD_TEST_SNAPSHOT(S) are
+# set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-/home/dev/bench.lock})
+# when the host is shared, as for the real harness's other KVM measurements.
 .PHONY: test-kvm
-test-kvm:
-	@test -n "$(JITK_SHARD_TEST_SNAPSHOT)" -a -n "$(JITK_SHARD_TEST_SNAPSHOTS)"
-	cargo +stable build --release --locked --offline --bin real
-	JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" cargo +stable test --locked --offline --lib -- --ignored
+test-kvm: snapshot
+	$(CARGO_PIN) build --release --locked --offline --bin real
+	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
 
-include ../tools/pin.mk
 SOURCES := $(wildcard *.ts) $(TSLIB_SOURCES)
 .PHONY: build build-linux clean
-build: build/mac/shard-tools
+# build: this host's shard-tools (tool.sh). build-linux: the Mac cross-build
+# for upload, plus the kernel's Linux tools.
+build: build/$(if $(filter Darwin,$(shell uname -s)),mac,native)/shard-tools
 build-linux: build/linux/shard-tools
 	$(MAKE) -C ../kernel .work/linux/prepare .work/linux/build-args
-build/mac/shard-tools: $(SOURCES) $(SCRIPTC)
+build/mac/shard-tools build/native/shard-tools: $(SOURCES) $(SCRIPTC)
 	mkdir -p $(@D)
 	$(SCRIPTC) build main.ts -o $@
 build/linux/shard-tools: $(SOURCES) $(SCRIPTC)

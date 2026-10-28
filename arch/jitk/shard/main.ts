@@ -12,13 +12,15 @@ import {
 import { checkRng } from "./rng.ts";
 import { escalation, ledger, waitObserver } from "./observe.ts";
 import { check } from "./lib.ts";
-import { corpus, gate, prepare, probe } from "./native.ts";
+import { corpus, gate, importCensus, prepare, probe } from "./native.ts";
 async function main(): Promise<void> {
   const name = process.argv[2];
   if (name === "prepare-native-r7") {
     await prepare();
   } else if (name === "native-corpus-r7") {
     await corpus();
+  } else if (name === "import-census") {
+    importCensus(process.argv.slice(3));
   } else if (name === "check-native-r7") {
     await gate();
   } else if (
@@ -35,7 +37,7 @@ async function main(): Promise<void> {
   } else if (name === "check-rng") {
     checkRng(String(process.argv[3]));
   } else if (name === "analyze-r6") {
-    analyzeR6(process.argv[3] || "/home/dev/r6-shard/raw");
+    analyzeR6(String(process.argv[3]));
   } else if (name === "analyze-native-r7") {
     analyzeNative(String(process.argv[3]));
   } else if (name === "analyze-r7-rng") {

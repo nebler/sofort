@@ -9,7 +9,7 @@ export { SAFE_ENV, sha, scratch, cleanup, load, capture, run, treeHashes, killCh
 export type { ProcessOptions, ProcessResult } from './lib.ts';
 import type { ProcessResult } from './lib.ts';
 import { load } from './lib.ts';
-import { requireArtifact } from '../tslib/deps.ts';
+import { pins, requireArtifact } from '../tslib/deps.ts';
 
 export const ROOT = resolve(import.meta.dirname);
 export const ASSETS = ROOT;
@@ -99,6 +99,7 @@ export async function build(work: string, out: string, elf: string, argv: string
   // Kernel's scriptc tools are trusted build inputs, outside proposer access.
   // Isolated copies have no sibling docs/ compiler package or Makefile include.
   env.JITK_TOOLS_DIR = join(ROOT, 'build/kernel-tools');
+  env.RUST_TOOLCHAIN = pins().rust_toolchain;
   if (resources !== undefined) {
     env.JITK_RESOURCES = resources;
   }

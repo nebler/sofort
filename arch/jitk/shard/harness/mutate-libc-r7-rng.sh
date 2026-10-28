@@ -18,7 +18,7 @@ strip -o "$mutation_dir/qjs-libc-omitted" "$mutation_dir/libc-omitted/qjs"
  cd arch/jitk/kernel
  CARGO_TARGET_DIR="$mutation_dir/target" \
  JITK_ELF="$mutation_dir/qjs-libc-omitted" \
- cargo +stable build --locked --offline --release --target aarch64-unknown-none --features transport-ring
+ cargo "+$(sh ../tools/rust-toolchain.sh)" build --locked --offline --release --target aarch64-unknown-none --features transport-ring
  llvm-objcopy -O binary "$mutation_dir/target/aarch64-unknown-none/release/jitk-02" \
  "$mutation_dir/kernel-libc-omitted.bin"
 ) >raw/mutation-kernel-build.log 2>&1

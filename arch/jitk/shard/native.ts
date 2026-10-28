@@ -8,6 +8,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  renameSync,
   rmSync,
   statSync,
   symlinkSync,
@@ -16,9 +17,11 @@ import {
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { loadavg } from "node:os";
+import { cacheRoot } from "../tslib/deps.ts";
 import {
   ROOT,
   capture,
+  cargoEnv,
   check,
   digest,
   dump,
@@ -77,10 +80,62 @@ const PINS: Record<string, string[]> = {
 const RUN = resolve(process.env.JITK_NATIVE_RUN_DIR || ROOT);
 const RAW = join(RUN, "raw");
 const REAL = join(ROOT, "arch/jitk/shard/target/release/real");
-const BUILD_ENV = env({
-  PATH: "/home/dev/.cargo/bin:" + process.env.PATH,
-  RUSTUP_TOOLCHAIN: "stable",
-});
+const BUILD_ENV = env(cargoEnv());
+// The six census binaries are pinned inputs, not evidence: static aarch64
+// musl builds from the R6 census (Alpine 3.21 recipes; jq differs from the
+// upstream release asset). They are 0.3-1.4 MB each and have no URL that
+// serves these exact bytes, so they live in a content-addressed store,
+// CENSUS/<sha256>, filled once by `./tool.sh import-census PATH...`. The
+// SQLite fixture is small and committed with its pin.
+const CENSUS = resolve(
+  process.env.JITK_NATIVE_CENSUS || join(cacheRoot(), "native-census"),
+);
+const DEMO_DB = join(ROOT, "arch/jitk/shard/harness/census-demo.db");
+const DEMO_DB_SHA256 =
+  "f3d4180cd07ad9eed5a674c7ff4e5f6d817eb517029c185f66af862a30eac059";
+function censusBinary(name: string): string {
+  return join(CENSUS, PINS[name][1]);
+}
+function censusMissing(): string[] {
+  return Object.keys(PINS).filter((name) => !existsSync(censusBinary(name)));
+}
+// Copies every given file whose sha256 is a pinned census binary into the
+// store. A directory is read as an R6 census run (raw/<tool>/metadata.json
+// names each binary).
+export function importCensus(paths: string[]): void {
+  check(paths.length > 0, "usage: tool.sh import-census FILE|CENSUS_DIR...");
+  const files: string[] = [];
+  for (const path of paths) {
+    if (!statSync(path).isDirectory()) {
+      files.push(path);
+      continue;
+    }
+    for (const name of Object.keys(PINS)) {
+      const metadata = join(path, "raw", PINS[name][0], "metadata.json");
+      if (existsSync(metadata)) {
+        files.push(String(json(metadata).binary));
+      }
+    }
+  }
+  const wanted = new Set(Object.keys(PINS).map((name) => PINS[name][1]));
+  mkdirSync(CENSUS, { recursive: true });
+  for (const file of files) {
+    const hash = sha(file);
+    if (!wanted.has(hash)) {
+      console.log("census: skip " + file + " (sha256 " + hash + " is not pinned)");
+      continue;
+    }
+    const staging = join(CENSUS, hash + ".tmp-" + process.pid);
+    copyFileSync(file, staging);
+    chmodSync(staging, 0o555);
+    renameSync(staging, join(CENSUS, hash));
+    console.log("census: " + hash + " <- " + file);
+  }
+  const missing = censusMissing();
+  console.log(
+    "census: " + CENSUS + (missing.length ? " still lacks " + missing.join(" ") : " complete"),
+  );
+}
 
 function uint(value: number, bytes: number): Buffer {
   const result = Buffer.alloc(bytes);
@@ -161,14 +216,12 @@ export async function prepare(): Promise<void> {
   ).split(/\s+/);
   for (const name of names) {
     const pin = PINS[name];
-    const metadata = json(
-      "/home/dev/r6-census/raw/" + pin[0] + "/metadata.json",
-    );
-    const binary = String(metadata.binary);
+    const binary = censusBinary(name);
     check(
-      sha(binary) === metadata.sha256 && metadata.sha256 === pin[1],
-      "census checksum mismatch: " + name,
+      existsSync(binary),
+      "census binary missing: " + name + " (" + binary + "); ./tool.sh import-census",
     );
+    check(sha(binary) === pin[1], "census checksum mismatch: " + name);
     const cls =
       classes[name] ||
       (["zstd", "micropython"].includes(name) ? "glue-4m" : "glue-2m");
@@ -216,11 +269,13 @@ export async function prepare(): Promise<void> {
   dump(join(RAW, "prepared.json"), prepared);
 }
 function cases(): Case[] {
+  const demo = readFileSync(DEMO_DB);
+  check(digest(demo) === DEMO_DB_SHA256, "census-demo.db checksum mismatch");
   const fixture: Record<string, Buffer> = {
     "data/input.txt": Buffer.from("alpha 2\nbeta 5\nalpha 3\n"),
     "data/input.json": Buffer.from('{"items":[{"n":2},{"n":5}]}\n'),
     "dev/null": Buffer.alloc(0),
-    "data/demo.db": readFileSync("/home/dev/r6-census/fixtures/data/demo.db"),
+    "data/demo.db": demo,
   };
   fixture["data/fixture.tar"] = fixtureTar(fixture["data/input.txt"]);
   const chunks: Buffer[] = [];
@@ -693,6 +748,17 @@ export async function probe(kind: string): Promise<void> {
   check(result.pass_exact, "native " + kind + " mismatch");
 }
 export async function gate(): Promise<void> {
+  const missing = censusMissing();
+  if (missing.length) {
+    console.log(
+      "check-native-r7: SKIP: pinned census binaries absent from " +
+        CENSUS +
+        " (" +
+        missing.join(" ") +
+        "); import them once with `./tool.sh import-census FILE|CENSUS_DIR...` (sha256-checked)",
+    );
+    return;
+  }
   const out = resolve(
     process.env.JITK_NATIVE_CHECK_OUTPUT ||
       join(ROOT, "arch/jitk/shard/test-results/native"),

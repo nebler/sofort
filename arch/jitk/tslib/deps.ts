@@ -2,28 +2,31 @@
 // (tools/deps.ts) builds into the persistent jitk cache, and the shared
 // resolution rule for every consumer: an explicitly set environment variable
 // wins; otherwise the cache path; a missing artifact is an error naming the
-// make target. Pins live in ../tools/deps.json.
+// make target (`make -C arch/jitk/shard snapshot` for the prepared shard
+// snapshot, `make -C arch/jitk deps` for the rest). Pins live in
+// ../tools/deps.json; its rust_toolchain is the one Rust pin.
 //
 // Cache root: $JITK_CACHE, else $XDG_CACHE_HOME/jitk, else ~/.cache/jitk. It
 // is outside every checkout so clones and worktrees share one copy, and
 // every entry is keyed by its pin or input fingerprint so checkouts at
 // different revisions never see each other's builds.
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir, platform } from 'node:os';
-import { join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { check } from './assert.ts';
 import { digest } from './hash.ts';
 import { sleep } from './process.ts';
 
 export const JITK_ROOT = resolve(import.meta.dirname, '..');
 export const DEPS_TARGET = 'make -C arch/jitk deps';
+export const SNAPSHOT_TARGET = 'make -C arch/jitk/shard snapshot';
 
 export interface Pins {
   node: { version: string; url: string; tarball_sha256: Record<string, string>; darwin_signed_name: string; darwin_signed_sha256: string };
   hyperlight_js: { repository: string; commit: string };
   hyperlight_toolchain: string;
   hyperlight_targets: string[];
-  vmm_toolchain: string;
+  rust_toolchain: string;
 }
 
 export function pins(): Pins {
@@ -69,7 +72,7 @@ export function vmmPatchFingerprint(): string {
 export function vmmInputs(): string {
   const files = ['build.ts', 'hypervisor.entitlements', 'src/main.rs', 'src/confinement.rs', 'src/watchdog.rs', 'sandbox/mod.rs', 'sandbox/jitk.sb', 'tests/seccomp-probe.rs'];
   const ready = existsSync(join(JITK_ROOT, 'vmm/sandbox/.READY')) ? 'sandbox_ready' : 'stub';
-  return fingerprint(join(JITK_ROOT, 'vmm'), files, [vmmPatchFingerprint(), ready, pins().vmm_toolchain, platform()]);
+  return fingerprint(join(JITK_ROOT, 'vmm'), files, [vmmPatchFingerprint(), ready, pins().rust_toolchain, platform()]);
 }
 
 export function vmmBuildDir(): string {
@@ -79,6 +82,83 @@ export function vmmBuildDir(): string {
 // Shared patched libkrun checkout and target, one per patch set.
 export function libkrunDir(): string {
   return join(cacheRoot(), 'vmm', 'libkrun-' + platform() + '-' + vmmPatchFingerprint().slice(0, 16));
+}
+
+// Every file under root/dir (relative to root, sorted); for fingerprints of
+// whole source trees.
+export function tree(root: string, dir: string): string[] {
+  const result: string[] = [];
+  const absolute = join(root, dir);
+  if (!existsSync(absolute)) {
+    return result;
+  }
+  for (const name of readdirSync(absolute).sort()) {
+    if (name.startsWith('.')) {
+      continue;
+    }
+    const path = dir + '/' + name;
+    if (statSync(join(root, path)).isDirectory()) {
+      result.push(...tree(root, path));
+    } else {
+      result.push(path);
+    }
+  }
+  return result;
+}
+
+// PATH with rustup's bin directory appended: kvm-dev's non-login ssh shell
+// lacks it.
+export function cargoPath(path: string): string {
+  return path + ':' + join(process.env.CARGO_HOME || join(process.env.HOME || homedir(), '.cargo'), 'bin');
+}
+
+// The production shard binary (shard `real`), built from source with the
+// pinned toolchain; Linux only.
+export function shardInputs(): string {
+  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi.c', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest')];
+  return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, hostPlatform()]);
+}
+
+export function shardDir(): string {
+  return join(cacheRoot(), 'shard', hostPlatform() + '-' + shardInputs().slice(0, 16));
+}
+
+// Prepared helper snapshots (`make -C arch/jitk/shard snapshot`, shard/snapshot.ts).
+// The entry directory is content-addressed: <class>-sha256(ring kernel image
+// sha256, helper identity sha256). The ring kernel is only known after a
+// build, so consumers find the entry through an index file keyed by the
+// fingerprint of every snapshot input (kernel and helper sources, toolchain,
+// class); the snapshot step rebuilds and re-verifies on an index miss.
+export const SNAPSHOT_CLASSES = ['glue-2m', 'glue-4m'];
+
+export function snapshotInputs(cls: string): string {
+  const kernel = ['Cargo.toml', 'Cargo.lock', 'build.rs', 'slots.json', 'prepare.ts', 'packer.ts', 'generate.ts', 'build-args.ts', 'lib.ts', 'native.c', 'native-ffi.json', 'ring-bootstrap.js', 'payload/qjs-ring'].map(name => 'kernel/' + name);
+  const helpers = ['executor/codec.mjs', 'executor/shard-helpers.js', 'executor/prepared-helpers.mjs', 'shard/snapshot.ts', 'protocol/bootstrap.js'];
+  const files = [...kernel, ...tree(JITK_ROOT, 'kernel/src'), ...helpers, ...tree(JITK_ROOT, 'tslib').filter(path => /^tslib\/[^/]+\.ts$/.test(path))];
+  return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, cls, hostPlatform()]);
+}
+
+export function snapshotRoot(): string {
+  return join(cacheRoot(), 'shard-snapshot');
+}
+
+export function snapshotIndex(cls: string): string {
+  return join(snapshotRoot(), 'index', hostPlatform() + '-' + cls + '-' + snapshotInputs(cls).slice(0, 16) + '.json');
+}
+
+export function snapshotKey(cls: string, kernelSha256: string, helperSha256: string): string {
+  return hostPlatform() + '-' + cls + '-' + digest(Buffer.from(kernelSha256 + '\0' + helperSha256)).slice(0, 16);
+}
+
+// The snapshot base (dir/helpers, without extension) the index names, or a
+// placeholder under the index name when it is not built yet.
+export function snapshotBase(cls: string): string {
+  const index = snapshotIndex(cls);
+  if (existsSync(index)) {
+    const entry = JSON.parse(readFileSync(index, 'utf8')) as { key: string };
+    return join(snapshotRoot(), entry.key, 'helpers');
+  }
+  return join(snapshotRoot(), 'unbuilt-' + basename(index, '.json'), 'helpers');
 }
 
 export function nodeDir(): string {
@@ -99,11 +179,29 @@ export function hyperlightDir(): string {
   return join(cacheRoot(), 'hyperlight', hostPlatform() + '-' + hyperlightInputs().slice(0, 16));
 }
 
-export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_VMM_BINARY', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT'];
+export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_VMM_BINARY', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
 
-// Hyperlight's HVF baseline exists only on macOS.
+// Hyperlight's HVF baseline and the libkrun/HVF VMM are macOS artifacts (the
+// Linux VMM is built by the linux suite in Docker); the KVM shard binary and
+// its prepared snapshot are Linux artifacts.
 export function applicable(name: string): boolean {
-  return platform() === 'darwin' || !name.startsWith('HYPERLIGHT_');
+  if (name.startsWith('HYPERLIGHT_') || name === 'JITK_VMM_BINARY') {
+    return platform() === 'darwin';
+  }
+  if (name.startsWith('JITK_SHARD_')) {
+    return platform() === 'linux';
+  }
+  return true;
+}
+
+// The make target that builds each artifact.
+export function target(name: string): string {
+  return name === 'JITK_SHARD_SNAPSHOT' ? SNAPSHOT_TARGET : DEPS_TARGET;
+}
+
+// A snapshot is a base path (BASE.mem, .regs, .layout, .identity).
+function present(name: string, path: string): boolean {
+  return existsSync(name === 'JITK_SHARD_SNAPSHOT' ? path + '.identity' : path);
 }
 
 // The cache location of one artifact (whether or not it is built yet).
@@ -126,6 +224,12 @@ export function cachePath(name: string): string {
   if (name === 'HYPERLIGHT_SNAPSHOT') {
     return join(hyperlightDir(), 'snapshot');
   }
+  if (name === 'JITK_SHARD_BINARY') {
+    return join(shardDir(), 'real');
+  }
+  if (name === 'JITK_SHARD_SNAPSHOT') {
+    return snapshotBase('glue-2m');
+  }
   throw new Error('unknown jitk artifact ' + name);
 }
 
@@ -140,11 +244,17 @@ export function completeMarker(name: string): string {
   if (name === 'HYPERLIGHT_JS_SRC') {
     return join(hyperlightSourceDir(), '.git/jitk-manifest.json');
   }
+  if (name === 'JITK_SHARD_BINARY') {
+    return join(shardDir(), 'manifest.json');
+  }
+  if (name === 'JITK_SHARD_SNAPSHOT') {
+    return join(dirname(snapshotBase('glue-2m')), 'manifest.json');
+  }
   return join(hyperlightDir(), 'manifest.json');
 }
 
 export function cached(name: string): boolean {
-  return existsSync(completeMarker(name)) && existsSync(cachePath(name));
+  return existsSync(completeMarker(name)) && present(name, cachePath(name));
 }
 
 // Explicit environment value, else the cache path (unchecked).
@@ -158,11 +268,11 @@ export function artifactPath(name: string): string {
 export function requireArtifact(name: string): string {
   const explicit = process.env[name] || '';
   if (explicit) {
-    check(existsSync(explicit), name + '=' + explicit + ' does not exist; unset it to use the ' + DEPS_TARGET + ' cache');
+    check(present(name, explicit), name + '=' + explicit + ' does not exist; unset it to use the ' + target(name) + ' cache');
     return explicit;
   }
   const path = cachePath(name);
-  check(cached(name), name + ' is unset and ' + path + ' is not built; run `' + DEPS_TARGET + '` (cache ' + cacheRoot() + ') or set ' + name);
+  check(cached(name), name + ' is unset and ' + path + ' is not built; run `' + target(name) + '` (cache ' + cacheRoot() + ') or set ' + name);
   return path;
 }
 

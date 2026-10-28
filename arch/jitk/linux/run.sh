@@ -32,14 +32,15 @@ else
  SUDO=(); [[ $EUID == 0 ]] || SUDO=(sudo)
  "${SUDO[@]}" apt-get update -qq
  "${SUDO[@]}" apt-get install -y -qq --no-install-recommends build-essential curl ca-certificates git clang llvm lld libclang-dev pkg-config libssl-dev
+ RUST_TOOLCHAIN=$(sh "$ROOT/../tools/rust-toolchain.sh")
  export CARGO_HOME="$JITK_WORK/cargo" RUSTUP_HOME="$JITK_WORK/rustup"
  export PATH="$CARGO_HOME/bin:$PATH"
  if [[ ! -x $CARGO_HOME/bin/rustup ]]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$JITK_WORK/rustup-init.sh"
-  sh "$JITK_WORK/rustup-init.sh" -y --no-modify-path --profile minimal --default-toolchain 1.95.0
+  sh "$JITK_WORK/rustup-init.sh" -y --no-modify-path --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
  fi
- rustup toolchain install 1.95.0 --profile minimal --component rustfmt
- rustup target add --toolchain 1.95.0 aarch64-unknown-none
+ rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component rustfmt
+ rustup target add --toolchain "$RUST_TOOLCHAIN" aarch64-unknown-none
  ./build-linux.sh 2>&1 | tee "$JITK_LINUX_OUT/build.log"
  ./tool.sh build-kernel 2>&1 | tee "$JITK_LINUX_OUT/kernel-build.log"
  ./tool.sh build-faults

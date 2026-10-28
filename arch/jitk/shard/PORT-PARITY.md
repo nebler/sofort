@@ -55,6 +55,9 @@ The maintained WAIT, escalation and ledger observers are validated separately.
 
 ## Verification procedure
 
+(As run for this record. The current clean-clone procedure, with cache
+snapshots and no host paths, is in README.md "Clean clone on Linux arm64".)
+
 Use a private /home/dev checkout. Build on Mac with `make build build-linux`,
 copy build/linux/shard-tools, and run `make test` without an outer flock.
 `test-kvm` expects the caller's lock and both classes:
