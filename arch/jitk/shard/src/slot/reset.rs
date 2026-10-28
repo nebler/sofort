@@ -165,6 +165,10 @@ impl<V: Vm> Slot<V> {
     pub fn is_quarantined(&self) -> bool {
         self.quarantined.is_some()
     }
+    /// Why this slot is out of service (the IPC QUARANTINED reason), if it is.
+    pub fn quarantine_reason(&self) -> Option<&str> {
+        self.quarantined.as_deref()
+    }
     fn try_reset(&mut self) -> io::Result<ResetReport> {
         let t = Instant::now();
         self.shutdown()?; // completes a half-done exit (KVM: pending MMIO)

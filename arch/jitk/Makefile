@@ -75,9 +75,9 @@ test-linux: deps
 	+@$(DELEGATE) kernel build
 	+@$(DELEGATE) protocol build
 	+@$(DELEGATE) executor dependencies
-	@# The image just built from this tree: kernel/.READY records the Mac build's
-	@# hash, and a Linux-hosted build lays out a few functions differently.
-	+@JITK_KERNEL_IMAGE="$(ROOT)/kernel/dist/kernel.bin" $(DELEGATE) executor parity
+	@# libkrun runs kernel/dist/kernel.bin, which must match kernel/.READY's hash:
+	@# Linux builds the Mac's bytes (kernel/ARCH.md "Image identity").
+	+@$(DELEGATE) executor parity
 	+@$(MAKE) -s -C "$(ROOT)/shard" test
 	+@$(MAKE) -s -C "$(ROOT)/executor" .work/bin/fixtures/shard-peer
 	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/executor" test-shard

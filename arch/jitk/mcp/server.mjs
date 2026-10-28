@@ -8,7 +8,7 @@ import {Server} from '@modelcontextprotocol/sdk/server/index.js';
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
 import {CallToolRequestSchema, ListToolsRequestSchema, ListResourcesRequestSchema,
   ReadResourceRequestSchema, McpError, ErrorCode} from '@modelcontextprotocol/sdk/types.js';
-import {loadConfig, createJitk, describeTools} from './jitk.mjs';
+import {loadConfig, createJitk, describeTools, describeLimits} from './jitk.mjs';
 
 const PREFIX = 'jitk://resources/', MAX_RESOURCE = 1 << 20;
 
@@ -49,19 +49,21 @@ function mcpServer(jitk, cfg) {
     name: 'execute',
     description: `Run JavaScript in a fresh single-use microVM (QuickJS, no network, no filesystem). ` +
       `The code is an async function body: use await and \`return\` a JSON value. console.log output is returned as logs. ` +
-      `Deadline ${cfg.timeoutMs} ms. Host tools (call with await; Promise.all runs them concurrently):\n${describeTools(cfg.tools)}\n` +
+      `Deadline ${cfg.timeoutMs} ms.${describeLimits(jitk.limits)} Host tools (call with await; Promise.all runs them concurrently):\n${describeTools(cfg.tools)}\n` +
       `Errors carry a code: TIMEOUT, POLICY, LIMIT, SANDBOX, CANCELLED or GUEST_ERROR.`,
     inputSchema: {type: 'object', properties: {code: {type: 'string', description: 'JavaScript async function body'}},
       required: ['code'], additionalProperties: false},
   };
+  // The native engine's own limits (Engine.limits.native).
+  const nl = jitk.nativeLimits, mib = n => `${n / (1 << 20)} MiB`;
   const run = {
     name: 'run',
     description: 'Run a prepared static native tool in a fresh Linux arm64 KVM microVM. args excludes argv[0]. ' +
-      'files maps relative read-only guest paths to canonical base64 bytes (64 files, 4 MiB archive). ' +
-      'Returns stdout/stderr as {encoding:"base64",data}, exitCode, outputLimited (1 MiB combined cap). ' +
+      `files maps relative read-only guest paths to canonical base64 bytes (${nl.files} files, ${mib(nl.inputBytes)} archive). ` +
+      `Returns stdout/stderr as {encoding:"base64",data}, exitCode, outputLimited (${mib(nl.outputBytes)} combined cap). ` +
       'macOS v1 returns UNSUPPORTED. Configured profiles: ' + Object.keys(cfg.native?.profiles ?? {}).join(', '),
-    inputSchema: {type: 'object', properties: {tool: {type: 'string'}, args: {type: 'array', maxItems: 31, items: {type: 'string'}},
-      files: {type: 'object', maxProperties: 64, additionalProperties: {type: 'string'}}}, required: ['tool'], additionalProperties: false},
+    inputSchema: {type: 'object', properties: {tool: {type: 'string'}, args: {type: 'array', maxItems: nl.args, items: {type: 'string'}},
+      files: {type: 'object', maxProperties: nl.files, additionalProperties: {type: 'string'}}}, required: ['tool'], additionalProperties: false},
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => ({tools: [execute, run]}));
   server.setRequestHandler(CallToolRequestSchema, async (req, extra) => {

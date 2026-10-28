@@ -2,6 +2,7 @@
 //! Waiting slots retain no execution stack. The reactor sends bounded commands;
 //! the watchdog shares only generation-fenced leases and eventfd wakeups.
 use crate::{
+    clock::{self, Clock},
     constants::ring,
     kvm::{self, Kvm, Request, ResetPolicy, ResetReport, RunError, Slot, Snapshot},
     lease::{Lease, Wake, Watchdog},
@@ -69,8 +70,11 @@ pub enum Event {
         generation: u64,
         completion: Completion,
     },
+    /// The slot is reset (or was pristine); `quarantined` names why it is
+    /// instead out of service for good.
     Reset {
         slot: usize,
+        quarantined: Option<String>,
     },
 }
 enum Command {
@@ -97,6 +101,8 @@ pub struct Pool {
     events: Receiver<Event>,
     watchdog: Watchdog,
     slots: usize,
+    // Dropped after the owners have stopped (Drop runs shutdown first).
+    _clock: Clock,
 }
 impl Pool {
     pub fn new(kvm: Arc<Kvm>, snapshot: Arc<Snapshot>, slots: usize, owners: usize) -> Self {
@@ -118,6 +124,7 @@ impl Pool {
         );
         let wakes: Vec<_> = (0..owners).map(|_| Wake::new()).collect();
         let watchdog = Watchdog::start(slots, &wakes, 100);
+        let clock = Clock::start(slots);
         let (tx, events) = mpsc::sync_channel(slots + owners);
         let mut mailboxes = Vec::new();
         let mut joins = Vec::new();
@@ -133,6 +140,10 @@ impl Pool {
                 .step_by(owners)
                 .map(|id| watchdog.slot(id))
                 .collect::<Vec<_>>();
+            let clocks = (owner..slots)
+                .step_by(owners)
+                .map(|id| clock.cell(id))
+                .collect::<Vec<_>>();
             let (kvm, snapshot, tx, w) = (kvm.clone(), snapshot.clone(), tx.clone(), wake.clone());
             joins.push(
                 thread::Builder::new()
@@ -145,6 +156,7 @@ impl Pool {
                             snapshot,
                             policy,
                             leases,
+                            clocks,
                             commands: rx,
                             events: Events { tx, notify },
                             wake: w,
@@ -161,6 +173,7 @@ impl Pool {
             events,
             watchdog,
             slots,
+            _clock: clock,
         }
     }
     pub fn shutdown(&mut self) -> io::Result<()> {
@@ -527,6 +540,7 @@ struct Worker {
     snapshot: Arc<Snapshot>,
     policy: ResetPolicy,
     leases: Vec<Lease>,
+    clocks: Vec<clock::Cell>,
     commands: Receiver<Command>,
     events: Events,
     wake: Wake,
@@ -579,7 +593,8 @@ impl Worker {
                 let i = id / self.owners;
                 assert_eq!(id % self.owners, self.owner);
                 if slots[i].is_none() {
-                    let cpu = Slot::with_policy(&self.kvm, self.snapshot.clone(), self.policy);
+                    let mut cpu = Slot::with_policy(&self.kvm, self.snapshot.clone(), self.policy);
+                    cpu.clock = Some(self.clocks[i].clone());
                     slots[i] = Some(Managed {
                         cpu,
                         lease: self.leases[i].clone(),
@@ -608,7 +623,13 @@ impl Worker {
                         let regs = s.cpu.register_mismatches();
                         assert!(regs.is_empty(), "registers differ: {regs:#x?}");
                     }
-                    self.events.send(Event::Reset { slot: id }).unwrap();
+                    let quarantined = s.cpu.quarantine_reason().map(str::to_owned);
+                    self.events
+                        .send(Event::Reset {
+                            slot: id,
+                            quarantined,
+                        })
+                        .unwrap();
                     continue;
                 }
                 if !s.command(cmd, &mut entropy, id, &self.events) {
@@ -786,7 +807,7 @@ mod tests {
             }
         }
         pool.reset(0);
-        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        assert_eq!(released(&mut pool, 0), None);
         pool.start(
             0,
             Job {
@@ -820,6 +841,16 @@ mod tests {
             _ => panic!("expected completion"),
         }
     }
+    /// The next event is this slot's Reset; returns its quarantine reason.
+    fn released(pool: &mut Pool, slot: usize) -> Option<String> {
+        match pool.recv() {
+            Event::Reset {
+                slot: s,
+                quarantined,
+            } if s == slot => quarantined,
+            _ => panic!("expected the reset of slot {slot}"),
+        }
+    }
     #[test]
     #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
     fn one_reset_per_lifecycle() {
@@ -832,7 +863,7 @@ mod tests {
         assert!(c.metrics.reset.is_none() && c.metrics.reset_ns == 0);
         // RELEASE (the IPC path) resets once; the next begin() does not.
         pool.cancel(0);
-        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        assert_eq!(released(&mut pool, 0), None);
         pool.start(0, job(3, None, 5_000));
         let c = completion(&mut pool);
         assert_eq!(c.result.unwrap(), "{\"ok\":2}");
@@ -846,9 +877,9 @@ mod tests {
         // A RELEASE of a pristine slot is answered without another reset; the
         // Reset command then checks every byte and register.
         pool.cancel(0);
-        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        assert_eq!(released(&mut pool, 0), None);
         pool.reset(0);
-        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        assert_eq!(released(&mut pool, 0), None);
         pool.shutdown().unwrap();
     }
     #[test]
@@ -861,7 +892,7 @@ mod tests {
         pool.start(0, job(fail, None, 5_000));
         assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
         pool.cancel(0); // the RELEASE reset: KVM rejects a register write
-        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        assert!(released(&mut pool, 0).is_some());
         for generation in [2, 3] {
             pool.start(1, job(generation, None, 5_000));
             assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
@@ -876,7 +907,7 @@ mod tests {
                 c.result
             );
             pool.cancel(0);
-            assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+            assert!(released(&mut pool, 0).is_some());
         }
         // A run that errors also resets in finish(): that path quarantines too,
         // and still acknowledges the lease (shutdown checks every lease).
@@ -890,6 +921,9 @@ mod tests {
             completion(&mut pool).result,
             Err(RunError::SlotUnavailable)
         ));
+        // Its release carries the reason (the reactor sends QUARANTINED).
+        pool.cancel(1);
+        assert!(released(&mut pool, 1).is_some_and(|why| why.starts_with("reset failed")));
         pool.shutdown().unwrap();
     }
     #[test]
@@ -921,7 +955,7 @@ mod tests {
             generation += 2;
         }
         pool.reset(0);
-        assert!(matches!(pool.recv(), Event::Reset { slot: 0 }));
+        assert_eq!(released(&mut pool, 0), None);
         pool.shutdown().unwrap();
     }
 }

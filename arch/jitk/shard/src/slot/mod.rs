@@ -1,4 +1,4 @@
-//! Hypervisor-neutral slot: guest RAM over a snapshot's memory classes, the
+//! Hypervisor-neutral slot: guest RAM over a snapshot's memory .map(|c| c.enter(control_word(&self.ram, ring::MONOTONIC_NS)));lasses, the
 //! bind header, the ring record decoder and reply path, and (reset.rs) reset,
 //! admission checks and verification. Generic over `hv::Vm`; the KVM and HVF
 //! specifics live behind it (`kvm`, `hvf`).
@@ -32,7 +32,7 @@ pub const CTRL: usize = ring::CONTROL;
 pub const REQUEST: usize = ring::TX;
 pub const REPLY: usize = ring::RX;
 
-/// The register file type of a backend's vCPU.
+/// The register file type of a back's vCPU.
 pub type State<V> = <<V as Vm>::Vcpu as Vcpu>::State;
 
 pub struct Request {
@@ -66,6 +66,24 @@ impl std::fmt::Display for RunError {
             }
         }
     }
+}
+/// A control-page word of guest RAM, for atomic host access only.
+fn control_word(ram: &Mapping, off: usize) -> &AtomicU64 {
+    assert!(
+        off.is_multiple_of(8)
+            && off
+                .checked_add(8)
+                .is_some_and(|end| end <= arena::RING_BYTES)
+    );
+    // SAFETY: mmap is page aligned; the checked control word is aligned and
+    // live. Only atomic host accesses are exposed, never a RAM slice.
+    unsafe { &*ram.ptr.add(CTRL + off).cast() }
+}
+/// `JITK_SHARD_DIAGNOSTICS` set: print JS-profile guest LOG records to stderr
+/// (offline debugging; Node starts the shard without it).
+fn diagnostics() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var_os("JITK_SHARD_DIAGNOSTICS").is_some())
 }
 /// One doorbell's decoded TX records.
 pub struct Step {
@@ -108,6 +126,11 @@ pub struct Slot<V: Vm> {
     quarantined: Option<String>,
     /// Admissions so far: every policy.sample_every-th is content-checked.
     admits: u64,
+    /// LOG payload bytes this generation; bounded by ring::LOG_BYTES.
+    log_bytes: usize,
+    /// The shard clock's cell for this slot (owner::Pool): refreshes the
+    /// guest's MONOTONIC_NS word while the vCPU runs.
+    pub(crate) clock: Option<crate::clock::Cell>,
 }
 impl<V: Vm> Slot<V> {
     fn with(vm: V, vcpu: V::Vcpu, ram: Mapping, snapshot: Option<Arc<Snapshot<State<V>>>>) -> Self {
@@ -129,6 +152,8 @@ impl<V: Vm> Slot<V> {
             reset_at: Instant::now(),
             quarantined: None,
             admits: 0,
+            log_bytes: 0,
+            clock: None,
         }
     }
     /// An unpartitioned, all-writable boot VM over a fresh image file, for
@@ -195,6 +220,11 @@ impl<V: Vm> Slot<V> {
     pub fn snapshot(&self) -> &Snapshot<State<V>> {
         self.snapshot.as_ref().expect("slot without a snapshot")
     }
+    /// Register this slot with a shard clock (`clock::Clock::cell`): its
+    /// guest time then advances while the vCPU runs, not only per entry.
+    pub fn set_clock(&mut self, cell: crate::clock::Cell) {
+        self.clock = Some(cell);
+    }
     /// The backend vCPU (HVF: its `Kicker`; offline preparation: `save`).
     pub fn vcpu(&self) -> &V::Vcpu {
         &self.vcpu
@@ -224,15 +254,7 @@ impl<V: Vm> Slot<V> {
         self.ram.word(self.snapshot().class.canary())
     }
     fn atomic(&self, off: usize) -> &AtomicU64 {
-        assert!(
-            off.is_multiple_of(8)
-                && off
-                    .checked_add(8)
-                    .is_some_and(|end| end <= arena::RING_BYTES)
-        );
-        // SAFETY: mmap is page aligned; the checked control word is aligned and
-        // live. Only atomic host accesses are exposed, never a RAM slice.
-        unsafe { &*self.ram.ptr.add(CTRL + off).cast() }
+        control_word(&self.ram, off)
     }
     pub(crate) fn load(&self, off: usize) -> u64 {
         self.atomic(off).load(Acquire)
@@ -267,6 +289,7 @@ impl<V: Vm> Slot<V> {
         // or any host write since the last reset, has touched.
         assert!(self.pristine.get(), "bind requires a pristine slot");
         self.generation = generation;
+        self.log_bytes = 0;
         self.store(0, ring::JS_VERSION);
         self.store(ring::GENERATION, generation);
         self.store(
@@ -331,7 +354,16 @@ impl<V: Vm> Slot<V> {
     pub fn try_exit(&mut self) -> Result<Option<Step>, RunError> {
         self.store(ring::MONOTONIC_NS, monotonic_ns());
         self.wrote_ram(); // the guest may write RAM and registers
-        match self.vcpu.run().expect("vCPU run") {
+        // While the guard lives the shard clock may refresh MONOTONIC_NS; its
+        // drop waits out an in-progress store (clock.rs), so none lands
+        // during decode or reset.
+        let ticking = self
+            .clock
+            .as_ref()
+            .map(|c| c.enter(control_word(&self.ram, ring::MONOTONIC_NS)));
+        let exit = self.vcpu.run().expect("vCPU run");
+        drop(ticking);
+        match exit {
             Exit::Doorbell(op) => {
                 self.exits += 1;
                 self.decode_exit(op)
@@ -413,7 +445,18 @@ impl<V: Vm> Slot<V> {
                     if id != 0 || cap != 0 {
                         return Err(RunError::GuestProtocol("log identity"));
                     }
-                    eprintln!("guest: {}", String::from_utf8_lossy(&payload));
+                    // Kernel diagnostics; tenant code cannot emit LOG, a
+                    // compromised kernel can flood it. Shard stderr is bounded
+                    // for the shard's lifetime (Node kills it past 64 KiB), so
+                    // a flood fails this run only, and the text reaches stderr
+                    // only when diagnostics are requested.
+                    self.log_bytes += n;
+                    if self.log_bytes > ring::LOG_BYTES {
+                        return Err(RunError::GuestProtocol("LOG budget"));
+                    }
+                    if diagnostics() {
+                        eprintln!("guest: {}", String::from_utf8_lossy(&payload));
+                    }
                 }
                 _ => return Err(RunError::GuestProtocol("unknown TX kind")),
             }

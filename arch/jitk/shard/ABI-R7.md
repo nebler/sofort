@@ -45,7 +45,11 @@ LOG remains JSON: `{"level":"debug","msg":"..."}` with each diagnostic byte
 escaped as `\u00hh`. A record encodes at most 256 message bytes; aggregate
 encoded diagnostic payload is at most 16 KiB/run. The host validates this
 restricted canonical schema and discards diagnostic records. Native output
-never uses LOG. QuickJS diagnostics now use this same JSON encoding.
+never uses LOG. QuickJS diagnostics now use this same JSON encoding. The JS
+profile's LOG records (kernel diagnostics; tenant code has no LOG path) have
+the same `ring::LOG_BYTES` (16 KiB) per run: more, as from a compromised
+kernel, fails that run (`guest_protocol: LOG budget`), never the shard. The host discards them;
+`JITK_SHARD_DIAGNOSTICS=1` prints them to shard stderr for offline debugging.
 
 The combined stdout+stderr cap is host-chosen, <=1,048,576 bytes, stored at
 control+0x260 and retained independently by the host. A write exceeding remaining

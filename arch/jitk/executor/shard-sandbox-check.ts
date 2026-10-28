@@ -15,7 +15,8 @@ class FakeShard implements ShardHost {
   fault?:Error;
   now() {return 1n;}
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)) {this.sent.push({kind,slot:s.slot,generation:s.generation,id,bytes});return Promise.resolve();}
-  released(s:ShardSession) {this.freed.push(s);}
+  lost:string[]=[];
+  released(s:ShardSession,quarantine?:string) {this.freed.push(s);if(quarantine!==undefined)this.lost.push(quarantine);}
   metrics() {}
   fatal(e:Error) {this.fault??=e;}
   // ShardBackend.receive: a throw here kills the whole shard connection.
@@ -51,7 +52,7 @@ export async function sandboxChecks():Promise<number> {
       const cancel=shard.sent.filter(m=>m.kind===IPC.cancel);
       assert.deepEqual(cancel.map(m=>[m.slot,m.generation]),[[0,1n]],name+': CANCEL for that generation only');
       shard.deliver(hostile,IPC.released);
-      await hostile.exited;assert.deepEqual(shard.freed,[hostile],name+': slot released after reset');
+      await hostile.released;assert.deepEqual(shard.freed,[hostile],name+': slot released after reset');
     }
     assert.equal(shard.fault,undefined,name+': shard connection survives');
     // The sibling on the same shard is unaffected and completes normally.
@@ -92,7 +93,7 @@ export async function sandboxChecks():Promise<number> {
     await assert.rejects(s.reply(1,{ok:1}),/shard unknown reply/,'each id answered once');
     shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.done,0,Buffer.from('{"err":{"name":"TypeError","message":"x"}}'));
     assert.deepEqual(await s.next(),{kind:'fail',cause:'guest',message:'TypeError: x'});
-    assert.equal(s.phase,'done','a guest throw is a completed run');s.kill();assert.equal(s.phase,'ended');
+    assert.equal(s.phase,'done','a guest throw is a completed run');s.release();assert.equal(s.phase,'ended');
     assert.equal(shard.fault,undefined);checks++;
   }
   // Host replies pass the same output limits as v1 frames; a bad one fails only
@@ -116,6 +117,22 @@ export async function sandboxChecks():Promise<number> {
     shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));
     shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.error,0,Buffer.from(text));
     assert.deepEqual(await s.next(),{kind:'fail',cause,message:text});assert.equal(s.phase,'ended',text);checks++;
+  }
+  // QUARANTINED ends a cancelled generation like RELEASED, carrying its reason;
+  // out of state or with a bad payload it is a shard contract violation.
+  {
+    const shard=new FakeShard(),s=await shard.running(0);
+    shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.error,0,Buffer.from('slot_unavailable: quarantined after a failed reset'));
+    assert.equal((await s.next()).kind,'fail');s.release();
+    shard.deliver(s,IPC.quarantined,0,Buffer.from('reset failed: EINVAL'));
+    await s.released;assert.deepEqual(shard.freed,[s]);assert.deepEqual(shard.lost,['reset failed: EINVAL']);
+    assert.equal(shard.fault,undefined);checks++;
+  }
+  for(const [name,bytes,cancel] of [['before CANCEL','x',false],['empty reason','',true],['control byte','a\x01',true],['over ERROR_BYTES','x'.repeat(IPC.errorBytes+1),true]] as const){
+    const shard=new FakeShard(),s=await shard.running(0);
+    if(cancel)s.release();
+    shard.deliver(s,IPC.quarantined,0,Buffer.from(bytes,'latin1'));
+    assert.match(String(shard.fault),/^Error: shard IPC release/,name);assert.deepEqual(shard.lost,[],name);checks++;
   }
   // The run's namespace schema is the v1 one: a reserved name fails this generation.
   {

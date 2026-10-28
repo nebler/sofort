@@ -4,6 +4,24 @@
 IsolateDriver. Every execute acquires a fresh, single-use microVM. Tool calls
 run concurrently on the trusted host; the guest receives only JSON results.
 
+Every backend is an `Engine` (`engine.ts`): `park()` yields a `Session` that
+runs one `Job` (`start`, `next` -> typed `GuestEvent`s, `reply`), and
+`release()` kills its process or resets its slot; `released` resolves when the
+capacity is free. `Engine.limits` reports what a session admits (memory class,
+concurrent sessions and starts, deadline horizon, and per JS job the tool
+calls, call/reply/completion bytes, logs, source size, timers, arena): the
+jitk-abi ring limits (`abi.ts`) for the shard, protocol v1 (`LIMIT`) for the
+process backends. The executor, the pool and the MCP server read these instead
+of hard-coding them or branching on the backend kind.
+
+A job is `js` (tenant code and tool names, run by `MicroVMExecutor`) or
+`native` (a prepared static program, its args and input files, run by
+`NativeExecutor`). `native-backend.ts` is the persistent Linux arm64 ring worker
+(`real native-worker`, `../shard/ABI-R7.md`) as an Engine with one session: a
+native session yields `stdout`, `stderr` and `done {exitCode, outputLimited}`,
+and its `limits.native` carries the profiles and the JNR7 request/output bounds.
+`native-check.ts` runs it on a stand-in worker (`fixtures/native-worker.mjs`).
+
 ## Build, test, demo
 
 Use a real **absolute Node >=24** executable. PATH `node` on this machine may
@@ -86,10 +104,11 @@ and no capacity is free (tokens stay charged through reap or shard reset),
 Freed capacity goes to the head waiter, and abort or deadline removes a waiter.
 Closing the pool or a backend death rejects them. Only a full queue sheds, with
 `OverloadedError` (`code: 'OVERLOADED'`). `ShardBackend.park` queues the same
-way (`ShardOptions.maxWaiting`). `refillConcurrency` defaults to maxLive for the
-shard backend and to 2 VMM boots for process backends. Warm pools require supplied
+way (`ShardOptions.maxWaiting`). `refillConcurrency` defaults to the engine's
+`limits.parallelStarts` capped at maxLive: every slot for the shard, 2 VMM boots
+for process backends. The pool has no backend-specific branch. Warm pools require supplied
 G1 evidence strictly below 2% idle core. The shipped parking receipt binds
-the measured VMM/kernel hashes; different artifacts need fresh G1 evidence. Lifecycle hooks observe kill/reaped;
+the measured VMM/kernel hashes; different artifacts need fresh G1 evidence. Lifecycle hooks observe release/released (`Session.release()`, `Session.released`);
 RunOptions.onTiming observes start/acquired/runSent/firstCall/firstRet/done/resolve.
 Hooks are diagnostic and exceptions cannot affect admission or results.
 

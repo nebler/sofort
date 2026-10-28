@@ -175,8 +175,9 @@ fn record(s: &Slot<FakeVm>, kind: u16, id: u64, payload: &[u8]) {
     b[24..28].copy_from_slice(&(payload.len() as u32).to_le_bytes());
     b[28..32].copy_from_slice(&(if kind == 1 { 1u32 } else { 0 }).to_le_bytes());
     b[32..32 + payload.len()].copy_from_slice(payload);
-    s.copy(REQUEST, &b);
-    s.store(ring::TX_PRODUCER, len as u64);
+    // At the guest's TX cursor (records already decoded stay consumed).
+    s.copy(REQUEST + s.tx, &b);
+    s.store(ring::TX_PRODUCER, (s.tx + len) as u64);
 }
 
 #[test]
@@ -187,6 +188,23 @@ fn guest_ram_reads_are_owned_copies() {
     s.copy(0x1800000, &[5, 6, 7, 8]);
     assert_eq!(&saved[..], &[1, 2, 3, 4]);
     assert_eq!(&s.bytes(0x1800000, 4)[..], &[5, 6, 7, 8]);
+}
+#[test]
+fn log_flood_fails_only_its_run() {
+    // A compromised kernel writing LOG records: up to ring::LOG_BYTES of
+    // payload per run decodes (and prints nothing), the next byte is a run
+    // error, never a shard failure.
+    let mut s = slot();
+    let chunk = vec![b'x'; 4096];
+    for _ in 0..ring::LOG_BYTES / chunk.len() {
+        record(&s, ring::LOG, 0, &chunk);
+        assert!(s.decode_exit(ring::SUBMIT).is_ok());
+    }
+    record(&s, ring::LOG, 0, b"x");
+    assert!(matches!(
+        s.decode_exit(ring::SUBMIT),
+        Err(RunError::GuestProtocol("LOG budget"))
+    ));
 }
 #[test]
 fn malformed_guest_records_are_run_errors() {

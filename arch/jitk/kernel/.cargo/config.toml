@@ -1,0 +1,3 @@
+# Kernel builds from this directory pin the crate metadata (rustc-pin.sh).
+[build]
+rustc-wrapper = "./rustc-pin.sh"

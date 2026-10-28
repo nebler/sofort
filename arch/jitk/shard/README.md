@@ -120,7 +120,11 @@ a second generation-fenced CAS claims escalation and `pidfd_send_signal(SIGKILL)
 kills the shard. A reset cannot reuse a slot after escalation has claimed it.
 The receiving reactor fails the shard closed on unexpected watchdog exit;
 production supervision must also cover a stalled reactor/watchdog. No per-VM/call helper or
-waiting thread is added. The reactor queues are bounded owner commands/events.
+waiting thread is added. One `jitk-clock` thread per pool (`clock.rs`) keeps guest time
+real: every 1 ms it stores CLOCK_MONOTONIC into the MONOTONIC_NS control word of each
+slot whose vCPU is inside KVM_RUN (the ring kernel reads that word for every
+clock_gettime), and it parks while none is. It writes only inside that window, and
+leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
 Real-guest commands (all emit JSONL):
@@ -162,7 +166,13 @@ those state machines on any host with a fake backend. Behind the seam
 | kick | lease signal | `hvf::Kicker` (`hv_vcpus_exit`) |
 
 `kvm::Slot` is `Slot<KvmVm>` with the same constructors, labels and call order
-as before; the native worker stays KVM-only.
+as before; the native worker stays KVM-only. The job clock, the per-run LOG
+budget and quarantine reasons live in the generic slot, so HVF has them too:
+`Slot::set_clock` registers a `clock::Clock` cell (the owner pool does this on
+Linux; `clock_advances_inside_a_run` checks it on HVF), and
+`Slot::quarantine_reason` is what the IPC QUARANTINED message carries
+(`failed_reset_quarantines_with_reason`). HVF has no IPC loop yet (phase 2),
+so nothing sends QUARANTINED there.
 
 On macOS arm64, `make snapshot` builds the same two classes as on Linux, prepared
 by the `hvf` tool (darwin-arm64 cache entries; `.mem` has KVM's format, `.regs`
@@ -211,12 +221,6 @@ glue-2m, `return 2`, p50 over 1,000 runs, M4 Pro at load 5–6 (`hvf bench`):
 For the record, DC CIVAC over the 1.39 MiB is ~42 µs, an I-cache invalidate
 (`sys_icache_invalidate`) ~90 µs; the non-executable mapping makes the latter
 unnecessary.
-
-`json64k` on the helper snapshots ends in `guest_fatal` (out of memory, then
-no completion) on HVF and on KVM alike, with this branch's `real` and with
-the previous one (`real hostile BASE json64k` on kvm-dev): the harness's
-`hostile json64k` expectation of an out-of-memory result is stale for helper
-snapshots. The HVF mix expects what KVM does.
 
 Open: the kernel should `tlbi vmalle1` (risk 3) and could `ic ialluis` once
 the CHECKPOINT doorbell returns. KVM has no per-memslot execute control, and

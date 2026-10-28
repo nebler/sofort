@@ -1,7 +1,7 @@
 import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
-import {ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
-import type {Engine,GuestEvent,Job,Phase,Reply,Session} from './engine.js';
+import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
+import type {Engine,GuestEvent,Job,Limits,Phase,Reply,Session} from './engine.js';
 import {failure} from './engine.js';
 import {executionBody} from './code.js';
 import {AdmissionQueue} from './pool.js';
@@ -9,8 +9,11 @@ import {ARENA_CLASSES} from './abi.js';
 import {ABI_VERSION,IPC,SharedChannel,checkReady,monotonicNs,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
-/** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)). */
-export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void};
+/** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are gone for the shard's lifetime. */
+export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:number;slots:number};
+/** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
+ *  onQuarantine observes lost capacity; without it each loss is one stderr line. */
+export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void};
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(code:string,names:string[]):string {
@@ -25,15 +28,26 @@ export function shardWire(code:string,names:string[]):string {
   return `return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
 }
 
+/** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots. */
+export function shardLimits(slots:number):Limits {
+  const arena=ARENA_CLASSES['glue-2m'];
+  return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
+    // Logs are ring CALL records: they share the call budget and the record size.
+    js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:IPC.replyBytes,doneBytes:IPC.doneBytes,
+      logs:IPC.calls,logBytes:IPC.callBytes,timers:false,arenaBytes:arena.arenaBytes}};
+}
+
 export class ShardBackend implements Engine {
   readonly kind='shard' as const;
-  readonly memoryLimitMB=2;
+  readonly limits:Limits;
   readonly ready:Promise<void>;
   readonly child:ChildProcess;
   private channel:SharedChannel;
   private sessions=new Map<number,ShardSession>();
   private queue:AdmissionQueue<ShardSession>;
   private generations:bigint[];
+  /** Slots the shard reported QUARANTINED: never claimed again. */
+  private lost=new Set<number>();
   private dead?:Error;
   private resolveReady!:()=>void;
   private rejectReady!:(e:Error)=>void;
@@ -46,7 +60,7 @@ export class ShardBackend implements Engine {
     verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
-    this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
+    this.limits=shardLimits(slots);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
     this.channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));
     // Exactly these descriptors and a credential-free environment are inherited.
@@ -85,10 +99,10 @@ export class ShardBackend implements Engine {
     if(this.dead)throw this.dead;
     if(signal?.aborted)throw Error('aborted');
     // All slots busy or resetting: wait in FIFO order; released() hands over.
-    const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sessions.has(i));
+    const slot=this.queue.length?-1:this.generations.findIndex((_,i)=>!this.sessions.has(i)&&!this.lost.has(i));
     const s=slot<0?await this.queue.wait(signal,deadline):this.claim(slot);
-    if(signal?.aborted){s.kill();await s.exited;throw Error('aborted');}
-    if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.kill();await s.exited;throw e;}
+    if(signal?.aborted){s.release();await s.released;throw Error('aborted');}
+    if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.release();await s.released;throw e;}
     return s;
   }
   private claim(slot:number):ShardSession {
@@ -97,11 +111,22 @@ export class ShardBackend implements Engine {
     const s=new ShardSession(this,slot,generation);this.sessions.set(slot,s);return s;
   }
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
-  released(s:ShardSession) {
+  /** Physical slots, and those lost to quarantine (capacity is slots - lost). */
+  get capacity() {return {slots:this.generations.length,lost:this.lost.size};}
+  released(s:ShardSession,quarantine?:string) {
     if(this.sessions.get(s.slot)!==s)throw Error('shard release identity');this.sessions.delete(s.slot);
+    if(quarantine!==undefined){this.quarantined(s,quarantine);return;}
     // The slot just finished its reset: give it straight to the head waiter.
     const w=this.queue.shift();if(!w)return;
     try{w.resolve(this.claim(s.slot));}catch(e){w.reject(e as Error);}
+  }
+  /** The slot never returns: account for it, report it, fail the shard once none is left. */
+  private quarantined(s:ShardSession,reason:string) {
+    this.lost.add(s.slot);
+    const q:ShardQuarantine={slot:s.slot,generation:s.generation,reason,lost:this.lost.size,slots:this.generations.length};
+    if(this.options.onQuarantine)try{this.options.onQuarantine(q);}catch{}
+    else process.stderr.write(`jitk shard: slot ${q.slot} quarantined (${reason}); capacity ${q.slots-q.lost}/${q.slots}\n`);
+    if(this.lost.size===this.generations.length)this.die(Error(`shard capacity lost: all ${q.slots} slots quarantined`));
   }
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}
@@ -136,8 +161,8 @@ type ShardRun={
  * Records decode straight into GuestEvents: one parse under the protocol
  * limits, the v1 field validators and a RunBudget; no v1 frames. */
 export class ShardSession implements Session {
-  readonly exited:Promise<void>;
-  private resolveExit!:()=>void;
+  readonly released:Promise<void>;
+  private resolveReleased!:()=>void;
   private run:ShardRun={phase:'parked',budget:new RunBudget(),wires:new Map(),nextWire:1,records:0,stats:false,admittedDeadlineNs:0n};
   private deadline?:number;
   private failure?:Fail;
@@ -146,7 +171,7 @@ export class ShardSession implements Session {
   private stopped:Promise<never>;
   private rejectStopped!:(e:Error)=>void;
   constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint) {
-    this.exited=new Promise(resolve=>{this.resolveExit=resolve;});
+    this.released=new Promise(resolve=>{this.resolveReleased=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
   }
   get phase():Phase {
@@ -158,7 +183,7 @@ export class ShardSession implements Session {
     if(this.deadline!==undefined&&this.deadline!==deadline)throw Error('deadline already armed');
     this.deadline=deadline;
   }
-  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveExit();}
+  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveReleased();}
   private emit(e:GuestEvent) {
     if(this.waiter){const w=this.waiter;this.waiter=undefined;w(e);}
     else {if(this.events.length>=34)throw Error('shard receive queue bound');this.events.push(e);}
@@ -170,7 +195,7 @@ export class ShardSession implements Session {
     const w=this.waiter;this.waiter=undefined;w?.(f);
   }
   /** Fail this generation only: end the reader and reset the slot via CANCEL. */
-  private abandon(e:Error) {this.end({kind:'fail',cause:'guest',message:e.message});this.kill();}
+  private abandon(e:Error) {this.end({kind:'fail',cause:'guest',message:e.message});this.release();}
   private guest(handle:()=>void) {
     try{handle();}catch(e){this.abandon(Error('protocol '+(e instanceof ProtocolError?e.code:'HOST_ERROR')));}
   }
@@ -204,10 +229,12 @@ export class ShardSession implements Session {
     else if(m.kind===IPC.done){if(m.id||m.bytes.length>16352)throw Error('shard IPC completion bound');}
     else if(m.kind===IPC.error){if(m.id||m.bytes.length>512)throw Error('shard IPC error bound');}
     else if(m.kind===IPC.stats){if(m.id||m.bytes.length<32||m.bytes.length>288||m.bytes.readBigUInt64LE(24)>32n||m.bytes.length!==32+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
-    else if(m.kind!==IPC.released)throw Error('shard IPC direction/kind');
-    if(m.kind===IPC.released){
-      if(run.phase!=='releasing'||m.id||m.bytes.length)throw Error('shard IPC release schema/state');
-      run.phase='released';this.backend.released(this);this.resolveExit();return;
+    else if(m.kind!==IPC.released&&m.kind!==IPC.quarantined)throw Error('shard IPC direction/kind');
+    // RELEASED, or QUARANTINED with its reason, ends the generation Node cancelled.
+    if(m.kind===IPC.released||m.kind===IPC.quarantined){
+      const reason=m.kind===IPC.quarantined?m.bytes.toString('latin1'):undefined;
+      if(run.phase!=='releasing'||m.id||(reason===undefined?m.bytes.length:!/^[\x20-\x7e]+$/.test(reason)||m.bytes.length>IPC.errorBytes))throw Error('shard IPC release schema/state');
+      run.phase='released';this.backend.released(this,reason);this.resolveReleased();return;
     }
     if(run.phase==='releasing')return; // draining this generation while reset is in progress
     if(run.phase!=='running')throw Error('shard IPC run state');
@@ -246,6 +273,7 @@ export class ShardSession implements Session {
   }
   async start(job:Job):Promise<void> {
     if(this.failure)throw Error(this.failure.message);
+    if(job.kind!=='js')throw Error('the shard runs JS jobs only');
     if(this.run.phase!=='parked'||this.deadline===undefined)throw Error('shard run requires admission deadline');
     const code=executionBody(job,true);
     this.host(()=>{checkCode(code);checkTools(job.tools);});
@@ -273,7 +301,7 @@ export class ShardSession implements Session {
     if(payload.length>IPC.replyBytes)payload=Buffer.from(`{"err":{"code":"LIMIT","message":"shard tool reply limit (${IPC.replyBytes} bytes)"}}`);
     await this.write(IPC.reply,wire,payload);
   }
-  kill() {
+  release() {
     if(this.run.phase==='released'||this.run.phase==='releasing')return;
     this.run.phase='releasing';
     this.end({kind:'fail',cause:'engine',message:'sandbox exited'});this.rejectStopped(Error(this.failure!.message));

@@ -1,4 +1,4 @@
-//! The HVF backend. The ignored tests need macOS arm64, a binary signed with
+//! Th        let step = s.exit().unwrap_or_else(|e| panic!("{name}: {e}")); HVF backend. The ignored tests need macOS arm64, a binary signed with
 //! the hypervisor entitlement (hvf-run.sh) and prepared HVF snapshots in
 //! JITK_SHARD_TEST_SNAPSHOT(S) (`make -C arch/jitk/shard test-hvf` does all
 //! three). HVF allows one VM per process, so they take `VM` in turn.
@@ -10,8 +10,6 @@ use crate::snapshot::Snapshot;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 static VM: Mutex<()> = Mutex::new(());
-/// A fixture outcome: the guest stops without a completion.
-const FATAL: &str = "guest_fatal";
 fn vm_lock() -> MutexGuard<'static, ()> {
     VM.lock().unwrap_or_else(|e| e.into_inner())
 }
@@ -62,16 +60,16 @@ fn fixture(name: &str) -> (&'static str, &'static str) {
         "return2" => (include_str!("../../fixtures/return2.js"), "{\"ok\":2}"),
         "one_tool" => (include_str!("../../fixtures/one_tool.js"), "{\"ok\":42}"),
         "promise10" => (include_str!("../../fixtures/promise10.js"), "{\"ok\":45}"),
-        // Out of memory on glue-2m. On the helper snapshots the guest then
-        // stops without a completion (guest_fatal), on KVM as here (checked
-        // with `real hostile BASE json64k` on kvm-dev, 2026-10-28).
-        "json64k" => (include_str!("../../fixtures/json64k.js"), FATAL),
+        // Out of memory on glue-2m, as the KVM shard's driver also expects.
+        "json64k" => (include_str!("../../fixtures/json64k.js"), OOM),
         // Dirties much of the arena and leaves a tenant global behind.
         "stress" => (
             "globalThis.__tenantCanary=1;let a=[];for(let i=0;i<2000;i++)a.push({i,s:'x'+i});return a.length;",
             "{\"ok\":2000}",
         ),
         // Runs the arena out of memory with the global set.
+        // The KVM harness's arena exhaustion (typed arrays).
+        "bomb" => (include_str!("../../fixtures/bomb.js"), OOM),
         "oom" => (
             "globalThis.__tenantCanary=1;let a=[];for(let i=0;i<1e6;i++)a.push({i,s:'x'+i});return a.length;",
             OOM,
@@ -95,10 +93,7 @@ fn run(s: &mut Slot<HvfVm>, generation: u64, name: &str) -> u64 {
         &mut std::fs::File::open("/dev/urandom").unwrap(),
     );
     loop {
-        let step = match s.exit() {
-            Err(RunError::GuestFatal) if expected == FATAL => break,
-            r => r.unwrap_or_else(|e| panic!("{name}: {e}")),
-        };
+        let step = s.exit().unwrap_or_else(|e| panic!("{name}: {e}"));
         if step.op == ring::FINISH {
             assert!(s.repaired(), "{name}: missing repair acknowledgement");
             assert_eq!(step.finish.as_deref(), Some(expected), "{name}");
@@ -236,7 +231,7 @@ fn mix_leaks_nothing_across_resets() {
         "stress",
         "canary",
         "one_tool",
-        "oom",
+        "bomb",
         "canary",
         "promise10",
         "json64k",
@@ -535,4 +530,80 @@ fn impdef_registers_are_out_of_guest_reach() {
         reachable.is_empty(),
         "guest-reachable registers the reset cannot restore: {reachable:04x?}"
     );
+}
+
+/// The shard clock (clock.rs) keeps guest time moving inside one HVF run: a
+/// job that waits 20 ms on Date.now() finishes, which it cannot when the time
+/// word is stored only before each entry (a kick ends that case after 2 s).
+#[test]
+#[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
+fn clock_advances_inside_a_run() {
+    let _vm = vm_lock();
+    let clock = crate::clock::Clock::start(1);
+    let mut s = slot(snapshot(), MemoryReset::Copy);
+    s.set_clock(clock.cell(0));
+    let kicker = s.vcpu().kicker();
+    let done = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let d = done.clone();
+    let guard = std::thread::spawn(move || {
+        for _ in 0..200 {
+            if d.load(std::sync::atomic::Ordering::Acquire) {
+                return;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        let _ = kicker.kick();
+    });
+    let source = "const t=Date.now();let n=0;while(Date.now()-t<20)n++;return n>0?1:0;";
+    s.bind(2, source, &mut std::fs::File::open("/dev/urandom").unwrap());
+    let t = std::time::Instant::now();
+    let finish = loop {
+        match s.try_exit() {
+            Ok(Some(step)) if step.op == ring::FINISH => break step.finish,
+            Ok(Some(step)) => {
+                for r in step.requests.iter().rev() {
+                    s.reply(r).unwrap();
+                }
+            }
+            Ok(None) => break None, // kicked: the clock did not advance
+            Err(e) => panic!("{e}"),
+        }
+    };
+    done.store(true, std::sync::atomic::Ordering::Release);
+    guard.join().unwrap();
+    assert_eq!(
+        finish.as_deref(),
+        Some("{\"ok\":1}"),
+        "guest time stood still"
+    );
+    let ms = t.elapsed().as_millis();
+    assert!((20..1000).contains(&ms), "{ms} ms");
+}
+/// A reset HVF rejects quarantines the slot with its reason (what the IPC
+/// QUARANTINED message carries on Linux) and it never admits again.
+#[test]
+#[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
+fn failed_reset_quarantines_with_reason() {
+    let _vm = vm_lock();
+    let mut s = slot(snapshot(), MemoryReset::Copy);
+    let (source, expected) = fixture("return2");
+    s.bind(
+        test_guest::FAIL_RESET_GENERATION,
+        source,
+        &mut std::fs::File::open("/dev/urandom").unwrap(),
+    );
+    let finish = loop {
+        let step = s.exit().unwrap();
+        if step.op == ring::FINISH {
+            break step.finish;
+        }
+    };
+    assert_eq!(finish.as_deref(), Some(expected));
+    assert!(s.reset().is_err() && s.is_quarantined());
+    let why = s.quarantine_reason().unwrap();
+    assert!(
+        why.starts_with("reset failed") && why.contains("hv_vcpu_set_sys_reg"),
+        "{why}"
+    );
+    assert!(s.admit().is_err());
 }

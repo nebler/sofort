@@ -7,10 +7,10 @@ import type {Session} from './engine.js';
 import {SandboxPool} from './pool.js';
 import {rules,noCredentials,type PolicyConfig} from './policy-adapter.js';
 import {performance} from 'node:perf_hooks';
-import {LIMIT} from '../protocol/dispatcher.js';
 export * from './backend.js';
 export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
+export {NativeBackend,NativeExecutor,NativeJobError,NATIVE_LIMITS,encodeNativeJob,type NativeOptions,type NativeResult,type NativeError} from './native-backend.js';
 export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
 export type Context=Readonly<{executionId:string;signal:AbortSignal;provenance:readonly Label[]}>;
@@ -40,10 +40,12 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     const baseContext={executionId:crypto.randomUUID(),signal:controller.signal};
     const getContext=():Context=>Object.freeze({...baseContext,provenance:Object.freeze([...labels])});
     const ctx=getContext();
-    let sandbox:Session|undefined;let kill:(()=>void)|undefined;let live=true;let run:any;
+    let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;
     let firstCall=true,firstRet=true;
     try {
-      if(code.length>LIMIT.code)throw new Error('code limit');
+      const limits=this.pool.backend.limits.js;
+      if(!limits)throw new Error('engine runs no JS jobs');
+      if(code.length>limits.code)throw new Error('code limit');
       if(options.connectors?.length)throw new Error('connector RPC unsupported: adapt to ResolvedProvider');
       const source=Array.isArray(providersOrFns)?providersOrFns:[{name:'codemode',fns:providersOrFns}];
       const providers=source.map(p=>{
@@ -71,7 +73,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       }
       run=rules.createRun({tools,deadline,limits:this.security.limits});
       sandbox=await this.pool.acquire(ctx.signal,deadline);mark('acquired');const s=sandbox;
-      kill=()=>s.kill();ctx.signal.addEventListener('abort',kill,{once:true});
+      stop=()=>s.release();ctx.signal.addEventListener('abort',stop,{once:true});
       if(expired())abort();
       if(ctx.signal.aborted)throw new Error('aborted');
       await s.armDeadline?.(deadline);
@@ -96,7 +98,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           if(run.tainted.untrusted)labels.add('tool-untrusted');
           if(expired())abort();
           if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
-        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.kill();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.kill());}
+        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.release());}
       };
       while(true){
         // Events are validated by the session's engine adapter (bytes, schema,
@@ -112,14 +114,15 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
         }else if(ev.kind==='done'){
           mark('done');
           return {result:parse(JSON.stringify(ev.ok)),logs};
-        }else throw Error(ev.message);
+        }else if(ev.kind==='fail')throw Error(ev.message);
+        else throw Error(`engine sent a native ${ev.kind} event to a JS job`);
       }
     }catch(e){if(expired())abort();return {result:undefined,error:ctx.signal.aborted?'Execution aborted or timed out':String(e),logs};}
     finally {
       live=false;if(run){run.dead=true;run.approvals.clear();}
       clearTimeout(timer);options.signal?.removeEventListener('abort',abort);
       // Remove the abort→SIGKILL listener before cancelling host tool work.
-      if(kill)ctx.signal.removeEventListener('abort',kill);
+      if(stop)ctx.signal.removeEventListener('abort',stop);
       // setImmediate runs after the execute promise's subscribers. No kill,
       // reap, refill or tool cancellation occurs on a successful result path.
       if(sandbox)this.pool.retire(sandbox,()=>controller.abort());
@@ -128,7 +131,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     }
   }
   async createContext(config:IsolateConfig):Promise<IsolateContext> {
-    if(config.memoryLimit!==undefined&&config.memoryLimit!==this.pool.backend.memoryLimitMB)throw new Error('memory limit requires a matching backend pool');
+    if(config.memoryLimit!==undefined&&config.memoryLimit!==this.pool.backend.limits.memoryMB)throw new Error('memory limit requires a matching backend pool');
     const lifetime=new AbortController();let running=false;let active:Promise<ExecuteResult>|undefined;
     const fns=Object.fromEntries(Object.entries(config.bindings).map(([key,b])=>[key,async(...args:unknown[])=>b.execute(args[0])]));
     // TanStack passes a stripped JS function body. Expose exact binding keys;
