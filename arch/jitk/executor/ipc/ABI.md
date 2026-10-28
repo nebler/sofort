@@ -1,4 +1,7 @@
-# Node ↔ shard shared-memory IPC, revision 1
+# Node ↔ shard shared-memory IPC, revision 2 (ABI version 8)
+
+Every number below is defined once in the jitk-abi crate (`../../abi`,
+`ipc` and `ring` modules); `bridge_abi.h` and `../abi.ts` are generated from it.
 
 Linux arm64, little endian, one Node producer/consumer and one shard reactor.
 Three inherited descriptors: fd3 sealed memfd, fd4 Node→shard eventfd, fd5
@@ -23,8 +26,10 @@ controls that copy or supplies an address. Padding beyond payload is ignored.
 
 Header: kind u32 @0, slot u32 @4, generation u64 @8, identity u32 @16, payload
 length u32 @20, reserved u64=0 @24. Length <=16,384; slot <configured cap<=64;
-generation nonzero and <2^62 for run messages. READY has all fields zero other
-than kind. Node sends strictly increasing per-slot generations; Rust admits
+generation nonzero and <2^62 for run messages. READY has all header fields zero
+other than kind and length; its 4-byte payload is the ABI version (u32 LE).
+Node refuses a shard whose READY carries another version or none. Node sends
+strictly increasing per-slot generations; Rust admits
 exactly `last+1` only after reset. Every response must match the current Node
 slot object and generation. Unexpected/stale/direction-invalid messages fail
 the entire shard connection closed.
@@ -38,7 +43,7 @@ the entire shard connection closed.
 | Shard DONE=17 | id=0, <=16352 printable ASCII bytes, no outstanding calls; Node requires JSON `{"ok":value}` or `{"err":{"name":...,"message":...}}` |
 | Shard ERROR=18 | id=0, <=512 diagnostic bytes; lease failure/memory bound/fatal guest |
 | Shard RELEASED=19 | id=0, no payload; owner has completed stopped reset, slot may admit its next generation |
-| Shard READY=20 | empty, once per connection after loading snapshot and starting owners/watchdog |
+| Shard READY=20 | ABI version u32 LE (exactly 4 bytes), once per connection after loading the snapshot (whose `.identity` must carry the same `abiVersion`) and starting owners/watchdog |
 | Shard STATS=22 | id=0; owner CPU ns, stopped ns, reset-completed ns, count (u64 each), count<=32 u64 owner-observed policy round trips; once before DONE/ERROR |
 
 PING=21 is only accepted by the offline `ipc-probe echo` executable mode; it
@@ -53,7 +58,7 @@ schemas, outstanding calls, wire budgets and frame order, then canonical
 executor policy runs for every actual tool. A guest payload that fails those
 checks fails only its own sandbox (Node sends CANCEL for that generation);
 envelope, identity, order and state violations still close the whole shard
-connection. `protocol/guest-payloads.json` is the shared acceptance corpus for
+connection. `abi/guest-payloads.json` is the shared acceptance corpus for
 both sides' tests. Log records get only a null
 acknowledgement. Logical tool IDs exclude logs; Node privately maps them back
 to physical ring IDs. Oversized provider replies become a bounded LIMIT error.

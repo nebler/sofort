@@ -3,7 +3,8 @@ import {spawn,type ChildProcess} from 'node:child_process';
 import {Dispatcher,ProtocolError,encode,parseFrame,parseJson,type Frame} from '../protocol/dispatcher.js';
 import type {Backend,Sandbox} from './backend.js';
 import {AdmissionQueue} from './pool.js';
-import {IPC,SharedChannel,monotonicNs,type Message} from './shard-ipc.js';
+import {ARENA_CLASSES} from './abi.js';
+import {ABI_VERSION,IPC,SharedChannel,checkReady,monotonicNs,type Message} from './shard-ipc.js';
 
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)). */
@@ -14,7 +15,7 @@ export function shardSource(frame:Frame):string {
   const names=Object.keys(frame.ns as object);
   // Only JSON string data is ASCII escaped: preserve raw templates/regex tokens.
   const wire=`return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(frame.code))},${JSON.stringify(names)});`;
-  if(Buffer.byteLength(wire)>8192)throw Error('shard source limit including trusted adapters (8192 bytes)');
+  if(Buffer.byteLength(wire)>IPC.sourceBytes)throw Error(`shard source limit including trusted adapters (${IPC.sourceBytes} bytes)`);
   return wire;
 }
 
@@ -36,7 +37,7 @@ export class ShardBackend implements Backend {
   private readonly onExit=()=>this.child.kill('SIGKILL');
   constructor(readonly options:ShardOptions) {
     if(process.platform!=='linux')throw Error('shard backend requires Linux');
-    verifyPreparedSnapshot(options.snapshot);
+    verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
     const slots=options.slots??64,owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
     this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
@@ -58,7 +59,8 @@ export class ShardBackend implements Backend {
   }
   private receive(m:Message) {
     if(m.kind===IPC.ready){
-      if(this.didReady||m.slot||m.generation||m.id||m.bytes.length)throw Error('shard IPC ready schema');
+      if(this.didReady)throw Error('shard IPC ready schema');
+      checkReady(m);
       this.didReady=true;clearTimeout(this.startup);this.resolveReady();return;
     }
     if(!this.didReady||m.slot>=this.generations.length||m.generation===0n)throw Error('shard IPC peer slot/state');
@@ -222,16 +224,16 @@ export class ShardSandbox implements Sandbox {
       const source=Buffer.from(shardSource(frame),'ascii');
       const remaining=Math.max(0,this.deadline-Date.now());
       if(remaining>60000)throw Error('shard deadline limit (60000 ms)');
-      const payload=Buffer.alloc(24+source.length);
+      const payload=Buffer.alloc(IPC.startHeaderBytes+source.length);
       this.admittedDeadlineNs=this.backend.now()+BigInt(Math.floor(remaining*1e6));
       payload.writeBigUInt64LE(this.admittedDeadlineNs,0);
-      payload.writeUInt32LE(32,8);payload.writeUInt32LE(1024,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(2*1048576,20);source.copy(payload,24);
+      payload.writeUInt32LE(IPC.calls,8);payload.writeUInt32LE(IPC.callBytes,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(ARENA_CLASSES['glue-2m'].admissionBytes,20);source.copy(payload,IPC.startHeaderBytes);
       this.state='running';await this.write(IPC.start,0,payload);
     }else if(frame.t==='ret'){
       const wire=this.pending.get(frame.id as number);if(wire===undefined)throw Error('shard unknown reply');
       this.pending.delete(frame.id as number);this.wirePending.delete(wire);
       let payload=Buffer.from(ascii(JSON.stringify(Object.hasOwn(frame,'ok')?{ok:frame.ok}:{err:frame.err})));
-      if(payload.length>1024)payload=Buffer.from('{"err":{"code":"LIMIT","message":"shard tool reply limit (1024 bytes)"}}');
+      if(payload.length>IPC.replyBytes)payload=Buffer.from(`{"err":{"code":"LIMIT","message":"shard tool reply limit (${IPC.replyBytes} bytes)"}}`);
       await this.write(IPC.reply,wire,payload);
     }else throw Error('shard host frame');
   }

@@ -25,11 +25,10 @@ import { environment } from '../tslib/process.ts';
 import { run } from '../tslib/subprocess.ts';
 import { JITK_ROOT, SNAPSHOT_CLASSES, SNAPSHOT_TARGET, hostPlatform, pins, requireArtifact, snapshotBase, snapshotIndex, snapshotInputs, snapshotKey, snapshotRoot, withLock } from '../tslib/deps.ts';
 import { rustToolchain } from '../tslib/rust.ts';
-import { bootstrapSource, helperHash, helperSource, verifyPreparedSnapshot } from '../executor/prepared-helpers.mjs';
+import { ABI_VERSION } from '../executor/abi.ts';
+import { IDENTITY_VERSION, bootstrapSource, helperHash, helperSource, verifyPreparedSnapshot } from '../executor/prepared-helpers.mjs';
 
 const KERNEL = join(JITK_ROOT, 'kernel');
-// Ring arena GPA; the same value as kernel/build-ring.sh and shard ARENA_OFFSET.
-const ARENA = '0x81800000';
 
 function log(message: string): void {
   console.error('jitk snapshot: ' + message);
@@ -56,7 +55,8 @@ async function kernelImage(cls: string, out: string, env: Record<string, string>
   settings.JITK_SCRIPT = script();
   settings.JITK_TOOLS_DIR = join(KERNEL, '.work/bin');
   settings.CARGO_TARGET_DIR = join(snapshotRoot(), 'kernel-target-' + hostPlatform() + '-' + cls);
-  settings.RUSTFLAGS = (cls === 'glue-4m' ? '--cfg ring_glue_4m ' : '') + '-C link-arg=--defsym=__ring_arena=' + ARENA;
+  // The arena GPA comes from the image itself (jitk-abi, kernel mmu_ring.rs).
+  settings.RUSTFLAGS = cls === 'glue-4m' ? '--cfg ring_glue_4m' : '';
   check(SNAPSHOT_CLASSES.includes(cls), 'unsupported ring memory class ' + cls);
   await run([tools.CARGO, 'build', '--locked', '--offline', '--release', '--target', 'aarch64-unknown-none', '--features', 'transport-ring'], { cwd: KERNEL, env: settings, inherit: true, timeout: 3600 });
   await run([env.OBJCOPY || 'llvm-objcopy', '-O', 'binary', join(settings.CARGO_TARGET_DIR, 'aarch64-unknown-none/release/jitk-02'), out], { env, timeout: 600 });
@@ -71,7 +71,7 @@ function verified(dir: string): boolean {
   try {
     const recorded = readJSON<Record<string, string>>(manifest);
     const base = join(dir, 'helpers');
-    verifyPreparedSnapshot(base);
+    verifyPreparedSnapshot(base, ABI_VERSION);
     const identity = readJSON<Record<string, string>>(base + '.identity');
     return identity.kernelSha256 === recorded.kernel_sha256 && shaFile(base + '.bin') === recorded.kernel_sha256;
   } catch (error) {
@@ -94,13 +94,14 @@ async function prepare(dir: string, image: string, cls: string, kernel: string, 
     for (const ext of ['mem', 'regs', 'layout']) {
       files[ext] = shaFile(base + '.' + ext);
     }
-    const identity = { version: 1, helperSha256: helperHash, kernelSha256: kernel, files };
+    const identity = { version: IDENTITY_VERSION, abiVersion: ABI_VERSION, helperSha256: helperHash, kernelSha256: kernel, files };
     writeFileSync(base + '.identity', JSON.stringify(identity, null, 2) + '\n', { flag: 'wx' });
     chmodSync(base + '.identity', 0o444);
     dumpJSON(join(stage, 'manifest.json'), {
       artifact: 'shard-snapshot',
       class: cls,
       kernel_sha256: kernel,
+      abi_version: ABI_VERSION,
       helper_sha256: helperHash,
       inputs_sha256: snapshotInputs(cls),
       toolchain: pins().rust_toolchain,

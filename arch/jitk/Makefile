@@ -38,9 +38,11 @@ build: deps
 	+@$(DELEGATE) executor build
 	+@$(DELEGATE) mcp build
 	+@$(DELEGATE) grow build
-# The layering lint (tools/layering.ts) runs first: guest <- engine <- host <- research.
+# The layering lint (tools/layering.ts) runs first: abi <- guest <- engine <- host <- research;
+# then the ABI crate, whose test fails while a generated copy (abi/README.md) is stale.
 test: deps
 	@"$(ROOT)/tools/.work/bin/layering" --self-test
+	+@$(DELEGATE) abi test
 	+@$(DELEGATE) kernel test
 	+@$(DELEGATE) vmm test
 	+@$(DELEGATE) vmm/sandbox test

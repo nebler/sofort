@@ -1,7 +1,15 @@
 import {createRequire} from 'node:module';
+import {ABI_VERSION,IPC} from './abi.js';
 
-export const IPC=Object.freeze({start:1,reply:2,cancel:3,call:16,done:17,error:18,released:19,ready:20,ping:21,stats:22,payload:16384,capacity:64,slots:64,calls:32,callBytes:1024});
+// Kinds, geometry and bounds are generated from the jitk-abi crate (abi.ts).
+export {ABI_VERSION,IPC};
 export type Message={kind:number;slot:number;generation:bigint;id:number;bytes:Buffer};
+/** READY carries the shard's ABI version (u32 LE); any other version, or none, is refused. */
+export function checkReady(m:Message):void {
+  if(m.slot||m.generation||m.id)throw Error('shard IPC ready schema');
+  const version=m.bytes.length===IPC.readyBytes?m.bytes.readUInt32LE(0):undefined;
+  if(version!==ABI_VERSION)throw Error(`shard ABI version ${version??'missing'} does not match the executor's ABI version ${ABI_VERSION}: refusing this shard; rebuild it (make -C arch/jitk deps) and its snapshots (make -C arch/jitk/shard snapshot)`);
+}
 type Native={fds:number[];send(record:Buffer):boolean;drain():Buffer[];close():void};
 type Bridge={create(callback:()=>void):Native;now():bigint};
 let bridge:Bridge|undefined;
@@ -12,12 +20,12 @@ function binding():Bridge {
 export function monotonicNs():bigint {return binding().now();}
 export function record(m:Message):Buffer {
   if(!Number.isInteger(m.kind)||m.kind<0||m.kind>0xffffffff||!Number.isInteger(m.slot)||m.slot<0||m.slot>=IPC.slots||m.generation<0n||m.generation>=1n<<62n||!Number.isInteger(m.id)||m.id<0||m.id>0xffffffff||m.bytes.length>IPC.payload)throw Error('shard IPC local envelope');
-  const b=Buffer.alloc(32+m.bytes.length);
-  b.writeUInt32LE(m.kind,0);b.writeUInt32LE(m.slot,4);b.writeBigUInt64LE(m.generation,8);b.writeUInt32LE(m.id,16);b.writeUInt32LE(m.bytes.length,20);m.bytes.copy(b,32);return b;
+  const b=Buffer.alloc(IPC.headerBytes+m.bytes.length);
+  b.writeUInt32LE(m.kind,0);b.writeUInt32LE(m.slot,4);b.writeBigUInt64LE(m.generation,8);b.writeUInt32LE(m.id,16);b.writeUInt32LE(m.bytes.length,20);m.bytes.copy(b,IPC.headerBytes);return b;
 }
 export function message(b:Buffer):Message {
-  if(b.length<32||b.length>32+IPC.payload||b.readUInt32LE(20)!==b.length-32||b.readBigUInt64LE(24)!==0n)throw Error('shard IPC peer envelope');
-  return {kind:b.readUInt32LE(0),slot:b.readUInt32LE(4),generation:b.readBigUInt64LE(8),id:b.readUInt32LE(16),bytes:b.subarray(32)};
+  if(b.length<IPC.headerBytes||b.length>IPC.headerBytes+IPC.payload||b.readUInt32LE(20)!==b.length-IPC.headerBytes||b.readBigUInt64LE(24)!==0n)throw Error('shard IPC peer envelope');
+  return {kind:b.readUInt32LE(0),slot:b.readUInt32LE(4),generation:b.readBigUInt64LE(8),id:b.readUInt32LE(16),bytes:b.subarray(IPC.headerBytes)};
 }
 /** uv_poll watches an eventfd. All payloads cross sealed memfd SPSC queues;
  * callbacks receive private native copies, never views into the hostile mmap. */
@@ -32,7 +40,7 @@ export class SharedChannel {
   }
   send(m:Message):Promise<void> {
     if(this.error)return Promise.reject(this.error);
-    if(this.pending.length>=IPC.slots*35+1){const e=Error('shard IPC writer bound');this.fail(e);return Promise.reject(e);}
+    if(this.pending.length>=IPC.outbound){const e=Error('shard IPC writer bound');this.fail(e);return Promise.reject(e);}
     const bytes=record(m);
     return new Promise<void>((resolve,reject)=>{this.pending.push({bytes,resolve,reject});try{this.flush();}catch(e){this.fail(e instanceof Error?e:Error(String(e)));}});
   }

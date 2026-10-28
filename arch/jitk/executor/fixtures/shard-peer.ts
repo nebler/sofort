@@ -3,6 +3,7 @@
 import { readSync, writeSync } from 'node:fs';
 import { basename } from 'node:path';
 import { check } from '../lib.ts';
+import { ABI_VERSION, IPC } from '../abi.ts';
 const CAP = 64;
 const RECORD = 16416;
 const REGION = CAP * RECORD;
@@ -47,7 +48,14 @@ if (mode === 'no-ready') {
   await sleep(5000);
   process.exit(0);
 }
-send(20);
+// READY carries the ABI version; bad-abi announces another one, which Node refuses.
+const version = Buffer.alloc(IPC.readyBytes);
+version.writeUInt32LE(mode === 'bad-abi' ? ABI_VERSION + 1 : ABI_VERSION);
+send(IPC.ready, 0, 0n, 0, version);
+if (mode === 'bad-abi') {
+  await sleep(5000);
+  process.exit(0);
+}
 if (mode === 'backpressure') {
   let consumed = 0;
   while (true) {

@@ -15,11 +15,15 @@ export function fileHash(path) {
   finally{closeSync(fd);}
   return hash.digest('hex');
 }
-export function verifyPreparedSnapshot(base) {
+/** Identity format: version 2 adds abiVersion (jitk-abi ABI_VERSION, executor/abi.ts). */
+export const IDENTITY_VERSION=2;
+export function verifyPreparedSnapshot(base,abiVersion) {
+  if(!Number.isInteger(abiVersion))throw TypeError('verifyPreparedSnapshot needs the executor ABI version');
   const stale=()=>Error('stale shard snapshot: prepared helper identity mismatch; run make -C arch/jitk/shard snapshot');
   let identity;
   try{identity=JSON.parse(readFileSync(base+'.identity','utf8'));}catch{throw stale();}
-  if(identity.version!==1||identity.helperSha256!==helperHash)throw stale();
+  if(identity.version!==IDENTITY_VERSION||identity.helperSha256!==helperHash)throw stale();
+  if(identity.abiVersion!==abiVersion)throw Error(`stale shard snapshot: prepared for ABI version ${identity.abiVersion}, the executor speaks ${abiVersion}; run make -C arch/jitk/shard snapshot`);
   for(const ext of ['mem','regs','layout']){
     if(identity.files?.[ext]!==fileHash(base+'.'+ext))throw Error('shard snapshot identity mismatch: '+ext+'; run make -C arch/jitk/shard snapshot');
   }

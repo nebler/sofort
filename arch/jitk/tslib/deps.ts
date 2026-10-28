@@ -141,7 +141,7 @@ export const SNAPSHOT_CLASSES = ['glue-2m', 'glue-4m'];
 
 export function snapshotInputs(cls: string): string {
   const kernel = ['Cargo.toml', 'Cargo.lock', 'build.rs', 'slots.json', 'prepare.ts', 'packer.ts', 'generate.ts', 'build-args.ts', 'lib.ts', 'native.c', 'native-ffi.json', 'ring-bootstrap.js', 'payload/qjs-ring'].map(name => 'kernel/' + name);
-  const helpers = ['executor/codec.mjs', 'executor/shard-helpers.js', 'executor/prepared-helpers.mjs', 'shard/snapshot.ts', 'protocol/bootstrap.js'];
+  const helpers = ['executor/codec.mjs', 'executor/shard-helpers.js', 'executor/prepared-helpers.mjs', 'executor/abi.ts', 'shard/snapshot.ts', 'protocol/bootstrap.js', 'abi/src/lib.rs'];
   const files = [...kernel, ...tree(JITK_ROOT, 'kernel/src'), ...helpers, ...tree(JITK_ROOT, 'tslib').filter(path => /^tslib\/[^/]+\.ts$/.test(path))];
   return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, cls, hostPlatform()]);
 }

@@ -10,7 +10,7 @@ TS_TOOLS := ipc/run-ssh.ts ipc/measure-helpers.ts ipc/summarize-helpers.ts fixtu
 include ../tools/scriptc.mk
 # The hostile peer runs on Linux: cross-built with zig on the Mac (run-ssh
 # uploads it), native on a Linux host (ipc/shard-host.sh).
-.work/bin/fixtures/shard-peer: fixtures/shard-peer.ts lib.ts $(TSLIB_SOURCES) $(SCRIPTC)
+.work/bin/fixtures/shard-peer: fixtures/shard-peer.ts lib.ts abi.ts $(TSLIB_SOURCES) $(SCRIPTC)
 	mkdir -p $(@D)
 ifeq ($(shell uname -s),Linux)
 	$(SCRIPTC) build $< -o $@
