@@ -51,6 +51,37 @@ try {
   check(randoms.size===5,'distinct restored Math.random');
   const results=await Promise.all(Array.from({length:8},(_,i)=>executor.execute(`return await codemode.echo(${i})`,{echo:async x=>x})));
   await pool.drain();check(results.every((r,i)=>!r.error&&r.result===i),'eight concurrent generations');
+  // R9 N1: guest payloads that Node rejects fail only their own sandbox. A sibling
+  // on the same shard holds a tool call open across all of them, then completes.
+  {
+    const nest=(k:number)=>'['.repeat(k)+'0'+']'.repeat(k);
+    const raw=(fd:number,text:string)=>`const b=new Uint8Array(${JSON.stringify([...Buffer.from(text,'latin1')])});os.write(${fd},b.buffer,0,b.length);return await new Promise(()=>{});`;
+    const ns=[{name:'ns',fns:{fn:async(x:unknown)=>x}}];
+    const pid=backend.child.pid;
+    let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+    const sibling=executor.execute('return await codemode.wait(7)',{wait:async x=>{await gate;return x;}});
+    r=await executor.execute(`return await ns.fn(${nest(30)})`,ns);
+    check(!r.error&&JSON.stringify(r.result)===nest(30),'R9 82-byte depth-32 call is valid input');
+    for(const [name,code,expected] of [
+      ['depth-33 array',`return await ns.fn(${nest(31)})`,/protocol DEPTH/],
+      ['depth-33 object',`return await ns.fn(${'{"a":'.repeat(31)}0${'}'.repeat(31)})`,/protocol DEPTH/],
+      ['unsafe number','return await ns.fn(2**60)',/protocol NUMBER/],
+      ['lone surrogate','return await ns.fn("\\ud800")',/protocol UNICODE/],
+      ['raw invalid JSON call',raw(129,'[bad]'),/protocol JSON/],
+      ['raw control-byte call',raw(129,'["call","ns","fn",["\x01"]]'),/guest_protocol/],
+      ['raw non-ASCII call',raw(129,'["call","ns","fn",["\xff"]]'),/guest_protocol/],
+      ['raw log with unknown level',raw(129,'["log","trace","x"]'),/protocol SCHEMA/],
+      ['raw non-object DONE',raw(102,'[1]'),/protocol SCHEMA/],
+      ['raw DONE with smuggled frame type',raw(102,'{"t":"call","ok":1}'),/protocol SCHEMA/],
+    ] as const){
+      r=await executor.execute(code,ns);
+      check(!!r.error&&expected.test(r.error),`hostile ${name} fails only its own sandbox`);
+    }
+    release();const done=await sibling;
+    check(!done.error&&done.result===7,'sibling on the same shard completes after every hostile run');
+    check(backend.child.pid===pid&&backend.child.exitCode===null&&backend.child.signalCode===null,'shard process survives hostile payloads');
+    r=await execute('return 2');check(!r.error&&r.result===2,'shard serves new runs after hostile payloads');
+  }
   let issued=0,revoked=0;
   const privateExecutor=new MicroVMExecutor(pool,()=> 'allow',5000,{issuer:{issue:async()=>{issued++;return 'HOST_ONLY_TEST_TOKEN';},revoke:async()=>{revoked++;}},tools:{codemode:{secret:{args:a=>a,reads:'private',egress:false,writes:false,timeoutMs:1000,invoke:async(_a,credential)=>{assert.equal(credential,'HOST_ONLY_TEST_TOKEN');return 'private result';},output:v=>v}}}});
   r=await privateExecutor.execute('return await codemode.secret()',{secret:async()=>null});await pool.drain();check(!r.error&&r.result==='private result'&&issued===1&&revoked===1,'canonical policy owns issuance/revocation');
@@ -136,7 +167,7 @@ for(const mode of ['kind','slot','generation','source-length','source-encoding',
     if(mode==='calls')bytes.writeUInt32LE(33,8);
     if(mode==='memory')bytes.writeUInt32LE(4*1048576,20);
     if(mode==='deadline')bytes.writeBigUInt64LE(monotonicNs()+61000000000n);
-    if(mode==='reply'){m.kind=IPC.reply;m.id=1;m.bytes=Buffer.from('{"ok":0,"ok":1}');}
+    if(mode==='reply'){m.kind=IPC.reply;m.id=1;m.bytes=Buffer.from('{"ok":"\xff"}','latin1');}
     if(mode==='cancel'){m.kind=IPC.cancel;m.generation=2n;m.bytes=Buffer.alloc(0);}
     await channel.send(m);
     if(mode==='replay')await channel.send(m);

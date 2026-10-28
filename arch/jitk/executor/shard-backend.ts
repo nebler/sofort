@@ -81,11 +81,11 @@ export class ShardBackend implements Backend {
     if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.kill();await s.exited;throw e;}
     return s;
   }
-  now():bigint {return monotonicNs();}
   send(kind:number,s:ShardSandbox,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
   released(s:ShardSandbox) {if(this.sandboxes.get(s.slot)!==s)throw Error('shard release identity');this.sandboxes.delete(s.slot);}
   metrics(m:ShardMetrics) {try{this.options.onMetrics?.(m);}catch{}}
   fatal(e:Error) {this.die(e);}
+  now():bigint {return monotonicNs();}
   async close():Promise<void> {
     if(this.closed)return;this.closed=true;
     const reaped=this.child.exitCode!==null||this.child.signalCode!==null?Promise.resolve():new Promise<void>(resolve=>this.child.once('close',()=>resolve()));
