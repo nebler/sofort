@@ -9,7 +9,7 @@ import {spawn,type ChildProcessWithoutNullStreams} from 'node:child_process';
 import type {Engine,GuestEvent,Job,Limits,NativeJob,NativeLimits,Phase,Reply,Session} from './engine.js';
 import {AdmissionQueue,type SandboxPool} from './pool.js';
 
-/** The JNR7 request and response bounds (shard/ABI-R7.md; not yet in jitk-abi). */
+/** The JNR8 request and response bounds (shard/ABI-R7.md; not yet in jitk-abi). */
 export const NATIVE_LIMITS:Omit<NativeLimits,'profiles'>=Object.freeze({args:31,argvBytes:8192,files:64,pathBytes:1024,pathComponents:16,
   inputBytes:4*1024*1024,outputBytes:1024*1024});
 const PROFILE=/^[A-Za-z0-9_-]{1,64}$/;
@@ -19,26 +19,32 @@ const wellFormed=(s:string)=>!/\p{Cs}/u.test(s);
 const REQUEST_SLACK=16384;
 /** Response header: five u32 words after the length; a failure carries <=512 bytes. */
 const RESPONSE_HEADER=20,FAILURE_BYTES=512;
+/** Worker status words: success, this run failed, its budget expired (shard inputs.rs). */
+const STATUS_OK=0,STATUS_FAILED=1,STATUS_DEADLINE=2;
+/** A run's budget in the request (u32 ms; also the budget of a run without a deadline). */
+export const MAX_BUDGET_MS=0xffffffff;
 
 /** A job refused before it reaches the worker. */
 export class NativeJobError extends Error {
   constructor(readonly code:'LIMIT'|'UNSUPPORTED',message:string){super(message);this.name='NativeJobError';}
 }
-/** The JNR7 request for a job, within the limits; argv[0] is the profile. */
-export function encodeNativeJob(job:NativeJob,limits:Omit<NativeLimits,'profiles'>=NATIVE_LIMITS):Buffer {
+/** The JNR8 request for a job, within the limits; argv[0] is the profile; the
+ *  worker stops the run budgetMs after it starts. */
+export function encodeNativeJob(job:NativeJob,limits:Omit<NativeLimits,'profiles'>=NATIVE_LIMITS,budgetMs=MAX_BUDGET_MS):Buffer {
   const limit=(message:string)=>new NativeJobError('LIMIT',message);
   if(typeof job.profile!=='string'||!PROFILE.test(job.profile))throw limit('invalid tool profile');
+  if(!Number.isInteger(budgetMs)||budgetMs<1||budgetMs>MAX_BUDGET_MS)throw limit('invalid native run budget');
   const {args,files}=job;
   if(!Array.isArray(args)||args.length>limits.args||args.some(a=>typeof a!=='string'||a.includes('\0')||!wellFormed(a)))
     throw limit(`args must contain at most ${limits.args} scalar strings without NUL`);
   if(!files||typeof files!=='object'||Array.isArray(files)||Object.keys(files).length>limits.files)throw limit(`files must contain at most ${limits.files} paths`);
   const argv=[job.profile,...args];
   if(argv.reduce((n,a)=>n+Buffer.byteLength(a)+1,0)>limits.argvBytes)throw limit(`argv exceeds ${limits.argvBytes} bytes`);
-  const parts:Buffer[]=[Buffer.from('JNR7')];
+  const parts:Buffer[]=[Buffer.from('JNR8')];
   const u16=(n:number)=>{const b=Buffer.alloc(2);b.writeUInt16LE(n);parts.push(b);};
   const u32=(n:number)=>{const b=Buffer.alloc(4);b.writeUInt32LE(n);parts.push(b);};
   const text=(s:string)=>{const b=Buffer.from(s);u16(b.length);parts.push(b);};
-  text(job.profile);u16(argv.length);for(const a of argv)text(a);
+  u32(budgetMs);text(job.profile);u16(argv.length);for(const a of argv)text(a);
   u16(Object.keys(files).length);
   let bytes=0;
   for(const [path,data] of Object.entries(files)){
@@ -145,7 +151,8 @@ class NativeSession implements Session {
     if(this.state!=='parked')throw Error('native session already started');
     if(job.kind!=='native')throw Error('the native worker runs native jobs only');
     if(!this.backend.limits.native!.profiles.includes(job.profile))throw new NativeJobError('UNSUPPORTED','unknown prepared native tool profile');
-    const request=encodeNativeJob(job,this.backend.limits.native);
+    const left=this.deadline===undefined?MAX_BUDGET_MS:Math.ceil(this.deadline-Date.now());
+    const request=encodeNativeJob(job,this.backend.limits.native,Math.min(MAX_BUDGET_MS,Math.max(1,left)));
     this.state='running';this.inFlight=true;
     await this.backend.write(request);
   }
@@ -162,11 +169,14 @@ class NativeSession implements Session {
     if(n<RESPONSE_HEADER||n>RESPONSE_HEADER+max||b.length>n+4)return die('invalid native response length');
     if(b.length!==n+4)return;
     const status=b.readUInt32LE(4),exitCode=b.readUInt32LE(8),out=b.readUInt32LE(12),err=b.readUInt32LE(16),limited=b.readUInt32LE(20);
-    if(status===1&&n<=RESPONSE_HEADER+FAILURE_BYTES){
-      // The worker reported a sandbox failure for this run and stays usable.
-      this.complete();this.end({kind:'fail',cause:'engine',message:b.subarray(24).toString('utf8')});return;
+    if((status===STATUS_FAILED||status===STATUS_DEADLINE)&&n<=RESPONSE_HEADER+FAILURE_BYTES){
+      // The worker reports this run failed, or stopped at its budget, and stays usable.
+      const why=b.subarray(24).toString('utf8');this.complete();
+      this.end(status===STATUS_DEADLINE?{kind:'fail',cause:'deadline',message:'native deadline expired: '+why}:
+        {kind:'fail',cause:'engine',message:why});
+      return;
     }
-    if(status!==0||exitCode>255||limited>1||out+err!==n-RESPONSE_HEADER)return die('invalid native completion');
+    if(status!==STATUS_OK||exitCode>255||limited>1||out+err!==n-RESPONSE_HEADER)return die('invalid native completion');
     this.complete();
     this.emit({kind:'stdout',bytes:b.subarray(24,24+out)});
     this.emit({kind:'stderr',bytes:b.subarray(24+out)});

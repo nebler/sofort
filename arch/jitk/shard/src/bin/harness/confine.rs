@@ -175,7 +175,7 @@ fn native_run(
         }
         Probe::Confined(_) => native::confined(confinement, profiles).map_err(e)?,
     });
-    worker.run(&run, 2).map(drop)
+    worker.run(&run, 2).map(drop).map_err(|e| e.to_string())
 }
 
 /// The probe process: confine, run the guest, try the operations; the row

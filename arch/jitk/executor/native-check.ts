@@ -1,5 +1,5 @@
 // The native job kind through Engine/Session (R10 W1.2): NativeBackend on a
-// stand-in worker (fixtures/native-worker.mjs, the real JNR7 frames), a pool
+// stand-in worker (fixtures/native-worker.mjs, the real JNR8 frames), a pool
 // and NativeExecutor. Runs on any host; mcp/native-linux-test.mjs covers the
 // real `real native-worker` on Linux arm64 KVM.
 import assert from 'node:assert/strict';
@@ -15,9 +15,10 @@ const ok=(r:NativeResult|NativeError):NativeResult=>{assert(!('error' in r),JSON
 const code=(r:NativeResult|NativeError)=>'error' in r?r.error.code:'OK';
 let checks=0;
 
-// JNR7 framing and job validation (formerly mcp/native-test.mjs).
-const wire=encodeNativeJob(job(['-e','print(2)'],{'data/binary':Buffer.from([0,255,128])}));
-assert.equal(wire.readUInt32LE(),wire.length-4);assert.equal(wire.subarray(4,8).toString(),'JNR7');checks++;
+// JNR8 framing and job validation (formerly mcp/native-test.mjs).
+const wire=encodeNativeJob(job(['-e','print(2)'],{'data/binary':Buffer.from([0,255,128])}),NATIVE_LIMITS,250);
+assert.equal(wire.readUInt32LE(),wire.length-4);assert.equal(wire.subarray(4,8).toString(),'JNR8');assert.equal(wire.readUInt32LE(8),250);checks++;
+for(const budget of [0,-1,1.5,2**32])assert.throws(()=>encodeNativeJob(job([]),NATIVE_LIMITS,budget),/budget/);checks++;
 for(const bad of [job([],{},'../bad'),job(['a\0b']),job(['\ud800']),job(Array(32).fill('x')),job(['x'.repeat(8192)]),
   ...['../a','/a','a//b','a\0b','\udc00'].map(p=>job([],{[p]:new Uint8Array(1)})),
   job([],Object.fromEntries(Array.from({length:65},(_,i)=>[`f${i}`,new Uint8Array(0)]))),

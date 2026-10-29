@@ -1,4 +1,4 @@
-// MCP `run` input decoding; the JNR7 framing and the native Engine are
+// MCP `run` input decoding; the JNR8 framing and the native Engine are
 // executor/native-check.ts (needs the built executor).
 import assert from 'node:assert/strict';
 import {nativeJob, createNativeRunner} from './native.mjs';

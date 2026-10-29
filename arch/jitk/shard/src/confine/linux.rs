@@ -147,6 +147,28 @@ impl Confinement {
     }
 }
 
+/// SIGKILL this process when its parent (Node) exits (PR_SET_PDEATHSIG),
+/// whatever its threads are doing, guest execution included; no helper
+/// process. Fails if the parent is already gone: reparented to init before
+/// the call, or reparented during it (getppid changed).
+pub fn die_with_parent() -> io::Result<()> {
+    let gone = || io::Error::other("parent unavailable");
+    // SAFETY: getppid has no pointer or lifetime preconditions.
+    let parent = unsafe { libc::getppid() };
+    if parent == 1 {
+        return Err(gone());
+    }
+    // SAFETY: PR_SET_PDEATHSIG takes SIGKILL as its integer second argument.
+    if unsafe { libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) } != 0 {
+        return Err(io::Error::last_os_error());
+    }
+    // SAFETY: as above.
+    if unsafe { libc::getppid() } != parent {
+        return Err(gone());
+    }
+    Ok(())
+}
+
 const SECCOMP_SET_MODE_FILTER: libc::c_ulong = 1;
 const SECCOMP_FILTER_FLAG_TSYNC: libc::c_ulong = 1;
 #[repr(C)]
