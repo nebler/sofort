@@ -99,11 +99,15 @@ one owner thread. It is an executor Engine (`executor/native-backend.ts`,
 `NativeBackend`) running `Job{kind:'native'}` sessions; `run` goes through a
 one-session pool and `NativeExecutor`, so concurrent calls wait in FIFO order
 (bounded; a full queue returns LIMIT) instead of failing while busy. The run
-tool's bounds come from the engine's `limits.native`. A Node deadline or
-client cancellation kills the entire worker. Subsequent native calls return
-SANDBOX until the MCP server restarts. This is intentionally explicit, pending
-integration with the separately owned shard watchdog leases and multi-owner
-scheduler. It does not add per-call helper processes or claim lease parity.
+tool's bounds come from the engine's `limits.native`. Each call's remaining
+time travels with the request and the worker stops the guest at that deadline
+itself (Linux: the shard's lease watchdog; macOS: a supervisor thread), so a
+TIMEOUT leaves the worker serving. The worker exits with the MCP server, even
+mid-run. A client cancellation, or a worker silent 1 s past its deadline,
+kills the worker and the next call starts a new one; after 5 such restarts in
+60 s native calls return SANDBOX `native engine unavailable` until the window
+has passed. Failure messages name a failed job, a failed (restarting) engine
+or an unavailable one. It does not add per-call helper processes.
 
 Portable validation: `$JITK_NODE native-test.mjs` (MCP input decoding) and the
 executor's `native-check.ts` (the native Engine on a stand-in worker speaking the
@@ -115,5 +119,6 @@ JITK_NATIVE_PROFILES='{"lua":"/absolute/prepared/lua"}' \
 node native-linux-test.mjs
 ```
 The integration test runs ten native calls, including binary output, status,
-late-bound files, rejection cases and deadline kill. [RESULTS-R7-bytes](../shard/RESULTS-R7-bytes.md)
+late-bound files, rejection cases and a deadline the worker survives, then
+SIGKILLs a second server mid-run and checks that its worker exits. [RESULTS-R7-bytes](../shard/RESULTS-R7-bytes.md)
 records the complete per-case native corpus and the memory ledger.

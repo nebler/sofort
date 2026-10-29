@@ -3,8 +3,16 @@
 // static program from a prepared profile, and yields its output streams and
 // exit status as GuestEvents. The worker runs one job at a time, so the engine
 // has one session; park() callers wait in FIFO order instead of being refused.
-// A deadline or a release mid-run kills the whole worker (it has no per-run
-// cancel); later park() calls fail until the engine is rebuilt.
+// Each request carries its budget: the worker stops the guest at the deadline
+// itself, reports it (status 2) and stays usable; it also dies with this
+// process. Node's timer only backs that up: a worker still silent
+// deadlineGraceMs past the deadline, a release mid-run (there is no per-run
+// cancel) or a broken worker is killed, and the next request gets a new one.
+// NATIVE_RESTARTS bounds those restarts per window; past it the engine is
+// unavailable until the window has passed, so a crash loop cannot spin.
+// Failure messages say which: `native job failed` (that request; the worker
+// is fine), `native engine failed` (the worker died or was stopped during the
+// run and restarts), `native engine unavailable` (the restart budget is spent).
 import {spawn,type ChildProcessWithoutNullStreams} from 'node:child_process';
 import type {Engine,GuestEvent,Job,Limits,NativeJob,NativeLimits,Phase,Reply,Session} from './engine.js';
 import {AdmissionQueue,type SandboxPool} from './pool.js';
@@ -23,6 +31,10 @@ const RESPONSE_HEADER=20,FAILURE_BYTES=512;
 const STATUS_OK=0,STATUS_FAILED=1,STATUS_DEADLINE=2;
 /** A run's budget in the request (u32 ms; also the budget of a run without a deadline). */
 export const MAX_BUDGET_MS=0xffffffff;
+/** Worker restarts allowed per window; past them the engine is unavailable until the window has passed. */
+export const NATIVE_RESTARTS=Object.freeze({max:5,windowMs:60000});
+/** Past a deadline, how long the worker may take to report it before Node kills the worker. */
+export const NATIVE_DEADLINE_GRACE_MS=1000;
 
 /** A job refused before it reaches the worker. */
 export class NativeJobError extends Error {
@@ -68,40 +80,87 @@ export type NativeOptions={binary:string;
   /** Arguments before `native-worker` (a test worker script under Node). */
   prefix?:string[];
   /** park() callers queued for the worker (default 64). */
-  maxWaiting?:number};
+  maxWaiting?:number;
+  /** Worker restarts per window (default NATIVE_RESTARTS). */
+  restarts?:{max:number;windowMs:number};
+  /** Past a deadline, how long the worker may take to report it (default NATIVE_DEADLINE_GRACE_MS). */
+  deadlineGraceMs?:number};
 export class NativeBackend implements Engine {
   readonly kind='native' as const;
   readonly limits:Limits;
-  private child:ChildProcessWithoutNullStreams;
-  private closed:Promise<void>;
+  readonly graceMs:number;
+  private restarts:{max:number;windowMs:number};
+  /** The live worker; none while the engine is unavailable or closed. */
+  private child?:ChildProcessWithoutNullStreams;
+  private exits=new Set<Promise<void>>();
+  /** Start times of the workers in the current window, the first included. */
+  private starts:number[]=[];
+  /** Why and until when the engine is unavailable (restart budget spent). */
+  private down?:{until:number;why:string};
   private active?:NativeSession;
   private queue:AdmissionQueue<NativeSession>;
-  private dead?:Error;
+  private closed?:Error;
   constructor(readonly options:NativeOptions) {
     const profiles=Object.entries(options.profiles??{});
     if(!options.binary||profiles.length<1||profiles.length>16||profiles.some(([p,b])=>!PROFILE.test(p)||typeof b!=='string'))
       throw Error('native config requires binary and 1..16 tool: snapshot-base profiles');
-    // No fixed memory class or deadline horizon: the Node deadline bounds a run.
+    this.restarts=options.restarts??NATIVE_RESTARTS;this.graceMs=options.deadlineGraceMs??NATIVE_DEADLINE_GRACE_MS;
+    if(!Number.isInteger(this.restarts.max)||this.restarts.max<0||!(this.restarts.windowMs>0)||!(this.graceMs>=0))
+      throw Error('invalid native restart budget or deadline grace');
+    // No fixed memory class or deadline horizon: each request's budget bounds its run in the worker.
     this.limits={sessions:1,parallelStarts:1,deadlineMs:Infinity,native:{...NATIVE_LIMITS,profiles:Object.freeze(profiles.map(([p])=>p))}};
     this.queue=new AdmissionQueue('native worker',options.maxWaiting??64);
-    this.child=spawn(options.binary,[...(options.prefix??[]),'native-worker',...profiles.map(([name,base])=>`${name}=${base}`)],
+    this.starts.push(Date.now());this.spawn();
+  }
+  /** The live worker's pid, if any. */
+  get pid():number|undefined {return this.child?.pid;}
+  private spawn() {
+    const {options}=this,profiles=Object.entries(options.profiles);
+    const child=spawn(options.binary,[...(options.prefix??[]),'native-worker',...profiles.map(([name,base])=>`${name}=${base}`)],
       {stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
-    this.child.stderr.resume(); // No guest stream travels on worker stderr.
-    this.child.stdin.on('error',()=>this.die(Error('sandbox exited: native worker IPC closed')));
-    this.child.once('error',()=>this.die(Error('sandbox exited: native worker could not start')));
-    this.closed=new Promise(resolve=>this.child.once('close',()=>{this.die(Error('sandbox exited: native worker exited'));resolve();}));
-    this.child.stdout.on('data',(b:Buffer)=>{if(this.active)this.active.receive(b);else this.die(Error('sandbox exited: native worker output outside a run'));});
+    this.child=child;
+    const fail=(why:string)=>this.fail(child,why);
+    child.stderr.resume(); // No guest stream travels on worker stderr.
+    child.stdin.on('error',()=>fail('native worker IPC closed'));
+    child.once('error',()=>fail('native worker could not start'));
+    const exit=new Promise<void>(resolve=>child.once('close',()=>{fail('native worker exited');resolve();}));
+    this.exits.add(exit);void exit.then(()=>this.exits.delete(exit));
+    child.stdout.on('data',(b:Buffer)=>{
+      if(this.child!==child)return; // a stopped worker's last bytes
+      if(this.active?.inFlight)this.active.receive(b);else fail('native worker output outside a run');
+    });
   }
-  /** Kill the worker: the running session fails and every waiter is rejected. */
-  die(e:Error) {
-    if(this.dead)return;this.dead=e;
-    try{this.child.kill('SIGKILL');}catch{}
-    this.active?.failed(e);this.queue.rejectAll(this.stopped());
+  /** The worker broke or was stopped: kill it, fail the run it had, and start
+   *  the next one within the restart budget. Stale events of an earlier worker are ignored. */
+  private fail(child:ChildProcessWithoutNullStreams,why:string) {
+    if(this.child!==child)return;
+    this.child=undefined;
+    try{child.kill('SIGKILL');}catch{}
+    const s=this.active;this.active=undefined;
+    if(this.closed){s?.failed(this.closed.message);this.queue.rejectAll(this.closed);return;}
+    s?.failed(`sandbox exited: native engine failed (${why}); the worker restarts`);
+    if(!this.restart(why)){this.queue.rejectAll(this.unavailable());return;}
+    const w=this.queue.shift();if(w)w.resolve(this.claim());
   }
-  private stopped(){return Error(`sandbox exited: native worker is stopped (${this.dead!.message}); restart the MCP server`);}
+  /** A new worker, unless the window's restarts are spent: then the engine is unavailable until it passes. */
+  private restart(why:string):boolean {
+    const now=Date.now(),{max,windowMs}=this.restarts;
+    this.starts=this.starts.filter(t=>now-t<windowMs);
+    // The window's first worker is no restart.
+    if(this.starts.length>max){this.down={until:this.starts[0]+windowMs,why};return false;}
+    this.down=undefined;this.starts.push(now);this.spawn();return true;
+  }
+  private unavailable() {
+    const {max,windowMs}=this.restarts,d=this.down!;
+    return Error(`sandbox exited: native engine unavailable: ${max} worker restarts within ${windowMs/1000} s (last: ${d.why}); `+
+      `retry in ${Math.max(1,Math.ceil((d.until-Date.now())/1000))} s`);
+  }
+  /** Stop the worker running `s` (no per-run cancel; a missed deadline). */
+  stop(s:NativeSession,why:string) {if(this.active===s&&this.child)this.fail(this.child,why);}
   async park(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(signal?.aborted)throw Error('aborted');
-    if(this.dead)throw this.stopped();
+    if(this.closed)throw this.closed;
+    if(!this.child&&!this.restart(this.down?.why??'stopped'))throw this.unavailable();
     const s=this.active||this.queue.length?await this.queue.wait(signal,deadline):this.claim();
     if(signal?.aborted){s.release();await s.released;throw Error('aborted');}
     if(deadline!==undefined)try{await s.armDeadline(deadline);}catch(e){s.release();await s.released;throw e;}
@@ -111,22 +170,30 @@ export class NativeBackend implements Engine {
   /** The worker is idle again: hand it to the head waiter. */
   released(s:NativeSession) {
     if(this.active!==s)return;this.active=undefined;
-    if(this.dead)return;
+    if(!this.child)return;
     const w=this.queue.shift();if(w)w.resolve(this.claim());
   }
   write(bytes:Buffer):Promise<void> {
-    if(this.dead)return Promise.reject(this.stopped());
-    return new Promise((resolve,reject)=>this.child.stdin.write(bytes,e=>e?reject(e):resolve()));
+    const child=this.child;
+    if(!child)return Promise.reject(this.closed??Error('sandbox exited: native engine restarting'));
+    return new Promise((resolve,reject)=>child.stdin.write(bytes,e=>e?reject(e):resolve()));
   }
-  async close():Promise<void> {this.die(Error('native backend closed'));await this.closed;}
+  async close():Promise<void> {
+    this.closed??=Error('sandbox exited: native backend closed');
+    if(this.child)this.fail(this.child,'closed');
+    this.queue.rejectAll(this.closed);
+    await Promise.all([...this.exits]);
+  }
 }
 type Fail=Extract<GuestEvent,{kind:'fail'}>;
 class NativeSession implements Session {
   readonly released:Promise<void>;
   private resolveReleased!:()=>void;
   private state:Phase='parked';
-  /** A request is with the worker: releasing now kills it. */
-  private inFlight=false;
+  /** A request is with the worker: releasing now stops it, unless its deadline passed. */
+  inFlight=false;
+  /** Released in flight past the deadline: freed when the worker reports or is stopped. */
+  private draining=false;
   private freed=false;
   private deadline?:number;
   private timer?:ReturnType<typeof setTimeout>;
@@ -141,10 +208,13 @@ class NativeSession implements Session {
     if(this.deadline===deadline)return;
     if(this.deadline!==undefined)throw Error('deadline already armed');
     this.deadline=deadline;
-    this.timer=setTimeout(()=>{
-      this.end({kind:'fail',cause:'deadline',message:'native deadline expired; worker stopped'});
-      if(this.inFlight)this.backend.die(Error('native deadline expired'));
-    },deadline-Date.now());
+    this.timer=setTimeout(()=>this.expired(),deadline-Date.now());
+  }
+  /** The run ends now; the worker, which stops the guest at the same
+   *  deadline, has the grace to report it before it is stopped. */
+  private expired() {
+    this.end({kind:'fail',cause:'deadline',message:'native deadline expired'});
+    if(this.inFlight)this.timer=setTimeout(()=>this.backend.stop(this,'native worker missed its deadline'),this.backend.graceMs);
   }
   async start(job:Job):Promise<void> {
     if(this.failure)throw Error(this.failure.message);
@@ -156,9 +226,9 @@ class NativeSession implements Session {
     this.state='running';this.inFlight=true;
     await this.backend.write(request);
   }
-  /** Worker stdout while this session's request is in flight; any violation kills the worker. */
+  /** Worker stdout while this session's request is in flight; any violation stops the worker. */
   receive(chunk:Buffer) {
-    const die=(message:string)=>this.backend.die(Error('sandbox exited: '+message));
+    const die=(message:string)=>this.backend.stop(this,message);
     const max=this.backend.limits.native!.outputBytes;
     if(!this.inFlight)return die('native worker output outside a run');
     if(this.bytes.length+chunk.length>4+RESPONSE_HEADER+max)return die('native response budget');
@@ -173,7 +243,7 @@ class NativeSession implements Session {
       // The worker reports this run failed, or stopped at its budget, and stays usable.
       const why=b.subarray(24).toString('utf8');this.complete();
       this.end(status===STATUS_DEADLINE?{kind:'fail',cause:'deadline',message:'native deadline expired: '+why}:
-        {kind:'fail',cause:'engine',message:why});
+        {kind:'fail',cause:'engine',message:'native job failed: '+why});
       return;
     }
     if(status!==STATUS_OK||exitCode>255||limited>1||out+err!==n-RESPONSE_HEADER)return die('invalid native completion');
@@ -182,7 +252,10 @@ class NativeSession implements Session {
     this.emit({kind:'stderr',bytes:b.subarray(24+out)});
     this.emit({kind:'done',ok:{exitCode,outputLimited:limited===1}});
   }
-  private complete() {this.inFlight=false;this.state='done';this.bytes=Buffer.alloc(0);clearTimeout(this.timer);}
+  private complete() {
+    this.inFlight=false;this.state='done';this.bytes=Buffer.alloc(0);clearTimeout(this.timer);
+    if(this.draining)this.free();
+  }
   private emit(e:GuestEvent) {
     if(this.failure)return;
     if(this.waiter){const w=this.waiter;this.waiter=undefined;w(e);}else this.events.push(e);
@@ -193,9 +266,9 @@ class NativeSession implements Session {
     this.failure=f;this.events=[];
     const w=this.waiter;this.waiter=undefined;w?.(f);
   }
-  /** The worker died: this session ends and its capacity is gone with it. */
-  failed(e:Error) {
-    this.end({kind:'fail',cause:'engine',message:e.message});
+  /** The worker died or was stopped: this session ends with it. */
+  failed(message:string) {
+    this.end({kind:'fail',cause:'engine',message});
     this.inFlight=false;this.state='ended';clearTimeout(this.timer);
     if(!this.freed){this.freed=true;this.resolveReleased();}
   }
@@ -207,11 +280,17 @@ class NativeSession implements Session {
   }
   async reply(_id:number,_r:Reply):Promise<void> {throw Error('native jobs make no tool calls');}
   release():void {
-    if(this.freed)return;
-    clearTimeout(this.timer);
+    if(this.freed||this.draining)return;
     this.end({kind:'fail',cause:'engine',message:'sandbox exited'});
-    // The worker has no per-run cancel: a release mid-run stops it (failed() follows).
-    if(this.inFlight){this.backend.die(Error('native run cancelled'));return;}
+    if(this.inFlight){
+      // Past its deadline the worker is stopping the guest itself: wait for its report (the grace timer backs it).
+      if(this.failure!.cause==='deadline'){this.draining=true;return;}
+      // No per-run cancel: a release mid-run stops the worker (failed() follows).
+      clearTimeout(this.timer);this.backend.stop(this,'native run cancelled');return;
+    }
+    clearTimeout(this.timer);this.free();
+  }
+  private free() {
     this.freed=true;if(this.state!=='done')this.state='ended';
     this.resolveReleased();this.backend.released(this);
   }
@@ -241,7 +320,7 @@ export class NativeExecutor {
       let stdout:Uint8Array=new Uint8Array(),stderr:Uint8Array=new Uint8Array();
       while(true){
         const ev=await s.next();
-        if(signal?.aborted)return error('CANCELLED','native run cancelled; worker stopped');
+        if(signal?.aborted)return error('CANCELLED','native run cancelled; the worker restarts');
         if(ev.kind==='stdout')stdout=ev.bytes;
         else if(ev.kind==='stderr')stderr=ev.bytes;
         else if(ev.kind==='done'){const ok=ev.ok as {exitCode:number;outputLimited:boolean};return {stdout,stderr,exitCode:ok.exitCode,outputLimited:ok.outputLimited};}

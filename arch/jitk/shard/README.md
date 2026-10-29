@@ -601,7 +601,7 @@ the harness's regression tests.
 ## HVF native worker (`hvf native-worker`)
 
 `hvf native-worker TOOL=SNAPSHOT_BASE ...` (`src/hvf/native.rs`) is the Linux
-`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR7 frames
+`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR8 frames
 on stdin/stdout (`inputs::serve`, shared with Linux), native bind, byte
 streams and output cap, on profiles of both arena classes prepared by `hvf
 prepare` (`./tool.sh prepare-native-r7` uses the deps-built engine on the
@@ -613,9 +613,13 @@ both classes). HVF allows one VM per process, so the worker holds one slot: a
 run of another profile replaces it. Before any VM exists the process enters
 jitk.sb (the first profile's directory) and drops fork; snapshots are mapped
 from descriptors opened before, so profiles in other directories work too.
+A supervisor thread, started before the sandbox, exits the process when its
+parent does and kicks the vCPU at the running request's deadline (status 2;
+ABI-R7.md "Persistent worker IPC").
 `executor/native-backend.ts` and the MCP `run` tool drive it unchanged
-(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
-included).
+(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, a deadline the
+worker enforces and survives, and the worker exiting with a SIGKILLed MCP
+server mid-run).
 
 `make check-native-hvf` (run by `make -C ../executor parity-ssh`) prepares the six census
 profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)
