@@ -56,33 +56,23 @@ impl Conn {
             return Err(invalid("IPC stream buffer bound"));
         }
         let at = self.input.len();
-        self.input.resize(at + CHUNK, 0);
-        let result = loop {
-            // SAFETY: the buffer has CHUNK writable bytes after `at`.
+        self.input.reserve(CHUNK);
+        let n = loop {
+            // SAFETY: reserve left at least CHUNK bytes of spare capacity
+            // after `at`; read writes only into them.
             let n = unsafe { libc::read(self.fd(), self.input.as_mut_ptr().add(at).cast(), CHUNK) };
             if n >= 0 {
-                break Ok(n as usize);
+                break n as usize;
             }
             match io::Error::last_os_error() {
                 e if e.kind() == io::ErrorKind::Interrupted => continue,
-                e if e.kind() == io::ErrorKind::WouldBlock => break Ok(usize::MAX),
-                e => break Err(e),
+                e if e.kind() == io::ErrorKind::WouldBlock => return Ok(true),
+                e => return Err(e),
             }
         };
-        match result {
-            Ok(usize::MAX) => {
-                self.input.truncate(at);
-                Ok(true)
-            }
-            Ok(n) => {
-                self.input.truncate(at + n);
-                Ok(n != 0)
-            }
-            Err(e) => {
-                self.input.truncate(at);
-                Err(e)
-            }
-        }
+        // SAFETY: read initialised these n bytes of spare capacity.
+        unsafe { self.input.set_len(at + n) };
+        Ok(n != 0)
     }
     /// The next complete message in the input buffer, if any.
     pub fn next(&mut self) -> io::Result<Option<Message>> {
@@ -116,12 +106,27 @@ impl Conn {
     pub fn pending(&self) -> bool {
         !self.output.is_empty()
     }
-    /// Write queued records until done or the socket would block.
+    /// Write queued messages until done or the socket would block: all that
+    /// are queued in one writev, so messages that arrived together leave
+    /// together.
     pub fn flush(&mut self) -> io::Result<()> {
-        while let Some(front) = self.output.front() {
-            let rest = &front[self.written..];
-            // SAFETY: rest is a live readable slice.
-            let n = unsafe { libc::write(self.fd(), rest.as_ptr().cast(), rest.len()) };
+        const BATCH: usize = 64;
+        while !self.output.is_empty() {
+            let mut iov = [libc::iovec {
+                iov_base: std::ptr::null_mut(),
+                iov_len: 0,
+            }; BATCH];
+            let mut count = 0;
+            for (i, message) in self.output.iter().take(BATCH).enumerate() {
+                let rest = &message[if i == 0 { self.written } else { 0 }..];
+                iov[i] = libc::iovec {
+                    iov_base: rest.as_ptr() as *mut libc::c_void,
+                    iov_len: rest.len(),
+                };
+                count += 1;
+            }
+            // SAFETY: the first `count` entries point into live queued buffers.
+            let n = unsafe { libc::writev(self.fd(), iov.as_ptr(), count as libc::c_int) };
             if n < 0 {
                 match io::Error::last_os_error() {
                     e if e.kind() == io::ErrorKind::Interrupted => continue,
@@ -129,18 +134,31 @@ impl Conn {
                     e => return Err(e),
                 }
             }
-            self.written += n as usize;
-            if self.written == front.len() {
-                self.output.pop_front();
-                self.written = 0;
-            }
+            self.consume(n as usize);
         }
         Ok(())
     }
+    /// Drop `n` written bytes from the front of the output queue.
+    fn consume(&mut self, mut n: usize) {
+        while let Some(front) = self.output.front() {
+            let left = front.len() - self.written;
+            if n < left {
+                self.written += n;
+                return;
+            }
+            n -= left;
+            self.output.pop_front();
+            self.written = 0;
+        }
+    }
 }
-/// Write one record on a blocking socket (the engine child's main thread).
-pub fn send(fd: RawFd, m: &Message) -> io::Result<()> {
-    let b = m.encode()?;
+/// Write `messages` on a blocking socket in one write (the engine child's
+/// main thread).
+pub fn send(fd: RawFd, messages: &[Message]) -> io::Result<()> {
+    let mut b = Vec::new();
+    for m in messages {
+        b.extend_from_slice(&m.encode()?);
+    }
     let mut at = 0;
     while at < b.len() {
         // SAFETY: b[at..] is a live readable slice.
@@ -217,6 +235,49 @@ mod tests {
         assert!(rx.fill().unwrap());
         drop(tx);
         assert!(!rx.fill().unwrap());
+    }
+    /// A small send buffer makes writev stop inside a message and between
+    /// messages; every message still arrives whole and in order.
+    #[test]
+    fn partial_writes_resume_where_they_stopped() {
+        let (a, b) = pair().unwrap();
+        let shrink = |fd: RawFd, opt| {
+            let small: libc::c_int = 4096;
+            // SAFETY: a live int option value of the stated size.
+            let r = unsafe {
+                libc::setsockopt(
+                    fd,
+                    libc::SOL_SOCKET,
+                    opt,
+                    (&small as *const libc::c_int).cast(),
+                    std::mem::size_of::<libc::c_int>() as libc::socklen_t,
+                )
+            };
+            assert_eq!(r, 0);
+        };
+        shrink(a.as_raw_fd(), libc::SO_SNDBUF);
+        shrink(b.as_raw_fd(), libc::SO_RCVBUF);
+        let sent: Vec<Message> = (0..40u8)
+            .map(|i| Message::new(CALL, 0, 1, i.into(), vec![i; 1000 + 97 * usize::from(i)]))
+            .collect();
+        let mut tx = Conn::new(a, sent.len());
+        tx.set_nonblocking().unwrap();
+        let mut rx = Conn::new(b, 1);
+        rx.set_nonblocking().unwrap();
+        for m in &sent {
+            tx.queue(m).unwrap();
+        }
+        let (mut got, mut stalls) = (Vec::new(), 0);
+        while got.len() < sent.len() {
+            tx.flush().unwrap();
+            stalls += usize::from(tx.pending());
+            assert!(rx.fill().unwrap(), "unexpected end of stream");
+            while let Some(m) = rx.next().unwrap() {
+                got.push(m);
+            }
+        }
+        assert_eq!(got, sent);
+        assert!(!tx.pending() && stalls > 1, "{stalls} partial flushes");
     }
     #[test]
     fn hostile_stream_envelopes_fail() {

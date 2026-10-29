@@ -90,6 +90,9 @@ struct Engine {
     slot: Slot<HvfVm>,
     index: usize,
     out: RawFd,
+    /// What the current command produced, written to the zygote in one
+    /// write when it is done (`flush`).
+    outbox: Vec<Message>,
     signals: Arc<Signals>,
     charge: u32,
     run: Option<Run>,
@@ -154,17 +157,19 @@ pub fn serve(
         slot,
         index,
         out: fd.as_raw_fd(),
+        outbox: Vec::new(),
         signals,
         charge,
         run: None,
     };
-    engine.send(Message::new(
+    engine.outbox.push(Message::new(
         READY,
         index,
         0,
         0,
         ABI_VERSION.to_le_bytes().to_vec(),
-    ))?;
+    ));
+    engine.flush()?;
     let result = engine.serve(&rx);
     drop(engine); // the vCPU and VM, on this thread
     drop(clock);
@@ -173,8 +178,11 @@ pub fn serve(
 }
 
 impl Engine {
-    fn send(&self, m: Message) -> io::Result<()> {
-        conn::send(self.out, &m)
+    /// Write the outbox to the zygote in one write.
+    fn flush(&mut self) -> io::Result<()> {
+        let sent = conn::send(self.out, &self.outbox);
+        self.outbox.clear();
+        sent
     }
     fn serve(&mut self, rx: &Receiver<Cmd>) -> io::Result<()> {
         loop {
@@ -184,47 +192,50 @@ impl Engine {
                 None => self.slot.trim_due(),
                 Some(run) => run.wake_at,
             };
+            // None: `due` passed first.
             let cmd = match due {
                 Some(due) => match rx.recv_timeout(due.saturating_duration_since(Instant::now())) {
-                    Ok(cmd) => cmd,
-                    Err(RecvTimeoutError::Timeout) => {
-                        match self.run.as_mut() {
-                            None => self.slot.trim(),
-                            Some(run) => {
-                                run.wake_at = None;
-                                self.drive()?;
-                            }
-                        }
-                        continue;
-                    }
+                    Ok(cmd) => Some(cmd),
+                    Err(RecvTimeoutError::Timeout) => None,
                     Err(RecvTimeoutError::Disconnected) => return Ok(()),
                 },
                 None => match rx.recv() {
-                    Ok(cmd) => cmd,
+                    Ok(cmd) => Some(cmd),
                     Err(_) => return Ok(()),
                 },
             };
             match cmd {
-                Cmd::Msg(m) if m.slot as usize != self.index => {
+                None => match self.run.as_mut() {
+                    None => self.slot.trim(),
+                    Some(run) => {
+                        run.wake_at = None;
+                        self.drive()?;
+                    }
+                },
+                Some(Cmd::Msg(m)) if m.slot as usize != self.index => {
                     return Err(invalid("HVF child: message for another slot"));
                 }
-                Cmd::Msg(m) => match m.kind {
+                Some(Cmd::Msg(m)) => match m.kind {
                     START => self.start(m)?,
                     REPLY => self.reply(m)?,
-                    CANCEL => self.cancel(m.generation)?,
+                    CANCEL => self.cancel(m.generation),
                     _ => return Err(invalid("HVF child: message direction/kind")),
                 },
-                Cmd::Expired(generation) => {
+                Some(Cmd::Expired(generation)) => {
                     if self
                         .run
                         .as_ref()
                         .is_some_and(|r| r.generation == generation)
                     {
                         let deadline_ns = self.run.as_ref().unwrap().deadline;
-                        self.finish(Err(RunError::Deadline { deadline_ns }))?;
+                        self.finish(Err(RunError::Deadline { deadline_ns }));
                     }
                 }
             }
+            // What the command's last exit produced leaves in one write:
+            // console lines with the calls of a WAIT, or with STATS and the
+            // completion.
+            self.flush()?;
         }
     }
     fn start(&mut self, m: Message) -> io::Result<()> {
@@ -238,19 +249,20 @@ impl Engine {
         let generation = m.generation;
         if self.slot.admit().is_err() {
             // Quarantined: nothing is bound; fail just this job.
-            self.send(service::stats(
+            self.outbox.push(service::stats(
                 self.index,
                 generation,
                 [thread_cpu() - cpu, clock::ipc_ns(), 0],
                 &[],
-            ))?;
-            return self.send(Message::new(
+            ));
+            self.outbox.push(Message::new(
                 ERROR,
                 self.index,
                 generation,
                 0,
                 RunError::SlotUnavailable.to_string().into_bytes(),
             ));
+            return Ok(());
         }
         self.slot.bind(generation, &source, &mut Entropy);
         self.signals.active.store(generation, SeqCst);
@@ -286,13 +298,16 @@ impl Engine {
         run.cpu_ns += thread_cpu() - cpu;
         match replied {
             Ok(()) => self.drive(),
-            Err(e) => self.finish(Err(e)),
+            Err(e) => {
+                self.finish(Err(e));
+                Ok(())
+            }
         }
     }
     /// Node released this generation: reset (one reset per lifecycle: a run
     /// that failed was reset in `finish`) and report RELEASED, or QUARANTINED
     /// with the reason when the reset failed.
-    fn cancel(&mut self, generation: u64) -> io::Result<()> {
+    fn cancel(&mut self, generation: u64) {
         self.run = None;
         self.signals.active.store(0, SeqCst);
         if !self.slot.is_pristine() && !self.slot.is_quarantined() {
@@ -306,12 +321,17 @@ impl Engine {
             }
             None => Message::new(RELEASED, self.index, generation, 0, Vec::new()),
         };
-        self.send(m)
+        self.outbox.push(m);
     }
     /// Run the vCPU to the next point that needs Node (calls to answer, or a
     /// WAIT), or to the end of the run.
     fn drive(&mut self) -> io::Result<()> {
         loop {
+            // Calls and console lines of an exit the guest runs on from
+            // (SUBMIT) go out before it runs again.
+            if !self.outbox.is_empty() {
+                self.flush()?;
+            }
             let run = self.run.as_mut().unwrap();
             let generation = run.generation;
             let cpu = thread_cpu();
@@ -319,7 +339,10 @@ impl Engine {
             let run = self.run.as_mut().unwrap();
             run.cpu_ns += thread_cpu() - cpu;
             let step = match exit {
-                Err(e) => return self.finish(Err(e)),
+                Err(e) => {
+                    self.finish(Err(e));
+                    return Ok(());
+                }
                 Ok(None) => {
                     // Kicked: the reader's command (CANCEL, Expired) follows.
                     if self.signals.stopped.load(SeqCst) == generation
@@ -329,7 +352,8 @@ impl Engine {
                     }
                     if clock::ipc_ns() >= run.deadline {
                         let deadline_ns = run.deadline;
-                        return self.finish(Err(RunError::Deadline { deadline_ns }));
+                        self.finish(Err(RunError::Deadline { deadline_ns }));
+                        return Ok(());
                     }
                     continue;
                 }
@@ -337,10 +361,8 @@ impl Engine {
             };
             // Console lines first: the last ones often share the FINISH exit.
             for line in step.logs {
-                conn::send(
-                    self.out,
-                    &Message::new(LOG, self.index, generation, 0, line),
-                )?;
+                let log = Message::new(LOG, self.index, generation, 0, line);
+                self.outbox.push(log);
             }
             if step.op == ring::FINISH {
                 let result = if !self.slot.repaired() {
@@ -349,12 +371,14 @@ impl Engine {
                     step.finish
                         .ok_or(RunError::GuestProtocol("missing completion"))
                 };
-                return self.finish(result);
+                self.finish(result);
+                return Ok(());
             }
             if (step.op == ring::REPAIRED_READY && !self.slot.repaired())
                 || !matches!(step.op, ring::SUBMIT | ring::WAIT | ring::REPAIRED_READY)
             {
-                return self.finish(Err(RunError::GuestProtocol("unexpected checkpoint/repair")));
+                self.finish(Err(RunError::GuestProtocol("unexpected checkpoint/repair")));
+                return Ok(());
             }
             // Request bytes are opaque here; Node owns the call schema.
             let now = clock::ipc_ns();
@@ -363,7 +387,7 @@ impl Engine {
                     return Err(invalid("HVF child: call outside the outstanding bound"));
                 }
                 let call = Message::new(CALL, self.index, generation, r.id, r.bytes);
-                conn::send(self.out, &call)?;
+                self.outbox.push(call);
             }
             // A WAIT parks the guest until Node answers or its timer is due,
             // unless RX records still wait for ring space: then it runs on,
@@ -377,7 +401,7 @@ impl Engine {
     /// End the run: past its deadline any result is a deadline; an error
     /// resets the slot now (KVM's Retention::ResetErrors). STATS, then DONE
     /// or ERROR.
-    fn finish(&mut self, result: Result<String, RunError>) -> io::Result<()> {
+    fn finish(&mut self, result: Result<String, RunError>) {
         let run = self.run.take().unwrap();
         self.signals.active.store(0, SeqCst);
         let stopped = clock::ipc_ns();
@@ -396,17 +420,18 @@ impl Engine {
             cpu_ns += thread_cpu() - cpu;
             reset_done = clock::ipc_ns();
         }
-        self.send(service::stats(
+        self.outbox.push(service::stats(
             self.index,
             run.generation,
             [cpu_ns, stopped, reset_done],
             &run.round_trips,
-        ))?;
+        ));
         let (kind, bytes) = match result {
             Ok(text) => (DONE, text.into_bytes()),
             Err(e) => (ERROR, e.to_string().into_bytes()),
         };
-        self.send(Message::new(kind, self.index, run.generation, 0, bytes))
+        self.outbox
+            .push(Message::new(kind, self.index, run.generation, 0, bytes));
     }
 }
 

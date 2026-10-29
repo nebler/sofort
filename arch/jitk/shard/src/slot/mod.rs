@@ -1,6 +1,6 @@
 //! Hypervisor-neutral slot: guest RAM over a snapshot's memory classes, the
 //! bind header, the ring record decoder and reply path, and (reset.rs) reset,
-//! admission checks and verification. Generic over `hv::Vm`; the KVM and HVF
+//! sampled checks and verification. Generic over `hv::Vm`; the KVM and HVF
 //! specifics live behind it (`kvm`, `hvf`).
 pub mod reset;
 #[cfg(test)]
@@ -176,8 +176,8 @@ pub struct Slot<V: Vm> {
     reset_at: Instant,
     /// Why a failed reset or content check took this slot out of service.
     quarantined: Option<String>,
-    /// Admissions so far: every policy.sample_every-th is content-checked.
-    admits: u64,
+    /// Resets so far: every policy.sample_every-th is content-checked.
+    resets: u64,
     /// LOG payload bytes this generation; bounded by ring::LOG_BYTES.
     log_bytes: usize,
     /// The shard clock's cell for this slot (owner::Pool): refreshes the
@@ -206,7 +206,7 @@ impl<V: Vm> Slot<V> {
             resident: Cell::new(false),
             reset_at: Instant::now(),
             quarantined: None,
-            admits: 0,
+            resets: 0,
             log_bytes: 0,
             clock: None,
         }

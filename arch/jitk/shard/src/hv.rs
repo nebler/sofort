@@ -139,15 +139,4 @@ pub trait Vm: Sized {
     fn executable(&mut self, _gpa: u64, _host: *mut u8, _len: usize) -> io::Result<()> {
         Ok(())
     }
-    /// Whether the immutable extent `start..end` still reads as the file, if
-    /// this backend can tell without reading it (KVM: pagemap). None: the
-    /// sampled check compares the bytes.
-    fn immutable_intact(
-        &self,
-        _m: &Memory<'_, <Self::Vcpu as Vcpu>::State>,
-        _start: usize,
-        _end: usize,
-    ) -> Option<bool> {
-        None
-    }
 }

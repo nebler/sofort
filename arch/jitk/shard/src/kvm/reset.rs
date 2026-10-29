@@ -188,7 +188,7 @@ impl KvmVm {
     /// extents, or say why the copy path must not be used.
     fn private_pages(&mut self, m: &Memory<'_, Registers>) -> Result<(), Discard> {
         self.dirty.clear();
-        if m.policy.copy_limit == 0 {
+        if m.policy.copy_limit == Some(0) {
             return Err(Discard::Limit);
         }
         let pagemap = pagemap().ok_or(Discard::Unavailable)?;
@@ -204,7 +204,7 @@ impl KvmVm {
                     None => return Err(Discard::Ambiguous),
                     Some(false) => {}
                     Some(true) => {
-                        if self.dirty.len() == m.policy.copy_limit {
+                        if m.policy.copy_limit == Some(self.dirty.len()) {
                             return Err(Discard::Limit);
                         }
                         self.dirty.push(start + i * PAGE);
@@ -231,29 +231,6 @@ impl KvmVm {
         }
         m.resident.set(false);
         Ok(())
-    }
-    /// No private (CoW) page anywhere in the immutable extent, read from
-    /// pagemap so the check does not fault its host PTEs in. None without
-    /// pagemap: the extent is compared byte for byte.
-    pub(super) fn intact(
-        &self,
-        m: &Memory<'_, Registers>,
-        start: usize,
-        end: usize,
-    ) -> Option<bool> {
-        let pagemap = pagemap()?;
-        let mut entries = vec![0u8; (end - start) / PAGE * 8];
-        let va = m.ram.ptr as usize + start;
-        Some(
-            pagemap
-                .read_exact_at(&mut entries, (va / PAGE * 8) as u64)
-                .is_ok()
-                && entries
-                    .as_chunks::<8>()
-                    .0
-                    .iter()
-                    .all(|e| classify(u64::from_le_bytes(*e)) == Some(false)),
-        )
     }
 }
 

@@ -18,7 +18,7 @@
 //! them (kvm/reset.rs); HVF replaces both writable mappings with fresh ones of
 //! the file (hvf.rs). Both state what they rely on for a guest that runs with
 //! its caches off.
-use super::{CTRL, RAM, Slot, writable};
+use super::{RAM, Slot, writable};
 use crate::hv::{Memory, Vcpu, Vm};
 use std::{
     io,
@@ -32,35 +32,40 @@ const PAGE: usize = 4096;
 /// Per-slot reset policy. The shard binary takes it as one option string.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ResetPolicy {
-    /// Most private pages a reset restores by copying. Above this the reset
-    /// discards, so a hot idle slot never retains more than this many private
-    /// pages. 0 always discards (the pre-copy-restore behaviour). KVM only.
-    pub copy_limit: usize,
+    /// Most private pages a reset restores by copying; above it the reset
+    /// discards them, and the next run faults them in again. None: no cap
+    /// below the class's writable window, so every reset copies and a hot
+    /// slot holds at most that window between runs (glue-2m: 340 pages,
+    /// 1.33 MiB) until idle trim. Some(0) always discards. KVM only.
+    pub copy_limit: Option<usize>,
     /// Discard the private pages of a pristine, idle slot after this long.
     pub idle_trim: Option<Duration>,
     /// After every reset and trim, compare both writable extents with the
     /// snapshot file and every register with the snapshot; panic on mismatch.
     pub verify: bool,
-    /// Every Nth admission of a slot, check its content on the live path
-    /// (`Slot::admit`); 0 disables it.
+    /// After every Nth reset of a slot, check its content (`Slot::reset`);
+    /// 0 disables it.
     pub sample_every: u32,
 }
 impl Default for ResetPolicy {
-    /// 128 pages (512 KiB): R9 measured 75 (`return 2`), 80 (one tool) and 98
-    /// (`Promise.all(10)`) private pages per run, so typical runs stay on the
-    /// copy path with ~30% headroom. It also bounds what a hot idle slot holds to
-    /// about a third of the glue-2m writable window (340 pages).
+    /// No copy cap: a run's private pages grow with its payload (glue-2m:
+    /// 84 for `return 2`, 173 for a 30 KB source, 184 for a 50 KB result),
+    /// and a discard makes the next run fault every one of them in again.
+    /// On nested KVM that took a 50 KB result from 5.2 to 44 ms of guest
+    /// CPU. Idle trim, not a cap, returns the memory.
     ///
     /// 2 s idle trim: a slot in rotation under any sustained load is reused far
     /// sooner (64 slots at 100 runs/s: every 0.64 s), while memory returns
     /// within ~2 s once load drops. One trimmed reuse costs one discard-path run
     /// (~230 stage-2 faults), at most once per slot per 2 s.
     ///
-    /// Sampling every 1,024th admission: one check measured 0.30-0.32 ms (nested,
-    /// glue-2m), ~0.3 µs per admission amortized, ~0.1% of a copy-path run.
+    /// Sampling every 1,024th reset: one check of the writable extents and
+    /// registers took 0.8-1.7 ms on nested KVM (debug test build), about
+    /// 1 µs per reset amortized, and it runs before the slot is released,
+    /// not when a run is admitted.
     fn default() -> Self {
         Self {
-            copy_limit: 128,
+            copy_limit: None,
             idle_trim: Some(Duration::from_secs(2)),
             verify: false,
             sample_every: 1024,
@@ -75,7 +80,11 @@ impl ResetPolicy {
         for item in s.split(',').filter(|i| !i.is_empty()) {
             match item.split_once('=') {
                 Some(("copy-limit", n)) => {
-                    p.copy_limit = n.parse().map_err(|_| format!("reset policy: {item}"))?;
+                    let n: usize = n.parse().map_err(|_| format!("reset policy: {item}"))?;
+                    if n > RAM / PAGE {
+                        return Err("reset policy: copy-limit above RAM pages".into());
+                    }
+                    p.copy_limit = Some(n);
                 }
                 Some(("idle-trim-ms", "off")) => p.idle_trim = None,
                 Some(("idle-trim-ms", n)) => {
@@ -89,9 +98,6 @@ impl ResetPolicy {
                 _ => return Err(format!("reset policy: unknown option {item:?}")),
             }
         }
-        if p.copy_limit > RAM / PAGE {
-            return Err("reset policy: copy-limit above RAM pages".into());
-        }
         Ok(p)
     }
 }
@@ -99,7 +105,7 @@ impl ResetPolicy {
 /// Why a reset discarded instead of copying.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Discard {
-    /// More private pages than `copy_limit` (or the limit is 0).
+    /// More private pages than the policy's `copy_limit` (or it is 0).
     Limit,
     /// A pagemap entry the copy path cannot prove clean or private.
     Ambiguous,
@@ -130,29 +136,48 @@ pub struct ResetReport {
 }
 
 impl<V: Vm> Slot<V> {
-    fn memory(&self) -> Memory<'_, super::State<V>> {
-        Memory {
-            ram: &self.ram,
-            snapshot: self.snapshot(),
-            policy: &self.policy,
-            resident: &self.resident,
-        }
-    }
     /// Return this stopped slot to the pristine invariant (module docs). Any
     /// failure (a call the hypervisor or kernel rejects) quarantines this slot
     /// only: it is never bound again, and its owner keeps serving other slots.
+    ///
+    /// Every `sample_every`th reset is then checked (`content_mismatch`). A
+    /// mismatch is logged and counted, the slot is reset again on the discard
+    /// path and checked again; a second mismatch quarantines it. Both engines
+    /// reset when a run is released or fails, so the check delays the slot's
+    /// return to service, never a run's admission.
     pub fn reset(&mut self) -> Result<ResetReport, Quarantined> {
         if let Some(why) = &self.quarantined {
             return Err(Quarantined(why.clone()));
         }
         self.pristine.set(false);
-        match self.try_reset() {
-            Ok(report) => {
-                self.reset_at = Instant::now();
-                self.pristine.set(true);
-                Ok(report)
-            }
-            Err(e) => Err(self.quarantine(format!("reset failed: {e}"))),
+        let report = self
+            .try_reset()
+            .map_err(|e| self.quarantine(format!("reset failed: {e}")))?;
+        self.resets += 1;
+        let every = u64::from(self.policy.sample_every);
+        if every != 0 && self.resets.is_multiple_of(every) {
+            self.sampled_check()?;
+        }
+        self.reset_at = Instant::now();
+        self.pristine.set(true);
+        Ok(report)
+    }
+    fn sampled_check(&mut self) -> Result<(), Quarantined> {
+        SAMPLED.fetch_add(1, Relaxed);
+        let Some(why) = self.content_mismatch() else {
+            return Ok(());
+        };
+        SAMPLE_FAILURES.fetch_add(1, Relaxed);
+        eprintln!(
+            "shard: SECURITY: a reset slot failed the sampled content check ({why}); discard-resetting it"
+        );
+        let limit = self.policy.copy_limit.replace(0);
+        let again = self.try_reset();
+        self.policy.copy_limit = limit;
+        again.map_err(|e| self.quarantine(format!("reset failed: {e}")))?;
+        match self.content_mismatch() {
+            Some(why) => Err(self.quarantine(format!("content after a discard reset: {why}"))),
+            None => Ok(()),
         }
     }
     fn quarantine(&mut self, why: String) -> Quarantined {
@@ -197,61 +222,22 @@ impl<V: Vm> Slot<V> {
         }
         Ok(report)
     }
-    /// The only way to a bind: reset unless pristine, then, every
-    /// `sample_every`th admission, check the content the pristine flag vouches
-    /// for. A mismatch is logged and counted, the slot is reset on the discard
-    /// path and checked again; a second mismatch quarantines it. A slot is never
-    /// handed out with content that failed a check.
+    /// The only way to a bind: a pristine slot as it is, any other reset
+    /// first. A quarantined slot is never pristine, so it fails here.
     pub fn admit(&mut self) -> Result<Option<ResetReport>, Quarantined> {
-        if let Some(why) = &self.quarantined {
-            return Err(Quarantined(why.clone()));
-        }
-        let report = if self.pristine.get() {
-            None
+        if self.pristine.get() {
+            Ok(None)
         } else {
-            Some(self.reset()?)
-        };
-        self.admits += 1;
-        let every = u64::from(self.policy.sample_every);
-        if every != 0 && self.admits.is_multiple_of(every) {
-            SAMPLED.fetch_add(1, Relaxed);
-            if let Some(why) = self.content_mismatch() {
-                SAMPLE_FAILURES.fetch_add(1, Relaxed);
-                eprintln!(
-                    "shard: SECURITY: a pristine-flagged slot failed the sampled content check ({why}); discard-resetting it"
-                );
-                let limit = std::mem::replace(&mut self.policy.copy_limit, 0);
-                let reset = self.reset();
-                self.policy.copy_limit = limit;
-                reset?;
-                if let Some(why) = self.content_mismatch() {
-                    return Err(self.quarantine(format!("content after a discard reset: {why}")));
-                }
-            }
+            self.reset().map(Some)
         }
-        Ok(report)
     }
-    /// The sampled live check: both writable extents byte for byte against the
-    /// file; nothing written in the immutable extents (the backend's cheap
-    /// check, e.g. KVM's pagemap, so the check does not fault 30 MiB of host
-    /// PTEs into every sampled slot; otherwise byte for byte); every register
-    /// and the run state.
+    /// The sampled check: what a reset restores, both writable extents byte
+    /// for byte against the file, every register and the run state. The
+    /// immutable extents are not compared: no reset touches them, and the
+    /// pristine invariant holds them by construction (module docs).
     pub fn content_mismatch(&self) -> Option<String> {
         if !self.writable_pristine() {
             return Some("writable RAM".into());
-        }
-        let memory = self.memory();
-        for (start, end, writable) in memory.snapshot.class.regions(RAM, CTRL) {
-            if writable {
-                continue;
-            }
-            let intact = self
-                .vm
-                .immutable_intact(&memory, start, end)
-                .unwrap_or_else(|| self.matches_file(start, end));
-            if !intact {
-                return Some(format!("immutable extent {start:#x}..{end:#x}"));
-            }
         }
         let regs = self.register_mismatches();
         (!regs.is_empty()).then(|| format!("registers {regs:#x?}"))
@@ -340,7 +326,7 @@ mod tests {
     fn reset_policy_parses_and_rejects() {
         assert_eq!(ResetPolicy::parse("").unwrap(), ResetPolicy::default());
         let p = ResetPolicy::parse("copy-limit=0,idle-trim-ms=off,verify").unwrap();
-        assert_eq!((p.copy_limit, p.idle_trim, p.verify), (0, None, true));
+        assert_eq!((p.copy_limit, p.idle_trim, p.verify), (Some(0), None, true));
         let p = ResetPolicy::parse("idle-trim-ms=50").unwrap();
         assert_eq!(p.idle_trim, Some(Duration::from_millis(50)));
         assert_eq!(ResetPolicy::default().sample_every, 1024);

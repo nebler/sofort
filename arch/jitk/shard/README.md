@@ -151,7 +151,7 @@ records cgroup `memory.peak`; its `spawn-cg` is built from
 
 `slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
 class regions (immutable extents read-only on the host and in the VM), bind,
-the ring record decoder and reply path, and reset, admission sampling, trim
+the ring record decoder and reply path, and reset with its sampled check, trim
 and verify with the pristine invariant (`slot/reset.rs`). `slot/tests.rs` runs
 those state machines on any host with a fake backend. Behind the seam
 (`hv.rs`):
@@ -273,6 +273,25 @@ after CHECKPOINT (measured with and without it); the rest follows the guest's
 heap layout (variants of the source decode moved it by ±4 µs), not the
 message path: `return 2` takes one exit before and after.
 
+Bigger payloads dirty more of the arena: 84 private pages for `return 2`,
+173 for a 30 KB source, 184 for a 50 KB result (glue-2m, whose writable
+window is 340). The KVM reset therefore copies every private page
+(`ResetPolicy::copy_limit` None); with the former 128-page cap such runs
+discarded and refaulted. Through `ShardBackend`, one slot, n=200, nested
+KVM at load 0.4–1.0, before / after:
+
+| | guest CPU p50 | wall p50 | guest RAM held between runs |
+| --- | ---: | ---: | ---: |
+| `return 2` | 0.20 / 0.19–0.20 ms | 0.54–0.55 / 0.50–0.54 ms | 336 / 336 KiB |
+| 30 KB source | 47.6–47.9 / 4.37–4.38 ms | 48.6–48.9 / 5.07–5.08 ms | 0 / 692 KiB |
+| 50 KB result | 44.0–44.6 / 5.17–5.22 ms | 44.7–45.7 / 5.84–5.91 ms | 0 / 736 KiB |
+
+Idle trim (2 s) returns that memory to 0. The shard's own heap is one glibc
+arena (`M_ARENA_MAX`, set in `real`'s `main`): per-thread arenas each took a
+2 MiB transparent huge page, so an idle shard's Private_Dirty was 11.0 MiB
+(10 MiB of it AnonHugePages) at 1 and at 64 slots, and is 0.25–0.76 MiB at
+1 slot and 0.76–2.4 MiB at 64 slots.
+
 ## HVF engine (`hvf ipc`)
 
 `hvf ipc SNAPSHOT_BASE SLOTS [POLICY]` is the Mac engine the executor drives
@@ -304,8 +323,9 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
 - **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
   creates its VM, slot
   and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
-  admit (reset unless pristine, sampled check), bind, run to calls or WAIT,
-  resume per REPLY, finish (an error resets at once), reset on CANCEL, idle
+  admit (reset unless pristine), bind, run to calls or WAIT,
+  resume per REPLY, finish (an error resets at once), reset on CANCEL (every
+  1,024th reset is then checked before RELEASED), idle
   trim. A failed reset is QUARANTINED with the reason; the slot then admits
   nothing (`slot_unavailable`) and the zygote kills the process.
 - **Leases and kicks.** The reader thread holds the running generation's
@@ -331,6 +351,50 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
 - **Clock.** IPC deadlines and STATS times are CLOCK_MONOTONIC_RAW
   (`clock::ipc_ns`), which is mach_continuous_time and Node's process.hrtime.
   macOS's CLOCK_MONOTONIC has a different base.
+- **Message path.** An engine process writes what one command produced in
+  one write (STATS with DONE; console lines with a WAIT's calls), except that
+  an exit the guest runs on from is sent before the vCPU runs again; the
+  zygote writes everything queued for Node in one writev. A `return 2` run
+  is 2 writes from the engine process and 2 from the zygote to Node.
+- **Sampled check.** Every 1,024th reset of a slot compares its writable
+  extents and registers with the snapshot before RELEASED (`Slot::reset`),
+  so it never delays a run's admission. The 30 MiB of immutable RAM is not
+  compared: it is read-only on the host and in the VM. Over 20,000 `return 2`
+  runs (8 slots, M4 Pro at load 13–17), engine CPU per run went from 18 runs
+  above 3 ms (max 8.6–11.2 ms) to none above 1 ms (max 0.87 ms).
+
+### Handing each engine process's socket to Node (evaluated, not done)
+
+Every message crosses two sockets, Node to zygote to engine process, and
+the zygote decodes, checks and re-encodes it. Giving each engine process
+its own socket to Node would save that hop, about 70 µs of zygote CPU per
+`return 2` run (`ps` over 20,000 runs at load 12). It is not done because
+the zygote would lose what it is there for:
+- **Descriptors.** Node cannot receive a descriptor from the zygote (`net`
+  has no SCM_RIGHTS; only `child_process`'s IPC channel passes handles, in
+  Node's own framing), so it would have to create one pipe per slot at
+  spawn (fd 4 + slot) and the zygote would hand each to its child.
+- **Re-forks.** A replacement engine process must reuse its slot's pipe.
+  A killed process can die mid-record, and Node would then read a torn
+  record from a stream it cannot reopen: the stream needs a resync record
+  (generation-tagged) that Node waits for. Today the zygote drops the dead
+  child's socket and Node never sees a partial record.
+- **Deadlines.** The zygote kills a run 100 ms past its deadline and a reset
+  1 s after its CANCEL; it knows both because it forwards START and CANCEL.
+  Without forwarding, Node would have to send every START deadline and
+  CANCEL to the zygote as well (a second write per message, the hop saved),
+  or the engine process would report its own deadline, which the untrusted
+  side must not do.
+- **Checks.** The zygote kills a child that breaks the slot state machine
+  (call ids, STATS before one completion, bounded DONE). Node's
+  `ShardBackend` checks the same records again, so this part would move
+  without loss.
+
+If the hop ever matters, the order that keeps the zygote enforcing
+deadlines is: a control socket from Node to the zygote carrying each
+admitted generation's deadline and its CANCEL; then the per-slot pipes with
+a resync record; then the zygote stops forwarding. While the Mac stays a
+development engine (about 60 VMs per host), the hop is not worth that.
 
 Confinement (REPORT.md risk 4). The zygote confines itself before its first
 fork: `src/hvf/jitk.sb` (deny default, read the snapshot directory, one
