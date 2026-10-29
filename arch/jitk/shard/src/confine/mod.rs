@@ -1,4 +1,5 @@
-//! Confinement of the Linux shard (`real ipc`) and its lease watchdog.
+//! Confinement of the Linux shard (`real ipc`), its lease watchdog and the
+//! native worker (`real native-worker`, kvm/native.rs `confined`).
 //!
 //! The layers follow the process model, in this order (`Confinement`):
 //! 1. `enter_namespaces`, while the process has one thread and no child:

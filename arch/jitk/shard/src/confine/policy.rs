@@ -1,17 +1,20 @@
-//! The syscall allowlists of the confined shard (`real ipc`) and its lease
-//! watchdog, once setup is done: every file, socket, exec and thread is
-//! created before the filter is installed, so neither process may open,
-//! connect, exec, fork, trace or signal outside itself afterwards. Built
-//! from the code paths in owner.rs, ipc.rs, clock.rs, lease.rs and the
-//! allocator, and checked under strace on kvm-dev (`real confine` runs a
-//! guest under the filter).
+//! The syscall allowlists of the confined shard (`real ipc`), its lease
+//! watchdog and the native worker (`real native-worker`), once setup is
+//! done: every file, socket, exec and thread is created before the filter is
+//! installed, so no process may open, connect, exec, fork, trace or signal
+//! outside itself afterwards. Built from the code paths in owner.rs, ipc.rs,
+//! clock.rs, lease.rs, kvm/native.rs, inputs.rs and the allocator, and
+//! checked under strace on kvm-dev (`real confine` runs a guest under the
+//! filter, `real confine --native` a native request).
 use super::bpf::{Arg, Rule};
 use crate::constants::kvm;
 
 /// aarch64 Linux syscall numbers (include/uapi/asm-generic/unistd.h; the
 /// Linux test checks them against libc).
 pub mod nr {
+    pub const FCNTL: u32 = 25;
     pub const IOCTL: u32 = 29;
+    pub const FTRUNCATE: u32 = 46;
     pub const UNSHARE: u32 = 97;
     pub const OPENAT: u32 = 56;
     pub const CLOSE: u32 = 57;
@@ -50,6 +53,7 @@ pub mod nr {
     pub const PROCESS_VM_READV: u32 = 270;
     pub const SECCOMP: u32 = 277;
     pub const GETRANDOM: u32 = 278;
+    pub const MEMFD_CREATE: u32 = 279;
     pub const PIDFD_SEND_SIGNAL: u32 = 424;
     pub const PIDFD_OPEN: u32 = 434;
     pub const CLONE3: u32 = 435;
@@ -61,6 +65,9 @@ const FUTEX_CMD: u64 = 0x7f; // without FUTEX_PRIVATE_FLAG and FUTEX_CLOCK_REALT
 const SIGKILL: u64 = 9;
 /// The watchdog's kick (lease.rs SIGNAL).
 const SIGUSR1: u64 = 10;
+/// MFD_CLOEXEC | MFD_ALLOW_SEALING: the native input archive's memfd.
+const MFD_CLOEXEC_SEALING: u64 = 1 | 2;
+const F_ADD_SEALS: u64 = 1033;
 
 /// The KVM ioctls an owner thread issues on its VM and vCPU descriptors
 /// after setup: creating a slot (lazily, on its first START), running,
@@ -133,6 +140,27 @@ pub fn shard(pid: u32) -> Vec<Rule> {
     rules
 }
 
+/// The native worker (kvm/native.rs): the runtime, the KVM ioctls of a run
+/// and a reset on its already created VMs (KVM_IOCTLS without the four that
+/// create a VM or vCPU), pagemap reads, signals to itself, and each run's
+/// sealed input archive: memfd_create (CLOEXEC and sealing only), its size,
+/// F_ADD_SEALS and a read-only mapping. Its frames are stdin and stdout
+/// reads and writes; /dev/kvm, the pagemap and /dev/urandom are open before.
+pub fn native_worker(pid: u32) -> Vec<Rule> {
+    let mut rules = runtime();
+    let ioctls: Vec<[Arg; 1]> = KVM_IOCTLS[4..].iter().map(|&op| [Arg::Eq(1, op)]).collect();
+    let ioctls: Vec<&[Arg]> = ioctls.iter().map(|a| &a[..]).collect();
+    rules.extend([
+        Rule::allow_any(nr::IOCTL, &ioctls),
+        Rule::allow(nr::PREAD64),
+        Rule::allow_if(nr::TGKILL, &[Arg::Eq(0, pid as u64)]),
+        Rule::allow_if(nr::MEMFD_CREATE, &[Arg::Eq(1, MFD_CLOEXEC_SEALING)]),
+        Rule::allow(nr::FTRUNCATE),
+        Rule::allow_if(nr::FCNTL, &[Arg::Eq(1, F_ADD_SEALS)]),
+    ]);
+    rules
+}
+
 /// The lease watchdog: the runtime, the kick (SIGUSR1 to a thread of the
 /// shard) and the escalation (SIGKILL through the shard's pidfd).
 pub fn watchdog(shard: u32, pidfd: i32) -> Vec<Rule> {
@@ -155,7 +183,7 @@ pub fn watchdog(shard: u32, pidfd: i32) -> Vec<Rule> {
 #[cfg(test)]
 mod tests {
     use super::super::bpf::{AUDIT_ARCH_AARCH64, Action, compile, eval};
-    use super::{KVM_IOCTLS, nr, shard, watchdog};
+    use super::{KVM_IOCTLS, native_worker, nr, shard, watchdog};
     use crate::constants::kvm;
     const PID: u32 = 4242;
     fn on(rules: &[super::Rule], nr: u32, args: [u64; 6]) -> Action {
@@ -282,11 +310,59 @@ mod tests {
             Action::KillProcess
         );
     }
+    #[test]
+    fn native_worker_runs_its_vms_and_seals_inputs_only() {
+        let rules = native_worker(PID);
+        for op in &KVM_IOCTLS[4..] {
+            assert_eq!(on(&rules, nr::IOCTL, args(&[7, *op])), Action::Allow);
+        }
+        // Its VMs and vCPUs exist before the filter: no new ones.
+        for op in &KVM_IOCTLS[..4] {
+            assert_eq!(on(&rules, nr::IOCTL, args(&[7, *op])), Action::KillProcess);
+        }
+        assert_eq!(on(&rules, nr::MEMFD_CREATE, args(&[0, 3])), Action::Allow);
+        // No executable (MFD_EXEC) or unsealable memfd.
+        for flags in [1, 0x11, 0x13] {
+            assert_eq!(
+                on(&rules, nr::MEMFD_CREATE, args(&[0, flags])),
+                Action::KillProcess
+            );
+        }
+        assert_eq!(on(&rules, nr::FCNTL, args(&[3, 1033, 15])), Action::Allow);
+        for cmd in [0, 1030, 2, 4] {
+            // F_DUPFD, F_DUPFD_CLOEXEC, F_SETFD, F_SETFL
+            assert_eq!(on(&rules, nr::FCNTL, args(&[3, cmd])), Action::KillProcess);
+        }
+        for n in [
+            nr::OPENAT,
+            nr::OPENAT2,
+            nr::SOCKET,
+            nr::CONNECT,
+            nr::EXECVE,
+            nr::CLONE,
+            nr::CLONE3,
+            nr::PTRACE,
+            nr::KILL,
+            nr::PRCTL,
+            nr::SECCOMP,
+            nr::UNSHARE,
+            nr::SETNS,
+        ] {
+            assert_eq!(on(&rules, n, args(&[])), Action::KillProcess, "syscall {n}");
+        }
+        assert_eq!(
+            on(&rules, nr::MMAP, args(&[0, 4096, 5, 2, 3])),
+            Action::KillProcess
+        );
+    }
     #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
     #[test]
     fn syscall_numbers_match_libc() {
         for (ours, libc) in [
+            (nr::FCNTL, libc::SYS_fcntl),
             (nr::IOCTL, libc::SYS_ioctl),
+            (nr::FTRUNCATE, libc::SYS_ftruncate),
+            (nr::MEMFD_CREATE, libc::SYS_memfd_create),
             (nr::UNSHARE, libc::SYS_unshare),
             (nr::OPENAT, libc::SYS_openat),
             (nr::CLOSE, libc::SYS_close),
@@ -332,5 +408,10 @@ mod tests {
         ] {
             assert_eq!(ours as libc::c_long, libc, "syscall {ours}");
         }
+        assert_eq!(super::F_ADD_SEALS, libc::F_ADD_SEALS as u64);
+        assert_eq!(
+            super::MFD_CLOEXEC_SEALING,
+            (libc::MFD_CLOEXEC | libc::MFD_ALLOW_SEALING) as u64
+        );
     }
 }

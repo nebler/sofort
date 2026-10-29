@@ -1,5 +1,7 @@
 //! Persistent Linux native worker; this child module is the only Slot adapter.
+//! The worker confines itself before any guest runs (`confined`).
 use super::{CTRL, Kvm, REQUEST, Region, Slot, Snapshot, monotonic_ns};
+use crate::confine::{Confinement, Signals, policy};
 use crate::constants::kvm::{
     EXIT_REASON, KVM_EXIT_MMIO, KVM_RUN, KVM_SET_USER_MEMORY_REGION, MMIO_ADDR, MMIO_DATA,
     MMIO_LEN, MMIO_WRITE,
@@ -10,7 +12,7 @@ use inputs::{MAX_ARCHIVE, Run};
 use libc::{ioctl, mmap, munmap};
 use std::{
     fs::File,
-    io::{self, Write},
+    io::{self, Read, Write},
     os::{
         fd::{AsRawFd, FromRawFd},
         raw::c_void,
@@ -210,34 +212,69 @@ impl NativeVm {
         }
     }
 }
-/// One fixed worker, one reusable slot/profile, no per-run helper process.
-pub fn worker(profiles: &[String]) -> Result<(), Box<dyn std::error::Error>> {
-    let kvm = Kvm::new();
-    let mut vms = BTreeMap::new();
-    if profiles.is_empty() || profiles.len() > 16 {
-        return Err("1..16 native profiles required".into());
-    }
-    for p in profiles {
-        let (name, base) = p
-            .split_once('=')
-            .ok_or("profile must be tool=SNAPSHOT_BASE")?;
-        if vms.contains_key(name) {
-            return Err("duplicate native profile".into());
+/// The worker's VMs, one reusable slot per profile, and its entropy: every
+/// descriptor it uses (/dev/kvm, the pagemap, the snapshots, /dev/urandom)
+/// is open once `load` returns.
+pub struct Worker {
+    vms: BTreeMap<String, NativeVm>,
+    entropy: File,
+}
+impl Worker {
+    /// Load 1..16 `TOOL=SNAPSHOT_BASE` profiles and create their VMs.
+    pub fn load(profiles: &[String]) -> io::Result<Self> {
+        if profiles.is_empty() || profiles.len() > 16 {
+            return Err(io::Error::other("1..16 native profiles required"));
         }
-        vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)?));
+        let kvm = Kvm::new();
+        let mut vms = BTreeMap::new();
+        for p in profiles {
+            let (name, base) = p
+                .split_once('=')
+                .ok_or_else(|| io::Error::other("profile must be tool=SNAPSHOT_BASE"))?;
+            if vms.contains_key(name) {
+                return Err(io::Error::other("duplicate native profile"));
+            }
+            vms.insert(name.to_string(), NativeVm::new(&kvm, Snapshot::load(base)?));
+        }
+        Ok(Self {
+            vms,
+            entropy: File::open("/dev/urandom")?,
+        })
     }
-    let mut entropy = File::open("/dev/urandom")?;
-    inputs::serve(
-        &mut io::stdin().lock(),
-        &mut io::stdout().lock(),
-        |run, generation| {
-            vms.get_mut(&run.tool)
-                .ok_or_else(|| "unknown native profile".to_string())?
-                .run(run, generation, &mut entropy)
-        },
-    )?;
-    for vm in vms.values_mut() {
-        vm.shutdown()?;
+    /// One request on its profile's VM.
+    pub fn run(&mut self, run: &Run, generation: u64) -> Result<Output, String> {
+        self.vms
+            .get_mut(&run.tool)
+            .ok_or_else(|| "unknown native profile".to_string())?
+            .run(run, generation, &mut self.entropy)
     }
-    Ok(())
+    /// Serve frames until `input` ends, then complete every pending exit.
+    pub fn serve(&mut self, input: &mut impl Read, output: &mut impl Write) -> io::Result<()> {
+        inputs::serve(input, output, |run, generation| self.run(run, generation))?;
+        for vm in self.vms.values_mut() {
+            vm.shutdown()?;
+        }
+        Ok(())
+    }
+}
+/// The worker as `real native-worker` runs it, also used by `real confine
+/// --native`: the confinement of `real ipc` (confine/mod.rs) around the
+/// setup. Namespaces while this is the only thread; then every VM and file
+/// (`Worker::load`); then no file system or TCP access and the
+/// native-worker syscall filter (confine::policy::native_worker). No guest
+/// code has run when this returns.
+pub fn confined(confinement: &mut Confinement, profiles: &[String]) -> io::Result<Worker> {
+    confinement.enter_namespaces();
+    let worker = Worker::load(profiles)?;
+    confinement.close_files(Signals::OwnProcess)?;
+    confinement.filter_syscalls(&policy::native_worker(std::process::id()))?;
+    Ok(worker)
+}
+/// One fixed, confined worker, one reusable slot/profile, no per-run helper
+/// process: serve stdin until it ends.
+pub fn worker(profiles: &[String]) -> io::Result<()> {
+    let mut confinement = Confinement::new();
+    let mut worker = confined(&mut confinement, profiles)?;
+    confinement.report().warn("native worker");
+    worker.serve(&mut io::stdin().lock(), &mut io::stdout().lock())
 }

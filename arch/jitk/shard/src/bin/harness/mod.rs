@@ -61,8 +61,25 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     if a.get(1).map(String::as_str) == Some("confine") {
-        let allow_degraded = a.get(3).map(String::as_str) == Some("--allow-degraded");
-        return confine::run(&a[2], allow_degraded);
+        // confine BASE | confine --native REQUEST TOOL=BASE...; [--allow-degraded] last
+        let allow_degraded = a.last().map(String::as_str) == Some("--allow-degraded");
+        let args = &a[2..a.len() - allow_degraded as usize];
+        let target = match args {
+            [flag, request, profiles @ ..] if flag == "--native" && !profiles.is_empty() => {
+                confine::Target::Native {
+                    request: std::fs::read(request)?,
+                    profiles: profiles.to_vec(),
+                }
+            }
+            [base] => confine::Target::Ipc(base.clone()),
+            _ => {
+                return Err(
+                    "confine BASE | confine --native REQUEST TOOL=BASE... [--allow-degraded]"
+                        .into(),
+                );
+            }
+        };
+        return confine::run(&target, allow_degraded);
     }
     if a.get(1).map(String::as_str) == Some("ipc-probe") {
         if let Err(e) = probe::run(&a[2]) {
