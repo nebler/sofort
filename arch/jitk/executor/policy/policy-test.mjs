@@ -50,7 +50,7 @@ ok(r.tainted.privateRead === true);
 // 8. cancellation before invocation: an aborted signal, or cancel/run death while the credential
 // is minted, never starts the tool, and the minted credential is revoked
 let invoked = 0;
-const counted = { web: { fetch: { ...tools.web.fetch, invoke: async () => (invoked++, 'page') } } };
+const counted = { web: { fetch: { ...tools.web.fetch, invoke: async () => { invoked++; return 'page'; } } } };
 const rejects = async (p, m) => { await assert.rejects(p, /cancelled before invocation/, m); n++; };
 r = createRun({ tools: counted, deadline: Date.now() + 60_000 });
 const aborted = new AbortController(); aborted.abort();
@@ -66,7 +66,7 @@ ok(invoked === 0, 'tool never invoked after cancellation');
 r = createRun({ tools: counted, deadline: Date.now() + 60_000 });
 const run = new AbortController(); let listeners = 0;
 const add = run.signal.addEventListener.bind(run.signal), remove = run.signal.removeEventListener.bind(run.signal);
-run.signal.addEventListener = (...a) => (listeners++, add(...a)); run.signal.removeEventListener = (...a) => (listeners--, remove(...a));
+run.signal.addEventListener = (...a) => { listeners++; add(...a); }; run.signal.removeEventListener = (...a) => { listeners--; remove(...a); };
 for (let i = 1; i <= 20; i++) await dispatch(r, decide(r, c(i, 'web', 'fetch')).call, { issuer, signal: run.signal });
 ok(listeners === 0 && invoked === 20, 'abort listeners removed');
 console.log(`${n} policy assertions passed`);
