@@ -481,8 +481,9 @@ pub fn run(a: &[String]) {
     // SAFETY: pidfd_open takes scalar arguments and returns a fresh owned fd.
     let pidfd = owned(unsafe { syscall(libc::SYS_pidfd_open, pid, 0) } as i32); // pidfd_open
     // Everything is open: from here the watchdog only polls, kicks and kills
-    // (confine::policy::watchdog). It shares the shard's namespaces and
-    // no_new_privs, and is outside the shard's Landlock domain.
+    // (confine::policy::watchdog). It shares the shard's namespaces (the
+    // shard spawns it before closing its own files) and gets a Landlock
+    // domain of its own, outside the shard's.
     let mut confinement = Confinement::new();
     let confined = confinement.close_files(Signals::Unscoped).and_then(|()| {
         confinement.filter_syscalls(&policy::watchdog(pid as u32, pidfd.as_raw_fd()))
