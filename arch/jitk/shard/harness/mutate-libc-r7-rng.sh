@@ -1,5 +1,5 @@
 #!/bin/sh
-# Run under flock "${JITK_BENCH_LOCK:-/home/dev/bench.lock}" after the main measurements.
+# Run under flock "${JITK_BENCH_LOCK:-$HOME/bench.lock}" after the main measurements.
 # Mutates a task-owned copy, never the measured payload or source.
 set -eu
 ulimit -c 0

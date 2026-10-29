@@ -1,63 +1,80 @@
-# Canonical jitk kernel (owner 02)
+# jitk guest kernel
 
-Experimental shard build: `make ring` (Linux/arm64 toolchain, `llvm-objcopy`) or
-`sh build-ring.sh` emits **`dist/kernel-ring.bin`** in a separate `target-ring/`
-cache. It enables `transport-ring`, packs the separate `payload/qjs-ring` and selects
-`ring-bootstrap.js`. It never overwrites `dist/kernel.bin`. The default build,
-argv, virtio/FDT/GIC path and syscall contracts are unchanged. See
-[`../shard/ABI-R6.md`](../shard/ABI-R6.md) for its bounded ABI-v2 subset and explicit
-clocks, deadline and policy limitations; it is not a production cutover.
+A small `no_std` AArch64 kernel that runs one unmodified static Linux ELF
+(QuickJS by default) at EL0 behind a fixed table of syscall handlers. One
+source tree builds two profiles:
 
-The R7 ring payload has a native `os.snapshotCheckpoint()` hook: after the EL1
-checkpoint resumes and installs fresh entropy, it repairs the existing context's
-Math.random state, musl AT_RANDOM/stack guards/mallocng metadata secret, and libc
-PRNGs before returning to the bootstrap or reading source. The seed is delivered
-once through fd101, erased in EL1, and never exposed as JS bytes. `run.entropy`
-is now a domain-separated public receipt. Math.random and libc PRNGs retain
-their upstream non-cryptographic semantics. Native code must use an independently
-designed entropy API for cryptographic randomness; getrandom is not implemented.
+| Profile | Build | Transport | Booted by | Used for |
+| --- | --- | --- | --- | --- |
+| ring (`transport-ring`) | `make ring` or `sh build-ring.sh` → `dist/kernel-ring.bin` (cache `target-ring/`), packing `payload/qjs-ring` and `ring-bootstrap.js` | shared-memory rings and a doorbell, ABI v11 ([`../abi/`](../abi/README.md), [`../shard/ABI-R7.md`](../shard/ABI-R7.md)) | the ring engine from a prepared snapshot (`make -C ../shard snapshot`): `hvf` on macOS, `real` (KVM) on Linux | the product: executor and MCP |
+| console (default) | `sh build.sh` (run by `make -C .. build`) → `dist/kernel.bin`, packing `payload/qjs` and `../protocol/bootstrap.js` | one virtio-mmio console, protocol v1 on stdio | `hvf console` on macOS (below) | GrowOS, `scriptc-corpus`, this subtree's VM tests, the protocol VM tests |
+
+[`.READY`](.READY) pins the console image and the gates that ran on it; it
+is written only by `make promote` ([`promote.ts`](promote.ts)), which runs
+every gate on the built image and refuses otherwise. The ring images are
+identified by the shard snapshot key instead (`../shard/README.md`).
+
+Source layout: an architecture-neutral core plus `src/arch/aarch64/` (boot,
+vectors, MMU, timer/GIC, FDT, trap entry, MMIO, syscall numbers, stat layout).
+[ARCH.md](ARCH.md) describes the interface an x86_64 port implements;
+`arch-lint` keeps assembly and AArch64 names out of the core.
+
+## Build
+
+The image is a 32 MiB AArch64 RAW image. It needs the Rust pin from
+`../tools/deps.json` with `aarch64-unknown-none`, LLVM `llvm-objcopy`
+(Homebrew LLVM on the Mac; override with `OBJCOPY`) and the scriptc tools in
+`.work/bin/` (`make build`). There are no Cargo dependencies or network
+downloads. `payload/qjs` is a stripped static Bellard qjs; its source digest
+is recorded in the manifest. The console bootstrap is read directly from
+`../protocol/bootstrap.js`, not copied. Default argv: `qjs --std
+--memory-limit 16777216 --stack-size 81920 -e <bootstrap>` (the user stack is
+96 KiB; see `generate.ts`).
+
+Outputs: `dist/kernel.bin`, `dist/kernel-<sha256>.bin`, `dist/manifest.json`
+and `dist/kernel-<sha256>.json`. The manifest records exact ELF/flat/image
+digests, segments, argv and syscall numbers/names/handler hashes/registration.
+The digest names immutable image contents; `kernel.bin` and `manifest.json`
+select the latest. Rebuilding with changed inputs does not certify that
+artifact; only `make promote` moves `.READY`.
+
+## Test
+
+`make test` runs the packer regression, handler tests and real-VM regressions
+on macOS arm64. The VMs are the HVF engine's console runner,
+`$JITK_SHARD_BINARY console --image IMAGE` (`tests/host.sh`; `make -C ..
+deps` builds the engine and the delegate passes it; `JITK_TEST_HOST` selects
+another positional-image test host). The full G1/G2 harness is
+`.work/bin/tests/measure park 0` and `... integration`. Tests use bounded
+controller deadlines and kill and reap every VM. The build cache defaults to
+`target/`; test outputs and scratch default to `test-results/` and
+`test-work/` here (`JITK_TEST_OUTPUT`, `JITK_GROW_CONTRACT_WORK`,
+`JITK_PROBE_WORK` and `JITK_LUA_PROFILE_WORK` override them). The grow-contract
+assembly fixtures ship in `tests/fixtures/grow/`.
+
+## Ring payload and entropy after restore
+
+The ring payload has a native `os.snapshotCheckpoint()` hook: after the EL1
+checkpoint resumes and installs fresh entropy, it repairs the existing
+context's Math.random state, musl AT_RANDOM/stack guards/mallocng metadata
+secret, and libc PRNGs before returning to the bootstrap or reading source.
+The seed is delivered once through fd101, erased in EL1, and never exposed as
+JS bytes. `run.entropy` is a domain-separated public receipt. Math.random and
+libc PRNGs keep their upstream non-cryptographic semantics; native code must
+use an independently designed entropy API for cryptographic randomness
+(getrandom is not implemented).
 
 Rebuild this payload **inside a Linux arm64 VM**, into a new directory:
-`sh payload/ring-rng/build.sh /absolute/NEW_WORK`, then copy `NEW_WORK/qjs-ring`
-to `payload/qjs-ring`. Sources, checksums, compiler flags and the mallocng repair
-are explicit in that recipe. It is QuickJS 2026-06-04 and musl 1.2.5; the original
-stripped `payload/qjs` cannot be reproduced from its recorded ELF digest alone.
-See [`../shard/RESULTS-R7-rng.md`](../shard/RESULTS-R7-rng.md) for measured
-provenance and restrictions. All frames spanning guard rotation are built without
-stack protection, including libc; do not enable it without redesigning checkpoint
-unwinding. The default `payload/qjs` and `dist/kernel.bin` remain unchanged.
+`sh payload/ring-rng/build.sh /absolute/NEW_WORK`, then copy
+`NEW_WORK/qjs-ring` to `payload/qjs-ring`. Sources, checksums, compiler flags
+and the mallocng repair are explicit in that recipe (QuickJS 2026-06-04, musl
+1.2.5); the stripped `payload/qjs` cannot be reproduced from its recorded ELF
+digest alone. See [the R7 RNG report](../docs/results/shard-r7-rng.md) for
+measured provenance and restrictions. All frames spanning guard rotation are
+built without stack protection, including libc; do not enable it without
+redesigning checkpoint unwinding.
 
-Source layout: an architecture-neutral core plus `src/arch/aarch64/` (boot, vectors,
-MMU, timer/GIC, FDT, trap entry, MMIO, syscall numbers, stat layout). See
-[ARCH.md](ARCH.md) for the interface an x86_64 port implements; `arch-lint` keeps
-assembly and AArch64 names out of the core.
-
-`make -C arch/jitk/kernel` builds the 32 MiB AArch64 RAW image. Requires Rust
-1.95.0 + aarch64-unknown-none, Python 3, LLVM objcopy (override `OBJCOPY`).
-There are no Cargo dependencies or network downloads. `payload/qjs` is the stripped
-static Bellard qjs from the spike; its source digest is recorded in the manifest.
-The default bootstrap is read directly from `../protocol/bootstrap.js`; it is not
-copied. Default argv: qjs --std --memory-limit 16777216 --stack-size 81920 -e <canonical bootstrap>
-(the user stack is 96 KiB; see generate.ts).
-
-Outputs: `dist/kernel.bin`, `dist/kernel-<sha256>.bin`, `dist/manifest.json`, and
-`dist/kernel-<sha256>.json`. The manifest records exact ELF/flat/image digests,
-segments, argv and syscall numbers/names/handler hashes/registration. The digest
-names immutable image contents; `kernel.bin` and `manifest.json` select latest.
-`make test` runs packer regression, handler tests and real-VM regressions; the
-VMs are the HVF engine's console runner, `$JITK_SHARD_BINARY console --image
-IMAGE` (`tests/host.sh`; `make -C .. deps` builds the engine, the delegate
-passes it; macOS arm64. Until 2026-10-28 the libkrun `jitk-vmm`;
-`JITK_TEST_HOST` selects another positional-image test host). The full G1/G2 harness is `.work/bin/tests/measure park 0` and `... integration`.
-`.READY` identifies the tested artifact; rebuilding with changed inputs does not
-certify that artifact. Tests use bounded controller deadlines and kill/reap all VMs.
-Build cache defaults to `target/`; test outputs and scratch default to
-`test-results/` and `test-work/` inside this subtree. `JITK_TEST_OUTPUT`,
-`JITK_GROW_CONTRACT_WORK`, `JITK_PROBE_WORK`, and `JITK_LUA_PROFILE_WORK`
-override those test paths. The grow-contract assembly fixtures ship in
-`tests/fixtures/grow/`; no historical area checkout or scratch fixture is needed.
-
-## Console launcher contract (`hvf console`, formerly vmm/)
+## Console launcher contract (`hvf console`)
 
 One vCPU, **32 MiB** RAM starting at 0x80000000; load RAW at 0x80000000 and
 pass the FDT in x0. Exactly one virtio-mmio inout console port named jitk maps
@@ -118,7 +135,7 @@ it unregisters both slots. Reserved
 134 rt_sigaction and 135 rt_sigprocmask are installed as Lua profile handlers:
 they ALWAYS return -38, touch no user pointers, and install no signal state.
 The owner-applied 6-line patch and native Linux injection evidence come from
-`../grow/results/canonical-r3/`. `syscalls.manifest.json` records that restricted
+`arch/08-grow-loop/r3/grow-results/canonical-r3/`. `syscalls.manifest.json` records that restricted
 contract; the artifact manifest includes its contents and SHA256. A growth replay
 deletes these handlers in its copied tree before rediscovery.
 216 mremap is registered and returns -38 (musl fallback). Unregistered syscalls
@@ -145,7 +162,8 @@ hex-encoded kind log. Trace records wait for a complete EL0 line (16 KiB bound,
 otherwise fail closed) to preserve D8. A final unterminated line cannot carry a
 terminal kernel record. Compare bounded probe profiles, not arbitrary qjs traces.
 
-Security integration is owned by vmm/sandbox and executor/policy; this subtree
+Host confinement belongs to the engine (`../shard/src/hvf/jitk.sb`) and host
+policy to `../executor/policy`; this subtree
 only enforces EL0 isolation, pointer checking, W^X and stdout framing.
 
 Lua profile verification after applying the owner patch:
@@ -210,9 +228,9 @@ newfstatat byte-layout code without changing pathname metadata.
 
 The grow controller accepts both handlers only after independent Linux
 semantic/error/state cases, executable rejected mutations and an unchanged
-SQLite corpus. See [`../grow/RESULTS-R7-grow.md`](../grow/RESULTS-R7-grow.md)
+SQLite corpus. See [the R7 grow report](../docs/results/grow-r7.md)
 for per-case stdout/stderr/exit comparisons and artifact identities. This is a
-developer grow-trace/libkrun demonstration with printable stdout; production
+developer grow-trace demonstration on the console profile with printable stdout; production
 native streams and stderr are separate ring work. faccessat/getpid remain
 tolerated missing compatibility probes; the signal handlers remain ENOSYS.
 
@@ -227,8 +245,8 @@ code can read resources with `std.loadFile`. No guest API was added or widened.
 
 Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
 shared helpers in `../tslib/`. Run `make tools` to compile the tools under
-`.work/bin/`. See `PORT-PARITY.md`
-and `SCRIPTC-GAPS.md` for parity coverage and platform details.
+`.work/bin/`. See [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md) for compiler workarounds and the
+[Python port parity report](../docs/results/port-parity-kernel-2026-10-26.md).
 
 `make linux-tools` cross-compiles static aarch64 musl executables for the
 Linux-only filesystem diagnostic and ring-rng source patcher. Set

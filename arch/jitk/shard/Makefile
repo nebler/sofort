@@ -25,7 +25,7 @@ snapshot:
 	"$(call jitk_artifact,JITK_NODE)" snapshot.ts build
 
 # The KVM tests use the cache snapshots unless JITK_SHARD_TEST_SNAPSHOT(S) are
-# set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-/home/dev/bench.lock})
+# set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-$$HOME/bench.lock})
 # when the host is shared, as for the real harness's other KVM measurements.
 .PHONY: test-kvm
 test-kvm: snapshot

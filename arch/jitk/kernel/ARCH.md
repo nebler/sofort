@@ -6,10 +6,9 @@ that implements the items below. It also adds a few mount lines in `main.rs`/`fs
 and one number table. No core file needs editing, with one exception noted under
 "Linux ABI data". `arch-lint` (see the end of this file) keeps it that way.
 
-This was a refactor with no behaviour change. All eight image variants
-(default, grow-trace, trace, trace+grow-trace, ring glue-2m/4m, ring native
-2m/4m) are byte-identical to `f3f14f0f`. The default image is still
-`e3d774eb…` (`.READY`). The unused `trace` feature was deleted later (R12).
+The split was a refactor with no behaviour change: every image variant stayed
+byte-identical ("Verification of the refactor" below). The current default
+image and its gates are in [`.READY`](.READY).
 
 ## What is core
 
@@ -44,7 +43,7 @@ This was a refactor with no behaviour change. All eight image variants
 | `arch::mmio::{read32, write32, barrier}` | LDR/STR to Device-nGnRE memory; DMB SY | `console.rs` |
 | `arch::doorbell(op)` (ring) | DMB ISHST then STR to `DOORBELL_GPA` | `ring.rs`, `wait_ring.rs`, `off()` |
 | `arch::system_off()` | PSCI SYSTEM_OFF (HVC) | `off()` |
-| `arch::{RAM_GPA, PACKED_GPA}` | 0x80000000, 0x80080000 (libkrun aarch64 RAM map) | `memory.rs`, mmu |
+| `arch::{RAM_GPA, PACKED_GPA}` | 0x80000000, 0x80080000 (the virt RAM map both engines use) | `memory.rs`, mmu |
 | `src/arch/<arch>/syscalls.json` | Linux syscall name → number (`null` = absent on this arch) | generator → dispatch, `syscalls::nr`, manifest, GrowOS |
 | `fs::stat_abi` (`src/arch/<arch>/stat.rs`) | asm-generic 128-byte `struct stat` | `fs::stat` → fstat/newfstatat |
 
@@ -134,7 +133,7 @@ is that table's estimate in days; "after" is the estimate with this layout.
 | `vectors.S` | IDT stubs, error codes, IST for #DF, SYSCALL entry with stack switch; save into a frame and define `frame::{NR=rax, ARGS (rdi,rsi,rdx,r10,r8,r9 stored contiguously), RET, PC=rcx/rip}` | 3–4 | 3–4 |
 | `mmu.rs` | `arch/x86_64/mmu.rs` with the same `crate::mmu` API: PML4, NX/RW/US, CR3/INVLPG, CR0.WP, SMEP/SMAP | 3–4 | 3–4 |
 | `user.rs` | only `enter_user` (IRETQ to ring 3), `sync_icache` (a no-op on x86) and `trap.rs`. The initial stack, auxv, copy helpers and dispatch are already core | 2–3 | 1–1.5 |
-| `main.rs` | `system_off` (ACPI-less: an i8042/port write or libkrun's chosen exit), a mount line per subsystem | 0.5–1 | 0.25–0.5 |
+| `main.rs` | `system_off` (ACPI-less: an i8042/port write or the engine's chosen exit), a mount line per subsystem | 0.5–1 | 0.25–0.5 |
 | `fdt.rs` / boot info | a `crate::fdt`-slot parser for boot params/cmdline; `BootInfo` with the same four methods | 1–2 | 1–2 |
 | `wait.rs` | TSC with a calibrated frequency, LAPIC deadline/one-shot timer, IOAPIC route for the console IRQ, `sti; hlt` without races; same `crate::wait` API | 2–3 | 2–3 |
 | `console.rs` | `arch::mmio` (volatile accesses plus a compiler fence) and IRQ routing; the virtio protocol is unchanged | 1–2 | 0.5–1 |
@@ -142,12 +141,11 @@ is that table's estimate in days; "after" is the estimate with this layout.
 | handler audit | `stat.rs` (144 bytes), `O_DIRECTORY` (contract refresh), new handlers or aliases for legacy x86 calls and `arch_prctl(ARCH_SET_FS)`, retrace QuickJS/Lua | 3–4 | 2–3 |
 | `fs.rs`, `trace.rs` | nothing: trace uses `syscalls::nr` and fs is neutral | 0.5–1 | 0–0.25 |
 | `prepare/artifact`, payloads | EM_X86_64 in `packer.ts`, x86 musl QuickJS/Lua | 2–3 | 2–3 |
-| `vmm/src/main.rs` | unchanged estimate | 1–2 | 1–2 |
-| `vmm/sandbox`, confinement | unchanged | 2–3 | 2–3 |
-| vmm build scripts | unchanged | 0.5–1 | 0.5–1 |
-| libkrun patches | unchanged | 1–2 | 1–2 |
 | tests/certification | unchanged | 4–6 | 4–6 |
-| **Total (libkrun path)** | | **30.5–50** | **≈26–41** |
+| **Total (kernel)** | | **26–42** | **≈21.5–33** |
+
+The 03 table's libkrun rows (VMM, its sandbox, build scripts and patches,
+4.5–8 days) no longer apply: the engines are the shard's, below.
 
 The 03 table does not include the **ring/shard path**:
 
@@ -158,7 +156,8 @@ The 03 table does not include the **ring/shard path**:
 | ring payload rebuild for x86 (`payload/ring-rng`), shard KVM gates | 1.5–2.5 |
 | **Shard subtotal** | **7–11** |
 
-With the shard included, the estimate is about **33–52 days**. The savings
+With the shard included, the estimate is about **28.5–44 days**, with both
+kernel profiles kept. The savings
 from the layout are 4.5–9 days. Most of that is time no longer spent finding
 and untangling ARM-specific code from shared code. The hard parts (SYSCALL
 entry, page tables, APIC timer, the test matrix) are unchanged.

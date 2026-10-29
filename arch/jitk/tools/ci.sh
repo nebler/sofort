@@ -20,7 +20,7 @@
 # tools/.work/ci-logs, emptied per run) with summary.txt; the summary ends
 # with the tail of every failed step's log. CI uploads the directory.
 #   JITK_BENCH_LOCK   lock held around the KVM suites; default
-#                     /home/dev/bench.lock when present (kvm-dev), else
+#                     ~/bench.lock when present (kvm-dev), else
 #                     $TMPDIR/jitk-bench.lock
 set -u
 JITK=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
@@ -150,7 +150,7 @@ export JITK_NPM_CACHE="${JITK_NPM_CACHE:-${TMPDIR:-/tmp}/jitk-npm-cache}"
 export OBJCOPY="${OBJCOPY:-llvm-objcopy}"
 
 if [ -z "${JITK_BENCH_LOCK:-}" ]; then
-  if [ -e /home/dev/bench.lock ]; then JITK_BENCH_LOCK=/home/dev/bench.lock; else JITK_BENCH_LOCK=${TMPDIR:-/tmp}/jitk-bench.lock; fi
+  if [ -e "$HOME/bench.lock" ]; then JITK_BENCH_LOCK=$HOME/bench.lock; else JITK_BENCH_LOCK=${TMPDIR:-/tmp}/jitk-bench.lock; fi
 fi
 export JITK_BENCH_LOCK
 locked() { flock -w "${JITK_SHARD_LOCK_WAIT:-900}" "$JITK_BENCH_LOCK" "$@"; }

@@ -1,6 +1,6 @@
 # GrowOS path syscalls on a shared file tree — 2026-10-27
 
-In Phase 2 ([`EXPERIMENTS-PHASE2-2026-10-27.md`](EXPERIMENTS-PHASE2-2026-10-27.md))
+In Phase 2 ([report](../docs/results/grow-phase2-2026-10-27.md))
 the grown chdir, unlinkat, mkdirat and statfs passed every gate but were left
 out of the grown kernel as overfit. The Linux reference ran on the
 `jitk-oracle:08` container's filesystem, not on the file tree jitk shows the

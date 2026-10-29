@@ -23,7 +23,7 @@ Host corpus: generated `vectors.json`, whole and fragmented reads, boundary
 checks and deterministic mutations. `guestCases` in that same corpus drive
 fresh real VMs. VM harness selects integrated `kernel/.READY` and its documented
 image when available; otherwise `/tmp/jitk-02/r2/kernel.bin` and `/tmp/jitk-02/r2/host`.
-Explicit `JITK_IMAGE` overrides the image; VMs run under the HVF engine's console runner (`$JITK_SHARD_BINARY console --image`, until 2026-10-28 the libkrun VMM).
+Explicit `JITK_IMAGE` overrides the image; VMs run under the HVF engine's console runner (`$JITK_SHARD_BINARY console --image`).
 `JITK_VM_N=30` is the default repetitions per case. Each result includes artifact
 hashes, loads, raw samples and p50/p90/p99. These are functional tests under load,
 not canonical performance claims (those belong to owner 06).
@@ -42,4 +42,4 @@ failure in this suite; rejection must come from the dispatcher or kernel/EL0.
 `.READY` covers canonical build plus host conformance; VM evidence is separate.
 
 Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
-shared helpers in `../tslib/`; run `make tools` to compile it. See `PORT-PARITY.md` and `../docs/SCRIPTC-GAPS.md`.
+shared helpers in `../tslib/`; run `make tools` to compile it. See [`../docs/SCRIPTC-GAPS.md`](../docs/SCRIPTC-GAPS.md) and the [Python port parity report](../docs/results/port-parity-protocol-2026-10-26.md).

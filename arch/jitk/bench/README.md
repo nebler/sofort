@@ -46,13 +46,11 @@ Use `--scratch-dir PATH` or `JITK_BENCH_TMP` for frozen run directories; the
 default is the system temporary directory. No other area's artifacts are guessed.
 
 The `jitk-*` rows boot a fresh console-kernel VM per process with the HVF
-engine's console runner, `hvf console --image` (until 2026-10-28 the libkrun
-VMM; every recorded result here is libkrun's). The engine, image, Hyperlight
+engine's console runner, `hvf console --image` (every result recorded here
+predates it and is libkrun's). The engine, image, Hyperlight
 snapshot and an available READY executor runtime are copied into a private
 run directory. The runner compiles and enters jitk.sb itself; host sandbox
-acknowledgement is mandatory. (The libkrun-only `sandbox-apply/on|off` rows,
-which timed `sandbox_apply` of the VMM's precompiled profile, and
-`--sandbox-profile` went with libkrun.) Executor rows run the executor's
+acknowledgement is mandatory. Executor rows run the executor's
 default engine, the ring engine (`hvf ipc` with the cache's prepared snapshot,
 `JITK_SHARD_SNAPSHOT`), from the canonical READY runtime or `--executor-root
 PATH`; they require an absolute `--node PATH` or `NODE`. No PATH shim or

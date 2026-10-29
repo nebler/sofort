@@ -1,11 +1,10 @@
 # Backend-parity corpus
 
-One question with one answer: do the backends agree? (R10 change #7, R9 N6,
-`arch/work/CUTOVER-PLAN.md` §2 precondition 5.)
+One question with one answer: do the backends agree?
 
 - `cases.ts`: the corpus. Each case has an id, its source, tenant code, the
   fixture tools it may call, and the expected outcome under the product
-  contract (protocol v1's limits, what the former libkrun path did): a result plus optional logs
+  contract (protocol v1's limits): a result plus optional logs
   and side-effect count, an error class (the MCP server's codes,
   `mcp/jitk.mjs` `classify`) with an optional message pattern, or for a burst
   the count of each class. Cases come from `verify.ts`, `hyperlight-check.ts`
@@ -60,8 +59,7 @@ The compare merges the reports' backends (`darwin/hyperlight-js`,
 and `linux/shard` must agree on every case where neither is allowlisted (the
 ring entries name both, so on those both must produce the allowlisted
 outcome). Reports carry a corpus hash, and the compare refuses a report from
-another corpus. (Until 2026-10-28 the corpus also ran on libkrun, `jitk`, on
-both hosts.)
+another corpus.
 
 ## Adding a case or a difference
 

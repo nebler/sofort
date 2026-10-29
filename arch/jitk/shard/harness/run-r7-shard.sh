@@ -1,5 +1,5 @@
 #!/bin/sh
-# Offline measurements only. Invoke under flock "${JITK_BENCH_LOCK:-/home/dev/bench.lock}".
+# Offline measurements only. Invoke under flock "${JITK_BENCH_LOCK:-$HOME/bench.lock}".
 set -eu
 cd "${JITK_R7_ROOT:-$HOME/r7-shard}"
 export JITK_SHARD_THREADS=4

@@ -74,7 +74,7 @@ const benchmark = process.env.JITK_SHARD_BENCH === '1';
 const lockWait = benchmark ? 1800 : 600;
 const report = remote + '/arch/jitk/executor/.work/parity/linux-arm64.json';
 const commands = target === 'test-linux' ? `set -eu
-JITK_BENCH_LOCK=\${JITK_BENCH_LOCK:-/home/dev/bench.lock} JITK_SHARD_LOCK_WAIT=${lockWait} make -C ${quote(remote)}/arch/jitk test-linux
+JITK_BENCH_LOCK=\${JITK_BENCH_LOCK:-\$HOME/bench.lock} JITK_SHARD_LOCK_WAIT=${lockWait} make -C ${quote(remote)}/arch/jitk test-linux
 ` : `set -eu
 JITK_SHARD_BENCH=${benchmark ? '1' : '0'} JITK_SHARD_LOCK_WAIT=${lockWait} sh ${quote(remote)}/arch/jitk/executor/ipc/shard-host.sh
 `;

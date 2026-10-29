@@ -1,1 +1,0 @@
-Canonical protocol source/build ready. 71 vectors x 2 chunkings, 25,000 deterministic mutations, boundary 4096 calls/1MiB and strict tsc pass. VM/hostile results separate; see README.

@@ -58,15 +58,17 @@ build: deps
 	+@$(DELEGATE) grow build
 # Every suite runs on a built tree. The layering lint (tools/layering.ts) runs
 # first: abi <- guest <- engine <- host <- research; then the kernel's static
-# checks (rustfmt, clippy with undocumented_unsafe_blocks denied) and the
-# shard's clippy (host and Linux targets); then the ABI crate, whose test
-# fails while a generated copy (abi/README.md) is stale.
+# checks (rustfmt, clippy with undocumented_unsafe_blocks denied), the
+# shard's clippy (host and Linux targets) and the docs checks (links,
+# delegate, receipts); then the ABI crate, whose test fails while a
+# generated copy (abi/README.md) is stale.
 # macOS: the kernel suite boots the console kernel on the HVF engine's
 # console runner (`hvf console`, shard/src/hvf/console.rs).
 test: build
 	@"$(ROOT)/tools/.work/bin/layering" --self-test
 	+@$(DELEGATE) kernel check
 	+@$(DELEGATE) shard clippy
+	+@$(MAKE) -s -C "$(ROOT)/docs" test
 	+@$(DELEGATE) abi test
 	+@$(DELEGATE) kernel test
 	+@$(DELEGATE) protocol test
