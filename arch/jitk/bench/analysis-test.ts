@@ -21,8 +21,11 @@ const cpuSource = join(HERE, cpu.input);
 check(sha(cpuSource) === cpu.sha256, 'CPU input changed');
 check(hashJSON(analyzeCPU(cpuSource, join(directory, 'cpu-summary.json'), false)) === cpu.digest, 'CPU analysis parity');
 console.log('PASS Hyperlight 10000-resample comparisons, summaries, marginal memory; ledger CPU summaries');
-const memoryRoot = process.env.JITK_LEDGER_INPUTS;
-if (memoryRoot) {
+// --memory (make test-memory): the recorded ledger memory collection, kept
+// outside the repository; JITK_LEDGER_INPUTS names its directory.
+if (process.argv.includes('--memory')) {
+  const memoryRoot = process.env.JITK_LEDGER_INPUTS || '';
+  check(memoryRoot !== '', 'set JITK_LEDGER_INPUTS to the preserved ledger collection directory');
   const memory = fixture.analysis.memory;
   for (const entry of memory.sources) {
     check(sha(join(memoryRoot, entry.path)) === entry.sha256, 'memory input changed: ' + entry.path);
@@ -34,6 +37,4 @@ if (memoryRoot) {
   dump(input, { cells });
   check(hashJSON(analyze(input, join(directory, 'memory-summary.json'), false)) === memory.digest, 'memory OLS parity');
   console.log('PASS recorded ledger memory totals, bracket deltas, and OLS fits');
-} else {
-  console.log('SKIP optional memory replay: set JITK_LEDGER_INPUTS to the preserved ledger collection directory');
 }

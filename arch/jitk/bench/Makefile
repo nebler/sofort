@@ -61,6 +61,12 @@ test: build
 	build/parity --test
 	build/analysis-test
 
+# The recorded ledger memory replay; its inputs are not in the repository:
+# JITK_LEDGER_INPUTS=/absolute/ledger-collection make test-memory.
+.PHONY: test-memory
+test-memory: build/analysis-test
+	build/analysis-test --memory
+
 bench: build
 	/usr/bin/lockf -k /tmp/sofort-bench.lock build/run $(BENCH_ARGS)
 
