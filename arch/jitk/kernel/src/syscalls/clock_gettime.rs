@@ -1,10 +1,12 @@
 use crate::syscalls::{copyout, now_ns};
 pub fn call(a: &[usize; 6]) -> isize {
-    if a[0] != 0 && a[0] != 1 {
+    // Linux takes clockid_t as a 32-bit int.
+    let clock = a[0] as u32;
+    if clock != 0 && clock != 1 {
         return -22;
     }
     // SAFETY: boot initializes the epoch before EL0; it is immutable in a run.
-    let offset = if a[0] == 0 {
+    let offset = if clock == 0 {
         // SAFETY: Boot initializes EPOCH_OFFSET before EL0; the offset remains immutable
         // throughout this run.
         unsafe { crate::EPOCH_OFFSET }

@@ -87,9 +87,14 @@ pub fn poll_fd(fd: i32, events: i16) -> i16 {
     // service completes before querying cursor state and no queue reference escapes.
     unsafe {
         crate::console::service();
-        match fd {
-            i32::MIN..=-1 => 0,
-            0 => {
+        if fd < 0 {
+            return 0;
+        }
+        match crate::fs::kind(fd as usize) {
+            // Linux reports a regular file (or directory) always readable and
+            // writable: DEFAULT_POLLMASK, masked by the requested events.
+            Ok(crate::fs::FdKind::Archive) => events & 0x145,
+            Ok(crate::fs::FdKind::Console) if fd == 0 => {
                 if crate::console::available() && events & 1 != 0 {
                     1
                 } else if crate::console::eof() {
@@ -98,8 +103,8 @@ pub fn poll_fd(fd: i32, events: i16) -> i16 {
                     0
                 }
             }
-            1 | 2 => events & 4,
-            _ => 32,
+            Ok(crate::fs::FdKind::Console) => events & 4,
+            Err(_) => 32,
         }
     }
 }
