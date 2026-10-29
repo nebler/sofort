@@ -11,7 +11,7 @@
 #   JITK_CI_KVM=auto|0|1   auto (default): KVM steps when /dev/kvm is usable;
 #                          0: skip them; 1: require KVM (missing = failure)
 #   JITK_BENCH_LOCK        lock held around KVM suites; default
-#                          /home/dev/bench.lock when present (kvm-dev), else
+#                          ~/bench.lock when present (kvm-dev), else
 #                          $TMPDIR/jitk-bench.lock
 # On Linux only: the Mac suites (the console kernel on `hvf console`,
 # Hyperlight, HVF) stay in `make test` on the Mac.
@@ -190,7 +190,7 @@ case "${JITK_CI_KVM:-auto}" in
   *) kvm_why="unknown JITK_CI_KVM=${JITK_CI_KVM}" ;;
 esac
 if [ -z "${JITK_BENCH_LOCK:-}" ]; then
-  if [ -e /home/dev/bench.lock ]; then JITK_BENCH_LOCK=/home/dev/bench.lock; else JITK_BENCH_LOCK=${TMPDIR:-/tmp}/jitk-bench.lock; fi
+  if [ -e "$HOME/bench.lock" ]; then JITK_BENCH_LOCK=$HOME/bench.lock; else JITK_BENCH_LOCK=${TMPDIR:-/tmp}/jitk-bench.lock; fi
 fi
 export JITK_BENCH_LOCK
 locked() { flock -w "${JITK_SHARD_LOCK_WAIT:-900}" "$JITK_BENCH_LOCK" "$@"; }
