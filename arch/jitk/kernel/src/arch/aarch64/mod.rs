@@ -152,6 +152,9 @@ pub unsafe fn invalidate_icache() {
 }
 
 /// Install the exception vectors and drop to EL0 at `entry` with stack `sp`.
+/// EL0 starts as a Linux arm64 process does after execve (start_thread): every
+/// general-purpose and SIMD/FP register, FPCR, FPSR and TPIDR_EL0 are zero, so no
+/// kernel address or kernel memcpy leftover reaches user code.
 /// # Safety
 /// sp and entry name validated user mappings. EL1 owns initialized tables and no kernel
 /// borrow survives eret.
@@ -164,10 +167,27 @@ pub unsafe fn enter_user(sp: usize, entry: usize) -> ! {
         static vectors: u8;
     }
     // SAFETY: vectors is the aligned exception table; sp and entry name validated user
-    // mappings. EL1 owns initialized tables and no kernel borrow survives eret.
+    // mappings. EL1 owns initialized tables and no kernel borrow survives eret. Every
+    // input is consumed by the system-register writes before any register is zeroed.
     unsafe {
         asm!("msr vbar_el1,{v}","msr sp_el0,{sp}","msr elr_el1,{entry}",
-             "msr spsr_el1,{mask}",".inst 0xd500419f","isb","eret",
+             "msr spsr_el1,{mask}",".inst 0xd500419f",
+             "msr tpidr_el0,xzr","msr fpcr,xzr","msr fpsr,xzr",
+             "movi v0.2d,#0","movi v1.2d,#0","movi v2.2d,#0","movi v3.2d,#0",
+             "movi v4.2d,#0","movi v5.2d,#0","movi v6.2d,#0","movi v7.2d,#0",
+             "movi v8.2d,#0","movi v9.2d,#0","movi v10.2d,#0","movi v11.2d,#0",
+             "movi v12.2d,#0","movi v13.2d,#0","movi v14.2d,#0","movi v15.2d,#0",
+             "movi v16.2d,#0","movi v17.2d,#0","movi v18.2d,#0","movi v19.2d,#0",
+             "movi v20.2d,#0","movi v21.2d,#0","movi v22.2d,#0","movi v23.2d,#0",
+             "movi v24.2d,#0","movi v25.2d,#0","movi v26.2d,#0","movi v27.2d,#0",
+             "movi v28.2d,#0","movi v29.2d,#0","movi v30.2d,#0","movi v31.2d,#0",
+             "mov x0,xzr","mov x1,xzr","mov x2,xzr","mov x3,xzr","mov x4,xzr",
+             "mov x5,xzr","mov x6,xzr","mov x7,xzr","mov x8,xzr","mov x9,xzr",
+             "mov x10,xzr","mov x11,xzr","mov x12,xzr","mov x13,xzr","mov x14,xzr",
+             "mov x15,xzr","mov x16,xzr","mov x17,xzr","mov x18,xzr","mov x19,xzr",
+             "mov x20,xzr","mov x21,xzr","mov x22,xzr","mov x23,xzr","mov x24,xzr",
+             "mov x25,xzr","mov x26,xzr","mov x27,xzr","mov x28,xzr","mov x29,xzr",
+             "mov x30,xzr","isb","eret",
              mask=in(reg)0x3c0u64,v=in(reg)&raw const vectors,sp=in(reg)sp,
              entry=in(reg)entry,options(noreturn));
     }
