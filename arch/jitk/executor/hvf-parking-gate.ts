@@ -48,8 +48,11 @@ let exchanges=0;
 try {
   await backend.ready;
   const zygote=backend.child.pid!;
-  const pids=[zygote,...sh('/usr/bin/pgrep',['-P',String(zygote)]).split('\n').filter(Boolean).map(Number)];
-  if(pids.length!==slots+1)throw Error(`expected ${slots} engine processes, found ${pids.length-1}`);
+  // The zygote's one child is its template; the engine processes are the template's.
+  const children=(pid:number)=>sh('/usr/bin/pgrep',['-P',String(pid)]).split('\n').filter(Boolean).map(Number);
+  const templates=children(zygote),engines=templates.flatMap(children);
+  const pids=[zygote,...templates,...engines];
+  if(templates.length!==1||engines.length!==slots)throw Error(`expected one template and ${slots} engine processes, found ${templates.length} and ${engines.length}`);
   const parked=await Promise.all(Array.from({length:slots},()=>backend.park()));
   const c0=cpu(pids),t0=performance.now();
   await sleep(IDLE_S*1000);

@@ -21,7 +21,7 @@ import {MicroVMExecutor,SandboxPool,type Backend} from './executor.js';
 import {ShardBackend} from './shard-backend.js';
 // Hyperlight is a research comparison backend (bench/), not part of the product API.
 import {HyperlightBackend} from '../bench/hyperlight/backend.ts';
-import {classify} from '../mcp/jitk.mjs';
+import {errorClass} from '../mcp/jitk.mjs';
 import demo from '../mcp/providers/demo.mjs';
 import {CASES,type Case,type Expect} from './parity/cases.js';
 import {ALLOWLIST,type Difference} from './parity/allowlist.js';
@@ -102,7 +102,7 @@ async function runBackend(kind:Kind,engine:Backend,cases:Case[]):Promise<Record<
     const r=await ex.execute(code,c.fixture==='mcp'?mcpProviders:providers(c),{timeout:c.timeout??5000,approve:c.approve?async()=>true:undefined});
     const effects=counter.effects-before;
     if(r.error===undefined)return {class:'OK',result:bounded(r.result),logs:normalLogs(r.logs??[]),effects};
-    return {class:classify(r.error,false),logs:normalLogs(r.logs??[]),effects,message:r.error.slice(0,300)};
+    return {class:errorClass(r,false),logs:normalLogs(r.logs??[]),effects,message:r.error.slice(0,300)};
   };
   try {
     for(const c of cases){

@@ -23,7 +23,9 @@ const linux=process.platform==='linux',hvf=process.platform==='darwin'&&process.
 if(!(linux||hvf)||!binary||!snapshot)throw Error('shard-check needs Linux (KVM) or macOS arm64 (HVF), JITK_SHARD_BINARY and JITK_SHARD_SNAPSHOT');
 let assertions=(linux?transportChecks():0)+await sourceChecks();
 /** The engine's IPC child processes (HVF: the zygote's engine processes, one per slot). */
-const engines=(pid:number)=>execFileSync('/usr/bin/pgrep',['-P',String(pid)],{encoding:'utf8'}).trim().split('\n').filter(Boolean).map(Number).sort((a,b)=>a-b);
+const children=(pid:number)=>{try{return execFileSync('/usr/bin/pgrep',['-P',String(pid)],{encoding:'utf8'}).trim().split('\n').filter(Boolean).map(Number);}catch{return [];}};
+/** HVF: the zygote's one child is its template, which forks every engine process (shard/src/hvf/template.rs). */
+const engines=(pid:number)=>(hvf?children(pid).flatMap(children):children(pid)).sort((a,b)=>a-b);
 /** Start the engine binary on this host's transport, as ShardBackend does. */
 function engine(args:string[],receive:(m:Message)=>void,failed:(e:Error)=>void):{child:ChildProcess;channel:Channel} {
   if(linux){

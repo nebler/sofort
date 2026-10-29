@@ -40,6 +40,13 @@ export function classify(error, cancelled) {
   return 'GUEST_ERROR';
 }
 
+/** An executor result's code: the executor's own (errorCode, from structure and host-made text),
+ *  else classify() on a message only the host made (failures before the run started). */
+export function errorClass(r, cancelled) {
+  if (!r.errorCode) return classify(r.error, cancelled);
+  return r.errorCode === 'TIMEOUT' && cancelled ? 'CANCELLED' : r.errorCode;
+}
+
 export async function createJitk(cfg) {
   if (cfg.execute === false) {
     const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
@@ -51,6 +58,9 @@ export async function createJitk(cfg) {
   }
   const {MicroVMExecutor, SandboxPool} = await import(new URL('executor.js', build).href);
   const {selectBackend} = await import(new URL('select-backend.js', build).href);
+  // Results keep binary values in the codec's wire form ({__codemode_binary_v1__, data: base64}):
+  // plain JSON would turn a Uint8Array into one key per byte and an ArrayBuffer into {}.
+  const {stringify} = await import(new URL('codec.mjs', build).href);
   const selected = selectBackend();
   if (cfg.warm && !selected.gate) throw Error('warm pool needs G1 parking evidence (see executor/README.md) or "warm": 0');
   const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
@@ -77,18 +87,20 @@ export async function createJitk(cfg) {
   // otherwise costs ~7-10 ms instead of ~3 ms. Its VM is refilled like any other.
   const warmed = refill().then(() => executor.execute('return 0', providers)).then(() => refill());
   return {
-    pool, executor, providers, selection: selected.selection, warmed, limits: inner.limits,
+    pool, executor, providers, selection: selected.selection, warmed,
+    // Advertise the call budget the executor enforces (engine budget, lowered by policy).
+    limits: {...inner.limits, js: inner.limits.js && {...inner.limits.js, calls: executor.callLimit}},
     async run(code, signal) {
       const r = await executor.execute(code, providers, {signal});
-      if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
-      return {error: {code: classify(r.error, signal?.aborted === true), message: r.error}, logs: r.logs};
+      if (r.error === undefined) return {result: JSON.parse(stringify(r.result ?? null)), logs: r.logs};
+      return {error: {code: errorClass(r, signal?.aborted === true), message: r.error}, logs: r.logs};
     },
     runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits,
     close: () => { closing = true; return Promise.all([pool.close(), native.close()]); },
   };
 }
 
-// The execute engine's own per-run limits (Engine.limits), for the MCP tool description.
+// The execute path's effective per-run limits, for the MCP tool description.
 export const describeLimits = limits => {
   const js = limits?.js;
   if (!js) return '';

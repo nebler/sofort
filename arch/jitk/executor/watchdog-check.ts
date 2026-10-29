@@ -19,6 +19,11 @@ try {
   clearTimeout(timer);assert(reaped,'external watchdog must fire independently of host event loop');
   assert(s.deadlineReceipt,'external watchdog must report its own kill timestamp');
   assert.equal(s.deadlineReceipt.deadline,deadline);
+  // The child is gone: a late release must not signal its (reusable) pid's process group.
+  const kill=process.kill;let groupKills=0;
+  process.kill=((pid:number,sig?:string|number)=>{if(pid<0)groupKills++;return kill.call(process,pid,sig);}) as typeof process.kill;
+  try{s.release();}finally{process.kill=kill;}
+  assert.equal(groupKills,0,'release after exit signals no process group');
   const result={receipt:s.deadlineReceipt,killOvershootMs:s.deadlineReceipt.killAt-deadline,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),watchdogDeadlineMs:250,hostEventLoopBlockedMs:1500,observedReapAfterHostUnblockMs:performance.now()-start,reaped};
   writeFileSync(receiptPath('watchdog-check-results.json'),JSON.stringify(result,null,2)+'\n');console.log(result);
 }finally{s.release();await s.released;}

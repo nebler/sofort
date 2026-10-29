@@ -15,7 +15,7 @@ use crate::constants::{ipc as wire, ring};
 use crate::hv::{ArchState, Exit, Memory, Vcpu, Vm};
 use crate::service::{self, Assembler, Message, Phase, State};
 use crate::slot::{REQUEST, Request, ResetReport, Slot, Step};
-use crate::virtio_console::{Console, Port};
+use crate::virtio_console::{Console, Port, TX_NOTIFY_BYTES};
 use crate::{inputs, payload, streams};
 use std::{
     collections::VecDeque,
@@ -395,10 +395,13 @@ fn run_console(data: &[u8]) -> (FuzzConsole, usize) {
     let mut events = 0;
     while let Some(tag) = input.u8() {
         let ok = match tag % 5 {
-            MMIO_WRITE => input
-                .u16()
-                .zip(input.u32())
-                .map(|(off, v)| dev.write(u64::from(off & 0x1fc), v).is_ok()),
+            MMIO_WRITE => input.u16().zip(input.u32()).map(|(off, v)| {
+                let before = dev.port().output;
+                let ok = dev.write(u64::from(off & 0x1fc), v).is_ok();
+                // One store (a QueueNotify) is bounded host work.
+                assert!(dev.port().output - before <= TX_NOTIFY_BYTES);
+                ok
+            }),
             MMIO_READ => input
                 .u16()
                 .map(|off| dev.read(u64::from(off & 0x1fc)).is_ok()),
@@ -703,13 +706,14 @@ fn ipc_seeds() -> Vec<Vec<u8>> {
     );
     seeds
 }
-/// A JNR7 native request (inputs.rs) for busybox with these input files.
+/// A native request (inputs.rs) for busybox with these input files.
 fn native_request_bytes(paths: &[&str]) -> Vec<u8> {
     let text = |b: &mut Vec<u8>, s: &str| {
         b.extend_from_slice(&(s.len() as u16).to_le_bytes());
         b.extend_from_slice(s.as_bytes());
     };
-    let mut b = b"JNR7".to_vec();
+    let mut b = inputs::MAGIC.to_vec();
+    b.extend_from_slice(&1000u32.to_le_bytes());
     text(&mut b, "busybox");
     b.extend_from_slice(&1u16.to_le_bytes());
     text(&mut b, "busybox");

@@ -3,6 +3,7 @@
 // `hvf native-worker` on macOS arm64 HVF). No native executable runs on the host.
 const build = new URL('../executor/build/', import.meta.url);
 const failure = (code, message) => ({error: {code, message}});
+const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 const base64 = bytes => ({encoding: 'base64', data: Buffer.from(bytes).toString('base64')});
 
 /** MCP input -> NativeJob: canonical base64 file contents become bytes. */
@@ -10,8 +11,14 @@ export function nativeJob({tool, args = [], files = {}}, limits) {
   if (!files || typeof files !== 'object' || Array.isArray(files) || Object.keys(files).length > limits.files)
     throw Error(`files must contain at most ${limits.files} paths`);
   const decoded = Object.create(null);
+  let total = 0;
   for (const [path, value] of Object.entries(files)) {
-    if (typeof value !== 'string' || value.length > Math.ceil(limits.inputBytes / 3) * 4) throw Error('file contents must be canonical base64');
+    if (typeof value !== 'string') throw Error('file contents must be canonical base64');
+    // Charge the decoded size against the whole job's budget before decoding anything.
+    if (value.length > Math.ceil((limits.inputBytes - total) / 3) * 4) throw Error(`input files exceed ${limits.inputBytes} bytes`);
+    if (value.length % 4 || !BASE64.test(value)) throw Error('file contents must be canonical base64');
+    total += value.length / 4 * 3 - (value.endsWith('==') ? 2 : value.endsWith('=') ? 1 : 0);
+    if (total > limits.inputBytes) throw Error(`input files exceed ${limits.inputBytes} bytes`);
     const data = Buffer.from(value, 'base64');
     if (data.toString('base64') !== value) throw Error('file contents must be canonical base64');
     decoded[path] = data;

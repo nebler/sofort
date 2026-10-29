@@ -255,14 +255,6 @@ pub unsafe fn write(b: &[u8]) {
         }
     }
 }
-/// # Safety
-/// The caller owns TX in the sole masked-IRQ context and b remains readable until write copies
-/// it into the ring.
-pub unsafe fn user_write(b: &[u8]) {
-    // SAFETY: The caller owns TX in the sole masked-IRQ context and b remains readable until
-    // write copies it into the ring.
-    unsafe { write(b) }
-}
 pub unsafe fn record(b: &[u8]) {
     // SAFETY: The caller owns TX in the sole masked-IRQ context and b remains readable until
     // write copies it into the ring.
@@ -338,9 +330,11 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             return None;
         }
         if n == nr::WRITE && fd == FD_CHECKPOINT {
-            assert_eq!({ CANARY }, 0);
-            assert_eq!({ NEXT }, 1);
-            assert_eq!({ INPUT }, 0);
+            // Only the bootstrap checkpoints, once, before any call or input.
+            // After restore tenant code can reach this fd too: refuse, never panic.
+            if CANARY != 0 || NEXT != 1 || INPUT != 0 {
+                return Some(-9);
+            }
             crate::arch::doorbell(CHECKPOINT); // offline CHECKPOINT, after bootstrap
             // A reset VM resumes here: drop guest TLB entries and instructions
             // cached before the host restored memory (hvf-spike/REPORT.md risk 3;

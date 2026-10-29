@@ -17,7 +17,8 @@ const issuer:Issuer={issue:async s=>{scopes.push(s.scope);live++;minted++;return
 const args=(a:unknown[])=>{if(a.length!==1||typeof a[0]!=='object'||a[0]===null||Object.keys(a[0]).join()!=='q'||typeof (a[0] as any).q!=='string')throw Error('schema');return a;};
 const make=(reads:Tool['reads'],egress:boolean,writes:boolean,endorsable=false):Tool=>({args,reads,egress,writes,endorsable,timeoutMs:1000,
  invoke:async(a,cred,ctx)=>{assert.match(cred,/^SECRET-/);assert(!ctx.signal.aborted);keys.push(ctx.idempotencyKey);if(writes)effects++;return {q:reads==='private'?'secret':a[0].q,internal:'redact'};},output:v=>({q:v.q})});
-const tools={mail:{search:make('private',false,false),send:make('none',true,true,true)},web:{fetch:make('public',true,false)},api:{pure:make('none',false,false),fail:{...make('none',false,false),invoke:async()=>{throw Error('tool failure');}}}};
+const tools={mail:{search:make('private',false,false),send:make('none',true,true,true)},web:{fetch:make('public',true,false)},api:{pure:make('none',false,false),fail:{...make('none',false,false),invoke:async()=>{throw Error('tool failure');}}},
+  vault:{leak:{...make('private',false,false),invoke:async(_a:unknown,cred:unknown)=>{throw Error('upstream said secret '+String(cred));}}}};
 const providers=Object.entries(tools).map(([name,fns])=>({name,fns:Object.fromEntries(Object.keys(fns).map(fn=>[fn,async()=>{throw Error('legacy invocation bypassed');}]))}));
 const ex=new MicroVMExecutor(pool,()=> 'allow',10000,{tools,issuer});
 const check=(name:string,c:unknown)=>{assert(c,name);rows.push({name,ok:true});};
@@ -38,13 +39,24 @@ try{
  r=await run("await web.fetch({q:'x'});return await mail.send({q:'injected'})");check('untrusted output then writes needs approval',/approval required/.test(r.error??''));
  r=await run("return await mail.send({q:'fresh'})");check('labels reset for a fresh VM/run',!r.error&&Number(effects)===3);
  const before=minted;r=await run("return await web.fetch({q:5})");check('schema denied',/policy denied: schema/.test(r.error??''));check('schema deny mints no credentials',minted===before);
- r=await run("return await api.fail({q:'x'})");check('tool errors returned',/tool failure/.test(r.error??''));check('credentials revoked on exception',live===0&&minted===revoked);
+ r=await run("return await api.fail({q:'x'})");check('tool errors returned without their text',/api\.fail failed/.test(r.error??'')&&!/tool failure/.test(r.error??''));
+ r=await run("let m='';try{await vault.leak({q:'x'})}catch(e){m=String(e.message)}try{await web.fetch({q:m})}catch(e){return m+'|'+e.message}");
+ check('failed private read redacted and still taints',(r.result as string)==='vault.leak failed|Error: policy denied: private data may not leave via this tool');check('credentials revoked on exception',live===0&&minted===revoked);
  check('credentials minted with exact tool scope',scopes.includes('mail.search')&&scopes.includes('mail.send')&&scopes.includes('web.fetch'));
  check('per-call idempotency keys unique',new Set(keys).size===keys.length);
  r=await run("for(let i=0;i<17;i++){try{await web.fetch({q:1})}catch{}}return 2");check('denial budget kills run',Boolean(r.error));
  const limited=new MicroVMExecutor(pool,()=> 'allow',10000,{tools,issuer,limits:{calls:2}});
- r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run',Boolean(r.error));
+ r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run with its reason',/policy violation: call budget/.test(r.error??'')&&limited.callLimit===2&&new MicroVMExecutor(pool,()=> 'allow').callLimit===Math.min(256,pool.backend.limits.js!.calls));
+ const slow=new MicroVMExecutor(pool,async()=>{await new Promise(r=>setTimeout(r,50));return 'allow' as const;},10000,{tools,issuer,limits:{outstanding:2}});
+ await pool.drain();r=await slow.execute("return await Promise.all([api.pure({q:'a'}),api.pure({q:'b'}),api.pure({q:'c'})])",providers);
+ check('calls awaiting an async policy count as outstanding',r.error==='policy violation: outstanding'&&r.errorCode==='LIMIT');
+ const legacy=new MicroVMExecutor(pool,()=> 'allow',10000);
+ const echo={polluted:async(o:any)=>Object.hasOwn(o,'__proto__')||Object.hasOwn(o,'constructor')||(Object.assign({},o) as any).isAdmin===true||({} as any).isAdmin===true,ok:async(o:any)=>o.a};
+ await pool.drain();r=await legacy.execute("return await codemode.polluted(JSON.parse('{\"__proto__\":{\"isAdmin\":true},\"constructor\":{\"prototype\":{\"isAdmin\":true}},\"a\":1}'))",echo);
+ check('guest prototype keys never reach host tools',r.result===false);
+ await pool.drain();r=await legacy.execute("try{await codemode.ok({__codemode_binary_v1__:'Uint8Array',data:'!'})}catch(e){}return await codemode.ok({a:7})",echo);
+ check('undecodable call args spend their id; the next call runs',r.result===7);
  r=await run("await api.pure({q:'x'});return await api.pure({q:'y'})");check('none-read computation does not taint',!r.error);
  check('no credentials left live at end',live===0&&minted===revoked);
 }finally{await pool.close();}
-assert.equal(rows.length,22);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('22 executor policy assertions passed (plus 22 security owner assertions)');
+assert.equal(rows.length,26);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('26 executor policy assertions passed (plus 22 security owner assertions)');

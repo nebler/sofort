@@ -131,6 +131,58 @@ clock_gettime), and it parks while none is. It writes only inside that window, a
 leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
+### Owners
+
+An owner thread serves every W-th slot, so no one slot may hold it: a guest
+in `while(true){}` never exits KVM_RUN by itself, and every CANCEL, START
+and REPLY for the owner's other slots would wait for its deadline (up to
+60 s), past Node's bounds (`RELEASE_GRACE_MS`), so Node would kill the
+shard. An owner therefore runs a vCPU only for a turn (`owner.rs`):
+
+- A command for any of its slots kicks it (the lease signal: tgkill SIGUSR1
+  from the reactor thread, `immediate_exit`) whenever it is running a vCPU;
+  a flag pair (`Attention`: mail posted, owner driving; SeqCst both ways)
+  makes either the owner see the mail before it enters or the sender see it
+  running, and one kick serves a batch of mail. Kicked, the owner sweeps
+  expired leases, reads its mailbox and due timers, and only then resumes
+  a guest. A CANCEL of the running slot itself resets it at once.
+- While another slot is runnable, the clock thread (which ticks only while
+  a vCPU runs) kicks the owner at the end of the turn (`SLICE`, 10 ms; also
+  when a parked slot's timer is due). Runnable slots go round-robin; a
+  slot kicked for mail keeps the rest of its turn, so a stream of commands
+  cannot starve a computing guest, and a slot whose turn is over (one that
+  ran alone, say) yields at once to a newly runnable one, so a spinner
+  cannot starve the others.
+
+A kick only interrupts (`Exit::Interrupted`); whether a run ends is decided
+by its generation-fenced lease and by the owner's commands, so a kick meant
+for one slot cannot end another slot's generation. Measured on kvm-dev, one
+owner, beside a spinning slot
+(`owner::tests::spinning_slot_does_not_hold_its_owners_other_slots`, three
+runs): CANCEL of the other slot to its reset 0.3 ms, its START to its tool
+call 2–3 ms, the REPLY to its completion 11–12 ms (the spinner keeps the rest
+of its turn), CANCEL of the spinner to its reset 0.2 ms; before, each waited
+for the spinner's deadline (the review's repro: 5.8 s for a 6 s deadline).
+Through Node and the confined `real ipc` (2 slots, 1 owner): START to DONE
+54 ms, CANCEL to RELEASED 0.3 ms for both slots.
+
+### KVM_RUN failures
+
+A guest can make KVM_RUN fail: an EL1 data abort without a valid
+syndrome (`stp`/`ldp`, writeback, atomics) on the doorbell, a read-only
+extent or an unbacked GPA has no MMIO emulation, and KVM_RUN returned
+ENOSYS, which used to abort the shard. Each VM enables
+KVM_CAP_ARM_NISV_TO_USER, so these exit as `KVM_EXIT_ARM_NISV` with their
+address and fail the run as HVF does (doorbell: `guest_protocol: invalid
+doorbell access`, else `memory_bound`); a KVM without the capability fails
+the run with `guest_protocol: guest access without a syndrome`. Any KVM_RUN
+error is a per-slot exit (pool and native worker): ENOSYS and EFAULT reset
+the slot as usual; another errno leaves KVM's view of the vCPU unknown, so
+its reset fails and the slot is quarantined, never reused
+(`kvm::tests::syndromeless_guest_accesses_fail_the_run_not_the_process`,
+`owner::tests::syndromeless_guest_access_fails_only_its_slot`,
+`native::tests::syndromeless_guest_access_fails_only_its_request`).
+
 ### Deadlines: lease, kick, kill
 
 Both engines implement one deadline model with three roles:
@@ -193,8 +245,13 @@ watchdog process), all before READY and so before any guest code runs:
    thread (TSYNC). Allowed: the allocator without executable mappings,
    futex wait/wake (no PI, no requeue), read/write/ppoll/close on the open
    descriptors, pread64 (pagemap), clocks and sleeps, signal return, tgkill
-   of its own threads, exit, and exactly the 11 KVM ioctls an owner issues
-   after setup (`confine::policy::KVM_IOCTLS`; slots are created lazily).
+   of its own threads (the watchdog's and owners' kicks), exit, and exactly
+   the 7 KVM ioctls that run, reset and verify an existing slot
+   (`confine::policy::KVM_IOCTLS[CREATE..]`). Every owner creates all its
+   slots (VM, vCPU, KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER, see
+   "KVM_RUN failures") before `Prepared::start` returns, so before the
+   filter: afterwards no VM or vCPU can be created and no capability
+   enabled. A quarantined slot stays quarantined; it is never re-created.
    Anything else (open, socket, exec, clone, ptrace, kill, prctl, other
    ioctls, ...) kills the process with SIGSYS.
 
@@ -210,8 +267,12 @@ seccomp denies ptrace and outside signals). PR_SET_DUMPABLE stays set, so
 Node and the observers can read the shard's /proc files; seccomp and Landlock
 keep the shard from reaching other processes' memory. A layer the kernel
 lacks (no Landlock, a refused namespace, an older Landlock ABI) is printed
-on stderr (`shard IPC: confinement degraded: ...`) and the shard runs with
-the rest; no_new_privs and seccomp are required.
+on stderr (`shard IPC: confinement degraded: ...`), and the shard then exits
+before READY unless the operator allowed it with
+`JITK_ALLOW_DEGRADED_CONFINEMENT=1` (Node passes it only with the backend
+option `allowDegradedConfinement`, default from the same variable; the start
+failure carries the engine's stderr line). no_new_privs and seccomp are
+required.
 
 `real confine SNAPSHOT_BASE [--allow-degraded]` (`src/bin/harness/confine.rs`,
 run by `make test-kvm`) checks it with forked probe processes, each running
@@ -223,6 +284,24 @@ confined probe (`ipc_service::confined_pool`, the code `real ipc` runs) is
 killed by SIGSYS at its attempt. It fails if a layer is degraded unless
 `--allow-degraded` is given. Measured on kvm-dev (Linux 7.0, Ubuntu 26.04,
 AppArmor-restricted user namespaces): every layer applies.
+
+The native worker (`real native-worker`, `kvm::native::confined`) takes the
+same three steps around its own setup, before it reads its first frame: the
+namespaces; then, with /dev/kvm, the pagemap, every profile's snapshot and VM
+and /dev/urandom open (`native::Worker::load`), the files-closed layer; then
+its filter (`confine::policy::native_worker`; it has no threads). That filter
+is the runtime above, pread64, tgkill of itself, the 7 KVM ioctls of a run and
+a reset (its VMs exist already, so none that creates or sets up a VM or vCPU), and what
+each run's sealed input archive needs: memfd_create with exactly
+CLOEXEC|ALLOW_SEALING, ftruncate, fcntl F_ADD_SEALS only, and its read-only
+mapping. Its frames are stdin/stdout reads and writes. Degraded layers are
+printed as `native worker: confinement degraded: ...` and refused the same
+way as the shard's. `real confine --native
+REQUEST TOOL=BASE... [--allow-degraded]` runs the probes above on it, the
+guest run being that native request; `make check-native-r7` runs it on the
+lua profile, after the 41-case corpus (one confined worker, every profile)
+and `check-native-supervision` (malformed frames each refused alone, then
+profile switches, on the worker command as Node runs it).
 
 ## Hypervisor seam and the HVF backend
 
@@ -318,7 +397,7 @@ medians) measured the process costs that shape the engine:
 | first boot to CHECKPOINT | 1.28 ms | 2.35 ms | |
 | warm run + reset in a persistent process | ~55 µs | | |
 
-So the zygote forks each engine process once and process creation stays off
+So each engine process is forked once and process creation stays off
 the per-run path.
 
 ## Limits (ABI 11)
@@ -379,25 +458,46 @@ IPC (`service.rs`: the record envelope and the per-slot state machine that
 ```
 Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a VM)
   PipeChannel                   │ per-slot service::State on both sides,
-                                │ escalation timer, reaps children
-                                ├─socketpair─> engine process, slot 0 (hvf/child.rs)
-                                │                main thread: HvfVm + vCPU + Slot
-                                │                reader: commands, CANCEL/deadline kicks
-                                │                job clock
-                                └─ ... one per slot
+                                │ escalation timer
+                                └─control─> template (hvf/template.rs, 1 thread,
+                                            │ no tenant byte ever; forks, kills
+                                            │ and reaps for the zygote)
+              zygote ─socketpair──────────> ├─ engine process, slot 0 (hvf/child.rs)
+                                            │    main thread: HvfVm + vCPU + Slot
+                                            │    reader: commands, CANCEL/deadline kicks
+                                            │    job clock
+                                            └─ ... one per slot
 ```
 
-- **Zygote.** Checks it has one thread before every fork (`proc_pidinfo`),
+- **Zygote.** Checks it has one thread before it forks (`proc_pidinfo`; the
+  template checks the same before each of its forks),
   loads the verified snapshot, reads the D-cache line size (sysctl, denied
   later), enters its Seatbelt profile (jitk.sb + zygote.sb, "Confinement"
-  below) and forks one engine process per slot; READY to Node once every
-  child is READY.
+  below), forks the template and has it fork one engine process per slot;
+  READY to Node once every child is READY.
   It validates every Node message (START admission, REPLY pending bits,
   CANCEL generation) and every child message (call ids in order, STATS
   before one completion, bounded printable DONE, RELEASED/QUARANTINED only
   while resetting) and forwards them; a Node violation fails the engine
-  closed, a child violation kills that child.
-- **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
+  closed, a child violation kills that child, and so does a child that stops
+  reading its socket while the zygote has messages for it (its queue of
+  `MAX_OUTSTANDING + 4` is full): only its slot is quarantined.
+- **Template.** Every engine process, the first ones and every
+  replacement, is forked by the template, never by the zygote: from READY
+  on, tenant bytes (START sources, REPLY payloads, other slots' calls and
+  results, freed buffers) pass through the zygote's memory, and a child
+  forked from it would inherit them; one who escaped into an engine process
+  could exit it to force a re-fork and read them. The zygote forks the
+  template before it reads anything from Node; the template only reads the
+  zygote's 16-byte commands (SPAWN with the engine's socket passed by
+  SCM_RIGHTS, KILL, REAP), so what an engine process holds is the snapshot
+  (`engine_processes_never_hold_tenant_bytes`: a sentinel in this process's
+  heap, a freed block and a received record is absent from every process the
+  template forks, present in one forked directly). Engine processes are the
+  template's children, so the template signals and reaps them for the zygote
+  (`zygote.sb` allows signals to children only); the zygote's one child is
+  the template. When the zygote exits or is killed, the template kills and
+  reaps every engine process and exits.- **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
   creates its VM, slot
   and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
   admit (reset unless pristine), bind, run to calls or WAIT,
@@ -407,16 +507,20 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   nothing (`slot_unavailable`) and the zygote kills the process.
 - **Leases and kicks.** The reader thread holds the running generation's
   START deadline and kicks the vCPU (`hv_vcpus_exit`) at it, and at once on
-  a CANCEL; the main thread sees `Exit::Interrupted` and ends the run. If the
+  a CANCEL; the main thread sees `Exit::Interrupted` and ends the run. A
+  CANCEL read with its START, or a deadline already past, can stop the
+  generation before the main thread marks it running (so without a kick):
+  the main thread checks for that after it does and never runs the vCPU
+  (`stops_before_the_run_is_active_still_stop_it`). If the
   run is still going 100 ms after its deadline (the Linux escalation), or a
   reset is not reported within 1 s of its CANCEL, the zygote SIGKILLs the
   process; its run fails as `deadline_exceeded` (or `slot_unavailable`) and
   the slot is QUARANTINED (`engine process exited (signal 9)`). Node closing
-  the socket ends the zygote, which kills and reaps every child; a child whose
-  socket closes stops its vCPU and exits.
+  the socket ends the zygote, whose template then kills and reaps every
+  child; a child whose socket closes stops its vCPU and exits.
 - **Capacity comes back** (IPC RESTORED, ABI 10). Once a slot is
-  QUARANTINED, the zygote forks it a fresh engine process from the snapshot it
-  still holds (no file is opened again); when that process is READY the
+  QUARANTINED, the template forks it a fresh engine process from the snapshot
+  it still holds (no file is opened again); when that process is READY the
   zygote sends RESTORED at the generation QUARANTINED ended, and Node counts
   the slot again and admits its next generation (~11 ms from the CANCEL to
   RESTORED in `shard-check`). An engine process that dies while its slot is
@@ -488,16 +592,23 @@ three probe processes. Measured on macOS 26.6.1:
   `return 2` and reads its snapshot directory; fork fails (EAGAIN), and so do
   signalling a child and exec; /etc/hosts, the home directory listing, a /tmp
   write, TCP and UDP to localhost get EPERM;
-- the zygote (its profile) forks an engine process that confines itself, runs
+- the zygote (its profile) forks a template and passes it a socket
+  (SCM_RIGHTS), which forks an engine process that confines itself, runs
   `return 2` and then cannot fork; it SIGKILLs and reaps a child and reads its
   snapshot directory; the same files, writes, network and exec get EPERM.
 Everything the zygote opens (the snapshot files, the Node socket) is open
-before it confines itself, and re-forks reuse them.
+before it confines itself, and re-forks reuse them (the template holds the
+snapshot; the zygote only the sockets).
 
 Tests: `hvf::tests::engine_child_runs_kicks_and_quarantines` (in-process
 child: tool call round trip, deadline kick within 200 ms, CANCEL of a spinning
 guest, clean slot after both, failed reset -> QUARANTINED -> slot_unavailable,
-socket close ends serve); `hvf::conn`, `service` and
+socket close ends serve); `stops_before_the_run_is_active_still_stop_it`
+(START and CANCEL in one write, a deadline past at START: RELEASED or
+`deadline_exceeded` at once, 20 times each); `hvf::template::tests` (engine
+processes never hold tenant bytes) and `hvf::zygote::tests` (a child that
+stops reading loses only its slot, which is re-forked by the template; stop
+leaves no process); `hvf::conn`, `service` and
 `hvf::zygote::restore_tests` (the re-fork budget) unit tests;
 `../executor/shard-check.ts` on the real binary (restore, concurrency, hostile
 payloads, environment, a blocked-Node deadline, zygote escalation of a stopped
@@ -541,7 +652,9 @@ stderr. The device (`src/virtio_console.rs`, platform-neutral, unit-tested and
 fuzzed) is the subset of a virtio-mmio console with MULTIPORT that
 `kernel/src/console.rs` drives (queues serviced synchronously at the guest's
 QueueNotify store; a malformed queue is an error that stops the VM, never an
-access outside RAM); the FDT names a GIC the kernel never touches, because a
+access outside RAM or unbounded host work: at most the queue size of chains
+available, 64 KiB per transmit chain and 1 MiB per transmit notify, where
+the kernel sends 1 KiB chains one at a time); the FDT names a GIC the kernel never touches, because a
 positive `jitk.tick_us` selects its CNTV fallback, so WFI is the only wait:
 the runner sleeps until CNTV_CVAL or stdin input (a receive buffer used since
 the last WFI completes it at once, as an interrupt would). Guest CNTVCT is
@@ -584,7 +697,7 @@ the harness's regression tests.
 ## HVF native worker (`hvf native-worker`)
 
 `hvf native-worker TOOL=SNAPSHOT_BASE ...` (`src/hvf/native.rs`) is the Linux
-`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR7 frames
+`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR8 frames
 on stdin/stdout (`inputs::serve`, shared with Linux), native bind, byte
 streams and output cap, on profiles of both arena classes prepared by `hvf
 prepare` (`./tool.sh prepare-native-r7` uses the deps-built engine on the
@@ -596,9 +709,13 @@ both classes). HVF allows one VM per process, so the worker holds one slot: a
 run of another profile replaces it. Before any VM exists the process enters
 jitk.sb (the first profile's directory) and drops fork; snapshots are mapped
 from descriptors opened before, so profiles in other directories work too.
+A supervisor thread, started before the sandbox, exits the process when its
+parent does and kicks the vCPU at the running request's deadline (status 2;
+ABI-R7.md "Persistent worker IPC").
 `executor/native-backend.ts` and the MCP `run` tool drive it unchanged
-(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
-included).
+(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, a deadline the
+worker enforces and survives, and the worker exiting with a SIGKILLed MCP
+server mid-run).
 
 `make check-native-hvf` (run by `make -C ../executor parity-ssh`) prepares the six census
 profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)

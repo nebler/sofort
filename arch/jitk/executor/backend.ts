@@ -111,6 +111,8 @@ class ProcessSession implements Session {
   private output=Promise.resolve();
   private writes=0;
   private dispatcher:Dispatcher;
+  /** The child has exited and its group was killed once: its pid may now belong to anyone. */
+  private exited=false;
   constructor(private child:ChildProcessWithoutNullStreams,private watchdog:Watchdog,lifetimeMs:number,deadline?:number) {
     this.deadline=deadline;
     this.dispatcher=new Dispatcher({kill:f=>{this.fail(Error('protocol '+f.code));this.release();},
@@ -125,6 +127,9 @@ class ProcessSession implements Session {
       }});
     const closed=new Promise<void>(resolve=>child.once('close',()=>{this.fail(Error('sandbox exited'),true);resolve();}));
     child.once('error',e=>{this.fail(e);this.release();});
+    // Kill the group (any descendants) once as the leader exits; after that release() is a no-op, so a
+    // late release never signals a reused pid's group.
+    child.once('exit',()=>{this.release();this.exited=true;});
     child.stdout.on('data',(b:Buffer)=>{try{this.dispatcher.feed(b);}catch{/* dispatcher kills */}});
     child.stdout.once('end',()=>{try{this.dispatcher.eof();}catch{/* dispatcher kills */}});
     child.stdin.on('error',()=>{});
@@ -203,6 +208,7 @@ class ProcessSession implements Session {
     return p.finally(()=>{this.writes--;});
   }
   release():void {
+    if(this.exited)return;
     try{if(this.child.pid)process.kill(-this.child.pid,'SIGKILL');}catch{}
   }
 }

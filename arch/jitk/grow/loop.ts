@@ -11,7 +11,7 @@ import { observe, requireResult, type Observations, type SyscallRecord } from '.
 import { PROFILES, mutations, resources, type Cases } from './profiles.ts';
 import { integration, type IntegrationResult } from './sqlite-profile.ts';
 import { oracle } from './oracle.ts';
-import { requireNoProbeBranches } from './probe-lint.ts';
+import { requireNoProbeBranches, rustTokens } from './probe-lint.ts';
 
 export const LUA_ARGV = ['lua', '-e', readFileSync(join(ASSETS, 'fixtures.lua'), 'utf8')];
 export const QJS_ARGV = ['qjs', '--std', '-e', 'os.setReadHandler(0,()=>{const s=std.in.getline();os.setReadHandler(0,null);print("reply:"+s)})'];
@@ -94,10 +94,27 @@ export async function discover(image: string, dest: string, command?: string[]):
   return found;
 }
 
+// The handler contract over Rust tokens, not substrings, so spacing, comments
+// and raw identifiers cannot spell a forbidden form past it. Compile-time
+// input names (include*, env, option_env) are rejected anywhere, so a `use ..
+// as` alias cannot smuggle one in under an allowed macro name.
+const FORBIDDEN = new Set(['unsafe', 'extern', 'mod', 'std', 'alloc', 'asm', 'global_asm', 'naked_asm', 'include', 'include_str', 'include_bytes', 'env', 'option_env', 'macro_rules']);
+const MACROS = new Set(['matches', 'assert', 'assert_eq', 'assert_ne', 'debug_assert', 'debug_assert_eq', 'debug_assert_ne', 'unreachable', 'panic']);
+const ATTRIBUTES = new Set(['inline', 'allow', 'derive', 'repr', 'must_use', 'cold']);
+// Keywords that may precede a prefix `!` (`if !x`, `return !y`).
+const KEYWORDS = new Set(['as', 'break', 'continue', 'else', 'for', 'if', 'in', 'let', 'loop', 'match', 'move', 'mut', 'ref', 'return', 'while', 'yield']);
+
 export function validateSource(name: string, source: string): void {
   check([...source].length < 12000 && /^[a-z_][a-z_0-9]*$/.test(name), 'source size/handler name');
-  check(!['unsafe', 'include!', 'include_str!', 'include_bytes!', 'extern ', 'std::', 'asm!', '#[path', 'mod '].some((token) => source.includes(token)), 'forbidden handler source');
-  check(source.includes('pub fn call('), 'missing handler signature');
+  const tokens = rustTokens(source);
+  for (let i = 0; i < tokens.length; i += 1) {
+    const token = tokens[i], next = tokens[i + 1] || '';
+    check(!FORBIDDEN.has(token), 'forbidden handler source: ' + token);
+    if (/^[A-Za-z_]/.test(token) && !KEYWORDS.has(token) && next === '!') check(MACROS.has(token), 'forbidden handler macro: ' + token);
+    // Outer attributes from the allowlist only; `r#name` raw identifiers pass.
+    if (token === '#') check((next === '[' && ATTRIBUTES.has(tokens[i + 2] || '') && tokens[i + 3] !== '::') || (tokens[i - 1] === 'r' && /^[A-Za-z_]/.test(next)), 'forbidden handler attribute');
+  }
+  check(tokens.join(' ').includes('pub fn call ('), 'missing handler signature');
 }
 
 interface MutationRejection {

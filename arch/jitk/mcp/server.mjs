@@ -48,7 +48,7 @@ function mcpServer(jitk, cfg) {
   const execute = {
     name: 'execute',
     description: `Run JavaScript in a fresh single-use microVM (QuickJS, no network, no filesystem). ` +
-      `The code is an async function body: use await and \`return\` a JSON value. console.log output is returned as logs. ` +
+      `The code is an async function body: use await and \`return\` a JSON value (binary values come back as {__codemode_binary_v1__, data: base64}). console.log output is returned as logs. ` +
       `Deadline ${cfg.timeoutMs} ms.${describeLimits(jitk.limits)} Host tools (call with await; Promise.all runs them concurrently):\n${describeTools(cfg.tools)}\n` +
       `Errors carry a code: TIMEOUT, POLICY, LIMIT, SANDBOX, CANCELLED or GUEST_ERROR.`,
     inputSchema: {type: 'object', properties: {code: {type: 'string', description: 'JavaScript async function body'}},

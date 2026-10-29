@@ -3,6 +3,9 @@
 import { createHash, randomUUID } from 'node:crypto';
 
 export class Violation extends Error {} // any Violation => SIGKILL the VM, fail the run
+// A tool failure as the guest sees it: the tool's declared error() redaction, else only its name.
+// Never the raw error, which may carry private data or a credential the output() redaction never saw.
+export class ToolError extends Error { name = 'ToolError'; }
 const granted = new WeakSet(); // calls produced by decide(allow)/approve(); dispatch is single-use
 
 // Frame cap BEFORE accumulation: never buffer more than cap bytes without a LF.
@@ -30,11 +33,15 @@ export const digest = v => createHash('sha256').update(canon(v)).digest('hex');
 // { args: strictValidator(args)->normalized|throws, reads:'none'|'public'|'private',
 //   egress: bool (can move data outside the tenant), writes: bool (state-changing), endorsable: bool
 //   (a human may approve it after taint), approval: 'always'|undefined,
-//   timeoutMs, invoke(args, cred, {signal, idempotencyKey}), output: validator(result)->value }
+//   timeoutMs, invoke(args, cred, {signal, idempotencyKey}), output: validator(result)->value,
+//   error?: redactor(thrown)->string (default: '<ns>.<fn> failed') }
+// Per-run policy budgets. The call budget sits below the protocol's own (LIMIT.calls): a run is
+// admitted far fewer host calls than the wire could carry.
+export const DEFAULT_LIMITS = Object.freeze({ calls: 256, outstanding: 64, denials: 16 });
 export function createRun({ tools, deadline, now = Date.now, limits = {} }) {
   return { id: randomUUID(), tools, deadline, now, nextId: 1, outstanding: 0, calls: 0, denials: 0,
     tainted: { privateRead: false, untrusted: false }, approvals: new Map(),
-    limits: { calls: 256, outstanding: 64, denials: 16, ...limits }, dead: false };
+    limits: { ...DEFAULT_LIMITS, ...limits }, dead: false };
 }
 
 // Decide a parsed guest call. Returns {kind:'allow'|'deny'|'approve', ...}; throws Violation to kill.
@@ -82,19 +89,27 @@ export async function dispatch(run, call, { issuer, signal }) {
   const tool = run.tools[call.ns][call.fn];
   const remaining = run.deadline - run.now();
   if (remaining <= 0) throw new Violation('deadline');
+  if (signal?.aborted) throw new Error('call cancelled before invocation');
   run.outstanding++;
   const ac = new AbortController(); const t = setTimeout(() => ac.abort(), Math.min(tool.timeoutMs, remaining));
-  signal?.addEventListener('abort', () => ac.abort(), { once: true });
+  const cancel = () => ac.abort(); signal?.addEventListener('abort', cancel, { once: true });
   let cred;
   try {
     cred = await issuer.issue({ run: run.id, scope: `${call.ns}.${call.fn}`, ttlMs: Math.min(tool.timeoutMs, remaining) });
-    const raw = await tool.invoke(call.args, cred, { signal: ac.signal, idempotencyKey: `${run.id}:${call.id}` });
-    const value = tool.output(raw); // output schema + redaction; throws => deny
-    if (tool.reads === 'private') run.tainted.privateRead = true; // label set before guest sees data
+    // Cancelled, timed out or killed while the credential was minted: the tool never starts.
+    if (ac.signal.aborted || run.dead || run.now() >= run.deadline) throw new Error('call cancelled before invocation');
+    // Labels before invoke: a result, an error or a timeout can each carry what the tool read.
+    if (tool.reads === 'private') run.tainted.privateRead = true;
     if (tool.reads !== 'none') run.tainted.untrusted = true;
-    return value;
+    try {
+      const raw = await tool.invoke(call.args, cred, { signal: ac.signal, idempotencyKey: `${run.id}:${call.id}` });
+      return tool.output(raw); // output schema + redaction
+    } catch (e) {
+      let text; try { text = tool.error ? String(tool.error(e)).slice(0, 4096) : undefined; } catch {}
+      throw new ToolError(text ?? `${call.ns}.${call.fn} failed`);
+    }
   } finally {
-    clearTimeout(t); run.outstanding--;
+    clearTimeout(t); signal?.removeEventListener('abort', cancel); run.outstanding--;
     if (cred) await issuer.revoke(cred).catch(() => {});
   }
 }

@@ -6,7 +6,7 @@ import { capture, run, environment, sha, check, copyTree, files, type Result } f
 import { pack } from '../kernel/packer.ts';
 import { observe } from '../grow/observations.ts';
 import { guestStdout } from './guest-output.ts';
-import { requireArtifact, zigPath } from '../tslib/deps.ts';
+import { pins, requireArtifact, zigPath } from '../tslib/deps.ts';
 
 export interface Stream { stdout: string; stderr: string; exit: number | null; timeout: boolean }
 export interface Guest {
@@ -92,6 +92,8 @@ export async function guest(elf: string, dir: string, timeout = 10, target = 'ta
   const out = join(dir, 'image');
   const buildEnv = environment();
   buildEnv.JITK_TOOLS_DIR = tools;
+  // The kernel tree is a copy under .work, where build.sh's ../tools/rust-toolchain.sh does not exist.
+  buildEnv.RUST_TOOLCHAIN = pins().rust_toolchain;
   buildEnv.CARGO_TARGET_DIR = join(WORK, target);
   buildEnv.JITK_OUT_DIR = out;
   buildEnv.JITK_ELF = elf;

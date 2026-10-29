@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { LineReader, Violation, createRun, decide, approve, dispatch } from './policy.mjs';
+import { LineReader, ToolError, Violation, createRun, decide, approve, dispatch } from './policy.mjs';
 let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
 const kills = (fn, m) => { assert.throws(fn, Violation, m); n++; };
 const str = a => { if (typeof a !== 'object' || a === null || Object.keys(a).join() !== 'q' || typeof a.q !== 'string' || a.q.length > 256) throw 0; return { q: a.q }; };
@@ -47,4 +47,34 @@ ok(decide(r, c(3, 'mail', 'send')).kind === 'approve', 'injected write needs app
 r.tainted.privateRead = true;
 // 7. tainting cannot be undone by the guest: labels live on the host run object only
 ok(r.tainted.privateRead === true);
+// 8. cancellation before invocation: an aborted signal, or cancel/run death while the credential
+// is minted, never starts the tool, and the minted credential is revoked
+let invoked = 0;
+const counted = { web: { fetch: { ...tools.web.fetch, invoke: async () => { invoked++; return 'page'; } } } };
+const rejects = async (p, m) => { await assert.rejects(p, /cancelled before invocation/, m); n++; };
+r = createRun({ tools: counted, deadline: Date.now() + 60_000 });
+const aborted = new AbortController(); aborted.abort();
+await rejects(dispatch(r, decide(r, c(1, 'web', 'fetch')).call, { issuer, signal: aborted.signal }), 'pre-aborted signal');
+for (const end of [ac => ac.abort(), (_, run) => { run.dead = true; }]) {
+  r = createRun({ tools: counted, deadline: Date.now() + 60_000 });
+  let mint; const slow = { issue: () => new Promise(res => { mint = res; }), revoke: async () => { slow.revoked = true; } };
+  const ac = new AbortController(); const p = dispatch(r, decide(r, c(1, 'web', 'fetch')).call, { issuer: slow, signal: ac.signal });
+  end(ac, r); mint('TOKEN'); await rejects(p, 'ended during issuance'); ok(slow.revoked, 'credential revoked');
+}
+ok(invoked === 0, 'tool never invoked after cancellation');
+// 9. completed calls leave no abort listener on the run signal
+r = createRun({ tools: counted, deadline: Date.now() + 60_000 });
+const run = new AbortController(); let listeners = 0;
+const add = run.signal.addEventListener.bind(run.signal), remove = run.signal.removeEventListener.bind(run.signal);
+run.signal.addEventListener = (...a) => { listeners++; add(...a); }; run.signal.removeEventListener = (...a) => { listeners--; remove(...a); };
+for (let i = 1; i <= 20; i++) await dispatch(r, decide(r, c(i, 'web', 'fetch')).call, { issuer, signal: run.signal });
+ok(listeners === 0 && invoked === 20, 'abort listeners removed');
+// 10. a failing private read taints the run and its error text never reaches the guest
+const leaky = { ...tools, mail: { ...tools.mail, search: { ...tools.mail.search, invoke: async () => { throw Error('got {"secret":"s3cr3t"} TOKEN'); } } } };
+r = createRun({ tools: leaky, deadline: Date.now() + 60_000 });
+await assert.rejects(dispatch(r, decide(r, c(1, 'mail', 'search')).call, { issuer }), e => e instanceof ToolError && e.message === 'mail.search failed'); n++;
+ok(r.tainted.privateRead && decide(r, c(2, 'web', 'fetch')).kind === 'deny', 'failed private read still blocks egress');
+const redacted = { mail: { search: { ...leaky.mail.search, error: e => String(e.message).replace(/\{.*\}|TOKEN/g, '[redacted]') } } };
+r = createRun({ tools: redacted, deadline: Date.now() + 60_000 });
+await assert.rejects(dispatch(r, decide(r, c(1, 'mail', 'search')).call, { issuer }), { message: 'got [redacted] [redacted]' }); n++;
 console.log(`${n} policy assertions passed`);

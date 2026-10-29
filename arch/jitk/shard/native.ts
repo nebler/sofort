@@ -162,12 +162,21 @@ function text(value: string): Buffer {
   const bytes = Buffer.from(value);
   return Buffer.concat([uint(bytes.length, 2), bytes]);
 }
+// A JNR8 request frame (shard/ABI-R7.md "Persistent worker IPC"); the worker
+// stops the run budgetMs (default 60 s) after it starts.
 export function request(
   name: string,
   args: string[],
   files: Record<string, Buffer>,
+  budgetMs?: number,
 ): Buffer {
-  const pieces = [Buffer.from("JNR7"), text(name), uint(args.length, 2)];
+  const budget = budgetMs === undefined ? 60000 : budgetMs;
+  const pieces = [
+    Buffer.from("JNR8"),
+    uint(budget, 4),
+    text(name),
+    uint(args.length, 2),
+  ];
   for (const arg of args) {
     pieces.push(text(arg));
   }
@@ -776,6 +785,78 @@ export async function corpus(): Promise<void> {
     "native corpus mismatch",
   );
 }
+// One frame to the worker and its response payload.
+async function ask(worker: Worker, payload: Buffer): Promise<Buffer> {
+  worker.child.stdin!.write(Buffer.concat([uint(payload.length, 4), payload]));
+  const header = await worker.take(4);
+  return await worker.take(header.readUInt32LE(0));
+}
+function answered(out: Buffer, expected: string, what: string): void {
+  const olen = out.readUInt32LE(8);
+  check(
+    out.readUInt32LE(0) === 0 &&
+      out.readUInt32LE(4) === 0 &&
+      out.subarray(20, 20 + olen).toString() === expected,
+    what + ": " + out.subarray(20).toString(),
+  );
+}
+// The worker command as Node runs it (confined on Linux), on two profiles:
+// each malformed frame fails alone (worker status 1); a guest spinning past
+// its 300 ms budget is stopped by the worker itself (status 2) on either
+// profile, and the worker then serves requests that switch profiles, exactly.
+export async function supervision(): Promise<void> {
+  const images = join(RUN, "images");
+  const worker = new Worker([
+    "lua=" + join(images, "lua-r7"),
+    "micropython=" + join(images, "micropython-r7"),
+  ]);
+  const lua = request("lua", ["lua", "-e", "print(6*7)"], {}).subarray(4);
+  const python = request("micropython", ["micropython", "-c", "print(6*7)"], {}).subarray(4);
+  const malformed = [
+    Buffer.alloc(0),
+    Buffer.from("JNR0"),
+    lua.subarray(0, lua.length - 1),
+    Buffer.concat([lua, Buffer.from([0])]),
+    request("../lua", ["lua"], {}).subarray(4),
+    request("absent", ["absent"], {}).subarray(4),
+    request("lua", ["lua"], { "../escape": Buffer.from([1]) }).subarray(4),
+    request("lua", ["lua"], {}, 0).subarray(4),
+  ];
+  const spins = [
+    request("lua", ["lua", "-e", "while true do end"], {}, 300).subarray(4),
+    request("micropython", ["micropython", "-c", "while True: pass"], {}, 300).subarray(4),
+  ];
+  try {
+    for (const bad of malformed) {
+      const out = await ask(worker, bad);
+      check(
+        out.readUInt32LE(0) === 1,
+        "malformed native request accepted: " + bad.subarray(0, 16).toString("hex"),
+      );
+    }
+    answered(await ask(worker, lua), "42\n", "lua after malformed requests");
+    for (const spin of spins) {
+      const start = Date.now();
+      const out = await ask(worker, spin);
+      const took = Date.now() - start;
+      check(
+        out.readUInt32LE(0) === 2 && took >= 300 && took < 5000,
+        "a spinning guest must stop at its budget (status 2): status " +
+          out.readUInt32LE(0) + " after " + took + " ms",
+      );
+      answered(await ask(worker, lua), "42\n", "lua after a deadline");
+    }
+    answered(await ask(worker, python), "42\n", "profile switch to micropython");
+    answered(await ask(worker, lua), "42\n", "profile switch back to lua");
+  } finally {
+    await worker.close();
+  }
+  console.log(
+    "native supervision: " +
+      malformed.length +
+      " malformed requests refused alone; budgets enforced by the worker; profile switches exact",
+  );
+}
 export async function probe(kind: string): Promise<void> {
   const source = join(ROOT, "arch/jitk/shard/harness/native-" + kind + "-r7.c");
   const obj = join(RUN, "native-" + kind + ".o");
@@ -901,6 +982,20 @@ export async function gate(): Promise<void> {
         inherit: true,
       });
     }
+    await run(tool("check-native-supervision"), { env: childEnv, inherit: true });
+    // The confinement probes on the native worker (`real confine --native`):
+    // a confined worker still runs a request and is killed for file opens,
+    // network, exec, ptrace, setuid, signals and ioctls.
+    await run(
+      [
+        real(),
+        "confine",
+        "--native",
+        join(tmp, "ledger-lua.request"),
+        "lua=" + join(tmp, "images/lua-r7"),
+      ],
+      { inherit: true },
+    );
     const bad = join(tmp, "images/mismatched");
     for (const ext of ["mem", "regs"]) {
       symlinkSync(join(tmp, "images/lua-r7." + ext), bad + "." + ext);
@@ -927,7 +1022,7 @@ export async function gate(): Promise<void> {
     rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    "native regression: 41/41 exact twice; fd and region probes PASS",
+    "native regression: 41/41 exact twice; fd and region probes, supervision and confinement PASS",
   );
 }
 // The Mac's native regression on the HVF engine's worker (`hvf native-worker`,
@@ -983,6 +1078,7 @@ export async function gateHvf(): Promise<void> {
         join(out, "corpus-" + rep + ".json"),
       );
     }
+    await run(tool("check-native-supervision"), { env: childEnv, inherit: true });
     const bad = join(tmp, "images/mismatched");
     for (const ext of ["mem", "regs"]) {
       symlinkSync(join(tmp, "images/lua-r7." + ext), bad + "." + ext);
@@ -999,6 +1095,6 @@ export async function gateHvf(): Promise<void> {
     rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    "native regression on HVF: 41/41 exact twice against the Linux oracle; layout mismatch rejected",
+    "native regression on HVF: 41/41 exact twice against the Linux oracle; supervision PASS; layout mismatch rejected",
   );
 }

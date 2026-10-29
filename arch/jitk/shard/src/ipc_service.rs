@@ -28,22 +28,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     let mut confinement = Confinement::new();
     confinement.enter_namespaces();
     // PR_SET_PDEATHSIG closes the Node death window without a helper process.
-    // SAFETY: getppid and PR_SET_PDEATHSIG take scalar arguments, retain no
-    // pointers, and are called before any owner threads are started.
-    let parent = unsafe { libc::getppid() };
-    if parent == 1 {
-        return Err(invalid("IPC parent unavailable"));
-    }
-    // SAFETY: PR_SET_PDEATHSIG takes SIGKILL as its integer second argument.
-    let armed = unsafe { libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) };
-    if armed != 0 {
-        return Err(invalid("IPC parent unavailable"));
-    }
-    // SAFETY: getppid has no pointer or lifetime preconditions.
-    let current_parent = unsafe { libc::getppid() };
-    if current_parent != parent {
-        return Err(invalid("IPC parent unavailable"));
-    }
+    confine::die_with_parent().map_err(|_| invalid("IPC parent unavailable"))?;
     let snapshot = Snapshot::load_identified(base)?;
     let charge = ipc_charge(snapshot.class)?;
     // SAFETY: this binary startup path uniquely adopts the Node-supplied
@@ -59,7 +44,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
         Some(notify),
         policy,
     )?;
-    confinement.report().warn("shard IPC");
+    confinement.report().enforce("shard IPC")?;
     let mut reactor = Reactor {
         pool,
         states: (0..slots).map(|_| State::default()).collect(),

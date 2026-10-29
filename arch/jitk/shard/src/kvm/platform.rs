@@ -61,6 +61,14 @@ pub(super) struct Region {
     pub(super) size: u64,
     pub(super) addr: u64,
 }
+/// struct kvm_enable_cap.
+#[repr(C)]
+pub(super) struct EnableCap {
+    pub(super) cap: u32,
+    pub(super) flags: u32,
+    pub(super) args: [u64; 4],
+    pub(super) pad: [u8; 64],
+}
 #[repr(C)]
 pub(super) struct OneReg {
     pub(super) id: u64,
@@ -69,6 +77,10 @@ pub(super) struct OneReg {
 pub struct Kvm {
     pub(super) fd: File,
     pub(super) run_size: usize,
+    /// KVM_CAP_ARM_NISV_TO_USER: a data abort without a valid syndrome
+    /// (stp, ldp, writeback, atomics) on an MMIO address exits to the owner
+    /// with its address, as KVM_EXIT_ARM_NISV, instead of failing KVM_RUN.
+    pub(crate) nisv: bool,
 }
 impl Kvm {
     pub fn new() -> Arc<Self> {
@@ -79,9 +91,10 @@ impl Kvm {
             .unwrap();
         assert_eq!(call(&fd, KVM_GET_API_VERSION, 0), 12);
         let run_size = call(&fd, KVM_GET_VCPU_MMAP_SIZE, 0) as usize;
+        let nisv = call(&fd, KVM_CHECK_EXTENSION, KVM_CAP_ARM_NISV_TO_USER) > 0;
         // Every file the slots use is open once this returns: the reset's
         // pagemap too (a confined shard cannot open it later).
         super::reset::pagemap();
-        Arc::new(Self { fd, run_size })
+        Arc::new(Self { fd, run_size, nisv })
     }
 }

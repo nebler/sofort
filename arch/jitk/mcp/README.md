@@ -22,9 +22,16 @@ from a prepared native profile (below). Sources: `server.mjs`, `jitk.mjs`,
 - **Engine**: the executor's default, the ring engine: the HVF engine on macOS
   arm64, the KVM shard on Linux (`../executor/select-backend.ts`; set
   `JITK_SHARD_BINARY` and `JITK_SHARD_SNAPSHOT`, which `make` takes from the
-  jitk cache). Its limits (`Engine.limits`, ABI v11: 4,096 calls with 64 open, 1 MiB
-  calls and replies, 64 KiB of tenant code, 1,024 log lines, guest timers;
-  `../shard/README.md` "Limits") are what the server describes.
+  jitk cache). Its limits (`Engine.limits`, ABI v11: 1 MiB calls and replies,
+  64 KiB of tenant code, 1,024 log lines, guest timers; `../shard/README.md`
+  "Limits") are what the server describes, with the call budget the executor
+  enforces: the policy's 256 calls per run (64 open), below the protocol's
+  4,096.
+- **Confinement** (Linux): the shard and the native worker refuse to start on a
+  host lacking a confinement layer (Landlock, user/net/IPC namespaces); the
+  failed start names it. `JITK_ALLOW_DEGRADED_CONFINEMENT=1` in the server's
+  environment (or the backends' `allowDegradedConfinement`) serves anyway,
+  with the remaining layers (seccomp and no_new_privs are always required).
 - **Warm pool**: `warm` sessions (default 2) are parked at startup and refilled
   whenever one is released. An `execute` therefore takes the parked path. One
   throwaway run at startup JIT-compiles the executor path; this cut the first
@@ -40,7 +47,7 @@ from a prepared native profile (below). Sources: `server.mjs`, `jitk.mjs`,
 make -C arch/jitk build             # includes mcp/build: npm ci --ignore-scripts (locked SDK 1.32.2)
 cd arch/jitk/mcp
 $JITK_NODE server.mjs               # stdio; JITK_MCP_CONFIG=/path/config.json to override
-make test                           # SDK client over stdio + raw bytes + HTTP; 26 checks
+make test                           # SDK client over stdio + raw bytes + HTTP; 31 checks
 make bench                          # n=30 parked latency, MCP vs in-process
 ```
 
@@ -99,11 +106,16 @@ one owner thread. It is an executor Engine (`executor/native-backend.ts`,
 `NativeBackend`) running `Job{kind:'native'}` sessions; `run` goes through a
 one-session pool and `NativeExecutor`, so concurrent calls wait in FIFO order
 (bounded; a full queue returns LIMIT) instead of failing while busy. The run
-tool's bounds come from the engine's `limits.native`. A Node deadline or
-client cancellation kills the entire worker. Subsequent native calls return
-SANDBOX until the MCP server restarts. This is intentionally explicit, pending
-integration with the separately owned shard watchdog leases and multi-owner
-scheduler. It does not add per-call helper processes or claim lease parity.
+tool's bounds come from the engine's `limits.native`. Each call's remaining
+time travels with the request and the worker stops the guest at that deadline
+itself (Linux: the shard's lease watchdog; macOS: a supervisor thread), so a
+TIMEOUT leaves the worker serving. The worker exits with the MCP server, even
+mid-run. A client cancellation returns CANCELLED at once and leaves the worker
+to finish that run within its budget (queued calls wait for it), so cancelling
+never costs a restart. A worker silent 1 s past its deadline is killed and the
+next call starts a new one; after 5 such restarts in 60 s native calls return
+SANDBOX `native engine unavailable` until the window has passed. Failure messages name a failed job, a failed (restarting) engine
+or an unavailable one. It does not add per-call helper processes.
 
 Portable validation: `$JITK_NODE native-test.mjs` (MCP input decoding) and the
 executor's `native-check.ts` (the native Engine on a stand-in worker speaking the
@@ -115,5 +127,6 @@ JITK_NATIVE_PROFILES='{"lua":"/absolute/prepared/lua"}' \
 node native-linux-test.mjs
 ```
 The integration test runs ten native calls, including binary output, status,
-late-bound files, rejection cases and deadline kill. [RESULTS-R7-bytes](../shard/RESULTS-R7-bytes.md)
+late-bound files, rejection cases and a deadline the worker survives, then
+SIGKILLs a second server mid-run and checks that its worker exits. [RESULTS-R7-bytes](../shard/RESULTS-R7-bytes.md)
 records the complete per-case native corpus and the memory ledger.

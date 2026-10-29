@@ -127,9 +127,10 @@ export const CASES:Case[]=[
   {id:'t-call-args-40k',source:'targeted: IPC.callBytes',code:`return (await t.echo('x'.repeat(40000))).length`,tools:T,expect:{ok:40000}},
   {id:'t-call-args-at-record',source:'targeted: IPC.payload',code:`try{return (await t.echo('x'.repeat(${IPC.payload}))).length}catch(e){return e.code}`,tools:T,expect:{ok:IPC.payload}},
   // The canonical executor's policy run admits POLICY_CALLS calls (below the
-  // protocol's LIMIT.calls); past it the run is dead and its sandbox released.
+  // protocol's LIMIT.calls); past it the run is dead, its sandbox released, and
+  // the result names the policy budget (LIMIT), not a bare sandbox exit.
   {id:'t-calls-at-budget',source:'targeted: policy calls',code:`let n=0;for(let i=0;i<${POLICY_CALLS};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:POLICY_CALLS}},
-  {id:'t-calls-over-budget',source:'targeted: policy calls',code:`let n=0;for(let i=0;i<${POLICY_CALLS+1};i++)n+=await t.add1(0);return n`,tools:T,expect:{error:'SANDBOX',match:'protocol EOF|sandbox exited'}},
+  {id:'t-calls-over-budget',source:'targeted: policy calls',code:`let n=0;for(let i=0;i<${POLICY_CALLS+1};i++)n+=await t.add1(0);return n`,tools:T,expect:{error:'LIMIT',match:'policy violation: call budget'}},
   {id:'t-calls-outstanding',source:'targeted: LIMIT.outstanding',code:`return (await Promise.all(Array.from({length:${LIMIT.outstanding}},()=>t.add1(0)))).length`,tools:T,expect:{ok:LIMIT.outstanding}},
   {id:'t-calls-over-outstanding',source:'targeted: LIMIT.outstanding',code:`return (await Promise.all(Array.from({length:${LIMIT.outstanding+1}},()=>t.delay(5,0)))).length`,tools:T,expect:{error:'LIMIT',match:'call budget'}},
   // Targeted: timers

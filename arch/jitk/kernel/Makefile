@@ -18,6 +18,15 @@ test: build tools bench-gate
 	.work/bin/tests/fs_diff
 	"$${NODE:-node}" tests/ring-bootstrap-check.mjs
 
+# The ring JS profile's tenant-reachable kernel paths (stdout/stderr, missing
+# syscalls, the checkpoint fd; tests/ring-tenant-check.mjs) on this host's ring
+# engine (HVF or KVM) with the prepared glue-2m snapshot. Needs `make -C .. deps`.
+.PHONY: test-ring
+test-ring:
+	$(MAKE) -s -C ../shard snapshot >/dev/null
+	../executor/run.sh build
+	eval "$$(../tools/.work/bin/deps env)" && "$$JITK_NODE" tests/ring-tenant-check.mjs
+
 .PHONY: fmt check
 fmt: .work/bin/format
 	$(CARGO_PIN) fmt

@@ -111,7 +111,7 @@
     {
       "nr": 65,
       "name": "readv",
-      "source_sha256": "c7de8524a2d5bbfac5fc6ed3c938ae2239aba8821d39c3606438ba97f42c1a80",
+      "source_sha256": "631b369c7464c6efe65979c49159fa2a221796507a902b40b18b637ef1fb3299",
       "status": "restricted",
       "domain": "read-only resource archive: archive fds fill iovecs in order; console fd0 unchanged",
       "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -156,7 +156,7 @@
     {
       "nr": 61,
       "name": "getdents64",
-      "source_sha256": "13b1f09bfdc12f38c6a0db57002c882af56ffae4399285f1a82d21b31c887d45",
+      "source_sha256": "489ce6b3f7298b9c5cf2b4e761aad8547c99feeac683ff9f69a27986e9e83635",
       "status": "restricted",
       "domain": "read-only resource archive: . .. then byte-sorted children; d_off = next index",
       "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -364,6 +364,33 @@
       "pread64": {
         "old": "75d908e6b1d067a6163c4abddac53380191e5f9a3ad606d05af0c0af1507f7bd",
         "new": "41fda29c434630e77ed72d9aea27a1828cd18b440bae3d75f7d6eb645157d63c"
+      }
+    }
+  },
+  "r9_amendment": {
+    "scope": "Source digests refreshed by hand for the 2026-10-29 review fixes to two contracted handlers; refresh-contracts.ts was not run because its make test includes the Docker fs_diff oracle. Historical semantic gates are retained; the new behaviour is checked by the host harness and console probes below.",
+    "changes": {
+      "readv": "iovcnt 0 returns 0 without reading the iovec array (Linux readv(fd, NULL, 0) == 0); every other path unchanged",
+      "getdents64": "a fault after one or more records returns the bytes copied (Linux); the faulting entry stays unread, as before"
+    },
+    "gates_run": [
+      "tests/test_fs (fs-harness.rs, incl. the new partial-EFAULT getdents64 case; fails on the old handler)",
+      "tests/regression: test_scratch, checks, clock-check, run-probes (21/21 incl. empty-iovec), grow_contract",
+      "check.sh: rustfmt, build-checks, arch-lint, clippy console and transport-ring",
+      "native regression (archive readv/getdents64 users): shard check-native-hvf 41/41 exact twice on HVF; check-native-r7 41/41 exact twice on kvm-dev KVM"
+    ],
+    "gates_not_run": [
+      "tests/fs_diff (Docker jitk-oracle:08)",
+      "make promote; kernel/.READY still names the previous console image"
+    ],
+    "changed_hashes": {
+      "readv": {
+        "old": "c7de8524a2d5bbfac5fc6ed3c938ae2239aba8821d39c3606438ba97f42c1a80",
+        "new": "631b369c7464c6efe65979c49159fa2a221796507a902b40b18b637ef1fb3299"
+      },
+      "getdents64": {
+        "old": "13b1f09bfdc12f38c6a0db57002c882af56ffae4399285f1a82d21b31c887d45",
+        "new": "489ce6b3f7298b9c5cf2b4e761aad8547c99feeac683ff9f69a27986e9e83635"
       }
     }
   }

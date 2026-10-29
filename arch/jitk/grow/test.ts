@@ -358,9 +358,23 @@ test('canonical source and aliases cannot be built', async () => {
 });
 
 test('candidate escape tokens rejected', async () => {
-  for (const escape of ['unsafe {}', 'include!("x");', 'extern "C" {}', 'asm!("hvc 0");']) {
-    assert.throws(() => validateSource('rt_sigaction', 'pub fn call(_: &[usize])->isize { ' + escape + ' -38 }'));
+  const escapes = ['unsafe {}', 'include!("x");', 'extern "C" {}', 'asm!("hvc 0");',
+    // Alternate spellings of the same forms (review F3).
+    'include_str ! ("/etc/hosts");', 'include_str/**/!("x");', 'r#include_str!("x");', 'env ! ("HOME");', 'option_env!("HOME");',
+    '0 } extern\tcrate std; fn x() {', '0 } #[ path = "x.rs"] mod\nx; fn y() {', '0 } use core::include_str as assert; fn y() { assert!("x");',
+    'core::arch::asm!("nop");', 'concat!("a");', '0 } #[no_mangle] fn y() {', '0 } #![allow(x)] fn y() {', '0 } #[rustfmt::skip] fn y() {'];
+  for (const escape of escapes) {
+    assert.throws(() => validateSource('rt_sigaction', 'pub fn call(_: &[usize])->isize { ' + escape + ' -38 }'), escape);
   }
+});
+
+test('handler contract accepts grown handlers and ordinary Rust', async () => {
+  for (const dir of ['pathfs-grown', 'phase2-grown']) {
+    for (const file of readdirSync(join(ROOT, dir)).filter((f) => f.endsWith('.rs'))) {
+      validateSource(file.slice(0, -3), readFileSync(join(import.meta.dirname, dir, file), 'utf8'));
+    }
+  }
+  validateSource('getpid', '#[inline]\npub fn call(a: &[usize]) -> isize {\n  let s = "include_str!(x) // mod";\n  // unsafe in a comment\n  if !matches!(a.first(), Some(&0)) && a.len() != 2 { return !(a[0] as isize); }\n  debug_assert!(s.len() > 0); 0\n}');
 });
 
 test('denied group signal falls back to child kill and reaps', async () => {

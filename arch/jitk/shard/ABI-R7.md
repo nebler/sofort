@@ -71,7 +71,9 @@ escaped as `\u00hh`. A record encodes at most 256 message bytes; aggregate
 encoded diagnostic payload is at most 16 KiB/run. The host validates this
 restricted canonical schema and discards diagnostic records. Native output
 never uses LOG. QuickJS diagnostics now use this same JSON encoding. The JS
-profile's LOG records (kernel diagnostics; tenant code has no LOG path) have
+profile's LOG records (kernel diagnostics; tenant code has no LOG path: the
+kernel checks and drops tenant fd 1/2 writes, returning their length, and
+reports each unregistered syscall number once, at most 8 per run) have
 the same `ring::LOG_BYTES` (16 KiB) per run: more, as from a compromised
 kernel, fails that run (`guest_protocol: LOG budget`), never the shard. The host discards them;
 `JITK_SHARD_DIAGNOSTICS=1` prints them to shard stderr for offline debugging.
@@ -186,20 +188,41 @@ return ENOSYS; console aliases/writable descriptors/exec remain unsupported.
 `real native-worker TOOL=SNAPSHOT_BASE ...` loads 1..16 prepared profiles once,
 keeps one reusable slot/profile, and executes serially on one thread. Its stdin
 and stdout carry u32-le length-prefixed frames; a request is at most 4 MiB+16 KiB:
-`JNR7`, u16-le tool byte length + UTF-8 tool, u16-le argc, argc strings each
-u16-le byte length + UTF-8, u16-le file count, then files (u16-le path length +
-UTF-8 path, u32-le data length + bytes). All trailing bytes are rejected.
+`JNR8`, u32-le run budget in milliseconds (1..2^32-1), u16-le tool byte length
++ UTF-8 tool, u16-le argc, argc strings each u16-le byte length + UTF-8, u16-le
+file count, then files (u16-le path length + UTF-8 path, u32-le data length +
+bytes). All trailing bytes are rejected; so is the budget-less `JNR7` frame
+(`native request magic`).
 Tool names are 1..64 ASCII alphanumeric/underscore/hyphen. The Node layer supplies
 argv[0]=tool; the remaining arguments are late-bound. No shell is involved.
 
 Response payload starts with five u32-le words: worker status (0 success / 1
-sandbox failure), guest status, stdout length, stderr length, outputLimited.
-Success appends stdout then stderr; lengths sum to <=1 MiB. Failure zeroes the
-last four words and appends <=512 diagnostic bytes. Node bounds the frame before
-copying and validates all fields. MCP returns base64 objects for both streams,
-exitCode and outputLimited; a nonzero guest status is a completed run, not an
-MCP transport error. Native worker timeout/cancellation kills that persistent
-worker and requires MCP-server restart; it is not the new shard lease protocol.
+sandbox failure / 2 deadline), guest status, stdout length, stderr length,
+outputLimited. Success appends stdout then stderr; lengths sum to <=1 MiB.
+Failure zeroes the last four words and appends <=512 diagnostic bytes. Node
+bounds the frame before copying and validates all fields. MCP returns base64
+objects for both streams, exitCode and outputLimited; a nonzero guest status is
+a completed run, not an MCP transport error.
+
+Deadlines and supervision (2026-10-29). The worker bounds each run itself: its
+deadline is the budget after the run starts. On Linux the shard's lease
+watchdog (`lease.rs`, a separate confined process started with the worker)
+kicks the vCPU out of KVM_RUN at the deadline and SIGKILLs the worker if it has
+not stopped 100 ms later; on macOS a supervisor thread kicks the vCPU
+(hv_vcpus_exit). The run then answers status 2 and the worker stays usable (the
+next run resets the slot). The worker dies with its parent: PR_SET_PDEATHSIG on
+Linux, a kqueue NOTE_EXIT watch of the parent on macOS, both effective while
+the vCPU runs; it refuses to start once its parent is gone. Node
+(`executor/native-backend.ts`) sends the session's remaining time as the
+budget, fails the session at its deadline (TIMEOUT), and kills the worker only
+if it has not reported 1 s later or on a broken frame. A cancel mid-run (there
+is no per-run cancel) ends the session at once and drains the worker, which
+finishes the run within its budget; only a run without a deadline is stopped
+by killing the worker. The next request then gets a new worker; at most 5
+restarts per 60 s, after which the engine answers `native engine unavailable`
+until the window has passed. Messages separate a failed job (`native job
+failed`, the worker is fine), a failed engine (`native engine failed`, it
+restarts) and an unavailable engine.
 
 On macOS arm64, `run` uses `hvf native-worker` (`src/hvf/native.rs`, 2026-10-28):
 the same frames, bind, byte streams and fd subset; profiles prepared by `hvf

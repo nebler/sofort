@@ -31,8 +31,10 @@ pub fn call(a: &[usize]) -> isize {
             rec[16..18].copy_from_slice(&(len as u16).to_le_bytes());
             rec[18] = kind;
             rec[19..19 + name.len()].copy_from_slice(name);
+            // As Linux: a fault after some records returns them; the faulting
+            // entry stays unread (f.pos is advanced only after its copy).
             if let Err(e) = copyout(a[1] + off, &rec[..len]) {
-                return e;
+                return if off == 0 { e } else { off as isize };
             }
             off += len;
             f.pos += 1;

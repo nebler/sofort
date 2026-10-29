@@ -4,6 +4,7 @@
 //   'allow'   -> dispatch(run, decision.call, {issuer, signal}) -> value sent as {t:'ret',id,ok}
 //   'deny'    -> {t:'ret',id,err:{code:'DENIED',...}}
 export declare class Violation extends Error {}
+export declare class ToolError extends Error {} // the only tool failure text the guest sees
 export declare class LineReader {
   constructor(cap?: number); len: number;
   push(chunk: Uint8Array, onLine: (line: string) => void): void; // throws Violation past cap
@@ -20,9 +21,11 @@ export type Tool<A = any, R = any> = Effects & {
   timeoutMs: number;
   invoke: (args: A, credential: unknown, ctx: { signal: AbortSignal; idempotencyKey: string }) => Promise<R>;
   output: (raw: R) => unknown;       // output schema + redaction; throw => error
+  error?: (thrown: unknown) => string; // failure text for the guest; default '<ns>.<fn> failed'
 };
 export type Tools = Record<string, Record<string, Tool>>;
 export type Limits = { calls?: number; outstanding?: number; denials?: number };
+export declare const DEFAULT_LIMITS: Readonly<Required<Limits>>;
 export type Run = {
   readonly id: string; tools: Tools; deadline: number; now: () => number;
   nextId: number; outstanding: number; calls: number; denials: number; dead: boolean;
