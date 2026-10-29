@@ -703,16 +703,28 @@ impl Peer {
             assert!(self.0.fill().unwrap(), "engine child closed its socket");
         }
     }
+    /// The next message if it arrives within `ms`.
+    fn recv_within(&mut self, ms: u64) -> Option<Message> {
+        let until = std::time::Instant::now() + std::time::Duration::from_millis(ms);
+        loop {
+            if let Some(m) = self.0.next().unwrap() {
+                return Some(m);
+            }
+            let left = until.saturating_duration_since(std::time::Instant::now());
+            let mut p = libc::pollfd {
+                fd: self.0.fd(),
+                events: libc::POLLIN,
+                revents: 0,
+            };
+            // SAFETY: one live pollfd.
+            if unsafe { libc::poll(&mut p, 1, left.as_millis() as i32) } == 0 {
+                return None;
+            }
+            assert!(self.0.fill().unwrap(), "engine child closed its socket");
+        }
+    }
     fn start(&mut self, generation: u64, source: &str, deadline_ms: u64) {
-        let mut b = vec![0; crate::constants::ipc::START_HEADER_BYTES];
-        let deadline = crate::clock::ipc_ns() + deadline_ms * 1_000_000;
-        b[0..8].copy_from_slice(&deadline.to_le_bytes());
-        b[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
-        b[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
-        b[16..20].copy_from_slice(&(source.len() as u32).to_le_bytes());
-        b[20..24].copy_from_slice(&(2u32 << 20).to_le_bytes());
-        b.extend_from_slice(source.as_bytes());
-        self.send(Message::new(START, 0, generation, 0, b));
+        self.send(start(generation, source, deadline_ms));
     }
     /// STATS, then the completion's kind and text.
     fn completion(&mut self, generation: u64) -> (u32, String) {
@@ -728,6 +740,17 @@ impl Peer {
         assert_eq!(m.generation, generation);
         m
     }
+}
+fn start(generation: u64, source: &str, deadline_ms: u64) -> Message {
+    let mut b = vec![0; crate::constants::ipc::START_HEADER_BYTES];
+    let deadline = crate::clock::ipc_ns() + deadline_ms * 1_000_000;
+    b[0..8].copy_from_slice(&deadline.to_le_bytes());
+    b[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
+    b[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
+    b[16..20].copy_from_slice(&(source.len() as u32).to_le_bytes());
+    b[20..24].copy_from_slice(&(2u32 << 20).to_le_bytes());
+    b.extend_from_slice(source.as_bytes());
+    Message::new(START, 0, generation, 0, b)
 }
 
 #[test]
@@ -785,6 +808,49 @@ fn engine_child_runs_kicks_and_quarantines() {
             "{text}"
         );
         // Dropping the socket ends serve().
+    });
+    let result = super::child::serve(theirs, 0, snapshot(), verified(), false);
+    zygote.join().unwrap();
+    result.unwrap();
+}
+
+/// A stop the reader takes before the main thread marks the run active (so
+/// without a kick) still stops a spinning guest before it runs: a CANCEL
+/// that arrives in one write with its START, and a deadline already past at
+/// START. Before, the guest ran until the zygote's 1 s kill; this in-process
+/// child has none, so the test gives up after 500 ms instead of hanging.
+#[test]
+#[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
+fn stops_before_the_run_is_active_still_stop_it() {
+    let _vm = vm_lock();
+    let (ours, theirs) = super::conn::pair().unwrap();
+    let zygote = std::thread::spawn(move || {
+        let mut p = Peer(super::conn::Conn::new(ours, 64));
+        assert_eq!(p.recv().kind, READY);
+        let spin = "while(true){}";
+        for g in (1..=40).step_by(2) {
+            let cancel = Message::new(CANCEL, 0, g, 0, vec![]);
+            super::conn::send(p.0.fd(), &[start(g, spin, 5000), cancel]).unwrap();
+            let m = p
+                .recv_within(500)
+                .expect("a CANCEL read with its START left the guest running");
+            assert_eq!((m.kind, m.generation), (RELEASED, g));
+            p.start(g + 1, spin, 0);
+            let stats = p
+                .recv_within(500)
+                .expect("a deadline past at START left the guest running");
+            assert_eq!((stats.kind, stats.generation), (STATS, g + 1));
+            let m = p.recv();
+            assert_eq!(
+                (m.kind, m.bytes.as_slice()),
+                (ERROR, &b"deadline_exceeded"[..])
+            );
+            assert_eq!(p.cancel(g + 1).kind, RELEASED);
+        }
+        // The slot is clean and runs to completion after them.
+        p.start(41, fixture("canary").0, 5000);
+        assert_eq!(p.completion(41), (DONE, "{\"ok\":0}".into()));
+        assert_eq!(p.cancel(41).kind, RELEASED);
     });
     let result = super::child::serve(theirs, 0, snapshot(), verified(), false);
     zygote.join().unwrap();

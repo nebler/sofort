@@ -424,7 +424,11 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   nothing (`slot_unavailable`) and the zygote kills the process.
 - **Leases and kicks.** The reader thread holds the running generation's
   START deadline and kicks the vCPU (`hv_vcpus_exit`) at it, and at once on
-  a CANCEL; the main thread sees `Exit::Interrupted` and ends the run. If the
+  a CANCEL; the main thread sees `Exit::Interrupted` and ends the run. A
+  CANCEL read with its START, or a deadline already past, can stop the
+  generation before the main thread marks it running (so without a kick):
+  the main thread checks for that after it does and never runs the vCPU
+  (`stops_before_the_run_is_active_still_stop_it`). If the
   run is still going 100 ms after its deadline (the Linux escalation), or a
   reset is not reported within 1 s of its CANCEL, the zygote SIGKILLs the
   process; its run fails as `deadline_exceeded` (or `slot_unavailable`) and

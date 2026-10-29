@@ -54,7 +54,8 @@ impl Signals {
     fn stop(&self, generation: u64) {
         self.stopped.store(generation, SeqCst);
         // A kick outside hv_vcpu_run makes the next one return at once, so
-        // only kick the generation that is running.
+        // only kick the generation that is running; one that is not active
+        // yet sees `stopped` before its first run (`Engine::start`).
         if self.active.load(SeqCst) == generation {
             let _ = self.kicker.kick();
         }
@@ -274,6 +275,21 @@ impl Engine {
             cpu_ns: thread_cpu() - cpu,
             wake_at: None,
         });
+        // The reader may have stopped this generation (a CANCEL read with
+        // the START, or its deadline) before `active` was set, so without a
+        // kick: its CANCEL or Expired follows; the vCPU must not run first.
+        // Set active, then read stopped (Signals::stop: the reverse), so one
+        // of the two sees the other. A kick that does land as well makes the
+        // next run return once at once, which `drive` tolerates.
+        if self.signals.stopped.load(SeqCst) == generation {
+            return Ok(());
+        }
+        if clock::ipc_ns() >= deadline {
+            self.finish(Err(RunError::Deadline {
+                deadline_ns: deadline,
+            }));
+            return Ok(());
+        }
         self.drive()
     }
     fn reply(&mut self, m: Message) -> io::Result<()> {
