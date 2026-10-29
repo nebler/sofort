@@ -15,6 +15,9 @@ pub mod calls;
 pub mod clock;
 pub mod constants;
 pub mod entropy;
+/// Fuzz harnesses (`fuzz/`; feature `fuzzing`), replayed by `cargo test`.
+#[cfg(all(unix, any(test, feature = "fuzzing")))]
+pub mod fuzz;
 #[cfg(unix)]
 pub mod hv;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]

@@ -10,6 +10,14 @@ jitk-abi = { path = "../abi" }
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.186"
 
+[features]
+# The fuzz harnesses (src/fuzz.rs) for fuzz/ and the seed writer.
+fuzzing = []
+
+[[bin]]
+name = "fuzz-seeds"
+required-features = ["fuzzing"]
+
 [profile.release]
 debug = 0
 strip = true

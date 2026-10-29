@@ -120,6 +120,10 @@ impl<M: AsMut<[u8]>, P: Port> Console<M, P> {
     pub fn port(&mut self) -> &mut P {
         &mut self.port
     }
+    /// Guest RAM, as the guest writes it.
+    pub fn ram_mut(&mut self) -> &mut [u8] {
+        self.ram.as_mut()
+    }
 
     fn at(&mut self, gpa: u64, off: u64, len: usize) -> io::Result<&mut [u8]> {
         range(self.ram.as_mut(), self.base, gpa, off, len)

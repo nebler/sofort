@@ -33,5 +33,6 @@
   },
   "hyperlight_toolchain": "nightly-2026-10-20",
   "hyperlight_targets": ["aarch64-unknown-none"],
-  "rust_toolchain": "1.95.0"
+  "rust_toolchain": "1.95.0",
+  "fuzz_toolchain": "nightly-2026-10-20"
 }

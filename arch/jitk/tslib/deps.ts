@@ -28,6 +28,7 @@ export interface Pins {
   hyperlight_toolchain: string;
   hyperlight_targets: string[];
   rust_toolchain: string;
+  fuzz_toolchain: string;
 }
 
 // root: the arch/jitk directory whose tools/deps.json to read (default: this

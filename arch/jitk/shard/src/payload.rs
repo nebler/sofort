@@ -18,59 +18,62 @@ pub fn forwarded(kind: u16, bytes: &[u8]) -> bool {
     };
     bytes.len() <= max && printable(bytes)
 }
-#[cfg(test)]
-pub(crate) mod tests {
-    use super::forwarded;
-    use crate::constants::ring;
-    /// `abi/guest-payloads.json`, shared with the executor's Node tests.
-    /// Rows are one per line: `[kind, name, outcome, payload]`, where each
-    /// payload code point is one byte. Only the escapes JSON.stringify emits
-    /// for that file (`\"`, `\\`, `\uXXXX`) are decoded.
-    pub(crate) fn corpus() -> Vec<(u16, String, String, Vec<u8>)> {
-        let mut rows = Vec::new();
-        for line in include_str!("../../abi/guest-payloads.json").lines() {
-            let Some(row) = line.strip_prefix('[') else {
+/// One `abi/guest-payloads.json` row: record kind, name, outcome (`ok`,
+/// `node` or `shard`), payload.
+#[cfg(any(test, feature = "fuzzing"))]
+pub(crate) type Row = (u16, String, String, Vec<u8>);
+/// `abi/guest-payloads.json`, shared with the executor's Node tests and the
+/// fuzz seeds. Rows are one per line: `[kind, name, outcome, payload]`, where
+/// each payload code point is one byte. Only the escapes JSON.stringify emits
+/// for that file (`\"`, `\\`, `\uXXXX`) are decoded.
+#[cfg(any(test, feature = "fuzzing"))]
+pub(crate) fn corpus() -> Vec<Row> {
+    let mut rows = Vec::new();
+    for line in include_str!("../../abi/guest-payloads.json").lines() {
+        let Some(row) = line.strip_prefix('[') else {
+            continue;
+        };
+        let mut fields = Vec::new();
+        let mut bytes = row.bytes();
+        while let Some(b) = bytes.next() {
+            if b != b'"' {
                 continue;
-            };
-            let mut fields = Vec::new();
-            let mut bytes = row.bytes();
-            while let Some(b) = bytes.next() {
-                if b != b'"' {
-                    continue;
-                }
-                let mut field = Vec::new();
-                loop {
-                    match bytes.next().expect("unterminated corpus string") {
-                        b'"' => break,
-                        b'\\' => match bytes.next() {
-                            Some(b'u') => {
-                                let hex: Vec<u8> = bytes.by_ref().take(4).collect();
-                                let s = std::str::from_utf8(&hex).unwrap();
-                                field.push(
-                                    u8::try_from(u16::from_str_radix(s, 16).unwrap()).unwrap(),
-                                );
-                            }
-                            Some(e @ (b'"' | b'\\')) => field.push(e),
-                            e => panic!("corpus escape {e:?}"),
-                        },
-                        b => field.push(b),
-                    }
-                }
-                fields.push(field);
             }
-            let [kind, name, outcome, payload] = <[Vec<u8>; 4]>::try_from(fields).unwrap();
-            let kind = match &kind[..] {
-                b"call" => ring::CALL,
-                b"done" => ring::DONE,
-                b"log" => ring::CONSOLE,
-                _ => panic!("corpus kind"),
-            };
-            let text = |v: Vec<u8>| String::from_utf8(v).unwrap();
-            rows.push((kind, text(name), text(outcome), payload));
+            let mut field = Vec::new();
+            loop {
+                match bytes.next().expect("unterminated corpus string") {
+                    b'"' => break,
+                    b'\\' => match bytes.next() {
+                        Some(b'u') => {
+                            let hex: Vec<u8> = bytes.by_ref().take(4).collect();
+                            let s = std::str::from_utf8(&hex).unwrap();
+                            field.push(u8::try_from(u16::from_str_radix(s, 16).unwrap()).unwrap());
+                        }
+                        Some(e @ (b'"' | b'\\')) => field.push(e),
+                        e => panic!("corpus escape {e:?}"),
+                    },
+                    b => field.push(b),
+                }
+            }
+            fields.push(field);
         }
-        assert!(rows.len() >= 30, "corpus rows");
-        rows
+        let [kind, name, outcome, payload] = <[Vec<u8>; 4]>::try_from(fields).unwrap();
+        let kind = match &kind[..] {
+            b"call" => ring::CALL,
+            b"done" => ring::DONE,
+            b"log" => ring::CONSOLE,
+            _ => panic!("corpus kind"),
+        };
+        let text = |v: Vec<u8>| String::from_utf8(v).unwrap();
+        rows.push((kind, text(name), text(outcome), payload));
     }
+    assert!(rows.len() >= 30, "corpus rows");
+    rows
+}
+#[cfg(test)]
+mod tests {
+    use super::{corpus, forwarded};
+    use crate::constants::ring;
     #[test]
     fn shared_corpus_forwarding() {
         for (kind, name, outcome, payload) in corpus() {
