@@ -33,6 +33,10 @@
 //! Re-forks are budgeted (`Restores`): more than `restore_budget(slots)`
 //! within `RESTORE_WINDOW_NS` is a crash loop, and the engine fails closed
 //! instead of spinning.
+//!
+//! A child that stops reading its socket while the zygote queues for it
+//! (REPLYs to calls it keeps issuing) is treated as dead: its slot only is
+//! quarantined and re-forked, never the engine.
 use super::{State, child, conn::Conn, template::Template};
 use crate::clock;
 use crate::constants::{ABI_VERSION, ipc as wire, ring};
@@ -557,7 +561,9 @@ impl Zygote {
         Ok(())
     }
     /// A Node message: the Linux reactor's checks (service::State), then the
-    /// child gets it, or the zygote answers for a dead child.
+    /// child gets it, or the zygote answers for a dead child. A child whose
+    /// queue is full is not reading: it is ended as dead (`died`), which
+    /// answers for it; the engine goes on.
     fn message(&mut self, m: Message) -> io::Result<()> {
         let i = m.slot as usize;
         if i >= self.states.len() || m.generation == 0 || m.generation >= u64::MAX >> 2 {
@@ -566,6 +572,8 @@ impl Zygote {
         let now = clock::ipc_ns();
         let s = &mut self.states[i];
         let c = &mut self.children[i];
+        // The child's queue was full: what it was sent is answered by `died`.
+        let mut stuck = None;
         match m.kind {
             START => {
                 let (deadline, _) = s.start(&m, now, self.charge)?;
@@ -573,7 +581,7 @@ impl Zygote {
                 c.escalated = false;
                 match (&c.dead, c.conn.as_mut()) {
                     (None, Some(conn)) => {
-                        conn.queue(&m)?;
+                        stuck = conn.queue(&m).err();
                         c.kill_at = Some(deadline.saturating_add(ESCALATION_NS));
                     }
                     (why, _) => {
@@ -598,7 +606,7 @@ impl Zygote {
                 if s.reply(&m)?
                     && let Some(conn) = c.conn.as_mut()
                 {
-                    conn.queue(&m)?;
+                    stuck = conn.queue(&m).err();
                 }
             }
             CANCEL => match s.cancel(&m)? {
@@ -608,7 +616,7 @@ impl Zygote {
                 }
                 Cancel::Reset => match c.conn.as_mut() {
                     Some(conn) => {
-                        conn.queue(&m)?;
+                        stuck = conn.queue(&m).err();
                         let grace = now.saturating_add(RESET_GRACE_NS);
                         c.kill_at = Some(c.kill_at.map_or(grace, |at| at.min(grace)));
                     }
@@ -619,6 +627,10 @@ impl Zygote {
                 },
             },
             _ => return Err(invalid("IPC message direction/kind")),
+        }
+        if let Some(e) = stuck {
+            eprintln!("hvf engine: slot {i}: {e}");
+            return self.died(i);
         }
         Ok(())
     }
@@ -934,3 +946,124 @@ mod restore_tests {
     }
 }
 
+/// The zygote's supervision with stand-in children the template forks (no
+/// VM). They fork, so they run in `make test-hvf`, on one test thread.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::service::STATS;
+
+    /// A child that never reads its socket (it holds it until killed).
+    fn deaf(_socket: OwnedFd, _slot: usize) -> i32 {
+        loop {
+            // SAFETY: waits for the template's SIGKILL.
+            unsafe { libc::pause() };
+        }
+    }
+    pub(crate) fn parent(pid: libc::pid_t) -> libc::pid_t {
+        // SAFETY: an all-zero proc_bsdinfo is a valid out-value.
+        let mut info: libc::proc_bsdinfo = unsafe { std::mem::zeroed() };
+        let size = std::mem::size_of::<libc::proc_bsdinfo>() as libc::c_int;
+        // SAFETY: info is a live, correctly sized out-buffer.
+        let n = unsafe {
+            libc::proc_pidinfo(
+                pid,
+                libc::PROC_PIDTBSDINFO,
+                0,
+                (&mut info as *mut libc::proc_bsdinfo).cast(),
+                size,
+            )
+        };
+        assert_eq!(n, size, "pid {pid}");
+        info.pbi_ppid as libc::pid_t
+    }
+    fn charge() -> u32 {
+        crate::arena::Class::Glue2m.admission_bytes()
+    }
+    fn start(generation: u64) -> Message {
+        let mut b = vec![0; wire::START_HEADER_BYTES];
+        let deadline = clock::ipc_ns() + 5_000_000_000;
+        b[0..8].copy_from_slice(&deadline.to_le_bytes());
+        b[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
+        b[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
+        b[20..24].copy_from_slice(&charge().to_le_bytes());
+        Message::new(START, 0, generation, 0, b)
+    }
+
+    /// A child that stops reading while it keeps issuing calls (Node's
+    /// replies pile up in its queue) is ended as dead: its run fails, its
+    /// slot is quarantined and re-forked; the engine and the other slot go
+    /// on. Every child, the replacement too, is the template's.
+    #[test]
+    #[ignore = "forks (make test-hvf runs it on one test thread)"]
+    fn a_child_that_stops_reading_loses_only_its_slot() {
+        let (ours, theirs) = super::super::conn::pair().unwrap();
+        let template = Template::start(&[ours.as_raw_fd(), theirs.as_raw_fd()], deaf).unwrap();
+        let forker = template.pid();
+        let node = Conn::new(ours, wire::OUTBOUND);
+        node.set_nonblocking().unwrap();
+        let mut z = Zygote::new(node, 2, charge(), template);
+        for i in 0..2 {
+            let mut c = z.spawn(i).unwrap();
+            c.ready = true;
+            z.children.push(c);
+        }
+        let pids = z.pids();
+        // SAFETY: no arguments.
+        let me = unsafe { libc::getpid() };
+        assert_eq!(parent(forker), me);
+        assert!(pids.iter().all(|&p| parent(p) == forker), "{pids:?}");
+        z.message(start(1)).unwrap();
+        let mut id = 0;
+        while z.children[0].conn.is_some() {
+            id += 1;
+            assert!(id <= 2 * CHILD_QUEUE as u64, "the queue never filled");
+            // The child's CALL (as `child_message` admits it), Node's REPLY.
+            assert!(z.states[0].call(id, b"{}").unwrap());
+            z.message(Message::new(REPLY, 0, 1, id, b"{}".to_vec()))
+                .expect("a deaf child never fails the engine");
+        }
+        // START and CHILD_QUEUE - 1 replies were queued; the next one was not.
+        assert_eq!(id, CHILD_QUEUE as u64);
+        assert_eq!(
+            z.children[0].dead.as_deref(),
+            Some("engine process exited (signal 9)")
+        );
+        assert!(z.children[1].conn.is_some(), "the other slot is untouched");
+        // Node sees the run fail, then QUARANTINED at its CANCEL.
+        z.message(Message::new(CANCEL, 0, 1, 0, vec![])).unwrap();
+        z.node.flush().unwrap();
+        let mut node = Conn::new(theirs, 1);
+        let mut got = Vec::new();
+        while got.len() < 3 {
+            assert!(node.fill().unwrap());
+            while let Some(m) = node.next().unwrap() {
+                got.push((
+                    m.kind,
+                    m.slot,
+                    m.generation,
+                    String::from_utf8_lossy(&m.bytes).into_owned(),
+                ));
+            }
+        }
+        let why = "engine process exited (signal 9)";
+        assert_eq!(got[0].0, STATS);
+        assert_eq!(
+            got[1..],
+            [
+                (ERROR, 0, 1, format!("slot_unavailable: {why}")),
+                (QUARANTINED, 0, 1, why.to_string())
+            ]
+        );
+        // The slot gets a fresh child, from the template.
+        z.restore(0).unwrap();
+        let fresh = z.children[0].pid;
+        assert!(!pids.contains(&fresh) && parent(fresh) == forker);
+        // Stopping reaps every child and the template.
+        z.stop();
+        for p in [pids[1], fresh, forker] {
+            // SAFETY: probes for existence only.
+            assert_eq!(unsafe { libc::kill(p, 0) }, -1, "pid {p} left behind");
+        }
+    }
+}

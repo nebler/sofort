@@ -417,7 +417,9 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   CANCEL generation) and every child message (call ids in order, STATS
   before one completion, bounded printable DONE, RELEASED/QUARANTINED only
   while resetting) and forwards them; a Node violation fails the engine
-  closed, a child violation kills that child.
+  closed, a child violation kills that child, and so does a child that stops
+  reading its socket while the zygote has messages for it (its queue of
+  `MAX_OUTSTANDING + 4` is full): only its slot is quarantined.
 - **Template.** Every engine process, the first ones and every
   replacement, is forked by the template, never by the zygote: from READY
   on, tenant bytes (START sources, REPLY payloads, other slots' calls and
@@ -542,7 +544,9 @@ guest, clean slot after both, failed reset -> QUARANTINED -> slot_unavailable,
 socket close ends serve); `stops_before_the_run_is_active_still_stop_it`
 (START and CANCEL in one write, a deadline past at START: RELEASED or
 `deadline_exceeded` at once, 20 times each); `hvf::template::tests` (engine
-processes never hold tenant bytes); `hvf::conn`, `service` and
+processes never hold tenant bytes) and `hvf::zygote::tests` (a child that
+stops reading loses only its slot, which is re-forked by the template; stop
+leaves no process); `hvf::conn`, `service` and
 `hvf::zygote::restore_tests` (the re-fork budget) unit tests;
 `../executor/shard-check.ts` on the real binary (restore, concurrency, hostile
 payloads, environment, a blocked-Node deadline, zygote escalation of a stopped
