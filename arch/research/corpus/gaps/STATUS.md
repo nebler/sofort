@@ -13,6 +13,9 @@ multi-day kill tests are outside this continuation; the deliverable is the compl
 - G02, G06, G08, G09 and G10 were already saved in the initial round commit.
 - G01 is complete after GPT-6.1 recovery: 50 software-oracle entries, three developed pairings, and corrections separating
   reproducibility, source bootstrapping and DDC. Its inventory and local links were checked; no untaken winner is established.
+- `TRANSCRIPT-SYNTHESIS.md` is complete: 80 unique added video IDs, 3,322 signal records, six raw-caption quote checks,
+  and targeted current primary-source audits. Source-facing compiled memory bounds are its strongest unresolved lead;
+  broad CPU ray queries are already being built. Corpus uniqueness and ledger counts were reproduced by the parent.
 - G07's Opus run failed before assembling its final report. Its draft sections and downloaded evidence survive under
   `/Users/noah/.t3/scratch/2026-10-28-here-are-the-absolute-paths-a63c3f1b/g07/`.
 
@@ -24,7 +27,7 @@ All use provider `codex`, model `gpt-6.1-sol`, reasoning `xhigh`, standard servi
 |---|---|---|
 | Assemble and check G07 from its saved draft | `G07-papers-pl-systems.md` | `gap-resume-g07-gpt61` |
 | Complete/audit interrupted G01 — **completed** | `G01-oracles-software.md` | `gap-resume-g01-gpt61` |
-| Synthesize E20–E27; check source coverage and strongest seeds | `TRANSCRIPT-SYNTHESIS.md` | `gap-e20-e27-synthesis-gpt61` |
+| Synthesize E20–E27; check source coverage and strongest seeds — **completed** | `TRANSCRIPT-SYNTHESIS.md` | `gap-e20-e27-synthesis-gpt61` |
 
 These are app-owned delegated tasks under thread `d086a58d-c7b3-483f-83c5-5e6497aa09ec`; their completion wakes that
 thread. Do not launch duplicate work. The parent will read their terminal results and write `SUMMARY.md` after they finish.
