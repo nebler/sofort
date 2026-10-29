@@ -1,3 +1,0 @@
-{"event":"environment","pid":49068,"threads":1,"nested":true,"loadavg":"1.01 0.92 0.59 3/186 49068","uptime":"1224.95 6544.57","kernel":"Linux version 7.0.0-38-generic (buildd@bos03-arm64-061) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:28:02 UTC 2026"}
-{"event":"held","n":1024,"fixture":"wait","threads":1}
-{"event":"released","n":1024,"threads":1,"lost":0}
