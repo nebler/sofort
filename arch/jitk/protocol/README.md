@@ -23,7 +23,7 @@ Host corpus: generated `vectors.json`, whole and fragmented reads, boundary
 checks and deterministic mutations. `guestCases` in that same corpus drive
 fresh real VMs. VM harness selects integrated `kernel/.READY` and its documented
 image when available; otherwise `/tmp/jitk-02/r2/kernel.bin` and `/tmp/jitk-02/r2/host`.
-Explicit `JITK_IMAGE` overrides the image; VMs run under the HVF engine's console runner (`$JITK_SHARD_BINARY console --image`, until 2026-10-28 the libkrun VMM).
+Explicit `JITK_IMAGE` overrides the image; VMs run under the HVF engine's console runner (`$JITK_SHARD_BINARY console --image`).
 `JITK_VM_N=30` is the default repetitions per case. Each result includes artifact
 hashes, loads, raw samples and p50/p90/p99. These are functional tests under load,
 not canonical performance claims (those belong to owner 06).

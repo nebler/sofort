@@ -68,8 +68,8 @@ checks both output SHA256s and fails on a mismatch; its private outputs never
 replace the pinned inputs. Run only in a fresh directory:
 
 ```sh
-JITK_MUSL_CC=/home/dev/r6-census/toolchain/musl-install/bin/musl-gcc \
-  sh arch/jitk/grow/sqlite-build.sh /home/dev/r7-grow/NEW_REBUILD
+JITK_MUSL_CC=$HOME/r6-census/toolchain/musl-install/bin/musl-gcc \
+  sh arch/jitk/grow/sqlite-build.sh $HOME/r7-grow/NEW_REBUILD
 ```
 
 Reproduction audit (2026-10-26, existing kvm-dev): the source SHA3-256 matches
@@ -115,7 +115,7 @@ Prerequisites: Node/npm for the pinned compiler, Zig for the Linux binary,
 Rust 1.95.0 with aarch64-unknown-none, clang/ld.lld/LLVM objcopy, the existing
 Docker image and the HVF engine (`JITK_SHARD_BINARY`, default the jitk cache):
 guests boot under its console runner, `hvf console --image` (macOS arm64;
-until 2026-10-28 the libkrun `jitk-vmm`, so recorded VMM pins are libkrun's).
+VMM pins recorded before it are libkrun's).
 The `--vmm PATH` options of the experiment drivers below name that binary.
 The kernel build uses its native scriptc tooling; grow executes no Python.
 The independent Rust host assertions are preserved unchanged in trusted

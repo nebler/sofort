@@ -1,4 +1,4 @@
-# jitk-shard: device-free nested-KVM spike
+# jitk-shard: the ring engine (KVM on Linux, HVF on macOS)
 
 `jitk-shard` is a library with two CLI entry points, `real` (Linux) and `hvf`
 (macOS). `snapshot`, `arena`, `inputs`, `payload`, `streams`, `entropy`, `hv`,
@@ -8,9 +8,7 @@ runtime, `hvf` the macOS backend and engine (see "Hypervisor seam" and "HVF
 engine" below). Shard-local UAPI constants live in `constants`, which re-exports
 the ring and IPC ABI from the jitk-abi crate (`../abi`). Offline preparation,
 fixtures, probes and measurement drivers belong to the `real` binary under
-`src/bin/harness` (and `src/bin/hvf.rs`); they are not library modules. (The
-synthetic ABI-v0 assembly baseline was deleted in R12; it is at tag
-`pre-dead-code-2026-10-28`.)
+`src/bin/harness` (and `src/bin/hvf.rs`); they are not library modules.
 
 Every build uses the one Rust pin, `rust_toolchain` in
 [`../tools/deps.json`](../tools/deps.json) (`$(CARGO_PIN)` in make,
@@ -28,7 +26,7 @@ still require the KVM gate below. Binary names and CLI commands are unchanged.
 make -C arch/jitk deps             # pinned Node, shard binary (cache)
 make -C arch/jitk/shard snapshot   # prepared helper snapshots (cache)
 make -C arch/jitk/shard test       # Rust tests + native census check
-flock /home/dev/bench.lock make -C arch/jitk/shard test-kvm
+flock ~/bench.lock make -C arch/jitk/shard test-kvm
 sh arch/jitk/executor/ipc/shard-host.sh   # executor shard suite from the cache
 ```
 
@@ -49,7 +47,7 @@ kernel build. A present entry is reused only after its identity, file hashes and
 kernel hash verify. `test-kvm` and the executor use these unless
 `JITK_SHARD_TEST_SNAPSHOT(S)` / `JITK_SHARD_SNAPSHOT` are set. The shard binary is
 not part of the key: a snapshot-format change must change the kernel or layout
-(checked at load), or this is a stale entry (R9 N15's `abi_version`).
+(checked at load), or this is a stale entry (the snapshot's `abiVersion`).
 
 **R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
 results, build/reproduce commands, and remaining gates are in
@@ -149,7 +147,7 @@ records cgroup `memory.peak`; its `spawn-cg` is built from
 [`harness/spawn-cg.c`](harness/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
 
-## Hypervisor seam (R10 #5) and the HVF backend
+## Hypervisor seam and the HVF backend
 
 `slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
 class regions (immutable extents read-only on the host and in the VM), bind,
@@ -275,7 +273,7 @@ after CHECKPOINT (measured with and without it); the rest follows the guest's
 heap layout (variants of the source decode moved it by ±4 µs), not the
 message path: `return 2` takes one exit before and after.
 
-## HVF engine (`hvf ipc`, R10 #10 phase 2)
+## HVF engine (`hvf ipc`)
 
 `hvf ipc SNAPSHOT_BASE SLOTS [POLICY]` is the Mac engine the executor drives
 by default on macOS arm64 (`JITK_BACKEND=hvf`, `../executor/README.md`). It speaks the Linux shard's
@@ -384,9 +382,9 @@ libkrun's p50 hides its VMM boot behind the warm pool; its CPU does not
 side (the executor, policy, IPC), the zygote's forwarding and the engine
 process's run and reset (~100 µs of it, per `hvf bench` above).
 
-Since 2026-10-28 the HVF engine is the executor's and MCP's default on
-macOS arm64 (`../executor/select-backend.ts`); libkrun is deleted. The table
-above is the comparison measured before that.
+The HVF engine is the executor's and MCP's default on macOS arm64
+(`../executor/select-backend.ts`); the table compares it with the libkrun
+path it replaced.
 
 ## Console runner (`hvf console`) and the watchdog
 
@@ -464,7 +462,7 @@ These tools need neither Node nor Python at run time. `./tool.sh NAME ARGS...`
 replaces each Python command using the basename without `.py` (for example
 `./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and
 lock composition come from `../tslib/` through `lib.ts`. `make test` still takes its own measurement
-locks (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`); never put another
+locks (`JITK_BENCH_LOCK`, default `~/bench.lock`); never put another
 lock around it. `test-kvm` expects the caller to hold that lock and takes the
 snapshots from the cache (`make snapshot`) unless the variables are set.
 See [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md) for compiler workarounds and the
