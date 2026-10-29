@@ -376,7 +376,8 @@
     "gates_run": [
       "tests/test_fs (fs-harness.rs, incl. the new partial-EFAULT getdents64 case; fails on the old handler)",
       "tests/regression: test_scratch, checks, clock-check, run-probes (21/21 incl. empty-iovec), grow_contract",
-      "check.sh: rustfmt, build-checks, arch-lint, clippy console and transport-ring"
+      "check.sh: rustfmt, build-checks, arch-lint, clippy console and transport-ring",
+      "native regression (archive readv/getdents64 users): shard check-native-hvf 41/41 exact twice on HVF; check-native-r7 41/41 exact twice on kvm-dev KVM"
     ],
     "gates_not_run": [
       "tests/fs_diff (Docker jitk-oracle:08)",
