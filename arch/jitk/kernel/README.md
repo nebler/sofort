@@ -52,6 +52,23 @@ controller deadlines and kill and reap every VM. The build cache defaults to
 `JITK_PROBE_WORK` and `JITK_LUA_PROFILE_WORK` override them). The grow-contract
 assembly fixtures ship in `tests/fixtures/grow/`.
 
+`make test-ring` checks the ring JS profile's tenant-reachable kernel paths
+(`tests/ring-tenant-check.mjs`: stdout/stderr, missing syscalls, the
+checkpoint fd) through the executor on this host's ring engine (HVF or KVM)
+with the prepared glue-2m snapshot; CI runs it in `ci-mac` and `ci-kvm`.
+
+## Ring JS profile: tenant output and diagnostics
+
+Tenant code in the JS profile has no output channel besides `tools.log`
+(ABI-R7: no LOG path). `write`/`writev` to fd 1 or 2 check the buffer as
+Linux would (EFAULT for unmapped bytes, EINVAL past 1 MiB per buffer) and drop
+it, returning its length, so `print`, `std.out` and `std.err` never stop or
+fail a run. Native mode keeps its byte streams. LOG records are kernel
+diagnostics only; within their 16 KiB per-run budget the kernel reports each
+unregistered syscall number once, for at most 8 numbers per run (further
+calls still return -38 silently). `write` to the checkpoint fd outside the
+bootstrap state returns EBADF.
+
 ## Ring payload and entropy after restore
 
 The ring payload has a native `os.snapshotCheckpoint()` hook: after the EL1
@@ -98,7 +115,8 @@ RX tails; PORT_OPEN=0 is EOF, reported as POLLHUP after buffered input drains.
 
 Follow `../protocol/PROTOCOL-v1.md`. EL0 stdout permits only printable ASCII
 0x20..0x7e plus LF; DEL and other controls terminate the guest. writev validates
-all iovecs before emitting any byte. fd2 is dropped in production. Kernel records
+all iovecs before emitting any byte. fd2 is checked like fd1 (EFAULT, EINVAL past
+1 MiB) and dropped in production. Kernel records
 start 0x1e and end LF; never treat them as guest success. Diagnostics cannot splice
 into a partial guest line. The host still validates every untrusted JSON frame.
 
@@ -139,11 +157,12 @@ The owner-applied 6-line patch and native Linux injection evidence come from
 contract; the artifact manifest includes its contents and SHA256. A growth replay
 deletes these handlers in its copied tree before rediscovery.
 216 mremap is registered and returns -38 (musl fallback). Unregistered syscalls
-return -38 and ALWAYS emit the v2 `missing` record; a registered handler returning
+return -38 and ALWAYS emit the v2 `missing` record in the console profile (ring
+builds: once per number, at most 8 numbers per run); a registered handler returning
 -38 is ordinary and NEVER emits missing. The pure-Rust candidate helper API in
 syscalls.rs provides copyin, copyout, writable, now_ns, poll_fd and park(deadline) and park_poll(deadline, input_interest).
-ppoll supports <=16 fds, ignored negative fds, stdout/stderr POLLOUT, unknown fd
-POLLNVAL, stdin POLLIN/POLLHUP, finite/NULL waits, and ENOSYS for non-NULL signal
+ppoll supports <=16 fds, ignored negative fds, stdout/stderr POLLOUT, open archive
+fds POLLIN|POLLOUT (a regular file), unknown fd POLLNVAL, stdin POLLIN/POLLHUP, finite/NULL waits, and ENOSYS for non-NULL signal
 masks. Overflow and invalid timespecs/pointers are errors.
 
 `--features grow-trace` adds the area-08 v2 guest emitter (no trace by default):
