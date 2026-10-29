@@ -737,6 +737,23 @@ mod tests {
         }
     }
 
+    /// Inputs libFuzzer found, kept as tests.
+    #[test]
+    fn regressions() {
+        // The guest's TX producer just below u64::MAX, then a write at it:
+        // the harness wraps the guest's cursor arithmetic; the shard refuses
+        // the cursor.
+        let p = Program::default()
+            .op(0)
+            .op(TX_CURSOR)
+            .u64(u64::MAX - 3)
+            .op(TX_APPEND)
+            .chunk(&[1; 40])
+            .op(TX_DOORBELL)
+            .u32(ring::SUBMIT);
+        assert_eq!(ring_tx(&p.0), 0);
+    }
+
     /// The ring seeds play the shared corpus as the shard judges it: every
     /// payload but the `shard` rows is forwarded, then the run completes.
     #[test]
