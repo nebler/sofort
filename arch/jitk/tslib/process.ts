@@ -125,8 +125,10 @@ export interface SpawnOptions {
   timeout: number;
   // Also write captured stdout/stderr through to this process.
   tee?: boolean;
-  // Return true to stop the child early (process-group SIGKILL).
-  onOutput?: (stdout: Buffer) => boolean;
+  // Called with everything captured so far whenever either stream has data;
+  // return true to stop the child early (process-group SIGKILL). Output the
+  // child wrote before the kill is still captured.
+  onOutput?: (stdout: Buffer, stderr: Buffer) => boolean;
   // Runs at the deadline, before the group kill.
   onTimeout?: (pid: number) => void;
   // Kill the child on a stdin error other than EPIPE (the error rejects
@@ -170,6 +172,20 @@ export async function spawnCapture(command: string[], options: SpawnOptions, sta
       }
       killGroup(target);
     });
+    const consider = (): void => {
+      if (!options.onOutput || stopped) {
+        return;
+      }
+      try {
+        if (options.onOutput(Buffer.concat(stdout), Buffer.concat(stderr))) {
+          stopped = true;
+          killGroup(child);
+        }
+      } catch (error) {
+        failure = new Error(message(error));
+        killGroup(child);
+      }
+    };
     if (piped) {
       child.stdout!.on('data', (chunk: Buffer) => {
         stdout.push(chunk);
@@ -177,17 +193,7 @@ export async function spawnCapture(command: string[], options: SpawnOptions, sta
         if (options.tee) {
           process.stdout.write(chunk);
         }
-        if (options.onOutput && !stopped) {
-          try {
-            if (options.onOutput(Buffer.concat(stdout))) {
-              stopped = true;
-              killGroup(child);
-            }
-          } catch (error) {
-            failure = new Error(message(error));
-            killGroup(child);
-          }
-        }
+        consider();
       });
       child.stderr!.on('data', (chunk: Buffer) => {
         stderr.push(chunk);
@@ -195,6 +201,7 @@ export async function spawnCapture(command: string[], options: SpawnOptions, sta
         if (options.tee) {
           process.stderr.write(chunk);
         }
+        consider();
       });
     }
     if (stdin) {

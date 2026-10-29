@@ -137,9 +137,13 @@ export function hostCommand(image: string): string[] {
   return [host(), 'console', '--image', resolve(image)];
 }
 
+// The launcher's whole stderr: its sandbox ack, written before the VM exists
+// (CONTRACTS.md).
+export const SANDBOX_ACK = Buffer.from('{"sandbox":"ok"}\n');
+
 export function checkHost(info: GuestInfo, stderr: Buffer): void {
   check(info.returncode === 0, JSON.stringify(info) + ' ' + stderr.toString());
-  check(stderr.equals(Buffer.from('{"sandbox":"ok"}\n')), 'missing/unexpected host-only sandbox ack: ' + stderr.toString());
+  check(stderr.equals(SANDBOX_ACK), 'missing/unexpected host-only sandbox ack: ' + stderr.toString());
 }
 
 export function distribution(samples: number[]): { n: number; unit: string; median: number; p90: number; p99: number; samples: number[] } {

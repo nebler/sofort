@@ -247,7 +247,10 @@ function reference(name: string): Differential {
 test('discovery retains fatal output-protocol records', async () => {
   await temporary(async (path) => {
     const dest = join(path, 'fatal');
-    await assert.rejects(() => discover('/image', dest, ['/bin/sh', '-c', 'read x; printf "\\036fatal control byte\\n"; printf \'{"sandbox":"ok"}\\n\' >&2']), /no missing record/);
+    // The record arrives a second before the ack and the launcher then runs
+    // on: discovery stops it only once the ack is in, so the ack is kept.
+    const launcher = 'read x; printf "\\036fatal control byte\\n"; sleep 1; printf \'{"sandbox":"ok"}\\n\' >&2; exec sleep 30';
+    await assert.rejects(() => discover('/image', dest, ['/bin/sh', '-c', launcher]), /no missing record/);
     const observed = readJSON<{ fatal_protocol: unknown[] }>(dest + '.observations.json');
     assert.ok(observed.fatal_protocol.length > 0);
   });
@@ -452,7 +455,10 @@ async function liveFixture(path: string, mode: string): Promise<void> {
       assert.ok(!prompt.includes('always return -38'));
       assert.ok(!prompt.includes(readFileSync(join(ASSETS, 'heldout-probe.c'), 'utf8')));
     } else if (mode === 'timeout') {
-      process.env.JITK_GROW_CLI_TIMEOUT = '0.1';
+      // The fixture prints first, then outlives any deadline (fakeCli), so
+      // the deadline only has to exceed its start-up; a cold start of this
+      // test binary under load took longer than the former 0.1 s.
+      process.env.JITK_GROW_CLI_TIMEOUT = '3';
       await assert.rejects(() => proposal('rt_sigaction', work, out, {}, true), /timeout/);
       delete process.env.JITK_GROW_CLI_TIMEOUT;
       assert.match(readFileSync(join(out, 'agent.log'), 'utf8'), /partial progress/);
@@ -526,10 +532,17 @@ test('trace observations preserve future raw record fields', async () => {
 });
 
 test('bounded process capture drains both binary streams and reaps descendants', async () => {
-  const result = await capture(['/bin/sh', '-c', 'printf "\\000\\377"; printf err >&2; sleep 30'], { timeout: 0.05 });
-  assert.ok(result.timeout && result.returncode === -9);
-  assert.equal(result.stdout.toString('hex'), '00ff');
-  assert.equal(result.stderr.toString(), 'err');
+  // Stopped once both streams are in; `sleep` is a descendant, so the run
+  // ends only if the whole group is killed.
+  const stopped = await capture(['/bin/sh', '-c', 'printf "\\000\\377"; printf err >&2; sleep 30; :'], {
+    onOutput: (stdout, stderr) => stdout.length === 2 && stderr.length === 3,
+  });
+  assert.ok(!stopped.timeout && stopped.returncode === -9);
+  assert.equal(stopped.stdout.toString('hex'), '00ff');
+  assert.equal(stopped.stderr.toString(), 'err');
+  // The deadline kills the group too, whatever the child wrote by then.
+  const late = await capture(['/bin/sh', '-c', 'sleep 30; :'], { timeout: 0.05 });
+  assert.ok(late.timeout && late.returncode === -9);
 });
 
 test('CLI validates targets, samples and pinned integration arguments', async () => {

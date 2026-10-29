@@ -2,7 +2,7 @@ import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, unlinkSync
 import { join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { check, detail, dump, equal, GateError, readJSON } from './lib.ts';
-import { ASSETS, CANONICAL, ROOT, build, slotNumber, capture, checkHost, cleanup, copyKernel, distribution, host, hostCommand, load, probeSource, processGuest, run, scratch, selectGate, selectHost, sha, treeHashes, type GuestInfo } from './runtime.ts';
+import { ASSETS, CANONICAL, ROOT, build, slotNumber, capture, checkHost, cleanup, copyKernel, distribution, host, hostCommand, load, probeSource, processGuest, run, scratch, selectGate, selectHost, sha, treeHashes, SANDBOX_ACK, type GuestInfo } from './runtime.ts';
 import { compare, guest, linux } from './adapters.ts';
 import { hostHandlerTests } from './host-tests.ts';
 import { retryTransaction, type Feedback, type TransactionReport } from './retries.ts';
@@ -69,7 +69,13 @@ export async function discover(image: string, dest: string, command?: string[]):
     input: Buffer.from('ping\n'),
     holdStdin: true,
     timeout: 10,
-    onOutput: (raw) => {
+    // Stop at the first missing or fatal record, but only once the launcher's
+    // sandbox ack is in: the two streams are separate pipes, so a record can
+    // be read before an ack written earlier, and killing then would lose it.
+    onOutput: (raw, stderr) => {
+      if (!stderr.includes(SANDBOX_ACK)) {
+        return false;
+      }
       const complete = raw.subarray(0, raw.lastIndexOf(10) + 1);
       const observed = observe(complete);
       if (observed.missing.length) {
@@ -82,7 +88,7 @@ export async function discover(image: string, dest: string, command?: string[]):
   writeFileSync(dest + '.stderr', result.stderr);
   dump(dest + '.json', { seconds: (performance.now() - started) / 1000, uptime_before: before, uptime_after: load(), missing: found ?? null, returncode: result.returncode, discovery_kill_expected: true });
   dump(dest + '.observations.json', observe(result.stdout));
-  check(result.stderr.equals(Buffer.from('{"sandbox":"ok"}\n')), 'host-only sandbox ack required: ' + result.stderr.toString());
+  check(result.stderr.equals(SANDBOX_ACK), 'host-only sandbox ack required: ' + result.stderr.toString());
   check(found, 'no missing record in ' + dest);
   dump(dest + '.missing.json', found);
   return found;
