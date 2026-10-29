@@ -131,6 +131,58 @@ clock_gettime), and it parks while none is. It writes only inside that window, a
 leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
+### Owners
+
+An owner thread serves every W-th slot, so no one slot may hold it: a guest
+in `while(true){}` never exits KVM_RUN by itself, and every CANCEL, START
+and REPLY for the owner's other slots would wait for its deadline (up to
+60 s), past Node's bounds (`RELEASE_GRACE_MS`), so Node would kill the
+shard. An owner therefore runs a vCPU only for a turn (`owner.rs`):
+
+- A command for any of its slots kicks it (the lease signal: tgkill SIGUSR1
+  from the reactor thread, `immediate_exit`) whenever it is running a vCPU;
+  a flag pair (`Attention`: mail posted, owner driving; SeqCst both ways)
+  makes either the owner see the mail before it enters or the sender see it
+  running, and one kick serves a batch of mail. Kicked, the owner sweeps
+  expired leases, reads its mailbox and due timers, and only then resumes
+  a guest. A CANCEL of the running slot itself resets it at once.
+- While another slot is runnable, the clock thread (which ticks only while
+  a vCPU runs) kicks the owner at the end of the turn (`SLICE`, 10 ms; also
+  when a parked slot's timer is due). Runnable slots go round-robin; a
+  slot kicked for mail keeps the rest of its turn, so a stream of commands
+  cannot starve a computing guest, and a slot whose turn is over (one that
+  ran alone, say) yields at once to a newly runnable one, so a spinner
+  cannot starve the others.
+
+A kick only interrupts (`Exit::Interrupted`); whether a run ends is decided
+by its generation-fenced lease and by the owner's commands, so a kick meant
+for one slot cannot end another slot's generation. Measured on kvm-dev, one
+owner, beside a spinning slot
+(`owner::tests::spinning_slot_does_not_hold_its_owners_other_slots`, three
+runs): CANCEL of the other slot to its reset 0.3 ms, its START to its tool
+call 2–3 ms, the REPLY to its completion 11–12 ms (the spinner keeps the rest
+of its turn), CANCEL of the spinner to its reset 0.2 ms; before, each waited
+for the spinner's deadline (the review's repro: 5.8 s for a 6 s deadline).
+Through Node and the confined `real ipc` (2 slots, 1 owner): START to DONE
+54 ms, CANCEL to RELEASED 0.3 ms for both slots.
+
+### KVM_RUN failures
+
+A guest can make KVM_RUN fail: an EL1 data abort without a valid
+syndrome (`stp`/`ldp`, writeback, atomics) on the doorbell, a read-only
+extent or an unbacked GPA has no MMIO emulation, and KVM_RUN returned
+ENOSYS, which used to abort the shard. Each VM enables
+KVM_CAP_ARM_NISV_TO_USER, so these exit as `KVM_EXIT_ARM_NISV` with their
+address and fail the run as HVF does (doorbell: `guest_protocol: invalid
+doorbell access`, else `memory_bound`); a KVM without the capability fails
+the run with `guest_protocol: guest access without a syndrome`. Any KVM_RUN
+error is a per-slot exit (pool and native worker): ENOSYS and EFAULT reset
+the slot as usual; another errno leaves KVM's view of the vCPU unknown, so
+its reset fails and the slot is quarantined, never reused
+(`kvm::tests::syndromeless_guest_accesses_fail_the_run_not_the_process`,
+`owner::tests::syndromeless_guest_access_fails_only_its_slot`,
+`native::tests::syndromeless_guest_access_fails_only_its_request`).
+
 ### Deadlines: lease, kick, kill
 
 Both engines implement one deadline model with three roles:
@@ -193,8 +245,10 @@ watchdog process), all before READY and so before any guest code runs:
    thread (TSYNC). Allowed: the allocator without executable mappings,
    futex wait/wake (no PI, no requeue), read/write/ppoll/close on the open
    descriptors, pread64 (pagemap), clocks and sleeps, signal return, tgkill
-   of its own threads, exit, and exactly the 11 KVM ioctls an owner issues
-   after setup (`confine::policy::KVM_IOCTLS`; slots are created lazily).
+   of its own threads (the watchdog's and owners' kicks), exit, and exactly
+   the 12 KVM ioctls an owner issues after setup
+   (`confine::policy::KVM_IOCTLS`; slots are created lazily, each VM with
+   KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER, see "KVM_RUN failures").
    Anything else (open, socket, exec, clone, ptrace, kill, prctl, other
    ioctls, ...) kills the process with SIGSYS.
 
@@ -230,7 +284,7 @@ namespaces; then, with /dev/kvm, the pagemap, every profile's snapshot and VM
 and /dev/urandom open (`native::Worker::load`), the files-closed layer; then
 its filter (`confine::policy::native_worker`; it has no threads). That filter
 is the runtime above, pread64, tgkill of itself, the 7 KVM ioctls of a run and
-a reset (its VMs exist already, so none that creates a VM or vCPU), and what
+a reset (its VMs exist already, so none that creates or sets up a VM or vCPU), and what
 each run's sealed input archive needs: memfd_create with exactly
 CLOEXEC|ALLOW_SEALING, ftruncate, fcntl F_ADD_SEALS only, and its read-only
 mapping. Its frames are stdin/stdout reads and writes. Degraded layers are

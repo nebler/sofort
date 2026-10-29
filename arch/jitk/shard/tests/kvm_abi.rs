@@ -26,6 +26,8 @@ int main(void) {
  O(MMIO_ADDR, mmio.phys_addr); O(MMIO_DATA, mmio.data); O(MMIO_LEN, mmio.len); O(MMIO_WRITE, mmio.is_write);
  R(REG_X0, CORE(regs.regs[0])); R(REG_PC, CORE(regs.pc)); R(REG_PSTATE, CORE(regs.pstate));
  R(REG_SCTLR, ARM64_SYS_REG(3, 0, 1, 0, 0));
+ C(KVM_CHECK_EXTENSION); C(KVM_ENABLE_CAP); C(KVM_CAP_ARM_NISV_TO_USER); C(KVM_EXIT_ARM_NISV);
+ O(NISV_IPA, arm_nisv.fault_ipa);
  return 0;
 }
 "#;
@@ -53,15 +55,26 @@ fn kvm_abi_matches_host_headers() {
         .arg(&binary)
         .status()
         .unwrap_or_else(|error| panic!("start `{cc}` for the UAPI header probe: {error}"));
-    assert!(built.success(), "`{cc}` failed to build the UAPI header probe");
+    assert!(
+        built.success(),
+        "`{cc}` failed to build the UAPI header probe"
+    );
     let output = Command::new(&binary).output().unwrap();
     assert!(output.status.success(), "UAPI header probe failed");
     fs::remove_dir_all(&dir).unwrap();
     let headers = constants(&String::from_utf8(output.stdout).unwrap());
     let checked_in = constants(include_str!("../src/kvm_abi.rs"));
-    assert_eq!(headers.len(), 32, "probe printed {} constants", headers.len());
+    assert_eq!(
+        headers.len(),
+        37,
+        "probe printed {} constants",
+        headers.len()
+    );
     for (index, (host, ours)) in headers.iter().zip(&checked_in).enumerate() {
-        assert_eq!(host, ours, "constant {index}: host headers vs src/kvm_abi.rs");
+        assert_eq!(
+            host, ours,
+            "constant {index}: host headers vs src/kvm_abi.rs"
+        );
     }
     assert_eq!(headers.len(), checked_in.len(), "constant count");
 }

@@ -9,6 +9,8 @@
 //! KVM_RUN once per TICK, and parks while none is. It writes guest RAM only
 //! inside that window, which already counts as dirtying the slot, and never
 //! during decode or reset: leaving the window waits out a store in progress.
+//! The pool also hangs its owners' time slices on this tick (`with_tick`,
+//! owner.rs): the one thread that runs exactly while a vCPU does.
 use std::{
     sync::{
         Arc, Barrier, OnceLock,
@@ -58,6 +60,8 @@ struct Entry {
 }
 struct Shared {
     entries: Box<[Entry]>,
+    /// Run after every tick (the owners' time slices, owner.rs).
+    on_tick: Option<Box<dyn Fn() + Send + Sync>>,
     running: AtomicUsize,
     parked: AtomicBool,
     stop: AtomicBool,
@@ -105,6 +109,9 @@ impl Shared {
             }
             thread::sleep(TICK);
             self.tick();
+            if let Some(f) = &self.on_tick {
+                f();
+            }
         }
     }
 }
@@ -115,7 +122,16 @@ pub struct Clock {
 }
 impl Clock {
     pub fn start(slots: usize) -> Self {
+        Self::spawn(slots, None)
+    }
+    /// As `start`, and `on_tick` runs on the clock thread after every tick,
+    /// that is every TICK while any vCPU is inside KVM_RUN.
+    pub fn with_tick(slots: usize, on_tick: impl Fn() + Send + Sync + 'static) -> Self {
+        Self::spawn(slots, Some(Box::new(on_tick)))
+    }
+    fn spawn(slots: usize, on_tick: Option<Box<dyn Fn() + Send + Sync>>) -> Self {
         let shared = Arc::new(Shared {
+            on_tick,
             entries: (0..slots)
                 .map(|_| Entry {
                     state: AtomicU8::new(IDLE),

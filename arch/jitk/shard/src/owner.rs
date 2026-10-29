@@ -1,23 +1,36 @@
 //! Fixed owner threads construct, run, reset and destroy their own VM/vCPU fds.
 //! Waiting slots retain no execution stack. The reactor sends bounded commands;
 //! the watchdog shares only generation-fenced leases and eventfd wakeups.
+//!
+//! An owner serves many slots on one thread, so no slot may hold it: a guest
+//! that never exits (`while(true){}`) would otherwise delay every command for
+//! the owner's other slots until its deadline. An owner runs a vCPU only for
+//! a turn: a command for any of its slots kicks it out of KVM_RUN at once
+//! (`Attention`), and while other slots are runnable the clock thread kicks
+//! it after `SLICE`. Kicked, it services its mailbox, expiries and timers,
+//! then resumes runnable slots round-robin. A kick only interrupts; what
+//! happens to a run is decided by its generation-fenced lease and commands.
 use crate::{
     calls::Calls,
     clock::{self, Clock},
     constants::ring,
     kvm::{self, Kvm, Request, ResetPolicy, ResetReport, RunError, Slot, Snapshot},
-    lease::{Lease, Wake, Watchdog},
+    lease::{self, Lease, Wake, Watchdog},
 };
 use std::{
+    collections::VecDeque,
     fs::File,
     io,
     sync::{
         Arc, Barrier,
+        atomic::{AtomicBool, AtomicI32, AtomicU64, Ordering::*},
         mpsc::{self, Receiver, SyncSender},
     },
     thread::{self, JoinHandle},
     time::{Duration, Instant},
 };
+/// The longest turn a vCPU gets while another slot of its owner is runnable.
+pub const SLICE: Duration = Duration::from_millis(10);
 #[derive(Clone, Copy, PartialEq)]
 pub enum Mode {
     Run,
@@ -88,14 +101,78 @@ enum Command {
     Cancel(usize),
     Stop,
 }
+/// What an owner thread shares with the reactor (mail) and the clock thread
+/// (its time slice), so that neither waits behind a running vCPU.
+struct Attention {
+    /// The owner thread's id: where kicks go.
+    tid: AtomicI32,
+    /// The owner is between `enter` and `leave`: it may be inside KVM_RUN.
+    driving: AtomicBool,
+    /// Commands were queued since the owner last took its mail.
+    mail: AtomicBool,
+    /// Monotonic ns at which the clock thread kicks the owner; u64::MAX: never.
+    slice_end: AtomicU64,
+}
+impl Attention {
+    fn new() -> Self {
+        Self {
+            tid: AtomicI32::new(0),
+            driving: AtomicBool::new(false),
+            mail: AtomicBool::new(false),
+            slice_end: AtomicU64::new(u64::MAX),
+        }
+    }
+    /// Sender, after queueing a command: kick a driving owner, once per
+    /// batch of mail. With `enter` this is Dekker's pattern (SeqCst): either
+    /// the owner sees the mail before it drives, or this sees it driving.
+    fn post(&self) {
+        if !self.mail.swap(true, SeqCst) && self.driving.load(SeqCst) {
+            lease::kick_thread(self.tid.load(Relaxed));
+        }
+    }
+    /// Owner, before it drains its mailbox.
+    fn take_mail(&self) {
+        self.mail.store(false, SeqCst);
+    }
+    /// Owner, before it drives a slot; false when mail came first (take it,
+    /// then drive). `slice_end`: when the clock thread should kick it.
+    fn enter(&self, slice_end: u64) -> bool {
+        self.slice_end.store(slice_end, SeqCst);
+        self.driving.store(true, SeqCst);
+        if self.mail.load(SeqCst) {
+            self.leave();
+            return false;
+        }
+        true
+    }
+    fn leave(&self) {
+        self.driving.store(false, SeqCst);
+        self.slice_end.store(u64::MAX, SeqCst);
+    }
+    /// Clock thread: kick an owner whose turn is over. A kick that lands
+    /// after the turn ended interrupts its next entry once, harmlessly.
+    fn tick(&self, now: u64) {
+        let end = self.slice_end.load(Acquire);
+        if end <= now
+            && self
+                .slice_end
+                .compare_exchange(end, u64::MAX, AcqRel, Relaxed)
+                .is_ok()
+        {
+            lease::kick_thread(self.tid.load(Relaxed));
+        }
+    }
+}
 struct Mailbox {
     tx: SyncSender<Command>,
     wake: Wake,
+    attention: Arc<Attention>,
 }
 impl Mailbox {
     fn send(&self, cmd: Command) {
         self.tx.send(cmd).unwrap();
         self.wake.notify();
+        self.attention.post();
     }
 }
 pub struct Pool {
@@ -173,7 +250,15 @@ impl Prepared {
             watchdog,
         } = self;
         let owners = wakes.len();
-        let clock = Clock::start(slots);
+        let attention: Vec<Arc<Attention>> =
+            (0..owners).map(|_| Arc::new(Attention::new())).collect();
+        let slices = attention.clone();
+        let clock = Clock::with_tick(slots, move || {
+            let now = kvm::monotonic_ns();
+            for a in &slices {
+                a.tick(now);
+            }
+        });
         let started = Arc::new(Barrier::new(owners + 1));
         let (tx, events) = mpsc::sync_channel(slots + owners);
         let mut mailboxes = Vec::new();
@@ -197,10 +282,14 @@ impl Prepared {
                 .collect::<Vec<_>>();
             let (kvm, snapshot, tx, w) = (kvm.clone(), snapshot.clone(), tx.clone(), wake.clone());
             let started = started.clone();
+            let a = attention[owner].clone();
             joins.push(
                 thread::Builder::new()
                     .name(format!("jitk-owner-{owner}"))
                     .spawn(move || {
+                        // SAFETY: gettid takes no arguments.
+                        a.tid
+                            .store(unsafe { libc::syscall(libc::SYS_gettid) } as i32, Relaxed);
                         started.wait();
                         Worker {
                             owner,
@@ -213,12 +302,17 @@ impl Prepared {
                             commands: rx,
                             events: Events { tx, notify },
                             wake: w,
+                            attention: a,
                         }
                         .run(entropy)
                     })
                     .unwrap(),
             );
-            mailboxes.push(Mailbox { tx: cmd, wake });
+            mailboxes.push(Mailbox {
+                tx: cmd,
+                wake,
+                attention: attention[owner].clone(),
+            });
         }
         started.wait();
         Pool {
@@ -252,6 +346,7 @@ impl Pool {
                     Err(mpsc::TrySendError::Full(c)) => {
                         command = c;
                         let _ = owner.wake.try_notify();
+                        owner.attention.post();
                         let _ = self.events.recv_timeout(Duration::from_millis(10));
                     }
                     Err(mpsc::TrySendError::Disconnected(_)) => {
@@ -265,6 +360,7 @@ impl Pool {
             if let Err(e) = owner.wake.try_notify() {
                 error.get_or_insert(e);
             }
+            owner.attention.post();
         }
         // Owners can be publishing bounded completion events as they stop.
         // Keep consuming until every owner exits, then observe every join result.
@@ -312,6 +408,8 @@ impl Pool {
     pub fn try_recv(&mut self) -> Option<Event> {
         self.events.try_recv().ok()
     }
+    /// Reset `slot` and report it (Event::Reset). A running slot's owner is
+    /// kicked out of KVM_RUN (`Attention`), so this never waits for its lease.
     pub fn cancel(&self, slot: usize) {
         self.owner(slot).send(Command::Cancel(slot));
     }
@@ -382,6 +480,11 @@ struct Managed {
     wake_at: Option<Instant>,
     /// Policy mode: console lines of the FINISH exit, forwarded before Done.
     finish_logs: Vec<Vec<u8>>,
+    /// The mode of the command that made this slot runnable: START's job
+    /// mode, None for a reply, resume or timer (`Worker::drive`).
+    drive: Option<Mode>,
+    /// In the owner's run queue.
+    queued: bool,
 }
 impl Managed {
     /// Reset this slot. A failed reset quarantines only this slot (kvm::reset);
@@ -641,6 +744,7 @@ struct Worker {
     commands: Receiver<Command>,
     events: Events,
     wake: Wake,
+    attention: Arc<Attention>,
 }
 /// Trim pristine idle slots whose time is due; return the next due time.
 fn trim_idle(slots: &mut [Option<Managed>]) -> Option<Instant> {
@@ -658,32 +762,60 @@ fn trim_idle(slots: &mut [Option<Managed>]) -> Option<Instant> {
     }
     next
 }
+/// The owner's runnable slots, round-robin. A slot is runnable from the
+/// command (or timer) that lets its guest go on until it parks or ends; an
+/// idle slot found here was cancelled or expired meanwhile and is skipped.
+#[derive(Default)]
+struct RunQueue {
+    ready: VecDeque<usize>,
+    /// The slot whose turn it is, and when the turn began (monotonic ns). It
+    /// keeps the turn across kicks for mail until SLICE has passed.
+    turn: Option<(usize, u64)>,
+}
+impl RunQueue {
+    fn push(&mut self, s: &mut Managed, i: usize, mode: Option<Mode>) {
+        s.drive = mode;
+        if !s.queued {
+            s.queued = true;
+            self.ready.push_back(i);
+        }
+    }
+}
+/// Why `Worker::drive` returned.
+#[derive(PartialEq)]
+enum Driven {
+    /// The run parked or ended.
+    Stopped,
+    /// A kick: the guest can go on once the owner has looked around.
+    Kicked,
+}
 impl Worker {
     /// `entropy` is /dev/urandom, opened by `Pool::prepare`.
     fn run(self, mut entropy: File) -> io::Result<()> {
         let mut slots: Vec<Option<Managed>> = (0..self.leases.len()).map(|_| None).collect();
+        let mut queue = RunQueue::default();
         let mut trim_at = None;
         loop {
             let timer = slots.iter().flatten().filter_map(|s| s.wake_at).min();
-            self.wake
-                .wait_until([trim_at, timer].into_iter().flatten().min());
+            // With a runnable slot, only collect news; never sleep.
+            self.wake.wait_until(if queue.ready.is_empty() {
+                [trim_at, timer].into_iter().flatten().min()
+            } else {
+                Some(Instant::now())
+            });
             expire(&mut slots, self.owner, self.owners, &self.events);
             // Guests whose timer is due run again (setTimeout in a job).
             let now = Instant::now();
-            for i in 0..slots.len() {
-                let Some(s) = slots[i].as_mut() else {
-                    continue;
-                };
-                if s.activity == Activity::Running && s.wake_at.is_some_and(|at| at <= now) {
+            for (i, s) in slots.iter_mut().enumerate() {
+                if let Some(s) = s
+                    && s.activity == Activity::Running
+                    && s.wake_at.is_some_and(|at| at <= now)
+                {
                     s.wake_at = None;
-                    self.drive(
-                        &mut slots,
-                        i,
-                        self.owner + i * self.owners,
-                        Some(Mode::Policy),
-                    );
+                    queue.push(s, i, Some(Mode::Policy));
                 }
             }
+            self.attention.take_mail();
             while let Ok(cmd) = self.commands.try_recv() {
                 expire(&mut slots, self.owner, self.owners, &self.events);
                 let (id, mode) = match &cmd {
@@ -726,12 +858,17 @@ impl Worker {
                         policy_sent: Calls::default(),
                         wake_at: None,
                         finish_logs: Vec::new(),
+                        drive: None,
+                        queued: false,
                     });
                 }
                 let s = slots[i].as_mut().unwrap();
                 if matches!(cmd, Command::Reset(_) | Command::Cancel(_)) {
                     // An errored run was already reset in finish(); its RELEASE
                     // costs nothing. The next begin() finds the slot pristine.
+                    // A running slot (its vCPU stopped: the kick that brought
+                    // this command) is reset here; if it is still queued, the
+                    // run queue skips it as idle.
                     s.reset_unless_pristine();
                     if matches!(cmd, Command::Reset(_)) && !s.cpu.is_quarantined() {
                         // Offline verification: the pristine flag must imply
@@ -749,21 +886,85 @@ impl Worker {
                         .unwrap();
                     continue;
                 }
-                if !s.command(cmd, &mut entropy, id, &self.events) {
-                    continue;
+                if s.command(cmd, &mut entropy, id, &self.events) {
+                    queue.push(s, i, mode);
                 }
-                self.drive(&mut slots, i, id, mode);
             }
             // Trim slots now due; resets above may have made others trimmable.
             trim_at = trim_idle(&mut slots);
+            self.turn(&mut slots, &mut queue);
         }
     }
-    fn drive(&self, slots: &mut [Option<Managed>], i: usize, id: usize, mode: Option<Mode>) {
+    /// Give the next runnable slot the vCPU until it parks or ends, or a
+    /// kick: mail, an expiry, a parked slot's timer, or the end of its turn.
+    fn turn(&self, slots: &mut [Option<Managed>], queue: &mut RunQueue) {
+        let slice = SLICE.as_nanos() as u64;
+        let now = kvm::monotonic_ns();
+        let i = loop {
+            let Some(i) = queue.ready.pop_front() else {
+                return;
+            };
+            let s = slots[i].as_mut().unwrap();
+            match queue.turn {
+                _ if s.activity == Activity::Idle => s.queued = false,
+                // Its turn is over (it may have run alone) and another
+                // slot waits: that one goes first.
+                Some((t, start)) if t == i && now >= start + slice && !queue.ready.is_empty() => {
+                    queue.turn = None;
+                    queue.ready.push_back(i);
+                }
+                _ => {
+                    s.queued = false;
+                    break i;
+                }
+            }
+        };
+        let start = match queue.turn {
+            Some((t, start)) if t == i => start,
+            _ => now,
+        };
+        queue.turn = Some((i, start));
+        // Kick at the end of the turn if another slot waits for the vCPU,
+        // or when a parked slot's timer is due, whichever comes first.
+        let mut end = if queue.ready.is_empty() {
+            u64::MAX
+        } else {
+            start + slice
+        };
+        if let Some(at) = slots.iter().flatten().filter_map(|s| s.wake_at).min() {
+            let left = at.saturating_duration_since(Instant::now());
+            end = end.min(now + left.as_nanos() as u64);
+        }
+        if !self.attention.enter(end) {
+            // Mail first; this slot keeps its turn.
+            slots[i].as_mut().unwrap().queued = true;
+            queue.ready.push_front(i);
+            return;
+        }
+        let mode = slots[i].as_ref().unwrap().drive;
+        let driven = self.drive(slots, i, self.owner + i * self.owners, mode);
+        self.attention.leave();
+        if driven == Driven::Stopped {
+            queue.turn = None;
+            return;
+        }
+        // Kicked: the guest goes on, first again unless its turn is over and
+        // another slot waits (then the next pick sends it to the back).
+        slots[i].as_mut().unwrap().queued = true;
+        queue.ready.push_front(i);
+    }
+    fn drive(
+        &self,
+        slots: &mut [Option<Managed>],
+        i: usize,
+        id: usize,
+        mode: Option<Mode>,
+    ) -> Driven {
         loop {
             let s = slots[i].as_mut().unwrap();
             if s.activity == Activity::Idle {
-                break;
-            } // expiry sweep already reported this run
+                return Driven::Stopped;
+            }
             let t = kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID);
             let until = match mode {
                 Some(Mode::Wait | Mode::Ready) => DriveUntil::Wait,
@@ -772,7 +973,8 @@ impl Worker {
             let result = s.drive(until);
             s.metrics.cpu_ns += kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - t;
             match result {
-                Ok(Progress::Interrupted) => expire(slots, self.owner, self.owners, &self.events),
+                // The owner sweeps expiries and reads its mail first.
+                Ok(Progress::Interrupted) => return Driven::Kicked,
                 Ok(Progress::Calls {
                     requests,
                     logs,
@@ -787,7 +989,7 @@ impl Worker {
                         })
                         .unwrap();
                     if parked {
-                        break;
+                        return Driven::Stopped;
                     }
                 }
                 Ok(Progress::Parked) => {
@@ -797,7 +999,7 @@ impl Worker {
                             generation: s.cpu.generation,
                         })
                         .unwrap();
-                    break;
+                    return Driven::Stopped;
                 }
                 result => {
                     let result = result.map(|p| match p {
@@ -830,7 +1032,7 @@ impl Worker {
                             completion,
                         })
                         .unwrap();
-                    break;
+                    return Driven::Stopped;
                 }
             }
         }
@@ -1091,6 +1293,152 @@ mod tests {
         }
         pool.reset(0);
         assert_eq!(released(&mut pool, 0), None);
+        pool.shutdown().unwrap();
+    }
+    const RETURN2: &str = include_str!("../fixtures/return2.js");
+    const SPIN: &str = include_str!("../fixtures/spin.js");
+    /// Far below Node's bounds (RELEASE_GRACE_MS 3 s); the old owner answered
+    /// after the spinning slot's deadline.
+    const PROMPT: Duration = Duration::from_millis(500);
+    /// A job as `ipc_service` starts one.
+    fn policy(generation: u64, source: &str, deadline_ms: u64) -> Job {
+        Job {
+            generation,
+            source: source.into(),
+            mode: Mode::Policy,
+            deadline_ns: kvm::monotonic_ns() + deadline_ms * 1_000_000,
+            canary: false,
+            entry: None,
+        }
+    }
+    fn within(t: Instant, what: &str) {
+        let took = t.elapsed();
+        println!("{what}: {took:?}");
+        assert!(took < PROMPT, "{what} took {took:?}");
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn spinning_slot_does_not_hold_its_owners_other_slots() {
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        // Two slots on one owner thread, as slots k and k+W are with W owners.
+        let mut pool = Pool::new(Kvm::new(), snapshot, 2, 1);
+        pool.start(1, policy(2, RETURN2, 5_000));
+        assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
+        // Slot 0 spins inside KVM_RUN with a deadline far away.
+        pool.start(0, policy(2, SPIN, 30_000));
+        std::thread::sleep(Duration::from_millis(200));
+        // CANCEL for slot 1 (Node's release after DONE).
+        let t = Instant::now();
+        pool.cancel(1);
+        assert_eq!(released(&mut pool, 1), None);
+        within(t, "CANCEL of another slot");
+        // START for slot 1: its tool call arrives, and the REPLY completes it.
+        let t = Instant::now();
+        pool.start(1, policy(3, include_str!("../fixtures/one_tool.js"), 5_000));
+        let requests = loop {
+            match pool.recv() {
+                Event::Calls {
+                    slot: 1,
+                    generation: 3,
+                    requests,
+                    ..
+                } if !requests.is_empty() => break requests,
+                Event::Calls { slot: 1, .. } => {}
+                _ => panic!("expected slot 1's call"),
+            }
+        };
+        within(t, "START of another slot");
+        let t = Instant::now();
+        for r in requests {
+            pool.reply(1, 3, r); // an echo, as the fixture drivers answer
+        }
+        assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":42}");
+        within(t, "REPLY to another slot");
+        pool.cancel(1);
+        assert_eq!(released(&mut pool, 1), None);
+        // CANCEL of the spinning slot stops its vCPU and releases it, without
+        // a result (Node has its own).
+        let t = Instant::now();
+        pool.cancel(0);
+        assert_eq!(released(&mut pool, 0), None);
+        within(t, "CANCEL of the spinning slot");
+        // Both serve again from a clean slot.
+        for slot in [0, 1] {
+            pool.start(slot, policy(4, RETURN2, 5_000));
+            assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
+            pool.cancel(slot);
+            assert_eq!(released(&mut pool, slot), None);
+        }
+        pool.shutdown().unwrap();
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn spinning_slots_share_their_owner() {
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let mut pool = Pool::new(Kvm::new(), snapshot, 3, 1);
+        // Slot 0 computes for 300 ms of guest time, then slot 1 spins for
+        // good: turns (SLICE) keep the spinner from starving the computation.
+        let busy = "let t=Date.now();while(Date.now()-t<300){}return 7;";
+        let t = Instant::now();
+        pool.start(0, policy(2, busy, 5_000));
+        std::thread::sleep(Duration::from_millis(50));
+        pool.start(1, policy(2, SPIN, 1_500));
+        let Event::Done {
+            slot: 0,
+            completion: c,
+            ..
+        } = pool.recv()
+        else {
+            panic!("slot 0 completes first");
+        };
+        assert_eq!(c.result.unwrap(), "{\"ok\":7}");
+        assert!(t.elapsed() < Duration::from_secs(1), "{:?}", t.elapsed());
+        // A short run on the same owner completes while the spinner runs.
+        pool.cancel(0);
+        assert_eq!(released(&mut pool, 0), None);
+        let t = Instant::now();
+        pool.start(2, policy(2, RETURN2, 5_000));
+        assert_eq!(completion(&mut pool).result.unwrap(), "{\"ok\":2}");
+        within(t, "a run beside a spinner");
+        // The spinner still ends at its deadline (the watchdog's kick).
+        let c = completion(&mut pool);
+        let Err(RunError::Deadline { deadline_ns }) = c.result else {
+            panic!("spinner: {:?}", c.result);
+        };
+        let late = c.stopped_ns.saturating_sub(deadline_ns);
+        assert!(late < 200_000_000, "stopped {late} ns past its deadline");
+        pool.shutdown().unwrap();
+    }
+    #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn syndromeless_guest_access_fails_only_its_slot() {
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let kvm = Kvm::new();
+        let mut pool = Pool::new(kvm.clone(), snapshot, 2, 1);
+        // The other slot on the owner spins throughout.
+        pool.start(1, policy(2, SPIN, 30_000));
+        let mut generation = 2;
+        for (name, code, expected) in kvm::test_guest::syndromeless() {
+            // KVM_RUN returned ENOSYS here, and the shard aborted.
+            pool.start(0, job(generation, Some(code), 5_000));
+            let c = completion(&mut pool);
+            let e = c.result.unwrap_err();
+            assert!(expected.is(kvm.nisv, &e), "{name}: {e:?}");
+            assert_ne!(c.reset_done_ns, 0, "{name}: reset at once");
+            pool.cancel(0);
+            assert_eq!(released(&mut pool, 0), None, "{name}");
+            pool.start(0, job(generation + 1, None, 5_000));
+            assert_eq!(
+                completion(&mut pool).result.unwrap(),
+                "{\"ok\":2}",
+                "{name}"
+            );
+            pool.cancel(0);
+            assert_eq!(released(&mut pool, 0), None, "{name}");
+            generation += 2;
+        }
+        pool.cancel(1);
+        assert_eq!(released(&mut pool, 1), None);
         pool.shutdown().unwrap();
     }
 }
