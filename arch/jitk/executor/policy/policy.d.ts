@@ -25,6 +25,7 @@ export type Tool<A = any, R = any> = Effects & {
 };
 export type Tools = Record<string, Record<string, Tool>>;
 export type Limits = { calls?: number; outstanding?: number; denials?: number };
+export declare const DEFAULT_LIMITS: Readonly<Required<Limits>>;
 export type Run = {
   readonly id: string; tools: Tools; deadline: number; now: () => number;
   nextId: number; outstanding: number; calls: number; denials: number; dead: boolean;

@@ -46,7 +46,7 @@ try{
  check('per-call idempotency keys unique',new Set(keys).size===keys.length);
  r=await run("for(let i=0;i<17;i++){try{await web.fetch({q:1})}catch{}}return 2");check('denial budget kills run',Boolean(r.error));
  const limited=new MicroVMExecutor(pool,()=> 'allow',10000,{tools,issuer,limits:{calls:2}});
- r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run with its reason',/policy violation: call budget/.test(r.error??'')&&limited.callLimit===2&&new MicroVMExecutor(pool,()=> 'allow').callLimit===pool.backend.limits.js!.calls);
+ r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run with its reason',/policy violation: call budget/.test(r.error??'')&&limited.callLimit===2&&new MicroVMExecutor(pool,()=> 'allow').callLimit===Math.min(256,pool.backend.limits.js!.calls));
  const slow=new MicroVMExecutor(pool,async()=>{await new Promise(r=>setTimeout(r,50));return 'allow' as const;},10000,{tools,issuer,limits:{outstanding:2}});
  await pool.drain();r=await slow.execute("return await Promise.all([api.pure({q:'a'}),api.pure({q:'b'}),api.pure({q:'c'})])",providers);
  check('calls awaiting an async policy count as outstanding',r.error==='policy violation: outstanding'&&r.errorCode==='LIMIT');

@@ -35,10 +35,13 @@ export const digest = v => createHash('sha256').update(canon(v)).digest('hex');
 //   (a human may approve it after taint), approval: 'always'|undefined,
 //   timeoutMs, invoke(args, cred, {signal, idempotencyKey}), output: validator(result)->value,
 //   error?: redactor(thrown)->string (default: '<ns>.<fn> failed') }
+// Per-run policy budgets. The call budget sits below the protocol's own (LIMIT.calls): a run is
+// admitted far fewer host calls than the wire could carry.
+export const DEFAULT_LIMITS = Object.freeze({ calls: 256, outstanding: 64, denials: 16 });
 export function createRun({ tools, deadline, now = Date.now, limits = {} }) {
   return { id: randomUUID(), tools, deadline, now, nextId: 1, outstanding: 0, calls: 0, denials: 0,
     tainted: { privateRead: false, untrusted: false }, approvals: new Map(),
-    limits: { calls: 256, outstanding: 64, denials: 16, ...limits }, dead: false };
+    limits: { ...DEFAULT_LIMITS, ...limits }, dead: false };
 }
 
 // Decide a parsed guest call. Returns {kind:'allow'|'deny'|'approve', ...}; throws Violation to kill.

@@ -70,8 +70,10 @@ async function allGone(pids, label) {
   ok('taint rule (private read then write, no approver) -> POLICY', r.error?.code === 'POLICY' && /approval required/.test(r.error.message), r);
   r = await run("throw new Error('boom')");
   ok('guest throw -> GUEST_ERROR', r.error?.code === 'GUEST_ERROR' && /boom/.test(r.error.message), r);
-  r = await run("throw new Error('sandbox exited: policy denied: budget')");
+  r = await run("throw new Error('sandbox exited: policy denied: schema')");
   ok('guest text cannot pick its error code', r.error?.code === 'GUEST_ERROR', r);
+  r = await run("const e = new Error('x'); e.name = 'protocol EOF'; throw e");
+  ok('guest cannot pose as a host protocol error', r.error?.code === 'GUEST_ERROR', r);
   r = await run('return new Uint8Array(3000)');
   ok('binary result stays in wire form', r.result?.__codemode_binary_v1__ === 'Uint8Array' && r.result.data.length === 4000, r);
   r = await run("return await kv.set('b', new ArrayBuffer(16))");

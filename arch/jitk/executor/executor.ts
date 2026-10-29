@@ -19,6 +19,15 @@ export type Decision='allow'|'deny'|'requireApproval';
 export type ErrorCode='TIMEOUT'|'POLICY'|'LIMIT'|'SANDBOX'|'GUEST_ERROR';
 export type RunResult=ExecuteResult&{errorCode?:ErrorCode};
 const CAUSE:Record<string,ErrorCode>={guest:'GUEST_ERROR',limit:'LIMIT',deadline:'TIMEOUT',engine:'SANDBOX'};
+/** A 'guest' failure mixes the host decoder's protocol errors with errors the guest raised (its own,
+ *  its runtime's resource limits), and the guest picks its error's name and message. It is POLICY only
+ *  when it ends in a denial the host sent, SANDBOX only in the host decoder's exact form; resource
+ *  words make it LIMIT (as mcp/jitk.mjs classify), which a guest can claim for its own run only. */
+function guestCode(error:string,denials:Set<string>):ErrorCode {
+  if([...denials].some(d=>error.endsWith(d)))return 'POLICY';
+  if(/^Error: protocol [A-Z_]+$/.test(error))return 'SANDBOX';
+  return /limit|budget|saturated|overloaded|out of memory|stack overflow/i.test(error)?'LIMIT':'GUEST_ERROR';
+}
 /** A host denial of one call: the guest gets DENIED. */
 class Denied extends Error {}
 export type Policy=(call:Call,ctx:Context)=>Decision|Promise<Decision>;
@@ -32,8 +41,9 @@ export interface RunOptions extends ExecuteOptions {
 export class MicroVMExecutor implements Executor, IsolateDriver {
   constructor(readonly pool:SandboxPool, readonly policy:Policy,
     readonly timeout=30000, readonly security:PolicyConfig={}) {}
-  /** Tool calls per run as enforced: the engine's budget, lowered by a configured policy limit. */
-  get callLimit():number {return Math.min(this.pool.backend.limits.js?.calls??0,this.security.limits?.calls??Infinity);}
+  /** Tool calls per run as enforced (and advertised): the configured policy limit, else the policy
+   *  default (256), never above the engine's own budget. */
+  get callLimit():number {return Math.min(this.pool.backend.limits.js?.calls??0,this.security.limits?.calls??rules.DEFAULT_LIMITS.calls);}
   async execute(code:string, providersOrFns:ResolvedProvider[]|Record<string,(...a:unknown[])=>Promise<unknown>>, options:RunOptions={}):Promise<RunResult> {
     const mark=(event:TimingEvent)=>{try{options.onTiming?.(event,performance.now());}catch{}};mark('start');
     // Bound normalization, acquisition, tool round-trips and guest execution.
@@ -141,9 +151,8 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     }catch(e){
       if(expired())abort();
       const error=violation?'policy violation: '+violation:ctx.signal.aborted?'Execution aborted or timed out':String(e);
-      // A guest that rethrows a denial it was sent failed on policy; its own text alone proves nothing.
       const errorCode:ErrorCode|undefined=violation?(/budget|outstanding/.test(violation)?'LIMIT':violation==='deadline'?'TIMEOUT':'POLICY')
-        :ctx.signal.aborted?'TIMEOUT':failCause==='guest'&&[...denials].some(d=>error.endsWith(d))?'POLICY':failCause?CAUSE[failCause]:undefined;
+        :ctx.signal.aborted?'TIMEOUT':failCause==='guest'?guestCode(error,denials):failCause?CAUSE[failCause]:undefined;
       return {result:undefined,error,errorCode,logs};
     }
     finally {
