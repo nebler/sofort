@@ -12,7 +12,7 @@ use std::{
     fs::File,
     io,
     sync::{
-        Arc,
+        Arc, Barrier,
         mpsc::{self, Receiver, SyncSender},
     },
     thread::{self, JoinHandle},
@@ -119,6 +119,17 @@ impl Pool {
         notify: Option<Arc<dyn Fn() + Send + Sync>>,
         policy: ResetPolicy,
     ) -> Self {
+        Self::prepare(kvm, snapshot, slots, owners).start(notify, policy)
+    }
+    /// The part of a pool that opens files or creates a process: the owners'
+    /// eventfds and entropy, and the watchdog process. No thread exists yet,
+    /// so the caller can close its file access (confine) before `start`.
+    pub fn prepare(
+        kvm: Arc<Kvm>,
+        snapshot: Arc<Snapshot>,
+        slots: usize,
+        owners: usize,
+    ) -> Prepared {
         assert!(
             owners > 0
                 && owners <= thread::available_parallelism().unwrap().get()
@@ -127,11 +138,47 @@ impl Pool {
         );
         let wakes: Vec<_> = (0..owners).map(|_| Wake::new()).collect();
         let watchdog = Watchdog::start(slots, &wakes, 100);
+        let urandom = File::open("/dev/urandom").unwrap();
+        let entropy = (0..owners).map(|_| urandom.try_clone().unwrap()).collect();
+        Prepared {
+            kvm,
+            snapshot,
+            slots,
+            wakes,
+            entropy,
+            watchdog,
+        }
+    }
+}
+/// A pool before its threads exist (`Pool::prepare`).
+pub struct Prepared {
+    kvm: Arc<Kvm>,
+    snapshot: Arc<Snapshot>,
+    slots: usize,
+    wakes: Vec<Wake>,
+    entropy: Vec<File>,
+    watchdog: Watchdog,
+}
+impl Prepared {
+    /// The clock and owner threads; no file is opened from here on. Returns
+    /// once every thread runs, past its start-up syscalls, so the caller can
+    /// filter syscalls next (confine/mod.rs).
+    pub fn start(self, notify: Option<Arc<dyn Fn() + Send + Sync>>, policy: ResetPolicy) -> Pool {
+        let Prepared {
+            kvm,
+            snapshot,
+            slots,
+            wakes,
+            entropy,
+            watchdog,
+        } = self;
+        let owners = wakes.len();
         let clock = Clock::start(slots);
+        let started = Arc::new(Barrier::new(owners + 1));
         let (tx, events) = mpsc::sync_channel(slots + owners);
         let mut mailboxes = Vec::new();
         let mut joins = Vec::new();
-        for (owner, wake) in wakes.into_iter().enumerate() {
+        for ((owner, wake), entropy) in wakes.into_iter().enumerate().zip(entropy) {
             // Per slot and generation: START, a reply per open call, CANCEL.
             let capacity = if notify.is_some() {
                 slots.saturating_sub(owner).div_ceil(owners) * (ring::MAX_OUTSTANDING + 2) + 1
@@ -149,10 +196,12 @@ impl Pool {
                 .map(|id| clock.cell(id))
                 .collect::<Vec<_>>();
             let (kvm, snapshot, tx, w) = (kvm.clone(), snapshot.clone(), tx.clone(), wake.clone());
+            let started = started.clone();
             joins.push(
                 thread::Builder::new()
                     .name(format!("jitk-owner-{owner}"))
                     .spawn(move || {
+                        started.wait();
                         Worker {
                             owner,
                             owners,
@@ -165,13 +214,14 @@ impl Pool {
                             events: Events { tx, notify },
                             wake: w,
                         }
-                        .run()
+                        .run(entropy)
                     })
                     .unwrap(),
             );
             mailboxes.push(Mailbox { tx: cmd, wake });
         }
-        Self {
+        started.wait();
+        Pool {
             owners: mailboxes,
             joins,
             events,
@@ -179,6 +229,15 @@ impl Pool {
             slots,
             _clock: clock,
         }
+    }
+}
+impl Pool {
+    /// Readable once the watchdog process has exited (`watchdog_exited`).
+    pub fn watchdog_exit_fd(&self) -> std::os::fd::BorrowedFd<'_> {
+        self.watchdog.exit_fd()
+    }
+    pub fn watchdog_exited(&self) -> ! {
+        self.watchdog.exited()
     }
     pub fn shutdown(&mut self) -> io::Result<()> {
         if self.joins.is_empty() {
@@ -251,7 +310,6 @@ impl Pool {
             .send(Command::Reply(slot, generation, request));
     }
     pub fn try_recv(&mut self) -> Option<Event> {
-        self.watchdog.check();
         self.events.try_recv().ok()
     }
     pub fn cancel(&self, slot: usize) {
@@ -601,9 +659,9 @@ fn trim_idle(slots: &mut [Option<Managed>]) -> Option<Instant> {
     next
 }
 impl Worker {
-    fn run(self) -> io::Result<()> {
+    /// `entropy` is /dev/urandom, opened by `Pool::prepare`.
+    fn run(self, mut entropy: File) -> io::Result<()> {
         let mut slots: Vec<Option<Managed>> = (0..self.leases.len()).map(|_| None).collect();
-        let mut entropy = File::open("/dev/urandom").unwrap();
         let mut trim_at = None;
         loop {
             let timer = slots.iter().flatten().filter_map(|s| s.wake_at).min();

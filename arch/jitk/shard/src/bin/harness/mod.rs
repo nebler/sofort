@@ -1,4 +1,5 @@
 //! Offline fixtures and CLI dispatch, compiled only into the real binary.
+mod confine;
 mod driver;
 mod native_hold;
 mod prepare;
@@ -58,6 +59,10 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             std::process::exit(1);
         }
         return Ok(());
+    }
+    if a.get(1).map(String::as_str) == Some("confine") {
+        let allow_degraded = a.get(3).map(String::as_str) == Some("--allow-degraded");
+        return confine::run(&a[2], allow_degraded);
     }
     if a.get(1).map(String::as_str) == Some("ipc-probe") {
         if let Err(e) = probe::run(&a[2]) {

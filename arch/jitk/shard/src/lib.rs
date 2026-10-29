@@ -13,6 +13,9 @@ pub mod arena;
 pub mod calls;
 #[cfg(unix)]
 pub mod clock;
+/// Linux shard confinement (namespaces, Landlock, seccomp); the seccomp
+/// compiler and policies are portable.
+pub mod confine;
 pub mod constants;
 pub mod entropy;
 #[cfg(unix)]

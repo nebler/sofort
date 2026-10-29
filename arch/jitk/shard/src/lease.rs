@@ -1,11 +1,12 @@
 //! A separate process owns deadline enforcement. Shared entries are generation-fenced;
 //! only a stopped/reset owner acknowledges expiry. No guest mapping includes this board.
 use crate::clock::monotonic_ns;
+use crate::confine::{Confinement, Signals, policy};
 use std::{
     cell::Cell,
     fs::File,
     io,
-    os::fd::{AsRawFd, FromRawFd, RawFd},
+    os::fd::{AsFd, AsRawFd, BorrowedFd, FromRawFd, OwnedFd, RawFd},
     process::{Child, Command, Stdio},
     ptr,
     sync::{
@@ -249,6 +250,9 @@ impl Lease {
 pub(crate) struct Watchdog {
     board: Arc<Board>,
     child: Child,
+    /// The child's pidfd: readable once it exits, so the reactor polls it
+    /// with its own descriptors instead of probing with wait4.
+    exit: OwnedFd,
 }
 impl Watchdog {
     pub fn start(slots: usize, wakes: &[Wake], grace_ms: u64) -> Self {
@@ -302,7 +306,20 @@ impl Watchdog {
         for w in wakes {
             inherit(w.0.as_raw_fd(), false);
         }
-        Self { board, child }
+        // An unreaped child's pid cannot be reused, so this names it.
+        // SAFETY: pidfd_open takes scalar arguments and returns a fresh fd.
+        let exit = owned(unsafe { syscall(libc::SYS_pidfd_open, child.id(), 0) } as i32).into();
+        Self { board, child, exit }
+    }
+    /// Readable once the watchdog process has exited.
+    pub fn exit_fd(&self) -> BorrowedFd<'_> {
+        self.exit.as_fd()
+    }
+    /// The watchdog is gone, so no deadline would be enforced: fail closed.
+    /// (Confined, the shard can neither reap nor wait; it only exits.)
+    pub fn exited(&self) -> ! {
+        eprintln!("watchdog exited unexpectedly");
+        std::process::exit(70);
     }
     pub fn slot(&self, slot: usize) -> Lease {
         Lease {
@@ -333,6 +350,8 @@ impl Watchdog {
         self.child.wait()?;
         Ok(())
     }
+    /// Fail closed if the watchdog has exited (unconfined callers: the
+    /// offline harness's blocking `Pool::recv`).
     pub fn check(&mut self) {
         if let Some(status) = self.child.try_wait().unwrap() {
             eprintln!("watchdog exited unexpectedly: {status}");
@@ -461,6 +480,18 @@ pub fn run(a: &[String]) {
     let board = Board::map(unsafe { File::from_raw_fd(fd) }, len, changes);
     // SAFETY: pidfd_open takes scalar arguments and returns a fresh owned fd.
     let pidfd = owned(unsafe { syscall(libc::SYS_pidfd_open, pid, 0) } as i32); // pidfd_open
+    // Everything is open: from here the watchdog only polls, kicks and kills
+    // (confine::policy::watchdog). It shares the shard's namespaces and
+    // no_new_privs, and is outside the shard's Landlock domain.
+    let mut confinement = Confinement::new();
+    let confined = confinement.close_files(Signals::Unscoped).and_then(|()| {
+        confinement.filter_syscalls(&policy::watchdog(pid as u32, pidfd.as_raw_fd()))
+    });
+    if let Err(e) = confined {
+        eprintln!("watchdog: {e}");
+        std::process::exit(70);
+    }
+    confinement.report().warn("watchdog");
     let mut fds = [
         PollFd {
             fd: pidfd.as_raw_fd(),
@@ -565,6 +596,7 @@ mod tests {
         drop(Watchdog {
             board: lease.board,
             child,
+            exit: std::fs::File::open("/dev/null").unwrap().into(),
         });
     }
     #[test]

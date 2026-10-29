@@ -79,6 +79,9 @@ impl Kvm {
             .unwrap();
         assert_eq!(call(&fd, KVM_GET_API_VERSION, 0), 12);
         let run_size = call(&fd, KVM_GET_VCPU_MMAP_SIZE, 0) as usize;
+        // Every file the slots use is open once this returns: the reset's
+        // pagemap too (a confined shard cannot open it later).
+        super::reset::pagemap();
         Arc::new(Self { fd, run_size })
     }
 }

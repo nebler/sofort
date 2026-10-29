@@ -11,7 +11,7 @@
 //! during decode or reset: leaving the window waits out a store in progress.
 use std::{
     sync::{
-        Arc, OnceLock,
+        Arc, Barrier, OnceLock,
         atomic::{AtomicBool, AtomicPtr, AtomicU8, AtomicU64, AtomicUsize, Ordering::*},
     },
     thread::{self, JoinHandle, Thread},
@@ -128,10 +128,19 @@ impl Clock {
             thread: OnceLock::new(),
         });
         let s = shared.clone();
+        // Returns once the thread runs: its start-up syscalls (name, signal
+        // stack) are behind it, so a seccomp filter installed next need not
+        // allow them (confine/mod.rs).
+        let started = Arc::new(Barrier::new(2));
+        let thread_started = started.clone();
         let join = thread::Builder::new()
             .name("jitk-clock".into())
-            .spawn(move || s.run())
+            .spawn(move || {
+                thread_started.wait();
+                s.run()
+            })
             .unwrap();
+        started.wait();
         shared.thread.set(join.thread().clone()).unwrap();
         Self {
             shared,
