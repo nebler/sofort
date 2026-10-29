@@ -6,6 +6,8 @@
 //                              Hypervisor entitlement and its hash checked
 //   JITK_ZIG                   ziglang.org tarball, sha256-checked (the static
 //                              aarch64 Linux cross-linker; ../tools/zig-cc.sh)
+//   JITK_BIOME                 the Biome release binary, sha256-checked (the TS/JS
+//                              formatter and linter; ../biome.json)
 //   HYPERLIGHT_JS_SRC          hyperlight-js fetched by full commit
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
 //   JITK_SHARD_BINARY          shard `real` (Linux) or the HVF engine `hvf`
@@ -33,7 +35,7 @@ import { shaFile } from '../tslib/hash.ts';
 import { readJSON, dumpJSON } from '../tslib/json.ts';
 import { environment } from '../tslib/process.ts';
 import { run } from '../tslib/subprocess.ts';
-import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardBinaryName, shardDir, shardInputs, target, withLock, zigDir } from '../tslib/deps.ts';
+import { ARTIFACTS, DEPS_TARGET, JITK_ROOT, applicable, biomeDir, cacheRoot, cached, cachePath, completeMarker, hostPlatform, hyperlightDir, hyperlightInputs, hyperlightSourceDir, nodeDir, pins, requireArtifact, shardBinaryName, shardDir, shardInputs, target, withLock, zigDir } from '../tslib/deps.ts';
 import { rustToolchain } from '../tslib/rust.ts';
 
 const mac = platform() === 'darwin';
@@ -170,6 +172,46 @@ async function buildZig(env: Record<string, string>): Promise<void> {
       dumpJSON(join(stage, 'jitk-manifest.json'), { artifact: 'zig', version: p.version, platform: plat, url, tarball_sha256: got, zig_sha256: shaFile(binary) });
     });
     log('zig: built ' + dir);
+  });
+}
+
+// --- Biome ------------------------------------------------------------------
+
+function biomeValid(): boolean {
+  if (!existsSync(completeMarker('JITK_BIOME'))) {
+    return false;
+  }
+  const manifest = readJSON<Record<string, string>>(completeMarker('JITK_BIOME'));
+  return existsSync(cachePath('JITK_BIOME')) && manifest.version === pins().biome.version && shaFile(cachePath('JITK_BIOME')) === manifest.binary_sha256;
+}
+
+async function buildBiome(env: Record<string, string>): Promise<void> {
+  if (biomeValid()) {
+    log('biome: cached ' + biomeDir());
+    return;
+  }
+  const p = pins().biome;
+  const plat = hostPlatform();
+  const expected = p.binary_sha256[plat];
+  check(Boolean(expected), 'deps.json pins no Biome binary for ' + plat + '; set JITK_BIOME to a biome ' + p.version);
+  await withLock('biome-' + p.version + '-' + plat, async () => {
+    if (biomeValid()) {
+      return;
+    }
+    const dir = biomeDir();
+    await staged(dir, async stage => {
+      const url = p.url.split('{version}').join(p.version).split('{platform}').join(plat);
+      const binary = join(stage, 'biome');
+      log('biome: fetching ' + url);
+      await run(['curl', '-fsSL', '--retry', '3', '-o', binary, url], { env, timeout: 600 });
+      const got = shaFile(binary);
+      check(got === expected, 'biome: ' + url + ' sha256 ' + got + ' != pinned ' + expected);
+      chmodSync(binary, 0o755);
+      const version = await text([binary, '--version'], env);
+      check(version.endsWith(' ' + p.version), 'biome: ' + binary + ' reports ' + version + ' != pinned ' + p.version);
+      dumpJSON(join(stage, 'jitk-manifest.json'), { artifact: 'biome', version: p.version, platform: plat, url, binary_sha256: got });
+    });
+    log('biome: built ' + dir);
   });
 }
 
@@ -358,6 +400,7 @@ async function verify(env: Record<string, string>): Promise<Record<string, strin
     JITK_NODE: async () => (node ??= nodeValid()),
     JITK_NPM_CLI: async () => (node ??= nodeValid()),
     JITK_ZIG: async () => zigValid(),
+    JITK_BIOME: async () => biomeValid(),
     HYPERLIGHT_JS_SRC: async () => sourceValid(env).catch(() => false),
     HYPERLIGHT_WORKER: async () => (hyperlight ??= hyperlightValid()),
     HYPERLIGHT_SNAPSHOT: async () => (hyperlight ??= hyperlightValid()),
@@ -394,6 +437,9 @@ async function build(): Promise<void> {
   }
   if (!explicit('JITK_ZIG')) {
     await buildZig(env);
+  }
+  if (!explicit('JITK_BIOME')) {
+    await buildBiome(env);
   }
   if (applicable('JITK_SHARD_BINARY') && !explicit('JITK_SHARD_BINARY')) {
     await buildShard(env);

@@ -27,6 +27,17 @@
     },
     "tarball_sha256_source": "arm64: sha256 of the downloaded tarballs (2026-10-28), equal to ziglang.org/download/index.json; x64: index.json only, not downloaded"
   },
+  "biome": {
+    "version": "2.6.4",
+    "url": "https://github.com/biomejs/biome/releases/download/%40biomejs/biome%40{version}/biome-{platform}",
+    "binary_sha256": {
+      "darwin-arm64": "1d1edbda5ee33475144c56ba452dbda28e1b061088fb875102a2df6cda84c9b4",
+      "linux-arm64": "11a2e6770b3d7c8ce8cbec4652a516584b179dc30febecce0ca852d87074bee8",
+      "darwin-x64": "eea768e85adf17a1680b0333c4305dd42df3f3bf73e1e1578eb04d4a365cb899",
+      "linux-x64": "eb9afd5af3c04bd242be6db39fb812a025b42469af8c6a621535036dbd9b0c63"
+    },
+    "binary_sha256_source": "the release asset digests GitHub publishes for @biomejs/biome@2.6.4"
+  },
   "hyperlight_js": {
     "repository": "https://github.com/hyperlight-dev/hyperlight-js.git",
     "commit": "8d208af8ac3ca53f2069c9ef0ca6a45d89e032d7"

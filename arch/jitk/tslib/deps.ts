@@ -24,6 +24,7 @@ export const SNAPSHOT_TARGET = 'make -C arch/jitk/shard snapshot';
 export interface Pins {
   node: { version: string; url: string; tarball_sha256: Record<string, string>; darwin_signed_name: string; darwin_signed_sha256: string };
   zig: { version: string; url: string; zig_platform: Record<string, string>; tarball_sha256: Record<string, string> };
+  biome: { version: string; url: string; binary_sha256: Record<string, string> };
   hyperlight_js: { repository: string; commit: string };
   hyperlight_toolchain: string;
   hyperlight_targets: string[];
@@ -167,6 +168,12 @@ export function zigPath(): string {
   return process.env.ZIG || requireArtifact('JITK_ZIG');
 }
 
+// The Biome release binary: the TS/JS formatter and linter (biome.json,
+// `make -C arch/jitk fmt` and `lint`).
+export function biomeDir(): string {
+  return join(cacheRoot(), 'biome', pins().biome.version + '-' + hostPlatform());
+}
+
 export function hyperlightSourceDir(): string {
   return join(cacheRoot(), 'src', 'hyperlight-js-' + pins().hyperlight_js.commit);
 }
@@ -181,7 +188,7 @@ export function hyperlightDir(): string {
   return join(cacheRoot(), 'hyperlight', hostPlatform() + '-' + hyperlightInputs().slice(0, 16));
 }
 
-export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_ZIG', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
+export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_ZIG', 'JITK_BIOME', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
 
 // Hyperlight's HVF baseline is a macOS artifact. The shard binary and its
 // prepared snapshot exist on both hosts (KVM `real` on Linux, the HVF engine
@@ -214,6 +221,9 @@ export function cachePath(name: string): string {
   if (name === 'JITK_ZIG') {
     return join(zigDir(), 'zig');
   }
+  if (name === 'JITK_BIOME') {
+    return join(biomeDir(), 'biome');
+  }
   if (name === 'HYPERLIGHT_JS_SRC') {
     return hyperlightSourceDir();
   }
@@ -239,6 +249,9 @@ export function completeMarker(name: string): string {
   }
   if (name === 'JITK_ZIG') {
     return join(zigDir(), 'jitk-manifest.json');
+  }
+  if (name === 'JITK_BIOME') {
+    return join(biomeDir(), 'jitk-manifest.json');
   }
   if (name === 'HYPERLIGHT_JS_SRC') {
     return join(hyperlightSourceDir(), '.git/jitk-manifest.json');
