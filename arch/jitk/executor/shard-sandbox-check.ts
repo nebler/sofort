@@ -3,7 +3,7 @@
 // SharedChannel.poll turns into die(), i.e. SIGKILL of every slot on the shard.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {DEADLINE_GRACE_MS,ShardSession,type ShardHost} from './shard-backend.js';
+import {DEADLINE_GRACE_MS,RELEASE_GRACE_MS,ShardSession,type ShardHost} from './shard-backend.js';
 import {IPC,type Message} from './shard-ipc.js';
 
 // Resolved from the bundle in executor/build/.
@@ -161,6 +161,24 @@ export async function sandboxChecks():Promise<number> {
     assert.match(String(await run(()=>{})),/shard missed a deadline: slot 0 generation 1/,'a silent engine is killed');
     assert.equal(await run((shard,s)=>{shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.error,0,Buffer.from('deadline_exceeded'));}),undefined,'ERROR in time');
     assert.equal(await run((shard,s)=>{s.release();shard.deliver(s,IPC.released);}),undefined,'RELEASED in time');
+    checks++;
+  }
+  // The reset is bounded too: after a completed run (DONE disarms the run
+  // deadline) or a DONE drained mid-reset, a CANCEL without RELEASED kills.
+  {
+    const reset=async(end:(shard:FakeShard,s:ShardSession)=>void)=>{
+      const shard=new FakeShard(),s=new ShardSession(shard,0,1n);await s.armDeadline(Date.now()+60_000);
+      await s.start({kind:'js',source:'async()=>1',tools:{},prelude:''});end(shard,s);
+      await new Promise(resolve=>setTimeout(resolve,RELEASE_GRACE_MS+100));return shard.fault;
+    };
+    const done=(shard:FakeShard,s:ShardSession)=>{shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.done,0,Buffer.from('{"ok":1}'));};
+    const [afterDone,midReset,acked]=await Promise.all([
+      reset((shard,s)=>{done(shard,s);s.release();}),
+      reset((shard,s)=>{s.release();done(shard,s);}),
+      reset((shard,s)=>{done(shard,s);s.release();shard.deliver(s,IPC.released);})]);
+    assert.match(String(afterDone),/acknowledged no reset/,'a completed run whose reset never ends is killed');
+    assert.match(String(midReset),/acknowledged no reset/,'DONE drained mid-reset keeps the reset bound');
+    assert.equal(acked,undefined,'RELEASED after DONE in time');
     checks++;
   }
   // The run's namespace schema is the v1 one: a reserved name fails this generation.

@@ -12,6 +12,10 @@ import {ABI_VERSION,IPC,PipeChannel,SharedChannel,checkReady,monotonicNs,type Ch
  *  before Node kills it: well past the engines' own escalation (KVM watchdog,
  *  HVF zygote: 100 ms after the deadline) plus a reset. */
 export const DEADLINE_GRACE_MS=1000;
+/** CANCEL to RELEASED/QUARANTINED: the engine kicks the vCPU and resets the
+ *  slot within its own 1 s reset grace (hvf zygote RESET_GRACE_NS) or
+ *  quarantines it; silence past this bound means the engine itself is stuck. */
+export const RELEASE_GRACE_MS=3000;
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are out of service now.
  *  On Linux a lost slot never returns; the HVF engine re-forks it and reports RESTORED. */
@@ -228,13 +232,15 @@ export class ShardSession implements Session {
   /** The supervisor's end of the run deadline (shard/README.md, "Deadlines"):
    *  the engine stops a run at its deadline and reports DONE/ERROR (or, after
    *  CANCEL, RELEASED); if none arrives DEADLINE_GRACE_MS later, the engine
-   *  is past enforcing its own deadlines and Node kills it. The check waits a
+   *  is past enforcing its own deadlines and Node kills it. release() re-arms
+   *  it for the reset: RELEASED must follow CANCEL within RELEASE_GRACE_MS,
+   *  also after a completed run. The check waits a
    *  setImmediate so that I/O already received is processed first. */
-  private arm(remainingMs:number) {
+  private arm(ms:number,missed:string) {
     this.overdue=setTimeout(()=>setImmediate(()=>{
       if(this.overdue===undefined)return;
-      this.backend.fatal(Error(`shard missed a deadline: slot ${this.slot} generation ${this.generation} reported no end ${DEADLINE_GRACE_MS} ms after it`));
-    }),remainingMs+DEADLINE_GRACE_MS);
+      this.backend.fatal(Error(`shard missed a deadline: slot ${this.slot} generation ${this.generation} ${missed}`));
+    }),ms);
     this.overdue.unref();
   }
   private disarm() {clearTimeout(this.overdue);this.overdue=undefined;}
@@ -289,7 +295,8 @@ export class ShardSession implements Session {
     else if(m.kind===IPC.error){if(m.id||m.bytes.length>IPC.errorBytes)throw Error('shard IPC error bound');}
     else if(m.kind===IPC.stats){if(m.id||m.bytes.length<IPC.statsFixedBytes||m.bytes.length>IPC.statsFixedBytes+8*rounds||m.bytes.readBigUInt64LE(24)>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
     else if(m.kind!==IPC.released&&m.kind!==IPC.quarantined)throw Error('shard IPC direction/kind');
-    if(m.kind===IPC.done||m.kind===IPC.error||m.kind===IPC.released||m.kind===IPC.quarantined)this.disarm();
+    // DONE/ERROR drained during a reset leave the reset's own bound armed.
+    if((m.kind===IPC.done||m.kind===IPC.error)&&run.phase!=='releasing'||m.kind===IPC.released||m.kind===IPC.quarantined)this.disarm();
     // RELEASED, or QUARANTINED with its reason, ends the generation Node cancelled.
     if(m.kind===IPC.released||m.kind===IPC.quarantined){
       const reason=m.kind===IPC.quarantined?m.bytes.toString('latin1'):undefined;
@@ -346,7 +353,7 @@ export class ShardSession implements Session {
     this.run.admittedDeadlineNs=this.backend.now()+BigInt(Math.floor(remaining*1e6));
     payload.writeBigUInt64LE(this.run.admittedDeadlineNs,0);
     payload.writeUInt32LE(IPC.calls,8);payload.writeUInt32LE(IPC.callBytes,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(ARENA_CLASSES['glue-2m'].admissionBytes,20);source.copy(payload,IPC.startHeaderBytes);
-    this.run.phase='running';this.arm(remaining);await this.write(IPC.start,0,payload);
+    this.run.phase='running';this.arm(remaining+DEADLINE_GRACE_MS,`reported no end ${DEADLINE_GRACE_MS} ms after it`);await this.write(IPC.start,0,payload);
   }
   async reply(id:number,r:Reply):Promise<void> {
     if(this.failure)throw Error(this.failure.message);
@@ -368,6 +375,7 @@ export class ShardSession implements Session {
   release() {
     if(this.run.phase==='released'||this.run.phase==='releasing')return;
     this.run.phase='releasing';
+    this.disarm();this.arm(RELEASE_GRACE_MS,`acknowledged no reset ${RELEASE_GRACE_MS} ms after CANCEL`);
     this.end({kind:'fail',cause:'engine',message:'sandbox exited'});this.rejectStopped(Error(this.failure!.message));
     void this.backend.send(IPC.cancel,this).catch(e=>this.backend.fatal(e));
   }
