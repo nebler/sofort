@@ -22,6 +22,14 @@ use std::{
 pub const QUEUE_MAX: u32 = 256;
 /// Host input moved into one receive buffer at most.
 const INPUT_CHUNK: usize = 1 << 16;
+/// Bytes one transmit chain may carry, as much as one receive buffer takes
+/// (the kernel sends at most 1 KiB per chain). More is a guest error.
+pub const TX_CHAIN_BYTES: usize = INPUT_CHUNK;
+/// Bytes one transmit QueueNotify may write to the port (16 full chains).
+/// More is a guest error, so one notify is bounded host work: at most
+/// QUEUE_MAX chains are available (`pending`), each of at most QUEUE_MAX
+/// descriptors, and this many bytes.
+pub const TX_NOTIFY_BYTES: usize = 1 << 20;
 /// Control messages the guest has not given a receive buffer for. A driver
 /// answers each DEVICE_ADD before it can send the next DEVICE_READY, so more
 /// is a guest that never posts control receive buffers.
@@ -139,8 +147,21 @@ impl<M: AsMut<[u8]>, P: Port> Console<M, P> {
         let q = self.queues[qi];
         Ok(u16::from_le_bytes(self.load(q.avail, 2)?))
     }
+    /// Whether queue `qi` has an available chain. A guest can make at most
+    /// `num` chains available at once; an index further ahead is an error.
     fn pending(&mut self, qi: usize) -> io::Result<bool> {
-        Ok(self.queues[qi].live() && self.avail_idx(qi)? != self.queues[qi].last_avail)
+        let q = self.queues[qi];
+        if !q.live() {
+            return Ok(false);
+        }
+        let ahead = self.avail_idx(qi)?.wrapping_sub(q.last_avail);
+        if u32::from(ahead) > q.num {
+            return Err(err(format!(
+                "queue {qi}: {ahead} chains available, more than its {} entries",
+                q.num
+            )));
+        }
+        Ok(ahead != 0)
     }
     /// The next available chain of a pending queue, without consuming it:
     /// its head and segments. At most `num` descriptors, each in the table.
@@ -200,9 +221,24 @@ impl<M: AsMut<[u8]>, P: Port> Console<M, P> {
         match qi {
             RX => self.pump(Some(Duration::ZERO)).map(|_| ()),
             TX => {
+                let mut written = 0;
                 while self.pending(TX)? {
                     let (head, segs) = self.pop(TX)?;
-                    for s in segs.into_iter().filter(|s| !s.writable) {
+                    // Bounded before any byte of the chain is written.
+                    let out = segs.iter().filter(|s| !s.writable);
+                    let bytes = out.clone().map(|s| u64::from(s.len)).sum::<u64>();
+                    if bytes > TX_CHAIN_BYTES as u64 {
+                        return Err(err(format!(
+                            "transmit chain of {bytes} bytes, more than {TX_CHAIN_BYTES}"
+                        )));
+                    }
+                    written += bytes as usize;
+                    if written > TX_NOTIFY_BYTES {
+                        return Err(err(format!(
+                            "transmit notify of more than {TX_NOTIFY_BYTES} bytes"
+                        )));
+                    }
+                    for s in out {
                         let bytes = range(self.ram.as_mut(), self.base, s.addr, 0, s.len as usize)?;
                         self.port.write_all(bytes)?;
                     }
@@ -635,12 +671,78 @@ mod tests {
     }
 
     #[test]
+    fn available_index_beyond_the_queue_is_an_error() {
+        // As many chains as the queue has entries is the most a driver can
+        // offer; they are all written.
+        let mut d = Driver::new();
+        let gpa = buffer_gpa(TX, 0);
+        d.poke(gpa, b"x");
+        d.desc(TX, 0, gpa, 1, 0, 0);
+        for _ in 0..N {
+            d.offer(TX, 0);
+        }
+        d.mmio(0x50, TX as u32);
+        assert_eq!(d.dev.port().output, [b'x'; N as usize]);
+        assert_eq!(d.used(TX).0, N as u16);
+        // One more is an error before any chain is walked, also across the
+        // index's wrap.
+        for last in [0u16, u16::MAX - 2] {
+            let mut d = Driver::new();
+            d.dev.queues[TX].last_avail = last;
+            d.desc(TX, 0, gpa, 1, 0, 0);
+            d.poke(
+                queue_gpa(TX) + 0x102,
+                &last.wrapping_add(N as u16 + 1).to_le_bytes(),
+            );
+            fails(&mut d, TX, "9 chains available, more than its 8 entries");
+            assert!(d.dev.port().output.is_empty());
+        }
+        // The receive and control queues are checked alike.
+        let mut d = Driver::new();
+        d.dev.port().input.push_back(b"x".to_vec());
+        d.poke(queue_gpa(RX) + 0x102, &(N as u16 + 1).to_le_bytes());
+        fails(&mut d, RX, "more than its 8 entries");
+    }
+
+    #[test]
+    fn transmit_bytes_are_bounded_per_chain_and_per_notify() {
+        // A chain of two descriptors one byte over TX_CHAIN_BYTES together
+        // (the review's repro: 256 descriptors of all of RAM): nothing of
+        // it is written.
+        let half = (TX_CHAIN_BYTES / 2 + 1) as u32;
+        let mut d = Driver::new();
+        d.desc(TX, 0, BASE, half, VIRTQ_DESC_F_NEXT, 1);
+        d.desc(TX, 1, BASE, half, 0, 0);
+        d.offer(TX, 0);
+        fails(&mut d, TX, "transmit chain of 65538 bytes, more than 65536");
+        assert!(d.dev.port().output.is_empty());
+        // Device-writable segments are not written, so they do not count.
+        let mut d = Driver::new();
+        d.desc(TX, 0, BASE, half, VIRTQ_DESC_F_NEXT | VIRTQ_DESC_F_WRITE, 1);
+        d.desc(TX, 1, BASE, half, 0, 0);
+        d.offer(TX, 0);
+        d.mmio(0x50, TX as u32);
+        assert_eq!(d.dev.port().output.len(), half as usize);
+        // Full chains on a 32-entry queue: 16 are written, the 17th is an
+        // error.
+        let mut d = Driver::new();
+        d.mmio(0x30, TX as u32);
+        d.mmio(0x38, 32);
+        d.desc(TX, 0, BASE, TX_CHAIN_BYTES as u32, 0, 0);
+        // The available ring's entries are zero: every chain is head 0.
+        d.poke(queue_gpa(TX) + 0x102, &17u16.to_le_bytes());
+        fails(&mut d, TX, "transmit notify of more than 1048576 bytes");
+        assert_eq!(d.dev.port().output.len(), TX_NOTIFY_BYTES);
+        assert_eq!(TX_NOTIFY_BYTES / TX_CHAIN_BYTES, 16);
+    }
+
+    #[test]
     fn addresses_outside_ram_are_errors() {
         let end = BASE + RAM_BYTES as u64;
         for (addr, len) in [
             (BASE - 1, 2),
             (end - 1, 2),
-            (BASE, u32::MAX),
+            (BASE + 1, RAM_BYTES as u32),
             (u64::MAX, 1),
             (0, 1),
         ] {

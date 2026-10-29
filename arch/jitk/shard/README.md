@@ -558,7 +558,9 @@ stderr. The device (`src/virtio_console.rs`, platform-neutral, unit-tested and
 fuzzed) is the subset of a virtio-mmio console with MULTIPORT that
 `kernel/src/console.rs` drives (queues serviced synchronously at the guest's
 QueueNotify store; a malformed queue is an error that stops the VM, never an
-access outside RAM); the FDT names a GIC the kernel never touches, because a
+access outside RAM or unbounded host work: at most the queue size of chains
+available, 64 KiB per transmit chain and 1 MiB per transmit notify, where
+the kernel sends 1 KiB chains one at a time); the FDT names a GIC the kernel never touches, because a
 positive `jitk.tick_us` selects its CNTV fallback, so WFI is the only wait:
 the runner sleeps until CNTV_CVAL or stdin input (a receive buffer used since
 the last WFI completes it at once, as an interrupt would). Guest CNTVCT is
