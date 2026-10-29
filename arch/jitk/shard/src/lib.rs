@@ -18,6 +18,9 @@ pub mod clock;
 pub mod confine;
 pub mod constants;
 pub mod entropy;
+/// Fuzz harnesses (`fuzz/`; feature `fuzzing`), replayed by `cargo test`.
+#[cfg(all(unix, any(test, feature = "fuzzing")))]
+pub mod fuzz;
 #[cfg(unix)]
 pub mod hv;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
@@ -42,6 +45,7 @@ pub mod slot;
 #[cfg(unix)]
 pub mod snapshot;
 pub mod streams;
+pub mod virtio_console;
 /// The process backends' shared deadline watchdog (`hvf process-watchdog`,
 /// `real process-watchdog`; `real watchdog` is the shard's lease watchdog,
 /// lease.rs); executor/backend.ts.

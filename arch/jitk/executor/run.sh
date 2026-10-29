@@ -21,6 +21,7 @@ case "${1:-test}" in
   "$TASK_NODE" build/resolve-check.js
   "$TASK_NODE" build/transport-check.js
   "$TASK_NODE" build/shard-sandbox-check.js
+  "$TASK_NODE" build/ipc-decoder-check.js
   "$TASK_NODE" build/native-check.js
   "$TASK_NODE" build/watchdog-check.js
   "$TASK_NODE" build/verify.js

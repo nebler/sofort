@@ -105,6 +105,8 @@ async function rust(): Promise<Item[]> {
   if (mac) {
     checks.push(toolchain(p.hyperlight_toolchain, 'Hyperlight baseline, make deps', p.hyperlight_targets, ['rust-src']));
   }
+  // libFuzzer with ASan needs nightly: `make -C shard fuzz-smoke` (make test, make ci).
+  checks.push(toolchain(p.fuzz_toolchain, 'shard fuzz-smoke', [], []));
   // clippy and rustfmt: `make -C abi test` (part of `make test` and `make ci`),
   // the kernel's `make check` and `make fmt`.
   checks.push(toolchain(p.rust_toolchain, 'abi test, kernel make check/fmt', [], ['clippy', 'rustfmt'], 'warn', ' lint'));

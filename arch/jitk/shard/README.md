@@ -537,9 +537,11 @@ Hypervisor.framework. GrowOS (`../grow`, `../scriptc-corpus`), the kernel
 suite (`../kernel/tests/host.sh`) and the protocol VM tests use it; the
 executor does not. Before the VM exists it enters `jitk.sb` for the image's
 directory, drops fork (as an engine process) and prints `{"sandbox":"ok"}` on
-stderr. The device is the subset of a virtio-mmio console with MULTIPORT that
+stderr. The device (`src/virtio_console.rs`, platform-neutral, unit-tested and
+fuzzed) is the subset of a virtio-mmio console with MULTIPORT that
 `kernel/src/console.rs` drives (queues serviced synchronously at the guest's
-QueueNotify store); the FDT names a GIC the kernel never touches, because a
+QueueNotify store; a malformed queue is an error that stops the VM, never an
+access outside RAM); the FDT names a GIC the kernel never touches, because a
 positive `jitk.tick_us` selects its CNTV fallback, so WFI is the only wait:
 the runner sleeps until CNTV_CVAL or stdin input (a receive buffer used since
 the last WFI completes it at once, as an interrupt would). Guest CNTVCT is
@@ -556,6 +558,28 @@ profile).
 `hvf process-watchdog` and `real process-watchdog` (`src/watchdog.rs`, moved unchanged from
 `jitk-vmm --watchdog`) are the process backends' shared deadline watchdog
 (`../executor/backend.ts`: Hyperlight's adapter, test peers).
+
+## Fuzzing
+
+`src/fuzz.rs` (feature `fuzzing`) has one harness per parser of untrusted
+bytes: the JS and native TX rings (`ring_tx`, `native_tx`), the console
+device (`virtio_console`), IPC record streams (`ipc_records`) and native
+requests (`native_request`). Each plays its input as guest or peer actions
+and checks the decoder's promises (bounded, printable forwarded messages,
+reads only of produced bytes, round trips), not only the absence of panics.
+`cargo test` replays the seeds, which are generated from
+`../abi/guest-payloads.json` and the decoders' test vectors, and every
+regression input. `fuzz/` drives the harnesses with libFuzzer and ASan on the
+pinned nightly (`tools/deps.json` `fuzz_toolchain`):
+
+```sh
+make fuzz-smoke             # every target for 10 s, in parallel (make test, ci-host)
+make fuzz FUZZ_SECONDS=1200 # longer runs; corpora grow in .work/fuzz/corpus
+```
+
+A finding is written to `.work/fuzz/artifacts/TARGET/`. Replay it with
+`.work/fuzz/target/HOST/release/TARGET FILE`, fix it, and add the input to
+the harness's regression tests.
 
 ## HVF native worker (`hvf native-worker`)
 

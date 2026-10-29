@@ -71,6 +71,8 @@ jobs:
           fi
           rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh)" --profile minimal \
             --component clippy --component rustfmt --target aarch64-unknown-none
+          # libFuzzer with ASan (shard fuzz-smoke).
+          rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh fuzz_toolchain)" --profile minimal
 
       # The jitk deps cache (Node, zig, Biome, shard binary; entries are
       # content-keyed, so a stale one is rebuilt, never reused) and the cargo

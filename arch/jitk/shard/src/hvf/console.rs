@@ -12,28 +12,24 @@
 //! carry (yet). The executor and MCP use the ring engine (`hvf ipc`). Deleted
 //! together with the console profile once those move to the ring.
 //!
-//! The device is a virtio-mmio (version 2) console with MULTIPORT and one
-//! port, the subset kernel/src/console.rs drives: receive/transmit queues 0/1,
-//! control queues 2/3 (DEVICE_READY -> DEVICE_ADD). Every queue is serviced
-//! synchronously at the guest's QueueNotify store, so a transmit is complete
-//! when the vCPU resumes. There is no interrupt controller: the FDT names a
-//! GIC the kernel never touches because `jitk.tick_us` selects its CNTV
-//! fallback (kernel/README.md), and WFI is the only wait. The vtimer stays
-//! masked; at a WFI the runner sleeps until CNTV_CVAL or stdin input, then
-//! resumes past it. Guest CNTVCT is the host's mach_absolute_time (offset 0),
-//! so `jitk.counter` pairs it with the epoch as the libkrun launcher did.
+//! The device is the virtio-mmio console of `crate::virtio_console` over
+//! stdin/stdout. There is no interrupt controller: the FDT names a GIC the
+//! kernel never touches because `jitk.tick_us` selects its CNTV fallback
+//! (kernel/README.md), and WFI is the only wait. The vtimer stays masked; at
+//! a WFI the runner sleeps until CNTV_CVAL or stdin input, then resumes past
+//! it. Guest CNTVCT is the host's mach_absolute_time (offset 0), so
+//! `jitk.counter` pairs it with the epoch as the libkrun launcher did.
 use super::{
     HvfVcpu, HvfVm, REG_PC, check, hv_vcpu_get_sys_reg, hv_vcpu_run, hv_vcpu_set_vtimer_mask,
     seatbelt,
 };
 use crate::hv::{Region, Vcpu as _, Vm as _};
+use crate::virtio_console::{Console, Port};
 use std::{
-    collections::VecDeque,
     fs::File,
     io::{self, Read, Write},
     path::PathBuf,
     ptr,
-    sync::atomic::{Ordering, fence},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -65,7 +61,6 @@ const GICR_GPA: u64 = 0x09fd_0000;
 /// The CNTV fallback interval: an idle guest re-checks its console this
 /// often. Input wakes it at once, so this only bounds a lost wakeup.
 const TICK_US: u64 = 100_000;
-const QUEUE_MAX: u32 = 256;
 const SYS_CNTV_CTL: u16 = 0xdf19;
 const SYS_CNTV_CVAL: u16 = 0xdf1a;
 const PSCI_CPU_OFF: u64 = 0x8400_0002;
@@ -218,163 +213,40 @@ fn fdt(bootargs: &str) -> Vec<u8> {
     b
 }
 
-#[derive(Default, Clone, Copy)]
-struct Queue {
-    num: u32,
-    ready: bool,
-    desc: u64,
-    avail: u64,
-    used: u64,
-    last_avail: u16,
-    used_idx: u16,
+/// Guest RAM as the device sees it: the runner's mapping, borrowed only
+/// while the vCPU is stopped.
+struct GuestRam(*mut u8);
+impl AsMut<[u8]> for GuestRam {
+    fn as_mut(&mut self) -> &mut [u8] {
+        // SAFETY: the RAM_BYTES mapping lives until the process exits. The
+        // device runs only on the vCPU thread between hv_vcpu_run calls, when
+        // the guest cannot touch RAM, and holds the slice for one access.
+        unsafe { std::slice::from_raw_parts_mut(self.0, RAM_BYTES) }
+    }
 }
 
-/// One descriptor of a chain: guest address, length, device-writable.
-type Segment = (u64, u32, bool);
-
-/// The virtio-mmio console over guest RAM at `ram` (RAM_BYTES at RAM_GPA).
-struct Console {
-    ram: *mut u8,
-    status: u32,
-    device_sel: u32,
-    queue_sel: usize,
-    queues: [Queue; 4],
-    /// Control messages for the guest, waiting for a control receive buffer.
-    control: VecDeque<[u8; 8]>,
-    stdin_eof: bool,
-    /// A receive buffer was used since the guest's last WFI.
-    wake: bool,
+/// The console port on stdin/stdout. Input is read unbuffered: input left in
+/// a userspace buffer would not wake poll.
+struct Stdio;
+impl Read for Stdio {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        // SAFETY: buf is writable for its length; read keeps no pointer.
+        match unsafe { libc::read(0, buf.as_mut_ptr().cast(), buf.len()) } {
+            n if n >= 0 => Ok(n as usize),
+            _ => Err(io::Error::last_os_error()),
+        }
+    }
 }
-impl Console {
-    fn at(&self, gpa: u64, len: usize) -> io::Result<*mut u8> {
-        let off = gpa
-            .checked_sub(RAM_GPA)
-            .ok_or_else(|| err(format!("queue address {gpa:#x} outside RAM")))?
-            as usize;
-        if off.checked_add(len).is_none_or(|end| end > RAM_BYTES) {
-            return Err(err(format!("queue range {gpa:#x}+{len} outside RAM")));
-        }
-        // SAFETY: off..off+len lies inside the RAM mapping.
-        Ok(unsafe { self.ram.add(off) })
+impl Write for Stdio {
+    fn write(&mut self, b: &[u8]) -> io::Result<usize> {
+        io::stdout().write(b)
     }
-    fn get<T: Copy>(&self, gpa: u64) -> io::Result<T> {
-        let p = self.at(gpa, size_of::<T>())?;
-        // SAFETY: in bounds (at); the vCPU is stopped while the runner reads.
-        Ok(unsafe { ptr::read_unaligned(p.cast::<T>()) })
+    fn flush(&mut self) -> io::Result<()> {
+        io::stdout().flush()
     }
-    fn put<T: Copy>(&self, gpa: u64, v: T) -> io::Result<()> {
-        let p = self.at(gpa, size_of::<T>())?;
-        // SAFETY: in bounds (at); the vCPU is stopped while the runner writes.
-        unsafe { ptr::write_unaligned(p.cast::<T>(), v) };
-        Ok(())
-    }
-    fn live(&self, q: usize) -> bool {
-        let q = &self.queues[q];
-        q.ready && q.num > 0
-    }
-    fn pending(&self, qi: usize) -> io::Result<bool> {
-        let q = self.queues[qi];
-        Ok(self.live(qi) && self.get::<u16>(q.avail + 2)? != q.last_avail)
-    }
-    /// The next available chain: its head and (address, length, writable)
-    /// segments.
-    fn pop(&mut self, qi: usize) -> io::Result<Option<(u16, Vec<Segment>)>> {
-        if !self.pending(qi)? {
-            return Ok(None);
-        }
-        let q = self.queues[qi];
-        let head: u16 = self.get(q.avail + 4 + 2 * u64::from(q.last_avail % q.num as u16))?;
-        self.queues[qi].last_avail = q.last_avail.wrapping_add(1);
-        let (mut id, mut segs) = (head, Vec::new());
-        for _ in 0..q.num {
-            if u32::from(id) >= q.num {
-                return Err(err(format!("queue {qi}: descriptor {id} out of range")));
-            }
-            let d = q.desc + 16 * u64::from(id);
-            let (addr, len, flags, next) = (
-                self.get::<u64>(d)?,
-                self.get::<u32>(d + 8)?,
-                self.get::<u16>(d + 12)?,
-                self.get::<u16>(d + 14)?,
-            );
-            segs.push((addr, len, flags & 2 != 0));
-            if flags & 1 == 0 {
-                return Ok(Some((head, segs)));
-            }
-            id = next;
-        }
-        Err(err(format!("queue {qi}: descriptor chain loops")))
-    }
-    fn push(&mut self, qi: usize, head: u16, len: u32) -> io::Result<()> {
-        let q = self.queues[qi];
-        let e = q.used + 4 + 8 * u64::from(q.used_idx % q.num as u16);
-        self.put(e, u32::from(head))?;
-        self.put(e + 4, len)?;
-        fence(Ordering::SeqCst);
-        let idx = q.used_idx.wrapping_add(1);
-        self.queues[qi].used_idx = idx;
-        // A receive or control-receive buffer is what an interrupt would
-        // announce (`idle`).
-        self.wake |= qi.is_multiple_of(2);
-        self.put(q.used + 2, idx)
-    }
-    fn notify(&mut self, qi: usize) -> io::Result<()> {
-        match qi {
-            1 => {
-                let mut out = io::stdout().lock();
-                while let Some((head, segs)) = self.pop(1)? {
-                    for (addr, len, writable) in segs {
-                        if !writable {
-                            let p = self.at(addr, len as usize)?;
-                            // SAFETY: in bounds (at); the vCPU is stopped.
-                            out.write_all(unsafe { std::slice::from_raw_parts(p, len as usize) })?;
-                        }
-                    }
-                    self.push(1, head, 0)?;
-                }
-                out.flush()
-            }
-            3 => {
-                while let Some((head, segs)) = self.pop(3)? {
-                    for (addr, len, writable) in segs {
-                        for at in (0..len / 8 * 8).step_by(8).filter(|_| !writable) {
-                            // virtio_console_control: id u32, event u16, value u16.
-                            if self.get::<u16>(addr + u64::from(at) + 4)? == 0 {
-                                // DEVICE_READY -> DEVICE_ADD for port 0.
-                                self.control.push_back([0, 0, 0, 0, 1, 0, 1, 0]);
-                            }
-                        }
-                    }
-                    self.push(3, head, 0)?;
-                }
-                self.deliver_control()
-            }
-            0 => self.pump(Some(Duration::ZERO)).map(|_| ()),
-            2 => self.deliver_control(),
-            _ => Ok(()),
-        }
-    }
-    fn deliver_control(&mut self) -> io::Result<()> {
-        while !self.control.is_empty() && self.pending(2)? {
-            let (head, segs) = self.pop(2)?.expect("pending");
-            let &(addr, len, _) = segs
-                .iter()
-                .find(|s| s.2 && s.1 >= 8)
-                .ok_or_else(|| err("control buffer too small"))?;
-            let _ = len;
-            let msg = self.control.pop_front().expect("non-empty");
-            self.put(addr, msg)?;
-            self.push(2, head, 8)?;
-        }
-        Ok(())
-    }
-    /// Move stdin into one posted receive buffer, waiting at most `wait`
-    /// (None: until input) when input can be taken. A zero-length used buffer
-    /// is EOF (console.rs `service`). Whether input was delivered.
-    fn pump(&mut self, wait: Option<Duration>) -> io::Result<bool> {
-        if self.stdin_eof || !self.pending(0)? {
-            return Ok(false);
-        }
+}
+impl Port for Stdio {
+    fn readable(&mut self, wait: Option<Duration>) -> bool {
         let ms = wait.map_or(-1, |d| d.as_millis().min(i32::MAX as u128) as i32);
         let mut fd = libc::pollfd {
             fd: 0,
@@ -382,122 +254,42 @@ impl Console {
             revents: 0,
         };
         // SAFETY: one live pollfd.
-        if unsafe { libc::poll(&mut fd, 1, ms) } <= 0 {
-            return Ok(false);
-        }
-        let q = self.queues[0];
-        let head: u16 = self.get(q.avail + 4 + 2 * u64::from(q.last_avail % q.num as u16))?;
-        let d = q.desc + 16 * u64::from(head.min(q.num as u16 - 1));
-        let mut buf = vec![0u8; (self.get::<u32>(d + 8)? as usize).clamp(1, 1 << 16)];
-        // Unbuffered: input left in a userspace buffer would not wake poll.
-        // SAFETY: buf is writable for its length; read keeps no pointer.
-        let n = match unsafe { libc::read(0, buf.as_mut_ptr().cast(), buf.len()) } {
-            n if n >= 0 => n as usize,
-            _ if io::Error::last_os_error().kind() == io::ErrorKind::Interrupted => {
-                return Ok(false);
-            }
-            _ => 0,
-        };
-        let (head, segs) = self.pop(0)?.expect("pending");
-        let &(addr, len, _) = segs
-            .iter()
-            .find(|s| s.2)
-            .ok_or_else(|| err("receive buffer not writable"))?;
-        let n = n.min(len as usize);
-        if n == 0 {
-            self.stdin_eof = true;
-        } else {
-            let p = self.at(addr, n)?;
-            // SAFETY: in bounds (at); the vCPU is stopped.
-            unsafe { ptr::copy_nonoverlapping(buf.as_ptr(), p, n) };
-        }
-        self.push(0, head, n as u32)?;
-        Ok(true)
+        unsafe { libc::poll(&mut fd, 1, ms) > 0 }
     }
-    fn read(&mut self, off: u64) -> io::Result<u32> {
-        let q = self.queues[self.queue_sel];
-        Ok(match off {
-            0x00 => 0x7472_6976,
-            0x04 => 2,
-            0x08 => 3,
-            0x0c => 0x554d_4551,
-            // MULTIPORT; VERSION_1.
-            0x10 => [1 << 1, 1]
-                .get(self.device_sel as usize)
-                .copied()
-                .unwrap_or(0),
-            0x34 => QUEUE_MAX,
-            0x44 => u32::from(q.ready),
-            0x60 => {
-                // The guest's console service: input it can pick up now.
-                self.pump(Some(Duration::ZERO))?;
-                0
-            }
-            0x70 => self.status,
-            // virtio_console_config.max_nr_ports.
-            0x104 => 1,
-            _ => 0,
-        })
+}
+type Device = Console<GuestRam, Stdio>;
+
+/// WFI: sleep until the armed CNTV deadline or stdin input.
+fn idle(dev: &mut Device, cpu: &HvfVcpu) -> io::Result<()> {
+    let sys = |r: u16| -> io::Result<u64> {
+        let mut v = 0;
+        check(
+            // SAFETY: own vCPU on its creating thread; live out-pointer.
+            unsafe { hv_vcpu_get_sys_reg(cpu.id, r, &mut v) },
+            "hv_vcpu_get_sys_reg",
+        )?;
+        Ok(v)
+    };
+    let (ctl, cval) = (sys(SYS_CNTV_CTL)?, sys(SYS_CNTV_CVAL)?);
+    let deadline = (ctl & 3 == 1).then_some(cval);
+    let left = || deadline.map(|d| ticks_to_duration(d.saturating_sub(now_ticks())));
+    if left() == Some(Duration::ZERO) {
+        return Ok(());
     }
-    fn write(&mut self, off: u64, v: u32) -> io::Result<()> {
-        let q = &mut self.queues[self.queue_sel];
-        let lo = |a: &mut u64| *a = (*a & !0xffff_ffff) | u64::from(v);
-        let hi = |a: &mut u64| *a = (*a & 0xffff_ffff) | u64::from(v) << 32;
-        match off {
-            0x14 => self.device_sel = v,
-            0x30 if v < 4 => self.queue_sel = v as usize,
-            0x30 => return Err(err(format!("queue {v} does not exist"))),
-            0x38 if (1..=QUEUE_MAX).contains(&v) => q.num = v,
-            0x44 => q.ready = v == 1,
-            0x50 => return self.notify(v as usize),
-            0x70 if v == 0 => {
-                self.status = 0;
-                self.queues = Default::default();
-            }
-            0x70 => self.status = v,
-            0x80 => lo(&mut q.desc),
-            0x84 => hi(&mut q.desc),
-            0x90 => lo(&mut q.avail),
-            0x94 => hi(&mut q.avail),
-            0xa0 => lo(&mut q.used),
-            0xa4 => hi(&mut q.used),
-            // Feature selection and acknowledgements need no state.
-            _ => {}
-        }
-        Ok(())
+    // A buffer the guest got since its last WFI is a pending interrupt: it
+    // may have checked its queues just before, so WFI completes.
+    if dev.interrupt(left())? {
+        return Ok(());
     }
-    /// WFI: sleep until the armed CNTV deadline or stdin input.
-    fn idle(&mut self, cpu: &HvfVcpu) -> io::Result<()> {
-        let sys = |r: u16| -> io::Result<u64> {
-            let mut v = 0;
-            check(
-                // SAFETY: own vCPU on its creating thread; live out-pointer.
-                unsafe { hv_vcpu_get_sys_reg(cpu.id, r, &mut v) },
-                "hv_vcpu_get_sys_reg",
-            )?;
-            Ok(v)
-        };
-        let (ctl, cval) = (sys(SYS_CNTV_CTL)?, sys(SYS_CNTV_CVAL)?);
-        let deadline = (ctl & 3 == 1).then_some(cval);
-        let left = || deadline.map(|d| ticks_to_duration(d.saturating_sub(now_ticks())));
-        if left() == Some(Duration::ZERO) {
-            return Ok(());
+    match left() {
+        Some(d) => std::thread::sleep(d),
+        None => {
+            return Err(err(
+                "guest waits with no timer armed and no input to wait for",
+            ));
         }
-        // A buffer the guest got since its last WFI is a pending interrupt:
-        // it may have checked its queues just before, so WFI completes.
-        if std::mem::take(&mut self.wake) || self.pump(left())? {
-            return Ok(());
-        }
-        match left() {
-            Some(d) => std::thread::sleep(d),
-            None => {
-                return Err(err(
-                    "guest waits with no timer armed and no input to wait for",
-                ));
-            }
-        }
-        Ok(())
     }
+    Ok(())
 }
 
 /// `hvf console --image KERNEL [--seed HEX] [--epoch-ns NS] [--mem-mib 32]`.
@@ -555,9 +347,7 @@ pub fn run(args: &[String]) -> io::Result<()> {
     if ram == libc::MAP_FAILED {
         return Err(io::Error::last_os_error());
     }
-    let ram = ram.cast::<u8>();
-    // SAFETY: the mapping is RAM_BYTES long and lives until the process exits.
-    let mem = unsafe { std::slice::from_raw_parts_mut(ram, RAM_BYTES) };
+    let mut ram = GuestRam(ram.cast::<u8>());
     let mut file = File::open(&image)?;
     let len = file.metadata()?.len() as usize;
     if len > RAM_BYTES - FDT_BYTES {
@@ -565,14 +355,14 @@ pub fn run(args: &[String]) -> io::Result<()> {
             "image of {len} bytes does not fit below the FDT"
         )));
     }
-    file.read_exact(&mut mem[..len])?;
+    file.read_exact(&mut ram.as_mut()[..len])?;
     let tree = fdt(&bootargs);
     let at = RAM_BYTES - FDT_BYTES;
-    mem[at..at + tree.len()].copy_from_slice(&tree);
+    ram.as_mut()[at..at + tree.len()].copy_from_slice(&tree);
 
     let mut vm = HvfVm::create()?;
     // SAFETY: the RAM mapping outlives the VM (never unmapped); page aligned.
-    unsafe { vm.map(RAM_GPA, ram, RAM_BYTES, Region::Boot)? };
+    unsafe { vm.map(RAM_GPA, ram.0, RAM_BYTES, Region::Boot)? };
     let mut cpu = vm.vcpu()?;
     check(
         // SAFETY: own vCPU on its creating thread.
@@ -586,16 +376,7 @@ pub fn run(args: &[String]) -> io::Result<()> {
     )?;
     cpu.set_entry(RAM_GPA)?;
     cpu.set(0, RAM_GPA + at as u64)?;
-    let mut dev = Console {
-        ram,
-        status: 0,
-        device_sel: 0,
-        queue_sel: 0,
-        queues: Default::default(),
-        control: VecDeque::new(),
-        stdin_eof: false,
-        wake: false,
-    };
+    let mut dev = Console::new(ram, RAM_GPA, Stdio);
     loop {
         // SAFETY: own vCPU on its creating thread.
         check(unsafe { hv_vcpu_run(cpu.id) }, "hv_vcpu_run")?;
@@ -618,13 +399,13 @@ pub fn run(args: &[String]) -> io::Result<()> {
             // WFI (WFE just resumes).
             0x01 => {
                 if esr & 1 == 0 {
-                    dev.idle(&cpu)?;
+                    idle(&mut dev, &cpu)?;
                 }
             }
             // HVC: ELR already points past it.
             0x16 => {
                 match cpu.reg(0) {
-                    PSCI_SYSTEM_OFF | PSCI_CPU_OFF => return io::stdout().flush(),
+                    PSCI_SYSTEM_OFF | PSCI_CPU_OFF => return dev.port().flush(),
                     // NOT_SUPPORTED.
                     _ => cpu.set(0, u64::MAX)?,
                 }
@@ -671,5 +452,177 @@ pub fn run(args: &[String]) -> io::Result<()> {
             }
         }
         cpu.set(REG_PC, pc + 4)?;
+    }
+}
+
+/// `hvf console` end to end: hand-assembled EL1 guests (MMU off) on the
+/// deps-built engine binary, which `make test-hvf` passes as
+/// JITK_SHARD_BINARY.
+#[cfg(test)]
+mod tests {
+    use super::{CONSOLE_GPA, PSCI_SYSTEM_OFF, RAM_GPA};
+    use std::{
+        io::Read,
+        process::{Command, Output, Stdio},
+        time::{Duration, Instant},
+    };
+
+    /// Where the guests keep their transmit queue (one descriptor).
+    const DESC: u64 = RAM_GPA + 0x1_0000;
+    const AVAIL: u64 = DESC + 0x100;
+    const USED: u64 = DESC + 0x200;
+    const BUFFER: u64 = DESC + 0x400;
+
+    /// A64 encodings of the few instructions the guests use.
+    struct Asm(Vec<u32>);
+    impl Asm {
+        /// x`rd` = `v` (movz, then movk per nonzero halfword).
+        fn mov(&mut self, rd: u32, v: u64) -> &mut Self {
+            self.0.push(0xd280_0000 | ((v & 0xffff) as u32) << 5 | rd);
+            for hw in 1..4 {
+                let part = (v >> (16 * hw) & 0xffff) as u32;
+                if part != 0 {
+                    self.0.push(0xf280_0000 | hw << 21 | part << 5 | rd);
+                }
+            }
+            self
+        }
+        /// str w`rt`, [x`rn`, #off]
+        fn str32(&mut self, rt: u32, rn: u32, off: u32) -> &mut Self {
+            self.0.push(0xb900_0000 | (off / 4) << 10 | rn << 5 | rt);
+            self
+        }
+        /// A 32-bit store of `v` to register `off` of the device at x1.
+        fn reg(&mut self, off: u32, v: u64) -> &mut Self {
+            self.mov(2, v).str32(2, 1, off)
+        }
+        /// Set up transmit queue 1 over the image's queue and notify it.
+        fn transmit(&mut self) -> &mut Self {
+            self.mov(1, CONSOLE_GPA)
+                .reg(0x30, 1)
+                .reg(0x38, 1)
+                .reg(0x80, DESC)
+                .reg(0x90, AVAIL)
+                .reg(0xa0, USED)
+                .reg(0x44, 1)
+                .reg(0x50, 1)
+        }
+        /// PSCI SYSTEM_OFF (hvc #0).
+        fn power_off(&mut self) -> &mut Self {
+            self.mov(0, PSCI_SYSTEM_OFF);
+            self.0.push(0xd400_0002);
+            self
+        }
+    }
+
+    /// A raw image: `code` at RAM_GPA, one transmit descriptor for `text`
+    /// with `flags`/`next`, made available once.
+    fn image(code: &Asm, text: &[u8], flags: u16, next: u16) -> Vec<u8> {
+        let at = |gpa: u64| (gpa - RAM_GPA) as usize;
+        let mut b = vec![0u8; at(BUFFER) + text.len()];
+        for (i, w) in code.0.iter().enumerate() {
+            b[4 * i..4 * i + 4].copy_from_slice(&w.to_le_bytes());
+        }
+        let d = at(DESC);
+        b[d..d + 8].copy_from_slice(&BUFFER.to_le_bytes());
+        b[d + 8..d + 12].copy_from_slice(&(text.len() as u32).to_le_bytes());
+        b[d + 12..d + 14].copy_from_slice(&flags.to_le_bytes());
+        b[d + 14..d + 16].copy_from_slice(&next.to_le_bytes());
+        b[at(AVAIL) + 2] = 1; // idx 1; ring[0] = descriptor 0
+        b[at(BUFFER)..].copy_from_slice(text);
+        b
+    }
+
+    /// Boot `image` on `hvf console` with no input. A guest that never
+    /// exits fails the test after 20 s instead of hanging it.
+    fn boot(name: &str, image: &[u8]) -> Output {
+        let engine = std::env::var("JITK_SHARD_BINARY")
+            .expect("JITK_SHARD_BINARY: the hvf engine (make -C arch/jitk/shard test-hvf)");
+        let dir = std::env::temp_dir().join(format!("jitk-console-{}-{name}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("image.bin");
+        std::fs::write(&path, image).unwrap();
+        let mut child = Command::new(engine)
+            .args(["console", "--image"])
+            .arg(&path)
+            .args(["--seed", &"0".repeat(32), "--epoch-ns", "1"])
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        let start = Instant::now();
+        let status = loop {
+            if let Some(status) = child.try_wait().unwrap() {
+                break status;
+            }
+            if start.elapsed() > Duration::from_secs(20) {
+                child.kill().unwrap();
+                panic!("{name}: hvf console did not exit");
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        };
+        let (mut stdout, mut stderr) = (Vec::new(), Vec::new());
+        child
+            .stdout
+            .take()
+            .unwrap()
+            .read_to_end(&mut stdout)
+            .unwrap();
+        child
+            .stderr
+            .take()
+            .unwrap()
+            .read_to_end(&mut stderr)
+            .unwrap();
+        std::fs::remove_dir_all(&dir).unwrap();
+        Output {
+            status,
+            stdout,
+            stderr,
+        }
+    }
+
+    #[test]
+    #[ignore = "requires Hypervisor.framework (make test-hvf)"]
+    fn a_guest_transmits_and_powers_off() {
+        let mut code = Asm(Vec::new());
+        code.transmit().power_off();
+        let out = boot("ok", &image(&code, b"hello from the guest\n", 0, 0));
+        let stderr = String::from_utf8_lossy(&out.stderr);
+        assert!(out.status.success(), "{:?}: {stderr}", out.status);
+        assert_eq!(out.stdout, b"hello from the guest\n");
+        assert_eq!(stderr, "{\"sandbox\":\"ok\"}\n");
+    }
+
+    #[test]
+    #[ignore = "requires Hypervisor.framework (make test-hvf)"]
+    fn hostile_guests_stop_with_status_70() {
+        let mut looping = Asm(Vec::new());
+        looping.transmit().power_off();
+        let mut stray = Asm(Vec::new());
+        stray.mov(1, CONSOLE_GPA - 0x1000).reg(0, 1).power_off();
+        let mut queue = Asm(Vec::new());
+        queue.mov(1, CONSOLE_GPA).reg(0x30, 4).power_off();
+        for (name, image, message) in [
+            // Descriptor 0 continues with itself.
+            (
+                "loop",
+                image(&looping, b"x", 1, 0),
+                "descriptor chain loops",
+            ),
+            (
+                "stray",
+                image(&stray, b"", 0, 0),
+                "outside RAM and the console",
+            ),
+            ("queue", image(&queue, b"", 0, 0), "queue 4 does not exist"),
+        ] {
+            let out = boot(name, &image);
+            let stderr = String::from_utf8_lossy(&out.stderr);
+            assert_eq!(out.status.code(), Some(70), "{name}: {stderr}");
+            assert!(stderr.contains(message), "{name}: {stderr}");
+            assert!(out.stdout.is_empty(), "{name}");
+        }
     }
 }

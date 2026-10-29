@@ -1,0 +1,56 @@
+# libFuzzer drivers for the shard's harnesses (../src/fuzz.rs). Built and run
+# by `make -C .. fuzz-smoke` / `make -C .. fuzz` with the pinned nightly
+# (tools/deps.json "fuzz_toolchain"); not part of the shard's own build.
+[package]
+name = "jitk-shard-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+jitk-shard = { path = "..", features = ["fuzzing"] }
+
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "ring_tx"
+path = "fuzz_targets/ring_tx.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "native_tx"
+path = "fuzz_targets/native_tx.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "virtio_console"
+path = "fuzz_targets/virtio_console.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "ipc_records"
+path = "fuzz_targets/ipc_records.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "native_request"
+path = "fuzz_targets/native_request.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1

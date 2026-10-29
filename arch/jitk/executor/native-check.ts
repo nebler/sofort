@@ -62,7 +62,12 @@ for(const bad of [job([],{},'../bad'),job(['a\0b']),job(['\ud800']),job(Array(32
   const b=engine(),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000),ac=new AbortController();
   try {
     const running=ex.run(job(['hang']),{signal:ac.signal}),queued=ex.run(job(['echo']));
-    setTimeout(()=>ac.abort(),50);
+    // Abort once the hanging job holds the worker and the second caller waits.
+    for(const end=Date.now()+10000;;await new Promise(r=>setImmediate(r))){
+      const p=pool.snapshot();if(p.live===1&&p.creating===0&&p.waiting===1)break;
+      assert(Date.now()<end,'the job never started: '+JSON.stringify(p));
+    }
+    ac.abort();
     assert.equal(code(await running),'CANCELLED');assert.equal(code(await queued),'SANDBOX');checks++;
   } finally {await pool.close();}
 }

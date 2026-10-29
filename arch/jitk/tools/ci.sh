@@ -202,7 +202,7 @@ kernel_identity() {
 # on the shard in the kvm part). transport-check and watchdog-check run the
 # process backend with the shard binary's `real process-watchdog`.
 executor_checks() {
-  for check in abi-check prepared-check pool-check resolve-check transport-check shard-sandbox-check watchdog-check; do
+  for check in abi-check prepared-check pool-check resolve-check transport-check shard-sandbox-check ipc-decoder-check watchdog-check; do
     echo "executor: $check"
     "$JITK_NODE" "$JITK/executor/build/$check.js" || return 1
   done
@@ -228,6 +228,7 @@ part_host() {
   step 'docs test' make -s -C "$JITK/docs" test
   step 'shard test' make -s -C "$JITK/shard" test
   step 'shard clippy' make -s -C "$JITK/shard" clippy
+  step 'shard fuzz-smoke' make -s -C "$JITK/shard" fuzz-smoke
   step 'protocol test' make -s -C "$JITK/protocol" test tools
   build_executor
   step 'executor checks' executor_checks

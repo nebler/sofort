@@ -311,7 +311,7 @@ fn malformed_guest_records_are_run_errors() {
     ));
     // Shared Node/shard corpus through the real decoder: only "shard" rows
     // stop here, as slot-scoped guest errors. Everything else is opaque.
-    for (kind, name, outcome, payload) in crate::payload::tests::corpus() {
+    for (kind, name, outcome, payload) in crate::payload::corpus() {
         let mut s = slot();
         record(&s, kind, u64::from(kind == ring::CALL), &payload);
         let op = if kind == ring::DONE {

@@ -122,7 +122,7 @@ export interface ProcessOptions {
   timeout?: number;
   input?: Buffer;
   holdStdin?: boolean;
-  onOutput?: (stdout: Buffer) => boolean;
+  onOutput?: (stdout: Buffer, stderr: Buffer) => boolean;
 }
 
 export function killChild(child: ChildProcess, groupSignal?: (pid: number) => void): void {
