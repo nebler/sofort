@@ -335,7 +335,7 @@ medians) measured the process costs that shape the engine:
 | first boot to CHECKPOINT | 1.28 ms | 2.35 ms | |
 | warm run + reset in a persistent process | ~55 µs | | |
 
-So the zygote forks each engine process once and process creation stays off
+So each engine process is forked once and process creation stays off
 the per-run path.
 
 ## Limits (ABI 11)
@@ -396,25 +396,44 @@ IPC (`service.rs`: the record envelope and the per-slot state machine that
 ```
 Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a VM)
   PipeChannel                   │ per-slot service::State on both sides,
-                                │ escalation timer, reaps children
-                                ├─socketpair─> engine process, slot 0 (hvf/child.rs)
-                                │                main thread: HvfVm + vCPU + Slot
-                                │                reader: commands, CANCEL/deadline kicks
-                                │                job clock
-                                └─ ... one per slot
+                                │ escalation timer
+                                └─control─> template (hvf/template.rs, 1 thread,
+                                            │ no tenant byte ever; forks, kills
+                                            │ and reaps for the zygote)
+              zygote ─socketpair──────────> ├─ engine process, slot 0 (hvf/child.rs)
+                                            │    main thread: HvfVm + vCPU + Slot
+                                            │    reader: commands, CANCEL/deadline kicks
+                                            │    job clock
+                                            └─ ... one per slot
 ```
 
-- **Zygote.** Checks it has one thread before every fork (`proc_pidinfo`),
+- **Zygote.** Checks it has one thread before it forks (`proc_pidinfo`; the
+  template checks the same before each of its forks),
   loads the verified snapshot, reads the D-cache line size (sysctl, denied
   later), enters its Seatbelt profile (jitk.sb + zygote.sb, "Confinement"
-  below) and forks one engine process per slot; READY to Node once every
-  child is READY.
+  below), forks the template and has it fork one engine process per slot;
+  READY to Node once every child is READY.
   It validates every Node message (START admission, REPLY pending bits,
   CANCEL generation) and every child message (call ids in order, STATS
   before one completion, bounded printable DONE, RELEASED/QUARANTINED only
   while resetting) and forwards them; a Node violation fails the engine
   closed, a child violation kills that child.
-- **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
+- **Template.** Every engine process, the first ones and every
+  replacement, is forked by the template, never by the zygote: from READY
+  on, tenant bytes (START sources, REPLY payloads, other slots' calls and
+  results, freed buffers) pass through the zygote's memory, and a child
+  forked from it would inherit them; one who escaped into an engine process
+  could exit it to force a re-fork and read them. The zygote forks the
+  template before it reads anything from Node; the template only reads the
+  zygote's 16-byte commands (SPAWN with the engine's socket passed by
+  SCM_RIGHTS, KILL, REAP), so what an engine process holds is the snapshot
+  (`engine_processes_never_hold_tenant_bytes`: a sentinel in this process's
+  heap, a freed block and a received record is absent from every process the
+  template forks, present in one forked directly). Engine processes are the
+  template's children, so the template signals and reaps them for the zygote
+  (`zygote.sb` allows signals to children only); the zygote's one child is
+  the template. When the zygote exits or is killed, the template kills and
+  reaps every engine process and exits.- **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
   creates its VM, slot
   and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
   admit (reset unless pristine), bind, run to calls or WAIT,
@@ -433,11 +452,11 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   reset is not reported within 1 s of its CANCEL, the zygote SIGKILLs the
   process; its run fails as `deadline_exceeded` (or `slot_unavailable`) and
   the slot is QUARANTINED (`engine process exited (signal 9)`). Node closing
-  the socket ends the zygote, which kills and reaps every child; a child whose
-  socket closes stops its vCPU and exits.
+  the socket ends the zygote, whose template then kills and reaps every
+  child; a child whose socket closes stops its vCPU and exits.
 - **Capacity comes back** (IPC RESTORED, ABI 10). Once a slot is
-  QUARANTINED, the zygote forks it a fresh engine process from the snapshot it
-  still holds (no file is opened again); when that process is READY the
+  QUARANTINED, the template forks it a fresh engine process from the snapshot
+  it still holds (no file is opened again); when that process is READY the
   zygote sends RESTORED at the generation QUARANTINED ended, and Node counts
   the slot again and admits its next generation (~11 ms from the CANCEL to
   RESTORED in `shard-check`). An engine process that dies while its slot is
@@ -509,16 +528,21 @@ three probe processes. Measured on macOS 26.6.1:
   `return 2` and reads its snapshot directory; fork fails (EAGAIN), and so do
   signalling a child and exec; /etc/hosts, the home directory listing, a /tmp
   write, TCP and UDP to localhost get EPERM;
-- the zygote (its profile) forks an engine process that confines itself, runs
+- the zygote (its profile) forks a template and passes it a socket
+  (SCM_RIGHTS), which forks an engine process that confines itself, runs
   `return 2` and then cannot fork; it SIGKILLs and reaps a child and reads its
   snapshot directory; the same files, writes, network and exec get EPERM.
 Everything the zygote opens (the snapshot files, the Node socket) is open
-before it confines itself, and re-forks reuse them.
+before it confines itself, and re-forks reuse them (the template holds the
+snapshot; the zygote only the sockets).
 
 Tests: `hvf::tests::engine_child_runs_kicks_and_quarantines` (in-process
 child: tool call round trip, deadline kick within 200 ms, CANCEL of a spinning
 guest, clean slot after both, failed reset -> QUARANTINED -> slot_unavailable,
-socket close ends serve); `hvf::conn`, `service` and
+socket close ends serve); `stops_before_the_run_is_active_still_stop_it`
+(START and CANCEL in one write, a deadline past at START: RELEASED or
+`deadline_exceeded` at once, 20 times each); `hvf::template::tests` (engine
+processes never hold tenant bytes); `hvf::conn`, `service` and
 `hvf::zygote::restore_tests` (the re-fork budget) unit tests;
 `../executor/shard-check.ts` on the real binary (restore, concurrency, hostile
 payloads, environment, a blocked-Node deadline, zygote escalation of a stopped

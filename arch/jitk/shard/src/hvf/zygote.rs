@@ -4,11 +4,16 @@
 //!
 //! HVF allows one VM per process and runs a vCPU only on its creating thread,
 //! so this process is a zygote: single-threaded, it loads and maps the
-//! verified snapshot, enters its Seatbelt profile (`zygote_profile`) and
-//! forks one child per slot (child.rs), but never creates a VM itself. Each
-//! child inherits the profile and drops its fork grant (`child::confine`)
-//! before it creates its VM. A fork costs ~1 CPU-ms and ~1.2 MiB per slot,
-//! once; runs reuse the child with a reset.
+//! verified snapshot, enters its Seatbelt profile (`zygote_profile`), forks
+//! the engine template (template.rs) and has it fork one child per slot
+//! (child.rs), but never creates a VM itself. Each child inherits the profile
+//! and drops its fork grant (`child::confine`) before it creates its VM. A
+//! fork costs ~1 CPU-ms and ~1.2 MiB per slot, once; runs reuse the child
+//! with a reset.
+//!
+//! Children come from the template, never from the zygote: from READY on,
+//! tenant bytes pass through the zygote's memory, and a child forked from it
+//! would inherit them (template.rs).
 //!
 //! The zygote is the trusted half. It runs the per-slot state machine on
 //! every Node message and every child message, so Node sees exactly the Linux
@@ -22,13 +27,13 @@
 //! and exits, even mid-run.
 //!
 //! Capacity comes back. Once a slot is QUARANTINED (or its process dies
-//! while the slot is idle, which Node never sees), the zygote forks it a
+//! while the slot is idle, which Node never sees), the template forks it a
 //! fresh child from the snapshot it still holds; when that child is READY,
 //! a QUARANTINED slot is reported RESTORED and admits its next generation.
 //! Re-forks are budgeted (`Restores`): more than `restore_budget(slots)`
 //! within `RESTORE_WINDOW_NS` is a crash loop, and the engine fails closed
 //! instead of spinning.
-use super::{State, child, conn::Conn};
+use super::{State, child, conn::Conn, template::Template};
 use crate::clock;
 use crate::constants::{ABI_VERSION, ipc as wire, ring};
 use crate::service::{
@@ -120,14 +125,14 @@ pub struct Zygote {
     node: Conn,
     states: Vec<service::State>,
     children: Vec<Child>,
-    snapshot: Arc<Snapshot<State>>,
-    policy: ResetPolicy,
+    /// Forks, signals and reaps the children.
+    template: Template,
     charge: u32,
     restores: Restores,
 }
 
 /// The process's thread count (`proc_pidinfo`): fork needs exactly one.
-fn threads() -> io::Result<i32> {
+pub(super) fn threads() -> io::Result<i32> {
     // SAFETY: an all-zero proc_taskinfo is a valid out-value.
     let mut info: libc::proc_taskinfo = unsafe { std::mem::zeroed() };
     let size = std::mem::size_of::<libc::proc_taskinfo>() as libc::c_int;
@@ -168,8 +173,8 @@ pub fn zygote_profile(base: &str) -> io::Result<Vec<u8>> {
 
 impl Zygote {
     /// Adopt Node's socket (fd 3), load the snapshot, confine this process
-    /// (`zygote.sb`), fork `slots` children
-    /// and wait for each to report READY.
+    /// (`zygote.sb`), fork the template, have it fork `slots` children and
+    /// wait for each to report READY.
     pub fn start(base: &str, slots: usize, policy: ResetPolicy) -> io::Result<Self> {
         if slots == 0 || slots > wire::MAX_SLOTS {
             return Err(invalid("IPC shard capacity"));
@@ -192,17 +197,24 @@ impl Zygote {
         // done: confine this process before the first fork, so every engine
         // process starts confined too.
         super::seatbelt::apply(&zygote_profile(base)?)?;
-        let mut z = Self {
-            node,
-            states: (0..slots).map(|_| service::State::default()).collect(),
-            children: Vec::with_capacity(slots),
-            snapshot,
-            policy,
-            charge,
-            restores: Restores::new(restore_budget(slots), RESTORE_WINDOW_NS),
-        };
+        // The template is forked before anything is read from Node, so it
+        // and every child it forks hold no tenant data. Only Node's socket
+        // must not reach it.
+        if threads()? != 1 {
+            return Err(invalid("HVF zygote must be single-threaded to fork"));
+        }
+        let template = Template::start(&[node.fd()], move |fd, i| {
+            match child::serve(fd, i, snapshot.clone(), policy, true) {
+                Ok(()) => 0,
+                Err(e) => {
+                    eprintln!("hvf engine slot {i}: {e}");
+                    70
+                }
+            }
+        })?;
+        let mut z = Self::new(node, slots, charge, template);
         for i in 0..slots {
-            let child = z.fork(i)?;
+            let child = z.spawn(i)?;
             z.children.push(child);
         }
         z.await_ready()?;
@@ -215,42 +227,21 @@ impl Zygote {
         ))?;
         Ok(z)
     }
-    /// Fork the child for slot `i`. Called only while this process has one
-    /// thread, so the child inherits no lock another thread held.
-    fn fork(&mut self, i: usize) -> io::Result<Child> {
-        if threads()? != 1 {
-            return Err(invalid("HVF zygote must be single-threaded to fork"));
+    fn new(node: Conn, slots: usize, charge: u32, template: Template) -> Self {
+        Self {
+            node,
+            states: (0..slots).map(|_| service::State::default()).collect(),
+            children: Vec::with_capacity(slots),
+            template,
+            charge,
+            restores: Restores::new(restore_budget(slots), RESTORE_WINDOW_NS),
         }
-        let (ours, theirs) = super::conn::pair()?;
-        // SAFETY: fork in a single-threaded process (checked above).
-        let pid = unsafe { libc::fork() };
-        if pid < 0 {
-            return Err(io::Error::last_os_error());
-        }
-        if pid == 0 {
-            // Keep only this slot's socket, the snapshot and stdio: Node's
-            // socket and the siblings' are closed (not dropped: this process
-            // ends in _exit and never runs their destructors).
-            let close = |fd: i32| {
-                // SAFETY: closing a descriptor this copy of the process owns.
-                unsafe { libc::close(fd) };
-            };
-            close(self.node.fd());
-            close(ours.as_raw_fd());
-            for c in self.children.iter().filter_map(|c| c.conn.as_ref()) {
-                close(c.fd());
-            }
-            let code = match child::serve(theirs, i, self.snapshot.clone(), self.policy, true) {
-                Ok(()) => 0,
-                Err(e) => {
-                    eprintln!("hvf engine slot {i}: {e}");
-                    70
-                }
-            };
-            // SAFETY: end the child without unwinding into the zygote's frames.
-            unsafe { libc::_exit(code) }
-        }
-        drop(theirs);
+    }
+    /// A child for slot `i`, forked by the template. It holds its socket,
+    /// the snapshot and stdio: never Node's socket, a sibling's, or anything
+    /// that passed through the zygote.
+    fn spawn(&mut self, i: usize) -> io::Result<Child> {
+        let (ours, pid) = self.template.spawn(i)?;
         let conn = Conn::new(ours, CHILD_QUEUE);
         conn.set_nonblocking()?;
         Ok(Child {
@@ -264,13 +255,13 @@ impl Zygote {
             stats: false,
         })
     }
-    /// Replace slot `i`'s dead process with a fresh child of the snapshot,
-    /// within the re-fork budget (spent: the engine fails closed). It reports
-    /// READY later (`child_message`); what Node sends meanwhile queues on
-    /// its socket.
+    /// Replace slot `i`'s dead process with a fresh child of the snapshot
+    /// (from the template, as at startup), within the re-fork budget (spent:
+    /// the engine fails closed). It reports READY later (`child_message`);
+    /// what Node sends meanwhile queues on its socket.
     fn restore(&mut self, i: usize) -> io::Result<()> {
         self.restores.charge(clock::ipc_ns())?;
-        let mut child = self.fork(i)?;
+        let mut child = self.spawn(i)?;
         child.ready_by = Some(clock::ipc_ns().saturating_add(STARTUP_NS));
         self.children[i] = child;
         Ok(())
@@ -302,7 +293,7 @@ impl Zygote {
                 }
                 let conn = c.conn.as_mut().unwrap();
                 if !conn.fill()? {
-                    let why = reap(c.pid);
+                    let why = self.template.reap(c.pid)?;
                     return Err(io::Error::other(format!(
                         "HVF engine slot {i} failed to start: {why}"
                     )));
@@ -364,7 +355,7 @@ impl Zygote {
                 }
                 continue;
             }
-            self.escalate();
+            self.escalate()?;
             if fds[0].revents != 0 {
                 if !self.node.fill()? {
                     return Ok(()); // Node is gone
@@ -400,25 +391,28 @@ impl Zygote {
         }
     }
     /// Kill every child whose run or reset outlived its bound, and every
-    /// re-forked child that did not start in time.
-    fn escalate(&mut self) {
+    /// re-forked child that did not start in time. Its socket then closes
+    /// and `drain_child` ends it (`died`).
+    fn escalate(&mut self) -> io::Result<()> {
         let now = clock::ipc_ns();
         for c in &mut self.children {
             if c.conn.is_none() {
                 continue;
             }
-            if c.kill_at.is_some_and(|at| now >= at) {
+            let late = c.kill_at.is_some_and(|at| now >= at);
+            if late {
                 c.kill_at = None;
                 c.escalated = true;
-                // SAFETY: a child of this process that has not been reaped.
-                unsafe { libc::kill(c.pid, libc::SIGKILL) };
             }
-            if c.ready_by.is_some_and(|at| now >= at) {
+            let unstarted = c.ready_by.is_some_and(|at| now >= at);
+            if unstarted {
                 c.ready_by = None;
-                // SAFETY: as above.
-                unsafe { libc::kill(c.pid, libc::SIGKILL) };
+            }
+            if late || unstarted {
+                self.template.kill(c.pid)?;
             }
         }
+        Ok(())
     }
     fn drain_child(&mut self, i: usize) -> io::Result<()> {
         let conn = self.children[i].conn.as_mut().unwrap();
@@ -517,12 +511,10 @@ impl Zygote {
                 c.kill_at = None;
                 self.node.queue(&released(s, i, Some(why.clone()))?)?;
                 // This process never serves again: free its memory now
-                // (`serve` forks the slot a fresh one).
+                // (`serve` has the slot a fresh one forked).
                 c.dead = Some(why);
-                // SAFETY: a child of this process that has not been reaped.
-                unsafe { libc::kill(c.pid, libc::SIGKILL) };
-                reap(c.pid);
                 c.conn = None;
+                self.template.reap(c.pid)?;
             }
             _ => return Err(invalid("child message direction/kind")),
         }
@@ -536,9 +528,7 @@ impl Zygote {
         if c.conn.is_none() {
             return Ok(());
         }
-        // SAFETY: a child of this process that has not been reaped.
-        unsafe { libc::kill(c.pid, libc::SIGKILL) };
-        let why = format!("engine process exited ({})", reap(c.pid));
+        let why = format!("engine process exited ({})", self.template.reap(c.pid)?);
         c.conn = None;
         c.kill_at = None;
         c.ready_by = None;
@@ -632,15 +622,13 @@ impl Zygote {
         }
         Ok(())
     }
-    /// Kill and reap every child (Node is gone, or the engine fails closed).
+    /// Kill and reap every child (Node is gone, or the engine fails closed):
+    /// the template does, then exits.
     pub fn stop(&mut self) {
         for c in &mut self.children {
-            if c.conn.take().is_some() {
-                // SAFETY: a child of this process that has not been reaped.
-                unsafe { libc::kill(c.pid, libc::SIGKILL) };
-                reap(c.pid);
-            }
+            c.conn = None;
         }
+        self.template.stop();
     }
     pub fn pids(&self) -> Vec<libc::pid_t> {
         self.children.iter().map(|c| c.pid).collect()
@@ -733,19 +721,23 @@ pub fn confinement(base: &str) -> io::Result<String> {
             unsafe { libc::_exit(0) }
         }
         drop(theirs);
-        rows.push(String::from_utf8_lossy(&report(ours, pid)?).into_owned());
+        let row = report(ours, || {
+            reap(pid);
+            Ok(())
+        })?;
+        rows.push(String::from_utf8_lossy(&row).into_owned());
     }
     drop(listener);
     Ok(format!("[{}]", rows.join(",")))
 }
-/// The one record a probe process sends, after it exits.
-fn report(ours: OwnedFd, pid: libc::pid_t) -> io::Result<Vec<u8>> {
+/// The one record a probe process sends, after it exits (`reap`).
+fn report(ours: OwnedFd, reap: impl FnOnce() -> io::Result<()>) -> io::Result<Vec<u8>> {
     let mut conn = Conn::new(ours, 1);
     let mut row = None;
     while row.is_none() && conn.fill()? {
         row = conn.next()?;
     }
-    reap(pid);
+    reap()?;
     row.map(|m| m.bytes)
         .ok_or_else(|| invalid("confinement probe child exited without a report"))
 }
@@ -766,21 +758,16 @@ fn hvf_run(snapshot: &Arc<Snapshot<State>>) -> io::Result<()> {
     s.reset().map_err(|e| io::Error::other(e.to_string()))?;
     Ok(())
 }
-/// What the zygote does per slot: fork a child that runs HVF. A confined
-/// caller's child confines itself as an engine process does
-/// (`child::confine`) and must then be unable to fork.
+/// What the zygote does per slot: fork the template (template.rs), pass it
+/// a socket and have it fork a child that runs HVF. A confined caller's
+/// child confines itself as an engine process does (`child::confine`) and
+/// must then be unable to fork.
 fn fork_engine(snapshot: &Arc<Snapshot<State>>, confined: bool) -> io::Result<()> {
-    let (ours, theirs) = super::conn::pair()?;
     if threads()? != 1 {
         return Err(invalid("probe must be single-threaded to fork"));
     }
-    // SAFETY: fork in a single-threaded process (checked above).
-    let pid = unsafe { libc::fork() };
-    if pid < 0 {
-        return Err(io::Error::last_os_error());
-    }
-    if pid == 0 {
-        drop(ours);
+    let snapshot = snapshot.clone();
+    let mut template = Template::start(&[], move |theirs, _| {
         let unforkable = || {
             // SAFETY: a probe fork; a child that exists exits at once.
             match unsafe { libc::fork() } {
@@ -795,10 +782,10 @@ fn fork_engine(snapshot: &Arc<Snapshot<State>>, confined: bool) -> io::Result<()
         };
         let result = if confined {
             child::confine()
-                .and_then(|()| hvf_run(snapshot))
+                .and_then(|()| hvf_run(&snapshot))
                 .and_then(|()| unforkable())
         } else {
-            hvf_run(snapshot)
+            hvf_run(&snapshot)
         };
         let text = match result {
             Ok(()) => "ok".to_string(),
@@ -808,11 +795,11 @@ fn fork_engine(snapshot: &Arc<Snapshot<State>>, confined: bool) -> io::Result<()
             theirs.as_raw_fd(),
             &[Message::new(READY, 0, 0, 0, text.into_bytes())],
         );
-        // SAFETY: end the child without unwinding.
-        unsafe { libc::_exit(0) }
-    }
-    drop(theirs);
-    match report(ours, pid)? {
+        0
+    })?;
+    let (ours, pid) = template.spawn(0)?;
+    let row = report(ours, || template.reap(pid).map(|_| ()))?;
+    match row {
         b if b == b"ok" => Ok(()),
         b => Err(io::Error::other(format!(
             "engine process: {}",
@@ -946,3 +933,4 @@ mod restore_tests {
         assert!(RESTORE_WINDOW_NS >= 10 * s);
     }
 }
+

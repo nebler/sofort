@@ -895,6 +895,7 @@ mod conn;
 pub mod console;
 pub mod native;
 mod seatbelt;
+mod template;
 pub mod zygote;
 
 #[cfg(test)]
