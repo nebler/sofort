@@ -11,7 +11,8 @@ multi-day kill tests are outside this continuation; the deliverable is the compl
 - G03, G04 and G05 are committed in `4e60c7f6`. G04 and G05 include a GPT-6.1 continuation audit qualifying permission
   safety, baseline comparability, CPU/GPU floating-point equality and error semantics.
 - G02, G06, G08, G09 and G10 were already saved in the initial round commit.
-- G01 exists, but its Opus run failed after writing. GPT-6.1 is checking it before it is committed.
+- G01 is complete after GPT-6.1 recovery: 50 software-oracle entries, three developed pairings, and corrections separating
+  reproducibility, source bootstrapping and DDC. Its inventory and local links were checked; no untaken winner is established.
 - G07's Opus run failed before assembling its final report. Its draft sections and downloaded evidence survive under
   `/Users/noah/.t3/scratch/2026-10-28-here-are-the-absolute-paths-a63c3f1b/g07/`.
 
@@ -22,7 +23,7 @@ All use provider `codex`, model `gpt-6.1-sol`, reasoning `xhigh`, standard servi
 | Work | Output | T3 client request ID |
 |---|---|---|
 | Assemble and check G07 from its saved draft | `G07-papers-pl-systems.md` | `gap-resume-g07-gpt61` |
-| Complete/audit interrupted G01 | `G01-oracles-software.md` | `gap-resume-g01-gpt61` |
+| Complete/audit interrupted G01 — **completed** | `G01-oracles-software.md` | `gap-resume-g01-gpt61` |
 | Synthesize E20–E27; check source coverage and strongest seeds | `TRANSCRIPT-SYNTHESIS.md` | `gap-e20-e27-synthesis-gpt61` |
 
 These are app-owned delegated tasks under thread `d086a58d-c7b3-483f-83c5-5e6497aa09ec`; their completion wakes that
