@@ -42,4 +42,4 @@ failure in this suite; rejection must come from the dispatcher or kernel/EL0.
 `.READY` covers canonical build plus host conformance; VM evidence is separate.
 
 Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
-shared helpers in `../tslib/`; run `make tools` to compile it. See `PORT-PARITY.md` and `../docs/SCRIPTC-GAPS.md`.
+shared helpers in `../tslib/`; run `make tools` to compile it. See [`../docs/SCRIPTC-GAPS.md`](../docs/SCRIPTC-GAPS.md) and the [Python port parity report](../docs/results/port-parity-protocol-2026-10-26.md).

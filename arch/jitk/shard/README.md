@@ -231,6 +231,21 @@ its copy path keeps the physical pages, so a tenant's arena code can survive in
 the I-cache there too, unless the CPU has CTR_EL0.DIC. A kernel `ic ialluis`
 would close both. Not done here: it would change `kernel/.READY`.
 
+**Why one long-lived process per slot.** HVF allows one VM per process and
+runs a vCPU only on the thread that created it. The HVF spike
+([report](../docs/results/hvf-spike-2026-10-28.md); M4 Pro, load 5–11,
+medians) measured the process costs that shape the engine:
+
+| | CPU | wall | memory |
+| --- | ---: | ---: | ---: |
+| cold VM via `posix_spawn` | 3.1 ms | 3.9 ms | |
+| VM in a child forked from a parent holding the mapped snapshot | 0.77 + 0.15 ms | 1.2 ms | 1.23 MiB per child |
+| first boot to CHECKPOINT | 1.28 ms | 2.35 ms | |
+| warm run + reset in a persistent process | ~55 µs | | |
+
+So the zygote forks each engine process once and process creation stays off
+the per-run path.
+
 ## Limits (ABI 11)
 
 The JS profile has the console path's limits (`../executor/ipc/ABI.md`,
@@ -259,21 +274,6 @@ The run grew 1.6 µs on HVF with the kernel's TLB and I-cache invalidation
 after CHECKPOINT (measured with and without it); the rest follows the guest's
 heap layout (variants of the source decode moved it by ±4 µs), not the
 message path: `return 2` takes one exit before and after.
-
-**Why one long-lived process per slot.** HVF allows one VM per process and
-runs a vCPU only on the thread that created it. The HVF spike
-([report](../docs/results/hvf-spike-2026-10-28.md); M4 Pro, load 5–11,
-medians) measured the process costs that shape the engine:
-
-| | CPU | wall | memory |
-| --- | ---: | ---: | ---: |
-| cold VM via `posix_spawn` | 3.1 ms | 3.9 ms | |
-| VM in a child forked from a parent holding the mapped snapshot | 0.77 + 0.15 ms | 1.2 ms | 1.23 MiB per child |
-| first boot to CHECKPOINT | 1.28 ms | 2.35 ms | |
-| warm run + reset in a persistent process | ~55 µs | | |
-
-So the zygote forks each engine process once and process creation stays off
-the per-run path.
 
 ## HVF engine (`hvf ipc`, R10 #10 phase 2)
 
@@ -467,4 +467,5 @@ lock composition come from `../tslib/` through `lib.ts`. `make test` still takes
 locks (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`); never put another
 lock around it. `test-kvm` expects the caller to hold that lock and takes the
 snapshots from the cache (`make snapshot`) unless the variables are set.
-See `PORT-PARITY.md` and `SCRIPTC-GAPS.md` for comparisons and compiler workarounds.
+See [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md) for compiler workarounds and the
+[Python port parity report](../docs/results/port-parity-shard-2026-10-26.md).

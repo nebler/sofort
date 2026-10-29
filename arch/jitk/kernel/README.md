@@ -227,8 +227,8 @@ code can read resources with `std.loadFile`. No guest API was added or widened.
 
 Native tooling uses the arch/jitk scriptc 0.4.5 pin in `../tools/` and the
 shared helpers in `../tslib/`. Run `make tools` to compile the tools under
-`.work/bin/`. See `PORT-PARITY.md`
-and `SCRIPTC-GAPS.md` for parity coverage and platform details.
+`.work/bin/`. See [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md) for compiler workarounds and the
+[Python port parity report](../docs/results/port-parity-kernel-2026-10-26.md).
 
 `make linux-tools` cross-compiles static aarch64 musl executables for the
 Linux-only filesystem diagnostic and ring-rng source patcher. Set

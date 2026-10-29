@@ -1,6 +1,6 @@
 # Kernel tooling parity
 
-macOS arm64, scriptc 0.4.5, 2026-10-26. Compiler/runtime pinned in ../docs.
+macOS arm64, scriptc 0.4.5, 2026-10-26. Compiler and runtime pinned in `arch/jitk/tools/`.
 
 | Suite / format | Python | Native TS |
 |---|---:|---:|
@@ -22,8 +22,9 @@ The delegate guard's status + staged/unstaged binary-diff snapshots are retained
 
 Packing qjs yields byte-identical payload.flat, packed.rs and packed.json.
 Dispatcher, syscalls.json, features.json, argv.json and Rust argv are byte-identical
-on the same root/input. The default kernel binary remains SHA256
-`e3d774eb844f2cca9f1ba2b28c5b732c7ebc659e01dbafb0505d0d0f1d08b1f6`.
+on the same root/input. The default kernel binary stayed byte-identical to the image
+`kernel/.READY` pinned at the time (`e3d774eb…`; the current pin is in
+`kernel/.READY`).
 FS differential evidence agrees exactly after excluding uptime; stdout hashes,
 syscall sets, counts and immutable tree hash agree. Resource RNG preserves
 CPython Random(integer).randbytes bytes (two 256 KiB blocks for seeds 0/1/8

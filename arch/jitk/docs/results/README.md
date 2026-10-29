@@ -20,6 +20,7 @@ For current numbers, see the latest review (`arch/review/R11-REVIEW.md`,
 | [bench-admission-queue-2026-10-28](bench-admission-queue-2026-10-28.md) | 2026-10-28 | executor FIFO admission queue, before/after (nested) |
 | [grow-phase2-2026-10-27](grow-phase2-2026-10-27.md) | 2026-10-27 | GrowOS phase 2: corpus on the grown kernel |
 | [scriptc-corpus-phase2](scriptc-corpus-phase2.md) | 2026-10-27 | scriptc corpus on the phase-2 grown kernel |
+| port-parity-[kernel](port-parity-kernel-2026-10-26.md), [shard](port-parity-shard-2026-10-26.md), [executor](port-parity-executor-2026-10-26.md), [protocol](port-parity-protocol-2026-10-26.md), [docs](port-parity-docs-2026-10-26.md) | 2026-10-26 | Python → scriptc TypeScript tooling port: paired checks per subtree |
 | [grow-e2-e3-2026-10-26](grow-e2-e3-2026-10-26.md) | 2026-10-26 | GrowOS experiments E2 and E3 |
 | [grow-e0-e1-2026-10-26](grow-e0-e1-2026-10-26.md) | 2026-10-26 | GrowOS experiments E0 and E1 |
 | [grow-r7](grow-r7.md) | 2026-10-25 | grow R7: read-only SQLite (fstat, pread64) |

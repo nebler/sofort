@@ -1,6 +1,6 @@
 # Executor tooling parity
 
-macOS arm64, scriptc 0.4.5, 2026-10-26. Compiler/runtime pinned in ../docs.
+macOS arm64, scriptc 0.4.5, 2026-10-26. Compiler and runtime pinned in `arch/jitk/tools/`.
 
 | Check | Python baseline | Native TS |
 |---|---:|---:|

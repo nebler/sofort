@@ -1,6 +1,6 @@
 # Protocol tooling parity
 
-macOS arm64, scriptc 0.4.5, 2026-10-26. Compiler pinned in ../docs.
+macOS arm64, scriptc 0.4.5, 2026-10-26. Compiler pinned in `arch/jitk/tools/`.
 
 | Check | Python | Native TS |
 |---|---:|---:|
