@@ -85,7 +85,10 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       mark('runSent');
       const dispatch=async(call:Call)=>{
         try {
-          const decision=rules.decide(run,{t:'call',id:call.id,ns:call.ns,fn:call.fn,args:parse(JSON.stringify(call.args))});
+          // Undecodable arguments still spend the call id (a schema denial), or the next call fails the id sequence.
+          let args:unknown,decoded=true;try{args=guestValue(JSON.stringify(call.args));}catch{decoded=false;args=null;}
+          const decision=rules.decide(run,{t:'call',id:call.id,ns:call.ns,fn:call.fn,args});
+          if(!decoded)throw Error('policy denied: schema');
           if(decision.kind==='deny')throw Error('policy denied: '+decision.reason);
           const frozen=deepFreeze({...call,args:structuredClone(decision.call.args)}) as Call;
           const callContext=getContext();
@@ -117,7 +120,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           void dispatch({id:ev.id,ns:ev.ns,fn:ev.fn,args:ev.args});
         }else if(ev.kind==='done'){
           mark('done');
-          return {result:parse(JSON.stringify(ev.ok)),logs};
+          return {result:guestValue(JSON.stringify(ev.ok)),logs};
         }else if(ev.kind==='fail')throw Error(ev.message);
         else throw Error(`engine sent a native ${ev.kind} event to a JS job`);
       }
@@ -159,6 +162,19 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
   }
 }
 
+/** Decode a guest value for host code. JSON.parse makes "__proto__" an own property, and a
+ *  merge of it (or of constructor.prototype) into host objects pollutes them: both are dropped.
+ *  (Host-side only: codec.mjs is also the guest's codec, compiled into prepared snapshots.) */
+function guestValue(text:string):unknown {
+  const clean=(v:unknown):unknown=>{
+    if(Array.isArray(v))v.forEach(clean);
+    else if(v&&typeof v==='object'&&!ArrayBuffer.isView(v)&&!(v instanceof ArrayBuffer))
+      for(const k of Object.keys(v)){const x=(v as Record<string,unknown>)[k];
+        if(k==='__proto__'||k==='constructor'&&x&&typeof x==='object')delete (v as Record<string,unknown>)[k];else clean(x);}
+    return v;
+  };
+  return clean(parse(text));
+}
 function deepFreeze(v:unknown):unknown {
   if(v&&typeof v==='object'&&!ArrayBuffer.isView(v)){Object.freeze(v);for(const x of Object.values(v))deepFreeze(x);}
   return v;

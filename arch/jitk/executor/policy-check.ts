@@ -47,7 +47,13 @@ try{
  r=await run("for(let i=0;i<17;i++){try{await web.fetch({q:1})}catch{}}return 2");check('denial budget kills run',Boolean(r.error));
  const limited=new MicroVMExecutor(pool,()=> 'allow',10000,{tools,issuer,limits:{calls:2}});
  r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run with its reason',/policy violation: call budget/.test(r.error??'')&&limited.callLimit===2&&new MicroVMExecutor(pool,()=> 'allow').callLimit===pool.backend.limits.js!.calls);
+ const legacy=new MicroVMExecutor(pool,()=> 'allow',10000);
+ const echo={polluted:async(o:any)=>Object.hasOwn(o,'__proto__')||Object.hasOwn(o,'constructor')||(Object.assign({},o) as any).isAdmin===true||({} as any).isAdmin===true,ok:async(o:any)=>o.a};
+ await pool.drain();r=await legacy.execute("return await codemode.polluted(JSON.parse('{\"__proto__\":{\"isAdmin\":true},\"constructor\":{\"prototype\":{\"isAdmin\":true}},\"a\":1}'))",echo);
+ check('guest prototype keys never reach host tools',r.result===false);
+ await pool.drain();r=await legacy.execute("try{await codemode.ok({__codemode_binary_v1__:'Uint8Array',data:'!'})}catch(e){}return await codemode.ok({a:7})",echo);
+ check('undecodable call args spend their id; the next call runs',r.result===7);
  r=await run("await api.pure({q:'x'});return await api.pure({q:'y'})");check('none-read computation does not taint',!r.error);
  check('no credentials left live at end',live===0&&minted===revoked);
 }finally{await pool.close();}
-assert.equal(rows.length,23);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('23 executor policy assertions passed (plus 22 security owner assertions)');
+assert.equal(rows.length,25);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('25 executor policy assertions passed (plus 22 security owner assertions)');
