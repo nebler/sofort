@@ -59,7 +59,8 @@ try {
   await Promise.all(parked.map(s=>s.released));
 
   const pool=new SandboxPool(backend,0,slots);
-  const executor=new MicroVMExecutor(pool,()=> 'allow',60000);
+  // The 07 policy layer's default call budget is 256 per run; G1 is 1000 in one.
+  const executor=new MicroVMExecutor(pool,()=> 'allow',60000,{limits:{calls:EXCHANGES}});
   // Each call returns its own argument; the run returns their sum, and the
   // host checks every argument arrives in order.
   const echo=async(x:unknown)=>{
