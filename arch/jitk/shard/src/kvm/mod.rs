@@ -26,8 +26,8 @@ pub use crate::slot::reset::{
 #[cfg(test)]
 pub(crate) use crate::slot::test_guest;
 use libc::ioctl;
+use platform::{EnableCap, Mapping, OneReg, Region, call, try_call};
 pub use platform::{Kvm, raise_fds};
-use platform::{Mapping, OneReg, Region, call, check, try_call};
 
 /// A prepared snapshot with a KVM register file.
 pub type Snapshot = crate::snapshot::Snapshot<Registers>;
@@ -47,6 +47,19 @@ impl KvmVm {
         // SAFETY: successful KVM_CREATE_VM returns a new descriptor, checked
         // by call(), and transferred exactly once to this File.
         let fd = unsafe { File::from_raw_fd(call(&kvm.fd, KVM_CREATE_VM, 0)) };
+        if kvm.nisv {
+            // Before any vCPU exists. A guest store or load without an
+            // instruction syndrome on an MMIO address then exits with its
+            // address (Exit::Fault/BadDoorbell, as HVF) instead of failing
+            // KVM_RUN with ENOSYS.
+            let cap = EnableCap {
+                cap: KVM_CAP_ARM_NISV_TO_USER as u32,
+                flags: 0,
+                args: [0; 4],
+                pad: [0; 64],
+            };
+            call(&fd, KVM_ENABLE_CAP, &cap as *const _ as u64);
+        }
         Self {
             fd,
             run_size: kvm.run_size,
@@ -107,6 +120,7 @@ impl hv::Vm for KvmVm {
             pending_mmio: false,
             lease: None,
             drains: 0,
+            failed: None,
         })
     }
     fn restore_memory(&mut self, m: &Memory<'_, Registers>) -> io::Result<ResetReport> {
@@ -123,6 +137,9 @@ pub struct KvmVcpu {
     pub(crate) pending_mmio: bool,
     pub(crate) lease: Option<lease::Lease>,
     pub drains: u64,
+    /// A KVM_RUN failure no guest access explains (errno): KVM's view of this
+    /// vCPU is unknown, so its next reset fails and quarantines the slot.
+    pub(crate) failed: Option<i32>,
 }
 impl KvmVcpu {
     fn set_bytes(&self, id: u64, b: &[u8]) {
@@ -143,6 +160,26 @@ impl KvmVcpu {
     }
     fn set(&self, id: u64, v: u64) {
         self.set_bytes(id, &v.to_le_bytes());
+    }
+}
+impl KvmVcpu {
+    /// A failed KVM_RUN as this slot's exit; never a process abort, since a
+    /// hostile guest (EL0 or EL1) can make KVM_RUN fail. EINTR is a kick.
+    /// ENOSYS (a data abort without a syndrome when KVM lacks
+    /// KVM_CAP_ARM_NISV_TO_USER) and EFAULT (a guest access KVM could not map)
+    /// stop the guest at the faulting instruction: the run fails and the
+    /// usual reset restores the slot. Any other errno leaves KVM's view of
+    /// the vCPU unknown; the run fails and the next reset quarantines it.
+    fn failure(&mut self, errno: i32) -> hv::Exit {
+        match errno {
+            libc::EINTR => hv::Exit::Interrupted, // a kick: the owner looks at its slots and mail
+            libc::ENOSYS => hv::Exit::Other("guest access without a syndrome"),
+            libc::EFAULT => hv::Exit::Other("guest access KVM could not map"),
+            _ => {
+                self.failed = Some(errno);
+                hv::Exit::Other("KVM_RUN failed")
+            }
+        }
     }
 }
 impl hv::Vcpu for KvmVcpu {
@@ -171,6 +208,12 @@ impl hv::Vcpu for KvmVcpu {
         Ok(())
     }
     fn reset(&mut self, s: &Registers) -> io::Result<()> {
+        if let Some(errno) = self.failed {
+            return Err(io::Error::other(format!(
+                "KVM_RUN failed: {}",
+                io::Error::from_raw_os_error(errno)
+            )));
+        }
         self.restore_registers(s)
     }
     fn mismatches(&self, s: &Registers) -> Vec<u64> {
@@ -195,13 +238,25 @@ impl hv::Vcpu for KvmVcpu {
             // SAFETY: this owner has the live vCPU/run mappings; no guest RAM
             // reference spans KVM_RUN, which takes a zero scalar argument.
             let r = unsafe { ioctl(self.cpu.as_raw_fd(), KVM_RUN as _, 0u64) };
-            if r < 0 && io::Error::last_os_error().raw_os_error() == Some(libc::EINTR) {
-                return Ok(hv::Exit::Interrupted); // yield to the owner to service another slot's expiry
+            if r < 0 {
+                let errno = io::Error::last_os_error().raw_os_error().unwrap_or(0);
+                drop(running); // KVM_RUN has returned
+                return Ok(self.failure(errno));
             }
-            check(r, "KVM_RUN");
         }
         self.pending_mmio = false;
         let reason = self.run.u32(EXIT_REASON);
+        if reason as u64 == KVM_EXIT_ARM_NISV {
+            // A data abort without a valid syndrome (stp, ldp, writeback,
+            // atomics) on the doorbell, a read-only extent or an unbacked
+            // GPA. Never resumed: the run fails and the reset restores PC.
+            let gpa = self.run.word(NISV_IPA);
+            return Ok(if gpa == ring::DOORBELL_GPA {
+                hv::Exit::BadDoorbell
+            } else {
+                hv::Exit::Fault { gpa }
+            });
+        }
         if reason as u64 != KVM_EXIT_MMIO {
             return Ok(hv::Exit::Other("unexpected KVM exit"));
         }
@@ -298,9 +353,8 @@ impl Slot {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        Kvm, KvmVcpu, Mapping, RAM, ResetPolicy, RunError, Slot, Snapshot, check, test_guest,
-    };
+    use super::platform::check;
+    use super::{Kvm, KvmVcpu, Mapping, RAM, ResetPolicy, RunError, Slot, Snapshot, test_guest};
     use crate::slot::CTRL;
     use crate::{arena, constants::ring};
     use std::{fs::File, sync::Arc};
@@ -636,6 +690,62 @@ mod tests {
         }
     }
     #[test]
+    #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
+    fn syndromeless_guest_accesses_fail_the_run_not_the_process() {
+        let kvm = Kvm::new();
+        let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
+        let mut s = Slot::new(&kvm, snapshot);
+        for (name, code, expected) in test_guest::syndromeless() {
+            // KVM_RUN returned ENOSYS here, and the shard aborted.
+            s.redirect_entry(code);
+            let e = s
+                .exit()
+                .err()
+                .unwrap_or_else(|| panic!("{name}: a doorbell"));
+            assert!(expected.is(kvm.nisv, &e), "{name}: {e:?}");
+            assert!(
+                s.vcpu.failed.is_none(),
+                "{name}: a guest access, not a KVM failure"
+            );
+            s.reset().unwrap();
+            assert!(probe(&mut s), "{name}: clean after the reset");
+            s.reset().unwrap();
+        }
+        s.shutdown().unwrap();
+    }
+    #[test]
+    fn failed_kvm_run_fails_the_run_and_quarantines_at_reset() {
+        use crate::hv::{Exit, Vcpu};
+        let f = File::open("/dev/zero").unwrap();
+        let vcpu = || KvmVcpu {
+            run: Mapping::new(&f, 4096, libc::MAP_PRIVATE),
+            cpu: File::open("/dev/null").unwrap(),
+            pending_mmio: false,
+            lease: None,
+            drains: 0,
+            failed: None,
+        };
+        // /dev/null rejects KVM_RUN (ENOTTY): no guest access explains it, so
+        // the run fails and the reset refuses the vCPU (the slot quarantines).
+        let mut v = vcpu();
+        assert_eq!(v.run().unwrap(), Exit::Other("KVM_RUN failed"));
+        let e = v
+            .reset(&crate::snapshot::Registers(Vec::new()))
+            .unwrap_err();
+        assert!(e.to_string().starts_with("KVM_RUN failed"), "{e}");
+        // Guest accesses KVM could not complete fail the run only; the usual
+        // reset follows. EINTR is a kick.
+        let mut v = vcpu();
+        for (errno, exit) in [
+            (libc::ENOSYS, Exit::Other("guest access without a syndrome")),
+            (libc::EFAULT, Exit::Other("guest access KVM could not map")),
+            (libc::EINTR, Exit::Interrupted),
+        ] {
+            assert_eq!(v.failure(errno), exit);
+        }
+        assert!(v.failed.is_none());
+    }
+    #[test]
     fn drop_does_not_panic_when_mmio_drain_fails() {
         let f = File::open("/dev/zero").unwrap();
         let mut v = KvmVcpu {
@@ -644,6 +754,7 @@ mod tests {
             pending_mmio: true,
             lease: None,
             drains: 0,
+            failed: None,
         };
         assert!(crate::hv::Vcpu::settle(&mut v).is_err());
         drop(v); // /dev/null rejects KVM_RUN: cleanup must not assert.

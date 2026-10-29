@@ -70,10 +70,13 @@ const MFD_CLOEXEC_SEALING: u64 = 1 | 2;
 const F_ADD_SEALS: u64 = 1033;
 
 /// The KVM ioctls an owner thread issues on its VM and vCPU descriptors
-/// after setup: creating a slot (lazily, on its first START), running,
-/// resetting and verifying it. /dev/kvm's own setup queries are done.
-pub const KVM_IOCTLS: [u64; 11] = [
+/// after setup: creating a slot (lazily, on its first START; the first
+/// `CREATE`, KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER among them, whose
+/// argument a filter cannot inspect), running, resetting and verifying it.
+/// /dev/kvm's own setup queries are done.
+pub const KVM_IOCTLS: [u64; 12] = [
     kvm::KVM_CREATE_VM,
+    kvm::KVM_ENABLE_CAP,
     kvm::KVM_CREATE_VCPU,
     kvm::KVM_ARM_PREFERRED_TARGET,
     kvm::KVM_ARM_VCPU_INIT,
@@ -85,6 +88,9 @@ pub const KVM_IOCTLS: [u64; 11] = [
     kvm::KVM_SET_MP_STATE,
     kvm::KVM_GET_MP_STATE,
 ];
+/// How many of KVM_IOCTLS create a VM or vCPU (a native worker's exist
+/// before its filter).
+pub const CREATE: usize = 5;
 
 /// What every thread of both processes needs: the allocator (never an
 /// executable mapping), futex waits and wakes (no PI or requeue operations),
@@ -141,14 +147,17 @@ pub fn shard(pid: u32) -> Vec<Rule> {
 }
 
 /// The native worker (kvm/native.rs): the runtime, the KVM ioctls of a run
-/// and a reset on its already created VMs (KVM_IOCTLS without the four that
-/// create a VM or vCPU), pagemap reads, signals to itself, and each run's
+/// and a reset on its already created VMs (KVM_IOCTLS without the CREATE
+/// ones), pagemap reads, signals to itself, and each run's
 /// sealed input archive: memfd_create (CLOEXEC and sealing only), its size,
 /// F_ADD_SEALS and a read-only mapping. Its frames are stdin and stdout
 /// reads and writes; /dev/kvm, the pagemap and /dev/urandom are open before.
 pub fn native_worker(pid: u32) -> Vec<Rule> {
     let mut rules = runtime();
-    let ioctls: Vec<[Arg; 1]> = KVM_IOCTLS[4..].iter().map(|&op| [Arg::Eq(1, op)]).collect();
+    let ioctls: Vec<[Arg; 1]> = KVM_IOCTLS[CREATE..]
+        .iter()
+        .map(|&op| [Arg::Eq(1, op)])
+        .collect();
     let ioctls: Vec<&[Arg]> = ioctls.iter().map(|a| &a[..]).collect();
     rules.extend([
         Rule::allow_any(nr::IOCTL, &ioctls),
@@ -183,7 +192,7 @@ pub fn watchdog(shard: u32, pidfd: i32) -> Vec<Rule> {
 #[cfg(test)]
 mod tests {
     use super::super::bpf::{AUDIT_ARCH_AARCH64, Action, compile, eval};
-    use super::{KVM_IOCTLS, native_worker, nr, shard, watchdog};
+    use super::{CREATE, KVM_IOCTLS, native_worker, nr, shard, watchdog};
     use crate::constants::kvm;
     const PID: u32 = 4242;
     fn on(rules: &[super::Rule], nr: u32, args: [u64; 6]) -> Action {
@@ -313,11 +322,11 @@ mod tests {
     #[test]
     fn native_worker_runs_its_vms_and_seals_inputs_only() {
         let rules = native_worker(PID);
-        for op in &KVM_IOCTLS[4..] {
+        for op in &KVM_IOCTLS[CREATE..] {
             assert_eq!(on(&rules, nr::IOCTL, args(&[7, *op])), Action::Allow);
         }
         // Its VMs and vCPUs exist before the filter: no new ones.
-        for op in &KVM_IOCTLS[..4] {
+        for op in &KVM_IOCTLS[..CREATE] {
             assert_eq!(on(&rules, nr::IOCTL, args(&[7, *op])), Action::KillProcess);
         }
         assert_eq!(on(&rules, nr::MEMFD_CREATE, args(&[0, 3])), Action::Allow);

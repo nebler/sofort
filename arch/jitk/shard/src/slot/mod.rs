@@ -676,4 +676,81 @@ pub(crate) mod test_guest {
         jitk_reset_system_off_start,
         jitk_reset_system_off_end
     );
+    /// What a hostile guest's access must end as: the slot's run fails with
+    /// this, and no other slot or the process notices.
+    #[cfg_attr(not(target_os = "linux"), allow(dead_code))] // KVM tests only, so far
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    pub enum Outcome {
+        /// `RunError::MemoryBound` at this address.
+        MemoryBound(u64),
+        /// `RunError::GuestProtocol("invalid doorbell access")`.
+        BadDoorbell,
+    }
+    #[cfg_attr(not(target_os = "linux"), allow(dead_code))] // KVM tests only, so far
+    impl Outcome {
+        /// Whether run error `e` is this. `nisv`: the hypervisor reports a
+        /// syndromeless access with its address (HVF; KVM with
+        /// KVM_CAP_ARM_NISV_TO_USER), else the run fails as a guest error.
+        pub fn is(self, nisv: bool, e: &super::RunError) -> bool {
+            use super::RunError::{GuestProtocol, MemoryBound};
+            match (nisv, e, self) {
+                (true, MemoryBound { address }, Self::MemoryBound(a)) => *address == a,
+                (true, GuestProtocol(why), Self::BadDoorbell) => *why == "invalid doorbell access",
+                (false, GuestProtocol(why), _) => *why == "guest access without a syndrome",
+                _ => false,
+            }
+        }
+    }
+    #[cfg_attr(not(target_os = "linux"), allow(dead_code))] // KVM tests only, so far
+    fn code(words: &[u32]) -> &'static [u8] {
+        Box::leak(words.iter().flat_map(|w| w.to_le_bytes()).collect())
+    }
+    #[cfg_attr(not(target_os = "linux"), allow(dead_code))] // KVM tests only, so far
+    /// EL1 accesses without a valid instruction syndrome (ESR ISV=0: pairs,
+    /// writeback) to the doorbell, read-only RAM and an unbacked GPA, each
+    /// followed by `b .`. KVM_RUN failed with ENOSYS for these (no MMIO
+    /// emulation without a syndrome); `Slot::redirect_entry` enters them.
+    pub fn syndromeless() -> Vec<(&'static str, &'static [u8], Outcome)> {
+        use crate::constants::ring::{DOORBELL_GPA, RAM_GPA};
+        const X2_DOORBELL: u32 = 0xd2a2_0002; // movz x2, #0x1000, lsl #16
+        const X2_RAM: u32 = 0xd2b0_0002; // movz x2, #0x8000, lsl #16: the immutable kernel
+        const X2_UNBACKED: u32 = 0xd2a8_0002; // movz x2, #0x4000, lsl #16
+        const STP: u32 = 0xa900_0440; // stp x0, x1, [x2]
+        const LDP: u32 = 0xa940_0440; // ldp x0, x1, [x2]
+        const STR_PRE: u32 = 0xb800_4c40; // str w0, [x2, #4]!
+        const SPIN: u32 = 0x1400_0000; // b .
+        assert_eq!((DOORBELL_GPA, RAM_GPA), (0x1000_0000, 0x8000_0000));
+        vec![
+            (
+                "stp to the doorbell",
+                code(&[X2_DOORBELL, STP, SPIN]),
+                Outcome::BadDoorbell,
+            ),
+            (
+                "ldp from the doorbell",
+                code(&[X2_DOORBELL, LDP, SPIN]),
+                Outcome::BadDoorbell,
+            ),
+            (
+                "stp to read-only RAM",
+                code(&[X2_RAM, STP, SPIN]),
+                Outcome::MemoryBound(RAM_GPA),
+            ),
+            (
+                "writeback str to read-only RAM",
+                code(&[X2_RAM, STR_PRE, SPIN]),
+                Outcome::MemoryBound(RAM_GPA + 4),
+            ),
+            (
+                "stp to an unbacked GPA",
+                code(&[X2_UNBACKED, STP, SPIN]),
+                Outcome::MemoryBound(0x4000_0000),
+            ),
+        ]
+    }
+    #[cfg_attr(not(target_os = "linux"), allow(dead_code))] // KVM tests only, so far
+    /// `b .` at EL1: a guest that never exits.
+    pub fn spin() -> &'static [u8] {
+        code(&[0x1400_0000])
+    }
 }

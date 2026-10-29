@@ -128,12 +128,17 @@ impl Drop for Input {
 pub struct NativeVm {
     slot: Slot, // Drop KVM memslots before dropping the input mapping.
     input: Option<Input>,
+    /// Tests: enter EL1 code instead of the snapshot's guest (redirect_entry).
+    #[cfg(test)]
+    entry: Option<&'static [u8]>,
 }
 impl NativeVm {
     pub fn new(kvm: &Kvm, snapshot: Arc<Snapshot>) -> Self {
         Self {
             slot: Slot::new(kvm, snapshot),
             input: None,
+            #[cfg(test)]
+            entry: None,
         }
     }
     pub fn shutdown(&mut self) -> io::Result<()> {
@@ -169,6 +174,10 @@ impl NativeVm {
         s.store(ring::ARGC, run.args.len() as u64);
         s.store(ring::ARCHIVE_BYTES, run.archive.len() as u64);
         s.store(ring::OUTPUT_BYTES, streams::OUTPUT_LIMIT as u64);
+        #[cfg(test)]
+        if let Some(code) = self.entry {
+            s.redirect_entry(code);
+        }
         let mut rx = Receiver::new(generation, streams::OUTPUT_LIMIT).map_err(str::to_string)?;
         loop {
             s.store(ring::MONOTONIC_NS, monotonic_ns());
@@ -182,6 +191,9 @@ impl NativeVm {
                 Exit::Fault { gpa } => {
                     return Err(format!("memory_bound: native access at {gpa:#x}").into());
                 }
+                // A failed KVM_RUN too; the next run's admit() resets the VM
+                // (or quarantines it when KVM's vCPU state is unknown).
+                Exit::Other(what) => return Err(format!("guest_protocol: {what}").into()),
                 e => return Err(format!("unexpected native KVM exit {e:?}").into()),
             };
             rx.drain(s.load(ring::TX_PRODUCER), |cursor, dst| {
@@ -315,4 +327,54 @@ pub fn worker(profiles: &[String]) -> io::Result<()> {
     let mut worker = confined(&mut confinement, profiles)?;
     confinement.report().warn("native worker");
     worker.serve(&mut io::stdin().lock(), &mut io::stdout().lock())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Worker;
+    use crate::inputs::{Failure, Run};
+    use crate::kvm::test_guest;
+    #[test]
+    #[ignore = "requires KVM, JITK_SHARD_TEST_SNAPSHOT and JITK_SHARD_TEST_BINARY; run under bench.lock"]
+    fn syndromeless_guest_access_fails_only_its_request() {
+        // Any snapshot serves: each request enters EL1 code at once.
+        let base = std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap();
+        let mut worker = Worker::load(&[format!("t={base}")]).unwrap();
+        let nisv = crate::kvm::Kvm::new().nisv;
+        let mut generation = 0;
+        let mut run = |worker: &mut Worker, code, budget_ms| {
+            worker.vms.get_mut("t").unwrap().entry = Some(code);
+            generation += 1;
+            let run = Run {
+                budget_ms,
+                tool: "t".into(),
+                args: Vec::new(),
+                archive: vec![0],
+            };
+            worker.run(&run, generation)
+        };
+        for (name, code, expected) in test_guest::syndromeless() {
+            // KVM_RUN returned ENOSYS here, and the worker aborted.
+            let Err(Failure::Sandbox(e)) = run(&mut worker, code, 2_000) else {
+                panic!("{name}: no failure");
+            };
+            let want = match (nisv, expected) {
+                (true, test_guest::Outcome::MemoryBound(gpa)) => {
+                    format!("memory_bound: native access at {gpa:#x}")
+                }
+                (true, test_guest::Outcome::BadDoorbell) => {
+                    "unexpected native KVM exit BadDoorbell".into()
+                }
+                (false, _) => "guest_protocol: guest access without a syndrome".into(),
+            };
+            assert_eq!(e, want, "{name}");
+        }
+        // The same VM, reset by admit(), still runs and its lease still
+        // stops a guest that never exits.
+        assert_eq!(
+            run(&mut worker, test_guest::spin(), 300),
+            Err(Failure::Deadline)
+        );
+        assert!(!worker.vms["t"].slot.is_quarantined());
+    }
 }

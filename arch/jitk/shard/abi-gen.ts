@@ -36,6 +36,7 @@ const KVM_VCPU_INIT = 4 + 7 * 4; // target, features[7]
 const KVM_ONE_REG = 8 + 8; // id, addr
 const KVM_REG_LIST = 8; // n, then the flexible reg[]
 const KVM_MP_STATE = 4; // mp_state
+const KVM_ENABLE_CAP = 4 + 4 + 4 * 8 + 64; // cap, flags, args[4], pad[64]
 
 const KVM_REG_ARM64 = 0x6000000000000000n;
 const KVM_REG_SIZE_U64 = 0x0030000000000000n;
@@ -54,7 +55,8 @@ function core(byteOffset: number): bigint {
 
 // struct kvm_run: request_interrupt_window u8 @0, immediate_exit u8 @1,
 // padding1[6], exit_reason u32 @8, ...; the exit union starts at 32 and its
-// mmio member is { u64 phys_addr; u8 data[8]; u32 len; u8 is_write; }.
+// mmio member is { u64 phys_addr; u8 data[8]; u32 len; u8 is_write; }, its
+// arm_nisv member { u64 esr_iss; u64 fault_ipa; }.
 const RUN_UNION = 32;
 
 // Order and names are the generated file's (and the header test's) contract.
@@ -91,6 +93,11 @@ export const CONSTANTS: [string, 'u64' | 'usize', bigint][] = [
   ['REG_PC', 'u64', core(32 * 8)],
   ['REG_PSTATE', 'u64', core(33 * 8)],
   ['REG_SCTLR', 'u64', sysreg(3, 0, 1, 0, 0)],
+  ['KVM_CHECK_EXTENSION', 'u64', io(0x03)],
+  ['KVM_ENABLE_CAP', 'u64', iow(0xa3, KVM_ENABLE_CAP)],
+  ['KVM_CAP_ARM_NISV_TO_USER', 'u64', 177n],
+  ['KVM_EXIT_ARM_NISV', 'u64', 28n],
+  ['NISV_IPA', 'usize', BigInt(RUN_UNION + 8)],
 ];
 
 export function render(): string {

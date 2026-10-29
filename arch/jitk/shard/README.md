@@ -131,6 +131,23 @@ clock_gettime), and it parks while none is. It writes only inside that window, a
 leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
+### KVM_RUN failures
+
+A guest can make KVM_RUN fail: an EL1 data abort without a valid
+syndrome (`stp`/`ldp`, writeback, atomics) on the doorbell, a read-only
+extent or an unbacked GPA has no MMIO emulation, and KVM_RUN returned
+ENOSYS, which used to abort the shard. Each VM enables
+KVM_CAP_ARM_NISV_TO_USER, so these exit as `KVM_EXIT_ARM_NISV` with their
+address and fail the run as HVF does (doorbell: `guest_protocol: invalid
+doorbell access`, else `memory_bound`); a KVM without the capability fails
+the run with `guest_protocol: guest access without a syndrome`. Any KVM_RUN
+error is a per-slot exit (pool and native worker): ENOSYS and EFAULT reset
+the slot as usual; another errno leaves KVM's view of the vCPU unknown, so
+its reset fails and the slot is quarantined, never reused
+(`kvm::tests::syndromeless_guest_accesses_fail_the_run_not_the_process`,
+`owner::tests::syndromeless_guest_access_fails_only_its_slot`,
+`native::tests::syndromeless_guest_access_fails_only_its_request`).
+
 ### Deadlines: lease, kick, kill
 
 Both engines implement one deadline model with three roles:
@@ -193,8 +210,10 @@ watchdog process), all before READY and so before any guest code runs:
    thread (TSYNC). Allowed: the allocator without executable mappings,
    futex wait/wake (no PI, no requeue), read/write/ppoll/close on the open
    descriptors, pread64 (pagemap), clocks and sleeps, signal return, tgkill
-   of its own threads, exit, and exactly the 11 KVM ioctls an owner issues
-   after setup (`confine::policy::KVM_IOCTLS`; slots are created lazily).
+   of its own threads (the watchdog's and owners' kicks), exit, and exactly
+   the 12 KVM ioctls an owner issues after setup
+   (`confine::policy::KVM_IOCTLS`; slots are created lazily, each VM with
+   KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER, see "KVM_RUN failures").
    Anything else (open, socket, exec, clone, ptrace, kill, prctl, other
    ioctls, ...) kills the process with SIGSYS.
 
@@ -230,7 +249,7 @@ namespaces; then, with /dev/kvm, the pagemap, every profile's snapshot and VM
 and /dev/urandom open (`native::Worker::load`), the files-closed layer; then
 its filter (`confine::policy::native_worker`; it has no threads). That filter
 is the runtime above, pread64, tgkill of itself, the 7 KVM ioctls of a run and
-a reset (its VMs exist already, so none that creates a VM or vCPU), and what
+a reset (its VMs exist already, so none that creates or sets up a VM or vCPU), and what
 each run's sealed input archive needs: memfd_create with exactly
 CLOEXEC|ALLOW_SEALING, ftruncate, fcntl F_ADD_SEALS only, and its read-only
 mapping. Its frames are stdin/stdout reads and writes. Degraded layers are
