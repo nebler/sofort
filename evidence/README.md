@@ -30,7 +30,6 @@ Build the tool with `make -C arch/jitk tools`, then run
 The reducers and verifiers for moved evidence don't run in any test. Fetch their
 inputs first. Examples:
 - `fetch arch/jitk/bench/ledger` before `bench/ledger/verify.ts`
-- `fetch arch/jitk/linux/out/r7` before `linux/historical.ts`
 - `fetch arch/jitk/shard/raw-r7-shard` before `shard/evidence.ts analyze-*`
 - `fetch arch/jitk/scriptc-corpus/census.csv` before `make -C arch/jitk/scriptc-corpus audit`
 
@@ -43,7 +42,7 @@ pinned by `docs/.R4`, and the area-10 R4 docs) were not edited.
 
 **Scope:** tracked files under `arch/`, except:
 - `arch/research/`, which other sessions are still writing
-- the trees W0.2 deletes: `arch/jitk/native/`, `arch/jitk/native-spike/` and `arch/jitk/shard/src/synthetic/`
+- `arch/jitk/native/`, `arch/jitk/native-spike/` and `arch/jitk/shard/src/synthetic/` (deleted trees)
 
 **A file is evidence** when any of these holds:
 1. A directory on its path is an output directory: `results`, `result`, `raw`,
