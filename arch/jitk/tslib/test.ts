@@ -9,7 +9,7 @@ import { asciiJSON, dumpJSON } from './json.ts';
 import { files, removeTree, writable, canonical } from './fs.ts';
 import { median, fit } from './stats.ts';
 import { PythonRandom, pythonShuffle } from './random.ts';
-import { spawnCapture, startDirect, startEnvArgv, trackedChildren, sleep, type Exit } from './process.ts';
+import { spawnCapture, startDirect, startEnvArgv, trackedChildren, type Exit } from './process.ts';
 import { capture, run } from './subprocess.ts';
 import * as streams from './stream-process.ts';
 import { skipOrFail } from './skip.ts';
@@ -167,7 +167,7 @@ await test('spawn failure rejects without waiting for close', async () => {
     message = String(error);
   }
   check(message.includes('ENOENT'), 'ENOENT: ' + message);
-  await sleep(10);
+  // track()'s error listener runs before the one that rejects.
   check(trackedChildren() === 0, 'failed spawn released');
 });
 
