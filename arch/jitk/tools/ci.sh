@@ -274,6 +274,7 @@ part_kvm() {
   # shard-host.sh takes the bench lock itself around the executor suite.
   step 'shard-host.sh' sh "$JITK/executor/ipc/shard-host.sh"
   step 'executor verify/api/policy/wrapper' executor_shard_checks
+  step 'kernel test-ring' make -s -C "$JITK/kernel" test-ring
   step 'mcp test' mcp_shard_test
   # The parity corpus, shard test, the executor's shard-check and shard
   # test-kvm, then the native census regression, each locked as it needs.
@@ -287,6 +288,7 @@ part_mac() {
   step 'shard snapshot' make -s -C "$JITK/shard" snapshot
   step 'shard test-hvf, hvf confine' make -s -C "$JITK/shard" test-hvf
   step 'executor shard-check (hvf)' make -s -C "$JITK/executor" test-shard
+  step 'kernel test-ring (hvf)' make -s -C "$JITK/kernel" test-ring
   step 'executor parity (darwin)' make -s -C "$JITK/executor" parity
   # MCP's warm pools need the engine's parking gate.
   step 'executor hvf-parking-gate' make -s -C "$JITK/executor" hvf-parking-gate

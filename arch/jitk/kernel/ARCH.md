@@ -38,7 +38,7 @@ image and its gates are in [`.READY`](.READY).
 | `crate::wait::{now_ns, park, park_for, init, ticks, ticks_ns}` (default build) | `wait.rs`: CNTVCT/CNTFRQ, CNTV one-shot plus WFI, GIC ack. The park policy (ack → `console::service` → recheck → sleep) is inside it | console, ppoll, `syscalls::now_ns` |
 | `crate::fdt` | the boot-info parser for this platform (FDT) | `arch::boot` only |
 | trap entry → `crate::user::syscall_entry!(frame)` and `arch::frame::{WORDS, NR, ARGS, RET, PC}` | `vectors.S` saves x0–x30, ELR, SPSR, SIMD; `trap.rs` checks ESR (SVC64), reports other faults, clears PAN on the ring path | `user.rs` |
-| `arch::enter_user(sp, entry) -> !` | VBAR, SP_EL0, ELR, SPSR=EL0t, PAN set, `eret` | `user::run` |
+| `arch::enter_user(sp, entry) -> !` | VBAR, SP_EL0, ELR, SPSR=EL0t, PAN set; zero x0–x30, v0–v31, FPCR, FPSR, TPIDR_EL0 (Linux execve state); `eret` | `user::run` |
 | `arch::sync_icache(start, end)` | DC CVAU per line plus IC IALLU over the kernel alias | `user::run`, ring checkpoint |
 | `arch::mmio::{read32, write32, barrier}` | LDR/STR to Device-nGnRE memory; DMB SY | `console.rs` |
 | `arch::doorbell(op)` (ring) | DMB ISHST then STR to `DOORBELL_GPA` | `ring.rs`, `wait_ring.rs`, `off()` |

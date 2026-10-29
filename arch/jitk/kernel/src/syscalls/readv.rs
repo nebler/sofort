@@ -10,6 +10,10 @@ pub fn call(a: &[usize; 6]) -> isize {
     if a[2] > 1024 {
         return -22;
     }
+    // No iovec is read for an empty vector (Linux: readv(fd, NULL, 0) == 0).
+    if a[2] == 0 {
+        return 0;
+    }
     let Some(_) = access(a[1], a[2] * 16, false) else {
         return -14;
     };

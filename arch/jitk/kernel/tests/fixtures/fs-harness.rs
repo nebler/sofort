@@ -89,6 +89,16 @@ fn exercise() {
     for fd in 3..64 { assert_eq!(open("/a.txt", 0), fd); }
     assert_eq!(open("/a.txt", 0), -24); assert_eq!(close::call(&[64]), -9); assert_eq!(close::call(&[usize::MAX]), -9);
     for fd in 3..64 { close::call(&[fd]); }
+    // getdents64 faulting after a record returns that record (Linux) and keeps
+    // the faulting entry: "." fits the last 24 bytes of MEM, ".." does not.
+    assert_eq!(open("/", 0x4000), 3);
+    let end = syscalls::MEM.as_ptr() as usize + 8192;
+    assert_eq!(getdents64::call(&[3, end - 24, 4096]), 24);
+    assert_eq!(&syscalls::MEM[8192 - 5..8192 - 3], b".\0");
+    assert_eq!(getdents64::call(&[3, end - 8, 4096]), -14);
+    assert_eq!(getdents64::call(&[3, buf(), 4096]), 24 + 32 + 24);
+    assert_eq!(&syscalls::MEM[4096 + 19..4096 + 22], b"..\0");
+    assert_eq!(close::call(&[3]), 0);
     exercise();
     let words = 4 + 6 * u32::from_le_bytes(fsb[8..12].try_into().unwrap()) as usize;
     for w in 0..words {
