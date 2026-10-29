@@ -15,7 +15,7 @@ use crate::constants::{ipc as wire, ring};
 use crate::hv::{ArchState, Exit, Memory, Vcpu, Vm};
 use crate::service::{self, Assembler, Message, Phase, State};
 use crate::slot::{REQUEST, Request, ResetReport, Slot, Step};
-use crate::virtio_console::{Console, Port};
+use crate::virtio_console::{Console, Port, TX_NOTIFY_BYTES};
 use crate::{inputs, payload, streams};
 use std::{
     collections::VecDeque,
@@ -395,10 +395,13 @@ fn run_console(data: &[u8]) -> (FuzzConsole, usize) {
     let mut events = 0;
     while let Some(tag) = input.u8() {
         let ok = match tag % 5 {
-            MMIO_WRITE => input
-                .u16()
-                .zip(input.u32())
-                .map(|(off, v)| dev.write(u64::from(off & 0x1fc), v).is_ok()),
+            MMIO_WRITE => input.u16().zip(input.u32()).map(|(off, v)| {
+                let before = dev.port().output;
+                let ok = dev.write(u64::from(off & 0x1fc), v).is_ok();
+                // One store (a QueueNotify) is bounded host work.
+                assert!(dev.port().output - before <= TX_NOTIFY_BYTES);
+                ok
+            }),
             MMIO_READ => input
                 .u16()
                 .map(|off| dev.read(u64::from(off & 0x1fc)).is_ok()),
