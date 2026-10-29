@@ -105,7 +105,11 @@ glue-2m arena (about 400 KiB of QuickJS heap). Details:
   decodes every ring record; Node validates every IPC record again before an
   event exists (`executor/engine.ts`).
 - The engine runs out of process: it is the crash and confinement boundary.
-  On macOS it is Seatbelt-confined; the Linux shard is not yet confined.
+  On macOS it is Seatbelt-confined; on Linux both the shard (`real ipc`) and
+  the native worker (`real native-worker`) enter namespaces, Landlock,
+  `no_new_privs` and a seccomp allowlist before any guest runs
+  (`shard/src/confine/`). Both die with their parent and enforce run
+  deadlines in the engine, independent of Node.
 - Policy and credentials exist only in Node. Kernel diagnostics never
   authorize a tool or establish success.
 - GrowOS's builder and oracle are trusted developer tools, a different

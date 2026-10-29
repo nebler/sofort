@@ -46,8 +46,12 @@ The kernel side of the launcher contract (RAM, FDT, bootargs, framing) is in
 - A change to `jitk.sb` (any file under `shard/src`) rebuilds the engine
   (`tslib/deps.ts` `shardInputs`).
 
-The Linux KVM shard has no OS confinement yet (`arch/review/R11-REVIEW.md`,
-fix #1).
+On Linux, `real ipc` and `real native-worker` confine themselves before
+any guest runs: user, network and IPC namespaces, Landlock, `no_new_privs`
+and a per-process seccomp allowlist (`shard/src/confine/policy.rs`: `shard`,
+`native_worker`, `watchdog`); `real confine [--native]` probes each layer.
+A kernel without a layer degrades with a reported warning
+(`arch/review/2026-10-29-SECURITY-CORRECTNESS-REVIEW.md`, F1).
 
 ## Executor ↔ shard IPC on macOS
 
