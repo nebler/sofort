@@ -264,8 +264,12 @@ seccomp denies ptrace and outside signals). PR_SET_DUMPABLE stays set, so
 Node and the observers can read the shard's /proc files; seccomp and Landlock
 keep the shard from reaching other processes' memory. A layer the kernel
 lacks (no Landlock, a refused namespace, an older Landlock ABI) is printed
-on stderr (`shard IPC: confinement degraded: ...`) and the shard runs with
-the rest; no_new_privs and seccomp are required.
+on stderr (`shard IPC: confinement degraded: ...`), and the shard then exits
+before READY unless the operator allowed it with
+`JITK_ALLOW_DEGRADED_CONFINEMENT=1` (Node passes it only with the backend
+option `allowDegradedConfinement`, default from the same variable; the start
+failure carries the engine's stderr line). no_new_privs and seccomp are
+required.
 
 `real confine SNAPSHOT_BASE [--allow-degraded]` (`src/bin/harness/confine.rs`,
 run by `make test-kvm`) checks it with forked probe processes, each running
@@ -288,7 +292,8 @@ a reset (its VMs exist already, so none that creates or sets up a VM or vCPU), a
 each run's sealed input archive needs: memfd_create with exactly
 CLOEXEC|ALLOW_SEALING, ftruncate, fcntl F_ADD_SEALS only, and its read-only
 mapping. Its frames are stdin/stdout reads and writes. Degraded layers are
-printed as `native worker: confinement degraded: ...`. `real confine --native
+printed as `native worker: confinement degraded: ...` and refused the same
+way as the shard's. `real confine --native
 REQUEST TOOL=BASE... [--allow-degraded]` runs the probes above on it, the
 guest run being that native request; `make check-native-r7` runs it on the
 lua profile, after the 41-case corpus (one confined worker, every profile)

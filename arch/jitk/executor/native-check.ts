@@ -120,4 +120,14 @@ for(const bad of [job([],{},'../bad'),job(['a\0b']),job(['\ud800']),job(Array(32
     assert.equal(code(await ex.run(job(['echo']))),'OK');checks++;
   } finally {await pool.close();}
 }
+{
+  // A worker that refuses degraded confinement fails with its reason; the operator's opt-in reaches it.
+  const refused=engine({profiles:{lua:'/prepared/lua',degraded:'/x'},restarts:{max:0,windowMs:60000}}),pool=new SandboxPool(refused,0,1),ex=new NativeExecutor(pool,2000);
+  try {
+    const r=await ex.run(job(['echo']));assert.equal(code(r),'SANDBOX');
+    assert.match(message(r),/confinement degraded \(landlock\); set JITK_ALLOW_DEGRADED_CONFINEMENT=1/);checks++;
+  } finally {await pool.close();}
+  const allowed=engine({profiles:{lua:'/prepared/lua',degraded:'/x'},allowDegradedConfinement:true}),p2=new SandboxPool(allowed,0,1),ex2=new NativeExecutor(p2,2000);
+  try {assert.equal(code(await ex2.run(job(['echo']))),'OK');checks++;} finally {await p2.close();}
+}
 console.log(JSON.stringify({suite:'native',checks,status:'PASS'}));

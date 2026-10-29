@@ -325,7 +325,7 @@ pub fn confined(confinement: &mut Confinement, profiles: &[String]) -> io::Resul
 pub fn worker(profiles: &[String]) -> io::Result<()> {
     let mut confinement = Confinement::new();
     let mut worker = confined(&mut confinement, profiles)?;
-    confinement.report().warn("native worker");
+    confinement.report().enforce("native worker")?;
     worker.serve(&mut io::stdin().lock(), &mut io::stdout().lock())
 }
 

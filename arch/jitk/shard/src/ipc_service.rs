@@ -44,7 +44,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
         Some(notify),
         policy,
     )?;
-    confinement.report().warn("shard IPC");
+    confinement.report().enforce("shard IPC")?;
     let mut reactor = Reactor {
         pool,
         states: (0..slots).map(|_| State::default()).collect(),

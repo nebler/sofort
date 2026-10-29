@@ -53,7 +53,9 @@ On Linux, `real ipc` and `real native-worker` confine themselves before
 any guest runs: user, network and IPC namespaces, Landlock, `no_new_privs`
 and a per-process seccomp allowlist (`shard/src/confine/policy.rs`: `shard`,
 `native_worker`, `watchdog`); `real confine [--native]` probes each layer.
-A kernel without a layer degrades with a reported warning
+A kernel without a layer is reported on stderr and the engine refuses to
+serve (exits before READY) unless `JITK_ALLOW_DEGRADED_CONFINEMENT=1`, which
+Node passes only with `allowDegradedConfinement`
 (`arch/review/2026-10-29-SECURITY-CORRECTNESS-REVIEW.md`, F1).
 
 ## Executor ↔ shard IPC on macOS

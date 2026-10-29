@@ -65,7 +65,28 @@ pub struct Report {
     pub applied: Vec<Layer>,
     pub degraded: Vec<(Layer, String)>,
 }
+/// The operator's opt-in to serve with missing layers (set to `1`); Node
+/// passes it only when configured to (`allowDegradedConfinement`).
+pub const ALLOW_DEGRADED: &str = "JITK_ALLOW_DEGRADED_CONFINEMENT";
 impl Report {
+    /// Warn about every missing layer, then refuse to serve (before READY)
+    /// unless the operator allowed degraded confinement: an engine never runs
+    /// tenants with less isolation than it claims without being told to.
+    pub fn enforce(&self, who: &str) -> std::io::Result<()> {
+        self.warn(who);
+        self.check(std::env::var_os(ALLOW_DEGRADED).is_some_and(|v| v == "1"))
+    }
+    /// `enforce` without the environment: Ok when complete or `allowed`.
+    pub fn check(&self, allowed: bool) -> std::io::Result<()> {
+        if self.degraded.is_empty() || allowed {
+            return Ok(());
+        }
+        let missing: Vec<&str> = self.degraded.iter().map(|(l, _)| l.name()).collect();
+        Err(std::io::Error::other(format!(
+            "confinement degraded ({}); set {ALLOW_DEGRADED}=1 to serve anyway",
+            missing.join(", ")
+        )))
+    }
     /// One stderr line per missing layer, naming the process.
     pub fn warn(&self, who: &str) {
         for (layer, why) in &self.degraded {
@@ -89,5 +110,28 @@ impl Report {
             applied.join(","),
             degraded.join(",")
         )
+    }
+}
+
+#[cfg(test)]
+mod enforce_tests {
+    use super::{Layer, Report};
+    #[test]
+    fn a_degraded_confinement_refuses_unless_allowed() {
+        let full = Report {
+            applied: vec![Layer::Seccomp],
+            degraded: vec![],
+        };
+        assert!(full.check(false).is_ok());
+        let partial = Report {
+            applied: vec![Layer::Seccomp],
+            degraded: vec![(Layer::Landlock, "ENOSYS".into())],
+        };
+        let e = partial.check(false).unwrap_err().to_string();
+        assert!(
+            e.contains("landlock") && e.contains("JITK_ALLOW_DEGRADED_CONFINEMENT=1"),
+            "{e}"
+        );
+        assert!(partial.check(true).is_ok());
     }
 }

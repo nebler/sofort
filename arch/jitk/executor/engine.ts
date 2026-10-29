@@ -115,3 +115,13 @@ export function failure(e:unknown):Extract<GuestEvent,{kind:'fail'}> {
   const cause=/timed out|deadline/.test(message)?'deadline':/^protocol /.test(message)?'guest':/limit|bound|budget/.test(message)?'limit':'engine';
   return {kind:'fail',cause,message};
 }
+/** The engine's environment: PATH only, plus the degraded-confinement opt-in when allowed. */
+export function engineEnv(allowDegraded=process.env.JITK_ALLOW_DEGRADED_CONFINEMENT==='1'):NodeJS.ProcessEnv {
+  return allowDegraded?{PATH:'/usr/bin:/bin',JITK_ALLOW_DEGRADED_CONFINEMENT:'1'}:{PATH:'/usr/bin:/bin'};
+}
+/** The last stderr line of an engine process (bounded), for failures before it served. */
+export class StderrTail {
+  private bytes=Buffer.alloc(0);
+  push(b:Buffer) {this.bytes=Buffer.concat([this.bytes,b]).subarray(-512);}
+  reason():string {const line=this.bytes.toString('utf8').trim().split('\n').pop()?.replace(/[^\x20-\x7e]/g,'?');return line?` (${line})`:'';}
+}

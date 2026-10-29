@@ -2,7 +2,7 @@ import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
 import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
 import type {Engine,GuestEvent,Job,Limits,Phase,Reply,Session} from './engine.js';
-import {failure} from './engine.js';
+import {StderrTail,engineEnv,failure} from './engine.js';
 import {executionBody} from './code.js';
 import {AdmissionQueue} from './pool.js';
 import {ARENA_CLASSES} from './abi.js';
@@ -26,7 +26,9 @@ export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:nu
 export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number};
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
  *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
-export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void};
+export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void;
+  /** Serve even if the host lacks a Linux confinement layer (the engine refuses otherwise; default: JITK_ALLOW_DEGRADED_CONFINEMENT=1). */
+  allowDegradedConfinement?:boolean};
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(code:string,names:string[]):string {
@@ -86,18 +88,20 @@ export class ShardBackend implements Engine {
     this.limits=shardLimits(slots);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
     // Exactly these descriptors and a credential-free environment are inherited.
+    const env=engineEnv(options.allowDegradedConfinement);
     if(hvf){
-      this.child=spawn(options.binary,['ipc',options.snapshot,String(slots)],{stdio:['ignore','ignore','pipe','pipe'],env:{PATH:'/usr/bin:/bin'}});
+      this.child=spawn(options.binary,['ipc',options.snapshot,String(slots)],{stdio:['ignore','ignore','pipe','pipe'],env});
       this.channel=new PipeChannel(this.child.stdio[3] as import('node:stream').Duplex,m=>this.receive(m),e=>this.die(e));
     }else{
       const channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));this.channel=channel;
-      this.child=spawn(options.binary,['ipc',options.snapshot,String(slots),String(owners)],{stdio:['ignore','ignore','pipe',...channel.fds],env:{PATH:'/usr/bin:/bin'}});
+      this.child=spawn(options.binary,['ipc',options.snapshot,String(slots),String(owners)],{stdio:['ignore','ignore','pipe',...channel.fds],env});
     }
     process.once('exit',this.onExit);
-    let stderr=0;
-    this.child.stderr!.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536)this.die(Error('shard stderr limit'));});
+    let stderr=0;const tail=new StderrTail();
+    this.child.stderr!.on('data',(b:Buffer)=>{stderr+=b.length;tail.push(b);if(stderr>65536)this.die(Error('shard stderr limit'));});
     this.child.once('error',e=>this.die(e));
-    this.child.once('close',()=>{process.removeListener('exit',this.onExit);this.die(Error('sandbox exited: shard'));});
+    // An engine that exits before READY (e.g. refusing degraded confinement) says why on stderr.
+    this.child.once('close',()=>{process.removeListener('exit',this.onExit);this.die(Error('sandbox exited: shard'+(this.didReady?'':tail.reason())));});
     this.startup=setTimeout(()=>this.die(Error('shard startup timeout')),5000);
   }
   private die(e:Error,graceful=false) {

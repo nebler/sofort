@@ -11,6 +11,12 @@
 //   crash      the worker exits
 //   hang       never respond
 if (process.argv[2] !== 'native-worker') process.exit(2);
+// A `degraded=` profile stands in for a host missing a confinement layer: refuse, as the engine does,
+// unless Node passed the operator's opt-in.
+if (process.argv.some(a => a.startsWith('degraded=')) && process.env.JITK_ALLOW_DEGRADED_CONFINEMENT !== '1') {
+  process.stderr.write('native worker: confinement degraded (landlock); set JITK_ALLOW_DEGRADED_CONFINEMENT=1 to serve anyway\n');
+  process.exit(1);
+}
 let input = Buffer.alloc(0);
 const respond = (status, code, out, err, limited) => {
   const head = Buffer.alloc(24);

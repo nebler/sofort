@@ -18,6 +18,7 @@
 // run and restarts), `native engine unavailable` (the restart budget is spent).
 import {spawn,type ChildProcessWithoutNullStreams} from 'node:child_process';
 import type {Engine,GuestEvent,Job,Limits,NativeJob,NativeLimits,Phase,Reply,Session} from './engine.js';
+import {StderrTail,engineEnv} from './engine.js';
 import {AdmissionQueue,type SandboxPool} from './pool.js';
 
 /** The JNR8 request and response bounds (shard/ABI-R7.md; not yet in jitk-abi). */
@@ -84,6 +85,8 @@ export type NativeOptions={binary:string;
   prefix?:string[];
   /** park() callers queued for the worker (default 64). */
   maxWaiting?:number;
+  /** Serve even if the host lacks a Linux confinement layer (default: JITK_ALLOW_DEGRADED_CONFINEMENT=1). */
+  allowDegradedConfinement?:boolean;
   /** Worker restarts per window (default NATIVE_RESTARTS). */
   restarts?:{max:number;windowMs:number};
   /** Past a deadline, how long the worker may take to report it (default NATIVE_DEADLINE_GRACE_MS). */
@@ -120,13 +123,14 @@ export class NativeBackend implements Engine {
   private spawn() {
     const {options}=this,profiles=Object.entries(options.profiles);
     const child=spawn(options.binary,[...(options.prefix??[]),'native-worker',...profiles.map(([name,base])=>`${name}=${base}`)],
-      {stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
+      {stdio:'pipe',env:engineEnv(options.allowDegradedConfinement)});
     this.child=child;
     const fail=(why:string)=>this.fail(child,why);
-    child.stderr.resume(); // No guest stream travels on worker stderr.
+    // No guest stream travels on worker stderr; its last line explains a worker that exits.
+    const tail=new StderrTail();child.stderr.on('data',(b:Buffer)=>tail.push(b));
     child.stdin.on('error',()=>fail('native worker IPC closed'));
     child.once('error',()=>fail('native worker could not start'));
-    const exit=new Promise<void>(resolve=>child.once('close',()=>{fail('native worker exited');resolve();}));
+    const exit=new Promise<void>(resolve=>child.once('close',()=>{fail('native worker exited'+tail.reason());resolve();}));
     this.exits.add(exit);void exit.then(()=>this.exits.delete(exit));
     child.stdout.on('data',(b:Buffer)=>{
       if(this.child!==child)return; // a stopped worker's last bytes
