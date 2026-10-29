@@ -44,8 +44,38 @@ fn bytes(addr: usize, len: usize) {
     }
     let _ = write!(Writer, "\"");
 }
+// Ring builds: each record is a host LOG record, and LOG has a 16 KiB per-run
+// budget that also fails the run when exceeded (shard/ABI-R7.md). Report each
+// missing syscall number once, for at most MISSING_ONCE numbers per run (about
+// 1.4 KiB of LOG each); further unregistered calls still return -38, silently.
+// The console profile reports every call: GrowOS discovers syscalls from them.
+#[cfg(feature = "transport-ring")]
+const MISSING_ONCE: usize = 8;
+#[cfg(feature = "transport-ring")]
+static mut REPORTED: [usize; MISSING_ONCE] = [0; MISSING_ONCE];
+#[cfg(feature = "transport-ring")]
+static mut REPORTED_LEN: usize = 0;
+/// Whether `n`'s missing record is the first of its number and within the bound.
+#[cfg(feature = "transport-ring")]
+fn first_report(n: usize) -> bool {
+    // SAFETY: Only the sole masked-IRQ syscall context accesses this table; no reference
+    // to it escapes.
+    unsafe {
+        let len = REPORTED_LEN;
+        if REPORTED[..len].contains(&n) || len == MISSING_ONCE {
+            return false;
+        }
+        REPORTED[len] = n;
+        REPORTED_LEN = len + 1;
+        true
+    }
+}
 pub fn enter(n: usize, a: &[usize; 6], pc: usize) {
     if !cfg!(feature = "grow-trace") && s::registered(n) {
+        return;
+    }
+    #[cfg(feature = "transport-ring")]
+    if !s::registered(n) && !first_report(n) {
         return;
     }
     // SAFETY: Only the sole masked-IRQ syscall context updates the sequence; no reference to

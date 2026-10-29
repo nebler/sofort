@@ -110,17 +110,31 @@ pub fn park_poll(deadline: Option<u64>, input: bool) {
         crate::wait::park_for(deadline.unwrap_or(u64::MAX), input);
     }
 }
+/// A write nobody reads (fd 2 in production; fd 1 of the ring JS profile). The
+/// buffer is still checked as Linux would: EFAULT for unmapped bytes, EINVAL past
+/// the 1 MiB write bound (as stdout), 0 for an empty write.
+pub fn discard(va: usize, len: usize) -> isize {
+    if len == 0 {
+        return 0;
+    }
+    if len > 1024 * 1024 {
+        return -22;
+    }
+    match crate::user::access(va, len, false) {
+        Some(_) => len as isize,
+        None => -14,
+    }
+}
 pub fn stderr(va: usize, len: usize) -> isize {
+    let checked = discard(va, len);
     #[cfg(feature = "grow-trace")]
-    // SAFETY: EL0 is stopped in the sole masked-IRQ context. access checks all source pages;
-    // bounded stack encoding is copied synchronously into console records.
+    // SAFETY: EL0 is stopped in the sole masked-IRQ context. discard checked all source
+    // pages; bounded stack encoding is copied synchronously into console records.
     unsafe {
-        if len > 1024 * 1024 {
-            return -22;
+        if checked <= 0 {
+            return checked;
         }
-        let Some(pa) = crate::user::access(va, len, false) else {
-            return -14;
-        };
+        let pa = crate::user::access(va, len, false).expect("checked stderr buffer");
         let b = core::slice::from_raw_parts(pa as *const u8, len);
         for chunk in b.chunks(128) {
             let mut encoded = [0u8; 256];
@@ -133,8 +147,7 @@ pub fn stderr(va: usize, len: usize) -> isize {
             crate::console::record(b"\"}\n");
         }
     }
-    let _ = va;
-    len as isize
+    checked
 }
 
 pub fn read_console(addr: usize, len: usize) -> isize {

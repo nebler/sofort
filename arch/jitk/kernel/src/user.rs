@@ -165,6 +165,14 @@ pub(crate) fn access(va: usize, len: usize, w: bool) -> Option<usize> {
         Some(m::physical(va))
     }
 }
+/// Ring builds: native stdout is a byte stream (`console::native_output`) and never
+/// reaches here. JS-profile stdout has no reader: tenant code has no LOG path
+/// (ABI-R7), so the buffer is checked as Linux would and dropped.
+#[cfg(feature = "transport-ring")]
+pub(crate) fn output(va: usize, len: usize) -> isize {
+    crate::syscalls::discard(va, len)
+}
+#[cfg(not(feature = "transport-ring"))]
 pub(crate) fn output(va: usize, len: usize) -> isize {
     // SAFETY: EL0 is stopped on the sole masked-IRQ vCPU. access validates every source
     // page; the slice is used only until synchronous console copy completes.
