@@ -15,8 +15,10 @@ use crate::constants::ipc::{
     BYTES, DATA, RECORD, REGION, RX_CONSUMER, RX_PRODUCER, TX_CONSUMER, TX_PRODUCER,
 };
 pub use crate::constants::ipc::{
-    CALL, CANCEL, CAPACITY, DONE, ERROR, PAYLOAD, PING, QUARANTINED, READY, RELEASED, REPLY, START,
+    CALL, CANCEL, CAPACITY, DONE, ERROR, LOG, PAYLOAD, PING, QUARANTINED, READY, RELEASED, REPLY,
+    START,
 };
+use crate::service::Assembler;
 
 use libc::{fcntl, mmap, munmap, poll, pollfd as PollFd, read, write};
 
@@ -65,6 +67,9 @@ pub struct Endpoint {
     tx: u64,
     peer: u64,
     rx: u64,
+    assembler: Assembler,
+    /// Records of the message being sent already written.
+    sent: usize,
 }
 impl Endpoint {
     /// Takes ownership of inherited descriptors. The sealed size prevents SIGBUS
@@ -109,6 +114,8 @@ impl Endpoint {
             tx: 0,
             peer: 0,
             rx: 0,
+            assembler: Assembler::default(),
+            sent: 0,
         })
     }
     fn cursor(&self, offset: usize) -> &AtomicU64 {
@@ -120,64 +127,69 @@ impl Endpoint {
     pub fn notifier(&self) -> Notify {
         self.incoming.clone()
     }
+    /// The next complete message, reading records while the peer has any.
     pub fn receive(&mut self) -> io::Result<Option<Message>> {
-        let produced = self.cursor(RX_PRODUCER).load(Acquire);
-        if produced < self.rx || produced - self.rx > CAPACITY {
-            return Err(invalid("IPC producer cursor"));
+        loop {
+            let produced = self.cursor(RX_PRODUCER).load(Acquire);
+            if produced < self.rx || produced - self.rx > CAPACITY {
+                return Err(invalid("IPC producer cursor"));
+            }
+            if produced == self.rx {
+                return Ok(None);
+            }
+            let mut copy = [0u8; RECORD];
+            // SAFETY: The host-selected ring index is within the fixed mapping, disjoint
+            // from copy. Acquire observed peer publication; this SPSC consumer returns
+            // credit only after the copy.
+            unsafe {
+                ptr::copy_nonoverlapping(
+                    self.memory
+                        .add(DATA + (self.rx % CAPACITY) as usize * RECORD),
+                    copy.as_mut_ptr(),
+                    RECORD,
+                );
+            }
+            let (record, more) = Message::decode(&copy)?;
+            self.rx += 1;
+            self.cursor(RX_CONSUMER).store(self.rx, Release);
+            self.outgoing.signal(); // return queue credit, even when no response is ready
+            if let Some(message) = self.assembler.push(record, more)? {
+                return Ok(Some(message));
+            }
         }
-        if produced == self.rx {
-            return Ok(None);
-        }
-        let mut copy = [0u8; RECORD];
-        // SAFETY: The host-selected ring index is within the fixed mapping, disjoint
-        // from copy. Acquire observed peer publication; this SPSC consumer returns
-        // credit only after the copy.
-        unsafe {
-            ptr::copy_nonoverlapping(
-                self.memory
-                    .add(DATA + (self.rx % CAPACITY) as usize * RECORD),
-                copy.as_mut_ptr(),
-                RECORD,
-            );
-        }
-        let message = Message::decode(&copy)?;
-        self.rx += 1;
-        self.cursor(RX_CONSUMER).store(self.rx, Release);
-        self.outgoing.signal(); // return queue credit, even when no response is ready
-        Ok(Some(message))
     }
+    /// Write `message`'s records while the queue has credit. Ok(false): some
+    /// are still unwritten; call again with the same message (the caller's
+    /// queue front) once the peer returned credit.
     pub fn send(&mut self, message: &Message) -> io::Result<bool> {
-        if message.bytes.len() > PAYLOAD {
-            return Err(invalid("IPC local payload bound"));
+        let records = message.records()?;
+        while self.sent < records.len() {
+            let consumed = self.cursor(TX_CONSUMER).load(Acquire);
+            if consumed < self.peer
+                || consumed > self.tx
+                || self.tx - consumed > CAPACITY
+                || self.tx == u64::MAX
+            {
+                return Err(invalid("IPC consumer cursor"));
+            }
+            self.peer = consumed;
+            if self.tx - consumed == CAPACITY {
+                return Ok(false);
+            }
+            let record = &records[self.sent];
+            let at = DATA + REGION + (self.tx % CAPACITY) as usize * RECORD;
+            // SAFETY: The bounded record is disjoint from the fixed mapped TX slot;
+            // checked consumer credit gives this SPSC producer ownership until
+            // release publication.
+            unsafe {
+                ptr::copy_nonoverlapping(record.as_ptr(), self.memory.add(at), record.len());
+            }
+            self.tx += 1;
+            self.sent += 1;
+            self.cursor(TX_PRODUCER).store(self.tx, Release);
+            self.outgoing.signal();
         }
-        let consumed = self.cursor(TX_CONSUMER).load(Acquire);
-        if consumed < self.peer
-            || consumed > self.tx
-            || self.tx - consumed > CAPACITY
-            || self.tx == u64::MAX
-        {
-            return Err(invalid("IPC consumer cursor"));
-        }
-        self.peer = consumed;
-        if self.tx - consumed == CAPACITY {
-            return Ok(false);
-        }
-        let header = message.header();
-        let at = DATA + REGION + (self.tx % CAPACITY) as usize * RECORD;
-        // SAFETY: The header and bounded payload are disjoint from the fixed mapped
-        // TX slot; checked consumer credit gives this SPSC producer ownership until
-        // release publication.
-        unsafe {
-            ptr::copy_nonoverlapping(header.as_ptr(), self.memory.add(at), 32);
-            ptr::copy_nonoverlapping(
-                message.bytes.as_ptr(),
-                self.memory.add(at + 32),
-                message.bytes.len(),
-            );
-        }
-        self.tx += 1;
-        self.cursor(TX_PRODUCER).store(self.tx, Release);
-        self.outgoing.signal();
+        self.sent = 0;
         Ok(true)
     }
     pub fn wait(&self) -> io::Result<()> {
@@ -305,7 +317,21 @@ mod tests {
             tx: 0,
             peer: 0,
             rx: 0,
+            assembler: Default::default(),
+            sent: 0,
         }
+    }
+    #[test]
+    fn messages_wait_for_credit_record_by_record() {
+        let mut e = endpoint();
+        let small = Message::new(REPLY, 0, 1, 1, vec![b'x'; 10 * PAYLOAD]);
+        let big = Message::new(REPLY, 0, 1, 2, vec![b'x'; 64 * PAYLOAD]);
+        assert!(e.send(&small).unwrap());
+        assert!(!e.send(&big).unwrap(), "54 of its 64 records fit");
+        assert_eq!(e.tx, CAPACITY);
+        e.cursor(TX_CONSUMER).store(CAPACITY, Release);
+        assert!(e.send(&big).unwrap());
+        assert_eq!((e.tx, e.sent), (74, 0));
     }
     #[test]
     fn private_cursor_shadows_and_wrapped_records() {
@@ -353,10 +379,12 @@ mod tests {
         copy[20..24].copy_from_slice(&u32::MAX.to_le_bytes());
         assert!(Message::decode(&copy).is_err());
         copy[20..24].fill(0);
-        copy[24] = 1;
-        assert!(Message::decode(&copy).is_err());
-        copy[24] = 0;
+        for at in [24, 28] {
+            copy[at] = 2;
+            assert!(Message::decode(&copy).is_err());
+            copy[at] = 0;
+        }
         copy[20..24].copy_from_slice(&(PAYLOAD as u32).to_le_bytes());
-        assert_eq!(Message::decode(&copy).unwrap().bytes.len(), PAYLOAD);
+        assert_eq!(Message::decode(&copy).unwrap().0.bytes.len(), PAYLOAD);
     }
 }

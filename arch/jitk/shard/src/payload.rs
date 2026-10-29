@@ -8,11 +8,12 @@ use crate::constants::ring;
 pub fn printable(bytes: &[u8]) -> bool {
     bytes.iter().all(|b| (32..=126).contains(b))
 }
-/// Whether a guest CALL or DONE record payload is forwarded to Node.
+/// Whether a guest CALL, DONE or CONSOLE message payload is forwarded to Node.
 pub fn forwarded(kind: u16, bytes: &[u8]) -> bool {
     let max = match kind {
         ring::CALL => ring::CALL_BYTES,
         ring::DONE => ring::DONE_BYTES,
+        ring::CONSOLE => ring::CONSOLE_BYTES,
         _ => return false,
     };
     bytes.len() <= max && printable(bytes)
@@ -61,6 +62,7 @@ pub(crate) mod tests {
             let kind = match &kind[..] {
                 b"call" => ring::CALL,
                 b"done" => ring::DONE,
+                b"log" => ring::CONSOLE,
                 _ => panic!("corpus kind"),
             };
             let text = |v: Vec<u8>| String::from_utf8(v).unwrap();
@@ -81,10 +83,14 @@ pub(crate) mod tests {
     }
     #[test]
     fn bounds() {
-        assert!(forwarded(ring::CALL, &[b'x'; ring::CALL_BYTES]));
-        assert!(!forwarded(ring::CALL, &[b'x'; ring::CALL_BYTES + 1]));
-        assert!(forwarded(ring::DONE, &[b'x'; ring::DONE_BYTES]));
-        assert!(!forwarded(ring::DONE, &[b'x'; ring::DONE_BYTES + 1]));
+        for (kind, max) in [
+            (ring::CALL, ring::CALL_BYTES),
+            (ring::DONE, ring::DONE_BYTES),
+            (ring::CONSOLE, ring::CONSOLE_BYTES),
+        ] {
+            assert!(forwarded(kind, &vec![b'x'; max]));
+            assert!(!forwarded(kind, &vec![b'x'; max + 1]));
+        }
         assert!(!forwarded(ring::LOG, b"x"));
     }
 }

@@ -2,14 +2,16 @@
  * Regenerate with `make -C arch/jitk/abi gen`; `make -C arch/jitk/abi test` fails while it is stale. */
 #ifndef JITK_BRIDGE_ABI_H
 #define JITK_BRIDGE_ABI_H
-#define JITK_ABI_VERSION 10u
+#define JITK_ABI_VERSION 11u
 #define JITK_IPC_CAPACITY 64u
 #define JITK_IPC_PAYLOAD 16384u
 #define JITK_IPC_HEADER_BYTES 32u
 #define JITK_IPC_DATA 4096u
 #define JITK_IPC_BYTES 2105344u
 #define JITK_IPC_LENGTH_AT 20u
-#define JITK_IPC_RESERVED_AT 24u
+#define JITK_IPC_FLAGS_AT 24u
+#define JITK_IPC_MORE 1u
+#define JITK_IPC_RESERVED_AT 28u
 /* Cursors (u64): Node -> shard queue, then shard -> Node queue. */
 #define JITK_IPC_NODE_PRODUCED 64u
 #define JITK_IPC_SHARD_CONSUMED 128u

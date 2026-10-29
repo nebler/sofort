@@ -64,7 +64,7 @@ pub fn decode(bytes: &[u8]) -> Result<Run, &'static str> {
     for _ in 0..argc {
         let a = r.text()?;
         arg_bytes += a.len() + 1;
-        if arg_bytes > ring::SOURCE_LIMIT {
+        if arg_bytes > ring::ARGV_BYTES {
             return Err("native argv budget");
         }
         args.push(a);

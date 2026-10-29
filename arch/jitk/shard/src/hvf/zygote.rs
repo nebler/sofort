@@ -32,8 +32,8 @@ use super::{State, child, conn::Conn};
 use crate::clock;
 use crate::constants::{ABI_VERSION, ipc as wire, ring};
 use crate::service::{
-    self, CALL, CANCEL, Cancel, DONE, ERROR, Message, Phase, QUARANTINED, READY, RELEASED, REPLY,
-    RESTORED, START, invalid, released,
+    self, CALL, CANCEL, Cancel, DONE, ERROR, LOG, Message, Phase, QUARANTINED, READY, RELEASED,
+    REPLY, RESTORED, START, invalid, released,
 };
 use crate::slot::ResetPolicy;
 use crate::snapshot::Snapshot;
@@ -49,8 +49,9 @@ use std::{
 pub const ESCALATION_NS: u64 = 100_000_000;
 /// A child must report a CANCEL's reset within this.
 const RESET_GRACE_NS: u64 = 1_000_000_000;
-/// Records queued for one child: a generation's START, REPLY and CANCEL.
-const CHILD_QUEUE: usize = ring::MAX_CALLS + 4;
+/// Messages queued for one child: a generation's START, a REPLY per open
+/// call and CANCEL.
+const CHILD_QUEUE: usize = ring::MAX_OUTSTANDING + 4;
 /// Children must all report READY within this at startup, and a re-forked
 /// child within this of its fork (or it is killed and re-forked again).
 const STARTUP_NS: u64 = 10_000_000_000;
@@ -466,6 +467,14 @@ impl Zygote {
         match m.kind {
             CALL => {
                 if s.call(m.id.into(), &m.bytes)? {
+                    self.node.queue(&m)?;
+                }
+            }
+            LOG => {
+                if m.id != 0 {
+                    return Err(invalid("child LOG"));
+                }
+                if s.log(&m.bytes)? {
                     self.node.queue(&m)?;
                 }
             }

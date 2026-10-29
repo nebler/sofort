@@ -7,7 +7,7 @@ import {ShardSession,type ShardHost} from './shard-backend.js';
 import {IPC,type Message} from './shard-ipc.js';
 
 // Resolved from the bundle in executor/build/.
-type Row=[kind:'call'|'done',name:string,outcome:'ok'|'node'|'shard',payload:string];
+type Row=[kind:'call'|'done'|'log',name:string,outcome:'ok'|'node'|'shard',payload:string];
 const corpus=(JSON.parse(readFileSync(new URL('../../abi/guest-payloads.json',import.meta.url),'utf8')) as {cases:Row[]}).cases;
 class FakeShard implements ShardHost {
   sent:Message[]=[];
@@ -37,12 +37,13 @@ export async function sandboxChecks():Promise<number> {
     shard.deliver(sibling,IPC.call,1,Buffer.from('["call","ns","fn",[1]]'));
     const bytes=Buffer.from(payload,'latin1');
     if(kind==='call')shard.deliver(hostile,IPC.call,1,bytes);
+    else if(kind==='log')shard.deliver(hostile,IPC.log,0,bytes);
     else {shard.deliver(hostile,IPC.stats,0,stats());shard.deliver(hostile,IPC.done,0,bytes);}
     if(outcome==='ok'){
       const ev=await hostile.next();
       // A valid DONE carrying a guest throw is a 'guest' fail, never a protocol error.
       const body=JSON.parse(payload);
-      assert.equal(ev.kind,kind==='call'?body[0]:Object.hasOwn(body,'ok')?'done':'fail',name);
+      assert.equal(ev.kind,kind==='call'?body[0]:kind==='log'?'log':Object.hasOwn(body,'ok')?'done':'fail',name);
       if(ev.kind==='fail')assert.ok(ev.cause==='guest'&&!/^protocol /.test(ev.message),name);
     }else if(kind==='call'&&bytes.length>IPC.callBytes){
       // Over the shard's own CALL bound: only a lying shard can deliver this.
@@ -78,18 +79,18 @@ export async function sandboxChecks():Promise<number> {
     const s=await new FakeShard().running(0);
     assert.throws(()=>violate(s),/^Error: shard IPC /,name);checks++;
   }
-  // Typed events straight from records: logs share the CALL wire ids, tool calls
-  // get their own ids, and each reply goes back on its call's wire.
+  // Typed events straight from records: logs are one-way LOG messages (no
+  // reply, no call id), and each reply goes back on its call's id.
   {
     const shard=new FakeShard(),s=await shard.running(0);
     assert.equal(s.phase,'running');
-    shard.deliver(s,IPC.call,1,Buffer.from('["log","warn","w"]'));
-    shard.deliver(s,IPC.call,2,Buffer.from('["call","ns","fn",["a"]]'));
+    shard.deliver(s,IPC.log,0,Buffer.from('["warn","w"]'));
+    shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",["a"]]'));
     assert.deepEqual(await s.next(),{kind:'log',level:'warn',msg:'w'});
-    assert.ok(shard.sent.some(m=>m.kind===IPC.reply&&m.id===1&&m.bytes.toString()==='{"ok":null}'),'log acknowledged on its wire');
+    assert.ok(!shard.sent.some(m=>m.kind===IPC.reply),'a log is not acknowledged');
     assert.deepEqual(await s.next(),{kind:'call',id:1,ns:'ns',fn:'fn',args:['a']});
     await s.reply(1,{ok:'Grüße'});
-    assert.equal(shard.sent.find(m=>m.kind===IPC.reply&&m.id===2)?.bytes.toString(),'{"ok":"Gr\\u00fc\\u00dfe"}','reply on the call wire, ASCII escaped');
+    assert.equal(shard.sent.find(m=>m.kind===IPC.reply&&m.id===1)?.bytes.toString(),'{"ok":"Gr\\u00fc\\u00dfe"}','reply on the call id, ASCII escaped');
     await assert.rejects(s.reply(1,{ok:1}),/shard unknown reply/,'each id answered once');
     shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.done,0,Buffer.from('{"err":{"name":"TypeError","message":"x"}}'));
     assert.deepEqual(await s.next(),{kind:'fail',cause:'guest',message:'TypeError: x'});
@@ -98,7 +99,9 @@ export async function sandboxChecks():Promise<number> {
   }
   // Host replies pass the same output limits as v1 frames; a bad one fails only
   // its own generation. An oversized valid reply becomes a LIMIT error instead.
-  for(const [name,r,code] of [['unsafe number',{ok:2**60},'NUMBER'],['lone surrogate',{ok:'\ud800'},'UNICODE'],['bad error code',{err:{code:'lower',message:''}},'SCHEMA'],['extra key',{ok:1,x:1},'SCHEMA'],['BigInt',{ok:1n},'SERIALIZE']] as const){
+  // A reply over the frame bound (= ring::REPLY_BYTES) fails its generation as on
+  // the console path (FRAME_LIMIT).
+  for(const [name,r,code] of [['unsafe number',{ok:2**60},'NUMBER'],['lone surrogate',{ok:'\ud800'},'UNICODE'],['bad error code',{err:{code:'lower',message:''}},'SCHEMA'],['extra key',{ok:1,x:1},'SCHEMA'],['BigInt',{ok:1n},'SERIALIZE'],['over the frame bound',{ok:'x'.repeat(IPC.replyBytes)},'FRAME_LIMIT']] as const){
     const shard=new FakeShard(),s=await shard.running(0);
     shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));await s.next();
     await assert.rejects(s.reply(1,r as never),{message:code},name);
@@ -106,10 +109,22 @@ export async function sandboxChecks():Promise<number> {
     assert.ok(shard.sent.some(m=>m.kind===IPC.cancel)&&!shard.sent.some(m=>m.kind===IPC.reply),name+': CANCEL, no reply');checks++;
   }
   {
+    // A reply of 64 KiB (several IPC records) goes through whole.
     const shard=new FakeShard(),s=await shard.running(0);
     shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));await s.next();
-    await s.reply(1,{ok:'x'.repeat(2000)});
-    assert.match(shard.sent.find(m=>m.kind===IPC.reply)!.bytes.toString(),/"LIMIT".*1024 bytes/);checks++;
+    await s.reply(1,{ok:'x'.repeat(65536)});
+    assert.equal(shard.sent.find(m=>m.kind===IPC.reply)!.bytes.length,65536+'{"ok":""}'.length);checks++;
+  }
+  {
+    // Calls and logs have separate budgets: IPC.logs logs, then calls go on.
+    const shard=new FakeShard(),s=await shard.running(0);
+    for(let i=0;i<IPC.logs;i++)shard.deliver(s,IPC.log,0,Buffer.from('["log","x"]'));
+    shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));
+    for(let i=0;i<IPC.logs;i++)assert.equal((await s.next()).kind,'log');
+    assert.equal((await s.next()).kind,'call');
+    shard.deliver(s,IPC.log,0,Buffer.from('["log","x"]'));
+    assert.deepEqual(await s.next(),{kind:'fail',cause:'guest',message:'protocol LOG_LIMIT'});
+    assert.equal(shard.fault,undefined);checks++;
   }
   // A run error preempts queued calls (no tool runs after it) and keeps its cause.
   for(const [text,cause] of [['deadline_exceeded','deadline'],['guest_protocol: x','guest'],['memory_bound: y','limit'],['slot_unavailable: z','engine']] as const){

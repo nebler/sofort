@@ -43,17 +43,20 @@ export type Case={
 
 const nest=(k:number)=>'['.repeat(k)+'0'+']'.repeat(k);
 const nested=(k:number):unknown=>k?[nested(k-1)]:0;
-/** Tenant code whose shard START source is exactly `bytes` long; it returns `k`. */
-function sourceOf(bytes:number):{code:string;k:number} {
-  const code=(k:number)=>`return '${'x'.repeat(k)}'.length`;
-  const wire=(k:number)=>Buffer.byteLength(shardWire(executionBody(jsJob(code(k),[]),true),[]));
-  const k=bytes-wire(0);
-  if(k<0||wire(k)!==bytes)throw Error('parity: cannot size a source of '+bytes+' bytes');
-  return {code:code(k),k};
-}
-const atSource=sourceOf(IPC.sourceBytes),overSource=sourceOf(IPC.sourceBytes+1);
+/** The longest tenant code of `k` two-byte characters (é: six bytes each in a
+ *  JSON-escaped START source) that both paths accept: the console path's
+ *  body (the larger, with its embedded codec) is at most LIMIT.code UTF-8
+ *  bytes; the shard's START source for it must fit ring::SOURCE_LIMIT. */
+const codeOf=(k:number)=>`return '${'é'.repeat(k)}'.length`;
+const bodyBytes=(k:number)=>{try{return Buffer.byteLength(executionBody(jsJob(codeOf(k),[]),false));}catch{return Infinity;}};
+let atCodeChars=0;
+while(bodyBytes(atCodeChars+1)<=LIMIT.code)atCodeChars+=bodyBytes(atCodeChars+256)<=LIMIT.code?256:1;
+const atCode=codeOf(atCodeChars);
+if(Buffer.byteLength(shardWire(executionBody(jsJob(atCode,[]),true),[]))>IPC.sourceBytes)throw Error('parity: LIMIT.code does not fit the ring source');
 /** Reply string length whose `{"ok":"..."}` encoding is exactly `bytes`. */
 const replyString=(bytes:number)=>bytes-'{"ok":""}'.length;
+/** executor/policy/policy.mjs createRun: limits.calls defaults to 256 per run. */
+const POLICY_CALLS=256;
 const t1=['echo'];
 const T={t:['echo','add1','big','fail','delay','hang']};
 
@@ -94,7 +97,7 @@ export const CASES:Case[]=[
   {id:'s-denial-to-guest',source:'executor/shard-check.ts',code:'try{await codemode.blocked()}catch(e){return e.code}',tools:{codemode:['blocked']},expect:{ok:'DENIED',effects:0}},
   {id:'s-console',source:'executor/shard-check.ts',code:'console.log("hello",2);console.warn("warning");return 7',expect:{ok:7,logs:['hello 2','[warn] warning']}},
   {id:'s-reply-2000',source:'executor/shard-check.ts',code:'return (await codemode.big(2000)).length',tools:{codemode:['big']},expect:{ok:2000}},
-  {id:'s-calls-33',source:'executor/shard-check.ts',code:`return await Promise.all(Array.from({length:${IPC.calls+1}},()=>codemode.echo(0)))`,tools:{codemode:t1},expect:{ok:Array(IPC.calls+1).fill(0)}},
+  {id:'s-calls-33',source:'executor/shard-check.ts',code:'return await Promise.all(Array.from({length:33},()=>codemode.echo(0)))',tools:{codemode:t1},expect:{ok:Array(33).fill(0)}},
   {id:'s-source-8000',source:'executor/shard-check.ts',code:'const a='+JSON.stringify('x'.repeat(8000))+';return a.length',expect:{ok:8000}},
   {id:'s-global-restored',source:'executor/shard-check.ts',before:'globalThis.btoa=()=>"poison";globalThis.helperCanary=42;return 1',code:'return [btoa("a"),typeof globalThis.helperCanary]',expect:{ok:['YQ==','undefined']}},
   {id:'s-depth-32-valid',source:'executor/shard-check.ts',code:`return await ns.echo(${nest(30)})`,tools:{ns:t1},expect:{ok:nested(30)}},
@@ -111,44 +114,60 @@ export const CASES:Case[]=[
   {id:'m-schema-denial',source:'mcp/test.mjs',fixture:'mcp',code:"return await math.add('x', 1)",expect:{error:'POLICY',match:'policy denied: schema'}},
   {id:'m-taint',source:'mcp/test.mjs',fixture:'mcp',code:"await kv.get('k'); return await kv.set('k', 1)",expect:{error:'POLICY',match:'approval required'}},
   {id:'m-guest-throw',source:'mcp/test.mjs',fixture:'mcp',code:"throw new Error('boom')",expect:{error:'GUEST_ERROR',match:'boom'}},
-  // Targeted: tool replies (ring::REPLY_BYTES)
-  {id:'t-reply-at-limit',source:'targeted: IPC.replyBytes',code:`return (await t.big(${replyString(IPC.replyBytes)})).length`,tools:T,expect:{ok:replyString(IPC.replyBytes)}},
-  {id:'t-reply-over-limit',source:'targeted: IPC.replyBytes',code:`return (await t.big(${replyString(IPC.replyBytes)+1})).length`,tools:T,expect:{ok:replyString(IPC.replyBytes)+1}},
+  // Targeted: tool replies. One reply spans IPC and ring records (IPC.payload,
+  // ring MAX_PAYLOAD 16,352); the bound is LIMIT.frame on both paths, which the
+  // glue-2m arena reaches first on the ring (b-json1m).
+  {id:'t-reply-at-record',source:'targeted: IPC.payload',code:`return (await t.big(${replyString(IPC.payload)})).length`,tools:T,expect:{ok:replyString(IPC.payload)}},
+  {id:'t-reply-over-record',source:'targeted: IPC.payload',code:`return (await t.big(${replyString(IPC.payload)+1})).length`,tools:T,expect:{ok:replyString(IPC.payload)+1}},
   {id:'t-reply-64k',source:'targeted: IPC.replyBytes',code:'return (await t.big(65536)).length',tools:T,expect:{ok:65536}},
   {id:'t-reply-limit-to-guest',source:'targeted: IPC.replyBytes',code:'try{return (await t.big(2000)).length}catch(e){return e.code}',tools:T,expect:{ok:2000}},
-  // Targeted: call arguments (ring::CALL_BYTES) and the call budget (ring::MAX_CALLS)
-  {id:'t-call-args-over-limit',source:'targeted: IPC.callBytes',code:`return (await t.echo('x'.repeat(${IPC.callBytes}))).length`,tools:T,expect:{ok:IPC.callBytes}},
-  {id:'t-call-limit-to-guest',source:'targeted: IPC.callBytes',code:`try{return (await t.echo('x'.repeat(${IPC.callBytes}))).length}catch(e){return e.code}`,tools:T,expect:{ok:IPC.callBytes}},
-  {id:'t-calls-at-budget',source:'targeted: IPC.calls',code:`let n=0;for(let i=0;i<${IPC.calls};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:IPC.calls}},
-  {id:'t-calls-over-budget',source:'targeted: IPC.calls',code:`let n=0;for(let i=0;i<${IPC.calls+1};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:IPC.calls+1}},
-  // Targeted: timers (the ring profile has none)
+  {id:'t-replies-parallel',source:'targeted: IPC.replyBytes',code:'return (await Promise.all(Array.from({length:4},()=>t.big(20000)))).map(s=>s.length)',tools:T,expect:{ok:Array(4).fill(20000)}},
+  // Targeted: call arguments (one call spans records) and the call budget (LIMIT.calls, LIMIT.outstanding)
+  {id:'t-call-args-40k',source:'targeted: IPC.callBytes',code:`return (await t.echo('x'.repeat(40000))).length`,tools:T,expect:{ok:40000}},
+  {id:'t-call-args-at-record',source:'targeted: IPC.payload',code:`try{return (await t.echo('x'.repeat(${IPC.payload}))).length}catch(e){return e.code}`,tools:T,expect:{ok:IPC.payload}},
+  // The canonical executor's policy run admits POLICY_CALLS calls (below the
+  // protocol's LIMIT.calls); past it the run is dead and its sandbox released.
+  {id:'t-calls-at-budget',source:'targeted: policy calls',code:`let n=0;for(let i=0;i<${POLICY_CALLS};i++)n+=await t.add1(0);return n`,tools:T,expect:{ok:POLICY_CALLS}},
+  {id:'t-calls-over-budget',source:'targeted: policy calls',code:`let n=0;for(let i=0;i<${POLICY_CALLS+1};i++)n+=await t.add1(0);return n`,tools:T,expect:{error:'SANDBOX',match:'protocol EOF|sandbox exited'}},
+  {id:'t-calls-outstanding',source:'targeted: LIMIT.outstanding',code:`return (await Promise.all(Array.from({length:${LIMIT.outstanding}},()=>t.add1(0)))).length`,tools:T,expect:{ok:LIMIT.outstanding}},
+  {id:'t-calls-over-outstanding',source:'targeted: LIMIT.outstanding',code:`return (await Promise.all(Array.from({length:${LIMIT.outstanding+1}},()=>t.delay(5,0)))).length`,tools:T,expect:{error:'LIMIT',match:'call budget'}},
+  // Targeted: timers
   {id:'t-timer',source:'targeted: timers',code:'await new Promise(r=>setTimeout(r,5));return 1',timeout:1000,expect:{ok:1}},
   {id:'t-timer-zero',source:'targeted: timers',code:'await new Promise(r=>setTimeout(r,0));return 1',expect:{ok:1}},
+  {id:'t-timer-elapsed',source:'targeted: timers',code:'const a=Date.now();await new Promise(r=>setTimeout(r,30));return Date.now()-a>=29',timeout:1000,expect:{ok:true}},
+  {id:'t-timer-order',source:'targeted: timers',code:'const r=[];await new Promise(d=>{setTimeout(()=>r.push(2),20);setTimeout(()=>r.push(1),5);const c=setTimeout(()=>r.push(9),10);clearTimeout(c);setTimeout(d,40);});return r',timeout:1000,expect:{ok:[1,2]}},
+  {id:'t-timer-interval',source:'targeted: timers',code:'let n=0;await new Promise(d=>{const h=setInterval(()=>{if(++n===3){clearInterval(h);d();}},2);});return n',timeout:1000,expect:{ok:3}},
+  {id:'t-timer-with-call',source:'targeted: timers',code:'const [a,b]=await Promise.all([new Promise(r=>setTimeout(()=>r(1),10)),t.delay(20,2)]);return a+b',tools:T,timeout:1000,expect:{ok:3}},
   {id:'t-clock-advances',source:'targeted: clocks (CUTOVER-PLAN §2.4)',code:'const a=Date.now();let i=0;while(Date.now()-a<20&&i<2e6)i++;return Date.now()-a>=20',expect:{ok:true}},
-  {id:'t-timer-typeof',source:'targeted: timers',code:'return [typeof setTimeout,typeof clearTimeout]',expect:{ok:['function','function']}},
-  // Targeted: tenant source (ring::SOURCE_LIMIT includes the trusted adapters) and LIMIT.code
-  {id:'t-source-at-limit',source:'targeted: IPC.sourceBytes',code:atSource.code,expect:{ok:atSource.k}},
-  {id:'t-source-over-limit',source:'targeted: IPC.sourceBytes',code:overSource.code,expect:{ok:overSource.k}},
+  {id:'t-timer-typeof',source:'targeted: timers',code:'return [typeof setTimeout,typeof clearTimeout,typeof setInterval,typeof clearInterval]',expect:{ok:['function','function','function','function']}},
+  // Targeted: tenant source. LIMIT.code is the bound on both paths: the ring
+  // START source binds the code as base64, so it always fits ring::SOURCE_LIMIT.
+  {id:'t-code-at-limit',source:'targeted: LIMIT.code',code:atCode,expect:{ok:atCodeChars}},
   {id:'t-code-over-limit',source:'targeted: LIMIT.code',code:`return ${JSON.stringify('x'.repeat(LIMIT.code))}.length`,expect:{error:'LIMIT',match:'code limit'}},
   // Targeted: memory class (glue-2m arena vs a 32 MiB VM)
   {id:'t-memory-256k',source:'targeted: ARENA_CLASSES',code:'return new Uint8Array(256*1024).length',expect:{ok:256*1024}},
   {id:'t-memory-over-arena',source:'targeted: ARENA_CLASSES',code:`return new Uint8Array(${2*ARENA_CLASSES['glue-2m'].arenaBytes}).length`,expect:{ok:2*ARENA_CLASSES['glue-2m'].arenaBytes}},
   {id:'t-memory-64m',source:'targeted: memoryLimitMB',code:'return new Uint8Array(64*1024*1024).length',expect:{error:'LIMIT',match:'out of memory'}},
-  // Finding (R14): unbounded recursion ends the guest (protocol EOF) on the v1
-  // QuickJS payload, even inside try; a catchable InternalError would be better.
-  {id:'t-stack-overflow',source:'targeted: error classes',code:'function f(){return f()}return f()',expect:{error:'SANDBOX',match:'protocol EOF'}},
-  // Targeted: completion size (ring::DONE_BYTES)
-  {id:'t-done-near-limit',source:'targeted: IPC.doneBytes',code:`return 'x'.repeat(${IPC.doneBytes-1024})`,expect:{ok:'x'.repeat(IPC.doneBytes-1024)}},
-  {id:'t-done-over-limit',source:'targeted: IPC.doneBytes',code:`return 'x'.repeat(${IPC.doneBytes})`,expect:{ok:'x'.repeat(IPC.doneBytes)}},
-  // Targeted: logs (LIMIT.logs/LIMIT.log; on the ring a log is a CALL record)
-  {id:'t-logs-at-budget',source:'targeted: IPC.calls (logs)',code:`for(let i=0;i<${IPC.calls};i++)console.log(i);return 1`,expect:{ok:1,logs:Array.from({length:IPC.calls},(_,i)=>String(i))}},
-  {id:'t-logs-over-budget',source:'targeted: IPC.calls (logs)',code:`for(let i=0;i<${IPC.calls+1};i++)console.log(i);return 1`,expect:{ok:1,logs:Array.from({length:IPC.calls+1},(_,i)=>String(i))}},
-  {id:'t-logs-and-calls',source:'targeted: IPC.calls (logs)',code:'for(let i=0;i<20;i++){console.log(i);await t.add1(i)}return 1',tools:T,expect:{ok:1,logs:Array.from({length:20},(_,i)=>String(i))}},
+  // Unbounded recursion: QuickJS's --stack-size limit (kernel/generate.ts) throws a
+  // catchable InternalError before the 96 KiB guest stack runs out.
+  {id:'t-stack-overflow',source:'targeted: error classes',code:'function f(){return f()}return f()',expect:{error:'LIMIT',match:'InternalError: stack overflow'}},
+  // Targeted: completion size, across records (one ring record was the bound before ABI 11)
+  {id:'t-done-near-record',source:'targeted: ring MAX_PAYLOAD',code:'return \'x\'.repeat(16352-1024)',expect:{ok:'x'.repeat(16352-1024)}},
+  {id:'t-done-over-record',source:'targeted: ring MAX_PAYLOAD',code:'return \'x\'.repeat(16352)',expect:{ok:'x'.repeat(16352)}},
+  {id:'t-done-64k',source:'targeted: IPC.doneBytes',code:'return \'x\'.repeat(65536)',expect:{ok:'x'.repeat(65536)}},
+  // Targeted: logs (LIMIT.logs/LIMIT.log; on the ring a log is a one-way CONSOLE message)
+  {id:'t-logs-at-budget',source:'targeted: LIMIT.logs',code:`for(let i=0;i<${LIMIT.logs};i++)console.log(i);return 1`,expect:{ok:1,logs:Array.from({length:LIMIT.logs},(_,i)=>String(i))}},
+  {id:'t-logs-over-budget',source:'targeted: LIMIT.logs',code:`for(let i=0;i<${LIMIT.logs+1};i++)console.log(i);return 1`,expect:{ok:1,logs:Array.from({length:LIMIT.logs},(_,i)=>String(i))}},
+  {id:'t-logs-and-calls',source:'targeted: LIMIT.logs, LIMIT.calls',code:'for(let i=0;i<40;i++){console.log(i);await t.add1(i)}return 1',tools:T,expect:{ok:1,logs:Array.from({length:40},(_,i)=>String(i))}},
+  {id:'t-log-burst-with-calls',source:'targeted: LIMIT.logs, LIMIT.outstanding',code:'const p=[];for(let i=0;i<200;i++){console.log(i);if(i<50)p.push(t.add1(i))}return (await Promise.all(p)).length',tools:T,expect:{ok:50,logs:Array.from({length:200},(_,i)=>String(i))}},
   {id:'t-log-long',source:'targeted: LIMIT.log',code:"console.log('x'.repeat(5000));return 1",expect:{ok:1,logs:['x'.repeat(LIMIT.log)]}},
   {id:'t-log-values',source:'targeted: log formatting',code:'console.log({a:1},[1,"b"],null,true,3.5);return 1',expect:{ok:1,logs:['{"a":1} [1,"b"] null true 3.5']}},
   {id:'t-log-undefined',source:'targeted: log formatting',code:'console.log("u",undefined);return 1',expect:{ok:1,logs:['u undefined']}},
   {id:'t-log-unserializable',source:'targeted: log formatting',code:'console.log("n",1n);return 1',expect:{ok:1,logs:['n [unserializable]']}},
-  {id:'t-stack-overflow-caught',source:'targeted: error classes',code:'function f(){return f()}try{f()}catch(e){return e.name}',expect:{error:'SANDBOX',match:'protocol EOF'}},
+  {id:'t-stack-overflow-caught',source:'targeted: error classes',code:'function f(){return f()}try{f()}catch(e){return e.name}',expect:{ok:'InternalError'}},
+  {id:'t-stack-overflow-json',source:'targeted: error classes',code:'let a=[];for(let i=0;i<500;i++)a=[a];try{JSON.stringify(a)}catch(e){return e.name}',expect:{ok:'InternalError'}},
+  {id:'t-stack-after-overflow',source:'targeted: error classes',code:'function f(n){return f(n+1)}try{f(0)}catch{}function g(n){return n?g(n-1)+1:0}return g(50)',expect:{ok:50}},
+  {id:'t-stack-overflow-paths',source:'targeted: error classes',code:'const r=[],t=g=>{try{g();r.push("none")}catch(e){r.push(e.name)}};let a=[];for(let i=0;i<500;i++)a=[a];t(()=>String(a));t(()=>JSON.parse("[".repeat(5000)));t(()=>(0,eval)("(".repeat(5000)+"1"+")".repeat(5000)));const p=new Proxy({},{get:(o,k,q)=>q[k]});t(()=>p.x);t(()=>/(a|b)*c/.test("ab".repeat(100000)));function s(){[2,1].sort(s)}t(s);async function f(){return await f()}try{await f()}catch(e){r.push(e.name)}return r',expect:{ok:['InternalError','SyntaxError','SyntaxError','InternalError','InternalError','InternalError','InternalError']}},
   // Targeted: error classes
   {id:'t-syntax-error',source:'targeted: error classes',code:'return (',expect:{error:'GUEST_ERROR'}},
   {id:'t-reference-error',source:'targeted: error classes',code:'return nope',expect:{error:'GUEST_ERROR',match:'ReferenceError'}},

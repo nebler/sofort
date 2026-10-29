@@ -2,6 +2,7 @@
 //! Waiting slots retain no execution stack. The reactor sends bounded commands;
 //! the watchdog shares only generation-fenced leases and eventfd wakeups.
 use crate::{
+    calls::Calls,
     clock::{self, Clock},
     constants::ring,
     kvm::{self, Kvm, Request, ResetPolicy, ResetReport, RunError, Slot, Snapshot},
@@ -56,10 +57,12 @@ pub struct Completion {
     pub reset_done_ns: u64,
 }
 pub enum Event {
+    /// Policy mode: guest calls and console lines to forward to Node.
     Calls {
         slot: usize,
         generation: u64,
         requests: Vec<Request>,
+        logs: Vec<Vec<u8>>,
     },
     Parked {
         slot: usize,
@@ -129,8 +132,9 @@ impl Pool {
         let mut mailboxes = Vec::new();
         let mut joins = Vec::new();
         for (owner, wake) in wakes.into_iter().enumerate() {
+            // Per slot and generation: START, a reply per open call, CANCEL.
             let capacity = if notify.is_some() {
-                slots.saturating_sub(owner).div_ceil(owners) * 34 + 1
+                slots.saturating_sub(owner).div_ceil(owners) * (ring::MAX_OUTSTANDING + 2) + 1
             } else {
                 32
             };
@@ -274,7 +278,13 @@ impl Drop for Pool {
 }
 enum Progress {
     Parked,
-    Calls(Vec<Request>),
+    /// Policy mode: forward these; `parked` when the guest waits for Node
+    /// (or for its timer), else it runs on.
+    Calls {
+        requests: Vec<Request>,
+        logs: Vec<Vec<u8>>,
+        parked: bool,
+    },
     Finished(String),
     Interrupted,
 }
@@ -307,7 +317,13 @@ struct Managed {
     started: Instant,
     waited: Option<Instant>,
     behavior: Behavior,
-    policy_sent: [u64; 32],
+    /// Policy mode: calls sent to Node and not answered, with when.
+    policy_sent: Calls,
+    /// Policy mode: the guest parked with a timer (ppoll deadline); resume
+    /// it then if nothing else has.
+    wake_at: Option<Instant>,
+    /// Policy mode: console lines of the FINISH exit, forwarded before Done.
+    finish_logs: Vec<Vec<u8>>,
 }
 impl Managed {
     /// Reset this slot. A failed reset quarantines only this slot (kvm::reset);
@@ -344,6 +360,9 @@ impl Managed {
         self.activity = Activity::Running;
         self.started = Instant::now();
         self.waited = None;
+        self.policy_sent = Calls::default();
+        self.wake_at = None;
+        self.finish_logs.clear();
         self.behavior = Behavior {
             mode: job.mode,
             canary: job.canary,
@@ -372,6 +391,10 @@ impl Managed {
                 if !self.cpu.repaired() {
                     return Err(RunError::GuestProtocol("missing repair acknowledgement"));
                 }
+                // The last console lines often share the FINISH exit.
+                if self.behavior.mode == Mode::Policy {
+                    self.finish_logs = e.logs;
+                }
                 return e
                     .finish
                     .map(Progress::Finished)
@@ -385,14 +408,13 @@ impl Managed {
             if e.op == ring::WAIT && self.waited.is_none() {
                 self.waited = Some(Instant::now());
             }
-            if self.behavior.mode == Mode::Policy && (!e.requests.is_empty() || e.op == ring::WAIT)
-            {
+            if self.behavior.mode == Mode::Policy {
                 // Request bytes are opaque here; Node owns the call schema.
                 let sent = kvm::monotonic_ns();
                 for r in &e.requests {
-                    self.policy_sent[r.id as usize - 1] = sent;
+                    assert!(self.policy_sent.issue(r.id, sent));
                 }
-                let calls = e
+                let calls: Vec<Request> = e
                     .requests
                     .iter()
                     .map(|r| Request {
@@ -401,8 +423,22 @@ impl Managed {
                     })
                     .collect();
                 self.pending.extend(e.requests);
-                self.cpu.drain();
-                return Ok(Progress::Calls(calls));
+                // A WAIT parks the guest until Node answers or its timer is
+                // due, unless RX records still wait for ring space: then it
+                // runs on, reads them and frees it. SUBMIT (TX full) runs on.
+                let parked = e.op == ring::WAIT && !self.cpu.backlogged();
+                if parked {
+                    self.wake_at = wake_time(self.cpu.wait_deadline());
+                    self.cpu.drain();
+                }
+                if parked || !calls.is_empty() || !e.logs.is_empty() {
+                    return Ok(Progress::Calls {
+                        requests: calls,
+                        logs: e.logs,
+                        parked,
+                    });
+                }
+                continue;
             }
             if until == DriveUntil::Wait && (e.op == ring::WAIT || e.op == ring::REPAIRED_READY) {
                 self.pending = e.requests;
@@ -466,9 +502,11 @@ impl Managed {
                         .unwrap();
                     return false;
                 }
-                self.metrics.policy_round_trips.push(
-                    kvm::monotonic_ns().saturating_sub(self.policy_sent[request.id as usize - 1]),
-                );
+                let sent = self.policy_sent.answer(request.id).unwrap_or(0);
+                self.metrics
+                    .policy_round_trips
+                    .push(kvm::monotonic_ns().saturating_sub(sent));
+                self.wake_at = None;
                 self.metrics.cpu_ns += kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - t;
             }
             Command::Resume(_, generation) => {
@@ -533,6 +571,7 @@ impl Managed {
         }
     }
 }
+use crate::slot::wake_time;
 struct Worker {
     owner: usize,
     owners: usize,
@@ -567,8 +606,26 @@ impl Worker {
         let mut entropy = File::open("/dev/urandom").unwrap();
         let mut trim_at = None;
         loop {
-            self.wake.wait_until(trim_at);
+            let timer = slots.iter().flatten().filter_map(|s| s.wake_at).min();
+            self.wake
+                .wait_until([trim_at, timer].into_iter().flatten().min());
             expire(&mut slots, self.owner, self.owners, &self.events);
+            // Guests whose timer is due run again (setTimeout in a job).
+            let now = Instant::now();
+            for i in 0..slots.len() {
+                let Some(s) = slots[i].as_mut() else {
+                    continue;
+                };
+                if s.activity == Activity::Running && s.wake_at.is_some_and(|at| at <= now) {
+                    s.wake_at = None;
+                    self.drive(
+                        &mut slots,
+                        i,
+                        self.owner + i * self.owners,
+                        Some(Mode::Policy),
+                    );
+                }
+            }
             while let Ok(cmd) = self.commands.try_recv() {
                 expire(&mut slots, self.owner, self.owners, &self.events);
                 let (id, mode) = match &cmd {
@@ -608,7 +665,9 @@ impl Worker {
                             mode: Mode::Run,
                             canary: false,
                         },
-                        policy_sent: [0; 32],
+                        policy_sent: Calls::default(),
+                        wake_at: None,
+                        finish_logs: Vec::new(),
                     });
                 }
                 let s = slots[i].as_mut().unwrap();
@@ -656,15 +715,22 @@ impl Worker {
             s.metrics.cpu_ns += kvm::clock_ns(libc::CLOCK_THREAD_CPUTIME_ID) - t;
             match result {
                 Ok(Progress::Interrupted) => expire(slots, self.owner, self.owners, &self.events),
-                Ok(Progress::Calls(requests)) => {
+                Ok(Progress::Calls {
+                    requests,
+                    logs,
+                    parked,
+                }) => {
                     self.events
                         .send(Event::Calls {
                             slot: id,
                             generation: s.cpu.generation,
                             requests,
+                            logs,
                         })
                         .unwrap();
-                    break;
+                    if parked {
+                        break;
+                    }
                 }
                 Ok(Progress::Parked) => {
                     self.events
@@ -680,6 +746,17 @@ impl Worker {
                         Progress::Finished(s) => s,
                         _ => unreachable!(),
                     });
+                    let logs = std::mem::take(&mut s.finish_logs);
+                    if !logs.is_empty() {
+                        self.events
+                            .send(Event::Calls {
+                                slot: id,
+                                generation: s.cpu.generation,
+                                requests: Vec::new(),
+                                logs,
+                            })
+                            .unwrap();
+                    }
                     let completion = s.finish(
                         result,
                         if mode == Some(Mode::Retain) {

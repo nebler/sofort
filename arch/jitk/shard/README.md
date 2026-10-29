@@ -231,6 +231,35 @@ its copy path keeps the physical pages, so a tenant's arena code can survive in
 the I-cache there too, unless the CPU has CTR_EL0.DIC. A kernel `ic ialluis`
 would close both. Not done here: it would change `kernel/.READY`.
 
+## Limits (ABI 11)
+
+The JS profile has the console path's limits (`../executor/ipc/ABI.md`,
+`ABI-R7.md` "JS profile"): 4,096 calls per run with 64 open and 2 MiB in
+flight, 1 MiB calls, replies and completions, a 72 KiB START source (64 KiB
+of tenant code, `LIMIT.code`), 1,024 one-way console lines, and guest timers
+(the WAIT deadline wakes a parked slot). Messages stream over the unchanged
+32 KiB rings and 16 KiB IPC records, so the layout, the arena classes, guest
+RAM and the reset are as before; host memory per slot is a backlog of at most
+the source plus one reply per open call.
+
+What bounds big values is the glue-2m arena: a run has about 400 KiB of
+QuickJS heap (each open call costs ~4 KiB of it), so a 64 KiB reply or source
+works, a 50 KiB call echoed back works, a 64 KiB echo, a 100 KiB reply or a
+100 KiB completion is a QuickJS out-of-memory error. A larger class (glue-4m,
+2.75 MiB arena) would lift that at the price of its reset copy.
+
+Cost, `return 2`, glue-2m, p50 of 1,000, before (ABI 10, main) / after:
+
+| | reset | run | max RSS of the one-slot bench process |
+| --- | ---: | ---: | ---: |
+| HVF (`hvf bench`, M4 Pro, load ~6) | 71.6–72.0 / 71.0–72.4 µs | 23.9–24.3 / 32.6–36.2 µs | 11.71 / 11.70 MB |
+| KVM (`real bench`, kvm-dev nested) | 93.4–94.1 / 92.3–93.2 µs | 114.0–115.8 / 118.4–119.0 µs | 49.4–49.9 / 49.9 MB |
+
+The run grew 1.6 µs on HVF with the kernel's TLB and I-cache invalidation
+after CHECKPOINT (measured with and without it); the rest follows the guest's
+heap layout (variants of the source decode moved it by ±4 µs), not the
+message path: `return 2` takes one exit before and after.
+
 ## HVF engine (`hvf ipc`, R10 #10 phase 2)
 
 `hvf ipc SNAPSHOT_BASE SLOTS [POLICY]` is the Mac engine the executor drives
@@ -322,8 +351,8 @@ child, dead-child quarantine then RESTORED and both slots serving, silent
 replacement of an idle dead child, a crash loop failing the engine after 5
 kills of a one-slot engine, an unsolicited RESTORED, malformed admissions, no
 orphans); the parity
-corpus on `hvf` (85 cases: 63 ok, 22 allowlisted, 0 undocumented; every
-allowlisted case is a ring-profile limit shared with the Linux shard).
+corpus on `hvf` (ABI 11: 96 cases, 94 ok, 2 allowlisted, 0 undocumented,
+as `linux/shard`; both allowlisted cases are the glue-2m arena).
 
 Per run through the canonical executor (`node ../executor/build/engine-bench.js`;
 sequential executes, libkrun with 2 warm VMMs, HVF unwarmed with 8 engine

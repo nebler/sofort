@@ -9,12 +9,13 @@ mod tests;
 pub use crate::clock::monotonic_ns;
 use crate::constants::ring::{self, RecordHeader};
 use crate::hv::{Exit, Region, Vcpu, Vm};
-use crate::{arena, memory::Mapping, snapshot::Snapshot};
+use crate::{arena, calls::Calls, memory::Mapping, snapshot::Snapshot};
 pub use reset::{
     Discard, QUARANTINED, Quarantined, ResetPolicy, ResetReport, SAMPLE_FAILURES, SAMPLED,
 };
 use std::{
     cell::Cell,
+    collections::VecDeque,
     fs::File,
     io::{self, Read},
     ptr,
@@ -85,11 +86,52 @@ fn diagnostics() -> bool {
     static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *ON.get_or_init(|| std::env::var_os("JITK_SHARD_DIAGNOSTICS").is_some())
 }
-/// One doorbell's decoded TX records.
+/// One doorbell's decoded TX messages: complete calls, console lines (JSON
+/// `[level, message]`, one-way) and the completion.
 pub struct Step {
     pub op: u32,
     pub requests: Vec<Request>,
+    pub logs: Vec<Vec<u8>>,
     pub finish: Option<String>,
+}
+/// A TX message whose MORE fragments arrived and whose last has not.
+struct Partial {
+    kind: u16,
+    id: u64,
+    bytes: Vec<u8>,
+}
+/// The JSON records of one message: full MORE fragments, then the rest.
+fn message_records(kind: u16, generation: u64, id: u64, cap: u32, bytes: &[u8]) -> Vec<Vec<u8>> {
+    let count = ring::records(bytes.len());
+    (0..count)
+        .map(|i| {
+            let chunk = &bytes[(i * ring::MAX_PAYLOAD).min(bytes.len())
+                ..((i + 1) * ring::MAX_PAYLOAD).min(bytes.len())];
+            let more = if i + 1 < count { ring::MORE } else { 0 };
+            let len = ring::record_len(chunk.len());
+            let mut b = vec![0u8; len];
+            let h = RecordHeader {
+                len: len as u32,
+                kind,
+                flags: ring::JSON_UTF8 | more,
+                generation,
+                id,
+                n: chunk.len() as u32,
+                cap,
+            };
+            b[..ring::HEADER_BYTES].copy_from_slice(&h.encode());
+            b[ring::HEADER_BYTES..ring::HEADER_BYTES + chunk.len()].copy_from_slice(chunk);
+            b
+        })
+        .collect()
+}
+/// When to resume a guest that parked (WAIT) with `deadline`, its DEADLINE
+/// word on the slot clock (`monotonic_ns`): None when it waits for input
+/// only. The run's lease bounds it in any case.
+pub fn wake_time(deadline: u64) -> Option<Instant> {
+    (deadline != u64::MAX).then(|| {
+        Instant::now() + std::time::Duration::from_nanos(deadline.saturating_sub(monotonic_ns()))
+    })
 }
 /// The writable extents of `class` (arena, transport) as RAM offsets.
 pub fn writable(class: arena::Class) -> impl Iterator<Item = (usize, usize)> {
@@ -110,8 +152,18 @@ pub struct Slot<V: Vm> {
     tx: usize,
     rx: usize,
     rx_consumed: usize,
-    seen: u32,
-    replied: u32,
+    /// This generation's call ids: issued by decoded CALLs, answered by replies.
+    calls: Calls,
+    /// Replies queued this generation (HOST_EPOCH).
+    replies: u64,
+    /// A TX message still waiting for its last fragment.
+    partial: Option<Partial>,
+    /// RX records (SOURCE, RET) not yet on the ring: written as the guest
+    /// frees ring space, before every vCPU entry. Bounded by the source and
+    /// one reply per open call.
+    backlog: VecDeque<Vec<u8>>,
+    /// CONSOLE messages this generation; bounded by ring::MAX_LOGS.
+    logs: usize,
     pub exits: u64,
     policy: ResetPolicy,
     /// The pristine invariant (reset.rs) holds. Cleared by every host write to
@@ -143,8 +195,11 @@ impl<V: Vm> Slot<V> {
             tx: 0,
             rx: 0,
             rx_consumed: 0,
-            seen: 0,
-            replied: 0,
+            calls: Calls::default(),
+            replies: 0,
+            partial: None,
+            backlog: VecDeque::new(),
+            logs: 0,
             exits: 0,
             policy: ResetPolicy::default(),
             pristine: Cell::new(false),
@@ -311,9 +366,55 @@ impl<V: Vm> Slot<V> {
                 .as_nanos() as u64,
         );
         self.store(ring::MONOTONIC_NS, monotonic_ns());
+        // The source is the run's first RX message (none for an empty one).
         self.store(ring::SOURCE_BYTES, source.len() as u64);
-        self.copy(CTRL + ring::SOURCE_OFFSET, source.as_bytes());
+        if !source.is_empty() {
+            self.backlog =
+                message_records(ring::SOURCE, generation, 0, 0, source.as_bytes()).into();
+        }
+        self.flush().expect("a pristine slot's RX ring is empty");
         seed
+    }
+    /// Move backlog records onto the RX ring while they fit. The vCPU is
+    /// stopped; the guest's consumer cursor is checked against what the host
+    /// produced.
+    fn flush(&mut self) -> Result<(), RunError> {
+        if self.backlog.is_empty() {
+            return Ok(());
+        }
+        let cons = self.load(ring::RX_CONSUMER) as usize;
+        if cons < self.rx_consumed || cons > self.rx || !cons.is_multiple_of(8) {
+            return Err(RunError::GuestProtocol("RX consumer cursor"));
+        }
+        self.rx_consumed = cons;
+        let start = self.rx;
+        while let Some(b) = self.backlog.front() {
+            if self.rx - cons + b.len() > ring::RING_BYTES {
+                break;
+            }
+            let at = self.rx % ring::RING_BYTES;
+            let first = b.len().min(ring::RING_BYTES - at);
+            let b = self.backlog.pop_front().unwrap();
+            self.copy(REPLY + at, &b[..first]);
+            self.copy(REPLY, &b[first..]);
+            self.rx += b.len();
+        }
+        if self.rx != start {
+            self.store(ring::RX_PRODUCER, self.rx as u64);
+            self.store(ring::HOST_EPOCH, self.replies);
+            self.store(ring::REPLY_READY, 1);
+        }
+        Ok(())
+    }
+    /// RX records wait for ring space: the guest must run (it frees space as
+    /// it reads) before it needs Node again.
+    pub fn backlogged(&self) -> bool {
+        !self.backlog.is_empty()
+    }
+    /// The guest's last WAIT deadline (ppoll timeout or timer), in this
+    /// slot's clock (`monotonic_ns`); u64::MAX when it waits for input only.
+    pub fn wait_deadline(&self) -> u64 {
+        self.load(ring::DEADLINE)
     }
     fn ring_copy(&self, base: usize, cursor: usize, n: usize) -> Vec<u8> {
         (0..n)
@@ -352,6 +453,7 @@ impl<V: Vm> Slot<V> {
     /// Run to the next doorbell and decode its records. None: interrupted by
     /// a kick (KVM: another slot's expiry); the owner calls again.
     pub fn try_exit(&mut self) -> Result<Option<Step>, RunError> {
+        self.flush()?;
         self.store(ring::MONOTONIC_NS, monotonic_ns());
         self.wrote_ram(); // the guest may write RAM and registers
         // While the guard lives the shard clock may refresh MONOTONIC_NS; its
@@ -385,6 +487,7 @@ impl<V: Vm> Slot<V> {
             return Err(RunError::GuestProtocol("TX cursor"));
         }
         let mut requests = Vec::new();
+        let mut logs = Vec::new();
         let mut finish = None;
         while self.tx < prod {
             if prod - self.tx < ring::HEADER_BYTES {
@@ -399,12 +502,13 @@ impl<V: Vm> Slot<V> {
                     .unwrap(),
             );
             if !h.framed(prod - self.tx)
-                || h.flags != ring::JSON_UTF8
+                || h.flags & !ring::MORE != ring::JSON_UTF8
                 || h.generation != self.generation
             {
                 return Err(RunError::GuestProtocol("TX record header"));
             }
             let (len, kind, id, n, cap) = (h.len as usize, h.kind, h.id, h.n as usize, h.cap);
+            let more = h.flags & ring::MORE != 0;
             // Copy once, then validate/use this owner-private copy.
             let mut payload = self.ring_copy(
                 REQUEST,
@@ -415,31 +519,68 @@ impl<V: Vm> Slot<V> {
                 return Err(RunError::GuestProtocol("nonzero TX padding"));
             }
             payload.truncate(n);
+            if more && (n != ring::MAX_PAYLOAD || kind == ring::LOG) {
+                return Err(RunError::GuestProtocol("TX fragment"));
+            }
             match kind {
-                ring::CALL => {
-                    if !(1..=ring::MAX_CALLS as u64).contains(&id)
-                        || id != u64::from(self.seen.count_ones()) + 1
-                        || cap != ring::CALL_CAP
-                        || !crate::payload::forwarded(ring::CALL, &payload)
+                ring::CALL | ring::DONE | ring::CONSOLE => {
+                    let first = match self.partial.take() {
+                        Some(p) if p.kind == kind && p.id == id => Some(p.bytes),
+                        Some(_) => return Err(RunError::GuestProtocol("TX fragment interleaved")),
+                        None => None,
+                    };
+                    if first.is_none() {
+                        // A message's identity is checked on its first record.
+                        let ok = match kind {
+                            ring::CALL => id == self.calls.next() && cap == ring::CALL_CAP,
+                            ring::DONE => id == 0 && cap == 0 && finish.is_none(),
+                            _ => id == 0 && cap == 0 && self.logs < ring::MAX_LOGS,
+                        };
+                        if !ok {
+                            return Err(RunError::GuestProtocol("message identity"));
+                        }
+                    } else if cap
+                        != if kind == ring::CALL {
+                            ring::CALL_CAP
+                        } else {
+                            0
+                        }
                     {
-                        return Err(RunError::GuestProtocol("call identity/schema"));
+                        return Err(RunError::GuestProtocol("message identity"));
                     }
-                    self.seen |= 1u32 << (id - 1);
-                    requests.push(Request { id, bytes: payload });
-                }
-                ring::DONE => {
-                    if id != 0
-                        || cap != 0
-                        || finish.is_some()
-                        || op != ring::FINISH
-                        || self.tx + len != prod
-                    {
-                        return Err(RunError::GuestProtocol("completion identity/order"));
+                    let bytes = match first {
+                        Some(mut b) => {
+                            b.extend_from_slice(&payload);
+                            b
+                        }
+                        None => payload,
+                    };
+                    let bounded = crate::payload::forwarded(kind, &bytes);
+                    if more {
+                        if !bounded {
+                            return Err(RunError::GuestProtocol("message bytes"));
+                        }
+                        self.partial = Some(Partial { kind, id, bytes });
+                    } else if kind == ring::CALL {
+                        if !bounded || !self.calls.issue(id, 0) {
+                            return Err(RunError::GuestProtocol("call identity/schema"));
+                        }
+                        requests.push(Request { id, bytes });
+                    } else if kind == ring::DONE {
+                        if op != ring::FINISH || self.tx + len != prod {
+                            return Err(RunError::GuestProtocol("completion identity/order"));
+                        }
+                        if !bounded {
+                            return Err(RunError::GuestProtocol("completion bytes"));
+                        }
+                        finish = Some(bytes.into_iter().map(char::from).collect());
+                    } else {
+                        if !bounded {
+                            return Err(RunError::GuestProtocol("console bytes"));
+                        }
+                        self.logs += 1;
+                        logs.push(bytes);
                     }
-                    if !crate::payload::forwarded(ring::DONE, &payload) {
-                        return Err(RunError::GuestProtocol("completion bytes"));
-                    }
-                    finish = Some(payload.into_iter().map(char::from).collect());
                 }
                 ring::LOG => {
                     if id != 0 || cap != 0 {
@@ -467,53 +608,30 @@ impl<V: Vm> Slot<V> {
             if finish.is_none() {
                 return Err(RunError::GuestFatal);
             }
-            if self.seen != self.replied || !requests.is_empty() {
+            if !self.calls.idle() || !requests.is_empty() || self.partial.is_some() {
                 return Err(RunError::GuestProtocol("completion with outstanding calls"));
             }
         }
         Ok(Some(Step {
             op,
             requests,
+            logs,
             finish,
         }))
     }
+    /// Answer open call `r.id`: its RET records join the backlog, and as many
+    /// as fit go onto the RX ring now.
     pub fn reply(&mut self, r: &Request) -> Result<(), RunError> {
-        let cons = self.load(ring::RX_CONSUMER) as usize;
-        if cons < self.rx_consumed || cons > self.rx || !cons.is_multiple_of(8) {
-            return Err(RunError::GuestProtocol("RX consumer cursor"));
-        }
-        self.rx_consumed = cons;
-        let n = r.bytes.len();
-        let len = ring::record_len(n);
-        if self.rx - cons + len > ring::RING_BYTES {
-            return Err(RunError::GuestProtocol("RX credit exhausted"));
-        }
         // The trusted broker/fixture must answer a previously decoded request once.
-        assert!((1..=ring::MAX_CALLS as u64).contains(&r.id) && n <= ring::REPLY_BYTES);
-        let bit = 1u32 << (r.id - 1);
-        assert_eq!(self.replied & bit, 0);
-        assert_ne!(self.seen & bit, 0);
-        let mut b = vec![0u8; len];
-        let h = RecordHeader {
-            len: len as u32,
-            kind: ring::RET,
-            flags: ring::JSON_UTF8,
-            generation: self.generation,
-            id: r.id,
-            n: n as u32,
-            cap: ring::CALL_CAP,
-        };
-        b[..ring::HEADER_BYTES].copy_from_slice(&h.encode());
-        b[ring::HEADER_BYTES..ring::HEADER_BYTES + n].copy_from_slice(&r.bytes);
-        for (i, x) in b.iter().enumerate() {
-            self.copy(REPLY + (self.rx + i) % ring::RING_BYTES, &[*x]);
-        }
-        self.rx += len;
-        self.replied |= bit;
-        self.store(ring::RX_PRODUCER, self.rx as u64);
-        self.store(ring::HOST_EPOCH, u64::from(self.replied.count_ones()));
-        self.store(ring::REPLY_READY, 1);
-        Ok(())
+        assert!(r.bytes.len() <= ring::REPLY_BYTES);
+        assert!(
+            self.calls.answer(r.id).is_some(),
+            "reply to an unopened call"
+        );
+        let records = message_records(ring::RET, self.generation, r.id, ring::CALL_CAP, &r.bytes);
+        self.backlog.extend(records);
+        self.replies += 1;
+        self.flush()
     }
     pub fn pause_after_repair(&self) {
         self.store(ring::SAMPLE_READY, 1);

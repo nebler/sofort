@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sha256": "e3d774eb844f2cca9f1ba2b28c5b732c7ebc659e01dbafb0505d0d0f1d08b1f6",
-  "image": "kernel-e3d774eb844f2cca9f1ba2b28c5b732c7ebc659e01dbafb0505d0d0f1d08b1f6.bin",
+  "sha256": "2b41d0f988aaaa3d8cf2531c09189e4cbd0d82bcc61d6632d34fd57dc8a21996",
+  "image": "kernel-2b41d0f988aaaa3d8cf2531c09189e4cbd0d82bcc61d6632d34fd57dc8a21996.bin",
   "bytes": 2924584,
   "ram_mib": 32,
   "features": [
@@ -26,6 +26,36 @@
       "name": "ioctl",
       "registered": true,
       "sha256": "64fe6c5b8e834746423a8e559aab6288dc08947285004aff56b684fed96b8eff"
+    },
+    {
+      "nr": 34,
+      "name": "mkdirat",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 35,
+      "name": "unlinkat",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 43,
+      "name": "statfs",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 48,
+      "name": "faccessat",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 49,
+      "name": "chdir",
+      "registered": false,
+      "sha256": null
     },
     {
       "nr": 56,
@@ -124,10 +154,22 @@
       "sha256": "8b1c109892ff62df0f67a507fcc5bd416e28428196da2251af443b3c4eb94662"
     },
     {
+      "nr": 101,
+      "name": "nanosleep",
+      "registered": false,
+      "sha256": null
+    },
+    {
       "nr": 113,
       "name": "clock_gettime",
       "registered": true,
       "sha256": "9aad5bea39fa843cde642c1ed26037f186033bb9f37f1e9738af3402f55e6230"
+    },
+    {
+      "nr": 123,
+      "name": "sched_getaffinity",
+      "registered": false,
+      "sha256": null
     },
     {
       "nr": 134,
@@ -140,6 +182,42 @@
       "name": "rt_sigprocmask",
       "registered": true,
       "sha256": "78f483509a8e5457a5cbd0a4175aa9ae8c21eeb38f09dd1f97f925b8c6ab0cea"
+    },
+    {
+      "nr": 141,
+      "name": "getpriority",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 160,
+      "name": "uname",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 165,
+      "name": "getrusage",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 172,
+      "name": "getpid",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 173,
+      "name": "getppid",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 179,
+      "name": "sysinfo",
+      "registered": false,
+      "sha256": null
     },
     {
       "nr": 214,
@@ -164,6 +242,18 @@
       "name": "mmap",
       "registered": true,
       "sha256": "9344774b48388212008791a139ed86d73155a01a78b64a3827a4f99b655c59bb"
+    },
+    {
+      "nr": 233,
+      "name": "madvise",
+      "registered": false,
+      "sha256": null
+    },
+    {
+      "nr": 278,
+      "name": "getrandom",
+      "registered": false,
+      "sha256": null
     }
   ],
   "packed": {
@@ -200,8 +290,10 @@
     "--std",
     "--memory-limit",
     "16777216",
+    "--stack-size",
+    "81920",
     "-e",
-    "// Stock QuickJS source: qjs --std --memory-limit 16M bootstrap.js\n// Convenience API only: the trusted TS dispatcher validates every guest byte.\n// --std supplies std/os; the kernel embeds this exact source with -e.\n\nconst MAX=1048576, WIRE=16777216, stringify=JSON.stringify.bind(JSON), parse=JSON.parse.bind(JSON);\nconst AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;\nconst pending=new Map();\nlet state='parked', next=1, inflight=0, outputBytes=0, inputBytes=0, outputFrames=0;\nlet logCount=0, logBytes=0;\nfunction ascii(m) {\n  return stringify(m).replace(/[\\u007f-\\uffff]/g,\n    c=>'\\\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));\n}\nfunction write(s) {\n  if (s.length>MAX || outputBytes+s.length+1>WIRE || outputFrames>=8192) throw Error('output budget');\n  outputBytes+=s.length+1; outputFrames++;\n  std.out.puts(s+'\\n'); std.out.flush();\n  if (std.out.error()) throw Error('output failure');\n}\nfunction stop(status) { state='closed'; os.setReadHandler(0,null); std.exit(status); }\nfunction fatal() { stop(1); } // No seventh message kind; malformed host input closes.\nfunction finish(ok,value) {\n  if (state!=='running') return;\n  try {\n    if (ok && pending.size) throw Error('unawaited calls at completion');\n    write(ascii(ok?{t:'done',ok:value===undefined?null:value}:\n      {t:'done',err:{name:String(value && value.name || 'Error').slice(0,128),\n        message:String(value && value.message || value).slice(0,4096)}}));\n    stop(0);\n  } catch(e) {\n    try { write(ascii({t:'done',err:{name:'SerializationError',message:String(e).slice(0,1024)}})); }\n    finally { stop(1); }\n  }\n}\nfunction rpc(ns,fn,args) {\n  if (state!=='running' || pending.size>=64 || next>4096) return Promise.reject(Error('call budget'));\n  let wire;\n  try {\n    wire=ascii({t:'call',id:next,ns,fn,args});\n    if (wire.length>MAX || inflight+wire.length+1>2097152) throw Error('call byte budget');\n  } catch(e) { return Promise.reject(e); }\n  const id=next;\n  return new Promise((resolve,reject)=> {\n    try { write(wire); }\n    catch(e) { reject(e); fatal(); return; }\n    next++; inflight+=wire.length+1; pending.set(id,{resolve,reject,bytes:wire.length+1});\n  });\n}\nfunction proxy(ns,fns) {\n  const allowed=new Set(fns);\n  return new Proxy(Object.create(null),{get:(_,fn)=>\n    typeof fn==='string' && fn!=='then' && allowed.has(fn)?(...args)=>rpc(ns,fn,args):undefined});\n}\nfunction utf8(s) {\n  let n=0; for (const c of s) { const p=c.codePointAt(0); n+=p<128?1:p<2048?2:p<65536?3:4; } return n;\n}\nfunction clip(s,n) {\n  let bytes=0, out='';\n  for (const c of s) {\n    const p=c.codePointAt(0), size=p<128?1:p<2048?2:p<65536?3:4;\n    // TextEncoder on the host accounts lone surrogates as U+FFFD. Replace here\n    // so the serialized scalar text is valid and has that same byte cost.\n    if (bytes+size>n) break;\n    bytes+=size; out+=p>=0xd800 && p<=0xdfff?'\\ufffd':c;\n  }\n  return out;\n}\nconst logger=level=>(...args)=> {\n  if (state!=='running' || logCount>=1024 || logBytes>=262144) return;\n  let msg='';\n  for (const arg of args) {\n    let part;\n    try { part=typeof arg==='string'?arg:stringify(arg); } catch { part='[unserializable]'; }\n    msg=clip(msg+(msg?' ':'')+String(part),Math.min(4096,262144-logBytes));\n    if (utf8(msg)>=4096) break;\n  }\n  const n=utf8(msg); if (logBytes+n>262144) return;\n  const wire=ascii({t:'log',level,msg});\n  if (outputBytes+wire.length+1>WIRE-8192 || outputFrames>=8190) return;\n  logCount++; logBytes+=n;\n  try { write(wire); } catch { fatal(); }\n};\nglobalThis.console=Object.freeze(Object.fromEntries(['log','info','warn','error','debug'].map(k=>[k,logger(k)])));\nglobalThis.print=logger('log');\nglobalThis.setTimeout=(fn,ms,...args)=>os.setTimeout(()=>fn(...args),ms);\nglobalThis.clearTimeout=os.clearTimeout;\n\nfunction receive(m) {\n  if (m.t==='run' && state==='parked') {\n    if (typeof m.code!=='string' || m.code.length>65536 || utf8(m.code)>65536 || !m.ns || typeof m.ns!=='object' || Array.isArray(m.ns)) throw Error('run schema');\n    const names=Object.keys(m.ns);\n    if (names.length>64 || names.some(n=>!/^[A-Za-z_$][A-Za-z0-9_$]{0,63}$/.test(n) || !Array.isArray(m.ns[n]))) throw Error('namespace schema');\n    state='running';\n    try {\n      // Lexical parameters avoid mutating globalThis or building JS declarations.\n      const body=new AsyncFunction(...names,'\"use strict\";\\n'+m.code);\n      Promise.resolve(body(...names.map(n=>proxy(n,m.ns[n])))).then(v=>finish(true,v),e=>finish(false,e));\n    } catch(e) { finish(false,e); }\n    return;\n  }\n  if (state!=='running' || m.t!=='ret' || !Number.isSafeInteger(m.id)) throw Error('response state');\n  const p=pending.get(m.id);\n  if (!p || Object.hasOwn(m,'ok')===Object.hasOwn(m,'err')) throw Error('response id/schema');\n  pending.delete(m.id); inflight-=p.bytes;\n  if (Object.hasOwn(m,'ok')) p.resolve(m.ok);\n  else {\n    if (!m.err || typeof m.err.code!=='string' || typeof m.err.message!=='string') throw Error('ret error schema');\n    const e=Error(m.err.message); e.code=m.err.code; p.reject(e);\n  }\n}\n// One raw read per readiness callback. Never mix stdio getline/read-ahead with ppoll.\nconst storage=new ArrayBuffer(16384), bytes=new Uint8Array(storage);\nlet line='', size=0;\nos.setReadHandler(0,()=> {\n  try {\n    const n=os.read(0,storage,0,bytes.length);\n    if (n<=0 || inputBytes+n>WIRE) throw Error('EOF/read/input budget');\n    inputBytes+=n;\n    let start=0;\n    for (let i=0;i<n;i++) {\n      const b=bytes[i];\n      if (b===10) {\n        if (size+i-start>MAX) throw Error('input frame limit');\n        line+=String.fromCharCode(...bytes.subarray(start,i));\n        const frame=line; line=''; size=0; start=i+1;\n        receive(parse(frame));\n      } else if (b<32 || b>126) throw Error('input ASCII');\n      else if (size+i-start+1>MAX) throw Error('input frame limit');\n    }\n    size+=n-start;\n    if (start<n) line+=String.fromCharCode(...bytes.subarray(start,n));\n  } catch { fatal(); }\n});\nwrite(ascii({t:'ready',v:1}));\n"
+    "// Stock QuickJS source: qjs --std --memory-limit 16M bootstrap.js\n// Convenience API only: the trusted TS dispatcher validates every guest byte.\n// --std supplies std/os; the kernel embeds this exact source with -e.\n\nconst MAX=1048576, WIRE=16777216, stringify=JSON.stringify.bind(JSON), parse=JSON.parse.bind(JSON);\nconst AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;\nconst pending=new Map();\nlet state='parked', next=1, inflight=0, outputBytes=0, inputBytes=0, outputFrames=0;\nlet logCount=0, logBytes=0;\nfunction ascii(m) {\n  return stringify(m).replace(/[\\u007f-\\uffff]/g,\n    c=>'\\\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));\n}\nfunction write(s) {\n  if (s.length>MAX || outputBytes+s.length+1>WIRE || outputFrames>=8192) throw Error('output budget');\n  outputBytes+=s.length+1; outputFrames++;\n  std.out.puts(s+'\\n'); std.out.flush();\n  if (std.out.error()) throw Error('output failure');\n}\nfunction stop(status) { state='closed'; os.setReadHandler(0,null); std.exit(status); }\nfunction fatal() { stop(1); } // No seventh message kind; malformed host input closes.\nfunction finish(ok,value) {\n  if (state!=='running') return;\n  try {\n    if (ok && pending.size) throw Error('unawaited calls at completion');\n    write(ascii(ok?{t:'done',ok:value===undefined?null:value}:\n      {t:'done',err:{name:String(value && value.name || 'Error').slice(0,128),\n        message:String(value && value.message || value).slice(0,4096)}}));\n    stop(0);\n  } catch(e) {\n    try { write(ascii({t:'done',err:{name:'SerializationError',message:String(e).slice(0,1024)}})); }\n    finally { stop(1); }\n  }\n}\nfunction rpc(ns,fn,args) {\n  if (state!=='running' || pending.size>=64 || next>4096) return Promise.reject(Error('call budget'));\n  let wire;\n  try {\n    wire=ascii({t:'call',id:next,ns,fn,args});\n    if (wire.length>MAX || inflight+wire.length+1>2097152) throw Error('call byte budget');\n  } catch(e) { return Promise.reject(e); }\n  const id=next;\n  return new Promise((resolve,reject)=> {\n    try { write(wire); }\n    catch(e) { reject(e); fatal(); return; }\n    next++; inflight+=wire.length+1; pending.set(id,{resolve,reject,bytes:wire.length+1});\n  });\n}\nfunction proxy(ns,fns) {\n  const allowed=new Set(fns);\n  return new Proxy(Object.create(null),{get:(_,fn)=>\n    typeof fn==='string' && fn!=='then' && allowed.has(fn)?(...args)=>rpc(ns,fn,args):undefined});\n}\nfunction utf8(s) {\n  let n=0; for (const c of s) { const p=c.codePointAt(0); n+=p<128?1:p<2048?2:p<65536?3:4; } return n;\n}\nfunction clip(s,n) {\n  let bytes=0, out='';\n  for (const c of s) {\n    const p=c.codePointAt(0), size=p<128?1:p<2048?2:p<65536?3:4;\n    // TextEncoder on the host accounts lone surrogates as U+FFFD. Replace here\n    // so the serialized scalar text is valid and has that same byte cost.\n    if (bytes+size>n) break;\n    bytes+=size; out+=p>=0xd800 && p<=0xdfff?'\\ufffd':c;\n  }\n  return out;\n}\nconst logger=level=>(...args)=> {\n  if (state!=='running' || logCount>=1024 || logBytes>=262144) return;\n  let msg='';\n  for (const arg of args) {\n    let part;\n    try { part=typeof arg==='string'?arg:stringify(arg); } catch { part='[unserializable]'; }\n    msg=clip(msg+(msg?' ':'')+String(part),Math.min(4096,262144-logBytes));\n    if (utf8(msg)>=4096) break;\n  }\n  const n=utf8(msg); if (logBytes+n>262144) return;\n  const wire=ascii({t:'log',level,msg});\n  if (outputBytes+wire.length+1>WIRE-8192 || outputFrames>=8190) return;\n  logCount++; logBytes+=n;\n  try { write(wire); } catch { fatal(); }\n};\nglobalThis.console=Object.freeze(Object.fromEntries(['log','info','warn','error','debug'].map(k=>[k,logger(k)])));\nglobalThis.print=logger('log');\nglobalThis.setTimeout=(fn,ms,...args)=>os.setTimeout(()=>fn(...args),ms);\nglobalThis.clearTimeout=os.clearTimeout;\nglobalThis.setInterval=(fn,ms,...args)=>{\n  const h={};\n  const tick=()=>{h.t=os.setTimeout(tick,ms);fn(...args);};\n  h.t=os.setTimeout(tick,ms);\n  return h;\n};\nglobalThis.clearInterval=h=>{if(h&&h.t!==undefined)os.clearTimeout(h.t);};\n\nfunction receive(m) {\n  if (m.t==='run' && state==='parked') {\n    if (typeof m.code!=='string' || m.code.length>65536 || utf8(m.code)>65536 || !m.ns || typeof m.ns!=='object' || Array.isArray(m.ns)) throw Error('run schema');\n    const names=Object.keys(m.ns);\n    if (names.length>64 || names.some(n=>!/^[A-Za-z_$][A-Za-z0-9_$]{0,63}$/.test(n) || !Array.isArray(m.ns[n]))) throw Error('namespace schema');\n    state='running';\n    try {\n      // Lexical parameters avoid mutating globalThis or building JS declarations.\n      const body=new AsyncFunction(...names,'\"use strict\";\\n'+m.code);\n      Promise.resolve(body(...names.map(n=>proxy(n,m.ns[n])))).then(v=>finish(true,v),e=>finish(false,e));\n    } catch(e) { finish(false,e); }\n    return;\n  }\n  if (state!=='running' || m.t!=='ret' || !Number.isSafeInteger(m.id)) throw Error('response state');\n  const p=pending.get(m.id);\n  if (!p || Object.hasOwn(m,'ok')===Object.hasOwn(m,'err')) throw Error('response id/schema');\n  pending.delete(m.id); inflight-=p.bytes;\n  if (Object.hasOwn(m,'ok')) p.resolve(m.ok);\n  else {\n    if (!m.err || typeof m.err.code!=='string' || typeof m.err.message!=='string') throw Error('ret error schema');\n    const e=Error(m.err.message); e.code=m.err.code; p.reject(e);\n  }\n}\n// One raw read per readiness callback. Never mix stdio getline/read-ahead with ppoll.\nconst storage=new ArrayBuffer(16384), bytes=new Uint8Array(storage);\nlet line='', size=0;\nos.setReadHandler(0,()=> {\n  try {\n    const n=os.read(0,storage,0,bytes.length);\n    if (n<=0 || inputBytes+n>WIRE) throw Error('EOF/read/input budget');\n    inputBytes+=n;\n    let start=0;\n    for (let i=0;i<n;i++) {\n      const b=bytes[i];\n      if (b===10) {\n        if (size+i-start>MAX) throw Error('input frame limit');\n        line+=String.fromCharCode(...bytes.subarray(start,i));\n        const frame=line; line=''; size=0; start=i+1;\n        receive(parse(frame));\n      } else if (b<32 || b>126) throw Error('input ASCII');\n      else if (size+i-start+1>MAX) throw Error('input frame limit');\n    }\n    size+=n-start;\n    if (start<n) line+=String.fromCharCode(...bytes.subarray(start,n));\n  } catch { fatal(); }\n});\nwrite(ascii({t:'ready',v:1}));\n"
   ],
   "verification": {
     "schema": 3,
