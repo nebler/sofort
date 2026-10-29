@@ -224,6 +224,23 @@ killed by SIGSYS at its attempt. It fails if a layer is degraded unless
 `--allow-degraded` is given. Measured on kvm-dev (Linux 7.0, Ubuntu 26.04,
 AppArmor-restricted user namespaces): every layer applies.
 
+The native worker (`real native-worker`, `kvm::native::confined`) takes the
+same three steps around its own setup, before it reads its first frame: the
+namespaces; then, with /dev/kvm, the pagemap, every profile's snapshot and VM
+and /dev/urandom open (`native::Worker::load`), the files-closed layer; then
+its filter (`confine::policy::native_worker`; it has no threads). That filter
+is the runtime above, pread64, tgkill of itself, the 7 KVM ioctls of a run and
+a reset (its VMs exist already, so none that creates a VM or vCPU), and what
+each run's sealed input archive needs: memfd_create with exactly
+CLOEXEC|ALLOW_SEALING, ftruncate, fcntl F_ADD_SEALS only, and its read-only
+mapping. Its frames are stdin/stdout reads and writes. Degraded layers are
+printed as `native worker: confinement degraded: ...`. `real confine --native
+REQUEST TOOL=BASE... [--allow-degraded]` runs the probes above on it, the
+guest run being that native request; `make check-native-r7` runs it on the
+lua profile, after the 41-case corpus (one confined worker, every profile)
+and `check-native-supervision` (malformed frames each refused alone, then
+profile switches, on the worker command as Node runs it).
+
 ## Hypervisor seam and the HVF backend
 
 `slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
@@ -584,7 +601,7 @@ the harness's regression tests.
 ## HVF native worker (`hvf native-worker`)
 
 `hvf native-worker TOOL=SNAPSHOT_BASE ...` (`src/hvf/native.rs`) is the Linux
-`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR7 frames
+`real native-worker` of ABI-R7 on Hypervisor.framework: the same JNR8 frames
 on stdin/stdout (`inputs::serve`, shared with Linux), native bind, byte
 streams and output cap, on profiles of both arena classes prepared by `hvf
 prepare` (`./tool.sh prepare-native-r7` uses the deps-built engine on the
@@ -596,9 +613,13 @@ both classes). HVF allows one VM per process, so the worker holds one slot: a
 run of another profile replaces it. Before any VM exists the process enters
 jitk.sb (the first profile's directory) and drops fork; snapshots are mapped
 from descriptors opened before, so profiles in other directories work too.
+A supervisor thread, started before the sandbox, exits the process when its
+parent does and kicks the vCPU at the running request's deadline (status 2;
+ABI-R7.md "Persistent worker IPC").
 `executor/native-backend.ts` and the MCP `run` tool drive it unchanged
-(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
-included).
+(`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, a deadline the
+worker enforces and survives, and the worker exiting with a SIGKILLed MCP
+server mid-run).
 
 `make check-native-hvf` (run by `make -C ../executor parity-ssh`) prepares the six census
 profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)

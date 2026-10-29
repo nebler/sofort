@@ -1,23 +1,30 @@
 // The native job kind through Engine/Session (R10 W1.2): NativeBackend on a
-// stand-in worker (fixtures/native-worker.mjs, the real JNR7 frames), a pool
-// and NativeExecutor. Runs on any host; mcp/native-linux-test.mjs covers the
-// real `real native-worker` on Linux arm64 KVM.
+// stand-in worker (fixtures/native-worker.mjs, the real JNR8 frames), a pool
+// and NativeExecutor: framing, the worker's own deadline, and bounded worker
+// recovery. Runs on any host; mcp/native-linux-test.mjs covers the real
+// `real native-worker` (Linux arm64 KVM) and `hvf native-worker` (macOS).
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
-import {NativeBackend,NativeExecutor,NATIVE_LIMITS,encodeNativeJob,SandboxPool,type NativeResult,type NativeError} from './executor.js';
+import {NativeBackend,NativeExecutor,NATIVE_LIMITS,encodeNativeJob,SandboxPool,type NativeOptions,type NativeResult,type NativeError} from './executor.js';
+import {MAX_BUDGET_MS,NATIVE_RESTARTS} from './native-backend.js';
 import type {NativeJob} from './engine.js';
 import {jsJob} from './code.js';
 
 const worker=fileURLToPath(new URL('../fixtures/native-worker.mjs',import.meta.url));
-const engine=()=>new NativeBackend({binary:process.execPath,prefix:[worker],profiles:{lua:'/prepared/lua',sh:'/prepared/sh'}});
+const engine=(o:Partial<NativeOptions>={})=>new NativeBackend({binary:process.execPath,prefix:[worker],profiles:{lua:'/prepared/lua',sh:'/prepared/sh'},...o});
 const job=(args:string[],files:Record<string,Uint8Array>={},profile='lua'):NativeJob=>({kind:'native',profile,args,files});
 const ok=(r:NativeResult|NativeError):NativeResult=>{assert(!('error' in r),JSON.stringify(r));return r;};
 const code=(r:NativeResult|NativeError)=>'error' in r?r.error.code:'OK';
+const message=(r:NativeResult|NativeError)=>'error' in r?r.error.message:'';
+const pid=async(ex:NativeExecutor)=>Number(Buffer.from(ok(await ex.run(job(['pid']))).stdout).toString());
+const delay=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 let checks=0;
 
-// JNR7 framing and job validation (formerly mcp/native-test.mjs).
-const wire=encodeNativeJob(job(['-e','print(2)'],{'data/binary':Buffer.from([0,255,128])}));
-assert.equal(wire.readUInt32LE(),wire.length-4);assert.equal(wire.subarray(4,8).toString(),'JNR7');checks++;
+// JNR8 framing and job validation (formerly mcp/native-test.mjs).
+const wire=encodeNativeJob(job(['-e','print(2)'],{'data/binary':Buffer.from([0,255,128])}),NATIVE_LIMITS,250);
+assert.equal(wire.readUInt32LE(),wire.length-4);assert.equal(wire.subarray(4,8).toString(),'JNR8');assert.equal(wire.readUInt32LE(8),250);
+assert.equal(encodeNativeJob(job([])).readUInt32LE(8),MAX_BUDGET_MS);checks++;
+for(const budget of [0,-1,1.5,MAX_BUDGET_MS+1])assert.throws(()=>encodeNativeJob(job([]),NATIVE_LIMITS,budget),/budget/);checks++;
 for(const bad of [job([],{},'../bad'),job(['a\0b']),job(['\ud800']),job(Array(32).fill('x')),job(['x'.repeat(8192)]),
   ...['../a','/a','a//b','a\0b','\udc00'].map(p=>job([],{[p]:new Uint8Array(1)})),
   job([],Object.fromEntries(Array.from({length:65},(_,i)=>[`f${i}`,new Uint8Array(0)]))),
@@ -44,38 +51,65 @@ for(const bad of [job([],{},'../bad'),job(['a\0b']),job(['\ud800']),job(Array(32
     // Refused before the worker: unknown profile, bad path.
     assert.equal(code(await ex.run(job([],{},'absent'))),'UNSUPPORTED');checks++;
     assert.equal(code(await ex.run(job([],{'../escape':new Uint8Array(1)}))),'LIMIT');checks++;
-    // A worker-reported failure ends the run only.
-    const failed=await ex.run(job(['fail']));assert.equal(code(failed),'SANDBOX');assert.match((failed as NativeError).error.message,/slot failure/);
+    // A worker-reported failure ends the run only: a job failure.
+    const first=b.pid;
+    const failed=await ex.run(job(['fail']));assert.equal(code(failed),'SANDBOX');assert.match(message(failed),/^native job failed: slot failure/);
     assert.equal(code(await ex.run(job(['echo','again']))),'OK');checks++;
     // A JS job on the native engine fails before the worker sees it.
     const s=await pool.acquire(undefined,Date.now()+1000);
     await assert.rejects(()=>s.start(jsJob('return 1',[])),/native jobs only/);await pool.release(s);
     assert.equal(code(await ex.run(job(['echo']))),'OK');checks++;
-    // The deadline kills the whole worker; later runs report it stopped.
-    const t=await ex.run(job(['hang']),{timeout:150});assert.equal(code(t),'TIMEOUT',JSON.stringify(t));
-    const after=await ex.run(job(['echo']));assert.equal(code(after),'SANDBOX');assert.match((after as NativeError).error.message,/stopped/);checks++;
+    // The worker stops a run at its budget itself and stays: TIMEOUT, same worker.
+    const t=await ex.run(job(['spin']),{timeout:150});assert.equal(code(t),'TIMEOUT',JSON.stringify(t));
+    assert.equal(await pid(ex),first);assert.equal(b.pid,first);checks++;
   } finally {await pool.close();}
-  assert.equal(pool.snapshot().tokens,0);checks++;
+  assert.equal(pool.snapshot().tokens,0);assert.equal(b.pid,undefined);checks++;
 }
 {
-  // Cancellation mid-run stops the worker; a queued caller is rejected too.
+  // A worker silent past its deadline and grace is stopped; the next run gets a new one.
+  const b=engine({deadlineGraceMs:100}),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000);
+  try {
+    const first=await pid(ex),started=Date.now();
+    const t=await ex.run(job(['hang']),{timeout:150});assert.equal(code(t),'TIMEOUT',JSON.stringify(t));
+    assert(Date.now()-started<1000,'TIMEOUT at the deadline, not after the grace');
+    const second=await pid(ex);assert.notEqual(second,first);checks++;
+    // A worker that dies mid-run fails that run as an engine failure, then restarts.
+    const crashed=await ex.run(job(['crash']));assert.equal(code(crashed),'SANDBOX');
+    assert.match(message(crashed),/native engine failed \(native worker exited\); the worker restarts/);
+    assert.notEqual(await pid(ex),second);checks++;
+    // A malformed response stops the worker, not the host.
+    const r=await ex.run(job(['garbage']));assert.equal(code(r),'SANDBOX');assert.match(message(r),/response length/);
+    assert.equal(code(await ex.run(job(['echo']))),'OK');checks++;
+  } finally {await pool.close();}
+}
+{
+  // Cancellation mid-run stops the worker; the queued caller runs on its successor.
   const b=engine(),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000),ac=new AbortController();
   try {
-    const running=ex.run(job(['hang']),{signal:ac.signal}),queued=ex.run(job(['echo']));
+    const first=b.pid;
+    const running=ex.run(job(['hang']),{signal:ac.signal}),queued=ex.run(job(['pid']));
     // Abort once the hanging job holds the worker and the second caller waits.
     for(const end=Date.now()+10000;;await new Promise(r=>setImmediate(r))){
       const p=pool.snapshot();if(p.live===1&&p.creating===0&&p.waiting===1)break;
       assert(Date.now()<end,'the job never started: '+JSON.stringify(p));
     }
     ac.abort();
-    assert.equal(code(await running),'CANCELLED');assert.equal(code(await queued),'SANDBOX');checks++;
+    assert.equal(code(await running),'CANCELLED');
+    const next=Number(Buffer.from(ok(await queued).stdout).toString());assert(next>0&&next!==first);checks++;
   } finally {await pool.close();}
 }
 {
-  // A malformed response kills the worker, not the host.
-  const b=engine(),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000);
+  // A crash loop spends the restart budget: the engine is unavailable until
+  // the window passes, then serves again.
+  assert.deepEqual(NATIVE_RESTARTS,{max:5,windowMs:60000});
+  const b=engine({restarts:{max:2,windowMs:600}}),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000);
   try {
-    const r=await ex.run(job(['garbage']));assert.equal(code(r),'SANDBOX');assert.match((r as NativeError).error.message,/response length/);checks++;
+    for(let i=0;i<3;i++)assert.match(message(await ex.run(job(['crash']))),/native engine failed/);
+    const down=await ex.run(job(['echo']));assert.equal(code(down),'SANDBOX');
+    assert.match(message(down),/native engine unavailable: 2 worker restarts within 0.6 s \(last: native worker exited\); retry in 1 s/);
+    assert.equal(b.pid,undefined);
+    await delay(650);
+    assert.equal(code(await ex.run(job(['echo']))),'OK');checks++;
   } finally {await pool.close();}
 }
 console.log(JSON.stringify({suite:'native',checks,status:'PASS'}));

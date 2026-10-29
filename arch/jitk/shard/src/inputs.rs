@@ -6,11 +6,48 @@ use std::io::{self, Read, Write};
 pub const MAX_ARCHIVE: usize = ring::ARCHIVE_LIMIT;
 pub const MAX_FILES: usize = 64;
 pub const MAX_REQUEST: usize = MAX_ARCHIVE + 16384;
+/// The request frame's magic: JNR8 is JNR7 with the run's budget.
+pub const MAGIC: &[u8; 4] = b"JNR8";
+/// Response worker status words (ABI-R7 "Persistent worker IPC").
+pub const STATUS_OK: u32 = 0;
+pub const STATUS_FAILED: u32 = 1;
+pub const STATUS_DEADLINE: u32 = 2;
 pub struct Run {
+    /// Milliseconds the run may take from its start in the worker (1..):
+    /// the engine stops the guest then, independent of Node.
+    pub budget_ms: u32,
     pub tool: String,
     pub args: Vec<String>,
     pub archive: Vec<u8>,
 }
+impl Run {
+    /// The run's deadline on `clock::monotonic_ns` if it starts at `now`.
+    pub fn deadline(&self, now: u64) -> u64 {
+        now.saturating_add(self.budget_ms as u64 * 1_000_000)
+    }
+}
+/// Why a request produced no output. The worker stays usable after either.
+#[derive(Debug, PartialEq, Eq)]
+pub enum Failure {
+    /// This request or its run failed (decode, profile, slot, guest protocol).
+    Sandbox(String),
+    /// The run's budget expired and the engine stopped the guest.
+    Deadline,
+}
+impl From<String> for Failure {
+    fn from(e: String) -> Self {
+        Failure::Sandbox(e)
+    }
+}
+impl std::fmt::Display for Failure {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Failure::Sandbox(e) => f.write_str(e),
+            Failure::Deadline => f.write_str("native run budget expired"),
+        }
+    }
+}
+impl std::error::Error for Failure {}
 struct Reader<'a>(&'a [u8]);
 impl<'a> Reader<'a> {
     fn bytes(&mut self, n: usize) -> Result<&'a [u8], &'static str> {
@@ -43,8 +80,12 @@ pub fn decode(bytes: &[u8]) -> Result<Run, &'static str> {
         return Err("native request budget");
     }
     let mut r = Reader(bytes);
-    if r.bytes(4)? != b"JNR7" {
+    if r.bytes(4)? != MAGIC {
         return Err("native request magic");
+    }
+    let budget_ms = r.u32()? as u32;
+    if budget_ms == 0 {
+        return Err("native run budget");
     }
     let tool = r.text()?;
     if tool.is_empty()
@@ -88,6 +129,7 @@ pub fn decode(bytes: &[u8]) -> Result<Run, &'static str> {
     }
     let archive = archive(&files)?;
     Ok(Run {
+        budget_ms,
         tool,
         args,
         archive,
@@ -160,14 +202,14 @@ fn archive(tree: &Tree<'_>) -> Result<Vec<u8>, &'static str> {
 }
 /// A worker response payload (ABI-R7 "Persistent worker IPC"): five u32
 /// words (worker status, guest status, stdout and stderr lengths,
-/// outputLimited), then stdout and stderr; a failure zeroes the last four
-/// and carries at most 512 diagnostic bytes.
-pub fn response(out: Result<Output, String>) -> Vec<u8> {
+/// outputLimited), then stdout and stderr; a failure (status 1, or 2 at the
+/// deadline) zeroes the last four and carries at most 512 diagnostic bytes.
+pub fn response(out: Result<Output, Failure>) -> Vec<u8> {
     let mut b = Vec::new();
-    match out {
+    let (status, e) = match out {
         Ok(out) => {
             for w in [
-                0,
+                STATUS_OK,
                 out.exit_code,
                 out.stdout.len() as u32,
                 out.stderr.len() as u32,
@@ -177,24 +219,25 @@ pub fn response(out: Result<Output, String>) -> Vec<u8> {
             }
             b.extend_from_slice(&out.stdout);
             b.extend_from_slice(&out.stderr);
+            return b;
         }
-        Err(e) => {
-            for w in [1, 0, 0, 0, 0] {
-                b.extend_from_slice(&u32::to_le_bytes(w));
-            }
-            b.extend_from_slice(e.as_bytes().get(..512).unwrap_or(e.as_bytes()));
-        }
+        Err(Failure::Sandbox(e)) => (STATUS_FAILED, e),
+        Err(Failure::Deadline) => (STATUS_DEADLINE, Failure::Deadline.to_string()),
+    };
+    for w in [status, 0, 0, 0, 0] {
+        b.extend_from_slice(&u32::to_le_bytes(w));
     }
+    b.extend_from_slice(e.as_bytes().get(..512).unwrap_or(e.as_bytes()));
     b
 }
 /// The persistent worker's frame loop, on every host: u32-le length-prefixed
-/// JNR7 requests from `input`, one response frame each to `output`, until
+/// JNR8 requests from `input`, one response frame each to `output`, until
 /// `input` ends. `run` executes one decoded request at a fresh, strictly
 /// increasing generation (the worker picks the profile).
 pub fn serve(
     input: &mut impl Read,
     output: &mut impl Write,
-    mut run: impl FnMut(&Run, u64) -> Result<Output, String>,
+    mut run: impl FnMut(&Run, u64) -> Result<Output, Failure>,
 ) -> io::Result<()> {
     let mut generation = 1u64;
     loop {
@@ -213,7 +256,7 @@ pub fn serve(
             .checked_add(1)
             .ok_or_else(|| io::Error::other("native generation exhausted"))?;
         let out = decode(&bytes)
-            .map_err(str::to_string)
+            .map_err(|e| Failure::Sandbox(e.into()))
             .and_then(|r| run(&r, generation));
         let b = response(out);
         output.write_all(&(b.len() as u32).to_le_bytes())?;
@@ -223,13 +266,14 @@ pub fn serve(
 }
 #[cfg(test)]
 mod tests {
-    use super::decode;
+    use super::{Failure, decode, response};
     fn text(b: &mut Vec<u8>, s: &str) {
         b.extend_from_slice(&(s.len() as u16).to_le_bytes());
         b.extend_from_slice(s.as_bytes());
     }
     fn request(paths: &[&str]) -> Vec<u8> {
-        let mut b = b"JNR7".to_vec();
+        let mut b = b"JNR8".to_vec();
+        b.extend_from_slice(&250u32.to_le_bytes());
         text(&mut b, "busybox");
         b.extend_from_slice(&1u16.to_le_bytes());
         text(&mut b, "busybox");
@@ -246,6 +290,7 @@ mod tests {
         let r = decode(&request(&["data/a", "data/b", "empty"])).unwrap();
         assert_eq!(&r.archive[..8], b"JITKFS01");
         assert_eq!(r.args, ["busybox"]);
+        assert_eq!((r.budget_ms, r.deadline(1)), (250, 250_000_001));
         assert!(r.archive.ends_with(b"a\0b"));
         assert_eq!(u32::from_le_bytes(r.archive[8..12].try_into().unwrap()), 5);
     }
@@ -268,5 +313,19 @@ mod tests {
         let mut bad = good.clone();
         bad.push(0);
         assert!(decode(&bad).is_err());
+        // No budget, or the JNR7 frame without one.
+        let mut bad = good.clone();
+        bad[4..8].fill(0);
+        assert_eq!(decode(&bad).err(), Some("native run budget"));
+        bad[..4].copy_from_slice(b"JNR7");
+        assert_eq!(decode(&bad).err(), Some("native request magic"));
+    }
+    #[test]
+    fn failures_are_distinct_statuses() {
+        let status = |f| u32::from_le_bytes(response(Err(f))[..4].try_into().unwrap());
+        assert_eq!(status(Failure::Sandbox("slot".into())), 1);
+        assert_eq!(status(Failure::Deadline), 2);
+        let long = response(Err(Failure::Sandbox("x".repeat(600))));
+        assert_eq!(long.len(), 20 + 512);
     }
 }

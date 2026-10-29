@@ -20,7 +20,10 @@ A job is `js` (tenant code and tool names, run by `MicroVMExecutor`) or
 (`real native-worker` on Linux KVM, `hvf native-worker` on macOS HVF,
 `../shard/ABI-R7.md`) as an Engine with one session: a
 native session yields `stdout`, `stderr` and `done {exitCode, outputLimited}`,
-and its `limits.native` carries the profiles and the JNR7 request/output bounds.
+and its `limits.native` carries the profiles and the JNR8 request/output bounds.
+Each request carries its budget, which the worker enforces itself; the backend
+restarts a worker it had to stop (cancel, missed deadline, broken frame) within
+`NATIVE_RESTARTS` (5 per 60 s).
 `native-check.ts` runs it on a stand-in worker (`fixtures/native-worker.mjs`).
 
 ## Build, test, demo

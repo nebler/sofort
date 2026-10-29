@@ -50,6 +50,9 @@ prefix of the stream; completion still reports the actual program status.
 The current Node timeout/cancellation kills the entire persistent native worker;
 after that, restart the MCP server to admit another native call. Concurrent
 native calls return LIMIT. This is not the r7-shard generation-lease scheduler.
+(Superseded 2026-10-29: the worker enforces each request's budget itself and
+survives it; Node restarts a stopped worker within a restart budget; see
+ABI-R7.md "Persistent worker IPC".)
 
 ## Environment and method
 

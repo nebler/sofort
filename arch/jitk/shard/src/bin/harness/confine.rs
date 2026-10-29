@@ -9,12 +9,17 @@
 //! - one fully confined process per operation (`ipc_service::confined_pool`,
 //!   as `real ipc`): each operation kills it (SIGSYS).
 //!
+//! `real confine --native REQUEST TOOL=SNAPSHOT_BASE... [--allow-degraded]`:
+//! the same probes on the native worker (`kvm::native::confined`, as `real
+//! native-worker`), whose guest run is the native request in the file
+//! REQUEST (a JNR frame payload, without its length) on those profiles.
+//!
 //! One JSON row per probe; exits 1 unless every row is as expected, or a
 //! layer is degraded without `--allow-degraded`.
 use jitk_shard::{
     confine::{Confinement, Signals},
-    ipc_service,
-    kvm::{self, Kvm, ResetPolicy, Snapshot},
+    inputs, ipc_service,
+    kvm::{self, Kvm, ResetPolicy, Snapshot, native},
     owner::{Event, Job, Mode, Pool},
 };
 use std::{
@@ -138,10 +143,52 @@ fn guest_run(pool: &mut Pool) -> Result<(), String> {
     Err("return 2 did not finish".into())
 }
 
+/// What the probes confine: the IPC shard or the native worker.
+pub enum Target {
+    Ipc(String),
+    Native {
+        request: Vec<u8>,
+        profiles: Vec<String>,
+    },
+}
+
+/// The native worker set up as `who` (as `real native-worker` when
+/// confined), then one request; its worker status must be success.
+fn native_run(
+    confinement: &mut Confinement,
+    who: Probe,
+    request: &[u8],
+    profiles: &[String],
+) -> Result<(), String> {
+    let run = inputs::decode(request).map_err(str::to_string)?;
+    let e = |e: std::io::Error| e.to_string();
+    // Never dropped: a confined worker ends with _exit like the pool above.
+    let mut worker = ManuallyDrop::new(match who {
+        Probe::Unconfined => native::Worker::load(profiles).map_err(e)?,
+        Probe::FilesClosed => {
+            confinement.enter_namespaces();
+            let worker = native::Worker::load(profiles).map_err(e)?;
+            confinement
+                .close_files(Signals::OwnProcess)
+                .map_err(|e| e.to_string())?;
+            worker
+        }
+        Probe::Confined(_) => native::confined(confinement, profiles).map_err(e)?,
+    });
+    worker.run(&run, 2).map(drop).map_err(|e| e.to_string())
+}
+
 /// The probe process: confine, run the guest, try the operations; the row
 /// is written before each attempt, so a kill still leaves what came before.
-fn probe(base: &str, who: Probe, port: u16, out: &mut std::fs::File) -> Result<(), String> {
+fn probe(target: &Target, who: Probe, port: u16, out: &mut std::fs::File) -> Result<(), String> {
     let mut confinement = Confinement::new();
+    let base = match target {
+        Target::Ipc(base) => base,
+        Target::Native { request, profiles } => {
+            native_run(&mut confinement, who, request, profiles)?;
+            return attempts(&confinement, who, port, out);
+        }
+    };
     let snapshot = Snapshot::load_identified(base).map_err(|e| e.to_string())?;
     // Never shut the pool down: a confined process may not signal or reap
     // its watchdog, and a traced one (TRACEME) would stop at the SIGCHLD.
@@ -163,8 +210,18 @@ fn probe(base: &str, who: Probe, port: u16, out: &mut std::fs::File) -> Result<(
                 .map_err(|e| e.to_string())?
         }
     });
-    let report = confinement.report().json();
     guest_run(&mut pool)?;
+    attempts(&confinement, who, port, out)
+}
+
+/// After a guest run: the row, then each operation of `who`.
+fn attempts(
+    confinement: &Confinement,
+    who: Probe,
+    port: u16,
+    out: &mut std::fs::File,
+) -> Result<(), String> {
+    let report = confinement.report().json();
     let ops: &[Op] = match who {
         Probe::Confined(op) => &[op][..],
         _ => &Op::ALL[..],
@@ -172,7 +229,7 @@ fn probe(base: &str, who: Probe, port: u16, out: &mut std::fs::File) -> Result<(
     let mut fields = vec![
         format!("\"probe\":{:?}", who.name()),
         format!("\"confinement\":{report}"),
-        "\"return2\":true".into(),
+        "\"guest\":true".into(),
     ];
     for &op in ops {
         let _ = writeln!(out, "{{{}}}", fields.join(","));
@@ -183,7 +240,7 @@ fn probe(base: &str, who: Probe, port: u16, out: &mut std::fs::File) -> Result<(
 }
 
 /// Fork one probe; returns its last row and how it ended.
-fn run_probe(base: &str, who: Probe, port: u16) -> io::Result<(String, String)> {
+fn run_probe(target: &Target, who: Probe, port: u16) -> io::Result<(String, String)> {
     let mut fds = [0; 2];
     // SAFETY: fds is a writable pair; both ends are adopted below.
     if unsafe { libc::pipe2(fds.as_mut_ptr(), libc::O_CLOEXEC) } != 0 {
@@ -201,7 +258,7 @@ fn run_probe(base: &str, who: Probe, port: u16) -> io::Result<(String, String)> 
     if pid == 0 {
         drop(read_end);
         let mut out = std::fs::File::from(write_end);
-        if let Err(e) = probe(base, who, port, &mut out) {
+        if let Err(e) = probe(target, who, port, &mut out) {
             let _ = writeln!(out, "{{\"probe\":{:?},\"error\":{:?}}}", who.name(), e);
         }
         // SAFETY: end the probe without unwinding or running destructors.
@@ -261,16 +318,16 @@ fn field<'a>(row: &'a str, key: &str) -> Option<&'a str> {
     Some(&rest[..rest.find([',', '}']).unwrap_or(rest.len())])
 }
 
-pub fn run(base: &str, allow_degraded: bool) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(target: &Target, allow_degraded: bool) -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind((Ipv4Addr::LOCALHOST, 0))?;
     let port = listener.local_addr()?.port();
     let mut failures = Vec::new();
     let mut probes = vec![Probe::Unconfined, Probe::FilesClosed];
     probes.extend(Op::ALL.map(Probe::Confined));
     for who in probes {
-        let (row, ended) = run_probe(base, who, port)?;
+        let (row, ended) = run_probe(target, who, port)?;
         println!("{{\"row\":{row},\"ended\":{ended:?}}}");
-        if field(&row, "return2") != Some("true") {
+        if field(&row, "guest") != Some("true") {
             failures.push(format!("{}: no guest run", who.name()));
             continue;
         }

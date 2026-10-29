@@ -1,6 +1,6 @@
 // The executor's host interface (R10 §3.1): typed guest events, no wire frames.
 // Each engine adapter decodes its own transport (v1 frames for the process
-// backends, binary IPC records for the shard, JNR7 frames for the native
+// backends, binary IPC records for the shard, JNR8 frames for the native
 // worker) and validates all guest content before an event exists. Bad guest
 // content ends that session only, as 'fail'.
 import {LIMIT} from '../protocol/dispatcher.js';
