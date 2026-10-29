@@ -39,6 +39,7 @@ pub mod slot;
 #[cfg(unix)]
 pub mod snapshot;
 pub mod streams;
+pub mod virtio_console;
 /// The process backends' shared deadline watchdog (`hvf process-watchdog`,
 /// `real process-watchdog`; `real watchdog` is the shard's lease watchdog,
 /// lease.rs); executor/backend.ts.

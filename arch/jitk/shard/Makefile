@@ -32,13 +32,14 @@ test-kvm: snapshot
 # test binary is signed with the hypervisor entitlement by hvf-run.sh. HVF
 # allows one VM per process, so the tests run on one thread. HVF_TEST_ARGS
 # (e.g. --nocapture) goes to the test binary; HVF_TESTS narrows the filter.
-# Then the engine's Seatbelt check (`hvf confine`, src/hvf/zygote.rs) with the
-# deps-built engine: a confined child must still run HVF and be denied files,
+# The `hvf console` tests (src/hvf/console.rs) boot guests on the deps-built
+# engine. Then the engine's Seatbelt check (`hvf confine`, src/hvf/zygote.rs)
+# with that engine: a confined child must still run HVF and be denied files,
 # network and exec that an unconfined control is allowed.
 HVF_TESTS ?= hvf::
 .PHONY: test-hvf check-native-hvf
 test-hvf: snapshot
-	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="$(CURDIR)/hvf-run.sh" $(CARGO_PIN) test --locked --offline --lib $(HVF_TESTS) -- --ignored --test-threads=1 $(HVF_TEST_ARGS)
+	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_BINARY="$(call jitk_artifact,JITK_SHARD_BINARY)" CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="$(CURDIR)/hvf-run.sh" $(CARGO_PIN) test --locked --offline --lib $(HVF_TESTS) -- --ignored --test-threads=1 $(HVF_TEST_ARGS)
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && "$(call jitk_artifact,JITK_SHARD_BINARY)" confine "$$JITK_SHARD_TEST_SNAPSHOT"
 	$(MAKE) check-native-hvf
 
