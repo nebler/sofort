@@ -43,7 +43,7 @@ try{
  check('per-call idempotency keys unique',new Set(keys).size===keys.length);
  r=await run("for(let i=0;i<17;i++){try{await web.fetch({q:1})}catch{}}return 2");check('denial budget kills run',Boolean(r.error));
  const limited=new MicroVMExecutor(pool,()=> 'allow',10000,{tools,issuer,limits:{calls:2}});
- r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run',Boolean(r.error));
+ r=await limited.execute("await api.pure({q:'a'});await api.pure({q:'b'});return await api.pure({q:'c'})",providers);check('policy call budget kills run with its reason',/policy violation: call budget/.test(r.error??'')&&limited.callLimit===2&&new MicroVMExecutor(pool,()=> 'allow').callLimit===pool.backend.limits.js!.calls);
  r=await run("await api.pure({q:'x'});return await api.pure({q:'y'})");check('none-read computation does not taint',!r.error);
  check('no credentials left live at end',live===0&&minted===revoked);
 }finally{await pool.close();}

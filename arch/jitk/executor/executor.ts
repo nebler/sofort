@@ -26,6 +26,8 @@ export interface RunOptions extends ExecuteOptions {
 export class MicroVMExecutor implements Executor, IsolateDriver {
   constructor(readonly pool:SandboxPool, readonly policy:Policy,
     readonly timeout=30000, readonly security:PolicyConfig={}) {}
+  /** Tool calls per run as enforced: the engine's budget, lowered by a configured policy limit. */
+  get callLimit():number {return Math.min(this.pool.backend.limits.js?.calls??0,this.security.limits?.calls??Infinity);}
   async execute(code:string, providersOrFns:ResolvedProvider[]|Record<string,(...a:unknown[])=>Promise<unknown>>, options:RunOptions={}):Promise<ExecuteResult> {
     const mark=(event:TimingEvent)=>{try{options.onTiming?.(event,performance.now());}catch{}};mark('start');
     // Bound normalization, acquisition, tool round-trips and guest execution.
@@ -40,7 +42,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     const baseContext={executionId:crypto.randomUUID(),signal:controller.signal};
     const getContext=():Context=>Object.freeze({...baseContext,provenance:Object.freeze([...labels])});
     const ctx=getContext();
-    let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;
+    let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;let violation:string|undefined;
     let firstCall=true,firstRet=true;
     try {
       const limits=this.pool.backend.limits.js;
@@ -71,7 +73,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
             invoke:async(a:unknown[],_credential:unknown,context:{signal:AbortSignal})=>fn.apply(Object.freeze({signal:context.signal}),a),output:(v:unknown)=>v};
         }
       }
-      run=rules.createRun({tools,deadline,limits:this.security.limits});
+      run=rules.createRun({tools,deadline,limits:{...this.security.limits,calls:this.callLimit}});
       sandbox=await this.pool.acquire(ctx.signal,deadline);mark('acquired');const s=sandbox;
       stop=()=>s.release();ctx.signal.addEventListener('abort',stop,{once:true});
       if(expired())abort();
@@ -98,7 +100,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           if(run.tainted.untrusted)labels.add('tool-untrusted');
           if(expired())abort();
           if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
-        }catch(e){if(e instanceof rules.Violation){run.dead=true;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.release());}
+        }catch(e){if(e instanceof rules.Violation){run.dead=true;violation??='policy violation: '+(e as Error).message;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.release());}
       };
       while(true){
         // Events are validated by the session's engine adapter (bytes, schema,
@@ -117,7 +119,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
         }else if(ev.kind==='fail')throw Error(ev.message);
         else throw Error(`engine sent a native ${ev.kind} event to a JS job`);
       }
-    }catch(e){if(expired())abort();return {result:undefined,error:ctx.signal.aborted?'Execution aborted or timed out':String(e),logs};}
+    }catch(e){if(expired())abort();return {result:undefined,error:violation??(ctx.signal.aborted?'Execution aborted or timed out':String(e)),logs};}
     finally {
       live=false;if(run){run.dead=true;run.approvals.clear();}
       clearTimeout(timer);options.signal?.removeEventListener('abort',abort);

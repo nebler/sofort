@@ -77,7 +77,9 @@ export async function createJitk(cfg) {
   // otherwise costs ~7-10 ms instead of ~3 ms. Its VM is refilled like any other.
   const warmed = refill().then(() => executor.execute('return 0', providers)).then(() => refill());
   return {
-    pool, executor, providers, selection: selected.selection, warmed, limits: inner.limits,
+    pool, executor, providers, selection: selected.selection, warmed,
+    // Advertise the call budget the executor enforces (engine budget, lowered by policy).
+    limits: {...inner.limits, js: inner.limits.js && {...inner.limits.js, calls: executor.callLimit}},
     async run(code, signal) {
       const r = await executor.execute(code, providers, {signal});
       if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
@@ -88,7 +90,7 @@ export async function createJitk(cfg) {
   };
 }
 
-// The execute engine's own per-run limits (Engine.limits), for the MCP tool description.
+// The execute path's effective per-run limits, for the MCP tool description.
 export const describeLimits = limits => {
   const js = limits?.js;
   if (!js) return '';
