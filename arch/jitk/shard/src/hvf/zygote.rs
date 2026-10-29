@@ -727,7 +727,7 @@ pub fn confinement(base: &str) -> io::Result<String> {
             let row = probe(base, &snapshot, who, &zygote, port);
             let _ = super::conn::send(
                 theirs.as_raw_fd(),
-                &Message::new(READY, 0, 0, 0, row.into_bytes()),
+                &[Message::new(READY, 0, 0, 0, row.into_bytes())],
             );
             // SAFETY: end the child without unwinding.
             unsafe { libc::_exit(0) }
@@ -806,7 +806,7 @@ fn fork_engine(snapshot: &Arc<Snapshot<State>>, confined: bool) -> io::Result<()
         };
         let _ = super::conn::send(
             theirs.as_raw_fd(),
-            &Message::new(READY, 0, 0, 0, text.into_bytes()),
+            &[Message::new(READY, 0, 0, 0, text.into_bytes())],
         );
         // SAFETY: end the child without unwinding.
         unsafe { libc::_exit(0) }

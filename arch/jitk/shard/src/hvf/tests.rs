@@ -693,7 +693,7 @@ use crate::service::{
 struct Peer(super::conn::Conn);
 impl Peer {
     fn send(&mut self, m: Message) {
-        super::conn::send(self.0.fd(), &m).unwrap();
+        super::conn::send(self.0.fd(), &[m]).unwrap();
     }
     fn recv(&mut self) -> Message {
         loop {
