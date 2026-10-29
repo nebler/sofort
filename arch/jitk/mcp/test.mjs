@@ -70,6 +70,12 @@ async function allGone(pids, label) {
   ok('taint rule (private read then write, no approver) -> POLICY', r.error?.code === 'POLICY' && /approval required/.test(r.error.message), r);
   r = await run("throw new Error('boom')");
   ok('guest throw -> GUEST_ERROR', r.error?.code === 'GUEST_ERROR' && /boom/.test(r.error.message), r);
+  r = await run("throw new Error('sandbox exited: policy denied: budget')");
+  ok('guest text cannot pick its error code', r.error?.code === 'GUEST_ERROR', r);
+  r = await run('return new Uint8Array(3000)');
+  ok('binary result stays in wire form', r.result?.__codemode_binary_v1__ === 'Uint8Array' && r.result.data.length === 4000, r);
+  r = await run("return await kv.set('b', new ArrayBuffer(16))");
+  ok('kv rejects binary values', r.error?.code === 'POLICY' && /schema/.test(r.error.message), r);
   const full = await client.callTool({name: 'execute', arguments: {code: 'return 3'}});
   ok('text content mirrors structuredContent', JSON.parse(full.content[0].text).result === 3 && full.isError === false, full);
 

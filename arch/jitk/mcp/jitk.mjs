@@ -51,6 +51,9 @@ export async function createJitk(cfg) {
   }
   const {MicroVMExecutor, SandboxPool} = await import(new URL('executor.js', build).href);
   const {selectBackend} = await import(new URL('select-backend.js', build).href);
+  // Results keep binary values in the codec's wire form ({__codemode_binary_v1__, data: base64}):
+  // plain JSON would turn a Uint8Array into one key per byte and an ArrayBuffer into {}.
+  const {stringify} = await import(new URL('codec.mjs', build).href);
   const selected = selectBackend();
   if (cfg.warm && !selected.gate) throw Error('warm pool needs G1 parking evidence (see executor/README.md) or "warm": 0');
   const native = await createNativeRunner(cfg.native, cfg.timeoutMs);
@@ -82,8 +85,11 @@ export async function createJitk(cfg) {
     limits: {...inner.limits, js: inner.limits.js && {...inner.limits.js, calls: executor.callLimit}},
     async run(code, signal) {
       const r = await executor.execute(code, providers, {signal});
-      if (r.error === undefined) return {result: r.result ?? null, logs: r.logs};
-      return {error: {code: classify(r.error, signal?.aborted === true), message: r.error}, logs: r.logs};
+      if (r.error === undefined) return {result: JSON.parse(stringify(r.result ?? null)), logs: r.logs};
+      // The executor's structural code; classify() only reads host-made messages it leaves uncoded.
+      const cancelled = signal?.aborted === true;
+      const errorCode = r.errorCode ? (r.errorCode === 'TIMEOUT' && cancelled ? 'CANCELLED' : r.errorCode) : classify(r.error, cancelled);
+      return {error: {code: errorCode, message: r.error}, logs: r.logs};
     },
     runNative: (input, signal) => native.run(input, signal), nativeLimits: native.limits,
     close: () => { closing = true; return Promise.all([pool.close(), native.close()]); },

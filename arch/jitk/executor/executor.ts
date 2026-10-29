@@ -15,6 +15,12 @@ export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
 export type Context=Readonly<{executionId:string;signal:AbortSignal;provenance:readonly Label[]}>;
 export type Decision='allow'|'deny'|'requireApproval';
+/** Why a run failed, from structure (abort, policy violation, the engine's fail cause), never from guest text. */
+export type ErrorCode='TIMEOUT'|'POLICY'|'LIMIT'|'SANDBOX'|'GUEST_ERROR';
+export type RunResult=ExecuteResult&{errorCode?:ErrorCode};
+const CAUSE:Record<string,ErrorCode>={guest:'GUEST_ERROR',limit:'LIMIT',deadline:'TIMEOUT',engine:'SANDBOX'};
+/** A host denial of one call: the guest gets DENIED. */
+class Denied extends Error {}
 export type Policy=(call:Call,ctx:Context)=>Decision|Promise<Decision>;
 export type TimingEvent='start'|'acquired'|'runSent'|'firstCall'|'firstRet'|'done'|'resolve';
 export interface RunOptions extends ExecuteOptions {
@@ -28,7 +34,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     readonly timeout=30000, readonly security:PolicyConfig={}) {}
   /** Tool calls per run as enforced: the engine's budget, lowered by a configured policy limit. */
   get callLimit():number {return Math.min(this.pool.backend.limits.js?.calls??0,this.security.limits?.calls??Infinity);}
-  async execute(code:string, providersOrFns:ResolvedProvider[]|Record<string,(...a:unknown[])=>Promise<unknown>>, options:RunOptions={}):Promise<ExecuteResult> {
+  async execute(code:string, providersOrFns:ResolvedProvider[]|Record<string,(...a:unknown[])=>Promise<unknown>>, options:RunOptions={}):Promise<RunResult> {
     const mark=(event:TimingEvent)=>{try{options.onTiming?.(event,performance.now());}catch{}};mark('start');
     // Bound normalization, acquisition, tool round-trips and guest execution.
     const controller=new AbortController(), logs:string[]=[];
@@ -42,7 +48,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     const baseContext={executionId:crypto.randomUUID(),signal:controller.signal};
     const getContext=():Context=>Object.freeze({...baseContext,provenance:Object.freeze([...labels])});
     const ctx=getContext();
-    let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;let violation:string|undefined;
+    let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;let violation:string|undefined;let failCause:string|undefined;let pending=0;const denials=new Set<string>();
     let firstCall=true,firstRet=true;
     try {
       const limits=this.pool.backend.limits.js;
@@ -85,17 +91,19 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       mark('runSent');
       const dispatch=async(call:Call)=>{
         try {
+          // Calls waiting on an async policy or approver count against the outstanding limit too.
+          if(++pending>run.limits.outstanding)throw new rules.Violation('outstanding');
           // Undecodable arguments still spend the call id (a schema denial), or the next call fails the id sequence.
           let args:unknown,decoded=true;try{args=guestValue(JSON.stringify(call.args));}catch{decoded=false;args=null;}
           const decision=rules.decide(run,{t:'call',id:call.id,ns:call.ns,fn:call.fn,args});
-          if(!decoded)throw Error('policy denied: schema');
-          if(decision.kind==='deny')throw Error('policy denied: '+decision.reason);
+          if(!decoded)throw new Denied('policy denied: schema');
+          if(decision.kind==='deny')throw new Denied('policy denied: '+decision.reason);
           const frozen=deepFreeze({...call,args:structuredClone(decision.call.args)}) as Call;
           const callContext=getContext();
           const d=await this.policy(frozen,callContext);
-          if(d!=='allow'&&d!=='requireApproval')throw new Error('policy denied');
+          if(d!=='allow'&&d!=='requireApproval')throw new Denied('policy denied');
           if(decision.kind==='approve'||d==='requireApproval'){
-            if(!(await options.approve?.(frozen,callContext)))throw Error('approval required');
+            if(!(await options.approve?.(frozen,callContext)))throw new Denied('approval required');
             if(decision.kind==='approve'&&!rules.approve(run,decision.digest))throw new rules.Violation('approval digest');
           }
           if(expired())abort();
@@ -105,7 +113,13 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           if(run.tainted.untrusted)labels.add('tool-untrusted');
           if(expired())abort();
           if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
-        }catch(e){if(e instanceof rules.Violation){run.dead=true;violation??='policy violation: '+(e as Error).message;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:(e instanceof rules.ToolError?(e as Error).message:String(e)).slice(0,4096)}}).catch(()=>s.release());}
+        }catch(e){
+          if(e instanceof rules.Violation){run.dead=true;violation??=(e as Error).message;s.release();return;}
+          if(!live||ctx.signal.aborted)return;
+          const message=(e instanceof rules.ToolError?(e as Error).message:String(e)).slice(0,4096);
+          if(e instanceof Denied)denials.add(message);
+          await s.reply(call.id,{err:{code:e instanceof Denied?'DENIED':'TOOL_ERROR',message}}).catch(()=>s.release());
+        }finally{pending--;}
       };
       while(true){
         // Events are validated by the session's engine adapter (bytes, schema,
@@ -121,10 +135,17 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
         }else if(ev.kind==='done'){
           mark('done');
           return {result:guestValue(JSON.stringify(ev.ok)),logs};
-        }else if(ev.kind==='fail')throw Error(ev.message);
+        }else if(ev.kind==='fail'){failCause=ev.cause;throw Error(ev.message);}
         else throw Error(`engine sent a native ${ev.kind} event to a JS job`);
       }
-    }catch(e){if(expired())abort();return {result:undefined,error:violation??(ctx.signal.aborted?'Execution aborted or timed out':String(e)),logs};}
+    }catch(e){
+      if(expired())abort();
+      const error=violation?'policy violation: '+violation:ctx.signal.aborted?'Execution aborted or timed out':String(e);
+      // A guest that rethrows a denial it was sent failed on policy; its own text alone proves nothing.
+      const errorCode:ErrorCode|undefined=violation?(/budget|outstanding/.test(violation)?'LIMIT':violation==='deadline'?'TIMEOUT':'POLICY')
+        :ctx.signal.aborted?'TIMEOUT':failCause==='guest'&&[...denials].some(d=>error.endsWith(d))?'POLICY':failCause?CAUSE[failCause]:undefined;
+      return {result:undefined,error,errorCode,logs};
+    }
     finally {
       live=false;if(run){run.dead=true;run.approvals.clear();}
       clearTimeout(timer);options.signal?.removeEventListener('abort',abort);
