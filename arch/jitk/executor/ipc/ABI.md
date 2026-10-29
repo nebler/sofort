@@ -92,7 +92,9 @@ allowlist; `../../shard/README.md`, "Confinement (Linux shard)"). No cgroup
 confinement, cache identity/signature, process-restart supervision, larger
 memory class or `/cap` parity is claimed. Timers are the guest's: a WAIT whose DEADLINE word is finite parks
 the slot until that time (or a reply), then the engine resumes it. Existing shard assertions can terminate the shard on hostile guest
-ring violations. Busy-vCPU cancellation waits for its existing lease; the
+ring violations. A CANCEL of a running slot kicks its owner out of KVM_RUN
+and resets the slot at once; no command waits behind another slot's running
+vCPU on the same owner (`../../shard/README.md`, "Owners"). The
 independent watchdog stops a run at its deadline, and Node kills the shard
 when a run reports no DONE/ERROR (or RELEASED after CANCEL) 1 s past it
 (`DEADLINE_GRACE_MS`; `../../shard/README.md`, "Deadlines"). Per-run abort

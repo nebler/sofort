@@ -12,9 +12,11 @@ import {ABI_VERSION,IPC,PipeChannel,SharedChannel,checkReady,monotonicNs,type Ch
  *  before Node kills it: well past the engines' own escalation (KVM watchdog,
  *  HVF zygote: 100 ms after the deadline) plus a reset. */
 export const DEADLINE_GRACE_MS=1000;
-/** CANCEL to RELEASED/QUARANTINED: the engine kicks the vCPU and resets the
- *  slot within its own 1 s reset grace (hvf zygote RESET_GRACE_NS) or
- *  quarantines it; silence past this bound means the engine itself is stuck. */
+/** CANCEL to RELEASED/QUARANTINED: the engine kicks the vCPU at once and
+ *  resets the slot or quarantines it (KVM: the CANCEL kicks the slot's owner
+ *  thread out of KVM_RUN, also while another of its slots runs; HVF: the
+ *  reader kicks, within the zygote's 1 s reset grace, RESET_GRACE_NS);
+ *  silence past this bound means the engine itself is stuck. */
 export const RELEASE_GRACE_MS=3000;
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are out of service now.

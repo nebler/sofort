@@ -131,6 +131,41 @@ clock_gettime), and it parks while none is. It writes only inside that window, a
 leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
 
+### Owners
+
+An owner thread serves every W-th slot, so no one slot may hold it: a guest
+in `while(true){}` never exits KVM_RUN by itself, and every CANCEL, START
+and REPLY for the owner's other slots would wait for its deadline (up to
+60 s), past Node's bounds (`RELEASE_GRACE_MS`), so Node would kill the
+shard. An owner therefore runs a vCPU only for a turn (`owner.rs`):
+
+- A command for any of its slots kicks it (the lease signal: tgkill SIGUSR1
+  from the reactor thread, `immediate_exit`) whenever it is running a vCPU;
+  a flag pair (`Attention`: mail posted, owner driving; SeqCst both ways)
+  makes either the owner see the mail before it enters or the sender see it
+  running, and one kick serves a batch of mail. Kicked, the owner sweeps
+  expired leases, reads its mailbox and due timers, and only then resumes
+  a guest. A CANCEL of the running slot itself resets it at once.
+- While another slot is runnable, the clock thread (which ticks only while
+  a vCPU runs) kicks the owner at the end of the turn (`SLICE`, 10 ms; also
+  when a parked slot's timer is due). Runnable slots go round-robin; a
+  slot kicked for mail keeps the rest of its turn, so a stream of commands
+  cannot starve a computing guest, and a slot whose turn is over (one that
+  ran alone, say) yields at once to a newly runnable one, so a spinner
+  cannot starve the others.
+
+A kick only interrupts (`Exit::Interrupted`); whether a run ends is decided
+by its generation-fenced lease and by the owner's commands, so a kick meant
+for one slot cannot end another slot's generation. Measured on kvm-dev, one
+owner, beside a spinning slot
+(`owner::tests::spinning_slot_does_not_hold_its_owners_other_slots`, three
+runs): CANCEL of the other slot to its reset 0.3 ms, its START to its tool
+call 2–3 ms, the REPLY to its completion 11–12 ms (the spinner keeps the rest
+of its turn), CANCEL of the spinner to its reset 0.2 ms; before, each waited
+for the spinner's deadline (the review's repro: 5.8 s for a 6 s deadline).
+Through Node and the confined `real ipc` (2 slots, 1 owner): START to DONE
+54 ms, CANCEL to RELEASED 0.3 ms for both slots.
+
 ### KVM_RUN failures
 
 A guest can make KVM_RUN fail: an EL1 data abort without a valid

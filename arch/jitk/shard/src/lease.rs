@@ -389,6 +389,21 @@ extern "C" fn kick(_: i32) {
         }
     });
 }
+/// Kick owner thread `tid` of this process: out of its current KVM_RUN, or
+/// out of its next entry if it is not inside one (the pending flag). The
+/// watchdog's lease signal, so the handler `Watchdog::start` installed runs.
+pub(crate) fn kick_thread(tid: i32) {
+    // SAFETY: tgkill takes scalar process/thread IDs and a signal number; a
+    // stale or unset tid fails with ESRCH/EINVAL and changes nothing.
+    unsafe {
+        syscall(
+            libc::SYS_tgkill,
+            std::process::id() as libc::pid_t,
+            tid,
+            SIGNAL,
+        );
+    }
+}
 /// The pointer lives for the whole KVM_RUN; only its owner can unmap it.
 pub(crate) struct Running<'a> {
     _exit: std::marker::PhantomData<&'a AtomicU8>,
