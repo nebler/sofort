@@ -45,10 +45,6 @@ export JITK_NODE=/absolute/path/to/node
 ./run.sh hvf-parking-gate   # macOS: the HVF engine's G1 receipt (make hvf-parking-gate: only when stale)
 ```
 
-(`./run.sh certify`, the libkrun integrated gate that wrote `.READY`, went
-with libkrun on 2026-10-28; the existing `.READY` is that gate's last
-receipt.)
-
 `package.json` exposes the same build/test/demo/bench scripts. `build` checks
 strict TypeScript and creates Node ESM bundles in `build/`. Production entry:
 `build/executor.js`. Bundles import the canonical protocol source at build time;
@@ -69,14 +65,12 @@ take both from the jitk cache: `make -C .. deps`, `make -C ../shard
 snapshot`). It reads no `.READY` marker. The selection, the engine's and the
 snapshot identity's hashes and the parking gate are written to
 `integration-selection.json` (`.work/`, `JITK_RECORD=1`: here). Missing
-artifacts fail with build instructions. (`JITK_BACKEND=jitk`, libkrun's
-`JitkBackend` with its stderr sandbox acknowledgement and precompiled
-Seatbelt profile, was removed on 2026-10-28.)
+artifacts fail with build instructions.
 
 `ProcessBackend` remains for engines that speak protocol v1 on stdio (09's
 Hyperlight adapter, kind `hyperlight-js`, and test peers). Deadlines are
 enforced by one shared native watchdog per executor, the `process-watchdog` mode of
-the engine binary (`../shard/src/watchdog.rs`, formerly `jitk-vmm --watchdog`;
+the engine binary (`../shard/src/watchdog.rs`;
 set `watchdog` or `JITK_WATCHDOG` to override `JITK_SHARD_BINARY`). It is a
 separate process, so it fires while a tool blocks Node, but it is spawned
 once instead of per process (the former per-VM Python script cost ~20–40 ms
@@ -149,8 +143,7 @@ scope/revocation and redaction. This suite supplies explicit host effects.
 
 ## Evidence
 
-`test.log` and JSON results record loads and artifact selection (the recorded
-ones are libkrun's, before 2026-10-28). Tests cover the 20 R2 cases,
+JSON results under `.work/` record loads and artifact selection. Tests cover the 20 R2 cases,
 Cloudflare generated wrappers and TanStack, 30 reverse-order concurrent-call
 fan-outs (64 calls, or the engine's call budget when smaller: 32 on the ring
 profile today), hostile transport, independent watchdog and pool lifecycle,
@@ -173,8 +166,7 @@ done=ret→validated done, resolve=done→caller continuation. Refill is exclude
 and recorded separately. Published performance comparisons belong only to
 `../bench/RESULTS.md`, the canonical load-aware table.
 
-`.READY` was written by the libkrun-era certification (`certify.mjs`,
-removed with libkrun) and is kept unchanged as its receipt. Production Linux
+Production Linux
 timing and sustained capacity are not established by macOS functional
 executor tests.
 
@@ -234,27 +226,26 @@ the remote home; `JITK_SHARD_OUTPUT` for local receipts) and runs
 [`ipc/shard-host.sh`](ipc/shard-host.sh) there: `make deps` and
 `make -C shard snapshot` into the remote jitk cache, the shard binary's own
 tests, the exact JS lockfile with scripts disabled, the addon, then the Linux
-tests under the bench lock (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`).
+tests under the bench lock (`JITK_BENCH_LOCK`, default `~/bench.lock`).
 On a Linux host, `sh ipc/shard-host.sh` is the same check without SSH. It never
 manages the VM lifecycle. Mac `make test` without this opt-in stays unchanged.
 
-Since ABI 11 the ring profile has protocol v1's (libkrun's) source (LIMIT.code), call
+The ring profile has protocol v1's source (LIMIT.code), call
 (4,096 per run, 64 open, 2 MiB in flight), reply and completion (LIMIT.frame)
 and log (1,024 lines, one-way) bounds and its timers (setTimeout,
 setInterval and their clear functions); messages stream over the fixed rings
 and IPC records (`../shard/ABI-R7.md`). What still differs is live memory:
 the glue-2m arena leaves a run about 400 KiB of heap, so values much past
 64 KiB (a reply, a 50 KiB call echoed back, a 70 KiB completion) end in a
-QuickJS out-of-memory error, where libkrun has 16 MiB (parity: `b-json1m`,
+QuickJS out-of-memory error, where the console profile has 16 MiB (parity: `b-json1m`,
 `t-memory-over-arena`). `/cap`, cancellation of a busy vCPU and broad shadow
 parity remain cutover blockers. Older measurements are in
-[RESULTS-R7-ipc.md](../shard/RESULTS-R7-ipc.md).
+[the R7 IPC report](../docs/results/shard-r7-ipc.md).
 
-## macOS HVF engine (R10 #10; the macOS default)
+## macOS HVF engine (the macOS default)
 
 The same ring engine on Hypervisor.framework, the default on macOS arm64
-since 2026-10-28 (`JITK_BACKEND=hvf` names it; libkrun, the former default, is
-deleted):
+(`JITK_BACKEND=hvf` names it):
 
 ```sh
 make -C .. deps                # pinned Node + the signed `hvf` engine (JITK_SHARD_BINARY)
@@ -292,11 +283,11 @@ cost: `node build/engine-bench.js` (offline; see
 
 Warm parking (G1 on HVF). A pool keeps sessions parked only with a parking
 gate (`SandboxPool` `parkingGate`). `./run.sh hvf-parking-gate`
-(`hvf-parking-gate.ts`, offline) measures the HVF engine as kernel/.READY's G1
-measures a libkrun VM: every slot parked for 10 s (CPU of the zygote and all
+(`hvf-parking-gate.ts`, offline) measures the HVF engine the way kernel/.READY's G1
+measures a console VM: every slot parked for 10 s (CPU of the zygote and all
 engine processes by `ps`, below 2% of a core), then 1000 checked tool-call
-exchanges through the executor (one run since ABI 11's 4,096-call budget, as
-libkrun's G1 run; 32 per run before) with a 3 s parked-in-WAIT pause every
+exchanges through the executor (one run, within the 4,096-call budget) with a
+3 s parked-in-WAIT pause every
 100th. It writes `.work/hvf-parking-gate.json` (`JITK_RECORD=1`:
 `hvf-parking-gate.json` here), binding the engine binary's sha256, the
 snapshot's `.identity` sha256 and the slots. `select-backend` (so the MCP

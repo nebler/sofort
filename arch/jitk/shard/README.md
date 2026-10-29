@@ -1,4 +1,4 @@
-# jitk-shard: device-free nested-KVM spike
+# jitk-shard: the ring engine (KVM on Linux, HVF on macOS)
 
 `jitk-shard` is a library with two CLI entry points, `real` (Linux) and `hvf`
 (macOS). `snapshot`, `arena`, `inputs`, `payload`, `streams`, `entropy`, `hv`,
@@ -8,17 +8,14 @@ runtime, `hvf` the macOS backend and engine (see "Hypervisor seam" and "HVF
 engine" below). Shard-local UAPI constants live in `constants`, which re-exports
 the ring and IPC ABI from the jitk-abi crate (`../abi`). Offline preparation,
 fixtures, probes and measurement drivers belong to the `real` binary under
-`src/bin/harness` (and `src/bin/hvf.rs`); they are not library modules. (The
-synthetic ABI-v0 assembly baseline was deleted in R12; it is at tag
-`pre-dead-code-2026-10-28`.)
+`src/bin/harness` (and `src/bin/hvf.rs`); they are not library modules.
 
 Every build uses the one Rust pin, `rust_toolchain` in
 [`../tools/deps.json`](../tools/deps.json) (`$(CARGO_PIN)` in make,
 `../tools/rust-toolchain.sh` in shell); nothing uses a floating `stable`.
 The pure library tests run on macOS without KVM, Linux headers or guest assembly:
-`make test` (`cargo +1.95.0 test --locked --offline`; the native census check
-below prints a skip line off Linux). Run
-`cargo +1.95.0 clippy --locked --offline --all-targets -- -D warnings` and
+`make test` (`cargo +1.95.0 test --locked --offline`). `make clippy` lints the
+host target and, off Linux, the Linux one (`make -C .. test` runs it); run
 `cargo +1.95.0 fmt --check` there too. Linux-only tests and the native corpus
 still require the KVM gate below. Binary names and CLI commands are unchanged.
 
@@ -27,8 +24,9 @@ still require the KVM gate below. Binary names and CLI commands are unchanged.
 ```sh
 make -C arch/jitk deps             # pinned Node, shard binary (cache)
 make -C arch/jitk/shard snapshot   # prepared helper snapshots (cache)
-make -C arch/jitk/shard test       # Rust tests + native census check
-flock /home/dev/bench.lock make -C arch/jitk/shard test-kvm
+make -C arch/jitk/shard test       # Rust tests
+flock ~/bench.lock make -C arch/jitk/shard test-kvm
+make -C arch/jitk/shard check-native-r7   # native census regression (locks itself)
 sh arch/jitk/executor/ipc/shard-host.sh   # executor shard suite from the cache
 ```
 
@@ -49,15 +47,15 @@ kernel build. A present entry is reused only after its identity, file hashes and
 kernel hash verify. `test-kvm` and the executor use these unless
 `JITK_SHARD_TEST_SNAPSHOT(S)` / `JITK_SHARD_SNAPSHOT` are set. The shard binary is
 not part of the key: a snapshot-format change must change the kernel or layout
-(checked at load), or this is a stale entry (R9 N15's `abi_version`).
+(checked at load), or this is a stale entry (the snapshot's `abiVersion`).
 
 **R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
 results, build/reproduce commands, and remaining gates are in
-[RESULTS-R6.md](RESULTS-R6.md); its versioned transport subset is specified in
+[the R6 report](../docs/results/shard-r6.md); its versioned transport subset is specified in
 [ABI-R6.md](ABI-R6.md). Build it with `cargo build --release --bin real` on
 Linux/arm64.
 
-**R7 implements the bounded real-kernel runtime.** See [RESULTS-R7-shard.md](RESULTS-R7-shard.md)
+**R7 implements the bounded real-kernel runtime.** See [the R7 shard report](../docs/results/shard-r7-shard.md)
 for measured limits, evidence and commands. The real executable uses four fixed
 owner threads plus the main fixture reactor, and one independent watchdog process.
 `JITK_SHARD_THREADS=1…available_cores` selects W. Every owner creates, runs, resets
@@ -91,7 +89,7 @@ See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
 The default QuickJS class remains glue-2m. Late-bound native archives have their
 own read-only stage-1 mapping and reserved read-only KVM memslot 63.
 
-`make -C arch/jitk/shard test` runs the Rust tests **and**, on Linux, rebuilds six fresh
+`make -C arch/jitk/shard check-native-r7` (run by `make -C .. test-linux`) rebuilds six fresh
 native profiles, checks the exact 41-case Linux differential twice, verifies
 fd and relocation-boundary probes, and rejects a mismatched class sidecar.
 It requires Linux arm64 KVM and the six pinned census binaries (static musl
@@ -100,11 +98,11 @@ are 0.3–1.4 MB each and no upstream URL serves those bytes, so they are not
 committed or fetched. They live in a content-addressed store,
 `$JITK_NATIVE_CENSUS` or `<jitk cache>/native-census/<sha256>`, filled once with
 `./tool.sh import-census FILE|CENSUS_DIR...` (it keeps only files whose hash
-is pinned). While any is absent, the check prints `SKIP` naming the missing
-tools and the import step. The SQLite fixture (8 KiB) is committed as
+is pinned). While any is absent, the check fails naming the missing tools and
+the import step, unless `JITK_ALLOW_SKIP` lists `check-native-r7`. The SQLite fixture (8 KiB) is committed as
 [`harness/census-demo.db`](harness/census-demo.db) with its hash. The full
 `harness/run-r7-shard.sh` gate invokes it too, sharing the runner's outer
-benchmark lock. Standalone `make test` takes its own measurement locks; when
+benchmark lock. Standalone `make check-native-r7` takes its own measurement locks; when
 already holding the lock, explicitly set `JITK_BENCH_LOCK_HELD=1`.
 Set `JITK_NATIVE_ROOT` to the source tree (otherwise inferred from the harness),
 and optionally `JITK_NATIVE_CHECK_OUTPUT` for retained regression receipts.
@@ -149,7 +147,7 @@ records cgroup `memory.peak`; its `spawn-cg` is built from
 [`harness/spawn-cg.c`](harness/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
 
-## Hypervisor seam (R10 #5) and the HVF backend
+## Hypervisor seam and the HVF backend
 
 `slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
 class regions (immutable extents read-only on the host and in the VM), bind,
@@ -231,6 +229,21 @@ its copy path keeps the physical pages, so a tenant's arena code can survive in
 the I-cache there too, unless the CPU has CTR_EL0.DIC. A kernel `ic ialluis`
 would close both. Not done here: it would change `kernel/.READY`.
 
+**Why one long-lived process per slot.** HVF allows one VM per process and
+runs a vCPU only on the thread that created it. The HVF spike
+([report](../docs/results/hvf-spike-2026-10-28.md); M4 Pro, load 5–11,
+medians) measured the process costs that shape the engine:
+
+| | CPU | wall | memory |
+| --- | ---: | ---: | ---: |
+| cold VM via `posix_spawn` | 3.1 ms | 3.9 ms | |
+| VM in a child forked from a parent holding the mapped snapshot | 0.77 + 0.15 ms | 1.2 ms | 1.23 MiB per child |
+| first boot to CHECKPOINT | 1.28 ms | 2.35 ms | |
+| warm run + reset in a persistent process | ~55 µs | | |
+
+So the zygote forks each engine process once and process creation stays off
+the per-run path.
+
 ## Limits (ABI 11)
 
 The JS profile has the console path's limits (`../executor/ipc/ABI.md`,
@@ -260,7 +273,7 @@ after CHECKPOINT (measured with and without it); the rest follows the guest's
 heap layout (variants of the source decode moved it by ±4 µs), not the
 message path: `return 2` takes one exit before and after.
 
-## HVF engine (`hvf ipc`, R10 #10 phase 2)
+## HVF engine (`hvf ipc`)
 
 `hvf ipc SNAPSHOT_BASE SLOTS [POLICY]` is the Mac engine the executor drives
 by default on macOS arm64 (`JITK_BACKEND=hvf`, `../executor/README.md`). It speaks the Linux shard's
@@ -369,9 +382,9 @@ libkrun's p50 hides its VMM boot behind the warm pool; its CPU does not
 side (the executor, policy, IPC), the zygote's forwarding and the engine
 process's run and reset (~100 µs of it, per `hvf bench` above).
 
-Since 2026-10-28 the HVF engine is the executor's and MCP's default on
-macOS arm64 (`../executor/select-backend.ts`); libkrun is deleted. The table
-above is the comparison measured before that.
+The HVF engine is the executor's and MCP's default on macOS arm64
+(`../executor/select-backend.ts`); the table compares it with the libkrun
+path it replaced.
 
 ## Console runner (`hvf console`) and the watchdog
 
@@ -422,7 +435,7 @@ from descriptors opened before, so profiles in other directories work too.
 (`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
 included).
 
-`make check-native-hvf` (part of `make test-hvf`) prepares the six census
+`make check-native-hvf` (run by `make -C ../executor parity-ssh`) prepares the six census
 profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)
 and runs the 41-case corpus twice. A Mac cannot run the Linux programs, so the
 oracle is a Linux `check-native-r7` run's `corpus-1.json` (every row exact
@@ -433,7 +446,7 @@ must reproduce the Linux program's exit status and stdout/stderr bytes
 archive, median 3.6 ms per case through Node (max 12 ms; nested KVM's
 8.3 ms is not comparable). The fd and region probes stay Linux-only (their
 oracle is the probe running on Linux). Without the census or the reference it
-prints SKIP and why.
+fails saying why, unless `JITK_ALLOW_SKIP` lists `check-native-hvf`.
 
 ## Native TypeScript harness
 
@@ -448,8 +461,9 @@ honored), and otherwise builds `build/native/shard-tools` and the kernel's
 These tools need neither Node nor Python at run time. `./tool.sh NAME ARGS...`
 replaces each Python command using the basename without `.py` (for example
 `./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and
-lock composition come from `../tslib/` through `lib.ts`. `make test` still takes its own measurement
-locks (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`); never put another
+lock composition come from `../tslib/` through `lib.ts`. `make check-native-r7` takes its own measurement
+locks (`JITK_BENCH_LOCK`, default `~/bench.lock`); never put another
 lock around it. `test-kvm` expects the caller to hold that lock and takes the
 snapshots from the cache (`make snapshot`) unless the variables are set.
-See `PORT-PARITY.md` and `SCRIPTC-GAPS.md` for comparisons and compiler workarounds.
+See [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md) for compiler workarounds and the
+[Python port parity report](../docs/results/port-parity-shard-2026-10-26.md).

@@ -1,4 +1,4 @@
-// Offline nested measurement: hold the bench lock (${JITK_BENCH_LOCK:-/home/dev/bench.lock}) when invoking.
+// Offline nested measurement: hold the bench lock (${JITK_BENCH_LOCK:-$HOME/bench.lock}) when invoking.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';

@@ -12,6 +12,7 @@ import { PythonRandom, pythonShuffle } from './random.ts';
 import { spawnCapture, startDirect, startEnvArgv, trackedChildren, sleep, type Exit } from './process.ts';
 import { capture, run } from './subprocess.ts';
 import * as streams from './stream-process.ts';
+import { skipOrFail } from './skip.ts';
 
 let passed = 0;
 async function test(name: string, body: () => Promise<void>): Promise<void> {
@@ -182,6 +183,21 @@ await test('onOutput stops the child early; tee and inherit run', async () => {
   const stream = new streams.StreamProcess(['/bin/sh', '-c', 'echo one; echo two']);
   check((await stream.line(5)) === 'one' && (await stream.line(5)) === 'two', 'stream lines');
   check((await stream.wait(5)) === 0, 'stream exit');
+});
+
+await test('a skip fails unless JITK_ALLOW_SKIP names it', async () => {
+  const saved = process.env.JITK_ALLOW_SKIP;
+  process.env.JITK_ALLOW_SKIP = 'other, census';
+  skipOrFail('census', 'allowed');
+  process.env.JITK_ALLOW_SKIP = 'censusx';
+  let failed = false;
+  try {
+    skipOrFail('census', 'not allowed');
+  } catch {
+    failed = true;
+  }
+  check(failed, 'an unlisted skip throws');
+  process.env.JITK_ALLOW_SKIP = saved ?? '';
 });
 
 console.log('PASS: ' + passed + ' tslib checks');

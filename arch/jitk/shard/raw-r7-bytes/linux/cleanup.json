@@ -1,6 +1,0 @@
-{
-  "before_kib": 870188,
-  "after_kib": 575996,
-  "retained": "Final immutable prepared images, bin/real, Linux Node/SDK runtime and source/raw evidence; compilation caches and fresh-repro sandbox removed",
-  "binary_sha256": "492d50f2374cd664875e429e071739b330cb46177ec30eda1dd6d19f962f29c7"
-}

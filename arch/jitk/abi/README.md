@@ -1,7 +1,7 @@
 # jitk-abi: the ring and IPC ABI, defined once
 
 A `no_std` Rust crate holding every value the guest kernel, the KVM shard and
-the Node executor must agree on (R10 change #2, R9 N19):
+the Node executor must agree on:
 
 - `layout`: guest physical layout per architecture (`AARCH64`). GPAs (kernel
   view) and RAM offsets (shard view) are both derived from one `Layout`.

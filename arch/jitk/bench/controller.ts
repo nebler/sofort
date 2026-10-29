@@ -337,7 +337,7 @@ export function choose(args: SelectionConfig): Frame {
   }
   const base = args.executor_root ? resolve(args.executor_root) : join(ROOT, 'executor');
   const exe = join(frozen, 'executor');
-  const integrated = existsSync(join(base, '.READY')) || Boolean(args.executor_root);
+  const integrated = existsSync(join(base, 'build/executor.js')) || Boolean(args.executor_root);
   let modules: string | null = null;
   if (integrated) {
     cpSync(base, exe, { recursive: true, filter: source => !['node_modules', '__pycache__'].includes(basename(source)) });

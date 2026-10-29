@@ -1,6 +1,6 @@
 #!/bin/sh
 # Offline larger-class certification. Invoke under the bench lock
-# (${JITK_BENCH_LOCK:-/home/dev/bench.lock}) after
+# (${JITK_BENCH_LOCK:-$HOME/bench.lock}) after
 # preparing qjs-glue-4m with the selected linked layouts.
 set -eu
 cd "${JITK_R7_ROOT:-$HOME/r7-integrate}"

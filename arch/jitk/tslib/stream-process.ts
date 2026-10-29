@@ -3,7 +3,8 @@
 // write-through of output, and CPython return codes (-signal number).
 import { type ChildProcess, spawn } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
-import { constants } from 'node:os';
+import { constants, homedir } from 'node:os';
+import { join } from 'node:path';
 import { check } from './assert.ts';
 import { environment, killGroup, spawnCapture, startDirect, track, type Signal } from './process.ts';
 
@@ -16,11 +17,11 @@ export function env(extra: Record<string, string> = {}): Record<string, string> 
   return result;
 }
 
-// The host-wide measurement lock every KVM timing run serializes on. The
-// default is the shared kvm-dev convention (agents and harnesses all flock
-// it); JITK_BENCH_LOCK names another host's lock.
+// The host-wide measurement lock every KVM timing run serializes on:
+// JITK_BENCH_LOCK, else ~/bench.lock (on kvm-dev the dev user's, which every
+// agent and harness flocks). Under sudo, pass JITK_BENCH_LOCK explicitly.
 export function benchLock(): string {
-  return process.env.JITK_BENCH_LOCK || '/home/dev/bench.lock';
+  return process.env.JITK_BENCH_LOCK || join(homedir(), 'bench.lock');
 }
 
 // Serializes a KVM measurement on benchLock() unless the caller already

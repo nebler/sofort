@@ -24,4 +24,4 @@ suite='"$JITK_NODE" build/shard-check.js'
 if [ "${JITK_SHARD_BENCH:-}" = 1 ]; then
   suite="$suite"' && "$JITK_NODE" build/shard-bench.js'
 fi
-flock -w "${JITK_SHARD_LOCK_WAIT:-600}" "${JITK_BENCH_LOCK:-/home/dev/bench.lock}" sh -c "$suite"
+flock -w "${JITK_SHARD_LOCK_WAIT:-600}" "${JITK_BENCH_LOCK:-$HOME/bench.lock}" sh -c "$suite"

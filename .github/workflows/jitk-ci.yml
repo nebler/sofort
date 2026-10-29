@@ -1,10 +1,13 @@
-# jitk CI on a GitHub-hosted Linux arm64 runner: `make -C arch/jitk ci`
-# (arch/jitk/tools/ci.sh) runs doctor, deps and every Linux-capable suite and
-# build. GitHub's arm64 runners expose no /dev/kvm, so the KVM suites (shard
-# snapshot/test-kvm, shard-host.sh, the executor and MCP suites on the shard,
-# test-linux) print a skip here;
-# they run on a KVM host (kvm-dev, or a self-hosted runner with JITK_CI_KVM=1).
-# See arch/jitk/README.md "CI".
+# jitk CI (arch/jitk/tools/ci.sh; arch/jitk/README.md "CI"):
+#   host  GitHub's ubuntu-24.04-arm runner: `make -C arch/jitk ci-host`, every
+#         Linux arm64 check that needs no KVM (that runner has no /dev/kvm)
+#   kvm   the self-hosted runner on kvm-dev (labels self-hosted, linux, arm64,
+#         kvm; nested KVM): `make -C arch/jitk ci-kvm`, the KVM engine suites
+#   mac   optional, a self-hosted Mac runner (labels self-hosted, macOS,
+#         ARM64, hvf; arch/jitk/tools/ci-runner.sh): `make -C arch/jitk
+#         ci-mac`, the HVF engine suites. Runs only while the repository
+#         variable JITK_MAC_RUNNER is 'true'.
+# Every job uploads its per-step logs (tools/.work/ci-logs) when it fails.
 name: jitk-ci
 
 on:
@@ -19,17 +22,17 @@ on:
       - '.github/workflows/jitk-ci.yml'
   workflow_dispatch:
 
-concurrency:
-  group: jitk-ci-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
 
 jobs:
-  linux-arm64:
+  host:
+    name: linux-arm64 (no KVM)
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
+    concurrency:
+      group: jitk-ci-host-${{ github.ref }}
+      cancel-in-progress: true
     env:
       JITK_CACHE: /home/runner/.cache/jitk
       JITK_NPM_CACHE: /home/runner/.cache/jitk-npm
@@ -69,7 +72,7 @@ jobs:
           rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh)" --profile minimal \
             --component clippy --component rustfmt --target aarch64-unknown-none
 
-      # The jitk deps cache (Node, zig, shard binary; entries are
+      # The jitk deps cache (Node, zig, Biome, shard binary; entries are
       # content-keyed, so a stale one is rebuilt, never reused) and the cargo
       # registry. Saved even when a later step fails.
       - name: Restore caches
@@ -85,8 +88,16 @@ jobs:
           key: jitk-linux-arm64-${{ hashFiles('arch/jitk/tools/deps.json', 'arch/jitk/**/Cargo.lock', 'arch/jitk/**/package-lock.json') }}
           restore-keys: jitk-linux-arm64-
 
-      - name: make -C arch/jitk ci
-        run: make -C arch/jitk ci
+      - name: make -C arch/jitk ci-host
+        run: make -C arch/jitk ci-host
+
+      - name: Upload step logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jitk-ci-logs-host
+          path: arch/jitk/tools/.work/ci-logs
+          retention-days: 14
 
       - name: Save caches
         if: always() && steps.cache.outputs.cache-hit != 'true'
@@ -99,3 +110,59 @@ jobs:
             ~/.cargo/registry/cache
             ~/.cargo/git/db
           key: ${{ steps.cache.outputs.cache-primary-key }}
+
+  # kvm-dev keeps its toolchains and the jitk cache (~/.cache/jitk) between
+  # runs; the KVM suites take /home/dev/bench.lock, which manual benchmarks
+  # on kvm-dev share. One run at a time; a newer one waits.
+  kvm:
+    name: linux-arm64 KVM (kvm-dev)
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, kvm]
+    timeout-minutes: 120
+    concurrency:
+      group: jitk-ci-kvm
+      cancel-in-progress: false
+    env:
+      JITK_BENCH_LOCK: /home/dev/bench.lock
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: make -C arch/jitk ci-kvm
+        run: make -C arch/jitk ci-kvm
+
+      - name: Upload step logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jitk-ci-logs-kvm
+          path: arch/jitk/tools/.work/ci-logs
+          retention-days: 14
+
+  mac:
+    name: macOS arm64 HVF (self-hosted)
+    if: vars.JITK_MAC_RUNNER == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: [self-hosted, macOS, ARM64, hvf]
+    timeout-minutes: 90
+    concurrency:
+      group: jitk-ci-mac
+      cancel-in-progress: false
+    env:
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: make -C arch/jitk ci-mac
+        run: make -C arch/jitk ci-mac
+
+      - name: Upload step logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jitk-ci-logs-mac
+          path: arch/jitk/tools/.work/ci-logs
+          retention-days: 14

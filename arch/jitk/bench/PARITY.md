@@ -42,7 +42,7 @@ Recheck after building:
 
 ```sh
 make -C arch/jitk/bench test
-JITK_LEDGER_INPUTS=/absolute/preserved-ledger-collection make -C arch/jitk/bench test
+JITK_LEDGER_INPUTS=/absolute/preserved-ledger-collection make -C arch/jitk/bench test-memory
 ```
 
 The memory collections are ignored archival inputs, not portable test fixtures.

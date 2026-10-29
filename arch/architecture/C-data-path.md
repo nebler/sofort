@@ -378,7 +378,7 @@ The requested root `docs/KILL-CRITERIA.md` is absent. Read the actual [jitk kill
 [R5]: ../research/next/05-io-caps-images.md
 [FINAL]: ../FINAL.md
 [CF]: ../research/cloudflare-deep.md
-[MCP]: ../jitk/mcp/RESULTS.md
+[MCP]: ../jitk/docs/results/mcp-latency-2026-10-24.md
 [KILL]: ../jitk/docs/KILL-CRITERIA.md
 [V1]: ../jitk/protocol/PROTOCOL-v1.md
 [MMU]: ../jitk/kernel/src/mmu.rs

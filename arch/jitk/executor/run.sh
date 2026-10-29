@@ -30,9 +30,11 @@ case "${1:-test}" in
   "$TASK_NODE" build/policy-check.js
   if [ "${JITK_SHARD_TEST:-}" = ssh ]; then
     make -s .work/bin/ipc/run-ssh .work/bin/fixtures/shard-peer; .work/bin/ipc/run-ssh
-  elif [ -n "${JITK_SHARD_SNAPSHOT:-}" ] && { [ "$(uname -s)" = Linux ] || [ "$(uname -sm)" = 'Darwin arm64' ]; }; then
+  elif [ -n "${JITK_SHARD_SNAPSHOT:-}" ]; then
     # The ring engine's suite: the KVM shard on Linux, the HVF engine on macOS.
     "$TASK_NODE" build/shard-check.js
+  else
+    sh ../tools/skip.sh executor-shard-check 'JITK_SHARD_SNAPSHOT is unset and not built (make -C arch/jitk/shard snapshot)'
   fi
   ;;
  shard-test)
