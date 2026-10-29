@@ -82,19 +82,22 @@ export async function dispatch(run, call, { issuer, signal }) {
   const tool = run.tools[call.ns][call.fn];
   const remaining = run.deadline - run.now();
   if (remaining <= 0) throw new Violation('deadline');
+  if (signal?.aborted) throw new Error('call cancelled before invocation');
   run.outstanding++;
   const ac = new AbortController(); const t = setTimeout(() => ac.abort(), Math.min(tool.timeoutMs, remaining));
-  signal?.addEventListener('abort', () => ac.abort(), { once: true });
+  const cancel = () => ac.abort(); signal?.addEventListener('abort', cancel, { once: true });
   let cred;
   try {
     cred = await issuer.issue({ run: run.id, scope: `${call.ns}.${call.fn}`, ttlMs: Math.min(tool.timeoutMs, remaining) });
+    // Cancelled, timed out or killed while the credential was minted: the tool never starts.
+    if (ac.signal.aborted || run.dead || run.now() >= run.deadline) throw new Error('call cancelled before invocation');
     const raw = await tool.invoke(call.args, cred, { signal: ac.signal, idempotencyKey: `${run.id}:${call.id}` });
     const value = tool.output(raw); // output schema + redaction; throws => deny
     if (tool.reads === 'private') run.tainted.privateRead = true; // label set before guest sees data
     if (tool.reads !== 'none') run.tainted.untrusted = true;
     return value;
   } finally {
-    clearTimeout(t); run.outstanding--;
+    clearTimeout(t); signal?.removeEventListener('abort', cancel); run.outstanding--;
     if (cred) await issuer.revoke(cred).catch(() => {});
   }
 }
