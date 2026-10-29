@@ -233,7 +233,7 @@ state/AT_RANDOM are likewise snapshotted. A small Bellard embedder reseed hook
 is required. This explicit measured failure prevents claiming full gate 4,
 even though generation/transport/private-memory reset works. Canary reset p50 /
 p99 is 2.603 / 3.440 ms, n=10,000; the sub-ms nested gate also fails.
-Raw: [canary-10000.jsonl](raw-r6/canary-10000.jsonl).
+Raw: `raw-r6/canary-10000.jsonl` (never tracked; too large).
 
 **WAIT: two independent N=1,024 real-guest runs pass**, with one pending echo
 per guest, all 1,024 held concurrently, one fixed owner thread, then every
