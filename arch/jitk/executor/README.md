@@ -45,10 +45,6 @@ export JITK_NODE=/absolute/path/to/node
 ./run.sh hvf-parking-gate   # macOS: the HVF engine's G1 receipt (make hvf-parking-gate: only when stale)
 ```
 
-(`./run.sh certify`, the libkrun integrated gate that wrote `.READY`, went
-with libkrun on 2026-10-28; the existing `.READY` is that gate's last
-receipt.)
-
 `package.json` exposes the same build/test/demo/bench scripts. `build` checks
 strict TypeScript and creates Node ESM bundles in `build/`. Production entry:
 `build/executor.js`. Bundles import the canonical protocol source at build time;
@@ -69,9 +65,7 @@ take both from the jitk cache: `make -C .. deps`, `make -C ../shard
 snapshot`). It reads no `.READY` marker. The selection, the engine's and the
 snapshot identity's hashes and the parking gate are written to
 `integration-selection.json` (`.work/`, `JITK_RECORD=1`: here). Missing
-artifacts fail with build instructions. (`JITK_BACKEND=jitk`, libkrun's
-`JitkBackend` with its stderr sandbox acknowledgement and precompiled
-Seatbelt profile, was removed on 2026-10-28.)
+artifacts fail with build instructions.
 
 `ProcessBackend` remains for engines that speak protocol v1 on stdio (09's
 Hyperlight adapter, kind `hyperlight-js`, and test peers). Deadlines are
@@ -173,8 +167,7 @@ done=ret→validated done, resolve=done→caller continuation. Refill is exclude
 and recorded separately. Published performance comparisons belong only to
 `../bench/RESULTS.md`, the canonical load-aware table.
 
-`.READY` was written by the libkrun-era certification (`certify.mjs`,
-removed with libkrun) and is kept unchanged as its receipt. Production Linux
+Production Linux
 timing and sustained capacity are not established by macOS functional
 executor tests.
 

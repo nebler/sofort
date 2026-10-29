@@ -32,10 +32,10 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
   const readme = join(directory, 'README.md');
   check(existsSync(directory) && statSync(directory).isDirectory() && existsSync(readme) && statSync(readme).isFile(), `jitk: ${subtree} is incomplete: missing ${readme}; owner must supply documented ${action} entrypoint`);
   const prerequisites = new Map<string, string[]>([
-    ['executor/demo', ['executor', 'executor/policy']],
+    ['executor/demo', ['executor/policy']],
     ['grow/grow', ['kernel']],
     ['grow/demo', ['grow']],
-    ['bench/bench', ['kernel', 'executor', 'executor/policy', 'bench/hyperlight']]
+    ['bench/bench', ['kernel', 'executor/policy', 'bench/hyperlight']]
   ]);
   const missing = (prerequisites.get(subtree + '/' + action) || []).map(part => join(root, part, '.READY')).filter(path => !existsSync(path) || !statSync(path).isFile());
   check(missing.length === 0, `jitk: ${subtree}/${action} needs canonical ready inputs: ${missing.join(', ')}; see ${readme}`);

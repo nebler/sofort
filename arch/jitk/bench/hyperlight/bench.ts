@@ -45,7 +45,7 @@ function jitkArgv(cfg: JitkConfig): string[] {
   return [String(cfg.vmm), 'console', '--image', String(cfg.image)];
 }
 class Suite {
-  executor = existsSync(join(JITK, 'executor/.READY'));
+  executor = existsSync(join(JITK, 'executor/build/executor.js'));
   cfg: JitkConfig;
   argv: string[];
   clone: Worker | null = null;
@@ -110,7 +110,7 @@ class Suite {
       r.parked_memory_bytes = parked;
       r.spawn_to_ready_ms = worker !== this.clone ? readyMs : null;
       r.isolation = CONTRACTS[mode];
-      r.jitk_path = mode.startsWith('jitk') ? 'canonical VMM raw channel (executor not READY at run start)' : null;
+      r.jitk_path = mode.startsWith('jitk') ? 'canonical VMM raw channel (executor not built at run start)' : null;
       return r;
     } finally {
       if (worker !== this.clone) {
@@ -183,12 +183,12 @@ function main(): void {
     const hl: Frame = readJSON<Frame>(join(ROOT, 'adapter.json'));
     hl.strict_argv = [WORKER, 'strict', SNAPSHOT];
     hl.clone_argv = [WORKER, 'clone', SNAPSHOT];
-    data.selection = { jitk: suite.cfg, executor_ready_at_start: suite.executor, protocol: join(JITK, 'protocol/dispatcher.ts'), canonical_controller_sha256: sha(source), canonical_controller: source, bench_ready_at_start: existsSync(join(CONTROLLER, '.READY')), hyperlight: hl, contracts: CONTRACTS, hashes: {} };
+    data.selection = { jitk: suite.cfg, executor_built_at_start: suite.executor, protocol: join(JITK, 'protocol/dispatcher.ts'), canonical_controller_sha256: sha(source), canonical_controller: source, bench_ready_at_start: existsSync(join(CONTROLLER, '.READY')), hyperlight: hl, contracts: CONTRACTS, hashes: {} };
     for (const path of [WORKER, String(suite.cfg.vmm), String(suite.cfg.image), join(ROOT, 'executor-runner.mjs')]) {
       data.selection.hashes[path] = sha(path);
     }
     if (!suite.executor) {
-      missing.push('04 integrated executor not READY at start; canonical VMM raw channel used');
+      missing.push('04 integrated executor not built at start; canonical VMM raw channel used');
     }
     writeFileSync(join(out, 'controller-source.ts'), readFileSync(source));
     data.selection.controller_source_archive = 'controller-source.ts';
