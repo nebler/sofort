@@ -25,19 +25,22 @@ export function shardSource(code:string,names:string[]):string {
   return wire;
 }
 /** The START source for a guest body, unchecked; the parity corpus sizes its
- *  source boundary cases with it (executor/parity/cases.ts). */
+ *  source boundary cases with it (executor/parity/cases.ts). UTF-8: the run
+ *  body, NUL, then the tenant code as data, which the prepared helper compiles
+ *  (kernel/ring-bootstrap.js.in decodes it once). So it is LIMIT.code plus a
+ *  bounded adapter and always fits ring::SOURCE_LIMIT; the run body drops its
+ *  reference so the arena holds the code text once. */
 export function shardWire(code:string,names:string[]):string {
-  // Only JSON string data is ASCII escaped: preserve raw templates/regex tokens.
-  return `return await globalThis.__jitkPrepared.source(tools,${ascii(JSON.stringify(code))},${JSON.stringify(names)});`;
+  return `return await globalThis.__jitkPrepared.source(tools,[data,data=undefined][0],${JSON.stringify(names)});\0"use strict";\n${code}`;
 }
 
-/** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots. */
+/** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots:
+ *  the console path's (protocol/dispatcher.ts LIMIT) but for the arena-bound memory. */
 export function shardLimits(slots:number):Limits {
   const arena=ARENA_CLASSES['glue-2m'];
   return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
-    // Logs are ring CALL records: they share the call budget and the record size.
     js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:IPC.replyBytes,doneBytes:IPC.doneBytes,
-      logs:IPC.calls,logBytes:IPC.callBytes,timers:false,arenaBytes:arena.arenaBytes}};
+      logs:LIMIT.logs,logBytes:LIMIT.log,timers:true,arenaBytes:arena.arenaBytes}};
 }
 
 /** The ring engine over the IPC of executor/ipc/ABI.md. On Linux it is the
@@ -179,11 +182,11 @@ type ShardRun={
   phase:'parked'|'running'|'done'|'releasing'|'released';
   /** Guest call ids, open calls and the log budget, under the v1 limits. */
   budget:RunBudget;
-  /** Call id -> the ring CALL record id that awaits its REPLY. */
+  /** Call id -> the ring CALL id that awaits its REPLY (the same number since logs left the call ids, ABI 11). */
   wires:Map<number,number>;
-  /** Next expected CALL record id; tool calls and logs share it (<=32). */
+  /** Next expected CALL id (<=IPC.calls). */
   nextWire:number;
-  /** Records received this generation (<=35). */
+  /** Messages received this generation (<=IPC.messagesPerGeneration). */
   records:number;
   stats:boolean;
   admittedDeadlineNs:bigint;
@@ -219,7 +222,8 @@ export class ShardSession implements Session {
   failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveReleased();}
   private emit(e:GuestEvent) {
     if(this.waiter){const w=this.waiter;this.waiter=undefined;w(e);}
-    else {if(this.events.length>=34)throw Error('shard receive queue bound');this.events.push(e);}
+    // Open calls, every log line, then the completion.
+    else {if(this.events.length>=IPC.outstanding+IPC.logs+2)throw Error('shard receive queue bound');this.events.push(e);}
   }
   /** A session failure preempts queued events: no tool runs after it. */
   private end(f:Fail) {
@@ -238,15 +242,17 @@ export class ShardSession implements Session {
   }
   private call(bytes:Buffer,wire:number) {
     const v=parseJson(bytes.toString('latin1'));
-    if(Array.isArray(v)&&v.length===4&&v[0]==='call'){
-      const [,ns,fn,args]=v;checkCall(ns,fn,args);
-      const id=this.run.budget.next;this.run.budget.call(id,bytes.length);this.run.wires.set(id,wire);
-      this.emit({kind:'call',id,ns:ns as string,fn:fn as string,args:args as unknown[]});
-    }else if(Array.isArray(v)&&v.length===3&&v[0]==='log'){
-      const [,level,msg]=v;checkLog(level,msg);this.run.budget.log(msg as string);
-      this.emit({kind:'log',level:level as string,msg:msg as string});
-      void this.backend.send(IPC.reply,this,wire,Buffer.from('{"ok":null}')).catch(e=>this.backend.fatal(e));
-    }else throw new ProtocolError('SCHEMA');
+    if(!Array.isArray(v)||v.length!==4||v[0]!=='call')throw new ProtocolError('SCHEMA');
+    const [,ns,fn,args]=v;checkCall(ns,fn,args);
+    const id=this.run.budget.next;this.run.budget.call(id,bytes.length);this.run.wires.set(id,wire);
+    this.emit({kind:'call',id,ns:ns as string,fn:fn as string,args:args as unknown[]});
+  }
+  /** A console line: one-way, under the v1 log budget (RunBudget.log). */
+  private log(bytes:Buffer) {
+    const v=parseJson(bytes.toString('latin1'));
+    if(!Array.isArray(v)||v.length!==2)throw new ProtocolError('SCHEMA');
+    const [level,msg]=v;checkLog(level,msg);this.run.budget.log(msg as string);
+    this.emit({kind:'log',level:level as string,msg:msg as string});
   }
   private done(bytes:Buffer) {
     const v=parseFrame(bytes.toString('latin1'));checkDone(v);
@@ -257,11 +263,13 @@ export class ShardSession implements Session {
   }
   receive(m:Message) {
     const run=this.run;
-    if(++run.records>35)throw Error('shard IPC per-run message bound');
+    if(++run.records>IPC.messagesPerGeneration)throw Error('shard IPC per-run message bound');
+    const rounds=IPC.statsRoundTrips;
     if(m.kind===IPC.call){if(m.id<1||m.id>IPC.calls||m.bytes.length>IPC.callBytes)throw Error('shard IPC call bound');}
-    else if(m.kind===IPC.done){if(m.id||m.bytes.length>16352)throw Error('shard IPC completion bound');}
-    else if(m.kind===IPC.error){if(m.id||m.bytes.length>512)throw Error('shard IPC error bound');}
-    else if(m.kind===IPC.stats){if(m.id||m.bytes.length<32||m.bytes.length>288||m.bytes.readBigUInt64LE(24)>32n||m.bytes.length!==32+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
+    else if(m.kind===IPC.log){if(m.id||m.bytes.length>IPC.consoleBytes)throw Error('shard IPC log bound');}
+    else if(m.kind===IPC.done){if(m.id||m.bytes.length>IPC.doneBytes)throw Error('shard IPC completion bound');}
+    else if(m.kind===IPC.error){if(m.id||m.bytes.length>IPC.errorBytes)throw Error('shard IPC error bound');}
+    else if(m.kind===IPC.stats){if(m.id||m.bytes.length<IPC.statsFixedBytes||m.bytes.length>IPC.statsFixedBytes+8*rounds||m.bytes.readBigUInt64LE(24)>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
     else if(m.kind!==IPC.released&&m.kind!==IPC.quarantined)throw Error('shard IPC direction/kind');
     // RELEASED, or QUARANTINED with its reason, ends the generation Node cancelled.
     if(m.kind===IPC.released||m.kind===IPC.quarantined){
@@ -274,17 +282,19 @@ export class ShardSession implements Session {
     if(m.kind===IPC.call){
       if(m.id!==run.nextWire++||m.id>IPC.calls||m.bytes.length>IPC.callBytes)throw Error('shard IPC call identity/size');
       this.guest(()=>this.call(m.bytes,m.id));
+    }else if(m.kind===IPC.log){
+      this.guest(()=>this.log(m.bytes));
     }else if(m.kind===IPC.stats){
-      if(m.id||run.stats||m.bytes.length<32)throw Error('shard IPC metrics schema');
+      if(m.id||run.stats||m.bytes.length<IPC.statsFixedBytes)throw Error('shard IPC metrics schema');
       const n=m.bytes.readBigUInt64LE(24);
-      if(n>32n||m.bytes.length!==32+8*Number(n))throw Error('shard IPC metrics bound');
+      if(n>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(n))throw Error('shard IPC metrics bound');
       run.stats=true;
       this.backend.metrics({deadlineNs:run.admittedDeadlineNs,slot:this.slot,generation:this.generation,ownerCpuNs:m.bytes.readBigUInt64LE(0),stoppedNs:m.bytes.readBigUInt64LE(8),resetDoneNs:m.bytes.readBigUInt64LE(16),roundTripsNs:Array.from({length:Number(n)},(_,i)=>m.bytes.readBigUInt64LE(32+8*i))});
     }else if(m.kind===IPC.done){
-      if(m.id||m.bytes.length>16352||!run.stats||run.wires.size)throw Error('shard IPC done schema/outstanding');
+      if(m.id||m.bytes.length>IPC.doneBytes||!run.stats||run.wires.size)throw Error('shard IPC done schema/outstanding');
       this.guest(()=>this.done(m.bytes));
     }else if(m.kind===IPC.error){
-      if(m.id||m.bytes.length>512||!run.stats)throw Error('shard IPC error schema');
+      if(m.id||m.bytes.length>IPC.errorBytes||!run.stats)throw Error('shard IPC error schema');
       const text=m.bytes.toString('utf8');
       this.end({kind:'fail',cause:/^deadline/.test(text)?'deadline':/^memory_bound/.test(text)?'limit':/^slot_/.test(text)?'engine':'guest',message:text});run.phase='done';
     }else throw Error('shard IPC direction/kind');
@@ -310,7 +320,7 @@ export class ShardSession implements Session {
     if(this.run.phase!=='parked'||this.deadline===undefined)throw Error('shard run requires admission deadline');
     const code=executionBody(job,true);
     this.host(()=>{checkCode(code);checkTools(job.tools);});
-    const source=Buffer.from(shardSource(code,Object.keys(job.tools)),'ascii');
+    const source=Buffer.from(shardSource(code,Object.keys(job.tools)),'utf8');
     const remaining=Math.max(0,this.deadline-Date.now());
     if(remaining>60000)throw Error('shard deadline limit (60000 ms)');
     const payload=Buffer.alloc(IPC.startHeaderBytes+source.length);
@@ -322,7 +332,9 @@ export class ShardSession implements Session {
   async reply(id:number,r:Reply):Promise<void> {
     if(this.failure)throw Error(this.failure.message);
     const wire=this.run.wires.get(id);if(wire===undefined)throw Error('shard unknown reply');
-    // One encode: the protocol's host-output limits apply to exactly these bytes.
+    // One encode: the protocol's host-output limits apply to exactly these bytes;
+    // parseJson's frame bound (LIMIT.frame) is ring::REPLY_BYTES, so a reply
+    // over it fails this generation as it fails a console-path run.
     const text=this.host(()=>{
       let s:string|undefined;
       try{s=JSON.stringify(r);}catch{throw new ProtocolError('SERIALIZE');}
@@ -330,8 +342,8 @@ export class ShardSession implements Session {
       s=ascii(s);checkReply(parseJson(s));return s;
     });
     this.run.wires.delete(id);this.run.budget.reply(id);
-    let payload=Buffer.from(text);
-    if(payload.length>IPC.replyBytes)payload=Buffer.from(`{"err":{"code":"LIMIT","message":"shard tool reply limit (${IPC.replyBytes} bytes)"}}`);
+    const payload=Buffer.from(text);
+    if(payload.length>IPC.replyBytes)throw Error('shard reply bound');
     await this.write(IPC.reply,wire,payload);
   }
   release() {

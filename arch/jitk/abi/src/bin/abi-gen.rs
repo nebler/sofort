@@ -27,13 +27,21 @@ fn placeholders() -> Vec<(&'static str, String)> {
     let v = |n: usize| n.to_string();
     vec![
         ("ABI_VERSION", ABI_VERSION.to_string()),
-        ("SOURCE_LIMIT", v(ring::SOURCE_LIMIT)),
         ("MAX_CALLS", v(ring::MAX_CALLS)),
+        ("MAX_OUTSTANDING", v(ring::MAX_OUTSTANDING)),
+        ("INFLIGHT_BYTES", v(ring::INFLIGHT_BYTES)),
         ("CALL_BYTES", v(ring::CALL_BYTES)),
-        ("REPLY_BYTES", v(ring::REPLY_BYTES)),
+        ("DONE_BYTES", v(ring::DONE_BYTES)),
+        ("MAX_LOGS", v(ring::MAX_LOGS)),
+        ("MAX_PAYLOAD", v(ring::MAX_PAYLOAD)),
+        ("MORE", ring::MORE.to_string()),
+        ("RET", ring::RET.to_string()),
+        ("REPLY_PREFIX_BYTES", v(ring::REPLY_PREFIX_BYTES)),
         ("FD_CHECKPOINT", v(ring::FD_CHECKPOINT)),
         ("FD_REPAIR", v(ring::FD_REPAIR)),
         ("FD_FINISH", v(ring::FD_FINISH)),
+        ("FD_CONSOLE", v(ring::FD_CONSOLE)),
+        ("FD_REPLY", v(ring::FD_REPLY)),
         ("FD_CALL_BASE", v(ring::FD_CALL_BASE)),
         ("REPAIR_BYTES", v(ring::REPAIR_BYTES)),
         (
@@ -89,9 +97,21 @@ fn typescript() -> String {
         ("stats", ipc::STATS.into(), ""),
         ("quarantined", ipc::QUARANTINED.into(), ""),
         ("restored", ipc::RESTORED.into(), ""),
+        ("log", ipc::LOG.into(), ""),
         ("headerBytes", ipc::HEADER_BYTES as u64, "record geometry"),
         ("payload", ipc::PAYLOAD as u64, ""),
         ("capacity", ipc::CAPACITY, ""),
+        (
+            "flagsAt",
+            ipc::FLAGS_AT as u64,
+            "header flags word and its MORE bit",
+        ),
+        ("more", ipc::MORE.into(), ""),
+        (
+            "messageBytes",
+            ipc::MESSAGE_BYTES as u64,
+            "largest message payload (reassembly bound)",
+        ),
         (
             "slots",
             ipc::MAX_SLOTS as u64,
@@ -109,19 +129,24 @@ fn typescript() -> String {
         ),
         ("deadlineHorizonNs", ipc::DEADLINE_HORIZON_NS, ""),
         ("calls", ring::MAX_CALLS as u64, "per-run guest limits"),
+        ("outstanding", ring::MAX_OUTSTANDING as u64, ""),
+        ("inflightBytes", ring::INFLIGHT_BYTES as u64, ""),
         ("callBytes", ring::CALL_BYTES as u64, ""),
         ("replyBytes", ring::REPLY_BYTES as u64, ""),
         ("doneBytes", ring::DONE_BYTES as u64, ""),
         ("sourceBytes", ring::SOURCE_LIMIT as u64, ""),
+        ("logs", ring::MAX_LOGS as u64, ""),
+        ("consoleBytes", ring::CONSOLE_BYTES as u64, ""),
         ("errorBytes", ipc::ERROR_BYTES as u64, ""),
         ("statsFixedBytes", ipc::STATS_FIXED_BYTES as u64, ""),
         ("statsRoundTrips", ipc::STATS_ROUND_TRIPS as u64, ""),
         (
-            "recordsPerGeneration",
-            ipc::RECORDS_PER_GENERATION as u64,
+            "messagesPerGeneration",
+            ipc::MESSAGES_PER_GENERATION as u64,
             "queue bounds",
         ),
         ("outbound", ipc::OUTBOUND as u64, ""),
+        ("nodeOutbound", ipc::NODE_OUTBOUND as u64, ""),
     ];
     writeln!(s, "/** Node <-> shard IPC (ipc/ABI.md). */").unwrap();
     writeln!(s, "export const IPC=Object.freeze({{").unwrap();
@@ -165,6 +190,8 @@ fn c_header() -> String {
         ("JITK_IPC_DATA", ipc::DATA as u64),
         ("JITK_IPC_BYTES", ipc::BYTES as u64),
         ("JITK_IPC_LENGTH_AT", ipc::LENGTH_AT as u64),
+        ("JITK_IPC_FLAGS_AT", ipc::FLAGS_AT as u64),
+        ("JITK_IPC_MORE", ipc::MORE.into()),
         ("JITK_IPC_RESERVED_AT", ipc::RESERVED_AT as u64),
     ];
     for (name, value) in rows {
@@ -250,7 +277,7 @@ mod tests {
     fn templates_expand_known_placeholders_only() {
         assert_eq!(
             expand("{{! note }}\nfd {{FD_FINISH}}, {{MAX_CALLS}}\n", "t").unwrap(),
-            "fd 102, 32\n"
+            "fd 102, 4096\n"
         );
         assert!(expand("{{NOPE}}", "t").is_err());
         assert!(expand("{{FD_FINISH", "t").is_err());

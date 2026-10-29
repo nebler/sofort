@@ -12,9 +12,9 @@
 //    a pristine slot) for 10 s. CPU is `ps` cputime of the zygote and every
 //    engine process (10 ms resolution); the gate is below 2% of one core.
 // 2. Exchanges: 1000 tool-call round trips through MicroVMExecutor, each
-//    checked. A run carries at most IPC.calls (the ring profile's 32, where
-//    G1's libkrun run carries all 1000), so they span runs; as in G1 every
-//    100th waits 3 s with its call outstanding (the guest parked in WAIT).
+//    checked. A run carries at most IPC.calls (4096 since ABI 11, as G1's
+//    libkrun run, so all 1000 fit one run); as in G1 every 100th waits 3 s
+//    with its call outstanding (the guest parked in WAIT).
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';

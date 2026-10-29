@@ -19,6 +19,10 @@
 #define HEADER JITK_IPC_HEADER_BYTES
 #define LENGTH_AT JITK_IPC_LENGTH_AT
 #define RESERVED_AT JITK_IPC_RESERVED_AT
+#define FLAGS_AT JITK_IPC_FLAGS_AT
+/* Header words a record may carry: flags MORE (of a full record) and reserved 0. */
+#define BAD_FLAGS(p,n) ((word((p)+FLAGS_AT)&~JITK_IPC_MORE) || word((p)+RESERVED_AT) || \
+  ((word((p)+FLAGS_AT)&JITK_IPC_MORE) && (n)!=PAYLOAD))
 #define RECORD (HEADER + PAYLOAD)
 #define REGION (CAP * RECORD)
 #define DATA JITK_IPC_DATA
@@ -60,7 +64,7 @@ static napi_value send_record(napi_env env, napi_callback_info info) {
   if(!buffer)return fail(env,"IPC send requires Buffer");
   napi_get_buffer_info(env,arg,&data,&n);
   const uint8_t *p=data;
-  if(n<HEADER || n>RECORD || word(p+LENGTH_AT)!=n-HEADER || word(p+RESERVED_AT) || word(p+RESERVED_AT+4))return fail(env,"invalid local IPC record");
+  if(n<HEADER || n>RECORD || word(p+LENGTH_AT)!=n-HEADER || BAD_FLAGS(p,n-HEADER))return fail(env,"invalid local IPC record");
   uint64_t consumed=atomic_load_explicit(cursor(b,JITK_IPC_SHARD_CONSUMED),memory_order_acquire);
   if(consumed<b->peer || consumed>b->tx || b->tx-consumed>CAP || b->tx==UINT64_MAX)return fail(env,"invalid peer IPC consumer");
   b->peer=consumed;
@@ -84,7 +88,7 @@ static napi_value drain(napi_env env, napi_callback_info info) {
     uint8_t copy[RECORD];
     memcpy(copy,b->mem+DATA+REGION+(b->rx%CAP)*RECORD,RECORD);
     uint32_t n=word(copy+LENGTH_AT);
-    if(n>PAYLOAD || word(copy+RESERVED_AT) || word(copy+RESERVED_AT+4))return fail(env,"invalid peer IPC record");
+    if(n>PAYLOAD || BAD_FLAGS(copy,n))return fail(env,"invalid peer IPC record");
     napi_value bytes; napi_create_buffer_copy(env,HEADER+n,copy,NULL,&bytes);
     napi_set_element(env,out,count++,bytes); b->rx++;
   }

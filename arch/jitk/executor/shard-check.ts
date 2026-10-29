@@ -71,7 +71,9 @@ try {
       ['raw invalid JSON call',raw(129,'[bad]'),/protocol JSON/],
       ['raw control-byte call',raw(129,'["call","ns","fn",["\x01"]]'),/guest_protocol/],
       ['raw non-ASCII call',raw(129,'["call","ns","fn",["\xff"]]'),/guest_protocol/],
-      ['raw log with unknown level',raw(129,'["log","trace","x"]'),/protocol SCHEMA/],
+      ['raw log as a call',raw(129,'["log","log","x"]'),/protocol SCHEMA/],
+      ['raw log with unknown level',raw(103,'["trace","x"]'),/protocol SCHEMA/],
+      ['raw non-ASCII log',raw(103,'["log","\xff"]'),/guest_protocol/],
       ['raw non-object DONE',raw(102,'[1]'),/protocol SCHEMA/],
       ['raw DONE with smuggled frame type',raw(102,'{"t":"call","ok":1}'),/protocol SCHEMA/],
     ] as const){
@@ -323,14 +325,14 @@ for(const mode of ['kind','slot','generation','source-length','source-encoding',
   const timer=setTimeout(()=>{child.kill('SIGKILL');failReady(Error('malformed-case timeout'));},3000);
   try {
     await ready;
-    const bytes=Buffer.alloc(24);bytes.writeBigUInt64LE(monotonicNs()+1000000000n);bytes.writeUInt32LE(32,8);bytes.writeUInt32LE(1024,12);bytes.writeUInt32LE(2*1048576,20);
+    const bytes=Buffer.alloc(24);bytes.writeBigUInt64LE(monotonicNs()+1000000000n);bytes.writeUInt32LE(IPC.calls,8);bytes.writeUInt32LE(IPC.callBytes,12);bytes.writeUInt32LE(2*1048576,20);
     let m:Message={kind:IPC.start,slot:0,generation:1n,id:0,bytes};
     if(mode==='kind')m.kind=IPC.done;
     if(mode==='slot')m.slot=63;
     if(mode==='generation')m.generation=2n;
     if(mode==='source-length')bytes.writeUInt32LE(0xffffffff,16);
     if(mode==='source-encoding'){m.bytes=Buffer.concat([bytes,Buffer.from([255])]);m.bytes.writeUInt32LE(1,16);}
-    if(mode==='calls')bytes.writeUInt32LE(33,8);
+    if(mode==='calls')bytes.writeUInt32LE(IPC.calls+1,8);
     if(mode==='memory')bytes.writeUInt32LE(4*1048576,20);
     if(mode==='deadline')bytes.writeBigUInt64LE(monotonicNs()+61000000000n);
     if(mode==='reply'){m.kind=IPC.reply;m.id=1;m.bytes=Buffer.from('{"ok":"\xff"}','latin1');}

@@ -267,7 +267,8 @@ mod mac {
         vm.reset = mode;
         let mut s = Slot::create(vm, snapshot, ResetPolicy::default()).unwrap();
         let mut entropy = File::open("/dev/urandom").unwrap();
-        let (mut run, mut cpu, mut reset, mut total) = (vec![], vec![], vec![], vec![]);
+        let (mut run, mut cpu, mut reset, mut total, mut exits) =
+            (vec![], vec![], vec![], vec![], vec![]);
         for i in 0..n {
             let t0 = Instant::now();
             if i > 0 {
@@ -289,14 +290,16 @@ mod mac {
                 run.push(t.elapsed().as_nanos() as u64);
                 cpu.push(thread_cpu_ns() - c);
                 total.push(t0.elapsed().as_nanos() as u64);
+                exits.push(s.exits);
             }
         }
         println!(
-            "{{\"event\":\"bench\",\"hypervisor\":\"hvf\",\"fixture\":\"{name}\",\"reset\":\"{mode:?}\",\"n\":{n},\"run_wall_ns\":{},\"run_cpu_ns\":{},\"reset_ns\":{},\"reset_plus_run_wall_ns\":{}}}",
+            "{{\"event\":\"bench\",\"hypervisor\":\"hvf\",\"fixture\":\"{name}\",\"reset\":\"{mode:?}\",\"n\":{n},\"run_wall_ns\":{},\"run_cpu_ns\":{},\"reset_ns\":{},\"reset_plus_run_wall_ns\":{},\"exits\":{}}}",
             stats(&mut run),
             stats(&mut cpu),
             stats(&mut reset),
             stats(&mut total),
+            stats(&mut exits),
         );
     }
 }

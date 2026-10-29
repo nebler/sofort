@@ -3,7 +3,7 @@
 //! Reads go into one bounded buffer (at most one record plus one read);
 //! writes queue up to a bound and drain without blocking, so a peer that stops
 //! reading never stalls the zygote's poll loop.
-use crate::service::{HEADER_BYTES, Message, PAYLOAD, invalid, u32_at};
+use crate::service::{Assembler, HEADER_BYTES, Message, PAYLOAD, invalid, u32_at};
 use std::{
     collections::VecDeque,
     io,
@@ -16,10 +16,11 @@ const CHUNK: usize = 64 << 10;
 pub struct Conn {
     fd: OwnedFd,
     input: Vec<u8>,
+    assembler: Assembler,
     output: VecDeque<Vec<u8>>,
     /// Bytes of output's front already written.
     written: usize,
-    /// Queued records before `queue` fails.
+    /// Queued messages before `queue` fails.
     bound: usize,
 }
 impl Conn {
@@ -27,6 +28,7 @@ impl Conn {
         Self {
             fd,
             input: Vec::new(),
+            assembler: Assembler::default(),
             output: VecDeque::new(),
             written: 0,
             bound,
@@ -82,24 +84,28 @@ impl Conn {
             }
         }
     }
-    /// The next complete record in the input buffer, if any.
+    /// The next complete message in the input buffer, if any.
     pub fn next(&mut self) -> io::Result<Option<Message>> {
-        if self.input.len() < HEADER_BYTES {
-            return Ok(None);
+        loop {
+            if self.input.len() < HEADER_BYTES {
+                return Ok(None);
+            }
+            let n = u32_at(&self.input, crate::constants::ipc::LENGTH_AT) as usize;
+            if n > PAYLOAD {
+                return Err(invalid("IPC record length/reserved"));
+            }
+            if self.input.len() < HEADER_BYTES + n {
+                return Ok(None);
+            }
+            let (record, more) = Message::decode(&self.input[..HEADER_BYTES + n])?;
+            self.input.drain(..HEADER_BYTES + n);
+            if let Some(m) = self.assembler.push(record, more)? {
+                return Ok(Some(m));
+            }
         }
-        let n = u32_at(&self.input, crate::constants::ipc::LENGTH_AT) as usize;
-        if n > PAYLOAD {
-            return Err(invalid("IPC record length/reserved"));
-        }
-        if self.input.len() < HEADER_BYTES + n {
-            return Ok(None);
-        }
-        let m = Message::decode(&self.input[..HEADER_BYTES + n])?;
-        self.input.drain(..HEADER_BYTES + n);
-        Ok(Some(m))
     }
-    /// Queue a record; past the bound the peer is not reading and the caller
-    /// fails it.
+    /// Queue a message (all its records); past the bound (in messages) the
+    /// peer is not reading and the caller fails it.
     pub fn queue(&mut self, m: &Message) -> io::Result<()> {
         if self.output.len() >= self.bound {
             return Err(invalid("IPC stream writer bound"));
@@ -191,7 +197,7 @@ mod tests {
         let (a, b) = pair().unwrap();
         let mut rx = Conn::new(b, 4);
         rx.set_nonblocking().unwrap();
-        let big = Message::new(CALL, 1, 9, 3, vec![b'x'; PAYLOAD]);
+        let big = Message::new(CALL, 1, 9, 3, vec![b'x'; 3 * PAYLOAD + 1]);
         let small = Message::new(REPLY, 0, 1, 1, b"{}".to_vec());
         let mut tx = Conn::new(a, 4);
         tx.set_nonblocking().unwrap();
@@ -216,7 +222,7 @@ mod tests {
     fn hostile_stream_envelopes_fail() {
         let (a, b) = pair().unwrap();
         let mut rx = Conn::new(b, 1);
-        let mut h = Message::new(CALL, 0, 1, 1, vec![]).header();
+        let mut h = Message::new(CALL, 0, 1, 1, vec![]).encode().unwrap();
         h[20..24].copy_from_slice(&(PAYLOAD as u32 + 1).to_le_bytes());
         // SAFETY: h is a live readable header.
         let n = unsafe { libc::write(a.as_raw_fd(), h.as_ptr().cast(), h.len()) };

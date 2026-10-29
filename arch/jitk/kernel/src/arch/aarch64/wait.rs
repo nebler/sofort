@@ -58,6 +58,13 @@ pub unsafe fn init(d: usize, r: usize, irq: u32, tick: u64) {
             core::hint::spin_loop();
         }
         wr(r + 0x10080, u32::MAX);
+        // Virtual timer PPI 27: priority 0x80 (above PMR 0xff), enabled. park_for's
+        // CNTV+WFI wake needs it pending *and enabled* at the redistributor: Linux
+        // KVM blocks WFI in-kernel until the vgic has such an interrupt, so without
+        // this a delayed setTimeout only woke on unrelated console IRQs. libkrun on
+        // HVF handled WFI in userspace from CNTV_CVAL, which hid it.
+        wr(r + 0x10418, (rd(r + 0x10418) & 0x00ff_ffff) | 0x8000_0000);
+        wr(r + 0x10100, 1 << 27);
         wr(
             d + 0x80 + (irq as usize / 32) * 4,
             rd(d + 0x80 + (irq as usize / 32) * 4) | (1 << (irq % 32)),

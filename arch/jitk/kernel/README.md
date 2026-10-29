@@ -37,7 +37,8 @@ assembly and AArch64 names out of the core.
 There are no Cargo dependencies or network downloads. `payload/qjs` is the stripped
 static Bellard qjs from the spike; its source digest is recorded in the manifest.
 The default bootstrap is read directly from `../protocol/bootstrap.js`; it is not
-copied. Default argv: qjs --std --memory-limit 16777216 -e <canonical bootstrap>.
+copied. Default argv: qjs --std --memory-limit 16777216 --stack-size 81920 -e <canonical bootstrap>
+(the user stack is 96 KiB; see generate.ts).
 
 Outputs: `dist/kernel.bin`, `dist/kernel-<sha256>.bin`, `dist/manifest.json`, and
 `dist/kernel-<sha256>.json`. The manifest records exact ELF/flat/image digests,

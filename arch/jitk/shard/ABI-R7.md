@@ -8,6 +8,31 @@ unknown bits, partial feature bundles, JSON-to-byte reinterpretation, or use
 with fixture ABI v0. Host-selected mode is private host state; guest writes to
 control never negotiate features or enlarge bounds.
 
+## JS profile: messages, ring version 3 (ABI 11)
+
+Supersedes ABI-R6's JS-profile call slots and source page; the geometry below
+is unchanged. A message is one or more consecutive records of one kind and
+identity in one ring; every record but the last has flags `JSON_UTF8|MORE`
+(MORE=2) and exactly 16,352 payload bytes, the last `JSON_UTF8`. Bounds
+(`jitk-abi` `ring`) are on the concatenated payload:
+
+| Message | Ring, identity | Bound | Guest side |
+|---|---|---|---|
+| SOURCE=9 | RX, 0 | SOURCE_BYTES (control+0x228) <= 73,728, UTF-8 | `read(0)`, blocking in WAIT for the next record; 0 at its end |
+| CALL=1 | TX, call id 1..4096 in order, cap 1 | 1 MiB printable ASCII; at most 64 open | `write(128+id)`; -EINVAL past 64 open |
+| RET=2 / ERR=3 | RX, an open call id, cap 1 | 1 MiB | `read(104)`: 8-byte prefix (id u32, kind u16, flags u16) + one record's payload; -EAGAIN when RX is empty; the final record closes the call |
+| CONSOLE=10 | TX, 0 | 32 KiB, at most 1,024 per run | `write(103)`, one-way; JSON `[level, message]` |
+| DONE=5 | TX, 0 | 1 MiB | `write(102)`, refused (-EBUSY) while a call is open; then FINISH |
+
+The guest copies replies straight from RX to user memory (no kernel reply
+buffers); a 4,096-bit set marks the open calls. The host keeps RX records
+that do not fit yet (the SOURCE message at bind, replies) in a per-slot
+backlog and writes them before every vCPU entry. Policy mode: SUBMIT (TX full)
+runs on; a WAIT runs on while the backlog is not empty, else parks the slot
+until a reply or, when the WAIT's DEADLINE word (control+0x230, the guest's
+ppoll timeout on the slot clock) is finite, until that time; this is how
+setTimeout/setInterval wake a parked guest. The lease bounds every wait.
+
 ## Records and credit
 
 The R6 control/TX/RX GPAs, 80 KiB transport allocation, 32,768-byte rings,

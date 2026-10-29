@@ -3,7 +3,8 @@
 // `expect`, the limit behind it (in the jitk-abi crate where one exists) and
 // why. parity-check.ts fails on any difference not listed here, and on an
 // entry whose difference no longer occurs, so the list only shrinks.
-import {IPC,ARENA_CLASSES} from '../abi.js';
+import {ARENA_CLASSES} from '../abi.js';
+import {LIMIT} from '../../protocol/dispatcher.js';
 import type {Expect} from './cases.js';
 import type {Engine} from '../engine.js';
 
@@ -26,60 +27,44 @@ const hyperlight:Difference[]=[
     reason:'tool calls are synchronous exchanges, so no call is outstanding at completion'},
   {case:'s-lone-surrogate',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'invalid utf-8'},limit:'hyperlight-js host function string conversion',
     reason:'the host-function boundary rejects the unpaired surrogate as a guest exception before the v1 dispatcher sees it; still fails closed'},
-  {case:'t-reply-64k',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'virtqueue capacity'},limit:'hyperlight-js host response virtqueue',
-    reason:'a 64 KiB reply exceeds the Hyperlight host-call response buffer'},
-  ...['t-timer','t-timer-zero'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'setTimeout is not defined'},limit:HL,
+  ...['t-reply-64k','t-reply-at-record','t-reply-over-record','t-replies-parallel'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'virtqueue capacity'},limit:'hyperlight-js host response virtqueue',
+    reason:'a reply of 16 KiB or more exceeds the Hyperlight host-call response buffer'})),
+  {case:'t-call-args-40k',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'Ring or pool temporarily full'},limit:'hyperlight-js guest-to-host call ring',
+    reason:'a 40 KiB host-call argument does not fit the Hyperlight guest-to-host ring'},
+  {case:'t-call-args-at-record',backends:['hyperlight-js'],expect:{ok:null},limit:'hyperlight-js host response virtqueue',
+    reason:'the 16 KiB echo reply exceeds the response buffer; the guest-visible error carries no code'},
+  {case:'t-calls-over-outstanding',backends:['hyperlight-js'],expect:{ok:LIMIT.outstanding+1},limit:HL,
+    reason:'tool calls are synchronous exchanges, so no call is outstanding and the outstanding bound never applies'},
+  ...['t-code-at-limit','t-done-64k'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'SANDBOX',match:'protocol EOF'},limit:'bench/hyperlight/worker.rs guest input/output buffers',
+    reason:'a 64 KiB source or completion exceeds the Hyperlight worker buffers; the worker exits without a done frame'})),
+  ...['t-timer','t-timer-zero','t-timer-elapsed','t-timer-order','t-timer-with-call'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'setTimeout is not defined'},limit:HL,
     reason:'the Hyperlight guest has no event-loop timers'})),
-  {case:'t-timer-typeof',backends:['hyperlight-js'],expect:{ok:['undefined','undefined']},limit:HL,
+  {case:'t-timer-interval',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'setInterval is not defined'},limit:HL,
+    reason:'the Hyperlight guest has no event-loop timers'},
+  {case:'t-timer-typeof',backends:['hyperlight-js'],expect:{ok:['undefined','undefined','undefined','undefined']},limit:HL,
     reason:'the Hyperlight guest has no event-loop timers'},
   {case:'t-memory-64m',backends:['hyperlight-js'],expect:{error:'SANDBOX',match:'protocol EOF'},limit:'bench/hyperlight/worker.rs guest heap 16 MiB',
     reason:'allocation failure in the 16 MiB guest heap aborts the worker instead of raising a QuickJS out-of-memory error'},
   {case:'t-log-undefined',backends:['hyperlight-js'],expect:{ok:1,logs:['u ']},limit:HL,
     reason:'console joins JSON.stringify results, which drops undefined'},
+  ...['t-stack-overflow','t-stack-overflow-caught','t-stack-after-overflow','t-stack-overflow-paths'].map((id):Difference=>({case:id,backends:['hyperlight-js'],expect:{error:'SANDBOX',match:'protocol EOF'},limit:HL,
+    reason:'unbounded recursion overruns the worker stack before QuickJS\'s stack limit; jitk sets --stack-size below its guest stack (kernel/generate.ts)'})),
+  {case:'t-stack-overflow-json',backends:['hyperlight-js'],expect:{ok:null},limit:HL,
+    reason:'the worker stack holds 500 nested JSON.stringify levels, so nothing throws'},
   {case:'t-log-unserializable',backends:['hyperlight-js'],expect:{error:'GUEST_ERROR',match:'BigInt'},limit:HL,
     reason:'console calls JSON.stringify without a fallback, so a BigInt argument throws in the tenant'},
 ];
 
-// The shard's ring profile (executor/ipc/ABI.md, shard/ABI-R7.md): the
-// product-parity gaps of R9 N6, now one table in jitk-abi. Both ring engines
-// have them: the KVM shard on Linux and the HVF engine on macOS run the same
-// kernel, prepared helpers, IPC and limits, so neither has an entry of its own.
+// The shard's ring profile (executor/ipc/ABI.md, shard/ABI-R7.md). Both ring
+// engines run the same kernel, prepared helpers, IPC and limits (the KVM shard
+// on Linux, the HVF engine on macOS), so neither has an entry of its own.
+// Since ABI 11 the ring has the console path's call, reply, completion,
+// source, log and timer limits; what remains is the memory class.
 const ring:Engine['kind'][]=['shard','hvf'];
-const replyLimit:Expect={error:'LIMIT',match:`shard tool reply limit \\(${IPC.replyBytes} bytes\\)`};
-const sourceLimit:Expect={error:'LIMIT',match:`shard source limit including trusted adapters \\(${IPC.sourceBytes} bytes\\)`};
 const arena=`abi arena::Class::Glue2m (arena ${ARENA_CLASSES['glue-2m'].arenaBytes} bytes, admission ${ARENA_CLASSES['glue-2m'].admissionBytes})`;
-const numbered=(n:number)=>Array.from({length:n},(_,i)=>String(i));
 const shard:Difference[]=[
-  ...['s-reply-2000','t-reply-over-limit','t-reply-64k'].map((id):Difference=>({case:id,backends:ring,expect:replyLimit,limit:'abi ring::REPLY_BYTES',value:IPC.replyBytes,
-    reason:'a provider reply over the ring reply size becomes a LIMIT tool error (shard-backend.ts reply())'})),
-  {case:'t-reply-limit-to-guest',backends:ring,expect:{ok:'LIMIT'},limit:'abi ring::REPLY_BYTES',value:IPC.replyBytes,
-    reason:'the oversized reply reaches the guest as a catchable tool error with code LIMIT'},
-  ...['s-calls-33','t-calls-over-budget'].map((id):Difference=>({case:id,backends:ring,expect:{error:'LIMIT',match:'call budget'},limit:'abi ring::MAX_CALLS',value:IPC.calls,
-    reason:'one ring call id per tool call; v1 allows LIMIT.calls (4096)'})),
-  {case:'t-call-args-over-limit',backends:ring,expect:{error:'LIMIT',match:`shard tool call limit \\(${IPC.callBytes} bytes\\)`},limit:'abi ring::CALL_BYTES',value:IPC.callBytes,
-    reason:'the encoded call must fit one ring record; the prepared helper turns the ring bootstrap refusal into a LIMIT tool error (shard-helpers.js.in call())'},
-  {case:'t-call-limit-to-guest',backends:ring,expect:{ok:'LIMIT'},limit:'abi ring::CALL_BYTES',value:IPC.callBytes,
-    reason:'the oversized call reaches the guest as a catchable tool error with code LIMIT'},
-  ...['s-source-8000','t-source-over-limit'].map((id):Difference=>({case:id,backends:ring,expect:sourceLimit,limit:'abi ring::SOURCE_LIMIT',value:IPC.sourceBytes,
-    reason:'the START source, tenant code plus the prepared-helper binding, must fit the ring source page; v1 allows LIMIT.code (64 KiB)'})),
   ...['b-json1m','t-memory-over-arena'].map((id):Difference=>({case:id,backends:ring,expect:{error:'LIMIT',match:'out of memory'},limit:arena,
-    reason:'the glue-2m arena class bounds the guest heap; the v1 QuickJS runs with --memory-limit 16M'})),
-  ...['t-timer','t-timer-zero'].map((id):Difference=>({case:id,backends:ring,expect:{error:'GUEST_ERROR',match:"'setTimeout' is not defined"},limit:'kernel/ring-bootstrap.js (no timers)',
-    reason:'the ring profile has deliberately no timers'})),
-  {case:'t-timer-typeof',backends:ring,expect:{ok:['undefined','undefined']},limit:'kernel/ring-bootstrap.js (no timers)',reason:'the ring profile has deliberately no timers'},
-  ...['t-stack-overflow','t-stack-overflow-caught'].map((id):Difference=>({case:id,backends:ring,expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi arena::STACK_BYTES',value:0x20000,
-    reason:'both paths end the guest on unbounded recursion; the shard reports it as a guest_fatal ERROR record (class GUEST_ERROR), the console path as EOF (SANDBOX)'})),
-  {case:'t-done-over-limit',backends:ring,expect:{error:'GUEST_ERROR',match:'guest_fatal'},limit:'abi ring::DONE_BYTES',value:IPC.doneBytes,
-    reason:'a completion over one ring record cannot be written; the guest stops without DONE'},
-  // Logs are ring CALL records: they share the call budget and the record size.
-  {case:'v-logs-bounded',backends:ring,expect:{ok:1,logs:Array(IPC.calls).fill('a')},limit:'abi ring::MAX_CALLS',value:IPC.calls,
-    reason:'logs past the ring call budget are dropped (v1 keeps LIMIT.logs = 1024)'},
-  {case:'t-logs-over-budget',backends:ring,expect:{ok:1,logs:numbered(IPC.calls)},limit:'abi ring::MAX_CALLS',value:IPC.calls,
-    reason:'logs past the ring call budget are dropped'},
-  {case:'t-logs-and-calls',backends:ring,expect:{error:'LIMIT',match:'call budget',logs:numbered(IPC.calls/2)},limit:'abi ring::MAX_CALLS',value:IPC.calls,
-    reason:'logs and tool calls share the ring call budget, so the 17th call has no id left'},
-  {case:'t-log-long',backends:ring,expect:{ok:1,logs:[]},limit:'abi ring::CALL_BYTES',value:IPC.callBytes,
-    reason:'a log record over the ring record size is dropped (v1 clips it to LIMIT.log = 4096)'},
+    reason:'the glue-2m arena class bounds the guest heap (per-VM memory and reset cost scale with it); the v1 QuickJS runs with --memory-limit 16M'})),
 ];
 
 // Known bugs, listed so the run stays green while they are open. Each is in

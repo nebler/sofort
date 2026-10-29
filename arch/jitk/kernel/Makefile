@@ -25,7 +25,7 @@ fmt: .work/bin/format
 check:
 	sh check.sh
 
-TS_TOOLS := prepare.ts build-args.ts artifact.ts format.ts build-checks.ts arch-lint.ts refresh-contracts.ts $(wildcard tests/*.ts) $(wildcard results-fs/*.ts) payload/ring-rng/patch.ts
+TS_TOOLS := prepare.ts build-args.ts artifact.ts format.ts build-checks.ts arch-lint.ts refresh-contracts.ts promote.ts $(wildcard tests/*.ts) $(wildcard results-fs/*.ts) payload/ring-rng/patch.ts
 SCRIPTC_FLAGS := --ffi native-ffi.json
 TS_EXTRA_DEPS := .work/native.o
 include ../tools/scriptc.mk
@@ -37,6 +37,13 @@ include ../tools/scriptc.mk
 .PHONY: bench-gate
 bench-gate:
 	$(MAKE) -C ../bench build/gate
+
+# Re-promotes .READY: every gate on the built image (default dist/kernel.bin),
+# then dist/kernel-<sha>.{bin,json}, dist/manifest.json and .READY; refuses otherwise.
+.PHONY: promote
+promote: tools bench-gate
+	$(MAKE) -C ../grow build
+	.work/bin/promote $(IMAGE) $(MANIFEST)
 
 .PHONY: linux-tools
 linux-tools: .work/linux/payload/ring-rng/patch
