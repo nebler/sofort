@@ -25,15 +25,20 @@ snapshot:
 	"$(call jitk_artifact,JITK_NODE)" snapshot.ts build
 
 # The KVM tests use the cache snapshots unless JITK_SHARD_TEST_SNAPSHOT(S) are
-# set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-/home/dev/bench.lock},
-# and sets JITK_BENCH_LOCK_HELD=1) when the host is shared, as for the real
-# harness's other KVM measurements. Then the native census regression, which
-# fails unless JITK_ALLOW_SKIP names check-native-r7 while its pinned census
-# inputs are absent (`./tool.sh import-census`).
+# set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-/home/dev/bench.lock})
+# when the host is shared, as for the real harness's other KVM measurements.
 .PHONY: test-kvm
 test-kvm: snapshot
 	$(CARGO_PIN) build --release --locked --offline --bin real
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
+
+# Linux arm64 KVM: the native census regression (41 cases twice, fd and
+# region probes). It takes the bench lock itself around the corpus; run it
+# outside a held lock, as the fd probe must not inherit the lock's
+# descriptor. It fails unless JITK_ALLOW_SKIP names check-native-r7 while its
+# pinned census inputs are absent (`./tool.sh import-census`).
+.PHONY: check-native-r7
+check-native-r7:
 	./tool.sh check-native-r7
 
 # macOS arm64: the Hypervisor.framework backend's tests (src/hvf/tests.rs) on

@@ -153,9 +153,7 @@ if [ -z "${JITK_BENCH_LOCK:-}" ]; then
   if [ -e /home/dev/bench.lock ]; then JITK_BENCH_LOCK=/home/dev/bench.lock; else JITK_BENCH_LOCK=${TMPDIR:-/tmp}/jitk-bench.lock; fi
 fi
 export JITK_BENCH_LOCK
-# Holders set JITK_BENCH_LOCK_HELD so nested tools (tslib locked()) do not
-# wait for the lock again.
-locked() { flock -w "${JITK_SHARD_LOCK_WAIT:-900}" "$JITK_BENCH_LOCK" env JITK_BENCH_LOCK_HELD=1 "$@"; }
+locked() { flock -w "${JITK_SHARD_LOCK_WAIT:-900}" "$JITK_BENCH_LOCK" "$@"; }
 
 # --- shared builds --------------------------------------------------------------
 executor_build() {
@@ -277,7 +275,7 @@ part_kvm() {
   step 'executor verify/api/policy/wrapper' executor_shard_checks
   step 'mcp test' mcp_shard_test
   # The parity corpus, shard test, the executor's shard-check and shard
-  # test-kvm (with the native census regression), locked as it needs.
+  # test-kvm, then the native census regression, each locked as it needs.
   step 'test-linux' make -s -C "$JITK" test-linux
 }
 

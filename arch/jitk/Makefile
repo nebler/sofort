@@ -89,8 +89,8 @@ ifeq ($(shell uname -s),Darwin)
 endif
 # Linux arm64 KVM host, from a clean clone: the backend-parity corpus
 # (executor/parity/README.md) on the shard, then the shard's library tests,
-# the shard-only executor suite (executor/shard-check.ts) and the KVM tests
-# with the native census regression.
+# the shard-only executor suite (executor/shard-check.ts), the KVM tests and
+# the native census regression.
 # Writes executor/.work/parity/linux-arm64.json for the cross-host compare. On
 # a shared host set JITK_BENCH_LOCK (kvm-dev: /home/dev/bench.lock) so the KVM
 # timing tests do not overlap a benchmark.
@@ -104,10 +104,9 @@ test-linux: deps
 	+@$(MAKE) -s -C "$(ROOT)/executor" .work/bin/fixtures/shard-peer
 	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/executor" test-shard
 	+@$(LOCKED) $(MAKE) -s -C "$(ROOT)/shard" test-kvm
-# Timing-sensitive KVM suites wait for the shared bench lock when one is
-# named; JITK_BENCH_LOCK_HELD tells nested tools (tslib locked()) not to
-# take it again.
-LOCKED = $(if $(JITK_BENCH_LOCK),flock -w $${JITK_SHARD_LOCK_WAIT:-600} "$(JITK_BENCH_LOCK)" env JITK_BENCH_LOCK_HELD=1)
+	+@$(MAKE) -s -C "$(ROOT)/shard" check-native-r7
+# Timing-sensitive KVM suites wait for the shared bench lock when one is named.
+LOCKED = $(if $(JITK_BENCH_LOCK),flock -w $${JITK_SHARD_LOCK_WAIT:-600} "$(JITK_BENCH_LOCK)")
 bench: deps
 	+@$(DELEGATE) bench bench
 demo: deps
