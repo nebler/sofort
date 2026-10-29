@@ -68,6 +68,14 @@ pinned by `docs/.R4`, and the area-10 R4 docs) were not edited.
 
 Every other evidence file moves.
 
+**Retired output moves regardless:** a path listed in `RETIRED` (same file)
+moves even when it is cited or a marker hashes the same bytes, unless a build
+reads it (`CONSUMED`). It names superseded run output: `grow/results/` (an
+ignored directory), the shard `raw-r6`/`raw-r7-*` runs (not `raw-r7-rng`, which
+`kernel/payload/ring-rng` cites as provenance), `executor/raw-r7-ipc`, the
+libkrun-era executor logs and receipt, and the frozen executor build under
+`bench/ledger/artifacts/executor/`.
+
 **Guard:** `evidence check`, which the delegate also runs before every `test*`
 action (`arch/jitk/docs/dispatch.ts`). It refuses tracked in-scope evidence above
 64 KiB unless the file is markdown, a marker, or listed in the manifest's

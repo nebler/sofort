@@ -44,6 +44,36 @@ export const CONSUMED: Record<string, string> = {
   'arch/jitk/grow/payload/lua-static': 'kernel test fs_diff.ts and grow runtime',
 };
 
+// Superseded run output that moves even though a tracked file cites it or a
+// marker hashes the same bytes (docs keep their paths; the manifest resolves
+// them). A path ending in '/' covers everything below it. Nothing here is read
+// by a build, test or runtime path.
+export const RETIRED: Record<string, string> = {
+  'arch/jitk/grow/results/': 'grow run output under an ignored directory (R4/R7 runs)',
+  'arch/jitk/executor/raw-r7-ipc/': 'R7 IPC receipts, superseded by executor/.work',
+  'arch/jitk/executor/integration-selection.json': 'libkrun-era receipt; the live one is executor/.work/integration-selection.json',
+  'arch/jitk/executor/breakdown.log': 'libkrun-era run log',
+  'arch/jitk/executor/certify-kernel-updated.log': 'libkrun-era run log',
+  'arch/jitk/executor/demo.log': 'libkrun-era run log',
+  'arch/jitk/executor/r4-certify.log': 'R4 run log',
+  'arch/jitk/executor/r4-hyperlight.log': 'R4 run log',
+  'arch/jitk/executor/test.log': 'libkrun-era run log',
+  'arch/jitk/bench/hyperlight/adapter-results.log': 'R3 run log',
+  'arch/jitk/bench/hyperlight/analysis.log': 'R3 run log',
+  'arch/jitk/bench/hyperlight/bench.log': 'R3 run log',
+  'arch/jitk/bench/hyperlight/executor-results.log': 'R3 run log',
+  'arch/jitk/bench/ledger/artifacts/executor/': 'frozen copy of a libkrun-era executor build',
+  'arch/jitk/shard/raw-r6/': 'R6 shard run output',
+  'arch/jitk/shard/raw-r7-bytes/': 'R7 shard run output',
+  'arch/jitk/shard/raw-r7-integrate/': 'R7 shard run output',
+  'arch/jitk/shard/raw-r7-shard/': 'R7 shard run output',
+};
+
+export function retired(path: string): string {
+  const key = Object.keys(RETIRED).find(prefix => (prefix.endsWith('/') ? path.startsWith(prefix) : path === prefix));
+  return key ? RETIRED[key] : '';
+}
+
 export interface Tracked {
   path: string;
   mode: string;
@@ -322,7 +352,7 @@ export interface Decision {
 // other tracked file stays without a decision.
 export function classify(root: string): Decision[] {
   const files = tracked(root);
-  const candidates = files.filter(file => file.bytes >= 0 && inScope(file.path) && !alwaysKept(file.path) && evidenceKind(file.path, file.bytes));
+  const candidates = files.filter(file => file.bytes >= 0 && inScope(file.path) && !alwaysKept(file.path) && (retired(file.path) || evidenceKind(file.path, file.bytes)));
   const candidateSet = new Set(candidates.map(file => file.path));
   const tokens = citations(root, files.filter(file => !candidateSet.has(file.path)));
   const ready = readyHashes(root, files);
@@ -331,6 +361,8 @@ export function classify(root: string): Decision[] {
     let reason = '';
     if (CONSUMED[file.path]) {
       reason = 'consumed: ' + CONSUMED[file.path];
+    } else if (retired(file.path)) {
+      return { file, sha256: hash, move: true, reason: 'retired: ' + retired(file.path) };
     } else if (ready.has(hash)) {
       reason = 'hashed by a .READY/release.json';
     } else if (file.bytes <= LIMIT && cited(file.path, tokens)) {
