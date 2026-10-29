@@ -69,7 +69,7 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
  // Default launch concurrency: the engine's limits.parallelStarts (every slot for a
  // shard, two VMM boots otherwise), capped at maxLive; no backend-kind branch.
  assert.equal(new SandboxPool(new Fake(true,'shard'),0,64).refillConcurrency,64);
- assert.equal(new SandboxPool(new Fake(true,'jitk'),0,64).refillConcurrency,2);
+ assert.equal(new SandboxPool(new Fake(true,'process'),0,64).refillConcurrency,2);
  assert.equal(new SandboxPool(new Fake(true,'shard'),0,8).refillConcurrency,8);
  const custom=new Fake();(custom as {limits:Limits}).limits={...custom.limits,parallelStarts:5};
  assert.equal(new SandboxPool(custom,0,64).refillConcurrency,5);
@@ -136,7 +136,7 @@ rows.push({name:'G1 denies missing / >=2% idle evidence',ok:true});
 }
 {
  // N concurrent callers on M<N slots all complete, with M as the hard cap.
- const b=new Fake(true,'jitk',2,3),p=new SandboxPool(b,0,4,{maxWaiting:50});let done=0;
+ const b=new Fake(true,'process',2,3),p=new SandboxPool(b,0,4,{maxWaiting:50});let done=0;
  await Promise.all(Array.from({length:50},async()=>{const s=await p.acquire();await delay(Math.random()*5);p.retire(s);done++;}));
  await p.drain();assert.equal(done,50);assert(p.snapshot().maxTokens<=4);await p.close();
  rows.push({name:'50 concurrent callers on 4 slots all complete',ok:true,snapshot:p.snapshot()});

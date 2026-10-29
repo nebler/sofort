@@ -39,3 +39,8 @@ pub mod slot;
 #[cfg(unix)]
 pub mod snapshot;
 pub mod streams;
+/// The process backends' shared deadline watchdog (`hvf process-watchdog`,
+/// `real process-watchdog`; `real watchdog` is the shard's lease watchdog,
+/// lease.rs); executor/backend.ts.
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub mod watchdog;

@@ -170,7 +170,7 @@ async function corpus(kernel: string, id: string, selection: string, filter: str
   // A transaction id is fresh; leftovers come only from an interrupted transaction.
   for (const stale of [id + '.jsonl', id + '-manifest.json', id + '-summary.json', id + '-disk-before.txt', 'kernel-' + id]) rmSync(join(CORPUS_WORK, stale), { recursive: true, force: true });
   const command = [CENSUS, 'rerun', '--from', 'full', '--id', id, '--kernel', kernel, '--selection', selection, '--workers', '2', '--targets', 'target-phase2', '--limit', String(limit), ...filter];
-  const result = await capture(command, { cwd: CORPUS_ROOT, env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', ZIG: zigPath(), JITK_VMM_BINARY: process.env.JITK_VMM_BINARY || '' }, timeout: 3600 });
+  const result = await capture(command, { cwd: CORPUS_ROOT, env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', ZIG: zigPath(), JITK_SHARD_BINARY: process.env.JITK_SHARD_BINARY || '' }, timeout: 3600 });
   writeFileSync(out + '.log', Buffer.concat([result.stdout, result.stderr]));
   check(result.returncode === 0, 'corpus rerun failed: ' + id);
   // No program of this split uses the target: the rerun selects nothing and writes no journal.
@@ -391,7 +391,7 @@ async function batch(argv: string[]): Promise<void> {
     if (existsSync(dest)) { await run(['mv', dest, dest + '-interrupted-' + Date.now()]); for (let i = rows.length - 1; i >= 0; i -= 1) if (rows[i].run_id === id) rows.splice(i, 1); }
     const disk = await diskSpace();
     const command = [join(ROOT, 'build/phase2'), 'one', '--run-id', id, '--validate-only', '--target', target, '--profiles', arg(argv, '--profiles'), '--accepted', accepted, '--sqlite-elf', arg(argv, '--sqlite-elf'), '--database', arg(argv, '--database')];
-    const result = await capture(command, { env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', JITK_VMM_BINARY: arg(argv, '--vmm'), JITK_GROW_MODEL: MODEL }, timeout: 7200 });
+    const result = await capture(command, { env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', JITK_SHARD_BINARY: arg(argv, '--vmm'), JITK_GROW_MODEL: MODEL }, timeout: 7200 });
     mkdirSync(dest, { recursive: true });
     writeFileSync(join(dest, 'driver.log'), Buffer.concat([result.stdout, result.stderr]));
     dump(join(dest, 'experiment.json'), { command, model: MODEL, returncode: result.returncode, disk_before: disk, disk_after: await diskSpace() });

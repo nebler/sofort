@@ -120,7 +120,7 @@ async function batch(argv: string[]): Promise<void> {
         for (let i = rows.length - 1; i >= 0; i -= 1) if (rows[i].run_id === cell.id) rows.splice(i, 1);
       }
       const command = [join(ROOT, 'build/auto-grow'), 'one', '--run-id', cell.id, '--validate-only', '--target', cell.target, '--profiles', arg(argv, '--profiles'), '--sqlite-elf', arg(argv, '--sqlite-elf'), '--database', arg(argv, '--database')];
-      const result = await capture(command, { env: { ...SAFE_ENV, JITK_VMM_BINARY: arg(argv, '--vmm'), JITK_GROW_MODEL: cell.model }, timeout: 1800 });
+      const result = await capture(command, { env: { ...SAFE_ENV, JITK_SHARD_BINARY: arg(argv, '--vmm'), JITK_GROW_MODEL: cell.model }, timeout: 1800 });
       mkdirSync(dest, { recursive: true });
       writeFileSync(join(dest, 'driver.log'), Buffer.concat([result.stdout, result.stderr]));
       dump(join(dest, 'experiment.json'), { command, model: cell.model, returncode: result.returncode, disk_before: disk, disk_after: await diskSpace(), controller_sha256: pins.controller_sha256, vmm_sha256: pins.vmm_sha256, oracle_image: pins.oracle_image });

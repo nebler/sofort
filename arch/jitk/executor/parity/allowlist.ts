@@ -69,6 +69,7 @@ const shard:Difference[]=[
 
 // Known bugs, listed so the run stays green while they are open. Each is in
 // the R14 parity report; fix and delete.
+// (The one entry, libkrun's never-firing setTimeout on Linux, went with libkrun.)
 const bugs:Difference[]=[];
 
 export const ALLOWLIST:Difference[]=[...hyperlight,...shard,...bugs];

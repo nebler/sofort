@@ -1,5 +1,5 @@
 import { existsSync, lstatSync, readFileSync, realpathSync, statSync, unlinkSync } from 'node:fs';
-import { isAbsolute, join, resolve, dirname, extname } from 'node:path';
+import { isAbsolute, join, resolve, extname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { check, output, capture, environment } from './lib.ts';
 import { cacheDefaults, requireArtifact } from '../tslib/deps.ts';
@@ -32,19 +32,15 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
   const readme = join(directory, 'README.md');
   check(existsSync(directory) && statSync(directory).isDirectory() && existsSync(readme) && statSync(readme).isFile(), `jitk: ${subtree} is incomplete: missing ${readme}; owner must supply documented ${action} entrypoint`);
   const prerequisites = new Map<string, string[]>([
-    ['executor/demo', ['kernel', 'vmm', 'vmm/sandbox', 'executor', 'executor/policy']],
-    ['grow/grow', ['kernel', 'vmm', 'vmm/sandbox']],
+    ['executor/demo', ['executor', 'executor/policy']],
+    ['grow/grow', ['kernel']],
     ['grow/demo', ['grow']],
-    ['bench/bench', ['kernel', 'vmm', 'vmm/sandbox', 'executor', 'executor/policy', 'bench/hyperlight']],
-    ['linux/nested', ['kernel', 'vmm/sandbox']],
-    ['linux/test', ['kernel', 'vmm/sandbox']]
+    ['bench/bench', ['kernel', 'executor', 'executor/policy', 'bench/hyperlight']]
   ]);
   const missing = (prerequisites.get(subtree + '/' + action) || []).map(part => join(root, part, '.READY')).filter(path => !existsSync(path) || !statSync(path).isFile());
   check(missing.length === 0, `jitk: ${subtree}/${action} needs canonical ready inputs: ${missing.join(', ')}; see ${readme}`);
   let commands: string[][];
-  if (subtree === 'vmm/sandbox' && action === 'test') {
-    commands = [['/bin/sh', join(directory, 'tests/run-unit.sh')]];
-  } else if (subtree === 'executor/policy' && action === 'test') {
+  if (subtree === 'executor/policy' && action === 'test') {
     commands = ['policy-test.mjs', 'policy-hostile.mjs'].map(script => [nodeBinary(), join(directory, script)]);
   } else if (subtree === 'bench/hyperlight' && action === 'test') {
     commands = [[nodeBinary(), '--experimental-transform-types', join(directory, 'adapter-test.ts')]];
@@ -66,18 +62,8 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
     const npm = realpathSync(requireArtifact('JITK_NPM_CLI'));
     check(extname(npm) === '.js' && lstatSync(npm).isFile(), 'jitk: locked dependency install needs JITK_NPM_CLI pointing to npm-cli.js (or unset for the deps cache); see executor/README.md');
     commands = [[node, npm, 'ci', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', process.env.JITK_NPM_CACHE || join(tmpdir(), 'jitk-npm-cache')]];
-  } else if (subtree === 'linux' && ['nested', 'test'].includes(action) && existsSync(join(directory, 'run.sh'))) {
-    commands = [['/bin/bash', join(directory, 'run.sh'), '--nested']];
   } else if (existsSync(join(directory, 'Makefile'))) {
-    const command = [process.env.MAKE || 'make', '-C', directory, action];
-    if (subtree === 'vmm' && process.env.JITK_VMM_BUILD) {
-      const out = String(process.env.JITK_VMM_BUILD);
-      command.push('BUILD_DIR=' + out, 'JITK_VMM=' + join(out, 'jitk-vmm'), 'PROFILE=' + join(out, 'test.sbbin'));
-      if (process.env.JITK_TEST_IMAGES) {
-        command.push('IMAGES=' + process.env.JITK_TEST_IMAGES);
-      }
-    }
-    commands = [command];
+    commands = [[process.env.MAKE || 'make', '-C', directory, action]];
   } else if (existsSync(join(directory, action + '.sh'))) {
     const script = join(directory, action + '.sh');
     const shell = readFileSync(script, 'utf8').split('\n')[0].includes('bash') ? '/bin/bash' : '/bin/sh';
@@ -96,10 +82,6 @@ export async function delegate(subtree: string, action: string, root = ROOT): Pr
     env.CARGO_TARGET_DIR = env.JITK_KERNEL_CARGO_TARGET_DIR;
   }
   const guarded = action.startsWith('test');
-  if (guarded && subtree === 'linux' && !env.JITK_NESTED_SSH) {
-    const common = output(['git', '-C', root, 'rev-parse', '--path-format=absolute', '--git-common-dir']).trim();
-    env.JITK_NESTED_SSH = join(dirname(common), 'kvm-dev/ssh.sh');
-  }
   // Bulk evidence lives in the store (evidence/README.md at the repo root):
   // refuse to test a tree that tracks new evidence above 64 KiB.
   const oversized = guarded ? guard(output(['git', '-C', root, 'rev-parse', '--show-toplevel']).trim()) : [];

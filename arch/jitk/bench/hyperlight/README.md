@@ -20,7 +20,7 @@ an unverified PATH launcher. `make build` compiles `build.ts` with the bench
 package's pinned scriptc 0.4.5, then runs the native `../build/hyperlight-build`.
 It stages the adapter crate beside a
 symlink to `HYPERLIGHT_JS_SRC`, builds offline/locked, signs with canonical
-`../../vmm/hypervisor.entitlements`, then creates a tenant-free snapshot.
+`../../shard/hypervisor.entitlements`, then creates a tenant-free snapshot.
 
 `HYPERLIGHT_BUILD_DIR` defaults to this directory's `build/`; output overrides
 `HYPERLIGHT_WORKER` and `HYPERLIGHT_SNAPSHOT` select the worker and snapshot.
@@ -50,11 +50,14 @@ prespawned Hyperlight and the exact Date.now 50 ms case. `Suite.sample` and
 `memory_sample` remain reusable. Gate defaults: load1 <6, budget 0.1 s/sample;
 timeouts are recorded as contention. This round makes no new timing claim.
 
-Jitk uses `../../vmm/build/jitk-vmm` and `../../kernel/dist/kernel.bin`, or
-`JITK_VMM_BINARY` and `JITK_KERNEL_IMAGE` (or owner 06's `JITK_IMAGE`). It uses the canonical `--image` CLI,
-32 MiB, a profile compiled for the selected image directory and host sandbox
-acknowledgement. Executor READY selects the integrated executor; otherwise the
-same canonical artifacts run through the raw channel. There is no R2 fallback.
+Jitk uses the HVF engine (`JITK_SHARD_BINARY`, deps cache) and
+`../../kernel/dist/kernel.bin` (or `JITK_KERNEL_IMAGE` / owner 06's
+`JITK_IMAGE`): the raw rows run the console kernel under `hvf console --image`
+(32 MiB, jitk.sb for the image directory, host sandbox acknowledgement), the
+executor rows the ring engine (`JITK_SHARD_SNAPSHOT`), the executor's
+default. Until 2026-10-28 both ran on the libkrun VMM; recorded results are
+libkrun's. The adapter (`backend.ts`) shares the executor's process backend,
+whose watchdog is the engine binary's `process-watchdog` mode.
 
 Cold begins before process spawn; parked begins before RUN after READY +5 ms.
 Each strict unit is consumed once, killed and reaped. Refill/snapshot restore

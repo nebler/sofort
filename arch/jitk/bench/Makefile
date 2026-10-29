@@ -2,7 +2,7 @@
 .PHONY: build test bench smoke clean
 include ../tools/pin.mk
 SOURCES := $(wildcard *.ts ledger/*.ts hyperlight/*.ts) $(TSLIB_SOURCES)
-PROGRAMS := analysis-test gate run watchdog test-child load-monitor recertify ledger ledger-report ledger-verify ledger-waves hvf-control hyperlight-analyze hyperlight-bench hyperlight-build parity
+PROGRAMS := analysis-test gate run watchdog test-child load-monitor ledger ledger-report ledger-verify ledger-waves hvf-control hyperlight-analyze hyperlight-bench hyperlight-build parity
 
 build/native.o: native.c
 	mkdir -p build
@@ -32,9 +32,6 @@ build/gate: gate.ts $(SOURCES) ffi.json build/native.o $(SCRIPTC)
 	$(SCRIPTC) build $< --ffi ffi.json -o $@
 
 build/load-monitor: load-monitor.ts $(SOURCES) ffi.json build/native.o $(SCRIPTC)
-	$(SCRIPTC) build $< --ffi ffi.json -o $@
-
-build/recertify: recertify.ts $(SOURCES) ffi.json build/native.o $(SCRIPTC)
 	$(SCRIPTC) build $< --ffi ffi.json -o $@
 
 build/ledger-report: ledger/report.ts $(SOURCES) ffi.json build/native.o $(SCRIPTC)

@@ -7,11 +7,10 @@
 //   JITK_ZIG                   ziglang.org tarball, sha256-checked (the static
 //                              aarch64 Linux cross-linker; ../tools/zig-cc.sh)
 //   HYPERLIGHT_JS_SRC          hyperlight-js fetched by full commit
-//   JITK_VMM_BINARY            vmm/build.ts (the canonical libkrun VMM builder;
-//                              HVF on macOS, KVM on Linux)
 //   HYPERLIGHT_WORKER/SNAPSHOT bench/hyperlight/build.ts from that source
 //   JITK_SHARD_BINARY          shard `real` (Linux) or the HVF engine `hvf`
-//                              (macOS, signed) from source, pinned toolchain
+//                              (macOS, signed) from source, pinned toolchain;
+//                              it also serves `process-watchdog` and (macOS) `console`
 // JITK_SHARD_SNAPSHOT needs KVM or HVF and is built by
 // `make -C arch/jitk/shard snapshot` (shard/snapshot.ts) into the same cache.
 // Every entry is built in a staging directory and renamed into place after
@@ -213,20 +212,6 @@ async function fetchSource(env: Record<string, string>): Promise<void> {
   });
 }
 
-// --- VMM --------------------------------------------------------------------
-
-async function buildVmm(env: Record<string, string>): Promise<void> {
-  const builder = join(JITK_ROOT, 'vmm/.work/bin/build');
-  check(existsSync(builder), 'vmm: ' + builder + ' missing; run `make -C arch/jitk deps` (it compiles the VMM builder first)');
-  const settings: Record<string, string> = { ...env };
-  // The cache entry, never a caller's JITK_VMM_BUILD: JITK_VMM_BINARY's default
-  // must be what this step built.
-  delete settings.JITK_VMM_BUILD;
-  delete settings.JITK_VMM_LIBKRUN;
-  await run([builder], { env: settings, inherit: true, timeout: 7200 });
-  check(cached('JITK_VMM_BINARY'), 'vmm: builder finished without ' + completeMarker('JITK_VMM_BINARY'));
-}
-
 // --- Hyperlight worker and snapshot ----------------------------------------
 
 function hyperlightValid(): boolean {
@@ -323,7 +308,7 @@ async function buildShard(env: Record<string, string>): Promise<void> {
       copyFileSync(join(settings.CARGO_TARGET_DIR, 'release', name), join(stage, name));
       chmodSync(join(stage, name), 0o755);
       if (mac) {
-        await run(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(JITK_ROOT, 'vmm/hypervisor.entitlements'), join(stage, name)], { env, timeout: 120 });
+        await run(['/usr/bin/codesign', '--force', '--sign', '-', '--entitlements', join(JITK_ROOT, 'shard/hypervisor.entitlements'), join(stage, name)], { env, timeout: 120 });
       }
       dumpJSON(join(stage, 'manifest.json'), {
         artifact: 'shard',
@@ -361,14 +346,6 @@ function status(): Record<string, unknown> {
   return { cache: cacheRoot(), artifacts: rows };
 }
 
-function vmmValid(): boolean {
-  if (!cached('JITK_VMM_BINARY')) {
-    return false;
-  }
-  const manifest = readJSON<Record<string, string>>(completeMarker('JITK_VMM_BINARY'));
-  return shaFile(cachePath('JITK_VMM_BINARY')) === manifest.binary_sha256;
-}
-
 // One row per applicable artifact: ok (cache entry complete and its hashes and
 // pins re-checked), environment (explicit value, present), missing (never
 // built, or explicit and absent), stale (built for other inputs or damaged;
@@ -381,7 +358,6 @@ async function verify(env: Record<string, string>): Promise<Record<string, strin
     JITK_NODE: async () => (node ??= nodeValid()),
     JITK_NPM_CLI: async () => (node ??= nodeValid()),
     JITK_ZIG: async () => zigValid(),
-    JITK_VMM_BINARY: async () => vmmValid(),
     HYPERLIGHT_JS_SRC: async () => sourceValid(env).catch(() => false),
     HYPERLIGHT_WORKER: async () => (hyperlight ??= hyperlightValid()),
     HYPERLIGHT_SNAPSHOT: async () => (hyperlight ??= hyperlightValid()),
@@ -418,9 +394,6 @@ async function build(): Promise<void> {
   }
   if (!explicit('JITK_ZIG')) {
     await buildZig(env);
-  }
-  if (applicable('JITK_VMM_BINARY') && !explicit('JITK_VMM_BINARY')) {
-    await buildVmm(env);
   }
   if (applicable('JITK_SHARD_BINARY') && !explicit('JITK_SHARD_BINARY')) {
     await buildShard(env);

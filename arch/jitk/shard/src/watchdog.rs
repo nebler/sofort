@@ -1,11 +1,13 @@
-//! Shared deadline watchdog: one trusted process per executor, independent of Node's event loop
-//! and of every VMM it guards. Replaces a per-VM interpreter process (~20–40 ms spawn each).
+//! Shared deadline watchdog (`hvf process-watchdog`, `real process-watchdog`): one trusted process per
+//! executor, independent of Node's event loop and of every worker process it guards (the
+//! process backends, executor/backend.ts: Hyperlight's worker, test peers). Moved here from
+//! the former libkrun VMM (`jitk-vmm --watchdog`), unchanged.
 //!
 //! stdin lines:  `add PID LIFETIME_MS` | `arm PID DEADLINE_UNIX_MS` | `del PID`
 //! stdout lines: `{"ready":true}` | `{"pid":P,"armed":D}` | `{"pid":P,"timeout":true,"deadline":D,"firedAt":F,"killAt":K}`
-//! Malformed input or EOF (including parent death) SIGKILLs every tracked VM. Exited VMs are
-//! dropped from kernel exit notifications (pidfd / kqueue NOTE_EXIT), so a reaped-and-reused pid
-//! is never signalled.
+//! Malformed input or EOF (including parent death) SIGKILLs every tracked process. Exited ones
+//! are dropped from kernel exit notifications (pidfd / kqueue NOTE_EXIT), so a reaped-and-reused
+//! pid is never signalled.
 use std::{
     collections::HashMap,
     io::Write,

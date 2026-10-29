@@ -85,7 +85,7 @@ export async function runE2(argv: string[]): Promise<void> {
       const command = [join(ROOT, 'build/grow'), '--run-id', id, '--validate-only', '--live', '--target', target, '--spec', 'none', '--attempts', '1'];
       if (target !== 'ppoll') command.push('--sqlite-elf', sqlite, '--database', database);
       const started = performance.now();
-      const env: Record<string, string> = { ...SAFE_ENV, JITK_VMM_BINARY: vmm, JITK_GROW_MODEL: model, JITK_GROW_RED_TEAM: redTeam };
+      const env: Record<string, string> = { ...SAFE_ENV, JITK_SHARD_BINARY: vmm, JITK_GROW_MODEL: model, JITK_GROW_RED_TEAM: redTeam };
       if (cli !== 'codex') env.JITK_GROW_CLI = cli;
       const result = await capture(command, { env, timeout: 600 });
       const dest = join(ROOT, 'results', id); mkdirSync(dest, { recursive: true });

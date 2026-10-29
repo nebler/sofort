@@ -7,8 +7,8 @@
 //
 //   node build/parity-check.js [run]           this host's backends; writes .work/parity/<host>.json
 //   node build/parity-check.js compare A.json B.json...   cross-host: evaluate merged reports
-// JITK_PARITY_BACKENDS=jitk,hyperlight-js,shard,hvf selects backends (default:
-// jitk + hyperlight-js + hvf on macOS, jitk + shard on Linux; a selected backend
+// JITK_PARITY_BACKENDS=hyperlight-js,shard,hvf selects backends (default:
+// hyperlight-js + hvf on macOS, shard on Linux; a selected backend
 // that cannot start fails the run). JITK_PARITY_CASES=<regex> filters case ids.
 // JITK_PARITY_OUT overrides the report path.
 import assert from 'node:assert/strict';
@@ -19,7 +19,6 @@ import {fileURLToPath} from 'node:url';
 import {performance} from 'node:perf_hooks';
 import {MicroVMExecutor,SandboxPool,type Backend} from './executor.js';
 import {ShardBackend} from './shard-backend.js';
-import {selectBackend} from './select-backend.js';
 // Hyperlight is a research comparison backend (bench/), not part of the product API.
 import {HyperlightBackend} from '../bench/hyperlight/backend.ts';
 import {classify} from '../mcp/jitk.mjs';
@@ -129,10 +128,6 @@ async function runBackend(kind:Kind,engine:Backend,cases:Case[]):Promise<Record<
 }
 
 async function engine(kind:Kind):Promise<Backend> {
-  if(kind==='jitk'){
-    const previous=process.env.JITK_BACKEND;delete process.env.JITK_BACKEND;
-    try{return selectBackend().backend;}finally{if(previous!==undefined)process.env.JITK_BACKEND=previous;}
-  }
   if(kind==='shard'||kind==='hvf'){
     // One ring engine: KVM on Linux, HVF on macOS (ShardBackend picks by platform).
     if(kind!==(process.platform==='darwin'?'hvf':'shard'))throw Error('parity: '+kind+' does not run on '+process.platform);
@@ -209,7 +204,7 @@ if(mode==='compare'){
   failures=evaluate(merged);
 }else if(mode==='run'){
   const host=`${process.platform}-${process.arch}`;
-  const kinds=(process.env.JITK_PARITY_BACKENDS??(process.platform==='linux'?'jitk,shard':'jitk,hyperlight-js,hvf')).split(',').filter(Boolean) as Kind[];
+  const kinds=(process.env.JITK_PARITY_BACKENDS??(process.platform==='linux'?'shard':'hyperlight-js,hvf')).split(',').filter(Boolean) as Kind[];
   const filter=process.env.JITK_PARITY_CASES?new RegExp(process.env.JITK_PARITY_CASES):undefined;
   const cases=CASES.filter(c=>!filter||filter.test(c.id));
   const report:Report={corpus,host:{platform:process.platform,arch:process.arch},started:new Date().toISOString(),backends:{}};

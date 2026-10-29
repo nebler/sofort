@@ -102,7 +102,7 @@ export async function ledger(native: boolean): Promise<void> {
     const args = native
       ? ["native-hold", base, request, String(n), "3600"]
       : ["hold", snapshot, name, String(n), "3600"];
-    // spawn-cg is built from arch/jitk/linux/spawn-cg.c (the only copy).
+    // spawn-cg is built from arch/jitk/shard/harness/spawn-cg.c (the only copy).
     const p = new StreamProcess(
       [
         join(root, "spawn-cg"),

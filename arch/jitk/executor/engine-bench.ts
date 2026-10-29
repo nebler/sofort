@@ -1,20 +1,22 @@
-// Per-run cost of the Mac engines through the canonical executor (R10 #10,
-// hvf-spike/REPORT.md productionization 5): libkrun (`jitk`, a cold VMM per
-// run) vs the HVF engine (`hvf`, persistent engine processes reset between
-// runs). Offline measurement; not part of `make test`.
+// Per-run cost of the ring engine through the canonical executor (R10 #10,
+// hvf-spike/REPORT.md productionization 5): the HVF engine (`hvf`, persistent
+// engine processes reset between runs) on the Mac, the KVM shard (`shard`)
+// on Linux. Offline measurement; not part of `make test`. (Until 2026-10-28
+// it also measured libkrun, `jitk`, a cold VMM per run: 8.5 CPU-ms/run against
+// HVF's 0.44; shard/README.md "HVF engine".)
 //
-//   node build/engine-bench.js [KIND...]       default: jitk hvf; prints JSON
+//   node build/engine-bench.js [KIND...]       default: this host's engine; prints JSON
 //   node build/engine-bench.js run KIND N      one measured process (internal)
 //
 // Each KIND runs in its own Node process, sequentially, one execute() at a
-// time through a SandboxPool (4 live; libkrun 2 warm) and MicroVMExecutor, per case:
-// `return 2` and one tool call. Wall: execute() start to result, p50/p99
-// after 10 warmups. CPU: /usr/bin/time's user+sys of that process and every
-// process it waited for (Node, the VMMs, the HVF zygote and the engine
-// processes it reaps), measured with N runs and with 0 runs; the difference
-// over N is the per-run CPU, engine startup excluded. Resolution is 10 ms per
-// measurement, so N is chosen per engine to keep it under ~3%.
-// JITK_BENCH_N_JITK / JITK_BENCH_N_HVF override N. The machine's load
+// time through a SandboxPool (4 live; 2 warm with a parking gate) and
+// MicroVMExecutor, per case: `return 2` and one tool call. Wall: execute()
+// start to result, p50/p99 after 10 warmups. CPU: /usr/bin/time's user+sys of
+// that process and every process it waited for (Node, the HVF zygote and the
+// engine processes it reaps), measured with N runs and with 0 runs; the
+// difference over N is the per-run CPU, engine startup excluded. Resolution
+// is 10 ms per measurement, so N (2000) keeps it under ~3%.
+// JITK_BENCH_N_HVF / JITK_BENCH_N_SHARD override N. The machine's load
 // averages are recorded before and after.
 import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
@@ -30,10 +32,10 @@ const load=()=>execFileSync('/usr/sbin/sysctl',['-n','vm.loadavg'],{encoding:'ut
 const quantile=(v:number[],q:number)=>{const a=[...v].sort((x,y)=>x-y);return a[Math.min(a.length-1,Math.ceil(a.length*q)-1)]!;};
 
 async function measure(kind:string,n:number) {
-  process.env.JITK_BACKEND=kind==='jitk'?'jitk':'hvf';
+  process.env.JITK_BACKEND=kind;
   const selected=selectBackend();
   const engine:Backend=selected.backend;
-  // Warm parking needs a parking-gate receipt: libkrun has one; HVF has one
+  // Warm parking needs a parking-gate receipt: HVF has one
   // once hvf-parking-gate.ts measured this engine binary, else it runs unwarmed.
   const pool=selected.gate?new SandboxPool(engine,2,4,{parkingGate:selected.gate}):new SandboxPool(engine,0,4);
   const ex=new MicroVMExecutor(pool,()=> 'allow',10000);
@@ -65,10 +67,10 @@ function timed(kind:string,n:number):{cpuS:number;result:Record<string,unknown>}
 if(process.argv[2]==='run'){
   await measure(process.argv[3]!,Number(process.argv[4]));
 }else{
-  const kinds=process.argv.slice(2).length?process.argv.slice(2):['jitk','hvf'];
+  const kinds=process.argv.slice(2).length?process.argv.slice(2):[process.platform==='darwin'?'hvf':'shard'];
   const report:Record<string,unknown>={host:`${process.platform}-${process.arch}`,loadBefore:load(),started:new Date().toISOString(),engines:{}};
   for(const kind of kinds){
-    const n=Number(process.env[`JITK_BENCH_N_${kind.toUpperCase()}`]??(kind==='jitk'?300:2000));
+    const n=Number(process.env[`JITK_BENCH_N_${kind.toUpperCase()}`]??2000);
     const base=timed(kind,0),full=timed(kind,n);
     const runs=n*Object.keys(CASES).length;
     (report.engines as Record<string,unknown>)[kind]={...full.result,cpuUsPerRun:Math.round((full.cpuS-base.cpuS)/runs*1e6),cpuSeconds:{withRuns:full.cpuS,startupOnly:base.cpuS},runs,load:load()};

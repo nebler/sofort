@@ -45,9 +45,10 @@ Outputs: `dist/kernel.bin`, `dist/kernel-<sha256>.bin`, `dist/manifest.json`, an
 segments, argv and syscall numbers/names/handler hashes/registration. The digest
 names immutable image contents; `kernel.bin` and `manifest.json` select latest.
 `make test` runs packer regression, handler tests and real-VM regressions; the
-integrated vmm launcher must be built first (set `JITK_VMM_BINARY` to its executable;
-the default is `../vmm/dist/jitk-vmm`;
-`JITK_TEST_HOST` selects a legacy positional-image test host). The full G1/G2 harness is `.work/bin/tests/measure park 0` and `... integration`.
+VMs are the HVF engine's console runner, `$JITK_SHARD_BINARY console --image
+IMAGE` (`tests/host.sh`; `make -C .. deps` builds the engine, the delegate
+passes it; macOS arm64. Until 2026-10-28 the libkrun `jitk-vmm`;
+`JITK_TEST_HOST` selects another positional-image test host). The full G1/G2 harness is `.work/bin/tests/measure park 0` and `... integration`.
 `.READY` identifies the tested artifact; rebuilding with changed inputs does not
 certify that artifact. Tests use bounded controller deadlines and kill/reap all VMs.
 Build cache defaults to `target/`; test outputs and scratch default to
@@ -56,11 +57,12 @@ Build cache defaults to `target/`; test outputs and scratch default to
 override those test paths. The grow-contract assembly fixtures ship in
 `tests/fixtures/grow/`; no historical area checkout or scratch fixture is needed.
 
-## vmm/ contract
+## Console launcher contract (`hvf console`, formerly vmm/)
 
 One vCPU, **32 MiB** RAM starting at 0x80000000; load RAW at 0x80000000 and
 pass the FDT in x0. Exactly one virtio-mmio inout console port named jitk maps
-fd0/fd1. No PL011 or filesystem device (resources are packed in the image, see below). FDT supplies console address/SPI and GICD/GICR.
+fd0/fd1 (`../shard/src/hvf/console.rs` implements it; it passes a positive
+`jitk.tick_us`, so the kernel never programs the GIC the FDT names). No PL011 or filesystem device (resources are packed in the image, see below). FDT supplies console address/SPI and GICD/GICR.
 Kernel + stack occupy the first 512 KiB; packed executable starts at 0x80080000.
 EL0 RX is also read-only/NX through its privileged alias. mmap recycles holes;
 brk is separately bounded; qjs has a 16 MiB heap cap. Keep panic=abort and a host

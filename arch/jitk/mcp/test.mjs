@@ -10,14 +10,17 @@ import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/st
 
 const here = new URL('./', import.meta.url).pathname, server = here + 'server.mjs';
 const dir = mkdtempSync(join(tmpdir(), 'jitk-mcp-test-')), config = join(dir, 'config.json');
-writeFileSync(config, JSON.stringify({timeoutMs: 2000, warm: 2, maxLive: 8,
+// Warm parking needs a parking gate: the HVF engine has one (make test measures
+// it, executor/hvf-parking-gate.ts); the Linux shard runs unwarmed.
+writeFileSync(config, JSON.stringify({timeoutMs: 2000, warm: process.platform === 'darwin' ? 2 : 0, maxLive: 8,
   providers: [here + 'providers/demo.mjs'], resources: here + 'resources'}));
 const env = {...process.env, JITK_MCP_CONFIG: config};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const passed = [];
 const ok = (name, cond, detail) => { assert(cond, `${name}: ${JSON.stringify(detail)}`); passed.push(name); console.log('ok -', name); };
 
-// Every live descendant pid: VMMs (own process groups) and the shared watchdog.
+// Every live descendant pid: the ring engine (`hvf ipc` and its engine
+// processes on macOS, `real ipc` on Linux).
 const descendants = root => {
   const rows = execFileSync('/bin/ps', ['-A', '-o', 'pid=,ppid=,command='], {encoding: 'utf8'}).trim().split('\n')
     .map(l => l.trim().match(/^(\d+)\s+(\d+)\s+(.*)$/)).filter(Boolean).map(m => ({pid: +m[1], ppid: +m[2], cmd: m[3]}));
@@ -29,7 +32,8 @@ const alive = pid => { try { process.kill(pid, 0); return true; } catch (e) { re
 async function untilWarm(pid) {
   for (let i = 0; i < 200; i++) {
     const d = descendants(pid);
-    if (d.some(r => r.cmd.includes('--watchdog')) && d.filter(r => r.cmd.includes('--image')).length >= 2) return d;
+    // macOS: the zygote and at least the two warm slots' engine processes.
+    if (d.filter(r => / ipc /.test(r.cmd)).length >= (process.platform === 'darwin' ? 3 : 1)) return d;
     await sleep(25);
   }
   throw Error('pool never warmed');
@@ -37,7 +41,7 @@ async function untilWarm(pid) {
 async function allGone(pids, label) {
   for (let i = 0; i < 120 && pids.some(alive); i++) await sleep(25);
   const left = pids.filter(alive);
-  ok(`${label}: no VMM/watchdog left (${pids.length} pids checked)`, left.length === 0, left);
+  ok(`${label}: no engine process left (${pids.length} pids checked)`, left.length === 0, left);
 }
 
 // 1. Official SDK client over stdio.

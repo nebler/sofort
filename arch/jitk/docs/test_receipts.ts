@@ -58,29 +58,4 @@ try {
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
-work = mkdtempSync(join(tmpdir(), 'jitk-receipts-'));
-try {
-  for (const name of ['nested.sh', 'output.sh']) {
-    const source = join(root, 'linux', name);
-    if (existsSync(source)) {
-      cpSync(source, join(work, name));
-    }
-  }
-  writeFileSync(join(work, '.READY'), 'recorded readiness');
-  mkdirSync(join(work, 'out'));
-  for (const name of ['report.json', 'report.md']) {
-    writeFileSync(join(work, 'out', name), 'recorded report');
-  }
-  const settings = environment();
-  for (const key of ['JITK_RECORD', 'JITK_WORK', 'JITK_LINUX_OUT', 'JITK_LINUX_READY']) {
-    delete settings[key];
-  }
-  check((await capture(['/bin/bash', join(work, 'nested.sh')], { env: settings })).returncode !== 0);
-  check(readFileSync(join(work, '.READY'), 'utf8') === 'recorded readiness');
-  check(readFileSync(join(work, 'out/report.json'), 'utf8') === 'recorded report');
-  check(readFileSync(join(work, 'out/report.md'), 'utf8') === 'recorded report');
-  count += 1;
-} finally {
-  rmSync(work, { recursive: true, force: true });
-}
 console.log(count + ' receipt tests passed');

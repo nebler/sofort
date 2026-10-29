@@ -46,7 +46,7 @@ promote: tools bench-gate
 	.work/bin/promote $(IMAGE) $(MANIFEST)
 
 .PHONY: linux-tools
-linux-tools: .work/linux/results-fs/linux-kvm-check .work/linux/payload/ring-rng/patch
+linux-tools: .work/linux/payload/ring-rng/patch
 .work/native-linux.o: native.c
 	mkdir -p .work
 	$(ZIG) cc -target aarch64-linux-musl -c $< -o $@

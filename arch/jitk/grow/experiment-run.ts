@@ -106,7 +106,7 @@ async function runCell(cell: Cell, metadata: Metadata, options: RunOptions): Pro
     command.push('--sqlite-elf', options.sqlite, '--database', options.database);
   }
   const started = performance.now();
-  const result = await capture(command, { env: { ...SAFE_ENV, JITK_VMM_BINARY: options.vmm, JITK_GROW_MODEL: metadata.models[model], JITK_GROW_CLI: process.env.JITK_GROW_CLI || 'codex', CODEX_HOME: process.env.CODEX_HOME || join(process.env.HOME || '', '.codex') }, timeout: 2400 });
+  const result = await capture(command, { env: { ...SAFE_ENV, JITK_SHARD_BINARY: options.vmm, JITK_GROW_MODEL: metadata.models[model], JITK_GROW_CLI: process.env.JITK_GROW_CLI || 'codex', CODEX_HOME: process.env.CODEX_HOME || join(process.env.HOME || '', '.codex') }, timeout: 2400 });
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, 'driver.log'), Buffer.concat([result.stdout, result.stderr]));
   const paused = files(out).some((path) => path.endsWith('/paused.json'));
@@ -177,7 +177,7 @@ export async function runE0(options: RunOptions): Promise<void> {
     const runOut = join(ROOT, 'results', runId);
     const command = [join(ROOT, 'build/grow'), '--run-id', runId, '--validate-only', '--live', '--attempts', '1'];
     const start = performance.now();
-    const result = await capture(command, { env: { ...SAFE_ENV, JITK_VMM_BINARY: options.vmm, JITK_GROW_MODEL: environment.model }, timeout: 2400 });
+    const result = await capture(command, { env: { ...SAFE_ENV, JITK_SHARD_BINARY: options.vmm, JITK_GROW_MODEL: environment.model }, timeout: 2400 });
     const wall = (performance.now() - start) / 1000;
     mkdirSync(runOut, { recursive: true });
     writeFileSync(join(runOut, 'driver.log'), Buffer.concat([result.stdout, result.stderr]));

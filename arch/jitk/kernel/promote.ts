@@ -2,7 +2,8 @@
 // these sources (byte identity), runs every readiness gate against it, and only
 // if all pass writes dist/kernel-<sha>.{bin,json}, dist/manifest.json and .READY.
 // promote [IMAGE [MANIFEST]]; defaults dist/kernel.bin and .work/dist/kernel-<sha>.json.
-// JITK_VMM_BINARY (or the deps cache) is the test host; JITK_SQLITE_ELF overrides
+// The test host is the HVF engine's console runner (`$JITK_SHARD_BINARY console`,
+// tests/host.sh; JITK_SHARD_BINARY or the deps cache); JITK_SQLITE_ELF overrides
 // the census sqlite3-static (grow checks its pinned hash).
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
@@ -23,7 +24,7 @@ const manifestPath = resolve(process.argv[3] || join(root, '.work/dist/kernel-' 
 const manifest = readJSON<Manifest>(manifestPath);
 check(manifest.sha256 === hash && manifest.bytes === bytes.length, 'refusing: image ' + image + ' is ' + hash + ' (' + bytes.length + ' B) but ' + manifestPath + ' names ' + manifest.sha256 + ' (' + manifest.bytes + ' B)');
 check(manifest.verification_sha256 === sha(readFileSync(join(root, 'syscalls.manifest.json'))), 'refusing: manifest verification_sha256 is not the current syscalls.manifest.json');
-const vmm = requireArtifact('JITK_VMM_BINARY');
+const engine = requireArtifact('JITK_SHARD_BINARY');
 const sqlite = process.env.JITK_SQLITE_ELF || join(cacheRoot(), 'native-census/005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff');
 const database = resolve(root, '../shard/harness/census-demo.db');
 check(existsSync(sqlite), 'refusing: no sqlite3-static at ' + sqlite + ' (set JITK_SQLITE_ELF)');
@@ -44,7 +45,7 @@ const env = environment();
 for (const key of ['JITK_ELF', 'JITK_ARGV_JSON', 'JITK_SCRIPT', 'JITK_RESOURCES', 'JITK_OUT_DIR', 'CARGO_TARGET_DIR', 'JITK_FS_WORK', 'JITK_GROW_CONTRACT_WORK', 'JITK_PROBE_WORK', 'JITK_TOOLS_DIR', 'JITK_RECORD', 'JITK_TEST_HOST', 'JITK_FS_SAMPLES']) {
   delete env[key];
 }
-env.JITK_VMM_BINARY = vmm;
+env.JITK_SHARD_BINARY = engine;
 env.JITK_TEST_KERNEL = image;
 env.JITK_KERNEL_IMAGE = image;
 env.JITK_TEST_OUTPUT = out;
@@ -213,8 +214,8 @@ const marker = {
   guest_loc: guestLoc,
   build_rs_loc: lines(join(root, 'build.rs')),
   gates: ready,
-  test_host: 'integrated VMM v2 (JITK_VMM_BINARY)',
-  test_host_sha256: sha(readFileSync(vmm)),
+  test_host: 'HVF engine console runner (JITK_SHARD_BINARY console, shard/src/hvf/console.rs)',
+  test_host_sha256: sha(readFileSync(engine)),
   note: 'Promoted by kernel/promote.ts: every gate run on this image (timing gates under the Mac bench lock); ' + gates.rebuild + ' byte-identically and the source-built gates (isolation, grow_contract, fs_differential, grow_r7) used that unchanged source tree (inventory ' + sources.slice(0, 16) + '). guest_loc/build_rs_loc are physical lines (wc -l) of src/**/*.rs and build.rs. Receipts: kernel/.work/promote/' + hash + '/.',
   // Re-promoting the same image keeps the image it replaced.
   previous_image: previous.sha256 === hash && previous.previous_image ? previous.previous_image : previous.image,

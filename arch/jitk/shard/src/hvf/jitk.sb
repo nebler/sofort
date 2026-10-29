@@ -1,0 +1,12 @@
+;; The HVF engine's Seatbelt profile (macOS), from the former libkrun VMM's
+;; (owner 07). Applied in-process (seatbelt.rs) after dyld has mapped all
+;; libraries and before the VM exists. Therefore no dylib, exec, or Mach/IOKit
+;; grants are needed: HVF calls (hv_vm_create, hv_vcpu_run) are not mediated by
+;; these operations on macOS 26.6.1 (verified: `hvf confine`).
+(version 1)
+(deny default)
+;; The only file: the immutable, content-addressed image or snapshot directory.
+;; Read-only; no metadata/xattr/listing elsewhere.
+(allow file-read-data (subpath (param "IMAGES")))
+;; sysconf(_SC_PAGESIZE) reads this sysctl.
+(allow sysctl-read (sysctl-name "hw.pagesize_compat"))

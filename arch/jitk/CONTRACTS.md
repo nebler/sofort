@@ -1,6 +1,17 @@
 # Cross-subtree contracts (lead-maintained; owners: read before integrating)
 
-## vmm ↔ sandbox (01 ↔ 07) — proposed by 01, 07 to confirm/adapt
+**2026-10-28: libkrun is deleted** (`vmm/`, `vmm/sandbox/`, `linux/`). The
+first two sections below are the historical libkrun contracts; what survives
+of them: the Seatbelt profile is `shard/src/hvf/jitk.sb`, the shared deadline
+watchdog is `shard/src/watchdog.rs` (`hvf process-watchdog` / `real process-watchdog`, the
+process backends' watchdog), and the console kernel profile boots on
+`hvf console --image KERNEL [--seed HEX] [--epoch-ns NS]`
+(`shard/src/hvf/console.rs`), which keeps the launcher contract used by
+GrowOS and the kernel/protocol tests: stdin/stdout are the virtio console,
+exactly `{"sandbox":"ok"}\n` on stderr after jitk.sb is applied and before the
+VM exists, exit 0 at PSCI SYSTEM_OFF, 70 with a message on an error.
+
+## vmm ↔ sandbox (01 ↔ 07) — proposed by 01, 07 to confirm/adapt (historical)
 Rust module at `vmm/sandbox/` (owned by 07), consumed by `vmm/` (01) without modification:
 ```rust
 Sandbox::prepare(image: &Path, profile: Option<&Path>, netns_fd: Option<i32>) -> Result<Sandbox>
@@ -9,7 +20,7 @@ fn after_build(&mut self) -> Result<()>    // Linux: seccomp/Landlock after libk
 fn compile_profile(images: &Path, out: &Path) -> Result<()>   // macOS, run once by supervisor
 ```
 
-## vmm CLI ↔ executor / linux (01 → 04, 05)
+## vmm CLI ↔ executor / linux (01 → 04, 05) (historical)
 - Existing flags stay: `--image --mem-mib --seed --epoch-ns --wait-go`.
 - macOS: supervisor compiles the profile once with `jitk-vmm --compile-profile OUT --images DIR`, then passes `--sandbox-profile PATH` to every worker.
 - **Host-only sandbox ack:** exactly `{"sandbox":"ok"}\n` on **stderr**. It is emitted after `before_build` on macOS and after `after_build` on Linux.
@@ -54,9 +65,9 @@ fn compile_profile(images: &Path, out: &Path) -> Result<()>   // macOS, run once
   - **No CLI or contract change.**
 
 ## sandbox ↔ HVF engine (07 → shard), 2026-10-28
-- The shard's HVF engine (`shard/src/hvf.rs`) compiles `vmm/sandbox/mod.rs` in unchanged, through `#[path]`, as `vmm/` does, and uses one item of it: `SEATBELT_PROFILE` (the `jitk.sb` source). The zygote compiles `jitk.sb` + `shard/src/hvf/zygote.sb` (`(allow process-fork)`, `(allow signal (target children))`) with `IMAGES` = the prepared snapshot's directory, through libsandbox's compile/apply entry points as `mod.rs` calls them (`shard/src/hvf/seatbelt.rs`), and applies it to itself before its first fork (2026-10-28, hardening). macOS refuses a second `sandbox_apply` in a sandboxed process (EPERM, also with `system-mac-syscall` allowed), so engine processes cannot enter `jitk.sb` on top: they inherit the zygote's profile and, before creating a VM, take the fork grant away with RLIMIT_NPROC 0/0 (`child::confine`; an unprivileged process cannot raise it again; root is not bound by it, so the engine refuses to run as root). `Sandbox::prepare`/`before_build`/`after_build` are no longer called by the engine.
+- The shard's HVF engine owns the Seatbelt profile `shard/src/hvf/jitk.sb` (`seatbelt::PROFILE`; until 2026-10-28 it compiled `vmm/sandbox/mod.rs` in through `#[path]` for this one item). The zygote compiles `jitk.sb` + `shard/src/hvf/zygote.sb` (`(allow process-fork)`, `(allow signal (target children))`) with `IMAGES` = the prepared snapshot's directory, through libsandbox's compile/apply entry points (`shard/src/hvf/seatbelt.rs`), and applies it to itself before its first fork (2026-10-28, hardening). macOS refuses a second `sandbox_apply` in a sandboxed process (EPERM, also with `system-mac-syscall` allowed), so engine processes cannot enter `jitk.sb` on top: they inherit the zygote's profile and, before creating a VM, take the fork grant away with RLIMIT_NPROC 0/0 (`child::confine`; an unprivileged process cannot raise it again; root is not bound by it, so the engine refuses to run as root). `Sandbox::prepare`/`before_build`/`after_build` are no longer called by the engine.
 - What the engine relies on (checked by `hvf confine`, run by `make -C shard test-hvf`): under the zygote's profile, fork, SIGKILL and reap of a child, its own task info, socketpair and reads in `IMAGES` work; in an engine process additionally hv_vm_create/hv_vcpu_run and mmap of the inherited snapshot descriptor, and fork fails (EAGAIN); in both, file reads elsewhere, writes, TCP/UDP and exec fail with EPERM. The engine reads `hw.cachelinesize` before confinement (the profile allows only `hw.pagesize_compat`).
-- A change to `mod.rs` or `jitk.sb` rebuilds the engine (`tslib/deps.ts` shardInputs).
+- A change to `jitk.sb` (any file under `shard/src`) rebuilds the engine (`tslib/deps.ts` shardInputs). The native worker and `hvf console` enter `jitk.sb` alone (no zygote) and drop fork the same way.
 
 ## executor ↔ shard IPC on macOS (04 ↔ shard), 2026-10-28
 - `ShardBackend` spawns `hvf ipc SNAPSHOT SLOTS` with fd 3 a stream socket (spawn's `pipe` stdio entry). Records are `executor/ipc/ABI.md`'s (32-byte header, ≤16,384 payload bytes) back to back; kinds, generations, ordering, bounds and READY's ABI version are unchanged. No memfd/eventfd, no addon.

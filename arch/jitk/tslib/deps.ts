@@ -31,7 +31,7 @@ export interface Pins {
 }
 
 // root: the arch/jitk directory whose tools/deps.json to read (default: this
-// checkout; vmm/build.ts passes the tree it builds, which may be a copy).
+// checkout).
 export function pins(root = JITK_ROOT): Pins {
   return JSON.parse(readFileSync(join(root, 'tools/deps.json'), 'utf8')) as Pins;
 }
@@ -65,32 +65,6 @@ export function fingerprint(root: string, paths: string[], extra: string[] = [])
   return digest(Buffer.concat(parts));
 }
 
-// The VMM inputs: its builder, the libkrun patch set, launcher and sandbox
-// sources, the entitlements and whether the sandbox .READY gate is present.
-// root is the arch/jitk tree being built (default: this checkout). The Mac's
-// linux suite builds the Linux VMM from a shipped copy on kvm-dev
-// (linux/nested/build.ts); equal sources give the same key there as in a
-// checkout on that host.
-export const VMM_INPUT_FILES = ['build.ts', 'hypervisor.entitlements', 'src/main.rs', 'src/confinement.rs', 'src/watchdog.rs', 'sandbox/mod.rs', 'sandbox/jitk.sb', 'tests/seccomp-probe.rs'];
-
-export function vmmPatchFingerprint(root = JITK_ROOT): string {
-  const series = readFileSync(join(root, 'vmm/patches/series'), 'utf8').split('\n').filter(Boolean);
-  return fingerprint(join(root, 'vmm/patches'), ['series', ...series]);
-}
-
-export function vmmInputs(root = JITK_ROOT): string {
-  const ready = existsSync(join(root, 'vmm/sandbox/.READY')) ? 'sandbox_ready' : 'stub';
-  return fingerprint(join(root, 'vmm'), VMM_INPUT_FILES, [vmmPatchFingerprint(root), ready, pins(root).rust_toolchain, platform()]);
-}
-
-export function vmmBuildDir(root = JITK_ROOT): string {
-  return join(cacheRoot(), 'vmm', platform() + '-' + vmmInputs(root).slice(0, 16));
-}
-
-// Shared patched libkrun checkout and target, one per patch set.
-export function libkrunDir(root = JITK_ROOT): string {
-  return join(cacheRoot(), 'vmm', 'libkrun-' + platform() + '-' + vmmPatchFingerprint(root).slice(0, 16));
-}
 
 // Every file under root/dir (relative to root, sorted); for fingerprints of
 // whole source trees.
@@ -122,10 +96,11 @@ export function cargoPath(path: string): string {
 
 // The production shard binary, built from source with the pinned toolchain:
 // shard `real` on Linux (KVM), shard `hvf` on macOS (the HVF engine, signed
-// with the hypervisor entitlement; it compiles in vmm/sandbox's Seatbelt
-// confinement).
+// with the hypervisor entitlement; its Seatbelt profile is
+// shard/src/hvf/jitk.sb). Both also serve `process-watchdog` (the process backends'
+// deadline watchdog); `hvf console` runs the console kernel profile.
 export function shardInputs(): string {
-  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest'), 'vmm/sandbox/mod.rs', 'vmm/sandbox/jitk.sb', 'vmm/hypervisor.entitlements'];
+  const files = ['shard/Cargo.toml', 'shard/Cargo.lock', 'shard/build.rs', 'shard/abi-gen.ts', ...tree(JITK_ROOT, 'shard/src'), ...tree(JITK_ROOT, 'shard/fixtures'), ...tree(JITK_ROOT, 'shard/guest'), 'shard/hypervisor.entitlements'];
   return fingerprint(JITK_ROOT, files, [pins().rust_toolchain, hostPlatform()]);
 }
 // The shard binary's name on this host.
@@ -198,7 +173,7 @@ export function hyperlightSourceDir(): string {
 
 export function hyperlightInputs(): string {
   const p = pins();
-  const files = ['bench/hyperlight/Cargo.toml', 'bench/hyperlight/Cargo.lock', 'bench/hyperlight/worker.rs', 'bench/hyperlight/load_linux.rs', 'bench/hyperlight/bootstrap.js', 'bench/hyperlight/build.ts', 'vmm/hypervisor.entitlements'];
+  const files = ['bench/hyperlight/Cargo.toml', 'bench/hyperlight/Cargo.lock', 'bench/hyperlight/worker.rs', 'bench/hyperlight/load_linux.rs', 'bench/hyperlight/bootstrap.js', 'bench/hyperlight/build.ts', 'shard/hypervisor.entitlements'];
   return fingerprint(JITK_ROOT, files, [p.hyperlight_js.commit, p.hyperlight_toolchain, hostPlatform()]);
 }
 
@@ -206,13 +181,11 @@ export function hyperlightDir(): string {
   return join(cacheRoot(), 'hyperlight', hostPlatform() + '-' + hyperlightInputs().slice(0, 16));
 }
 
-export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_ZIG', 'JITK_VMM_BINARY', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
+export const ARTIFACTS = ['JITK_NODE', 'JITK_NPM_CLI', 'JITK_ZIG', 'HYPERLIGHT_JS_SRC', 'HYPERLIGHT_WORKER', 'HYPERLIGHT_SNAPSHOT', 'JITK_SHARD_BINARY', 'JITK_SHARD_SNAPSHOT'];
 
 // Hyperlight's HVF baseline is a macOS artifact. The shard binary and its
 // prepared snapshot exist on both hosts (KVM `real` on Linux, the HVF engine
-// `hvf` on macOS). The libkrun VMM is built natively on both hosts (HVF on
-// macOS, KVM on Linux; the Mac's linux suite has kvm-dev build the Linux one,
-// linux/nested/build.ts).
+// `hvf` on macOS).
 export function applicable(name: string): boolean {
   if (name.startsWith('HYPERLIGHT_')) {
     return platform() === 'darwin';
@@ -241,9 +214,6 @@ export function cachePath(name: string): string {
   if (name === 'JITK_ZIG') {
     return join(zigDir(), 'zig');
   }
-  if (name === 'JITK_VMM_BINARY') {
-    return join(vmmBuildDir(), 'jitk-vmm');
-  }
   if (name === 'HYPERLIGHT_JS_SRC') {
     return hyperlightSourceDir();
   }
@@ -269,9 +239,6 @@ export function completeMarker(name: string): string {
   }
   if (name === 'JITK_ZIG') {
     return join(zigDir(), 'jitk-manifest.json');
-  }
-  if (name === 'JITK_VMM_BINARY') {
-    return join(vmmBuildDir(), 'build.json');
   }
   if (name === 'HYPERLIGHT_JS_SRC') {
     return join(hyperlightSourceDir(), '.git/jitk-manifest.json');

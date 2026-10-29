@@ -1,3 +1,4 @@
+import {receiptPath} from './receipt-path.js';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
@@ -5,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {performance} from 'node:perf_hooks';
 import {MicroVMExecutor,SandboxPool,type TimingEvent} from './executor.js';
 import {selectBackend} from './select-backend.js';
-const selected=selectBackend();const artifacts=JSON.parse(readFileSync('integration-selection.json','utf8'));if(!selected.gate)throw Error('warm G1 gate required');
+const selected=selectBackend();const artifacts=JSON.parse(readFileSync(receiptPath('integration-selection.json'),'utf8'));if(!selected.gate)throw Error('warm G1 gate required');
 const uptime=()=>execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim();
 const rows:any[]=[],loadBefore=uptime();let lifecycle:Record<string,number>={};
 const pool=new SandboxPool(selected.backend,2,4,{parkingGate:selected.gate,onEvent:(event,_s,at)=>{lifecycle[event]=at;}});
@@ -31,6 +32,6 @@ try{
  }
 }finally{await pool.close();}
 const stats=(key:string)=>{const a=rows.map(r=>r[key]).sort((a,b)=>a-b);return {n:a.length,median:a[Math.ceil(a.length*.5)-1],p90:a[Math.ceil(a.length*.9)-1],p99:a[Math.ceil(a.length*.99)-1]};};
-const result={artifacts,selection:selected.selection,integrated:selected.integrated,loadBefore,loadAfter:uptime(),warmups:5,n:rows.length,
+const result={artifacts,selection:selected.selection,loadBefore,loadAfter:uptime(),warmups:5,n:rows.length,
  unit:'ms',summary:Object.fromEntries(['acquire','sendRun','firstCall','ret','done','resolve','execute','killAfterResolve','reapAfterResolve'].map(k=>[k,stats(k)])),rows,pool:pool.snapshot()};
-writeFileSync('breakdown-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({...result,rows:undefined},null,2));
+writeFileSync(receiptPath('breakdown-results.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({...result,rows:undefined},null,2));

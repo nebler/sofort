@@ -20,14 +20,14 @@ const identity = sha(Buffer.from(root)).slice(0, 12);
 const remoteRoot = process.env.JITK_SHARD_REMOTE_ROOT || 'jitk-ssh';
 check(/^[A-Za-z0-9_./-]+$/.test(remoteRoot) && !remoteRoot.split('/').includes('..'), 'JITK_SHARD_REMOTE_ROOT must be a plain path without ..');
 const remote = remoteRoot + '/test-' + identity;
-const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.patch', '.diff', '.md']);
-// .READY markers ship as they are: the VMM build refuses to compile without vmm/sandbox/.READY.
-const named = new Set(['.npmrc', 'Makefile', 'series', 'qjs', 'qjs-ring', '.READY']);
+const extensions = new Set(['.rs', '.c', '.h', '.S', '.ld', '.ts', '.mjs', '.js', '.json', '.toml', '.lock', '.sh', '.mk', '.db', '.entitlements', '.sb', '.in', '.md']);
+// .READY markers ship as they are (coordination signals some tools print).
+const named = new Set(['.npmrc', 'Makefile', 'qjs', 'qjs-ring', '.READY']);
 // Tracked sources over the 1 MiB evidence cap: the kernel payload's QuickJS (2.3 MiB).
 const large = new Set(['qjs']);
 const ignored = new Set(['target', 'node_modules', 'build', 'dist', '.work', '.scriptc', 'results', 'test-results', 'out']);
-// raw* names are evidence, except patches (vmm/patches/raw-direct-load.diff).
-const evidence = (name: string) => name.startsWith('raw') && !['.diff', '.patch'].includes(extname(name));
+// raw* names are evidence.
+const evidence = (name: string) => name.startsWith('raw');
 function sources(directory: string): string[] {
   const paths: string[] = [];
   for (const name of readdirSync(directory).sort()) {
@@ -48,8 +48,8 @@ function sources(directory: string): string[] {
   return paths;
 }
 const files: string[] = [join(root, 'arch/jitk/Makefile')];
-// abi: the crate the shard and kernel build from; vmm: the libkrun builder (`make deps`).
-for (const part of ['tools', 'tslib', 'docs', 'abi', 'kernel', 'vmm', 'shard', 'executor', 'protocol', 'bench/hyperlight', 'mcp']) {
+// abi: the crate the shard and kernel build from.
+for (const part of ['tools', 'tslib', 'docs', 'abi', 'kernel', 'shard', 'executor', 'protocol', 'bench/hyperlight', 'mcp']) {
   files.push(...sources(join(root, 'arch/jitk', part)).sort());
 }
 // The parity corpus imports the benchmark workloads; the shard's native fd

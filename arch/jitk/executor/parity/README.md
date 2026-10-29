@@ -5,7 +5,7 @@ One question with one answer: do the backends agree? (R10 change #7, R9 N6,
 
 - `cases.ts`: the corpus. Each case has an id, its source, tenant code, the
   fixture tools it may call, and the expected outcome under the product
-  contract (what the shipping `jitk` path does): a result plus optional logs
+  contract (protocol v1's limits, what the former libkrun path did): a result plus optional logs
   and side-effect count, an error class (the MCP server's codes,
   `mcp/jitk.mjs` `classify`) with an optional message pattern, or for a burst
   the count of each class. Cases come from `verify.ts`, `hyperlight-check.ts`
@@ -28,11 +28,11 @@ One question with one answer: do the backends agree? (R10 change #7, R9 N6,
 
 | Where | Command | Backends |
 |---|---|---|
-| Mac | `make -C arch/jitk test` (or `make -C arch/jitk/executor parity`) | `jitk` (libkrun), `hyperlight-js`, `hvf` |
-| Linux arm64 KVM host, clean clone | `make -C arch/jitk test-linux` | `jitk` (libkrun on Linux), `shard` |
+| Mac | `make -C arch/jitk test` (or `make -C arch/jitk/executor parity`) | `hyperlight-js`, `hvf` |
+| Linux arm64 KVM host, clean clone | `make -C arch/jitk test-linux` | `shard` |
 | Mac, using kvm-dev | `make -C arch/jitk/executor parity-ssh` | both of the above, then the cross-host compare, then the native corpus on the HVF worker against the Linux native oracle (`shard` `check-native-hvf`) |
 
-`JITK_PARITY_BACKENDS=jitk,shard` selects backends; a selected backend that
+`JITK_PARITY_BACKENDS=hyperlight-js,hvf` selects backends; a selected backend that
 cannot start fails the run. `hvf` is the shard's ring engine on
 Hypervisor.framework (`../shard/src/hvf/zygote.rs`): same kernel, prepared
 helpers, IPC and limits, so the ring profile's allowlist entries name both
@@ -40,7 +40,7 @@ helpers, IPC and limits, so the ring profile's allowlist entries name both
 Each run writes `executor/.work/parity/<platform>-<arch>.json`
 (`JITK_PARITY_OUT` overrides). Messages are kept in the report but not diffed.
 
-`test-linux` needs `make deps` (Node, the shard, the Linux VMM) and builds the
+`test-linux` needs `make deps` (Node, the shard binary) and builds the
 prepared snapshots, the kernel and the executor itself. After the corpus it runs
 the shard's library tests and then, under `JITK_BENCH_LOCK` when set, the
 shard-only executor suite (`shard-check.ts`: restore, slot concurrency, failure
@@ -55,10 +55,13 @@ The Linux run writes `linux-arm64.json`. Copy it into the Mac's
 cd arch/jitk/executor && ./run.sh parity-compare   # = node build/parity-check.js compare .work/parity/*.json
 ```
 
-The compare merges the reports' backends (`darwin/jitk`, `darwin/hyperlight-js`,
-`linux/jitk`, `linux/shard`) and evaluates them together, so `darwin/jitk`
-vs `linux/jitk` must agree exactly. Reports carry a corpus hash, and the
-compare refuses a report from another corpus.
+The compare merges the reports' backends (`darwin/hyperlight-js`,
+`darwin/hvf`, `linux/shard`) and evaluates them together, so `darwin/hvf`
+and `linux/shard` must agree on every case where neither is allowlisted (the
+ring entries name both, so on those both must produce the allowlisted
+outcome). Reports carry a corpus hash, and the compare refuses a report from
+another corpus. (Until 2026-10-28 the corpus also ran on libkrun, `jitk`, on
+both hosts.)
 
 ## Adding a case or a difference
 

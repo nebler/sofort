@@ -22,5 +22,5 @@ script=$(cat "$jitk/kernel/ring-bootstrap.js")
 )
 ${OBJCOPY:-llvm-objcopy} -O binary "$here/target-kernel/aarch64-unknown-none/release/jitk-02" "$here/out/kernel-ring.bin"
 (cd "$here" && CARGO_TARGET_DIR="$here/target" cargo "+$pin" build --release)
-codesign --force --sign - --entitlements "$jitk/vmm/hypervisor.entitlements" "$here/target/release/hvf-spike"
+codesign --force --sign - --entitlements "$jitk/shard/hypervisor.entitlements" "$here/target/release/hvf-spike"
 ls -la "$here/out/kernel-ring.bin" "$here/target/release/hvf-spike"

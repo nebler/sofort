@@ -146,7 +146,7 @@ arena pages and 20 ring pages, then write immutable RAM; retain its stopped
 private pages for cgroup accounting. Ordinary `arena_attack` errors reset first.
 The existing R6 ledger harness works with the configured thread count and also
 records cgroup `memory.peak`; its `spawn-cg` is built from
-[`../linux/spawn-cg.c`](../linux/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
+[`harness/spawn-cg.c`](harness/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
 
 ## Hypervisor seam (R10 #5) and the HVF backend
@@ -263,7 +263,7 @@ message path: `return 2` takes one exit before and after.
 ## HVF engine (`hvf ipc`, R10 #10 phase 2)
 
 `hvf ipc SNAPSHOT_BASE SLOTS [POLICY]` is the Mac engine the executor drives
-as `JITK_BACKEND=hvf` (`../executor/README.md`). It speaks the Linux shard's
+by default on macOS arm64 (`JITK_BACKEND=hvf`, `../executor/README.md`). It speaks the Linux shard's
 IPC (`service.rs`: the record envelope and the per-slot state machine that
 `ipc_service` also runs) over a stream socket on fd 3.
 
@@ -320,7 +320,7 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
   macOS's CLOCK_MONOTONIC has a different base.
 
 Confinement (REPORT.md risk 4). The zygote confines itself before its first
-fork: vmm/sandbox's `jitk.sb` (deny default, read the snapshot directory, one
+fork: `src/hvf/jitk.sb` (deny default, read the snapshot directory, one
 sysctl) plus `src/hvf/zygote.sb` (fork, signal its children). macOS refuses a
 second `sandbox_apply` in a sandboxed process (EPERM, measured, also with the
 Sandbox mac syscall allowed), so an engine process cannot narrow that profile
@@ -368,6 +368,40 @@ libkrun's p50 hides its VMM boot behind the warm pool; its CPU does not
 (every run boots and reaps one VMM). The HVF per-run CPU includes Node's
 side (the executor, policy, IPC), the zygote's forwarding and the engine
 process's run and reset (~100 µs of it, per `hvf bench` above).
+
+Since 2026-10-28 the HVF engine is the executor's and MCP's default on
+macOS arm64 (`../executor/select-backend.ts`); libkrun is deleted. The table
+above is the comparison measured before that.
+
+## Console runner (`hvf console`) and the watchdog
+
+`hvf console --image KERNEL [--seed HEX] [--epoch-ns NS]`
+(`src/hvf/console.rs`) boots the **console** kernel profile (`kernel/build.sh`,
+no `transport-ring`) with stdin/stdout as its virtio console: the former
+`jitk-vmm --image` launcher contract (`../CONTRACTS.md`), on
+Hypervisor.framework. GrowOS (`../grow`, `../scriptc-corpus`), the kernel
+suite (`../kernel/tests/host.sh`) and the protocol VM tests use it; the
+executor does not. Before the VM exists it enters `jitk.sb` for the image's
+directory, drops fork (as an engine process) and prints `{"sandbox":"ok"}` on
+stderr. The device is the subset of a virtio-mmio console with MULTIPORT that
+`kernel/src/console.rs` drives (queues serviced synchronously at the guest's
+QueueNotify store); the FDT names a GIC the kernel never touches, because a
+positive `jitk.tick_us` selects its CNTV fallback, so WFI is the only wait:
+the runner sleeps until CNTV_CVAL or stdin input (a receive buffer used since
+the last WFI completes it at once, as an interrupt would). Guest CNTVCT is
+mach_absolute_time (vtimer offset 0), paired with the epoch in
+`jitk.counter`. Exit 0 at PSCI SYSTEM_OFF, 70 on an error (an access outside
+RAM and the console, an unexpected exception). Measured on the M4 Pro under
+load 5–14: ~14 ms from spawn to the guest's READY frame (p50), 0.16–0.24 ms
+for a `return` run after it; the kernel suite (`regression`, `fs_diff`)
+passes on it unchanged. It is not a tenant boundary beyond jitk.sb: it serves
+trusted test and grow images. It goes when the console profile does (the
+kernel follow-up; GrowOS first needs a host-visible trace on the ring
+profile).
+
+`hvf process-watchdog` and `real process-watchdog` (`src/watchdog.rs`, moved unchanged from
+`jitk-vmm --watchdog`) are the process backends' shared deadline watchdog
+(`../executor/backend.ts`: Hyperlight's adapter, test peers).
 
 ## HVF native worker (`hvf native-worker`)
 

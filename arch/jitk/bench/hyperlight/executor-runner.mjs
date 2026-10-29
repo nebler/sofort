@@ -8,9 +8,11 @@ import {hyperlightConfig} from './config.ts';
 const [build, mode, cJSON, cfgJSON] = process.argv.slice(2);
 const c=JSON.parse(cJSON),cfg=JSON.parse(cfgJSON);
 const {worker,snapshot}=cfg.hyperlight??hyperlightConfig();
-const {MicroVMExecutor,SandboxPool,JitkBackend}=await import(pathToFileURL(build+'/executor.js'));
+const {MicroVMExecutor,SandboxPool}=await import(pathToFileURL(build+'/executor.js'));
+const {ShardBackend}=await import(pathToFileURL(build+'/shard-backend.js'));
+// jitk modes: the executor's default engine, the ring engine (`hvf ipc`).
 const backend=mode.startsWith('hl-') ? new HyperlightBackend(worker,snapshot,20000) :
-  new JitkBackend(cfg.vmm,{launcher:cfg.launcher,image:cfg.image,sandboxProfile:cfg.sandboxProfile,startupMs:10000,lifetimeMs:20000});
+  new ShardBackend({binary:cfg.vmm,snapshot:cfg.snapshot,slots:2});
 const parked=mode==='jitk-parked'||mode==='hl-strict-prespawned';
 let workerPid;
 const park=backend.park.bind(backend);
@@ -34,4 +36,4 @@ try {
   console.log(JSON.stringify({t:'measurement',latency_ms:ms,tool_calls:calls,max_pending:maxPending,
     call_stamps_ms:stamps,load_at_result:loadavg(),pool_at_resolve:pool.snapshot(),worker_pid:workerPid??null}));
 } catch(e){console.log(JSON.stringify({t:'measurement',error:String(e)}));}
-finally{await pool.close();rl.close();}
+finally{await pool.close();await backend.close?.();rl.close();}

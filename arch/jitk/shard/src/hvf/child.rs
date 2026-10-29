@@ -97,7 +97,7 @@ struct Engine {
 
 /// What an engine process does to its inherited confinement before its VM
 /// exists. It runs under the zygote's profile (zygote.rs `zygote_profile`:
-/// vmm/sandbox's jitk.sb plus fork and signalling children), because macOS
+/// jitk.sb plus fork and signalling children), because macOS
 /// refuses a second sandbox_apply in a sandboxed process. It takes the fork
 /// grant away itself: RLIMIT_NPROC 0, which an unprivileged process cannot
 /// raise again. That does not bind root, so the engine refuses to run as root.

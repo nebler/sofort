@@ -148,7 +148,7 @@ fn threads() -> io::Result<i32> {
 }
 
 /// The Seatbelt profile the zygote enters before its first fork, compiled
-/// for the snapshot's directory: vmm/sandbox's jitk.sb (deny by default;
+/// for the snapshot's directory: jitk.sb (deny by default;
 /// read only the image directory, here the snapshot's; one sysctl) plus
 /// `zygote.sb` (fork, signal its children). No other file, no write, network
 /// or exec. Engine processes inherit it (macOS refuses a second
@@ -160,7 +160,7 @@ pub fn zygote_profile(base: &str) -> io::Result<Vec<u8>> {
         .ok_or_else(|| invalid("snapshot directory"))?;
     let source = format!(
         "{}\n{}",
-        super::confine::SEATBELT_PROFILE,
+        super::seatbelt::PROFILE,
         super::seatbelt::ZYGOTE_RULES
     );
     super::seatbelt::compile(&source, images)

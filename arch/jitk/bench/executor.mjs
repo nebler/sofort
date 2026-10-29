@@ -5,13 +5,12 @@ import readline from 'node:readline';
 import assert from 'node:assert/strict';
 const [build,mode,caseName,selectionJSON]=process.argv.slice(2);
 const selection=JSON.parse(selectionJSON);
-const {MicroVMExecutor,SandboxPool,JitkBackend}=await import(pathToFileURL(build+'/executor.js'));
+const {MicroVMExecutor,SandboxPool}=await import(pathToFileURL(build+'/executor.js'));
+const {ShardBackend}=await import(pathToFileURL(build+'/shard-backend.js'));
 const c=JSON.parse(readFileSync(new URL('./cases.json',import.meta.url),'utf8'))[caseName];
-const backend=new JitkBackend(selection.vmm,{launcher:'01-vmm',image:selection.image,
-    requireSandboxAck:selection.require_sandbox_ack??selection.vmm_source==='integrated READY',
-    sandboxProfile:selection.sandbox_profile,startupMs:10000,lifetimeMs:15000});
-// Preserve the controller's exact frozen launch command across backend versions.
-backend.argv.splice(0,backend.argv.length,...selection.argv.slice(1));
+// The executor's default engine: the ring engine (HVF on macOS) the controller
+// froze, two slots (cold: a slot per run; parked: one claimed ahead).
+const backend=new ShardBackend({binary:selection.executor.engine,snapshot:selection.executor.snapshot,slots:2});
 const lifecycle={};
 const pool=new SandboxPool(backend,mode==='executor-parked'?1:0,2,{refillConcurrency:1,
     onEvent:(event,_sandbox,at)=>{lifecycle[event]=at;},
@@ -40,5 +39,5 @@ try {
         load_at_timing_start:loadAtTimingStart,load_at_result:(await import('node:os')).loadavg(),pool_at_resolve:pool.snapshot(),
         timing_marks:{...marks,callerResolve},done_to_resolve_ms:marks.done===undefined?undefined:callerResolve-marks.done};
 } catch(e){measurement={t:'measurement',error:String(e)};}
-finally{await pool.close();rl.close();if(measurement)measurement.cleanup_events=lifecycle;}
+finally{await pool.close();await backend.close();rl.close();if(measurement)measurement.cleanup_events=lifecycle;}
 console.log(JSON.stringify(measurement));

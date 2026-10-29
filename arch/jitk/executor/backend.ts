@@ -1,9 +1,4 @@
 import {spawn, type ChildProcessWithoutNullStreams} from 'node:child_process';
-import {execFileSync} from 'node:child_process';
-import {dirname,join} from 'node:path';
-import {tmpdir} from 'node:os';
-import {createHash} from 'node:crypto';
-import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {Dispatcher, LIMIT, type Frame} from '../protocol/dispatcher.js';
 import {failure,v1Limits,type Engine,type GuestEvent,type Job,type Limits,type Phase,type Reply,type Session} from './engine.js';
 import {executionBody} from './code.js';
@@ -11,10 +6,11 @@ import {executionBody} from './code.js';
 export type {Engine,GuestEvent,JsJob,JsLimits,Job,Limits,NativeJob,NativeLimits,Phase,Reply,Session} from './engine.js';
 /** The public name for an engine (codemode/TanStack/MCP callers construct these). */
 export type Backend=Engine;
-export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;requireSandboxAck?:boolean;
-  /** jitk-vmm binary providing `--watchdog`; defaults to JITK_WATCHDOG, then JITK_VMM_BINARY. */ watchdog?:string};
-/** One shared native deadline watchdog per binary (vmm/src/watchdog.rs): a separate process, so it
- *  still fires while a trusted tool blocks Node's event loop, spawned once instead of per VM. */
+export type ProcessOptions={cwd?:string; env?:Record<string,string>; startupMs?:number; lifetimeMs?:number;
+  /** Engine binary serving `process-watchdog`; defaults to JITK_WATCHDOG, then JITK_SHARD_BINARY. */ watchdog?:string};
+/** One shared native deadline watchdog per binary (`hvf process-watchdog` / `real process-watchdog`,
+ *  shard/src/watchdog.rs): a separate process, so it still fires while a trusted tool blocks
+ *  Node's event loop, spawned once instead of per worker process. */
 class Watchdog {
   private static readonly shared=new Map<string,Watchdog>();
   static for(bin:string):Watchdog {
@@ -28,7 +24,7 @@ class Watchdog {
   private readonly vms=new Map<number,{timeout:(m:any)=>void;fail:(e:Error)=>void;armed?:{deadline:number;resolve:()=>void;reject:(e:Error)=>void}}>();
   private constructor(bin:string) {
     // EOF on its stdin (including executor death) kills every registered VM.
-    this.proc=spawn(bin,['--watchdog'],{stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
+    this.proc=spawn(bin,['process-watchdog'],{stdio:'pipe',env:{PATH:'/usr/bin:/bin'}});
     this.proc.unref();for(const p of [this.proc.stdin,this.proc.stdout,this.proc.stderr])(p as any).unref?.();
     this.proc.stdin.on('error',()=>{});this.proc.stderr.resume();
     this.ready=new Promise<void>((resolve,reject)=>{
@@ -74,11 +70,9 @@ class Watchdog {
     this.write(`del ${pid}\n`,()=>{});
   }
 }
-// glibc's malloc THP backs the VMM heap with huge pages: -5.99 MiB/VM on Linux (research/perf/linux-ledger).
-const LINUX_MALLOC_ENV:Record<string,string>=process.platform==='linux'?{GLIBC_TUNABLES:'glibc.malloc.hugetlb=0'}:{};
 function watchdogBinary(options:ProcessOptions):string {
-  const bin=options.watchdog??process.env.JITK_WATCHDOG??process.env.JITK_VMM_BINARY;
-  if(!bin)throw Error('watchdog: set ProcessOptions.watchdog, JITK_WATCHDOG or JITK_VMM_BINARY to a jitk-vmm binary');
+  const bin=options.watchdog??process.env.JITK_WATCHDOG??process.env.JITK_SHARD_BINARY;
+  if(!bin)throw Error('watchdog: set ProcessOptions.watchdog, JITK_WATCHDOG or JITK_SHARD_BINARY to the engine binary (`hvf`/`real`, make -C arch/jitk deps)');
   return bin;
 }
 export class ProcessBackend implements Backend {
@@ -89,12 +83,12 @@ export class ProcessBackend implements Backend {
   async park(signal?:AbortSignal,deadline?:number):Promise<Session> {
     if(signal?.aborted)throw Error('aborted');
     const child=spawn(this.command,this.argv,{stdio:'pipe',detached:true,cwd:this.options.cwd,
-      env:{PATH:'/usr/bin:/bin',...LINUX_MALLOC_ENV,...this.options.env}});
-    const s=new ProcessSession(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,this.options.requireSandboxAck??false,deadline);
+      env:{PATH:'/usr/bin:/bin',...this.options.env}});
+    const s=new ProcessSession(child,Watchdog.for(watchdogBinary(this.options)),this.options.lifetimeMs??60000,deadline);
     const abort=()=>s.release();signal?.addEventListener('abort',abort,{once:true});
     const timer=setTimeout(abort,this.options.startupMs??5000);
     try {
-      const [first]:any[]=await Promise.all([s.frame(),s.confined,s.watchdogReady]);
+      const [first]:any[]=await Promise.all([s.frame(),s.watchdogReady]);
       if(first.t!=='ready'||first.v!==1)throw Error('bad ready');
       if(signal?.aborted)throw Error('aborted');
       return s;
@@ -102,41 +96,13 @@ export class ProcessBackend implements Backend {
     finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
   }
 }
-const profiles=new Map<string,string>();
-let profileDirectory:string|undefined;
-function compiledProfile(vmm:string,image:string):string {
-  const key=createHash('sha256').update(readFileSync(vmm)).update(dirname(image)).digest('hex');
-  const cached=profiles.get(key);if(cached)return cached;
-  if(!profileDirectory){
-    profileDirectory=mkdtempSync(join(tmpdir(),'jitk-executor-profiles-'));
-    process.once('exit',()=>rmSync(profileDirectory!,{recursive:true,force:true}));
-  }
-  const path=join(profileDirectory,`${key}.sbbin`);
-  execFileSync(vmm,['--compile-profile',path,'--images',dirname(image)],{stdio:'pipe',timeout:10000});
-  profiles.set(key,path);return path;
-}
-export type JitkOptions=ProcessOptions & {launcher:'01-vmm'|'02-r2';image:string;memoryLimitMB?:number;sandboxProfile?:string};
-export class JitkBackend extends ProcessBackend {
-  constructor(vmm:string,config:JitkOptions) {
-    const mem=config.memoryLimitMB??32;
-    if(mem!==32&&mem!==64)throw Error('jitk RAM must be 32 or 64 MiB');
-    if(config.launcher==='02-r2'&&mem!==32)throw Error('02 launcher supports only 32 MiB');
-    const requireSandboxAck=config.requireSandboxAck??config.launcher==='01-vmm';
-    const sandboxProfile=config.sandboxProfile??(requireSandboxAck&&process.platform==='darwin'?compiledProfile(vmm,config.image):undefined);
-    config={...config,requireSandboxAck,sandboxProfile};
-    if(config.launcher==='01-vmm')config.watchdog??=vmm;
-    super('jitk',vmm,config.launcher==='01-vmm'?['--image',config.image,'--mem-mib',String(mem),...(sandboxProfile?['--sandbox-profile',sandboxProfile]:[])]:[config.image],mem,config);
-  }
-}
-/** A VMM or worker process speaking protocol v1 on stdio. The v1 Dispatcher is
- *  this adapter's decoder: frames exist only here and become GuestEvents. */
+/** A worker process speaking protocol v1 on stdio (Hyperlight's, test peers). The v1
+ *  Dispatcher is this adapter's decoder: frames exist only here and become GuestEvents. */
 class ProcessSession implements Session {
   readonly released:Promise<void>;
-  readonly confined:Promise<void>;
   readonly watchdogReady:Promise<void>;
   deadlineReceipt?:{deadline:number;firedAt:number;killAt:number};
   private deadline?:number;
-  private rejectConfined?:(e:Error)=>void;
   private queue:Frame[]=[];
   private queueBytes=0;
   private waiters:{resolve:(v:unknown)=>void;reject:(e:Error)=>void}[]=[];
@@ -145,10 +111,8 @@ class ProcessSession implements Session {
   private output=Promise.resolve();
   private writes=0;
   private dispatcher:Dispatcher;
-  constructor(private child:ChildProcessWithoutNullStreams,private watchdog:Watchdog,lifetimeMs:number,requireSandboxAck:boolean,deadline?:number) {
+  constructor(private child:ChildProcessWithoutNullStreams,private watchdog:Watchdog,lifetimeMs:number,deadline?:number) {
     this.deadline=deadline;
-    let acknowledge=()=>{};
-    this.confined=requireSandboxAck?new Promise<void>((resolve,reject)=>{acknowledge=resolve;this.rejectConfined=reject;}):Promise.resolve();
     this.dispatcher=new Dispatcher({kill:f=>{this.fail(Error('protocol '+f.code));this.release();},
       message:m=>{
         const w=this.waiters.shift();
@@ -165,11 +129,7 @@ class ProcessSession implements Session {
     child.stdout.once('end',()=>{try{this.dispatcher.eof();}catch{/* dispatcher kills */}});
     child.stdin.on('error',()=>{});
     let stderr=0;
-    let hostLines='';
-    child.stderr.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536){this.fail(Error('stderr limit'));this.release();return;}
-      hostLines+=b.toString('utf8');let pos;
-      while((pos=hostLines.indexOf('\n'))!==-1){const line=hostLines.slice(0,pos);hostLines=hostLines.slice(pos+1);if(line==='{"sandbox":"ok"}')acknowledge();}
-    });
+    child.stderr.on('data',(b:Buffer)=>{stderr+=b.length;if(stderr>65536){this.fail(Error('stderr limit'));this.release();}});
     this.watchdogReady=Promise.resolve();
     if(child.pid) {
       const pid=child.pid;
@@ -178,7 +138,7 @@ class ProcessSession implements Session {
         if(deadline!==undefined)return watchdog.arm(pid,deadline);
       });
       this.watchdogReady.catch(e=>{this.fail(e);this.release();});
-      // Reaped VMMs leave the watchdog at once; it also drops exits itself (pidfd/kqueue).
+      // Reaped processes leave the watchdog at once; it also drops exits itself (pidfd/kqueue).
       void closed.then(()=>watchdog.del(pid));
     }
     this.released=closed;
@@ -196,7 +156,7 @@ class ProcessSession implements Session {
   }
   private fail(e:Error,drain=false) {
     if(this.error)return;
-    this.error=e;this.fatalError=!drain;this.rejectConfined?.(e);
+    this.error=e;this.fatalError=!drain;
     if(!drain){this.queue=[];this.queueBytes=0;}
     for(const w of this.waiters.splice(0))w.reject(e);
   }

@@ -1,7 +1,0 @@
-{
-  "ffi_format": 1,
-  "functions": [
-    {"name": "nativeChildrenCPU", "symbol": "jitk_children_cpu", "params": [], "returns": "f64"}
-  ],
-  "libraries": [".work/native-linux.o"]
-}

@@ -12,6 +12,7 @@ import {selectBackend} from './select-backend.js';
 const require=createRequire(import.meta.url);
 const text=readFileSync(require.resolve('@cloudflare/codemode'),'utf8');
 const region=text.slice(text.indexOf('const CONNECTOR_CONTROL_KEY'),text.indexOf('//#region src/runtime.ts'));
+const codec=readFileSync(new URL('./codec.mjs',import.meta.url),'utf8').replaceAll('export function ','function ');
 const selected=selectBackend(),pool=new SandboxPool(selected.backend,0,4),ex=new MicroVMExecutor(pool,()=> 'allow');
 const results:any[]=[];
 const loadBefore=execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim();
@@ -31,9 +32,14 @@ try {
     // Guest has no virtual filesystem/module loader. Give the wrapper its own
     // console object, as it overwrites console methods to capture its own logs.
     const linked=source.replace(/^import \{ WorkerEntrypoint \} from "cloudflare:workers";\s*/, 'class WorkerEntrypoint {}\n').replace('export default class','return class');
-    const body=`const C=(()=>{const console={...globalThis.console};\n${linked}\n})();return await new C().evaluate({github:{call:async(name,args)=>stringify({result:await github[name](...parse(args))})}});`;
+    // An engine without event-loop timers (the ring profile today) gets a
+    // never-firing setTimeout for the wrapper's 1 s timeout race (linkage only).
+    const timerShim=selected.backend.limits.js!.timers?'':'const setTimeout=()=>0;';
+    // The wrapper's stringify/parse (codemode's binary-aware JSON) as tenant
+    // code: engines do not expose the executor's own codec to tenants.
+    const body=`${codec}\nconst C=(()=>{const console={...globalThis.console};${timerShim}\n${linked}\n})();return await new C().evaluate({github:{call:async(name,args)=>stringify({result:await github[name](...parse(args))})}});`;
     const result=await ex.execute(body,[{name:'github',fns:{listIssues:async(...args:unknown[])=>{assert.deepEqual(args,[{repo:'x'}]);return [{id:1},{id:2}];},echo:async(x)=>x}}]);
-    assert.deepEqual(result,{result:expected,logs:[]});results.push({name,result,linkageOnly:true});
+    assert.deepEqual(result,{result:expected,logs:[]});results.push({name,result,linkageOnly:true,timerShim:!!timerShim});
     console.log('PASS Cloudflare wrapper '+name);
   }
 }finally{await pool.close();}
