@@ -60,8 +60,9 @@ impl Default for ResetPolicy {
     /// (~230 stage-2 faults), at most once per slot per 2 s.
     ///
     /// Sampling every 1,024th reset: one check of the writable extents and
-    /// registers costs a few hundred µs, ~0.3 µs per reset amortized, and it
-    /// runs before the slot is released, not when a run is admitted.
+    /// registers took 0.8-1.7 ms on nested KVM (debug test build), about
+    /// 1 µs per reset amortized, and it runs before the slot is released,
+    /// not when a run is admitted.
     fn default() -> Self {
         Self {
             copy_limit: None,
