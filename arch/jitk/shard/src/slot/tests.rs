@@ -79,6 +79,8 @@ impl Vcpu for FakeVcpu {
 struct FakeVm {
     ram: Option<*mut u8>,
     copies: usize,
+    /// This many of the next memory restores do nothing (a reset bug).
+    skipped_restores: usize,
 }
 impl Vm for FakeVm {
     type Vcpu = FakeVcpu;
@@ -104,6 +106,10 @@ impl Vm for FakeVm {
     }
     /// Copy both writable extents from the snapshot view (no cache question).
     fn restore_memory(&mut self, m: &Memory<'_, Regs>) -> io::Result<ResetReport> {
+        if self.skipped_restores > 0 {
+            self.skipped_restores -= 1;
+            return Ok(ResetReport::default());
+        }
         for (start, end) in m.writable() {
             // SAFETY: both views are RAM-sized; extents lie within them.
             unsafe {
@@ -447,25 +453,33 @@ fn exits_map_to_run_outcomes() {
     }
     assert_eq!(s.vm.copies, 5);
 }
-/// A reset the backend rejects quarantines the slot for good; a host write
-/// behind the flag's back is caught by the sampled admission check.
+/// A reset the backend rejects quarantines the slot for good; a reset that
+/// left memory behind is caught by the sampled check and repaired, and one
+/// that cannot be repaired quarantines the slot.
 #[test]
 fn failed_resets_quarantine_and_sampled_checks_repair() {
     let mut s = fixture(ResetPolicy {
-        sample_every: 1,
+        sample_every: 2,
         ..ResetPolicy::default()
     });
-    assert!(s.admit().unwrap().is_none() && s.content_mismatch().is_none());
-    // SAFETY: test-only write into the writable arena of a stopped slot.
-    unsafe {
-        s.ram
-            .ptr
-            .add(arena::Class::Glue2m.start())
-            .write_volatile(1)
+    // A tenant write, then `n` memory restores that do nothing.
+    let dirty = |s: &mut Slot<FakeVm>, n| {
+        s.copy(arena::Class::Glue2m.start(), &[1]);
+        s.vm.skipped_restores = n;
     };
+    dirty(&mut s, 1);
+    s.reset().unwrap(); // reset 1 is not sampled: the miss goes unseen
     assert!(s.is_pristine() && s.content_mismatch().is_some());
-    s.admit().unwrap(); // sampled: found, reset, re-checked
-    assert!(s.content_mismatch().is_none());
+    assert!(s.admit().unwrap().is_none(), "a pristine slot is not reset");
+    dirty(&mut s, 1);
+    s.reset().unwrap(); // 2: sampled, found, restored again, checked again
+    assert!(s.is_pristine() && s.content_mismatch().is_none());
+    s.reset().unwrap(); // 3
+    dirty(&mut s, 2);
+    assert!(s.reset().is_err(), "4: the second restore misses too");
+    assert!(s.is_quarantined() && !s.is_pristine() && s.admit().is_err());
+
+    let mut s = fixture(ResetPolicy::default());
     s.vcpu.fail_reset = true;
     s.copy(arena::Class::Glue2m.start(), &[2]);
     assert!(s.reset().is_err() && s.is_quarantined() && !s.is_pristine());

@@ -115,14 +115,6 @@ impl hv::Vm for KvmVm {
     fn discard_memory(&mut self, m: &Memory<'_, Registers>) -> io::Result<()> {
         self.discard(m)
     }
-    fn immutable_intact(
-        &self,
-        m: &Memory<'_, Registers>,
-        start: usize,
-        end: usize,
-    ) -> Option<bool> {
-        self.intact(m, start, end)
-    }
 }
 
 pub struct KvmVcpu {
@@ -341,7 +333,7 @@ mod tests {
             verify: true,
             sample_every: 0,
         };
-        [("copy", verify(RAM / 4096)), ("discard", verify(0))]
+        [("copy", verify(None)), ("discard", verify(Some(0)))]
     }
     fn writable_pages(snapshot: &Snapshot) -> u32 {
         ((snapshot.class.bytes() + arena::RING_BYTES) / 4096) as u32
@@ -508,7 +500,7 @@ mod tests {
         let kvm = Kvm::new();
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
         let n = writable_pages(&snapshot) as usize; // the fill's private pages
-        for (limit, copies) in [(n - 1, false), (n, true), (n + 1, true)] {
+        for (limit, copies) in [(Some(n - 1), false), (Some(n), true), (None, true)] {
             let policy = ResetPolicy {
                 copy_limit: limit,
                 idle_trim: None,
@@ -519,87 +511,52 @@ mod tests {
             attack(&mut s, test_guest::fill());
             let r = s.reset().unwrap();
             if copies {
-                assert_eq!((r.discard, r.private as usize), (None, n), "limit {limit}");
+                assert_eq!(
+                    (r.discard, r.private as usize),
+                    (None, n),
+                    "limit {limit:?}"
+                );
                 assert!(s.is_resident());
             } else {
-                assert_eq!(r.discard, Some(super::Discard::Limit), "limit {limit}");
-                assert_eq!(r.private as usize, limit, "counted up to the limit");
+                assert_eq!(r.discard, Some(super::Discard::Limit), "limit {limit:?}");
+                assert_eq!(Some(r.private as usize), limit, "counted up to the limit");
                 assert!(!s.is_resident());
             }
-            assert!(s.pristine(), "limit {limit}");
-            assert!(probe(&mut s), "limit {limit}");
+            assert!(s.pristine(), "limit {limit:?}");
+            assert!(probe(&mut s), "limit {limit:?}");
             s.shutdown().unwrap();
         }
     }
     #[test]
     #[ignore = "requires KVM and JITK_SHARD_TEST_SNAPSHOT; run under bench.lock"]
-    fn sampled_admission_check_catches_a_lying_pristine_flag() {
+    fn sampled_reset_checks_pass_after_hostile_runs() {
+        use crate::slot::{SAMPLE_FAILURES, SAMPLED};
+        use std::sync::atomic::Ordering::Relaxed;
         let kvm = Kvm::new();
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
-        let policy = |sample_every| ResetPolicy {
-            copy_limit: RAM / 4096,
+        let policy = ResetPolicy {
+            copy_limit: None,
             idle_trim: None,
             verify: false,
-            sample_every,
+            sample_every: 1,
         };
-        // Flip one byte of a restored arena page without touching the flag.
-        let corrupt = |s: &Slot| {
-            let p = s.ram.ptr.wrapping_add(snapshot.class.start() + 4096);
-            // SAFETY: test-only write inside a writable extent of a stopped slot.
-            unsafe { p.write_volatile(!p.read_volatile()) };
-        };
-        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy(3));
-        attack(&mut s, test_guest::fill());
-        s.reset().unwrap(); // copy path: the arena pages stay mapped and private
-        corrupt(&s);
-        assert!(
-            s.is_pristine(),
-            "the flag cannot see a write behind its back"
-        );
-        s.admit().unwrap(); // admissions 1 and 2 are not sampled
-        s.admit().unwrap();
-        assert!(!s.pristine());
-        s.admit().unwrap(); // 3: sampled, found, discard-reset, re-checked
-        assert!(s.pristine() && s.register_mismatches().is_empty());
-        assert!(probe(&mut s));
-
-        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy(1));
-        // A register changed behind the flag's back (raw ioctl, not set_bytes).
-        let v = 0x41u64;
-        let r = super::OneReg {
-            id: 0x6030_0000_0013_de82, // TPIDR_EL0
-            addr: &v as *const u64 as u64,
-        };
-        super::call(
-            &s.vcpu.cpu,
-            crate::constants::kvm::KVM_SET_ONE_REG,
-            &r as *const _ as u64,
-        );
-        assert!(s.is_pristine() && !s.register_mismatches().is_empty());
-        s.admit().unwrap();
-        assert!(s.register_mismatches().is_empty());
-        // Cost of one sampled check on a clean slot (reported in the results doc).
+        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy);
+        let (sampled, failures) = (SAMPLED.load(Relaxed), SAMPLE_FAILURES.load(Relaxed));
+        for _ in 0..3 {
+            attack(&mut s, test_guest::fill());
+            s.reset().unwrap(); // the copy path, then the sampled check
+            assert!(probe(&mut s));
+            s.reset().unwrap();
+        }
+        // Other tests in this process may sample too, but none fails.
+        assert!(SAMPLED.load(Relaxed) >= sampled + 6);
+        assert_eq!(SAMPLE_FAILURES.load(Relaxed), failures);
+        // Cost of one sampled check on a clean slot.
         let t = std::time::Instant::now();
         for _ in 0..20 {
             assert_eq!(s.content_mismatch(), None);
         }
         println!("SAMPLED_CHECK_NS {}", t.elapsed().as_nanos() / 20);
-
-        // A private page in an immutable extent cannot be repaired by a reset:
-        // the slot is quarantined and never admitted again.
-        let mut s = Slot::with_policy(&kvm, snapshot.clone(), policy(1));
-        let page = s.ram.ptr.wrapping_add(0x10000);
-        // SAFETY: test-only: unprotect one immutable page of this stopped slot and
-        // rewrite one byte with its own value, which still makes the page private.
-        unsafe {
-            check(
-                libc::mprotect(page.cast(), 4096, libc::PROT_READ | libc::PROT_WRITE),
-                "mprotect",
-            );
-            page.write_volatile(page.read_volatile());
-        }
-        assert!(s.admit().is_err() && s.is_quarantined());
-        assert!(s.admit().is_err() && s.reset().is_err());
         s.shutdown().unwrap();
     }
     #[test]
@@ -608,7 +565,7 @@ mod tests {
         let kvm = Kvm::new();
         let snapshot = Snapshot::load(&std::env::var("JITK_SHARD_TEST_SNAPSHOT").unwrap()).unwrap();
         let policy = ResetPolicy {
-            copy_limit: RAM / 4096,
+            copy_limit: None,
             idle_trim: Some(std::time::Duration::ZERO),
             verify: true,
             sample_every: 0,

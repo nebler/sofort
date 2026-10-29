@@ -44,7 +44,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     if a.get(1).map(String::as_str) == Some("ipc") {
         raise_fds();
-        // ipc BASE SLOTS OWNERS [RESET_POLICY], e.g. copy-limit=128,idle-trim-ms=2000
+        // ipc BASE SLOTS OWNERS [RESET_POLICY], e.g. copy-limit=0,idle-trim-ms=2000
         let policy = match a.get(5).map(|p| kvm::ResetPolicy::parse(p)).transpose() {
             Ok(p) => p.unwrap_or_default(),
             Err(e) => {

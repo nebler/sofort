@@ -153,7 +153,7 @@ records cgroup `memory.peak`; its `spawn-cg` is built from
 
 `slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
 class regions (immutable extents read-only on the host and in the VM), bind,
-the ring record decoder and reply path, and reset, admission sampling, trim
+the ring record decoder and reply path, and reset with its sampled check, trim
 and verify with the pristine invariant (`slot/reset.rs`). `slot/tests.rs` runs
 those state machines on any host with a fake backend. Behind the seam
 (`hv.rs`):
@@ -291,8 +291,9 @@ Node ShardBackend ──socket──> zygote (hvf/zygote.rs, 1 thread, never a V
 - **Engine process.** Drops the inherited fork grant (RLIMIT_NPROC 0), then
   creates its VM, slot
   and job clock, and runs the KVM owner's `Mode::Policy` generation logic:
-  admit (reset unless pristine, sampled check), bind, run to calls or WAIT,
-  resume per REPLY, finish (an error resets at once), reset on CANCEL, idle
+  admit (reset unless pristine), bind, run to calls or WAIT,
+  resume per REPLY, finish (an error resets at once), reset on CANCEL (every
+  1,024th reset is then checked before RELEASED), idle
   trim. A failed reset is QUARANTINED with the reason; the slot then admits
   nothing (`slot_unavailable`) and the zygote kills the process.
 - **Leases and kicks.** The reader thread holds the running generation's
