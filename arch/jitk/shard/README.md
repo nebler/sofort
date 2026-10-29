@@ -16,9 +16,8 @@ Every build uses the one Rust pin, `rust_toolchain` in
 [`../tools/deps.json`](../tools/deps.json) (`$(CARGO_PIN)` in make,
 `../tools/rust-toolchain.sh` in shell); nothing uses a floating `stable`.
 The pure library tests run on macOS without KVM, Linux headers or guest assembly:
-`make test` (`cargo +1.95.0 test --locked --offline`; the native census check
-below prints a skip line off Linux). Run
-`cargo +1.95.0 clippy --locked --offline --all-targets -- -D warnings` and
+`make test` (`cargo +1.95.0 test --locked --offline`). `make clippy` lints the
+host target and, off Linux, the Linux one (`make -C .. test` runs it); run
 `cargo +1.95.0 fmt --check` there too. Linux-only tests and the native corpus
 still require the KVM gate below. Binary names and CLI commands are unchanged.
 
@@ -27,8 +26,9 @@ still require the KVM gate below. Binary names and CLI commands are unchanged.
 ```sh
 make -C arch/jitk deps             # pinned Node, shard binary (cache)
 make -C arch/jitk/shard snapshot   # prepared helper snapshots (cache)
-make -C arch/jitk/shard test       # Rust tests + native census check
+make -C arch/jitk/shard test       # Rust tests
 flock /home/dev/bench.lock make -C arch/jitk/shard test-kvm
+make -C arch/jitk/shard check-native-r7   # native census regression (locks itself)
 sh arch/jitk/executor/ipc/shard-host.sh   # executor shard suite from the cache
 ```
 
@@ -91,7 +91,7 @@ See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
 The default QuickJS class remains glue-2m. Late-bound native archives have their
 own read-only stage-1 mapping and reserved read-only KVM memslot 63.
 
-`make -C arch/jitk/shard test` runs the Rust tests **and**, on Linux, rebuilds six fresh
+`make -C arch/jitk/shard check-native-r7` (run by `make -C .. test-linux`) rebuilds six fresh
 native profiles, checks the exact 41-case Linux differential twice, verifies
 fd and relocation-boundary probes, and rejects a mismatched class sidecar.
 It requires Linux arm64 KVM and the six pinned census binaries (static musl
@@ -100,11 +100,11 @@ are 0.3–1.4 MB each and no upstream URL serves those bytes, so they are not
 committed or fetched. They live in a content-addressed store,
 `$JITK_NATIVE_CENSUS` or `<jitk cache>/native-census/<sha256>`, filled once with
 `./tool.sh import-census FILE|CENSUS_DIR...` (it keeps only files whose hash
-is pinned). While any is absent, the check prints `SKIP` naming the missing
-tools and the import step. The SQLite fixture (8 KiB) is committed as
+is pinned). While any is absent, the check fails naming the missing tools and
+the import step, unless `JITK_ALLOW_SKIP` lists `check-native-r7`. The SQLite fixture (8 KiB) is committed as
 [`harness/census-demo.db`](harness/census-demo.db) with its hash. The full
 `harness/run-r7-shard.sh` gate invokes it too, sharing the runner's outer
-benchmark lock. Standalone `make test` takes its own measurement locks; when
+benchmark lock. Standalone `make check-native-r7` takes its own measurement locks; when
 already holding the lock, explicitly set `JITK_BENCH_LOCK_HELD=1`.
 Set `JITK_NATIVE_ROOT` to the source tree (otherwise inferred from the harness),
 and optionally `JITK_NATIVE_CHECK_OUTPUT` for retained regression receipts.
@@ -422,7 +422,7 @@ from descriptors opened before, so profiles in other directories work too.
 (`mcp/native-linux-test.mjs` passes on the Mac: 10 calls, deadline kill
 included).
 
-`make check-native-hvf` (part of `make test-hvf`) prepares the six census
+`make check-native-hvf` (run by `make -C ../executor parity-ssh`) prepares the six census
 profiles (jq, SQLite, BusyBox, Lua on glue-2m; MicroPython, zstd on glue-4m)
 and runs the 41-case corpus twice. A Mac cannot run the Linux programs, so the
 oracle is a Linux `check-native-r7` run's `corpus-1.json` (every row exact
@@ -433,7 +433,7 @@ must reproduce the Linux program's exit status and stdout/stderr bytes
 archive, median 3.6 ms per case through Node (max 12 ms; nested KVM's
 8.3 ms is not comparable). The fd and region probes stay Linux-only (their
 oracle is the probe running on Linux). Without the census or the reference it
-prints SKIP and why.
+fails saying why, unless `JITK_ALLOW_SKIP` lists `check-native-hvf`.
 
 ## Native TypeScript harness
 
@@ -448,7 +448,7 @@ honored), and otherwise builds `build/native/shard-tools` and the kernel's
 These tools need neither Node nor Python at run time. `./tool.sh NAME ARGS...`
 replaces each Python command using the basename without `.py` (for example
 `./tool.sh check-native-r7` or `./tool.sh summarize results`). Generic helpers and
-lock composition come from `../tslib/` through `lib.ts`. `make test` still takes its own measurement
+lock composition come from `../tslib/` through `lib.ts`. `make check-native-r7` takes its own measurement
 locks (`JITK_BENCH_LOCK`, default `/home/dev/bench.lock`); never put another
 lock around it. `test-kvm` expects the caller to hold that lock and takes the
 snapshots from the cache (`make snapshot`) unless the variables are set.
