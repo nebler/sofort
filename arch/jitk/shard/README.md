@@ -53,11 +53,11 @@ not part of the key: a snapshot-format change must change the kernel or layout
 
 **R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
 results, build/reproduce commands, and remaining gates are in
-[RESULTS-R6.md](RESULTS-R6.md); its versioned transport subset is specified in
+[RESULTS-R6.md](../docs/results/shard-r6.md); its versioned transport subset is specified in
 [ABI-R6.md](ABI-R6.md). Build it with `cargo build --release --bin real` on
 Linux/arm64.
 
-**R7 implements the bounded real-kernel runtime.** See [RESULTS-R7-shard.md](RESULTS-R7-shard.md)
+**R7 implements the bounded real-kernel runtime.** See [RESULTS-R7-shard.md](../docs/results/shard-r7-shard.md)
 for measured limits, evidence and commands. The real executable uses four fixed
 owner threads plus the main fixture reactor, and one independent watchdog process.
 `JITK_SHARD_THREADS=1…available_cores` selects W. Every owner creates, runs, resets
@@ -259,6 +259,21 @@ The run grew 1.6 µs on HVF with the kernel's TLB and I-cache invalidation
 after CHECKPOINT (measured with and without it); the rest follows the guest's
 heap layout (variants of the source decode moved it by ±4 µs), not the
 message path: `return 2` takes one exit before and after.
+
+**Why one long-lived process per slot.** HVF allows one VM per process and
+runs a vCPU only on the thread that created it. The HVF spike
+([report](../docs/results/hvf-spike-2026-10-28.md); M4 Pro, load 5–11,
+medians) measured the process costs that shape the engine:
+
+| | CPU | wall | memory |
+| --- | ---: | ---: | ---: |
+| cold VM via `posix_spawn` | 3.1 ms | 3.9 ms | |
+| VM in a child forked from a parent holding the mapped snapshot | 0.77 + 0.15 ms | 1.2 ms | 1.23 MiB per child |
+| first boot to CHECKPOINT | 1.28 ms | 2.35 ms | |
+| warm run + reset in a persistent process | ~55 µs | | |
+
+So the zygote forks each engine process once and process creation stays off
+the per-run path.
 
 ## HVF engine (`hvf ipc`, R10 #10 phase 2)
 

@@ -222,5 +222,5 @@ Source selection (frozen at run start):
 ```
 
 Missing integrations: .
-Raw observations, timestamps, gate histories, result assertions, machine state, hashes and failures: [raw.json](raw.json).
+Raw observations, timestamps, gate histories, result assertions, machine state, hashes and failures: [raw.json](../../bench/raw.json).
 All external performance claims must cite this table. R2 tables are historical contended measurements.

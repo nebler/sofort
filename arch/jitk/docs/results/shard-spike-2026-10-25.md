@@ -1,6 +1,6 @@
 # Minimal KVM shard — 2026-10-25
 
-> Raw evidence linked here moved out of git (R10 W0.1): restore it with `arch/jitk/tools/.work/bin/evidence fetch <path>`; see [evidence/README.md](../../../evidence/README.md).
+> Raw evidence linked here moved out of git (R10 W0.1): restore it with `arch/jitk/tools/.work/bin/evidence fetch <path>`; see [evidence/README.md](../../../../evidence/README.md).
 
 Owner `w2-shard`; scope `arch/jitk/shard/`. This is the assembly-fixture spike
 for architecture gates 2, 4 (basic) and 5. **All timing is nested HVF → KVM,
@@ -14,7 +14,7 @@ GIC, virtio, guest timer, WFI, HVC transport, per-VM thread, or per-call process
 One immutable 2 MiB snapshot file is mapped `MAP_PRIVATE` into each slot; its
 16 KiB control and two 32 KiB rings are privately initialized in full. The
 fixture uses aligned 32-bit MMIO stores with SUBMIT=1, WAIT=2, FINISH=3.
-The [README](README.md) specifies the exact versioned fixture ABI and the
+The [README](../../shard/README.md) specifies the exact versioned fixture ABI and the
 differences from the variable-record kernel transport under development.
 
 Machine: Apple M4 Pro host, QEMU/HVF, Ubuntu 26.04.1 arm64 nested guest,
@@ -28,7 +28,7 @@ Every benchmark command holds `flock /home/dev/bench.lock`. Each metrics/idle
 record includes `/proc/uptime` and `/proc/loadavg`. The machine remains shared:
 unlocked compilation and other jobs affect global counters. Density checkpoint
 load averages ranged 3.40–8.31 (one-minute load). Exact source/binary hashes and
-environment are in [environment.json](results/environment.json).
+environment are in [environment.json](../../shard/results/environment.json).
 
 ## A. Density / gate 2
 
@@ -92,7 +92,7 @@ process retains 16,914 KiB PSS versus 8,879 KiB at baseline (consistent with
 allocator/measurement high-water storage; attribution is an inference). Its fd
 count returns to 7; these are not 4,096 surviving VM allocations.
 
-Raw: [density.json](results/density.json); derived rows: [summary.json](results/summary.json).
+Raw: [density.json](../../shard/results/density.json); derived rows: [summary.json](../../shard/results/summary.json).
 
 ## B. Snapshot/reset / gate 4 (basic)
 
@@ -155,10 +155,10 @@ multi-millisecond median. A metal measurement is needed to separate nested
 stage-2/TLB and scheduler cost from the proposed production reset budget.
 Do not convert functional correctness into a claimed ≤1 ms restore result.
 
-Raw: [reset-1000.json](results/reset-1000.json),
-[reset-10000.json](results/reset-10000.json), with all timing samples and
+Raw: [reset-1000.json](../../shard/results/reset-1000.json),
+[reset-10000.json](../../shard/results/reset-10000.json), with all timing samples and
 baseline/dirty/after-discard memory measurements; the stale-canary mutation is
-in [selftest.json](results/selftest.json).
+in [selftest.json](../../shard/results/selftest.json).
 
 ## C. WAIT / gate 5
 
@@ -202,16 +202,16 @@ The two-second parked interval precedes the timed completion phase:
 This demonstrates overlap rather than serial sum-of-delays execution. It does
 not implement JavaScript promises. Any-ready kernel scheduling can legitimately
 resume/WAIT more often than the fixture's deliberate all-of predicate; the
-[ABI-v2 proposal](../../research/perf/transport/ABI-v2.md) documents that distinction.
+[ABI-v2 proposal](../../../research/perf/transport/ABI-v2.md) documents that distinction.
 Fixture v0 sends ten SUBMIT exits before its one WAIT, whereas v2 can submit the
 batch through WAIT itself. No v2 production implementation is included here.
 
-Raw: [wait-1024.json](results/wait-1024.json), [promise-1.json](results/promise-1.json).
+Raw: [wait-1024.json](../../shard/results/wait-1024.json), [promise-1.json](../../shard/results/promise-1.json).
 They retain every completion order and latency sample, not only percentiles.
 
 ## Reproduce and validation
 
-Build and run commands are in [README.md](README.md); `bash run.sh` in
+Build and run commands are in [README.md](../../shard/README.md); `bash run.sh` in
 `/home/dev/w2-shard` performs the locked sequence. `python3 summarize.py results`
 converts JSONL to JSON arrays and computes nearest-rank percentiles. Raw JSON
 is the evidence; summaries are derived. Keep nested timing labels on reuse.

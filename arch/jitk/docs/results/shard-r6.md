@@ -25,7 +25,7 @@ No commits were made.
   entry, boot/repair data, doorbell and host-clock access are under `src/arch/aarch64/`.
 - Real 16 KiB control + two 32 KiB byte rings, ABI-v2 header/cursors/order/bounds,
   MMIO SUBMIT / WAIT / FINISH, and bounded **kernel-side reply demultiplexing**.
-  [ABI-R6.md](ABI-R6.md) documents every profile restriction/deviation, including
+  [ABI-R6.md](../../shard/ABI-R6.md) documents every profile restriction/deviation, including
   the experimental fd bridge, 1 KiB JSON replies, no `/cap` files or bulk replies,
   no typed-array codec, frozen-in-job clocks and unrepaired RNG state.
 - `shard/src/bin/real.rs` loads the real kernel, not the assembly fixture. Offline
@@ -55,7 +55,7 @@ Apple M4 Pro/macOS host; existing `kvm-dev`, Ubuntu 26.04 arm64, Linux
 Nothing changed or restarted kvm-dev, its kernel or global toolchains. No cloud
 resources, third-party downloads or new dependencies were needed by the shard.
 Rust stable 1.99.1 for the Linux ring/shard build; the default Mac build retains
-its pinned Rust 1.95.0. Exact receipts: [environment.txt](raw-r6/environment.txt).
+its pinned Rust 1.95.0. Exact receipts: [environment.txt](../../shard/raw-r6/environment.txt).
 
 All measured VM runs hold `flock /home/dev/bench.lock`. Raw timing batches retain
 load/uptime; main fixture batch start load1 was 0.62–0.75, and memory observations
@@ -65,7 +65,7 @@ its physical CPU or disk. Do not compare these timings to metal or the previous
 round as a causal performance change.
 
 Fixtures are literals in `src/bin/real.rs`, frozen in
-[measured-source.tgz](raw-r6/measured-source.tgz):
+[measured-source.tgz](../../shard/raw-r6/measured-source.tgz):
 
 | Fixture | Actual guest work / validated result |
 |---|---|
@@ -89,7 +89,7 @@ Two independent curves, each **N=1/16/64/256**, fresh shard process per point.
 After validated guest completion/READY stop: settle 3 s; take three samples
 200 ms apart; measure one second of parked CPU. Fit `bytes=fixed+N×marginal`
 to each curve's per-point median, then average the slopes, as in
-[linux-ledger](../../research/perf/linux-ledger/RESULTS.md). An extra READY point
+[linux-ledger](../../../research/perf/linux-ledger/RESULTS.md). An extra READY point
 at N=1,024 validates scale; both WAIT experiments also reach N=1,024.
 
 | Stopped state | All-in marginal MiB/VM | Two-slope range B/VM | Process private-dirty KiB/VM | Cgroup kernel KiB/VM | Fitted fixed MiB |
@@ -152,7 +152,7 @@ Accounting details and qualifications:
   32 MiB remains writable at stage 2; architecture §2.3 is **not implemented**.
 
 Raw: `raw-r6/ledger-{0,1}-{ready,return2,one_tool,promise10,json64k}-{1,16,64,256}.json`,
-[summary-r6.json](raw-r6/summary-r6.json), [ledger-cleanup.json](raw-r6/ledger-cleanup.json).
+[summary-r6.json](../../shard/raw-r6/summary-r6.json), [ledger-cleanup.json](../../shard/raw-r6/ledger-cleanup.json).
 All 41 memory cells completed and their cgroups were removed.
 
 ## Restore, execution, CPU and tool latency
@@ -177,7 +177,7 @@ KVM guest/system CPU and the entropy/uniqueness checks. It excludes stdout sampl
 printing, final statistics, process startup/slot creation, and the full-memory
 pristine comparisons at the beginning/end. This is the harness's measured service
 path, **not production Node+shard+watchdog CPU**. Initial one-time real boot to
-CHECKPOINT: **177.643 ms, n=1**, from [prepare-final.jsonl](raw-r6/prepare-final.jsonl).
+CHECKPOINT: **177.643 ms, n=1**, from [prepare-final.jsonl](../../shard/raw-r6/prepare-final.jsonl).
 
 For **one echo** (n=200), WAIT observed by owner → validated FINISH is
 **1.904 / 2.691 ms p50/p99**. This includes reply publication, re-entry, guest
@@ -188,10 +188,10 @@ round-trip measurement. Owner-private echo/reply publication alone is
 An exact isolated guest call-boundary RTT remains uninstrumented. Promise.all's
 same WAIT→FINISH interval is 2.117 / 2.816 ms for the whole ready-together batch.
 
-Raw: [bench-return2.jsonl](raw-r6/bench-return2.jsonl),
-[bench-one_tool.jsonl](raw-r6/bench-one_tool.jsonl),
-[bench-promise10.jsonl](raw-r6/bench-promise10.jsonl),
-[bench-json64k.jsonl](raw-r6/bench-json64k.jsonl).
+Raw: [bench-return2.jsonl](../../shard/raw-r6/bench-return2.jsonl),
+[bench-one_tool.jsonl](../../shard/raw-r6/bench-one_tool.jsonl),
+[bench-promise10.jsonl](../../shard/raw-r6/bench-promise10.jsonl),
+[bench-json64k.jsonl](../../shard/raw-r6/bench-json64k.jsonl).
 Clock-correction pilots are retained under `raw-r6/pilot-clock/` and excluded.
 
 ### VM exits: userspace transport versus all hardware exits
@@ -244,8 +244,8 @@ No lost/duplicate replies; duplicate IDs are checked by the host bitmap and
 kernel pending states. Promise.all(10) separately validates actual promises and
 reverse reply demux. This does not test cross-thread/cross-process notification
 races, independent provider timing or multi-owner real-guest scheduling.
-Raw: [wait-1024.jsonl](raw-r6/wait-1024.jsonl),
-[wait-observed.json](raw-r6/wait-observed.json).
+Raw: [wait-1024.jsonl](../../shard/raw-r6/wait-1024.jsonl),
+[wait-observed.json](../../shard/raw-r6/wait-observed.json).
 
 **Deadline/watchdog leases: missing.** A CPU-infinite guest is externally
 SIGKILLed and reaped successfully; n=1, observed kill→reap **3.697 ms**, after
@@ -253,7 +253,7 @@ an explicit 0.2-second observer delay. This proves external whole-process
 containment only. There is no registered per-slot deadline lease, independent
 watchdog process, owner kick/escalation protocol or ≤50 ms production guarantee.
 The existing shipping watchdog is untouched and its Mac tests pass; it is not
-connected to this shard. Raw: [external-kill.json](raw-r6/external-kill.json).
+connected to this shard. Raw: [external-kill.json](../../shard/raw-r6/external-kill.json).
 
 ## Mac regression result and final validation
 
@@ -272,9 +272,9 @@ was ineffective, then SIGKILL); the aggregate then failed with
 was **not isolated or fixed**, and a full aggregate PASS is not claimed. The
 kernel bytes in that harness also match the initial default image exactly.
 
-Evidence: [mac-build-test.log](raw-r6/mac-build-test.log),
-[mac-aggregate-nested.log](raw-r6/mac-aggregate-nested.log),
-[mac-aggregate-stall.json](raw-r6/mac-aggregate-stall.json), and paired default
+Evidence: [mac-build-test.log](../../shard/raw-r6/mac-build-test.log),
+[mac-aggregate-nested.log](../../shard/raw-r6/mac-aggregate-nested.log),
+[mac-aggregate-stall.json](../../shard/raw-r6/mac-aggregate-stall.json), and paired default
 SHA-256 receipts. This leaves the task's full aggregate Mac-test requirement
 unmet even though the default image and its direct Mac regression suite pass.
 
@@ -315,7 +315,7 @@ ring image** and completes return2, one_tool, Promise.all(10), json64k and canar
 formatting changed the host executable digest. Kernel image digest remains
 `fa7e26587f7c98ef5d79a3bcfee17d92721ed695500e9850fd74def3a8bc42d0`.
 Raw: `raw-r6/fixture-selftest.jsonl`, `qa-*.jsonl`, `final-build-*.log`,
-[final-artifact-hashes.txt](raw-r6/final-artifact-hashes.txt).
+[final-artifact-hashes.txt](../../shard/raw-r6/final-artifact-hashes.txt).
 
 ## Artifact identity and reproduce
 
@@ -330,8 +330,8 @@ All remote artifacts are under **`/home/dev/r6-shard/`**. Runtime/prepared input
 | `final-r6.regs` | `657ec78f1029b131d3dec20700630a891ee71466c2f01abc695bc00e5b78e804` |
 
 Snapshot hashes remain unchanged after correctness, curves, WAIT and perf.
-See [artifact-hashes-before.txt](raw-r6/artifact-hashes-before.txt) and
-[snapshot-hashes-after.txt](raw-r6/snapshot-hashes-after.txt). The prepared format
+See [artifact-hashes-before.txt](../../shard/raw-r6/artifact-hashes-before.txt) and
+[snapshot-hashes-after.txt](../../shard/raw-r6/snapshot-hashes-after.txt). The prepared format
 is local-machine-specific and has no production signature/cache identity layer.
 
 ```sh

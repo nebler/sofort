@@ -35,7 +35,7 @@ owners plus its reactor, and one independent watchdog process.
 The addon is necessary only on the selected Linux shard path; Mac/default
 libkrun builds do not acquire new native build requirements. It uses matching
 Node headers and the installed C compiler, with no new npm or Cargo dependency.
-See [executor IPC ABI](../executor/ipc/ABI.md) for exact layout and bounds.
+See [executor IPC ABI](../../executor/ipc/ABI.md) for exact layout and bounds.
 
 Both endpoints shadow cursors privately. A receiver copies an entire fixed slot
 before interpreting hostile fields. Neither a peer cursor nor a message length
@@ -167,7 +167,7 @@ native checks prove fixed geometry, seals, local envelope/cursor rejection and
 private copies. A 2,048-message 1-KiB echo fixture exercises wrap and pressure
 beyond the 64-record capacity. Fixture processes are offline tests only.
 
-Raw data: [executor/raw-r7-ipc/](../executor/raw-r7-ipc/). SSH source hashes and
+Raw data: [executor/raw-r7-ipc/](../../executor/raw-r7-ipc/). SSH source hashes and
 exact build/run command: `ssh-command.json`; complete suite: `ssh-test.log` and
 `ssh-hook.log`; Rust final tests: `rust-final.log`; transport-only:
 `ipc-native-check.log`; pure adapter: `source-check.log`; Linux versions/load:

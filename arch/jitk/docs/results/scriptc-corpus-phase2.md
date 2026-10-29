@@ -1,13 +1,13 @@
 # scriptc 0.4.5 corpus on the phase-2 grown kernel
 
 Measured 2026-10-27 on macOS arm64/HVF, same corpus, compiler, Linux and Node
-references as [`RESULTS.md`](RESULTS.md) (the "before" column below). The
+references as [`RESULTS.md`](../../scriptc-corpus/RESULTS.md) (the "before" column below). The
 grown kernel is the canonical kernel tree at this commit plus eight handlers
 grown by the loop (mmap, getrandom, uname, getpid, getppid, faccessat,
-getpriority, sysinfo; [`../grow/phase2-grown/`](../grow/phase2-grown/)).
+getpriority, sysinfo; [`../grow/phase2-grown/`](../../grow/phase2-grown/)).
 The canonical kernel tree includes the human placement change; its built
 image is still byte-identical to the READY image. How the handlers were
-grown: [`../grow/EXPERIMENTS-PHASE2-2026-10-27.md`](../grow/EXPERIMENTS-PHASE2-2026-10-27.md).
+grown: [`../grow/EXPERIMENTS-PHASE2-2026-10-27.md`](grow-phase2-2026-10-27.md).
 
 Method: `census rerun --from full --kernel <grown> --selection visible|heldout`
 re-evaluates every compiled program on jitk only. It rebuilds each ELF and

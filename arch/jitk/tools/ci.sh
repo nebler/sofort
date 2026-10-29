@@ -169,7 +169,7 @@ step 'scriptc linux builds' make -s -C "$JITK/kernel" linux-tools
 step 'shard tools' make -s -C "$JITK/shard" build
 step 'bench build, test' make -s -C "$JITK/bench" test
 step 'grow build, test' grow_checks
-skip 'bench/hyperlight, hvf-spike' 'macOS only (Hyperlight on HVF, Hypervisor.framework)'
+skip 'bench/hyperlight' 'macOS only (Hyperlight on HVF, Hypervisor.framework)'
 
 # --- 3. KVM suites ------------------------------------------------------------
 kvm_why=

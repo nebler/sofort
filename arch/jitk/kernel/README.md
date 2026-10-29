@@ -22,7 +22,7 @@ Rebuild this payload **inside a Linux arm64 VM**, into a new directory:
 to `payload/qjs-ring`. Sources, checksums, compiler flags and the mallocng repair
 are explicit in that recipe. It is QuickJS 2026-06-04 and musl 1.2.5; the original
 stripped `payload/qjs` cannot be reproduced from its recorded ELF digest alone.
-See [`../shard/RESULTS-R7-rng.md`](../shard/RESULTS-R7-rng.md) for measured
+See [`../shard/RESULTS-R7-rng.md`](../docs/results/shard-r7-rng.md) for measured
 provenance and restrictions. All frames spanning guard rotation are built without
 stack protection, including libc; do not enable it without redesigning checkpoint
 unwinding. The default `payload/qjs` and `dist/kernel.bin` remain unchanged.
@@ -210,7 +210,7 @@ newfstatat byte-layout code without changing pathname metadata.
 
 The grow controller accepts both handlers only after independent Linux
 semantic/error/state cases, executable rejected mutations and an unchanged
-SQLite corpus. See [`../grow/RESULTS-R7-grow.md`](../grow/RESULTS-R7-grow.md)
+SQLite corpus. See [`../grow/RESULTS-R7-grow.md`](../docs/results/grow-r7.md)
 for per-case stdout/stderr/exit comparisons and artifact identities. This is a
 developer grow-trace/libkrun demonstration with printable stdout; production
 native streams and stderr are separate ring work. faccessat/getpid remain
