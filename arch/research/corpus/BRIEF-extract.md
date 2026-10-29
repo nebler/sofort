@@ -73,3 +73,19 @@ Also read `arch/research/corpus/BRIEF-ambition.md`. In addition to the types abo
 For each of your top 5 candidates, add one line for the one-shot test ("could a next-generation model build this from
 one prompt? If yes, where is the non-code value?") and one line for the ambition rung (tool, product, category,
 field infrastructure, or field-changing).
+
+## Addendum for batch 4 (2026-10-29): the gap-filling batch, files `transcripts/g1-*` and `transcripts/g2-*`
+These 80 videos come from communities the corpus was missing:
+- **g1:** programming-language research and systems talks;
+- **g2:** hardware, game developers, defensive security, graphics and networking.
+
+The curation notes are in `gaps/G09-videos-pl-systems.md` and `gaps/G10-videos-hw-games-sec.md`.
+
+In addition to the types and tags above, apply the **tailwind lens** from `BRIEF-tailwind.md`:
+- Tag **Oracle** whenever a speaker names an existing reference: a test suite, spec, golden model, simulator,
+  conformance suite or reference implementation.
+- Tag **Effort** whenever a speaker says something was blocked by engineering effort ("would take N years", "nobody
+  has the manpower", "we gave up because…"). Effort plus an oracle is the GrowOS-shaped seed.
+
+For your top 5 candidates, give one line on the shape: what grows, what the oracle is, and why the next model makes it
+better rather than obsolete. Security material: defensive framing only.
