@@ -246,9 +246,12 @@ watchdog process), all before READY and so before any guest code runs:
    futex wait/wake (no PI, no requeue), read/write/ppoll/close on the open
    descriptors, pread64 (pagemap), clocks and sleeps, signal return, tgkill
    of its own threads (the watchdog's and owners' kicks), exit, and exactly
-   the 12 KVM ioctls an owner issues after setup
-   (`confine::policy::KVM_IOCTLS`; slots are created lazily, each VM with
-   KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER, see "KVM_RUN failures").
+   the 7 KVM ioctls that run, reset and verify an existing slot
+   (`confine::policy::KVM_IOCTLS[CREATE..]`). Every owner creates all its
+   slots (VM, vCPU, KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER, see
+   "KVM_RUN failures") before `Prepared::start` returns, so before the
+   filter: afterwards no VM or vCPU can be created and no capability
+   enabled. A quarantined slot stays quarantined; it is never re-created.
    Anything else (open, socket, exec, clone, ptrace, kill, prctl, other
    ioctls, ...) kills the process with SIGSYS.
 

@@ -69,10 +69,11 @@ const SIGUSR1: u64 = 10;
 const MFD_CLOEXEC_SEALING: u64 = 1 | 2;
 const F_ADD_SEALS: u64 = 1033;
 
-/// The KVM ioctls an owner thread issues on its VM and vCPU descriptors
-/// after setup: creating a slot (lazily, on its first START; the first
-/// `CREATE`, KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER among them, whose
-/// argument a filter cannot inspect), running, resetting and verifying it.
+/// The KVM ioctls of a slot: creating it (the first `CREATE`, among them
+/// KVM_ENABLE_CAP for KVM_CAP_ARM_NISV_TO_USER, whose argument a filter
+/// cannot inspect), then running, resetting and verifying it. Every slot is
+/// created before the filter (the shard's owners at startup, the native
+/// worker's profiles at load), so both filters allow only `[CREATE..]`.
 /// /dev/kvm's own setup queries are done.
 pub const KVM_IOCTLS: [u64; 12] = [
     kvm::KVM_CREATE_VM,
@@ -88,8 +89,8 @@ pub const KVM_IOCTLS: [u64; 12] = [
     kvm::KVM_SET_MP_STATE,
     kvm::KVM_GET_MP_STATE,
 ];
-/// How many of KVM_IOCTLS create a VM or vCPU (a native worker's exist
-/// before its filter).
+/// How many of KVM_IOCTLS create a slot (every slot, the shard's and the
+/// native worker's, exists before its filter).
 pub const CREATE: usize = 5;
 
 /// What every thread of both processes needs: the allocator (never an
@@ -136,7 +137,10 @@ fn runtime() -> Vec<Rule> {
 /// and signals to its own threads only (abort raises SIGABRT that way).
 pub fn shard(pid: u32) -> Vec<Rule> {
     let mut rules = runtime();
-    let ioctls: Vec<[Arg; 1]> = KVM_IOCTLS.iter().map(|&op| [Arg::Eq(1, op)]).collect();
+    let ioctls: Vec<[Arg; 1]> = KVM_IOCTLS[CREATE..]
+        .iter()
+        .map(|&op| [Arg::Eq(1, op)])
+        .collect();
     let ioctls: Vec<&[Arg]> = ioctls.iter().map(|a| &a[..]).collect();
     rules.extend([
         Rule::allow_any(nr::IOCTL, &ioctls),
@@ -206,8 +210,12 @@ mod tests {
     #[test]
     fn shard_runs_kvm_and_nothing_else_through_ioctl() {
         let rules = shard(PID);
-        for op in KVM_IOCTLS {
-            assert_eq!(on(&rules, nr::IOCTL, args(&[7, op])), Action::Allow);
+        for op in &KVM_IOCTLS[CREATE..] {
+            assert_eq!(on(&rules, nr::IOCTL, args(&[7, *op])), Action::Allow);
+        }
+        // Its slots exist before the filter: no new VM or vCPU, no KVM_ENABLE_CAP.
+        for op in &KVM_IOCTLS[..CREATE] {
+            assert_eq!(on(&rules, nr::IOCTL, args(&[7, *op])), Action::KillProcess);
         }
         for op in [
             kvm::KVM_GET_API_VERSION,

@@ -290,8 +290,7 @@ impl Prepared {
                         // SAFETY: gettid takes no arguments.
                         a.tid
                             .store(unsafe { libc::syscall(libc::SYS_gettid) } as i32, Relaxed);
-                        started.wait();
-                        Worker {
+                        let worker = Worker {
                             owner,
                             owners,
                             kvm,
@@ -303,8 +302,20 @@ impl Prepared {
                             events: Events { tx, notify },
                             wake: w,
                             attention: a,
-                        }
-                        .run(entropy)
+                        };
+                        // Every slot (its VM and vCPU) exists before start()
+                        // returns, so before the shard's seccomp filter: the
+                        // filter then denies creating VMs or vCPUs and
+                        // KVM_ENABLE_CAP (confine::policy::shard). A failed
+                        // creation still releases the barrier, then panics.
+                        let made = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                            (0..worker.leases.len())
+                                .map(|i| Some(worker.managed(i)))
+                                .collect::<Vec<_>>()
+                        }));
+                        started.wait();
+                        let slots = made.unwrap_or_else(|p| std::panic::resume_unwind(p));
+                        worker.run(entropy, slots)
                     })
                     .unwrap(),
             );
@@ -791,8 +802,31 @@ enum Driven {
 }
 impl Worker {
     /// `entropy` is /dev/urandom, opened by `Pool::prepare`.
-    fn run(self, mut entropy: File) -> io::Result<()> {
-        let mut slots: Vec<Option<Managed>> = (0..self.leases.len()).map(|_| None).collect();
+    /// Slot `i` of this owner, pristine (called at startup for every slot).
+    fn managed(&self, i: usize) -> Managed {
+        let mut cpu = Slot::with_policy(&self.kvm, self.snapshot.clone(), self.policy);
+        cpu.clock = Some(self.clocks[i].clone());
+        Managed {
+            cpu,
+            lease: self.leases[i].clone(),
+            activity: Activity::Idle,
+            pending: Vec::new(),
+            seed: [0; 16],
+            metrics: Metrics::default(),
+            started: Instant::now(),
+            waited: None,
+            behavior: Behavior {
+                mode: Mode::Run,
+                canary: false,
+            },
+            policy_sent: Calls::default(),
+            wake_at: None,
+            finish_logs: Vec::new(),
+            drive: None,
+            queued: false,
+        }
+    }
+    fn run(self, mut entropy: File, mut slots: Vec<Option<Managed>>) -> io::Result<()> {
         let mut queue = RunQueue::default();
         let mut trim_at = None;
         loop {
@@ -839,30 +873,7 @@ impl Worker {
                 };
                 let i = id / self.owners;
                 assert_eq!(id % self.owners, self.owner);
-                if slots[i].is_none() {
-                    let mut cpu = Slot::with_policy(&self.kvm, self.snapshot.clone(), self.policy);
-                    cpu.clock = Some(self.clocks[i].clone());
-                    slots[i] = Some(Managed {
-                        cpu,
-                        lease: self.leases[i].clone(),
-                        activity: Activity::Idle,
-                        pending: Vec::new(),
-                        seed: [0; 16],
-                        metrics: Metrics::default(),
-                        started: Instant::now(),
-                        waited: None,
-                        behavior: Behavior {
-                            mode: Mode::Run,
-                            canary: false,
-                        },
-                        policy_sent: Calls::default(),
-                        wake_at: None,
-                        finish_logs: Vec::new(),
-                        drive: None,
-                        queued: false,
-                    });
-                }
-                let s = slots[i].as_mut().unwrap();
+                let s = slots[i].as_mut().expect("every slot is created at startup");
                 if matches!(cmd, Command::Reset(_) | Command::Cancel(_)) {
                     // An errored run was already reset in finish(); its RELEASE
                     // costs nothing. The next begin() finds the slot pristine.
