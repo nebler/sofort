@@ -53,11 +53,11 @@ not part of the key: a snapshot-format change must change the kernel or layout
 
 **R6 adds a separate real-kernel/QuickJS executable, `real`.** Its measured
 results, build/reproduce commands, and remaining gates are in
-[RESULTS-R6.md](../docs/results/shard-r6.md); its versioned transport subset is specified in
+[the R6 report](../docs/results/shard-r6.md); its versioned transport subset is specified in
 [ABI-R6.md](ABI-R6.md). Build it with `cargo build --release --bin real` on
 Linux/arm64.
 
-**R7 implements the bounded real-kernel runtime.** See [RESULTS-R7-shard.md](../docs/results/shard-r7-shard.md)
+**R7 implements the bounded real-kernel runtime.** See [the R7 shard report](../docs/results/shard-r7-shard.md)
 for measured limits, evidence and commands. The real executable uses four fixed
 owner threads plus the main fixture reactor, and one independent watchdog process.
 `JITK_SHARD_THREADS=1…available_cores` selects W. Every owner creates, runs, resets

@@ -21,7 +21,7 @@ census environment, and records per program what they create, where (cwd, /tmp, 
 how many bytes they write and which filesystem calls they issue (`writes.ts`). It sizes a
 writable scratch tree; it grades nothing. Rows stay in `.work/`.
 
-Results: [`RESULTS.md`](RESULTS.md); phase-2 grown kernel: [`RESULTS-PHASE2.md`](../docs/results/scriptc-corpus-phase2.md). Compiler findings: [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md).
+Results: [`RESULTS.md`](RESULTS.md); phase-2 grown kernel: [phase-2 report](../docs/results/scriptc-corpus-phase2.md). Compiler findings: [`SCRIPTC-GAPS.md`](SCRIPTC-GAPS.md).
 
 `census` and `run` both execute the complete build → Linux/Node → ENOSYS
 experiments → canonical packer/VM pipeline. Completed receipts are resumed;

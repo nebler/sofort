@@ -241,7 +241,7 @@ the glue-2m arena leaves a run about 400 KiB of heap, so values much past
 QuickJS out-of-memory error, where libkrun has 16 MiB (parity: `b-json1m`,
 `t-memory-over-arena`). `/cap`, cancellation of a busy vCPU and broad shadow
 parity remain cutover blockers. Older measurements are in
-[RESULTS-R7-ipc.md](../docs/results/shard-r7-ipc.md).
+[the R7 IPC report](../docs/results/shard-r7-ipc.md).
 
 ## macOS HVF engine (R10 #10; the macOS default)
 

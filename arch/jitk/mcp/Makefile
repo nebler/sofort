@@ -1,4 +1,4 @@
-# Owner entrypoints for docs/delegate.py. build installs the locked SDK locally
+# Owner entrypoints for docs/delegate.ts. build installs the locked SDK locally
 # (scripts disabled) and syntax-checks; test/bench need the built executor and
 # the ring engine (JITK_SHARD_BINARY, JITK_SHARD_SNAPSHOT; macOS: its parking gate).
 include ../tools/deps.mk
