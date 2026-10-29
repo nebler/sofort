@@ -1,82 +1,121 @@
-# jitk — architecture as built
+# jitk architecture
 
-One submitted JavaScript body runs per single-use hardware VM. R4 H2 is reproduced;
-H1 fails a stale protocol import guard, strict path hygiene fails, and the deadline
-target remains unmet. [Final gates](../../10-minimalist-critic/R4.md), [claims](CLAIMS.md),
-[criteria](KILL-CRITERIA.md), [exact artifact hashes](ARTIFACTS-R4.json).
+jitk runs each submitted JavaScript body (or a whole static Linux program) in
+its own single-use hardware VM. A VM is never booted per run: each engine slot
+is restored from a prepared snapshot, runs one job, and is reset to that
+snapshot before the next. Tool calls leave the VM as bounded records; trusted
+Node code applies policy, calls the tool with its credentials and replies.
 
 ```text
- TRUSTED HOST                                  HOSTILE GUEST
- caller -> TS executor -> bounded single-use pool
-            |                    | spawn one process/VM
-            +- canonical TS      v
-            |  dispatcher   Rust/libkrun VMM -- virtio-console -+
-            +- host policy  [OS sandbox; panic=abort]          |
-            |  + credentials     ^ external watchdog         v
-            +- approved tools    |                     qjs + bootstrap EL0
-                 ^              +-- destroy/reap             | SVC
-                 +---- ASCII JSON call/ret v1 ----------------+
-                                                    Rust kernel EL1
-                                                    MMU, syscall slots
- TRUSTED DEV: missing syscall -> Linux oracle -> reviewed proposal -> trace gates
-              -> rebuilt RAW image/receipt -> unchanged static Lua fixture
+ TRUSTED HOST (Node)                         ENGINE (Rust, one OS process tree)        HOSTILE GUEST (per slot)
+ MCP client ─> mcp/server.mjs
+               tools: execute, run
+ codemode / TanStack caller
+        │
+        v
+ MicroVMExecutor ─ policy (executor/policy) ─ provider tools + credentials
+        │
+ SandboxPool: warm parked sessions, FIFO admission
+        │
+ Engine / Session ── ShardBackend ──IPC records──> macOS: hvf ipc                    guest kernel, ring profile
+                                     (fd 3 socket)   zygote ─fork─> 1 process/slot   QuickJS (or a native ELF) at EL0
+                                                     Linux: real ipc                   │
+                                                     owner threads + leases           │ ring records + doorbell
+                                                   slot: VM + snapshot reset <────────┘
 ```
 
-Build-time packing selects a static ELF and canonical protocol bootstrap; no
-runtime guest ELF parser. Fixed dispatch slots make a deleted handler ENOSYS.
-Active consumers use one canonical protocol source; generated JS is build output.
-The Hyperlight comparison adapter exposes distinct fresh-VM strict and shared-VM
-logical-clone contracts. Growth now uses the explicit confined canonical-v2 VMM. Builder/oracle execution
-is trusted; it is a different boundary from running hostile guest JavaScript.
+## A run
 
-Trust boundaries: guest EL0/EL1, tool results and frames are hostile to the host.
-EL0/EL1 mappings mediate pointers/devices; a separate sandboxed VMM process limits
-host access. Kernel diagnostics cannot authorize tools or establish success.
-Host policy validates lookup/arguments/approvals and owns per-call credentials.
-RUN follows stderr sandbox acknowledgement plus guest READY; validated `done`
-resolves while capacity stays charged through reap. Each invocation passes its
-absolute deadline to a separate watchdog process before RUN. The watchdog
-survives blocked Node, but measured scheduling overshoot still fails the target;
-API return and cooperative AbortSignal delivery also wait for a blocked callback
-to resume ([final failures](CLAIMS.md)). Builder OS isolation remains unproven.
+1. **Park.** The pool keeps `warm` sessions parked: a slot whose VM sits at
+   the snapshot's CHECKPOINT, admitted and bound to a generation.
+2. **Start.** `execute(code)` takes a parked session and sends START with the
+   tenant source. The guest kernel resumes, reseeds entropy
+   (`kernel/README.md` "Ring payload and entropy after restore") and runs the
+   source in QuickJS.
+3. **Calls.** A tool call is a ring record; the doorbell exits to the engine,
+   which forwards it to Node as an IPC record. Node validates it, the policy
+   decides, the provider runs on the host, and the reply goes back the same
+   way. While a call is open the guest parks (WAIT); its timers keep running.
+4. **Done.** The completion value comes back as DONE (with STATS). The engine
+   resets the slot: the writable guest memory is copied back from the
+   snapshot and the registers restored, then the slot is pristine again.
+5. **Deadlines and failure.** The engine holds each run's deadline and kicks
+   the vCPU at it. Bad guest content ends that session only; a slot whose
+   reset fails is quarantined (on HVF re-forked and reported RESTORED).
 
-Configured limits: one vCPU/console,32MiB RAM (VMM also accepts64MiB),16MiB qjs
-heap; frames1MiB/depth32/outstanding64/calls4096. These do not bound total host
-memory or noncooperative tools. [Configuration/test evidence](CLAIMS.md).
+## Components
 
-Measured R4 using the unchanged R3 counter, load1 45.50. Physical lines include
-comments/blanks, tests, build code and selected configuration. Vendor, generated
-code, data and output are excluded. [Counter](count-loc.ts), [frozen inventory](../../10-minimalist-critic/r4/frozen/review/loc-final.json).
+| Subtree | Role | Start reading |
+| --- | --- | --- |
+| [`mcp/`](../mcp/README.md) | MCP server: `execute` (code-mode JS) and `run` (a native profile), file-backed resources | `server.mjs` |
+| [`executor/`](../executor/README.md) | `MicroVMExecutor` (Cloudflare codemode `Executor`, TanStack `IsolateDriver`), `SandboxPool`, the `Engine`/`Session` interface and its adapters, engine selection | `engine.ts`, `executor.ts`, `select-backend.ts` |
+| [`executor/policy/`](../executor/policy/README.md) | host policy: tool lookup, argument and output validation, approvals, per-call credentials | `policy.mjs` |
+| [`shard/`](../shard/README.md) | the ring engine: slots, snapshot reset, the `hv` seam, KVM (`real`) and HVF (`hvf`) backends, IPC service, native worker, snapshot preparation | `src/slot/`, `src/hv.rs` |
+| [`abi/`](../abi/README.md) | `jitk-abi`: ring, arena, IPC values defined once (ABI v11); generates the TS and guest copies | `src/lib.rs` |
+| [`kernel/`](../kernel/README.md) | the guest kernel: syscall handlers, MMU, ring transport; ring and console profiles | `src/main.rs`, [`ARCH.md`](../kernel/ARCH.md) |
+| [`protocol/`](../protocol/README.md) | protocol v1 (console profile) and the frame checks the ring path reuses | `dispatcher.ts` |
+| [`grow/`](../grow/README.md) | GrowOS: grows missing syscall handlers against a Linux oracle (developer loop) | `loop.ts` |
+| [`bench/`](../bench/README.md) | load-aware benchmark harness, Hyperlight comparison | `run.ts` |
+| [`tools/`](../tools/), [`tslib/`](../tslib/) | setup (`doctor`, `deps`), CI, layering lint, evidence tool; shared TS helpers | `ci.sh`, `deps.ts` |
 
-| Component | LOC |
-|---|---:|
-| Kernel (runtime alone 1,440) | 2,314 |
-| VMM | 1,115 |
-| Sandbox | 539 |
-| Executor | 1,158 |
-| Policy | 248 |
-| Canonical protocol | 878 |
-| Grow | 976 |
-| Bench | 691 |
-| Hyperlight adapter | 614 |
-| Linux kit | 640 |
-| Docs scripts | 201 |
-| Top Makefile | 35 |
-| **Total** | **9,409** |
+## Engines and the `hv` seam
 
-Down 1,249 from R3's 10,658. All 15 duplicate groups named by the R3 source
-audit are resolved: one per-VM watchdog shared by executor/Hyperlight, canonical
-kernel handlers for grow, canonical fault fixtures, one exit implementation,
-and one policy test. A duplicate Linux/VMM fixture linker script remains.
-The benchmark's multiplexed harness watchdog is a separate measurement helper.
-Upstream libkrun patch delta +174/−93 remains separate. [Source audit](../../10-minimalist-critic/r4/frozen/review/source-audit-final.json).
-No whole-product 1.5k claim; 9,409 still exceeds the 5,750 planning alarm.
+`slot::Slot<V: hv::Vm>` holds everything hypervisor-neutral: guest RAM over the
+arena class regions (immutable extents read-only on both sides), the ring
+record decoder and reply path, admission, reset, trim and verify. Behind the
+seam (`shard/src/hv.rs`) are two backends with different process topologies:
 
-Reproduce the inventory with `make loc`. The [Makefile](../Makefile) delegates
-subtree README commands. Full source/build/receipt hashes and the separate
-certified and rebuilt binaries are in the [frozen manifest](../../10-minimalist-critic/r4/frozen/manifest.json).
+| | Linux: KVM shard (`real ipc`) | macOS: HVF engine (`hvf ipc`) |
+| --- | --- | --- |
+| VMs | one VM fd per slot, many per process | one VM per process (an HVF rule) |
+| topology | owner threads run slots; leases carry deadlines | a single-threaded zygote forks one long-lived engine process per slot |
+| reset | pagemap: copy private pages, or `MADV_DONTNEED` | copy both writable extents |
+| confinement | none yet | Seatbelt (`jitk.sb`), fork dropped ([CONTRACTS](../CONTRACTS.md)) |
+| role | the production engine | the development engine |
 
-MCP front (`mcp/`): an official-SDK MCP server (stdio; optional stateless HTTP)
-maps one `execute` tool onto `MicroVMExecutor` with a warm `SandboxPool`. Guest tools
-come from config-listed provider modules declared in the 07 policy format. Resources
-are a plain file directory. The MCP layer holds no limits or policy of its own.
+Snapshots are prepared per arena class (`glue-2m`, `glue-4m`) by
+`make -C shard snapshot` and stored in the jitk cache under a key derived
+from the ring kernel image and helper hashes; both engines refuse a snapshot
+whose ABI version differs (Node checks it too).
+
+## Kernel profiles
+
+One kernel source tree builds two profiles (`kernel/README.md`):
+
+- **ring** (`transport-ring`): shared-memory rings and a doorbell, booted only
+  from a snapshot by the ring engine. This is what the executor and MCP run.
+- **console** (default build): a virtio console speaking protocol v1 on stdio,
+  booted by `hvf console`. GrowOS, `scriptc-corpus`, the kernel suite and the
+  protocol VM tests use it, because they need its stdin, path syscalls and
+  inline trace records.
+
+## Limits
+
+Both engines admit the same JS jobs (ABI v11, `Engine.limits`): 4,096 calls
+per run with 64 open, 1 MiB calls, replies and completions, 64 KiB of tenant
+code, 1,024 log lines, guest timers. The practical bound on big values is the
+glue-2m arena (about 400 KiB of QuickJS heap). Details:
+`shard/README.md` "Limits (ABI 11)". A 96-case corpus
+(`executor/parity/`) checks that both engines behave the same.
+
+## Trust boundaries
+
+- Guest EL0 and EL1, and everything they send, are hostile to the host. The
+  kernel enforces EL0 isolation, pointer checks and W^X; the engine bounds and
+  decodes every ring record; Node validates every IPC record again before an
+  event exists (`executor/engine.ts`).
+- The engine runs out of process: it is the crash and confinement boundary.
+  On macOS it is Seatbelt-confined; the Linux shard is not yet confined.
+- Policy and credentials exist only in Node. Kernel diagnostics never
+  authorize a tool or establish success.
+- GrowOS's builder and oracle are trusted developer tools, a different
+  boundary from hostile guest code.
+
+## Gates and evidence
+
+`.READY` markers record what a gate certified ([READY.md](READY.md) lists
+them). Bulk run output lives outside git in a content-addressed store
+([evidence/README.md](../../../evidence/README.md)). Dated measurement reports
+are indexed in [results/](results/README.md); the current performance numbers
+are in the latest review (`arch/review/R11-REVIEW.md`). `make loc` prints the
+owned-source line inventory.

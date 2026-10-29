@@ -1,17 +1,19 @@
 // Link check for the jitk docs (`make -C arch/jitk/docs test`): every relative
-// markdown link in a tracked arch/jitk/**/*.md file must name a tracked file or
-// directory, or a file moved to the evidence store (evidence/manifest.json),
-// and every #anchor must match a heading (GitHub slug) or an explicit id in
-// the target. URLs with a scheme are not fetched. Code spans and fenced blocks
-// are skipped.
-import { readFileSync } from 'node:fs';
+// markdown link in an arch/jitk/**/*.md file (tracked, or new and not ignored)
+// must name such a file or directory, or a file moved to the evidence store
+// (evidence/manifest.json), and every #anchor must match a heading (GitHub
+// slug) or an explicit id in the target. URLs with a scheme are not fetched.
+// Code spans and fenced blocks are skipped.
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, normalize } from 'node:path';
 import { git, readManifest, repoRoot } from '../tslib/evidence.ts';
 
 const ROOT = repoRoot(import.meta.dirname);
 const SCOPE = 'arch/jitk/';
 
-const tracked = new Set(git(ROOT, ['ls-files', '-z']).split('\0').filter(Boolean));
+// Tracked files plus new ones not yet added (but never ignored ones), as long
+// as they exist in the working tree.
+const tracked = new Set(git(ROOT, ['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(path => path && existsSync(join(ROOT, path))));
 const manifest = readManifest(ROOT);
 const known = new Set<string>(tracked);
 for (const entry of manifest ? manifest.files : []) {
