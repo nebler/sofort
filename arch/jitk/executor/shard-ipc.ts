@@ -104,7 +104,10 @@ export type Channel={send(m:Message):Promise<void>;close():void};
  *  Input is parsed from one bounded buffer (a record plus a read); writes past
  *  IPC.nodeOutbound unflushed records fail the channel, as SharedChannel's do. */
 export class PipeChannel implements Channel {
-  private input:Buffer=Buffer.alloc(0);
+  /** Unparsed input as received, `size` bytes; joined once `need` bytes (the next header or record) are here. */
+  private input:Buffer[]=[];
+  private size=0;
+  private need:number=IPC.headerBytes;
   private assembler=new Assembler();
   private unflushed=0;
   private error?:Error;
@@ -115,18 +118,23 @@ export class PipeChannel implements Channel {
   }
   private data(b:Buffer) {
     if(this.error)return;
-    this.input=this.input.length?Buffer.concat([this.input,b]):b;
-    while(this.input.length>=IPC.headerBytes){
-      const n=this.input.readUInt32LE(20);
+    this.input.push(b);this.size+=b.length;
+    // Small reads are only queued: joining on every read would copy a record once per read.
+    if(this.size<this.need)return;
+    let input=this.input.length===1?this.input[0]:Buffer.concat(this.input,this.size);
+    this.need=IPC.headerBytes;
+    while(input.length>=IPC.headerBytes){
+      const n=input.readUInt32LE(20);
       if(n>IPC.payload)throw Error('shard IPC peer envelope');
-      if(this.input.length<IPC.headerBytes+n)break;
+      if(input.length<IPC.headerBytes+n){this.need=IPC.headerBytes+n;break;}
       // A private copy: message() and the receiver never see the stream buffer.
-      const record=Buffer.from(this.input.subarray(0,IPC.headerBytes+n));
-      this.input=this.input.subarray(IPC.headerBytes+n);
+      const record=Buffer.from(input.subarray(0,IPC.headerBytes+n));
+      input=input.subarray(IPC.headerBytes+n);
       const m=this.assembler.push(record);
       if(m)this.receive(m);
       if(this.error)return;
     }
+    this.input=input.length?[input]:[];this.size=input.length;
   }
   send(m:Message):Promise<void> {
     if(this.error)return Promise.reject(this.error);
