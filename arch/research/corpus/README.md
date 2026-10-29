@@ -1,9 +1,11 @@
-# Transcript corpus: about 170 videos (2026-10-28)
+# Transcript corpus: 245 unique videos after round 14 (2026-10-29)
 
 **Later rounds:** the final solo/10×/model-tailwind filter and round-13 findings are in
 [`tailwind/SUMMARY.md`](tailwind/SUMMARY.md). Round 14 adds 80 videos from previously thin communities plus oracle,
-paper and issue-tracker research; see [`gaps/STATUS.md`](gaps/STATUS.md) for continuation status and report locations.
-The inventories below describe the original three-playlist batch.
+paper and issue-tracker research; start with [`gaps/SUMMARY.md`](gaps/SUMMARY.md) for the completed gap analysis and
+[`gaps/TRANSCRIPT-SYNTHESIS.md`](gaps/TRANSCRIPT-SYNTHESIS.md) for new transcript findings and reproducible counts.
+There are 232 distinct IDs in this directory's transcripts and 13 in Connect26, with no overlap. The inventories below
+describe the original three-playlist batch; G09/G10 list the 80 additions.
 
 Three playlists combined:
 - the builder's 88-video playlist (podcasts, talks, creator videos), transcribed here;

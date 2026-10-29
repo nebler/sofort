@@ -196,6 +196,8 @@ Moreover, Eunomia's 2026 primary [hook-composition contract notes](https://eunom
 | 11 | S11 Approval independence | 3 | 3 | 4 | 2 | 2 | 4 | Authority completeness/solo risk |
 | 12 | S12 CPU ray queries | 4 | 4 | 4 | 1 | 3 | 5 | Taken / being built; drop broad pitch |
 
-**TL;DR —** 80 new unique videos and 3,322 signal rows close broad community-presence gaps, not the search for worthwhile ideas.  
-Source-facing compiled memory bounds merit the next bounded inquiry; Verilator and eBPF have sharp constraints, and CPU ray queries are already being built.  
+**TL;DR —** 80 new unique videos and 3,322 signal rows close broad community-presence gaps, not the search for worthwhile ideas.
+
+Source-facing compiled memory bounds merit the next bounded inquiry; Verilator and eBPF have sharp constraints, and CPU ray queries are already being built.
+
 Dedicated audio DSP, robotics, non-English sources and practitioner backlog sampling remain gaps; no all-filter winner or universal correctness claim is established.

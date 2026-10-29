@@ -2,8 +2,8 @@
 
 **Historical filter:** this summary records the earlier 100–1000× round. Its institutional recommendations were
 subsequently rejected; the current filter is solo-buildable, about 10× ambition, clear value and model tailwind.
-Start with [`tailwind/SUMMARY.md`](tailwind/SUMMARY.md) for round 13 and [`gaps/STATUS.md`](gaps/STATUS.md) for the
-round-14 gap-analysis continuation. The text below is retained as the record of the earlier round.
+Start with [`tailwind/SUMMARY.md`](tailwind/SUMMARY.md) for round 13 and [`gaps/SUMMARY.md`](gaps/SUMMARY.md) for the
+completed round-14 gap analysis. The text below is retained as the record of the earlier round.
 
 **Verified** means I checked the quote in the transcript or the source myself. Everything else is the agents' research,
 labelled in their reports.
