@@ -6,8 +6,11 @@
 // Each request carries its budget: the worker stops the guest at the deadline
 // itself, reports it (status 2) and stays usable; it also dies with this
 // process. Node's timer only backs that up: a worker still silent
-// deadlineGraceMs past the deadline, a release mid-run (there is no per-run
-// cancel) or a broken worker is killed, and the next request gets a new one.
+// deadlineGraceMs past the deadline or a broken worker is killed, and the next
+// request gets a new one. A release mid-run (there is no per-run cancel) ends
+// the caller's run at once and leaves the worker to finish it within its
+// budget, so cancelling never spends a restart; only a run without a deadline
+// is stopped by killing the worker.
 // NATIVE_RESTARTS bounds those restarts per window; past it the engine is
 // unavailable until the window has passed, so a crash loop cannot spin.
 // Failure messages say which: `native job failed` (that request; the worker
@@ -285,7 +288,10 @@ class NativeSession implements Session {
     if(this.inFlight){
       // Past its deadline the worker is stopping the guest itself: wait for its report (the grace timer backs it).
       if(this.failure!.cause==='deadline'){this.draining=true;return;}
-      // No per-run cancel: a release mid-run stops the worker (failed() follows).
+      // No per-run cancel. With a deadline the worker stops the run itself (the
+      // grace timer backs it): drain it, so a cancel neither kills the worker nor
+      // spends the restart budget other callers rely on. Without one, stop it.
+      if(this.deadline!==undefined){this.draining=true;return;}
       clearTimeout(this.timer);this.backend.stop(this,'native run cancelled');return;
     }
     clearTimeout(this.timer);this.free();

@@ -83,18 +83,26 @@ for(const bad of [job([],{},'../bad'),job(['a\0b']),job(['\ud800']),job(Array(32
   } finally {await pool.close();}
 }
 {
-  // Cancellation mid-run stops the worker; the queued caller runs on its successor.
-  const b=engine(),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000),ac=new AbortController();
+  // Cancellation mid-run ends that run at once; the worker finishes it within its
+  // budget and stays, so the queued caller runs on the same worker and repeated
+  // cancels never spend the restart budget (or lock other callers out).
+  const b=engine({restarts:{max:2,windowMs:60000}}),pool=new SandboxPool(b,0,1),ex=new NativeExecutor(pool,2000);
+  const holding=async()=>{for(const end=Date.now()+10000;;await new Promise(r=>setImmediate(r))){
+    const p=pool.snapshot();if(p.live===1&&p.creating===0&&p.waiting===1)return;
+    assert(Date.now()<end,'the job never started: '+JSON.stringify(p));}};
   try {
     const first=b.pid;
-    const running=ex.run(job(['hang']),{signal:ac.signal}),queued=ex.run(job(['pid']));
-    // Abort once the hanging job holds the worker and the second caller waits.
-    for(const end=Date.now()+10000;;await new Promise(r=>setImmediate(r))){
-      const p=pool.snapshot();if(p.live===1&&p.creating===0&&p.waiting===1)break;
-      assert(Date.now()<end,'the job never started: '+JSON.stringify(p));
+    for(let i=0;i<6;i++){
+      const ac=new AbortController(),started=Date.now();
+      const running=ex.run(job(['spin']),{signal:ac.signal,timeout:200}),queued=ex.run(job(['pid']));
+      await holding();ac.abort();
+      assert.equal(code(await running),'CANCELLED');assert(Date.now()-started<150,'cancel returns at once');
+      assert.equal(Number(Buffer.from(ok(await queued).stdout).toString()),first);
     }
-    ac.abort();
-    assert.equal(code(await running),'CANCELLED');
+    assert.equal(b.pid,first);checks++;
+    // A cancelled run whose worker then misses its deadline is still stopped.
+    const ac=new AbortController(),running=ex.run(job(['hang']),{signal:ac.signal,timeout:150}),queued=ex.run(job(['pid']));
+    await holding();ac.abort();assert.equal(code(await running),'CANCELLED');
     const next=Number(Buffer.from(ok(await queued).stdout).toString());assert(next>0&&next!==first);checks++;
   } finally {await pool.close();}
 }

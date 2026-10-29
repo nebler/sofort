@@ -213,8 +213,10 @@ Linux, a kqueue NOTE_EXIT watch of the parent on macOS, both effective while
 the vCPU runs; it refuses to start once its parent is gone. Node
 (`executor/native-backend.ts`) sends the session's remaining time as the
 budget, fails the session at its deadline (TIMEOUT), and kills the worker only
-if it has not reported 1 s later, or on a cancel mid-run (there is no per-run
-cancel) or a broken frame. The next request then gets a new worker; at most 5
+if it has not reported 1 s later or on a broken frame. A cancel mid-run (there
+is no per-run cancel) ends the session at once and drains the worker, which
+finishes the run within its budget; only a run without a deadline is stopped
+by killing the worker. The next request then gets a new worker; at most 5
 restarts per 60 s, after which the engine answers `native engine unavailable`
 until the window has passed. Messages separate a failed job (`native job
 failed`, the worker is fine), a failed engine (`native engine failed`, it

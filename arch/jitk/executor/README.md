@@ -22,8 +22,10 @@ A job is `js` (tenant code and tool names, run by `MicroVMExecutor`) or
 native session yields `stdout`, `stderr` and `done {exitCode, outputLimited}`,
 and its `limits.native` carries the profiles and the JNR8 request/output bounds.
 Each request carries its budget, which the worker enforces itself; the backend
-restarts a worker it had to stop (cancel, missed deadline, broken frame) within
-`NATIVE_RESTARTS` (5 per 60 s).
+restarts a worker it had to stop (missed deadline, broken frame) within
+`NATIVE_RESTARTS` (5 per 60 s). A cancel mid-run drains instead: the caller's
+run ends at once and the worker finishes it within its budget, spending no
+restart.
 `native-check.ts` runs it on a stand-in worker (`fixtures/native-worker.mjs`).
 
 ## Build, test, demo

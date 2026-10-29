@@ -103,10 +103,11 @@ tool's bounds come from the engine's `limits.native`. Each call's remaining
 time travels with the request and the worker stops the guest at that deadline
 itself (Linux: the shard's lease watchdog; macOS: a supervisor thread), so a
 TIMEOUT leaves the worker serving. The worker exits with the MCP server, even
-mid-run. A client cancellation, or a worker silent 1 s past its deadline,
-kills the worker and the next call starts a new one; after 5 such restarts in
-60 s native calls return SANDBOX `native engine unavailable` until the window
-has passed. Failure messages name a failed job, a failed (restarting) engine
+mid-run. A client cancellation returns CANCELLED at once and leaves the worker
+to finish that run within its budget (queued calls wait for it), so cancelling
+never costs a restart. A worker silent 1 s past its deadline is killed and the
+next call starts a new one; after 5 such restarts in 60 s native calls return
+SANDBOX `native engine unavailable` until the window has passed. Failure messages name a failed job, a failed (restarting) engine
 or an unavailable one. It does not add per-call helper processes.
 
 Portable validation: `$JITK_NODE native-test.mjs` (MCP input decoding) and the
