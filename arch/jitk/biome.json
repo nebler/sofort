@@ -1,0 +1,32 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "root": "../.." },
+  "files": {
+    "includes": [
+      "**/*.ts",
+      "**/*.mjs",
+      "**/*.js",
+      "!**/vendor",
+      "!bench/ledger/artifacts",
+      "!hvf-spike",
+      "!executor/shard-helpers.js",
+      "!kernel/ring-bootstrap.js",
+      "!**/*.d.ts"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "arrowParentheses": "asNeeded" }
+  },
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "style": { "useTemplate": "off", "noNonNullAssertion": "off" }
+    }
+  },
+  "assist": { "enabled": false }
+}

@@ -18,6 +18,7 @@ import {
 import { dirname, join, resolve } from "node:path";
 import { loadavg } from "node:os";
 import { cacheRoot, requireArtifact } from "../tslib/deps.ts";
+import { skipOrFail } from "../tslib/skip.ts";
 import {
   ROOT,
   capture,
@@ -856,8 +857,9 @@ export async function probe(kind: string): Promise<void> {
 export async function gate(): Promise<void> {
   const missing = censusMissing();
   if (missing.length) {
-    console.log(
-      "check-native-r7: SKIP: pinned census binaries absent from " +
+    skipOrFail(
+      "check-native-r7",
+      "pinned census binaries absent from " +
         CENSUS +
         " (" +
         missing.join(" ") +
@@ -932,23 +934,23 @@ export async function gate(): Promise<void> {
 // src/hvf/native.rs): the six profiles prepared by HVF, the 41 cases twice
 // against a Linux run's recorded oracle (JITK_NATIVE_REFERENCE), and the
 // mismatched-layout rejection. The fd and region probes compare with the
-// probe itself running on Linux and stay Linux-only. Skips while the census
-// or the reference is absent.
+// probe itself running on Linux and stay Linux-only. Without the census or
+// the reference it fails unless JITK_ALLOW_SKIP names check-native-hvf.
 export async function gateHvf(): Promise<void> {
   const missing = censusMissing();
   const path = process.env.JITK_NATIVE_REFERENCE || "";
   if (missing.length || !path || !existsSync(path)) {
-    console.log(
-      "check-native-hvf: SKIP: " +
-        (missing.length
-          ? "pinned census binaries absent from " +
+    skipOrFail(
+      "check-native-hvf",
+      missing.length
+        ? "pinned census binaries absent from " +
             CENSUS +
             " (" +
             missing.join(" ") +
             "); `./tool.sh import-census FILE|CENSUS_DIR...`"
-          : "no Linux reference corpus (JITK_NATIVE_REFERENCE=" +
+        : "no Linux reference corpus (JITK_NATIVE_REFERENCE=" +
             path +
-            "); `make -C arch/jitk/executor parity-ssh` fetches it from kvm-dev"),
+            "); `make -C arch/jitk/executor parity-ssh` fetches it from kvm-dev",
     );
     return;
   }

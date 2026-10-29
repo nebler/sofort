@@ -158,6 +158,6 @@ it uses a separate compiled process so synchronous collection cannot stall it.
 `make test` replays recorded samples against original-Python parity digests,
 without running Python or modifying published evidence. Optional preserved
 memory collections can also be checked with
-`JITK_LEDGER_INPUTS=/absolute/ledger-collection make test`.
+`JITK_LEDGER_INPUTS=/absolute/ledger-collection make test-memory`.
 See [PARITY.md](PARITY.md) for evidence and the sole formatting normalization,
 and [SCRIPTC-GAPS.md](SCRIPTC-GAPS.md) for compiler findings and minimal repros.

@@ -42,7 +42,7 @@ From a fresh clone (or after a reboot cleared `/tmp`), with no `JITK_*` or
 `HYPERLIGHT_*` variables set:
 
 ```sh
-make -C arch/jitk build test   # build and test depend on deps; it runs first
+make -C arch/jitk test   # test depends on build, build on deps
 ```
 
 `make deps` (also the first step of `build`, `test`, `bench` and `demo`)
@@ -54,6 +54,7 @@ building.
 | --- | --- | --- |
 | `JITK_NODE`, `JITK_NPM_CLI` | `node/v24.22.1-{darwin,linux}-arm64/` | nodejs.org tarball, sha256 pinned in [`tools/deps.json`](tools/deps.json); macOS: `bin/node-real` ad-hoc signed with [`tools/node.entitlements`](tools/node.entitlements) (Hypervisor), signed hash pinned; npm is the tarball's `npm-cli.js` |
 | `JITK_ZIG` | `zig/0.16.0-{darwin,linux}-arm64/zig` | ziglang.org tarball, sha256 pinned in `tools/deps.json`; the static aarch64 Linux cross-linker ([`tools/zig-cc.sh`](tools/zig-cc.sh)) and `zig cc` for C cross-builds. Makefiles read it as `$(ZIG)` ([`tools/pin.mk`](tools/pin.mk)); an explicit `ZIG` or `JITK_ZIG` wins |
+| `JITK_BIOME` | `biome/2.6.4-{darwin,linux}-arm64/biome` | the Biome release binary, sha256 pinned in `tools/deps.json`; the TS/JS formatter and linter for `make fmt` and `make lint` ([`biome.json`](biome.json)) |
 | `HYPERLIGHT_JS_SRC` (macOS) | `src/hyperlight-js-<commit>/` | `git fetch --depth 1` of the pinned commit |
 | `HYPERLIGHT_WORKER`, `HYPERLIGHT_SNAPSHOT` (macOS) | `hyperlight/darwin-arm64-<inputs>/` | [`bench/hyperlight/build.ts`](bench/hyperlight/build.ts) from that source; `cargo fetch --locked`, then offline build |
 | `JITK_SHARD_BINARY` | `shard/{linux,darwin}-arm64-<inputs>/{real,hvf}` | the shard binary from this checkout, pinned toolchain; `cargo fetch --locked`, then offline build. Linux: `real` (KVM); macOS: the HVF engine `hvf`, ad-hoc signed with [`shard/hypervisor.entitlements`](shard/hypervisor.entitlements). Both also serve `process-watchdog` (the process backends' deadline watchdog); `hvf console` boots the console kernel profile (GrowOS, kernel and protocol tests) |
@@ -95,33 +96,74 @@ shard suites run from a clean clone with no variables set; see
 
 ## CI
 
-`make ci` ([`tools/ci.sh`](tools/ci.sh)) is the single entrypoint for a clean
-Linux arm64 host. It runs `doctor` and `deps` (a failure stops the run). Then
-the layering lint, `abi test`, the kernel build, a check that the built image
-has `kernel/.READY`'s hash (Linux builds the Mac's bytes; see
-[`kernel/ARCH.md`](kernel/ARCH.md) "Image identity"), the kernel host checks,
-`docs test`, shard `make test`, protocol, the executor checks that need no
-engine, policy, the MCP build and native test, tslib,
-bench, grow and every scriptc build. With a usable `/dev/kvm` it also runs
-`shard snapshot`, `shard test-kvm`, `executor/ipc/shard-host.sh`, the
-executor checks on the shard (Linux's default engine: `verify`,
-`wrapper-conformance`, `api-check`, `policy-check`) and `mcp test`, all under
-`$JITK_BENCH_LOCK`, plus `make test-linux`. It ends by checking that the git
-checkout is still clean. Every skipped part prints its reason. The kernel
-regression and fs_diff suites (the console kernel on `hvf console`, Homebrew
-`ld.lld`), Hyperlight and HVF stay in the Mac's `make test`. The run
-exits 1 if any step failed. `JITK_CI_KVM=0` skips the KVM part and
-`JITK_CI_KVM=1` requires it.
+[`tools/ci.sh`](tools/ci.sh) is the CI entrypoint. It runs in parts, each
+behind a make target:
 
-[`.github/workflows/jitk-ci.yml`](../../.github/workflows/jitk-ci.yml) runs it
-on GitHub's `ubuntu-24.04-arm` runner (2 vCPU, 8 GB) for pushes to `main`,
-pull requests and manual dispatch. It only triggers on changes under
-`arch/jitk/` or to the workflow. It installs only what `doctor` asks for and
-caches the jitk deps cache, npm cache and cargo registry, keyed by
-`tools/deps.json` and the lockfiles. GitHub's arm64 runners expose no
-`/dev/kvm`, so the KVM part is skipped there and still runs on kvm-dev, or on
-a self-hosted KVM runner with `JITK_CI_KVM=1`. On kvm-dev:
-`make -C arch/jitk ci`.
+| target | host | runs |
+| --- | --- | --- |
+| `make ci-host` | Linux arm64, no KVM needed | the layering lint, `abi test`, the kernel build, a check that the built image has `kernel/.READY`'s hash (Linux builds the Mac's bytes; [`kernel/ARCH.md`](kernel/ARCH.md) "Image identity"), kernel `check` (rustfmt, clippy with `undocumented_unsafe_blocks` denied) and host checks, `docs test`, shard `test` and `clippy`, protocol, the executor checks that need no engine, policy, the MCP build and native test, tslib, bench, grow, every scriptc build, and the TS lint (report only) |
+| `make ci-kvm` | Linux arm64 with a usable `/dev/kvm` | `shard snapshot`, `executor/ipc/shard-host.sh`, the executor checks on the KVM shard (`verify`, `wrapper-conformance`, `api-check`, `policy-check`), `mcp test`, then `make test-linux` (parity corpus, shard-check, `shard test-kvm`, shard `check-native-r7`, the native census regression), each under `$JITK_BENCH_LOCK` where it needs it |
+| `make ci` | Linux arm64 KVM host (kvm-dev) | both of the above |
+| `make ci-mac` | macOS arm64 | `shard test-hvf` (with `hvf confine`), the executor's shard-check on the HVF engine, executor parity, the parking gate and `mcp test` with warm pools |
+
+Every run starts with `doctor` and `deps` (a failure there stops it) and ends
+by checking that the checkout is still clean. Every other step runs, and the
+run exits 1 when any failed. Each step's output also goes to
+`tools/.work/ci-logs/NN-<step>.log` (`$JITK_CI_LOGS`), with `summary.txt`
+ending in the last 60 lines of every failed step's log.
+
+**Skips fail.** A check that cannot run here (no `/dev/kvm`, census inputs or
+a reference corpus missing, no prepared snapshot) fails unless its name is
+listed in `JITK_ALLOW_SKIP` (comma- or space-separated), and prints why either
+way ([`tools/skip.sh`](tools/skip.sh), [`tslib/skip.ts`](tslib/skip.ts)). The
+names: `kvm` (ci.sh's kvm part), `check-native-r7` (shard `check-native-r7`),
+`check-native-hvf` (shard `check-native-hvf`), `executor-shard-check`
+(executor `run.sh test`), `checkout-clean`. Steps that never apply to a
+platform are listed as `n/a` with the reason (the console-kernel regression
+and Hyperlight on Linux). Checks whose inputs are not in the repository have
+their own targets instead of a silent skip: bench `make test-memory`, shard
+`make check-native-hvf` (run by `make -C executor parity-ssh`).
+
+[`.github/workflows/jitk-ci.yml`](../../.github/workflows/jitk-ci.yml) runs on
+pushes to `main`, pull requests from this repository and manual dispatch,
+for changes under `arch/jitk/` or to the workflow:
+
+- `host`: `make ci-host` on GitHub's `ubuntu-24.04-arm` runner (2 vCPU, 8 GB,
+  no `/dev/kvm`). It installs only what `doctor` asks for and caches the jitk
+  deps cache, npm cache and cargo registry, keyed by `tools/deps.json` and the
+  lockfiles.
+- `kvm`: `make ci-kvm` on the self-hosted runner on kvm-dev (labels
+  `self-hosted, linux, arm64, kvm`), one run at a time.
+- `mac`: `make ci-mac` on a self-hosted Mac runner (labels
+  `self-hosted, macOS, ARM64, hvf`); it runs only while the repository
+  variable `JITK_MAC_RUNNER` is `true`.
+
+A failed job uploads its `ci-logs` directory as an artifact.
+
+Runners: [`tools/ci-runner.sh`](tools/ci-runner.sh) `install|remove|status`
+sets one up on the host it runs on, pinned by version and sha256. On kvm-dev
+it is the systemd user service `jitk-ci-runner.service` of user `dev`
+(lingering enabled, so it starts at boot), installed in
+`/home/dev/actions-runner` with jobs in its `_work/`; the KVM suites share
+`/home/dev/bench.lock` with manual benchmarks. Stop it with
+`systemctl --user stop jitk-ci-runner` on kvm-dev; unregister it with
+`RUNNER_TOKEN=$(gh api -X POST repos/nebler/sofort/actions/runners/remove-token --jq .token)`
+and `ci-runner.sh remove`. To add the Mac (a launchd agent of the logged-in
+user), run on the Mac:
+
+```sh
+RUNNER_TOKEN=$(gh api -X POST repos/nebler/sofort/actions/runners/registration-token --jq .token) \
+  RUNNER_LABELS=hvf sh arch/jitk/tools/ci-runner.sh install
+gh variable set JITK_MAC_RUNNER --body true --repo nebler/sofort
+```
+
+Without a Mac runner, run `make -C arch/jitk ci-mac` (or `make test`) on the
+Mac by hand.
+
+TS/JS formatting and lint: `make fmt` rewrites arch/jitk's TS, JS and MJS
+with the pinned Biome ([`biome.json`](biome.json)); `make lint` checks them
+and fails on any finding. CI runs the lint report-only until the codebase has
+had its one-shot `make fmt`.
 
 MCP clients reach jitk through [`mcp/`](mcp/README.md): one `execute` tool that runs
 code-mode JS in a parked single-use VM, plus file-backed skill/doc resources.
