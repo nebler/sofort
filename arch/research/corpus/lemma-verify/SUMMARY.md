@@ -38,3 +38,28 @@ matches the CPU for the emitted forms. There are three serious qualifications:
 - the "Wasm" side is a model language, not Wasm.
 
 Speed is a code-quality problem, not an architecture problem.
+
+## Fixes applied (2026-10-29, spike at `~/.t3/scratch/…/lemma-spike`, git-tracked)
+- **Spec lock (fix 1, done):**
+  - The Lean model is split into locked `lean/Spec/` and an untrusted `Compiler.lean`.
+  - Artifacts must prove `Spec.Accepts program bodyBytes`, which mentions no compiler.
+  - The build refuses edits to locked files without `npm run lock -- "<reason>"`, and refuses untrusted Lean that could add axioms or elaborators.
+  - Conformance evaluates the locked semantics against V8 and the CPU.
+  - The V2 joint modulo-16 mutant is now refused by the lock and, if re-locked, rejected by conformance at `shift(16)` (`npm run check:drift`).
+- **Memory model (fix 3, done):**
+  - Loads and stores fault unless readable or writable; data addresses use TBI.
+  - The contract requires mapped linear memory at an untagged base below 2^56, so the claims now exclude data aborts.
+  - Ten hardware probes, including V3's 5 fault cases and tagged aliasing, agree with the M4 Pro.
+- **Proved speedups (fix 2, first slice, GPT-6.1-Sol):**
+  - New forms: ADD W #imm, LSL W #imm and B.cond, each locked separately and covered by 630 CPU comparisons.
+  - Proved immediate selection, compare/branch fusion and direct local updates.
+  - `fill(16384)`: 0.994 → 0.613 ns/iteration (1.62×), 32 → 24 instructions/iteration. That is about 1.8× behind V8, down from 3.0×. Rerun independently.
+  - Remaining: constant hoisting, repeated checked-load elimination and copy propagation, each needing proofs.
+- **LNSym bridge (fix 4, first slice, GPT-6.1-Sol, `lemma-lnsym/lnsym-bridge/`):**
+  - 17/23 emitted forms are proved, with universal decode agreement and one-step refinement against unchanged LNSym `5c05220` (= current main). 87 theorems use only the standard axioms. Re-verified independently.
+  - Blockers:
+    - CSINC/CSET execution is unimplemented in LNSym.
+    - The LDR/STR register-offset class is missing from LNSym's decoder.
+    - **An upstream bug:** B, B.cond and CBNZ compute `signExtend 64 (immN <<< 2)` inside N bits, losing the top two displacement bits. Large forward branches go backwards. This is kernel-checked and visible in the source.
+  - LNSym has no permissions or TBI, so the spike's full memory model cannot be derived from it unchanged.
+  - Estimate: 6–10 weeks for a composed normal-memory result, 8–14 weeks including faults and TBI.
