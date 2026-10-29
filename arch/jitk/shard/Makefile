@@ -12,9 +12,9 @@ test:
 # Lints for this host and, off Linux, for the Linux engine too (the musl
 # target the scriptc cross-builds already install; clippy only type-checks).
 clippy:
-	$(CARGO_PIN) clippy --locked --offline --all-targets -- -D warnings
+	$(CARGO_PIN) clippy --locked --offline --all-targets --all-features -- -D warnings
 ifneq ($(shell uname -s),Linux)
-	$(CARGO_PIN) clippy --locked --offline --all-targets --target aarch64-unknown-linux-musl -- -D warnings
+	$(CARGO_PIN) clippy --locked --offline --all-targets --all-features --target aarch64-unknown-linux-musl -- -D warnings
 endif
 
 # Prepared helper snapshots (glue-2m, glue-4m) in the jitk cache, content-

@@ -68,6 +68,7 @@ test: build
 	@"$(ROOT)/tools/.work/bin/layering" --self-test
 	+@$(DELEGATE) kernel check
 	+@$(DELEGATE) shard clippy
+	+@$(MAKE) -s -C "$(ROOT)/shard" test fuzz-smoke
 	+@$(MAKE) -s -C "$(ROOT)/docs" test
 	+@$(DELEGATE) abi test
 	+@$(DELEGATE) kernel test
