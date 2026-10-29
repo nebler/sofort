@@ -8,6 +8,10 @@ import {AdmissionQueue} from './pool.js';
 import {ARENA_CLASSES} from './abi.js';
 import {ABI_VERSION,IPC,PipeChannel,SharedChannel,checkReady,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 
+/** How long after a run's deadline the engine may take to report its end
+ *  before Node kills it: well past the engines' own escalation (KVM watchdog,
+ *  HVF zygote: 100 ms after the deadline) plus a reset. */
+export const DEADLINE_GRACE_MS=1000;
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are out of service now.
  *  On Linux a lost slot never returns; the HVF engine re-forks it and reports RESTORED. */
@@ -201,6 +205,7 @@ export class ShardSession implements Session {
   private resolveReleased!:()=>void;
   private run:ShardRun={phase:'parked',budget:new RunBudget(),wires:new Map(),nextWire:1,records:0,stats:false,admittedDeadlineNs:0n};
   private deadline?:number;
+  private overdue?:ReturnType<typeof setTimeout>;
   private failure?:Fail;
   private events:GuestEvent[]=[];
   private waiter?:(e:GuestEvent)=>void;
@@ -219,7 +224,20 @@ export class ShardSession implements Session {
     if(this.deadline!==undefined&&this.deadline!==deadline)throw Error('deadline already armed');
     this.deadline=deadline;
   }
-  failed(e:Error) {this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveReleased();}
+  failed(e:Error) {this.disarm();this.rejectStopped(e);this.end({...failure(e),cause:'engine'});this.run.phase='released';this.resolveReleased();}
+  /** The supervisor's end of the run deadline (shard/README.md, "Deadlines"):
+   *  the engine stops a run at its deadline and reports DONE/ERROR (or, after
+   *  CANCEL, RELEASED); if none arrives DEADLINE_GRACE_MS later, the engine
+   *  is past enforcing its own deadlines and Node kills it. The check waits a
+   *  setImmediate so that I/O already received is processed first. */
+  private arm(remainingMs:number) {
+    this.overdue=setTimeout(()=>setImmediate(()=>{
+      if(this.overdue===undefined)return;
+      this.backend.fatal(Error(`shard missed a deadline: slot ${this.slot} generation ${this.generation} reported no end ${DEADLINE_GRACE_MS} ms after it`));
+    }),remainingMs+DEADLINE_GRACE_MS);
+    this.overdue.unref();
+  }
+  private disarm() {clearTimeout(this.overdue);this.overdue=undefined;}
   private emit(e:GuestEvent) {
     if(this.waiter){const w=this.waiter;this.waiter=undefined;w(e);}
     // Open calls, every log line, then the completion.
@@ -271,6 +289,7 @@ export class ShardSession implements Session {
     else if(m.kind===IPC.error){if(m.id||m.bytes.length>IPC.errorBytes)throw Error('shard IPC error bound');}
     else if(m.kind===IPC.stats){if(m.id||m.bytes.length<IPC.statsFixedBytes||m.bytes.length>IPC.statsFixedBytes+8*rounds||m.bytes.readBigUInt64LE(24)>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
     else if(m.kind!==IPC.released&&m.kind!==IPC.quarantined)throw Error('shard IPC direction/kind');
+    if(m.kind===IPC.done||m.kind===IPC.error||m.kind===IPC.released||m.kind===IPC.quarantined)this.disarm();
     // RELEASED, or QUARANTINED with its reason, ends the generation Node cancelled.
     if(m.kind===IPC.released||m.kind===IPC.quarantined){
       const reason=m.kind===IPC.quarantined?m.bytes.toString('latin1'):undefined;
@@ -327,7 +346,7 @@ export class ShardSession implements Session {
     this.run.admittedDeadlineNs=this.backend.now()+BigInt(Math.floor(remaining*1e6));
     payload.writeBigUInt64LE(this.run.admittedDeadlineNs,0);
     payload.writeUInt32LE(IPC.calls,8);payload.writeUInt32LE(IPC.callBytes,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(ARENA_CLASSES['glue-2m'].admissionBytes,20);source.copy(payload,IPC.startHeaderBytes);
-    this.run.phase='running';await this.write(IPC.start,0,payload);
+    this.run.phase='running';this.arm(remaining);await this.write(IPC.start,0,payload);
   }
   async reply(id:number,r:Reply):Promise<void> {
     if(this.failure)throw Error(this.failure.message);

@@ -87,7 +87,9 @@ fn dcache_line() -> usize {
         line
     })
 }
-fn pagemap() -> Option<&'static File> {
+/// The process's pagemap, opened on first use (`Kvm::new`, so before a
+/// confined process loses file access).
+pub(super) fn pagemap() -> Option<&'static File> {
     static PAGEMAP: OnceLock<Option<File>> = OnceLock::new();
     PAGEMAP
         .get_or_init(|| {

@@ -4,6 +4,7 @@
 use crate::constants::ABI_VERSION;
 use crate::service::{self, Cancel, State, enqueue, invalid, ipc_charge, released};
 use crate::{
+    confine::{self, Confinement, Signals},
     ipc::{self, Endpoint, Message},
     kvm::{self, Kvm, Request, Snapshot},
     owner::{Event, Job, Mode, Pool},
@@ -20,6 +21,12 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     {
         return Err(invalid("IPC shard capacity"));
     }
+    // Confinement (confine/mod.rs) runs in three steps around the setup:
+    // namespaces while this is the only thread; Landlock once every file is
+    // open and the watchdog spawned; seccomp once every thread exists. READY
+    // goes to Node only after the last step, before any guest code runs.
+    let mut confinement = Confinement::new();
+    confinement.enter_namespaces();
     // PR_SET_PDEATHSIG closes the Node death window without a helper process.
     // SAFETY: getppid and PR_SET_PDEATHSIG take scalar arguments, retain no
     // pointers, and are called before any owner threads are started.
@@ -43,14 +50,16 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     // memfd and eventfds 3/4/5 before any owner threads are started.
     let mut endpoint = unsafe { Endpoint::inherited()? };
     let wake = endpoint.notifier();
-    let pool = Pool::notified(
-        Kvm::new(),
+    let notify: Notify = Arc::new(move || wake.signal());
+    let pool = confined_pool(
+        &mut confinement,
         snapshot,
         slots,
         owners,
-        Some(Arc::new(move || wake.signal())),
+        Some(notify),
         policy,
-    );
+    )?;
+    confinement.report().warn("shard IPC");
     let mut reactor = Reactor {
         pool,
         states: (0..slots).map(|_| State::default()).collect(),
@@ -69,6 +78,26 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
         std::process::exit(1);
     }
     result
+}
+type Notify = Arc<dyn Fn() + Send + Sync>;
+/// The shard's pool as `real ipc` runs it, also used by `real confine`:
+/// call with the namespaces entered and no thread started. Opens /dev/kvm,
+/// the pagemap and entropy and spawns the watchdog; closes file access;
+/// starts the clock and owner threads; then filters every thread's syscalls
+/// (confine::policy::shard). No guest code has run when this returns.
+pub fn confined_pool(
+    confinement: &mut Confinement,
+    snapshot: Arc<Snapshot>,
+    slots: usize,
+    owners: usize,
+    notify: Option<Notify>,
+    policy: kvm::ResetPolicy,
+) -> io::Result<Pool> {
+    let prepared = Pool::prepare(Kvm::new(), snapshot, slots, owners);
+    confinement.close_files(Signals::OwnProcess)?;
+    let pool = prepared.start(notify, policy);
+    confinement.filter_syscalls(&confine::policy::shard(std::process::id()))?;
+    Ok(pool)
 }
 struct Reactor {
     pool: Pool,
@@ -98,8 +127,8 @@ impl Reactor {
                 self.outbound.pop_front();
                 progress = true;
             }
-            if !progress {
-                endpoint.wait()?;
+            if !progress && endpoint.wait(Some(self.pool.watchdog_exit_fd()))? {
+                self.pool.watchdog_exited();
             }
         }
     }

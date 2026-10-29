@@ -3,7 +3,7 @@
 use std::{
     fs::File,
     io,
-    os::fd::{AsRawFd, FromRawFd},
+    os::fd::{AsRawFd, BorrowedFd, FromRawFd},
     ptr,
     sync::atomic::{
         AtomicU64,
@@ -192,27 +192,44 @@ impl Endpoint {
         self.sent = 0;
         Ok(true)
     }
-    pub fn wait(&self) -> io::Result<()> {
+    /// Sleep until the peer or an owner signals the incoming eventfd, or
+    /// `other` becomes readable; true in the latter case. No timeout: an
+    /// idle shard does not wake.
+    pub fn wait(&self, other: Option<BorrowedFd<'_>>) -> io::Result<bool> {
         let fd = self.incoming.0.as_raw_fd();
-        let mut p = PollFd {
-            fd,
-            events: libc::POLLIN,
-            revents: 0,
-        };
-        // A bounded liveness check also notices an unexpectedly dead watchdog.
-        // SAFETY: The pollfd and eight-byte eventfd buffer are live and writable for
-        // their respective calls; no pointer escapes.
-        let n = unsafe { poll(&mut p, 1, 100) };
-        if n < 0 && io::Error::last_os_error().raw_os_error() != Some(libc::EINTR) {
-            return Err(io::Error::last_os_error());
+        let mut fds = [
+            PollFd {
+                fd,
+                events: libc::POLLIN,
+                revents: 0,
+            },
+            PollFd {
+                // poll skips a negative descriptor.
+                fd: other.map_or(-1, |fd| fd.as_raw_fd()),
+                events: libc::POLLIN,
+                revents: 0,
+            },
+        ];
+        // SAFETY: both pollfds are live and writable for the call; their
+        // descriptors are owned by this endpoint and the caller.
+        let n = unsafe { poll(fds.as_mut_ptr(), fds.len() as libc::nfds_t, -1) };
+        if n < 0 {
+            let e = io::Error::last_os_error();
+            return if e.raw_os_error() == Some(libc::EINTR) {
+                Ok(false)
+            } else {
+                Err(e)
+            };
         }
-        let mut value = 0u64;
-        // SAFETY: The pollfd and eight-byte eventfd buffer are live and writable for
-        // their respective calls; no pointer escapes.
-        unsafe {
-            read(fd, (&mut value as *mut u64).cast(), 8);
+        if fds[0].revents != 0 {
+            let mut value = 0u64;
+            // SAFETY: an eight-byte writable buffer for the eventfd read; a
+            // nonblocking eventfd that another wake already drained is fine.
+            unsafe {
+                read(fd, (&mut value as *mut u64).cast(), 8);
+            }
         }
-        Ok(())
+        Ok(fds[1].revents != 0)
     }
 }
 impl Drop for Endpoint {

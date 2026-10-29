@@ -41,6 +41,6 @@ pub(super) fn run(mode: &str) -> io::Result<()> {
             }
             out.pop_front();
         }
-        endpoint.wait()?;
+        endpoint.wait(None)?;
     }
 }

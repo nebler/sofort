@@ -117,14 +117,39 @@ A deadline result is published after MMIO completion, RAM discard and register
 restore. If reset is not acknowledged within **100 ms of the watchdog firing**,
 a second generation-fenced CAS claims escalation and `pidfd_send_signal(SIGKILL)`
 kills the shard. A reset cannot reuse a slot after escalation has claimed it.
-The receiving reactor fails the shard closed on unexpected watchdog exit;
-production supervision must also cover a stalled reactor/watchdog. No per-VM/call helper or
+The reactor polls the watchdog's pidfd with its IPC eventfd (no timeout, no
+wait4) and fails the shard closed when the watchdog exits. Measured on
+kvm-dev (1 slot, 1 owner, through the executor, two runs each, bpftrace over
+1,000 one-tool runs): an idle shard wakes 0 times/s (9.7–9.8 with the former
+100 ms tick), and a one-tool run makes 258–259 syscalls (268–277 with a
+wait4 per reactor pass, 16.5–17.5 of them); about 201 of the rest are the
+reset's KVM register ioctls. No per-VM/call helper or
 waiting thread is added. One `jitk-clock` thread per pool (`clock.rs`) keeps guest time
 real: every 1 ms it stores CLOCK_MONOTONIC into the MONOTONIC_NS control word of each
 slot whose vCPU is inside KVM_RUN (the ring kernel reads that word for every
 clock_gettime), and it parks while none is. It writes only inside that window, and
 leaving the window waits out a store, so decode and reset never race it. The reactor queues are bounded owner commands/events.
 `ipc_service` bridges them to Node's bounded shared-memory policy IPC.
+
+### Deadlines: lease, kick, kill
+
+Both engines implement one deadline model with three roles:
+
+| | lease (who holds the deadline) | kick (stop the vCPU at it) | kill (when the kick did not end the run) |
+| --- | --- | --- | --- |
+| KVM shard | START's deadline, armed by the owner on the lease board | the watchdog process: tgkill SIGUSR1 → `immediate_exit` | the watchdog, 100 ms after the kick without a reset: SIGKILL of the shard |
+| HVF engine | the zygote's per-slot `service::State`, from START | the child's reader thread: `hv_vcpus_exit` | the zygote, 100 ms after the deadline: SIGKILL of the child |
+| both | Node (`ShardSession`), from the deadline it sent | — | Node, `DEADLINE_GRACE_MS` (1 s) after the deadline without DONE/ERROR (or RELEASED after CANCEL): SIGKILL of the engine |
+
+The kick and the first kill are the engine's own: they hold while Node's
+event loop is blocked, and the KVM watchdog is a separate process, so they
+also hold for a stopped or wedged shard (`./tool.sh escalation-r7`). Neither
+is an authority over a compromised engine: the KVM board is shard memory and
+the watchdog is the shard's child; on HVF the kick runs in the child. The
+authority is the supervisor that wrote the deadline, Node, whose kill needs
+nothing from the engine but silence. What it bounds is the run (no result
+past deadline + 1 s); CPU used by a compromised engine beyond that is for
+cgroups to bound.
 
 Real-guest commands (all emit JSONL):
 
@@ -146,6 +171,58 @@ The existing R6 ledger harness works with the configured thread count and also
 records cgroup `memory.peak`; its `spawn-cg` is built from
 [`harness/spawn-cg.c`](harness/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
+
+## Confinement (Linux shard)
+
+`real ipc` confines itself (`src/confine/`) in three steps that follow its
+process model (a reactor thread, W owner threads, one clock thread, and the
+watchdog process), all before READY and so before any guest code runs:
+
+1. **Namespaces**, while the process is single-threaded: new user, network
+   (no interface up) and IPC namespaces in one `unshare`. Credentials, and so
+   access to /dev/kvm, are unchanged.
+2. **Files closed**, once setup has opened everything (snapshot, /dev/kvm,
+   the reset's pagemap, /dev/urandom, Node's memfd and eventfds) and spawned
+   the watchdog (`Pool::prepare`), before any thread exists: RLIMIT_CORE 0,
+   no_new_privs, and a Landlock domain that handles every right of the
+   kernel's ABI and grants none: no file opened, created or executed, no TCP
+   bind or connect, no abstract Unix socket, no signal outside the process.
+   The threads started next inherit it.
+3. **Syscalls filtered**, once the owner and clock threads run past their
+   start-up (`Prepared::start` waits for them): one seccomp filter on every
+   thread (TSYNC). Allowed: the allocator without executable mappings,
+   futex wait/wake (no PI, no requeue), read/write/ppoll/close on the open
+   descriptors, pread64 (pagemap), clocks and sleeps, signal return, tgkill
+   of its own threads, exit, and exactly the 11 KVM ioctls an owner issues
+   after setup (`confine::policy::KVM_IOCTLS`; slots are created lazily).
+   Anything else (open, socket, exec, clone, ptrace, kill, prctl, other
+   ioctls, ...) kills the process with SIGSYS.
+
+The watchdog confines itself the same way once its board and pidfd are
+open: its own Landlock domain (it must signal the shard, so signals are not
+scoped) and a filter that allows its poll loop, tgkill SIGUSR1 to the shard
+and SIGKILL through the shard's pidfd.
+
+Not used: a mount namespace (hosts that restrict unprivileged user
+namespaces, such as Ubuntu's AppArmor default, refuse it, and Landlock
+already closes the file system) and a PID namespace (it needs a fork;
+seccomp denies ptrace and outside signals). PR_SET_DUMPABLE stays set, so
+Node and the observers can read the shard's /proc files; seccomp and Landlock
+keep the shard from reaching other processes' memory. A layer the kernel
+lacks (no Landlock, a refused namespace, an older Landlock ABI) is printed
+on stderr (`shard IPC: confinement degraded: ...`) and the shard runs with
+the rest; no_new_privs and seccomp are required.
+
+`real confine SNAPSHOT_BASE [--allow-degraded]` (`src/bin/harness/confine.rs`,
+run by `make test-kvm`) checks it with forked probe processes, each running
+`return 2` on a one-slot pool first: an unconfined control may open
+/etc/hosts, connect to a local TCP port, exec /bin/true, signal its parent,
+setuid, issue FIONREAD and PTRACE_TRACEME; with namespaces and Landlock only,
+the open, connect and exec get EACCES and the signal EPERM; each fully
+confined probe (`ipc_service::confined_pool`, the code `real ipc` runs) is
+killed by SIGSYS at its attempt. It fails if a layer is degraded unless
+`--allow-degraded` is given. Measured on kvm-dev (Linux 7.0, Ubuntu 26.04,
+AppArmor-restricted user namespaces): every layer applies.
 
 ## Hypervisor seam and the HVF backend
 

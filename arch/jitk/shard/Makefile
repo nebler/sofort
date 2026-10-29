@@ -27,10 +27,14 @@ snapshot:
 # The KVM tests use the cache snapshots unless JITK_SHARD_TEST_SNAPSHOT(S) are
 # set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-$$HOME/bench.lock})
 # when the host is shared, as for the real harness's other KVM measurements.
+# Then the confinement check (`real confine`, src/bin/harness/confine.rs): a
+# confined shard still runs a guest and is killed for file opens, network,
+# exec, ptrace, setuid, signals and ioctls that an unconfined control may do.
 .PHONY: test-kvm
 test-kvm: snapshot
 	$(CARGO_PIN) build --release --locked --offline --bin real
 	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
+	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && target/release/real confine "$$JITK_SHARD_TEST_SNAPSHOT"
 
 # Linux arm64 KVM: the native census regression (41 cases twice, fd and
 # region probes). It takes the bench lock itself around the corpus; run it

@@ -3,7 +3,7 @@
 // SharedChannel.poll turns into die(), i.e. SIGKILL of every slot on the shard.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {ShardSession,type ShardHost} from './shard-backend.js';
+import {DEADLINE_GRACE_MS,ShardSession,type ShardHost} from './shard-backend.js';
 import {IPC,type Message} from './shard-ipc.js';
 
 // Resolved from the bundle in executor/build/.
@@ -148,6 +148,20 @@ export async function sandboxChecks():Promise<number> {
     if(cancel)s.release();
     shard.deliver(s,IPC.quarantined,0,Buffer.from(bytes,'latin1'));
     assert.match(String(shard.fault),/^Error: shard IPC release/,name);assert.deepEqual(shard.lost,[],name);checks++;
+  }
+  // Node owns the kill of the run deadline: an engine that reports no end
+  // (DONE/ERROR, or RELEASED after CANCEL) DEADLINE_GRACE_MS past the
+  // deadline is killed; one that reports in time is not.
+  {
+    const run=async(end:(shard:FakeShard,s:ShardSession)=>void)=>{
+      const shard=new FakeShard(),s=new ShardSession(shard,0,1n);await s.armDeadline(Date.now()+20);
+      await s.start({kind:'js',source:'async()=>1',tools:{},prelude:''});end(shard,s);
+      await new Promise(resolve=>setTimeout(resolve,20+DEADLINE_GRACE_MS+100));return shard.fault;
+    };
+    assert.match(String(await run(()=>{})),/shard missed a deadline: slot 0 generation 1/,'a silent engine is killed');
+    assert.equal(await run((shard,s)=>{shard.deliver(s,IPC.stats,0,stats());shard.deliver(s,IPC.error,0,Buffer.from('deadline_exceeded'));}),undefined,'ERROR in time');
+    assert.equal(await run((shard,s)=>{s.release();shard.deliver(s,IPC.released);}),undefined,'RELEASED in time');
+    checks++;
   }
   // The run's namespace schema is the v1 one: a reserved name fails this generation.
   {
