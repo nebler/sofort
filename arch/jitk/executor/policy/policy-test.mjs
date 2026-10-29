@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { LineReader, Violation, createRun, decide, approve, dispatch } from './policy.mjs';
+import { LineReader, ToolError, Violation, createRun, decide, approve, dispatch } from './policy.mjs';
 let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
 const kills = (fn, m) => { assert.throws(fn, Violation, m); n++; };
 const str = a => { if (typeof a !== 'object' || a === null || Object.keys(a).join() !== 'q' || typeof a.q !== 'string' || a.q.length > 256) throw 0; return { q: a.q }; };
@@ -69,4 +69,12 @@ const add = run.signal.addEventListener.bind(run.signal), remove = run.signal.re
 run.signal.addEventListener = (...a) => { listeners++; add(...a); }; run.signal.removeEventListener = (...a) => { listeners--; remove(...a); };
 for (let i = 1; i <= 20; i++) await dispatch(r, decide(r, c(i, 'web', 'fetch')).call, { issuer, signal: run.signal });
 ok(listeners === 0 && invoked === 20, 'abort listeners removed');
+// 10. a failing private read taints the run and its error text never reaches the guest
+const leaky = { ...tools, mail: { ...tools.mail, search: { ...tools.mail.search, invoke: async () => { throw Error('got {"secret":"s3cr3t"} TOKEN'); } } } };
+r = createRun({ tools: leaky, deadline: Date.now() + 60_000 });
+await assert.rejects(dispatch(r, decide(r, c(1, 'mail', 'search')).call, { issuer }), e => e instanceof ToolError && e.message === 'mail.search failed'); n++;
+ok(r.tainted.privateRead && decide(r, c(2, 'web', 'fetch')).kind === 'deny', 'failed private read still blocks egress');
+const redacted = { mail: { search: { ...leaky.mail.search, error: e => String(e.message).replace(/\{.*\}|TOKEN/g, '[redacted]') } } };
+r = createRun({ tools: redacted, deadline: Date.now() + 60_000 });
+await assert.rejects(dispatch(r, decide(r, c(1, 'mail', 'search')).call, { issuer }), { message: 'got [redacted] [redacted]' }); n++;
 console.log(`${n} policy assertions passed`);

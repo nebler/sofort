@@ -70,7 +70,9 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           if(this.security.tools&&!declared)throw Error('missing tool effects: '+p.name+'.'+name);
           // Legacy public computation providers are explicitly credential-free.
           tools[p.name][name]=declared??{args:(a:unknown[])=>a,reads:'public',egress:false,writes:false,timeoutMs:options.timeout??this.timeout,
-            invoke:async(a:unknown[],_credential:unknown,context:{signal:AbortSignal})=>fn.apply(Object.freeze({signal:context.signal}),a),output:(v:unknown)=>v};
+            invoke:async(a:unknown[],_credential:unknown,context:{signal:AbortSignal})=>fn.apply(Object.freeze({signal:context.signal}),a),output:(v:unknown)=>v,
+            // Credential-free public computation: its own error text is the guest's, as before.
+            error:(e:unknown)=>String(e)};
         }
       }
       run=rules.createRun({tools,deadline,limits:{...this.security.limits,calls:this.callLimit}});
@@ -100,7 +102,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           if(run.tainted.untrusted)labels.add('tool-untrusted');
           if(expired())abort();
           if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
-        }catch(e){if(e instanceof rules.Violation){run.dead=true;violation??='policy violation: '+(e as Error).message;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:String(e).slice(0,4096)}}).catch(()=>s.release());}
+        }catch(e){if(e instanceof rules.Violation){run.dead=true;violation??='policy violation: '+(e as Error).message;s.release();return;}if(live&&!ctx.signal.aborted)await s.reply(call.id,{err:{code:String(e).includes('policy denied')||String(e).includes('approval required')?'DENIED':'TOOL_ERROR',message:(e instanceof rules.ToolError?(e as Error).message:String(e)).slice(0,4096)}}).catch(()=>s.release());}
       };
       while(true){
         // Events are validated by the session's engine adapter (bytes, schema,

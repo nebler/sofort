@@ -8,6 +8,8 @@ export type Tool={
   endorsable?:boolean; approval?:'always'; timeoutMs:number;
   invoke:(args:any,credential:any,context:{signal:AbortSignal;idempotencyKey:string})=>Promise<any>;
   output:(result:any)=>any;
+  /** Failure text the guest sees (redact private data and credentials); default '<ns>.<fn> failed'. */
+  error?:(thrown:unknown)=>string;
 };
 export type Issuer={issue:(scope:{run:string;scope:string;ttlMs:number})=>Promise<any>;revoke:(credential:any)=>Promise<void>};
 export type PolicyConfig={tools?:Record<string,Record<string,Tool>>;issuer?:Issuer;limits?:{calls?:number;outstanding?:number;denials?:number}};
