@@ -114,7 +114,8 @@ impl Endpoint {
             tx: 0,
             peer: 0,
             rx: 0,
-            assembler: Assembler::default(),
+            // Node -> shard: START, REPLY (up to a class's reply bound), CANCEL.
+            assembler: Assembler::from_node(),
             sent: 0,
         })
     }

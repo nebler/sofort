@@ -1,8 +1,9 @@
 // Payload cost and memory class measurement on this host's ring engine (one
 // slot, JITK_SHARD_CLASS, default glue-2m): guest CPU (STATS owner CPU) and
 // wall time of runs that move a big source, tool reply or completion through
-// the guest codec (kernel/ring-bootstrap.js.in), then the class's usable heap,
-// the largest reply and completion, and the engine's resident memory.
+// the guest codec (kernel/ring-bootstrap.js.in), then the class's usable heap
+// and heap capacity (STATS heapPeakBytes at out of memory), the largest reply
+// (up to the class's reply bound) and completion, and the engine's resident memory.
 // Offline measurement: run one at a time on a quiet host (shard/README.md
 // "Limits"). `run.sh payload-bench [sizes|memory]`, default both.
 import assert from 'node:assert/strict';
@@ -23,10 +24,10 @@ const load=()=>execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim().repla
 const median=(a:number[])=>[...a].sort((x,y)=>x-y)[Math.ceil(a.length/2)-1];
 type Fns=Record<string,(...a:unknown[])=>Promise<unknown>>;
 type Outcome={result?:unknown;error?:string};
-async function run(code:string,fns:Fns={}):Promise<Outcome&{cpuUs:number;wallMs:number}> {
+async function run(code:string,fns:Fns={}):Promise<Outcome&{cpuUs:number;wallMs:number;heapPeakBytes?:number}> {
   rows.length=0;const t=performance.now();
   const r=await ex.execute(code,fns);const wallMs=performance.now()-t;await pool.drain();
-  return {result:r.result,error:r.error,cpuUs:rows.length?Number(rows[0].ownerCpuNs)/1e3:NaN,wallMs};
+  return {result:r.result,error:r.error,cpuUs:rows.length?Number(rows[0].ownerCpuNs)/1e3:NaN,wallMs,heapPeakBytes:rows[0]?.heapPeakBytes};
 }
 /** p50 guest CPU and wall over n runs after 3 warmups; null when the run fails (the class's heap). */
 async function measure(code:string,fns:Fns,check:(r:unknown)=>boolean,n:number) {
@@ -59,9 +60,11 @@ try {
   if(mode==='all'||mode==='memory'){
     // Usable heap: 16 KiB buffers until QuickJS runs out of memory.
     const heap=await run('const keep=[];try{for(;;)keep.push(new ArrayBuffer(16384));}catch{}const n=keep.length;keep.length=0;return n*16384');
-    // The largest reply and completion (JSON bytes) that still work, to 1 KiB.
-    const largest=async(ok:(bytes:number)=>Promise<boolean>)=>{let lo=0,hi=1024*KB;while(hi-lo>KB){const mid=Math.floor((lo+hi)/2/KB)*KB;if(await ok(mid))lo=mid;else hi=mid;}return lo;};
-    const reply=await largest(async bytes=>{const text='x'.repeat(bytes-9);const r=await run('return (await codemode.big()).length',{big:async()=>text});return r.result===text.length;});
+    // The largest reply (to the class's reply bound) and completion (to the
+    // 1 MiB frame) in JSON bytes that still work, to 1 KiB.
+    const largest=async(ok:(bytes:number)=>Promise<boolean>,hi=1024*KB)=>{let lo=0;if(await ok(hi))return hi;while(hi-lo>KB){const mid=Math.floor((lo+hi)/2/KB)*KB;if(await ok(mid))lo=mid;else hi=mid;}return lo;};
+    const replyBound=backend.limits.js!.replyBytes;
+    const reply=await largest(async bytes=>{const text='x'.repeat(bytes-9);const r=await run('return (await codemode.big()).length',{big:async()=>text});return r.result===text.length;},replyBound);
     const completion=await largest(async bytes=>{const r=await run(`return 'x'.repeat(${bytes-9})`);return typeof r.result==='string';});
     const echo=await largest(async bytes=>{const r=await run(`const s='x'.repeat(${bytes-9});return (await codemode.echo(s)).length`,{echo:async x=>x});return r.result===bytes-9;});
     // macOS footprint (dirty memory charged to the process), in KiB; RSS also counts clean file pages.
@@ -76,6 +79,6 @@ try {
     const idle=rss();
     await run(`return 'x'.repeat(${Math.max(0,completion-64*KB)})`);
     const afterLarge=rss();
-    console.log(JSON.stringify({event:'memory',memoryClass,heapBytes:heap.result,largestReplyBytes:reply,largestCompletionBytes:completion,largestEchoBytes:echo,rssKiB:{idle,afterLarge},load:load()}));
+    console.log(JSON.stringify({event:'memory',memoryClass,heapBytes:heap.result,heapCapacityBytes:heap.heapPeakBytes,replyBoundBytes:replyBound,largestReplyBytes:reply,largestCompletionBytes:completion,largestEchoBytes:echo,rssKiB:{idle,afterLarge},load:load()}));
   }
 } finally {await pool.close();}

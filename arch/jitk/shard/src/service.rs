@@ -11,8 +11,8 @@ use crate::payload;
 use std::{collections::VecDeque, io};
 
 pub use crate::constants::ipc::{
-    CALL, CANCEL, DONE, ERROR, HEADER_BYTES, LOG, MESSAGE_BYTES, PAYLOAD, QUARANTINED, READY,
-    RELEASED, REPLY, RESTORED, START, STATS,
+    CALL, CANCEL, DONE, ERROR, HEADER_BYTES, LOG, MESSAGE_BYTES, NODE_MESSAGE_BYTES, PAYLOAD,
+    QUARANTINED, READY, RELEASED, REPLY, RESTORED, START, STATS,
 };
 
 pub fn invalid(message: &'static str) -> io::Error {
@@ -89,9 +89,10 @@ impl Message {
         h[wire::FLAGS_AT..wire::FLAGS_AT + 4].copy_from_slice(&flags.to_le_bytes());
         h
     }
-    /// The message's records, each header and payload.
+    /// The message's records, each header and payload. The local bound is
+    /// the larger direction's (a REPLY the zygote forwards to its child).
     pub fn records(&self) -> io::Result<Vec<Vec<u8>>> {
-        if self.bytes.len() > MESSAGE_BYTES {
+        if self.bytes.len() > NODE_MESSAGE_BYTES {
             return Err(invalid("IPC local message bound"));
         }
         let count = wire::records(self.bytes.len());
@@ -112,12 +113,29 @@ impl Message {
     }
 }
 /// Reassembles one direction's messages: their records are consecutive, so
-/// at most one message is partial.
-#[derive(Default)]
+/// at most one message is partial. The default bound is the shard -> Node
+/// direction's (guest bytes, MESSAGE_BYTES); a receiver of Node's messages
+/// takes `Assembler::from_node()` (NODE_MESSAGE_BYTES, for class replies).
 pub struct Assembler {
     partial: Option<Message>,
+    bound: usize,
+}
+impl Default for Assembler {
+    fn default() -> Self {
+        Self {
+            partial: None,
+            bound: MESSAGE_BYTES,
+        }
+    }
 }
 impl Assembler {
+    /// For the Node -> shard direction (START, REPLY, CANCEL).
+    pub fn from_node() -> Self {
+        Self {
+            partial: None,
+            bound: NODE_MESSAGE_BYTES,
+        }
+    }
     /// Add a decoded record; the message once its last record arrived.
     pub fn push(&mut self, record: Message, more: bool) -> io::Result<Option<Message>> {
         let message = match self.partial.take() {
@@ -132,7 +150,7 @@ impl Assembler {
                 m
             }
         };
-        if message.bytes.len() > MESSAGE_BYTES {
+        if message.bytes.len() > self.bound {
             return Err(invalid("IPC message bound"));
         }
         if more {
@@ -210,13 +228,14 @@ impl State {
         self.phase = Phase::Done;
         Ok(true)
     }
-    /// A Node REPLY for this slot. Ok(true): deliver it to the running guest
-    /// (a reply already in flight may arrive after the run ended; its
-    /// generation must still match, so it never targets a reused slot).
-    pub fn reply(&mut self, m: &Message) -> io::Result<bool> {
+    /// A Node REPLY for this slot, of at most `reply_bytes` (the snapshot
+    /// class's bound). Ok(true): deliver it to the running guest (a reply
+    /// already in flight may arrive after the run ended; its generation must
+    /// still match, so it never targets a reused slot).
+    pub fn reply(&mut self, m: &Message, reply_bytes: usize) -> io::Result<bool> {
         if m.generation != self.generation
             || m.bytes.is_empty()
-            || m.bytes.len() > ring::REPLY_BYTES
+            || m.bytes.len() > reply_bytes
             || !payload::printable(&m.bytes)
         {
             return Err(invalid("IPC reply schema/generation"));
@@ -267,9 +286,10 @@ impl State {
         Ok(admitted)
     }
 }
-/// The START reservation of a snapshot class. IPC serves both JS classes:
-/// glue-2m (the default) and glue-4m (larger values; Node selects it with
-/// JITK_SHARD_CLASS). Every START must carry exactly this charge.
+/// The START reservation of a snapshot class. IPC serves every JS class:
+/// glue-2m (the default), glue-4m, glue-8m and glue-16m (larger values and
+/// replies; Node selects one with JITK_SHARD_CLASS). Every START must carry
+/// exactly this charge.
 pub fn ipc_charge(class: crate::arena::Class) -> u32 {
     class.admission_bytes()
 }
@@ -320,11 +340,20 @@ pub fn released(s: &mut State, slot: usize, quarantined: Option<String>) -> io::
     }
     Ok(Message::new(QUARANTINED, slot, s.generation, 0, reason))
 }
-/// The STATS payload: owner CPU, stopped and reset-done times, then the
-/// policy round trips (at most ring::MAX_CALLS).
-pub fn stats(slot: usize, generation: u64, fixed: [u64; 3], round_trips: &[u64]) -> Message {
+/// The STATS payload: owner CPU, stopped and reset-done times, the run's
+/// heap high-water bytes (0 when none was bound), then the policy round
+/// trips (at most ring::MAX_CALLS).
+pub fn stats(slot: usize, generation: u64, fixed: [u64; 4], round_trips: &[u64]) -> Message {
+    // The heap high-water at STATS_HEAP_PEAK_AT, the count at STATS_COUNT_AT.
+    const _: () = assert!(wire::STATS_HEAP_PEAK_AT == 24 && wire::STATS_COUNT_AT == 32);
     let mut b = Vec::with_capacity(wire::STATS_FIXED_BYTES + 8 * round_trips.len());
-    for n in [fixed[0], fixed[1], fixed[2], round_trips.len() as u64] {
+    for n in [
+        fixed[0],
+        fixed[1],
+        fixed[2],
+        fixed[3],
+        round_trips.len() as u64,
+    ] {
         b.extend_from_slice(&n.to_le_bytes());
     }
     for n in round_trips {
@@ -347,6 +376,8 @@ mod tests {
     fn ipc_charges_the_snapshot_class() {
         assert_eq!(ipc_charge(crate::arena::Class::Glue2m), 2 << 20);
         assert_eq!(ipc_charge(crate::arena::Class::Glue4m), 4 << 20);
+        assert_eq!(ipc_charge(crate::arena::Class::Glue8m), 8 << 20);
+        assert_eq!(ipc_charge(crate::arena::Class::Glue16m), 16 << 20);
         // A START charging another class than the snapshot's is refused.
         let mut m = Message::new(START, 0, 1, 0, vec![0; 24]);
         m.bytes[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
@@ -433,10 +464,28 @@ mod tests {
             assert!(Message::decode(&bad).is_err(), "header byte {at}");
         }
         assert!(
-            Message::new(CALL, 0, 1, 1, vec![0; MESSAGE_BYTES + 1])
+            Message::new(CALL, 0, 1, 1, vec![0; NODE_MESSAGE_BYTES + 1])
                 .encode()
                 .is_err()
         );
+    }
+    #[test]
+    fn each_direction_reassembles_to_its_own_bound() {
+        // Guest-derived messages keep 1 MiB; Node's (a class reply) may be larger.
+        let big = Message::new(REPLY, 0, 1, 1, vec![b'x'; MESSAGE_BYTES + 1]);
+        let feed = |mut a: Assembler| {
+            let mut last = Ok(None);
+            for r in big.records().unwrap() {
+                let (record, more) = Message::decode(&r).unwrap();
+                last = a.push(record, more);
+                if last.is_err() {
+                    break;
+                }
+            }
+            last
+        };
+        assert!(feed(Assembler::default()).is_err());
+        assert_eq!(feed(Assembler::from_node()).unwrap().as_ref(), Some(&big));
     }
     #[test]
     fn messages_span_records() {
@@ -483,16 +532,25 @@ mod tests {
         assert!(s.call(2, b"[]").is_err(), "call ids start at 1");
         assert!(s.call(1, b"[]").unwrap());
         let reply = Message::new(REPLY, 0, 1, 1, b"{}".to_vec());
-        assert!(s.reply(&reply).unwrap());
-        assert!(s.reply(&reply).is_err(), "duplicate reply");
+        let bound = crate::arena::Class::Glue2m.reply_bytes();
+        assert!(s.reply(&reply, bound).unwrap());
+        assert!(s.reply(&reply, bound).is_err(), "duplicate reply");
         // Logs have their own budget and need no reply.
         for _ in 0..ring::MAX_LOGS {
             assert!(s.log(b"[\"log\",\"x\"]").unwrap());
         }
         assert!(s.log(b"[\"log\",\"x\"]").is_err(), "log budget");
         assert!(s.call(2, b"[]").unwrap());
+        // A reply over the class's bound fails the service; within it, it is delivered.
+        let over = Message::new(REPLY, 0, 1, 2, vec![b'x'; bound + 1]);
+        assert!(s.reply(&over, bound).is_err(), "reply over the class bound");
         assert!(
-            s.reply(&Message::new(REPLY, 0, 1, 2, b"{}".to_vec()))
+            s.reply(&over, crate::arena::Class::Glue8m.reply_bytes())
+                .unwrap()
+        );
+        assert!(s.call(3, b"[]").unwrap());
+        assert!(
+            s.reply(&Message::new(REPLY, 0, 1, 3, b"{}".to_vec()), bound)
                 .unwrap()
         );
         assert!(s.complete().unwrap());

@@ -110,7 +110,12 @@ fn typescript() -> String {
         (
             "messageBytes",
             ipc::MESSAGE_BYTES as u64,
-            "largest message payload (reassembly bound)",
+            "largest shard -> Node message payload (Node's reassembly bound)",
+        ),
+        (
+            "nodeMessageBytes",
+            ipc::NODE_MESSAGE_BYTES as u64,
+            "largest Node -> shard message payload (the shard's reassembly bound)",
         ),
         (
             "slots",
@@ -132,13 +137,19 @@ fn typescript() -> String {
         ("outstanding", ring::MAX_OUTSTANDING as u64, ""),
         ("inflightBytes", ring::INFLIGHT_BYTES as u64, ""),
         ("callBytes", ring::CALL_BYTES as u64, ""),
-        ("replyBytes", ring::REPLY_BYTES as u64, ""),
+        (
+            "maxReplyBytes",
+            ring::MAX_REPLY_BYTES as u64,
+            "the largest class reply bound (ARENA_CLASSES replyBytes)",
+        ),
         ("doneBytes", ring::DONE_BYTES as u64, ""),
         ("sourceBytes", ring::SOURCE_LIMIT as u64, ""),
         ("logs", ring::MAX_LOGS as u64, ""),
         ("consoleBytes", ring::CONSOLE_BYTES as u64, ""),
         ("errorBytes", ipc::ERROR_BYTES as u64, ""),
         ("statsFixedBytes", ipc::STATS_FIXED_BYTES as u64, ""),
+        ("statsHeapPeakAt", ipc::STATS_HEAP_PEAK_AT as u64, ""),
+        ("statsCountAt", ipc::STATS_COUNT_AT as u64, ""),
         ("statsRoundTrips", ipc::STATS_ROUND_TRIPS as u64, ""),
         (
             "messagesPerGeneration",
@@ -160,17 +171,19 @@ fn typescript() -> String {
     writeln!(s, "}});").unwrap();
     writeln!(
         s,
-        "/** Arena classes of prepared snapshots: the START reservation and the writable arena. */"
+        "/** Arena classes of prepared snapshots: the START reservation, the writable arena (GPA, bytes) and a run's tool-reply bound. */"
     )
     .unwrap();
     writeln!(s, "export const ARENA_CLASSES=Object.freeze({{").unwrap();
     for c in Class::ALL {
         writeln!(
             s,
-            "  '{}':Object.freeze({{admissionBytes:{},arenaBytes:{}}}),",
+            "  '{}':Object.freeze({{admissionBytes:{},arenaGpa:{},arenaBytes:{},replyBytes:{}}}),",
             c.name(),
             c.admission_bytes(),
-            c.bytes()
+            c.gpa(),
+            c.bytes(),
+            c.reply_bytes()
         )
         .unwrap();
     }

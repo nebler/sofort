@@ -42,10 +42,13 @@ export function parseJson(s:string):Json { return decode(s,false); }
 // frames are not adversarial, the frame bound already bounds their parse, and real
 // tool replies exceed it (a GitHub workflow-runs page: 38,746 values; an OTLP
 // metrics page: 212,119; bench/v1/results/2026-10-30-fit-matrix.md).
+// A host reply may have a larger frame than LIMIT.frame where the receiver's
+// heap can hold one (the shard's larger arena classes: `frame`, their
+// ARENA_CLASSES replyBytes); guest frames never do.
 export function parseHostFrame(s:string):Frame { return decode(s,true,Infinity) as Frame; }
-export function parseHostJson(s:string):Json { return decode(s,false,Infinity); }
-function decode(s:string, frame:boolean, structure:number=LIMIT.structure):Json {
-  if (!s.length || s.length>LIMIT.frame) bad('FRAME_LIMIT');
+export function parseHostJson(s:string, frame:number=LIMIT.frame):Json { return decode(s,false,Infinity,frame); }
+function decode(s:string, frame:boolean, structure:number=LIMIT.structure, max:number=LIMIT.frame):Json {
+  if (!s.length || s.length>max) bad('FRAME_LIMIT');
   const stack:{object:boolean; key:boolean; seen:Set<string>}[]=[];
   let budget=0;
   for (let i=0;i<s.length;i++) {

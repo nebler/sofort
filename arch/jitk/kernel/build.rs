@@ -1,6 +1,8 @@
 use std::{env, path::PathBuf, process::Command};
 fn main() {
     println!("cargo::rustc-check-cfg=cfg(ring_glue_4m)");
+    println!("cargo::rustc-check-cfg=cfg(ring_glue_8m)");
+    println!("cargo::rustc-check-cfg=cfg(ring_glue_16m)");
     let base = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let out = PathBuf::from(env::var("OUT_DIR").unwrap());
     // Arch layer: linker script and Linux syscall-number table (see ARCH.md).

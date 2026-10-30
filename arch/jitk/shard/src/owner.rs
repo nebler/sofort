@@ -61,6 +61,8 @@ pub struct Metrics {
     pub policy_round_trips: Vec<u64>,
     pub wait_to_finish_ns: u64,
     pub exits: u64,
+    /// The run's heap high-water bytes (`Slot::heap_peak`), read when it stopped.
+    pub heap_peak: u64,
 }
 pub struct Completion {
     pub result: Result<String, RunError>,
@@ -720,6 +722,7 @@ impl Managed {
         let retain = retention == Retention::KeepStopped
             && !matches!(result, Err(RunError::Deadline { .. }));
         let mut reset_done_ns = 0;
+        self.metrics.heap_peak = self.cpu.heap_peak();
         if result.is_err() && !retain {
             // MMIO completion, memory, registers, immediate_exit. A failure
             // quarantines this slot; its lease is acknowledged all the same.
