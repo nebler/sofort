@@ -46,6 +46,6 @@ export function report(data: Frame, out: string): void {
   lines.push('', 'Source selection (frozen at run start):', '', '```json', JSON.stringify(data.selection, null, 2), '```', '',
     'Missing integrations: ' + (data.missing || []).join(', ') + '.',
     `Raw observations, timestamps, gate histories, result assertions, machine state, hashes and failures: [${basename(data.raw_path)}](${basename(data.raw_path)}).`,
-    'All external performance claims must cite this table. R2 tables are historical contended measurements.');
+    'Historical: this table measured the removed libkrun console engine (deleted 2026-10-28) on a contended host; it is not the current ring engine. Current numbers and the next benchmark plan: [PLAN-MAC-V1.md](PLAN-MAC-V1.md).');
   writeFileSync(out, lines.join('\n') + '\n');
 }

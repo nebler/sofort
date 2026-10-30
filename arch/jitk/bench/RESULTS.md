@@ -1,4 +1,6 @@
-# Canonical benchmark results
+# Canonical benchmark results (historical, libkrun era)
+
+> Historical: this table measured the removed libkrun console engine (deleted 2026-10-28) on a contended host; it is not the current ring engine. Current numbers and the next benchmark plan: [PLAN-MAC-V1.md](PLAN-MAC-V1.md).
 
 Run: 2026-10-24T01:40:05.128705+00:00 → 2026-10-24T02:40:41.977828+00:00. Platform: macOS-26.6.1-arm64-arm-64bit-Mach-O.
 Start: `3:40  up  4:53, 2 users, load averages: 58.09 51.44 58.79`. End: `4:40  up  5:54, 2 users, load averages: 38.53 62.02 68.42`.
@@ -107,7 +109,7 @@ R3 frozen artifact set:
 
 Missing integrations: none in this pinned macOS run.
 Raw observations, timestamps, gate histories, result assertions, machine state, hashes and failures: [raw.json](raw.json).
-All external performance claims must cite this table. R2 tables are historical contended measurements.
+Historical: this table measured the removed libkrun console engine (deleted 2026-10-28) on a contended host; it is not the current ring engine. Current numbers and the next benchmark plan: [PLAN-MAC-V1.md](PLAN-MAC-V1.md).
 
 Post-run verification: [verification.json](verification.json) records matching input hashes, 600 executor result-before-kill/capacity checks, and no surviving owned workers.
 

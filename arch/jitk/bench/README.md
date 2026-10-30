@@ -1,5 +1,8 @@
 # Canonical performance harness (owner 06)
 
+> The next benchmark (current engines, same-host baselines, workflows) is planned in
+> [PLAN-MAC-V1.md](PLAN-MAC-V1.md).
+
 Build with `make -C arch/jitk/bench build`, then run
 `make -C arch/jitk/bench bench BENCH_ARGS="--samples 30"` from the repository root.
 The Makefile holds `/usr/bin/lockf -k /tmp/sofort-bench.lock` for collection.
@@ -13,7 +16,7 @@ Use `--gate-budget 60 --load-threshold 6` for a longer gate, or `--only REGEX`.
 `--test` verifies the statistical, gate, and watchdog behavior without a VM.
 
 Outputs: `raw.json` (incrementally saved, includes every failure and machine
-state), `RESULTS.md` (the sole canonical table; cite it for all external claims).
+state), `RESULTS.md` (the table from the libkrun era, historical: do not quote it for the current engines; see [PLAN-MAC-V1.md](PLAN-MAC-V1.md)).
 95% percentile bootstrap CIs for p50/p90/p99 use 2,000 resamples, fixed seed.
 The p99 of n=30 is poorly resolved; CIs describe this run, not future SLOs.
 CPU-ms is child user+system time including teardown, excludes supervisor and
