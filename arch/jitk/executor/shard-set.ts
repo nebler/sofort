@@ -1,5 +1,5 @@
 import type {Engine,Limits,Session} from './engine.js';
-import {ShardBackend,shardLimits,type ShardOptions} from './shard-backend.js';
+import {SHARD_OWNERS,ShardBackend,shardLimits,type ShardOptions} from './shard-backend.js';
 
 /** Startup failures in a row (an engine that dies before READY, e.g. refusing
  *  degraded confinement) after which the set fails instead of respawning. */
@@ -9,6 +9,9 @@ export type ShardSetOptions=Omit<ShardOptions,'slots'|'onDeath'>&{
   slots:number;
   /** Slots per engine process: 1 runs every VM in its own process. */
   slotsPerProcess:number;
+  /** Owner threads per engine process (at most its slots). Default: one
+   *  shard's SHARD_OWNERS split across the engines, at least one each. */
+  owners?:number;
 };
 /** Several shard engine processes behind one Engine. An engine process maps
  *  the memory of every guest it runs, so it is one trust and failure domain: a
@@ -27,18 +30,26 @@ export class ShardSet implements Engine {
   private started=new WeakSet<ShardBackend>();
   /** park() calls in flight per engine: claimed slots that free does not show yet. */
   private parking=new Map<ShardBackend,number>();
+  /** Owner threads per engine (before the slot cap). */
+  private readonly owners:number;
   private dead?:Error;
   private closed=false;
   constructor(readonly options:ShardSetOptions) {
     const {slots,slotsPerProcess}=options;
     if(!Number.isInteger(slots)||!Number.isInteger(slotsPerProcess)||slotsPerProcess<1||slotsPerProcess>64||slots<1||slots>4096)throw Error('shard set capacity limit');
     this.limits=shardLimits(slots);
+    // Owner threads run vCPUs. Every engine taking a whole shard's owners
+    // would run more of them than the host has cores (8 x 8: 32): preempted
+    // inside KVM_RUN, they lose time to vCPU switches (8 x 8 first use 2.4x
+    // slower on nested KVM, shard/README.md "Trust domains"). The set gets
+    // one shard's budget.
+    this.owners=options.owners??Math.max(1,Math.floor(SHARD_OWNERS/Math.ceil(slots/slotsPerProcess)));
     for(let left=slots;left>0;left-=slotsPerProcess)this.shards.push(this.spawn(this.shards.length,Math.min(left,slotsPerProcess)));
     this.ready=Promise.all(this.shards.map(s=>s.ready)).then(()=>{});this.ready.catch(()=>{});
   }
   private spawn(i:number,slots:number):ShardBackend {
     const {slotsPerProcess:_,...options}=this.options;
-    const owners=Math.min(options.owners??4,slots);
+    const owners=Math.min(this.owners,slots);
     const shard:ShardBackend=new ShardBackend({...options,slots,owners,onDeath:e=>this.died(i,shard,e)});
     shard.ready.then(()=>{this.started.add(shard);if(this.shards[i]===shard)this.startupFailures=0;},()=>{});
     return shard;
