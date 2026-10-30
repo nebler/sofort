@@ -12,7 +12,7 @@ agent and is intentionally excluded from this package's standalone typecheck.
 | ai-sdk-code-mode | @ai-sdk/code-mode 1.0.115; ai 7.0.158; run 2.1.11 | QuickJS WASI in Node worker threads, fresh context, **wasm** | 10/10 |
 | tanstack-isolated-vm | @tanstack/ai-code-mode and @tanstack/ai-isolate-node 1.0.0; isolated-vm 6.2.0 | Fresh native V8 isolate, **v8-isolate** | 10/10 |
 | tanstack-quickjs | @tanstack/ai-code-mode and @tanstack/ai-isolate-quickjs 1.0.0; quickjs-emscripten 0.31.0 | Fresh QuickJS Wasm runtime/context, **wasm** | 10/10 |
-| hyperlight-js | Hyperlight host 0.18.0; Hyperlight-JS 8d208af8ac3ca53f2069c9ef0ca6a45d89e032d7 | Existing strict single-use HVF backend, **microvm** | 8/10 |
+| hyperlight-js | Hyperlight host 0.18.0; Hyperlight-JS 8d208af8ac3ca53f2069c9ef0ca6a45d89e032d7 | Existing strict single-use HVF backend, **microvm** | 10/10 |
 | cf-dynamic-worker | @cloudflare/codemode 0.5.5; miniflare 4.20260730.0; workerd 1.20260730.1 | Fresh Worker Loader Worker per execute, **v8-isolate** | 10/10 |
 
 `package-lock.json` pins transitive packages and integrity hashes. Provenance
@@ -106,9 +106,28 @@ V8 mechanism, not equivalence with production Cloudflare hardening.
   The local bundler redirects the backend's built JS import to the same
   source TS and preserves source-relative resource locations. Cached binary
   selection follows `tslib/deps.ts` with environment overrides.
-- Hyperlight returns `Error: Error: boom` for the thrown-error check and fails
-  the 100 KB host result with **Host response exceeds virtqueue capacity**.
-  Both are retained as differences, with actual output in `CONFORMANCE.json`.
+- Hyperlight's two former differences were our configuration, not
+  Hyperlight's limits. Both are fixed (2026-10-30; 8/10 → 10/10):
+  - **100 KB host result** failed with *Host response exceeds virtqueue
+    capacity*. Our worker left Hyperlight-JS's transport at its
+    16 KiB-per-message default. It now sizes the virtqueue pools for one
+    1 MiB protocol frame each way, the frame limit Sofort's ring and every
+    other adapter accept. Probed through this adapter, a 1,040,000-byte host
+    reply, guest call argument and guest result all pass. Run code stays
+    under the protocol's 64 KiB code limit, as for Sofort.
+  - **Thrown error** read `Error: Error: boom`. That came from the shared
+    process backend (`name: message`) wrapped again by `MicroVMExecutor`,
+    not from Hyperlight. For guest errors the adapter now reports the
+    message, as the other adapters do (`boom`). Other errors pass through
+    unchanged.
+  The same fairness pass also fixed the bridge encoding, scratch sizing and
+  a quadratic QuickJS JSON reviver path, and named guest aborts honestly.
+  `bench/hyperlight/README.md` "Fair configuration" has the settings and
+  evidence. Real-task fit went from 0/100 to 88/100 at the unchanged 16 MiB
+  heap. The 12 remaining failures are that heap (8× `oom`) and the 1 MiB
+  protocol frame (4×). The checked-in `CONFORMANCE.*` is the earlier
+  all-adapter run and still shows 8/10. The Hyperlight-only rerun was not
+  merged into it.
 - `Promise.all` returns correct values everywhere, but measured simultaneous
   host calls were **1** for TanStack isolated-vm (`applySyncPromise`) and
   Hyperlight's synchronous host bridge, versus **3** elsewhere. Matching

@@ -24,6 +24,13 @@ async function loadRuntime() {
     return import(pathToFileURL(entry).href);
   })();
 }
+/** The shared process backend reports a guest throw as `name: message` and the
+ *  executor wraps that as `Error: name: message`. Other adapters report the
+ *  thrown error's message, so return the guest's message for guest errors. */
+function guestMessage(v:{error?:string;errorCode?:string}):string {
+  const m=v.errorCode==='GUEST_ERROR'||v.errorCode==='LIMIT'?/^Error: [A-Za-z_$][\w$]*: ([\s\S]*)$/.exec(v.error??''):null;
+  return m?m[1]!:v.error??'';
+}
 let selected:Record<string,string>={};
 export default localAdapter({
   name:'hyperlight-js',isolation:'microvm',where:'local',
@@ -41,6 +48,6 @@ export default localAdapter({
     process.env.JITK_WATCHDOG??=watchdog;
     const pool=new r.SandboxPool(new r.HyperlightBackend(worker,snapshot,Math.max(5000,budget)),0,concurrency);
     const executor:Executor=new r.MicroVMExecutor(pool,()=> 'allow',budget);
-    return {async execute(code,p,options){const v=await executor.execute(code,p,options);return v.error?failure(v.error,v.logs??[]):{result:v.result,logs:v.logs??[]};},async close(){await pool.close();}};
+    return {async execute(code,p,options){const v=await executor.execute(code,p,options);return v.error?failure(guestMessage(v),v.logs??[]):{result:v.result,logs:v.logs??[]};},async close(){await pool.close();}};
   }
 });
