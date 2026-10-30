@@ -110,6 +110,11 @@ glue-2m arena (about 400 KiB of QuickJS heap). Details:
   `no_new_privs` and a seccomp allowlist before any guest runs
   (`shard/src/confine/`). Both die with their parent and enforce run
   deadlines in the engine, independent of Node.
+- An engine process maps every guest it runs, so it is also a trust domain
+  between guests: on Linux the default 64-slot shard is one domain; serve
+  one tenant per engine process, or split slots across processes with
+  `ShardSet` (`JITK_SHARD_PROCESS_SLOTS=1`: one VM per process). On macOS
+  every slot is its own process. See `shard/README.md` "Trust domains".
 - Policy and credentials exist only in Node. Kernel diagnostics never
   authorize a tool or establish success.
 - GrowOS's builder and oracle are trusted developer tools, a different
