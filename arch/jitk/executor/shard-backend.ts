@@ -27,8 +27,17 @@ export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
  *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
 export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void;
+  /** Called once when the engine process fails or the backend closes (ShardSet replaces it). */
+  onDeath?:(e:Error)=>void;
   /** Serve even if the host lacks a Linux confinement layer (the engine refuses otherwise; default: JITK_ALLOW_DEGRADED_CONFINEMENT=1). */
   allowDegradedConfinement?:boolean};
+// Engine processes still running: killed when Node exits (one listener for any number of backends).
+const running=new Set<ChildProcess>();
+let exitHook=false;
+function track(child:ChildProcess) {
+  if(!exitHook){exitHook=true;process.once('exit',()=>{for(const c of running)c.kill('SIGKILL');});}
+  running.add(child);child.once('close',()=>running.delete(child));
+}
 const ascii=(s:string)=>s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 /** Bind tenant code to helpers already compiled in restored guest memory. */
 export function shardSource(code:string,names:string[]):string {
@@ -78,7 +87,6 @@ export class ShardBackend implements Engine {
   private didReady=false;
   private startup:ReturnType<typeof setTimeout>;
   private closed=false;
-  private readonly onExit=()=>this.child.kill('SIGKILL');
   constructor(readonly options:ShardOptions) {
     const hvf=process.platform==='darwin';
     if(process.platform!=='linux'&&!(hvf&&process.arch==='arm64'))throw Error('shard backend requires Linux (KVM) or macOS arm64 (HVF)');
@@ -96,12 +104,12 @@ export class ShardBackend implements Engine {
       const channel=new SharedChannel(m=>this.receive(m),e=>this.die(e));this.channel=channel;
       this.child=spawn(options.binary,['ipc',options.snapshot,String(slots),String(owners)],{stdio:['ignore','ignore','pipe',...channel.fds],env});
     }
-    process.once('exit',this.onExit);
+    track(this.child);
     let stderr=0;const tail=new StderrTail();
     this.child.stderr!.on('data',(b:Buffer)=>{stderr+=b.length;tail.push(b);if(stderr>65536)this.die(Error('shard stderr limit'));});
     this.child.once('error',e=>this.die(e));
     // An engine that exits before READY (e.g. refusing degraded confinement) says why on stderr.
-    this.child.once('close',()=>{process.removeListener('exit',this.onExit);this.die(Error('sandbox exited: shard'+(this.didReady?'':tail.reason())));});
+    this.child.once('close',()=>{this.die(Error('sandbox exited: shard'+(this.didReady?'':tail.reason())));});
     this.startup=setTimeout(()=>this.die(Error('shard startup timeout')),5000);
   }
   private die(e:Error,graceful=false) {
@@ -112,6 +120,7 @@ export class ShardBackend implements Engine {
     else this.child?.kill('SIGKILL');
     this.channel?.close();
     for(const s of this.sessions.values())s.failed(e);this.sessions.clear();this.queue.rejectAll(e);
+    if(this.options.onDeath)try{this.options.onDeath(e);}catch{}
   }
   private receive(m:Message) {
     if(m.kind===IPC.ready){
@@ -150,6 +159,11 @@ export class ShardBackend implements Engine {
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
   /** Physical slots, and those out of service after a quarantine (capacity is slots - lost). */
   get capacity() {return {slots:this.generations.length,lost:this.lost.size};}
+  /** Slots a park() would claim at once: none before READY, after death, or with callers queued. */
+  get free():number {return !this.didReady||this.dead||this.queue.length?0:this.generations.length-this.sessions.size-this.lost.size;}
+  /** park() callers queued for a slot, and whether the engine is gone. */
+  get waiting():number {return this.queue.length;}
+  get failed():boolean {return this.dead!==undefined;}
   released(s:ShardSession,quarantine?:string) {
     if(this.sessions.get(s.slot)!==s)throw Error('shard release identity');this.sessions.delete(s.slot);
     if(quarantine!==undefined){this.quarantined(s,quarantine);return;}

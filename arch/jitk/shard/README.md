@@ -224,6 +224,43 @@ records cgroup `memory.peak`; its `spawn-cg` is built from
 [`harness/spawn-cg.c`](harness/spawn-cg.c). `./tool.sh analyze-r7-shard`, `./tool.sh wait-r7` and
 `./tool.sh escalation-r7` are offline observers, never runtime helper processes.
 
+## Trust domains
+
+Each guest is its own hardware VM, but one engine process maps the memory of
+every slot it runs. An engine process is therefore one trust and failure
+domain: a guest that took over its engine (a bug in exit handling, the
+virtio devices, or KVM) could read and write every other slot in that
+process, and an engine crash fails all of that process's runs. Confinement
+(below) limits what such an engine can do to the host; it does nothing
+between the slots of one process.
+
+On macOS every slot is already its own engine process (the HVF zygote). On
+Linux the default is one 64-slot shard, the densest choice. Two ways to keep
+tenants apart:
+
+- **One tenant per engine process.** A host serving several tenants gives
+  each its own executor and backend; nothing in one process ever runs
+  another tenant's code.
+- **Smaller engine processes.** `ShardSet` (`executor/shard-set.ts`) splits
+  a pool's slots across engine processes; `JITK_SHARD_PROCESS_SLOTS=1` (with
+  `JITK_SHARD_SLOTS`, default 64) gives one VM per process. A crashed engine
+  fails only its own runs and is replaced; one that cannot start fails the
+  set after three tries.
+
+What the split costs (`executor/shard-set-bench.ts`, 64 slots, nested KVM
+on kvm-dev, 6 vCPUs, host under load; two runs, 2026-10-30):
+
+| Engine processes x slots | READY | PSS (engines + watchdogs) | per slot | sequential run p50 |
+| --- | --- | --- | --- | --- |
+| 1 x 64 (default) | 0.11-0.17 s | 33 MiB | 0.52 MiB | 1.6-1.9 ms |
+| 8 x 8 | 0.26-0.32 s | 43-44 MiB | 0.68 MiB | 1.7-2.2 ms |
+| 64 x 1 | 1.9-2.2 s | 95 MiB | 1.48 MiB | 1.7-2.2 ms |
+
+One VM per process costs about 1 MiB more per slot and a slower start (128
+processes); a run costs the same. The first use of every slot (64 at once)
+took 4-6 s for 1x64 and 64x1 but 13-14 s for 8x8, in both runs; that is
+not explained yet.
+
 ## Confinement (Linux shard)
 
 `real ipc` confines itself (`src/confine/`) in three steps that follow its

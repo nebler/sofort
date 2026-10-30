@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {type Backend} from './backend.js';
 import {ShardBackend} from './shard-backend.js';
+import {ShardSet} from './shard-set.js';
 import type {ParkingGate} from './pool.js';
 // Every emitted entry lives in executor/build; no checkout-name assumptions.
 const here=fileURLToPath(new URL('../',import.meta.url));
@@ -31,14 +32,18 @@ export function hvfGate(binary:string,snapshot:string,slots:number):ParkingGate|
 export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:string} {
   const mac=process.platform==='darwin'&&process.arch==='arm64';
   const selected=process.env.JITK_BACKEND??(mac?'hvf':process.platform==='linux'?'shard':'');
-  let backend:ShardBackend,gate:ParkingGate|undefined,selection:string,binary:string,snapshot:string|undefined;
+  let backend:ShardBackend|ShardSet,gate:ParkingGate|undefined,selection:string,binary:string,snapshot:string|undefined;
   if(selected==='shard'){
     if(process.platform!=='linux')throw Error('shard backend requires Linux (on macOS: JITK_BACKEND=hvf)');
     binary=process.env.JITK_SHARD_BINARY??jitk+'shard/target/release/real';
     snapshot=process.env.JITK_SHARD_SNAPSHOT;
     if(!snapshot)throw Error('shard backend requires JITK_SHARD_SNAPSHOT=/absolute/path/to/prepared-base');
-    backend=new ShardBackend({binary,snapshot});
-    selection='Linux KVM shard / shared-memory Node policy';
+    // One engine process maps every guest it runs: JITK_SHARD_PROCESS_SLOTS
+    // (1..64) splits JITK_SHARD_SLOTS (default 64) across engine processes,
+    // each its own trust and failure domain (shard-set.ts).
+    const slots=Number(process.env.JITK_SHARD_SLOTS??64),perProcess=Number(process.env.JITK_SHARD_PROCESS_SLOTS??slots);
+    if(perProcess>=slots){backend=new ShardBackend({binary,snapshot,slots});selection='Linux KVM shard / shared-memory Node policy';}
+    else{backend=new ShardSet({binary,snapshot,slots,slotsPerProcess:perProcess});selection=`Linux KVM shard set (${backend.processes.length} engine processes of up to ${perProcess} slots) / shared-memory Node policy`;}
   }
   // The ring engine on Hypervisor.framework (shard/src/hvf/zygote.rs):
   // JITK_SHARD_BINARY is the signed `hvf` engine and JITK_SHARD_SNAPSHOT a

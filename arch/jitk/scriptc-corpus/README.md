@@ -66,7 +66,26 @@ Each program is compiled twice. The **stock** link (scriptc/Zig default, base
 `stock_loader`. The **jitk** link (`zig-link.sh`: the same Zig linker plus
 `-Wl,--image-base=0x400000`) is the ELF used for Linux, Node comparison and
 jitk. Only the image base differs. `--layout stock` runs the whole pipeline on
-stock ELFs instead (every one is a loader refusal today).
+stock ELFs instead (`stock-link.sh`: scriptc's own link, byte-identical to its
+default; with the current kernel most now load).
+
+**Reproducible ELFs.** A rerun rebuilds every ELF and, in the jitk layout,
+requires the census bytes (`elf-drift` otherwise). Three inputs used to leak
+into them and are now fixed:
+
+- zig's install directory and global cache: musl and compiler-rt are built
+  by zig with debug info naming its lib directory, and the cached archive
+  differs between cache states. Both link scripts pass
+  `-Wl,--strip-debug`, which makes the output independent of either.
+- the corpus checkout path: scriptc embeds a program's absolute source path
+  (`import.meta.url`). Builds, Linux and Node runs reach the tree through
+  `/tmp/jitk-corpus-<rev>` (a symlink to this checkout's `.work/source`),
+  so ELFs are the same in every checkout.
+
+Census journals from before 2026-10-30 (`full`) used unstripped ELFs from
+`.work/source`; they can be rerun only with the same zig directory and cache
+state (`ZIG=~/.local/share/zig-0.16.0/zig` on the original Mac reproduces
+them), and programs with `import.meta.url` only from the original checkout.
 
 The source kernel is copied into `.work/kernel/`; all image/Cargo/native-tool
 outputs stay in `.work/`. `guest.ts` builds each image with the unchanged

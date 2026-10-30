@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync, symlinkSync, appendFileSync, chmodSync, realpathSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, lstatSync, rmSync, symlinkSync, appendFileSync, chmodSync, realpathSync, readlinkSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { capture, run, dump, readJSON, check, environment, copyTree, files, sha, scriptcRepo } from './lib.ts';
@@ -10,9 +10,14 @@ import { zigPath } from '../tslib/deps.ts';
 
 const ROOT = resolve(import.meta.dirname);
 const WORK = join(ROOT, '.work');
-const SOURCE = join(WORK, 'source');
-const CORPUS = join(SOURCE, 'tests/corpus');
 const REV = '4ee477d11eb9a71f0a018e5f5bed171a954fc2f7';
+// The corpus tree lives in .work/source, but every build, Linux and Node run
+// reaches it through one fixed path: scriptc embeds a program's absolute
+// source path (import.meta.url), so an ELF built in another checkout would
+// differ. linkSource() points SOURCE at this checkout's tree.
+const STORE = join(WORK, 'source');
+const SOURCE = '/tmp/jitk-corpus-' + REV.slice(0, 12);
+const CORPUS = join(SOURCE, 'tests/corpus');
 const IMAGE = 'sha256:88f8f82bb1850e61c04fd9e47813cd054f5e18eaf6143c4cebeb3d3667818d0a';
 const NODE_IMAGE = 'sha256:14078204b6bb268c107ceff6d3c43f45a888105e5c2b18b14c32b3409d93a1b0';
 const ORACLE_CONTAINER = 'jitk-corpus-linux-' + process.pid;
@@ -53,6 +58,37 @@ let findingsDir = 'findings';
 let targetPrefix = '';
 
 function hash(text: string): string { return sha(Buffer.from(text)); }
+function linkSource(): void {
+  mkdirSync(STORE, { recursive: true });
+  let target = '';
+  try { target = readlinkSync(SOURCE); } catch { /* absent */ }
+  if (target === STORE) return;
+  check(!target || !existsSync(target), SOURCE + ' serves another checkout\'s corpus (' + target + '); finish or remove that run first');
+  rmSync(SOURCE, { force: true });
+  symlinkSync(STORE, SOURCE);
+}
+// One link setup for every build: the pinned zig on PATH, the static musl
+// target, and a linker that drops debug sections. Those name the zig install
+// directory and depend on zig's global cache, so without them the same
+// inputs give different ELFs on another host or after a cache rebuild.
+// jitk: zig-link.sh (the jitk image base); stock: stock-link.sh (scriptc's
+// own zig cc link, byte-identical to its default, plus the same strip).
+function buildEnv(stock: boolean): Record<string, string> {
+  const e = environment();
+  e.PATH = dirname(zigPath()) + ':' + env.PATH;
+  e.SCRIPTC_TARGET = 'aarch64-linux-musl';
+  e.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
+  e.SCRIPTC_LINKER = join(ROOT, stock ? 'stock-link.sh' : 'zig-link.sh');
+  // Keep compiler/cache writes local and bounded; program sources stay exact.
+  e.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
+  return e;
+}
+function buildArgs(name: string, elf: string): string[] {
+  const args = [compiler, 'build', join(CORPUS, name), '-o', elf];
+  if (inputs(name).split('\n', 2).includes('// @optimization: speed')) args.push('--optimization', 'speed');
+  return args;
+}
+const linker = (stock: boolean) => sha(readFileSync(join(ROOT, stock ? 'stock-link.sh' : 'zig-link.sh')));
 function held(name: string): boolean { return parseInt(hash(seed + '\0' + name).slice(0, 8), 16) % 100 < heldPercent; }
 async function disk(): Promise<string> {
   const value = (await run(['df', '-h', '/System/Volumes/Data'], { timeout: 5 })).stdout.toString().trim();
@@ -201,16 +237,7 @@ async function program(name: string): Promise<void> {
   chmodSync(dir, 0o777);
   try {
     const elf = join(dir, 'program');
-    const buildEnv = environment();
-    buildEnv.PATH = dirname(zigPath()) + ':' + env.PATH;
-    buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
-    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
-    if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
-    // Keep compiler/cache writes local and bounded; program sources stay exact.
-    buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
-    const args = [compiler, 'build', join(CORPUS, name), '-o', elf];
-    if (text.split('\n', 2).includes('// @optimization: speed')) args.push('--optimization', 'speed');
-    const build = await capture(args, { cwd: SOURCE, env: buildEnv, timeout: 40 });
+    const build = await capture(buildArgs(name, elf), { cwd: SOURCE, env: buildEnv(layout === 'stock'), timeout: 40 });
     const diagnostics = Buffer.concat([build.stdout, build.stderr]).toString();
     writeFileSync(join(dir, 'build.log'), diagnostics);
     const codes = new Set<string>();
@@ -225,10 +252,8 @@ async function program(name: string): Promise<void> {
       if (layout === 'jitk') {
         // The unmodified scriptc/Zig link is what a user ships; record its
         // canonical packer result separately from the relinked jitk layout.
-        const stockEnv = { ...buildEnv };
-        delete stockEnv.SCRIPTC_LINKER;
         const stockElf = join(dir, 'program-stock');
-        const stock = await capture([compiler, 'build', join(CORPUS, name), '-o', stockElf, ...args.slice(5)], { cwd: SOURCE, env: stockEnv, timeout: 40 });
+        const stock = await capture(buildArgs(name, stockElf), { cwd: SOURCE, env: buildEnv(true), timeout: 40 });
         if (stock.returncode !== 0 || stock.timeout || !existsSync(stockElf)) row.stockLoader = 'build-error';
         else {
           try { pack(readFileSync(stockElf)); row.stockLoader = 'ok'; }
@@ -418,15 +443,7 @@ async function rerunProgram(base: Row, target: string, kernel: string, benign: s
     const text = inputs(base.name);
     check(hash(text) === base.source, 'corpus source drift: ' + base.name);
     const elf = join(dir, 'program');
-    const buildEnv = environment();
-    buildEnv.PATH = dirname(zigPath()) + ':' + env.PATH;
-    buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
-    buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
-    if (layout === 'jitk') buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
-    buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
-    const args = [compiler, 'build', join(CORPUS, base.name), '-o', elf];
-    if (text.split('\n', 2).includes('// @optimization: speed')) args.push('--optimization', 'speed');
-    const build = await capture(args, { cwd: SOURCE, env: buildEnv, timeout: 40 });
+    const build = await capture(buildArgs(base.name, elf), { cwd: SOURCE, env: buildEnv(layout === 'stock'), timeout: 40 });
     if (build.returncode !== 0 || build.timeout || !existsSync(elf)) { row.jitk = 'build-error'; row.diagnostic = 'rebuild failed'; return; }
     if (layout === 'jitk' && sha(readFileSync(elf)) !== base.elf) { row.jitk = 'elf-drift'; row.diagnostic = 'rebuilt ELF differs from the census ELF'; return; }
     if (layout === 'stock') row.elf = sha(readFileSync(elf));
@@ -460,7 +477,7 @@ async function rerun(): Promise<void> {
   if (!existsSync(join(kernel, 'Cargo.toml'))) copyTree(resolve(kernelArg), kernel, new Set(['.work', 'target', 'target-ring', 'dist', 'test-work', 'test-results', 'node_modules', '.git']));
   const benign = Array.from(new Set(source.filter(r => r.jitk === 'pass').flatMap(r => r.guestErrors || []))).sort();
   const manifest = { mode: 'rerun', from: fromId, fromJournal: sha(readFileSync(join(WORK, fromId + '.jsonl'))), seedCommitment: hash(seed), heldPercent,
-    selection, layout, linker: layout === 'jitk' ? sha(readFileSync(join(ROOT, 'zig-link.sh'))) : 'scriptc-default',
+    selection, layout, linker: linker(layout === 'stock'), sourcePath: SOURCE,
     selected: hash(selected.map(r => r.name).join('\n')), count: selected.length, runner: sha(readFileSync(join(ROOT, 'census.ts'))),
     guest: sha(readFileSync(join(ROOT, 'guest.ts'))), compiler: sha(readFileSync(compiler)),
     kernel: hash(files(kernel).map(f => f.slice(kernel.length) + ':' + sha(readFileSync(f))).join('\n')), benign };
@@ -528,15 +545,7 @@ async function writes(): Promise<void> {
       const result: Record<string, unknown> = { name: row.name, held: row.held, tier: row.tier, jitk: row.jitk, cause: row.cause || '' };
       try {
         const elf = join(dir, 'program');
-        const buildEnv = environment();
-        buildEnv.PATH = dirname(zigPath()) + ':' + env.PATH;
-        buildEnv.SCRIPTC_TARGET = 'aarch64-linux-musl';
-        buildEnv.SCRIPTC_RUNTIME_PACK = join(ROOT, '../tools/node_modules/@scriptc/runtime-linux-arm64-musl');
-        buildEnv.SCRIPTC_LINKER = join(ROOT, 'zig-link.sh');
-        buildEnv.SCRIPTC_CACHE_DIR = join(WORK, 'cache');
-        const args = [compiler, 'build', join(CORPUS, row.name), '-o', elf];
-        if (inputs(row.name).split('\n', 2).includes('// @optimization: speed')) args.push('--optimization', 'speed');
-        const build = await capture(args, { cwd: SOURCE, env: buildEnv, timeout: 40 });
+        const build = await capture(buildArgs(row.name, elf), { cwd: SOURCE, env: buildEnv(false), timeout: 40 });
         check(build.returncode === 0 && !build.timeout && existsSync(elf) && sha(readFileSync(elf)) === census.get(row.name)?.elf, 'rebuilt ELF differs from the census ELF');
         await linux(elf, join(dir, 'linux'));
         result.status = readJSON<Status>(join(dir, 'linux/status.json'));
@@ -588,6 +597,7 @@ async function main(): Promise<void> {
     check(w.dirs === 2 && w.files === 1 && w.removed === 1 && w.bytes === 5 && w.peakOpen === 1 && w.where.tmp === 2 && w.where.cwd === 2 && w.errors['mkdirat:EEXIST'] === 1 && w.related.newfstatat === 1, 'write profile');
     console.log('ok'); return;
   }
+  linkSource();
   if (mode === 'rerun') { await rerun(); return; }
   if (mode === 'writes') { await writes(); return; }
   check(mode === 'census' || mode === 'run' || mode === 'report', 'expected census/run/report/rerun/test');
@@ -599,7 +609,7 @@ async function main(): Promise<void> {
   diskBefore = await disk();
   const selected = entries().filter(n => (!filter || n.includes(filter)) && (selection === 'all' || held(n) === (selection === 'heldout'))).slice(0, limit);
   const manifest = { revision: REV, seedCommitment: hash(seed), heldPercent, selection, layout,
-    linker: layout === 'jitk' ? sha(readFileSync(join(ROOT, 'zig-link.sh'))) : 'scriptc-default',
+    linker: linker(layout === 'stock'), sourcePath: SOURCE,
     kernelProfile: { optimization: 's', lto: false, incremental: true, codegenUnits: 16 },
     selected: hash(selected.join('\n')), count: selected.length, image: IMAGE, nodeImage: NODE_IMAGE,
     runner: sha(readFileSync(join(ROOT, 'census.ts'))), oracle: sha(readFileSync(join(WORK, 'bin/oracle'))),

@@ -186,6 +186,13 @@ make -C ../shard snapshot      # prepared helper snapshot (JITK_SHARD_SNAPSHOT)
 ./run.sh build
 ```
 
+One shard engine process maps every guest it runs, so it is one trust
+domain. `JITK_SHARD_SLOTS` (default 64) and `JITK_SHARD_PROCESS_SLOTS`
+(default: all of them) choose how many engine processes share them; below
+the total, `selectBackend()` returns a `ShardSet` (`shard-set.ts`), and `1`
+runs every VM in its own process (costs: `../shard/README.md` "Trust
+domains").
+
 `run.sh` takes `JITK_NODE`, `JITK_SHARD_BINARY` and `JITK_SHARD_SNAPSHOT` from
 the jitk cache (`../tools/.work/bin/deps env`) unless they are set. The shard
 binary is built from `../shard` with the pinned toolchain; the snapshot step
