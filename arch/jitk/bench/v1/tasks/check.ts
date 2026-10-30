@@ -5,7 +5,7 @@
 // programs (kind 'sql') run read-only against the task's SQLite file.
 // Exits non-zero on any failure.
 //
-//   node bench/v1/tasks/materialize.ts && node bench/v1/tasks/check.ts [--sizes] [task-id...]
+//   node bench/v1/tasks/materialize.ts && node bench/v1/tasks/check.ts [--sizes] [--print] [task-id...]
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -77,6 +77,7 @@ async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
     let verdict: Verdict;
     try {
       const result = JSON.parse(JSON.stringify((await runProgram(code, namespaces)) ?? null));
+      if (printResults) console.log(JSON.stringify(result).slice(0, 4000));
       verdict = unmatched.length ? { ok: false, reason: 'unrecorded call: ' + unmatched[0] } : oracle(result);
     } catch (error) {
       verdict = { ok: false, reason: 'threw: ' + (error instanceof Error ? error.message : String(error)) };
@@ -132,6 +133,8 @@ async function checkSql(id: string, oracle: Oracle): Promise<boolean> {
 
 // --sizes writes the per-program call counts and byte totals into task.json.
 const writeSizes = process.argv.includes('--sizes');
+// --print shows each program's result (first 4000 characters).
+const printResults = process.argv.includes('--print');
 const args = process.argv.slice(2).filter(arg => !arg.startsWith('--'));
 const ids = args.length ? args : taskIds();
 let failed = 0;

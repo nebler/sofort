@@ -63,7 +63,11 @@
                 "description": "The page number of the results to fetch. Default: 1"
               }
             },
-            "required": ["owner", "repo", "workflow_id"]
+            "required": [
+              "owner",
+              "repo",
+              "workflow_id"
+            ]
           },
           "outputDescription": "{total_count, workflow_runs: [...]} where each run is a GitHub workflow run object: id, name, run_number, event, status, conclusion, head_branch, head_sha, created_at, updated_at, run_started_at, html_url, jobs_url, logs_url, actor, head_commit, repository, and more."
         },
@@ -86,7 +90,10 @@
               },
               "filter": {
                 "type": "string",
-                "enum": ["latest", "all"],
+                "enum": [
+                  "latest",
+                  "all"
+                ],
                 "description": "Filters jobs by their completed_at timestamp. latest returns jobs from the most recent execution of the workflow run. all returns all jobs for a workflow run, including from old executions of the workflow run. Default: latest"
               },
               "per_page": {
@@ -98,7 +105,11 @@
                 "description": "The page number of the results to fetch. Default: 1"
               }
             },
-            "required": ["owner", "repo", "run_id"]
+            "required": [
+              "owner",
+              "repo",
+              "run_id"
+            ]
           },
           "outputDescription": "{total_count, jobs: [...]} where each job has id, run_id, name, status, conclusion, started_at, completed_at, steps [{name, status, conclusion, number}], labels, runner_name, html_url, and more."
         },
@@ -124,7 +135,11 @@
                 "description": "Number of lines to return from the end of the log. Default: 500"
               }
             },
-            "required": ["owner", "repo", "job_id"]
+            "required": [
+              "owner",
+              "repo",
+              "job_id"
+            ]
           },
           "outputDescription": "{job_id, total_lines, returned_lines, content} where content is the last returned_lines lines of the log joined with \\n; each line starts with an ISO timestamp."
         }

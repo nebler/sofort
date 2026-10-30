@@ -24,7 +24,11 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["open", "closed", "all"],
+                "enum": [
+                  "open",
+                  "closed",
+                  "all"
+                ],
                 "description": "Indicates the state of the issues to return. Default: open"
               },
               "labels": {
@@ -33,12 +37,19 @@
               },
               "sort": {
                 "type": "string",
-                "enum": ["created", "updated", "comments"],
+                "enum": [
+                  "created",
+                  "updated",
+                  "comments"
+                ],
                 "description": "What to sort results by. Default: created"
               },
               "direction": {
                 "type": "string",
-                "enum": ["asc", "desc"],
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
                 "description": "The direction to sort the results by. Default: desc"
               },
               "since": {
@@ -54,7 +65,10 @@
                 "description": "The page number of the results to fetch. Default: 1"
               }
             },
-            "required": ["owner", "repo"]
+            "required": [
+              "owner",
+              "repo"
+            ]
           },
           "outputDescription": "Array of GitHub issue objects as the REST API returns them: number, title, state, user {login, ...}, labels [{name, ...}], comments (count), created_at, updated_at, closed_at, body, reactions, pull_request (only on pull requests), and more."
         },
@@ -76,7 +90,11 @@
                 "description": "The number that identifies the issue."
               }
             },
-            "required": ["owner", "repo", "issue_number"]
+            "required": [
+              "owner",
+              "repo",
+              "issue_number"
+            ]
           },
           "outputDescription": "One GitHub issue object (same shape as an element of listIssues)."
         },
@@ -110,7 +128,11 @@
                 "description": "The page number of the results to fetch. Default: 1"
               }
             },
-            "required": ["owner", "repo", "issue_number"]
+            "required": [
+              "owner",
+              "repo",
+              "issue_number"
+            ]
           },
           "outputDescription": "Array of issue comment objects: id, user {login, ...}, created_at, updated_at, body, author_association, reactions, html_url, and more."
         }

@@ -23,7 +23,9 @@
                 "description": "Maximum number of files to return. Default: 100"
               }
             },
-            "required": ["query"]
+            "required": [
+              "query"
+            ]
           },
           "outputDescription": "{kind, incompleteSearch, files: [{id, name, mimeType, modifiedTime, owners: [{displayName, emailAddress}], size}]}"
         },
@@ -37,7 +39,9 @@
                 "description": "The ID of the file."
               }
             },
-            "required": ["fileId"]
+            "required": [
+              "fileId"
+            ]
           },
           "outputDescription": "{id, name, mimeType, modifiedTime, content} where content is the full document text."
         }
@@ -56,7 +60,9 @@
                 "description": "The SOQL query, e.g. SELECT Id, Name FROM Account WHERE Name = 'Acme'"
               }
             },
-            "required": ["q"]
+            "required": [
+              "q"
+            ]
           },
           "outputDescription": "{totalSize, done, records: [{attributes: {type, url}, Id, ...selected fields}]}. Objects: Account (Id, Name, Industry, Type, BillingCountry, AnnualRevenue, NumberOfEmployees, OwnerId), User (Id, Name, Email, IsActive, Title, Department), Opportunity (Id, Name, AccountId, StageName, IsClosed, IsWon, Amount, CloseDate, Probability, NextStep, OwnerId)."
         },
@@ -81,7 +87,10 @@
                 "description": "Fields to return. Default: all fields."
               }
             },
-            "required": ["sobject", "id"]
+            "required": [
+              "sobject",
+              "id"
+            ]
           },
           "outputDescription": "{attributes: {type, url}, Id, ...fields}"
         },
@@ -100,7 +109,10 @@
                 "additionalProperties": true
               }
             },
-            "required": ["sobject", "record"]
+            "required": [
+              "sobject",
+              "record"
+            ]
           },
           "outputDescription": "{id, success, errors} on success. Failures reject with a Salesforce error list [{message, errorCode}]."
         },
@@ -123,7 +135,11 @@
                 "additionalProperties": true
               }
             },
-            "required": ["sobject", "id", "record"]
+            "required": [
+              "sobject",
+              "id",
+              "record"
+            ]
           },
           "outputDescription": "{id, success, errors}"
         }

@@ -34,17 +34,19 @@ export class Recorder {
   namespaces(): Record<string, unknown> {
     const out: Record<string, unknown> = {};
     for (const [namespace, tools] of Object.entries(this.live)) {
-      const fns: Record<string, (args: Record<string, unknown>) => Promise<unknown>> = {};
+      const fns: Record<string, (...args: unknown[]) => Promise<unknown>> = {};
       for (const tool of Object.keys(tools)) {
-        fns[tool] = args => this.call(namespace, tool, args);
+        fns[tool] = (...args) => this.call(namespace, tool, args);
       }
       out[namespace] = fns;
     }
     return out;
   }
 
-  private async call(namespace: string, tool: string, input: Record<string, unknown>): Promise<unknown> {
-    const args = [JSON.parse(JSON.stringify(input ?? {}))];
+  // Args are kept positional, as the guest passed them (codemode tools take one
+  // object, but a no-argument call records []).
+  private async call(namespace: string, tool: string, positional: unknown[]): Promise<unknown> {
+    const args = JSON.parse(JSON.stringify(positional)) as unknown[];
     const key = callKey(namespace, tool, args);
     const done = this.calls.get(key);
     if (done) {
@@ -56,7 +58,7 @@ export class Recorder {
       flight = (async () => {
         const started = performance.now();
         try {
-          let response = await this.live[namespace][tool](args[0]);
+          let response = await this.live[namespace][tool]((args[0] ?? {}) as Record<string, unknown>);
           let latencyMs = Math.round((performance.now() - started) * 10) / 10;
           if (response instanceof Timed) {
             latencyMs = response.latencyMs;

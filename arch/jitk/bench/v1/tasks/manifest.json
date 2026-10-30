@@ -22,5 +22,13 @@
       "sha256": "4b3df565719d2af7a5eb94e1d2c4887d2fc69c39cb54befe711b92a368831bf1",
       "from": "generate.ts"
     }
+  ],
+  "t4-otel-rollup": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 22843053,
+      "sha256": "f74dbb3466bae1c07ce3549f92d4a80d940b7c0aff0c9f2297713fd0a37afb93",
+      "from": "generate.ts"
+    }
   ]
 }
