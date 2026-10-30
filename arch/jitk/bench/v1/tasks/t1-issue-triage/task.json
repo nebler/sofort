@@ -1,0 +1,98 @@
+{
+  "id": "t1-issue-triage",
+  "name": "T1 issue triage",
+  "title": "Issue triage: old open issues with a label, ranked by discussion, with last activity",
+  "description": "Paginate the open issues of cli/cli with label gh-extension, keep issues opened before the cutoff, rank by comment count, and fan out to the comments of the top 20 to find the last activity. GitHub REST response shapes, real data captured from github.com.",
+  "kind": "js",
+  "prompt": "Today is 2026-10-30. In the cli/cli GitHub repository, find the open issues (not pull requests) labeled `gh-extension` that were opened more than 30 days ago, that is before 2026-09-30T00:00:00Z. Rank them by number of comments, most first, breaking ties by the older issue first. For the top 20, give me the issue number, title, comment count, and the last activity: when the most recent comment was posted and by whom (null for both if there are no comments). Return JSON: {cutoff, totalMatching, issues: [{number, title, comments, lastCommentAt, lastCommenter}]} where totalMatching counts all matching issues, not just the top 20.",
+  "providers": [
+    {
+      "name": "github",
+      "tools": {
+        "listIssues": {
+          "description": "List issues in a repository (GET /repos/{owner}/{repo}/issues). Pull requests are also returned; they have a `pull_request` key. Results are paginated with per_page and page; a page shorter than per_page is the last one.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "owner": { "type": "string", "description": "The account owner of the repository." },
+              "repo": { "type": "string", "description": "The name of the repository without the .git extension." },
+              "state": {
+                "type": "string",
+                "enum": ["open", "closed", "all"],
+                "description": "Indicates the state of the issues to return. Default: open"
+              },
+              "labels": {
+                "type": "string",
+                "description": "A list of comma separated label names. Example: bug,ui,@high"
+              },
+              "sort": {
+                "type": "string",
+                "enum": ["created", "updated", "comments"],
+                "description": "What to sort results by. Default: created"
+              },
+              "direction": {
+                "type": "string",
+                "enum": ["asc", "desc"],
+                "description": "The direction to sort the results by. Default: desc"
+              },
+              "since": {
+                "type": "string",
+                "description": "Only show results that were last updated after the given time (ISO 8601: YYYY-MM-DDTHH:MM:SSZ)."
+              },
+              "per_page": { "type": "integer", "description": "The number of results per page (max 100). Default: 30" },
+              "page": { "type": "integer", "description": "The page number of the results to fetch. Default: 1" }
+            },
+            "required": ["owner", "repo"]
+          },
+          "outputDescription": "Array of GitHub issue objects as the REST API returns them: number, title, state, user {login, ...}, labels [{name, ...}], comments (count), created_at, updated_at, closed_at, body, reactions, pull_request (only on pull requests), and more."
+        },
+        "getIssue": {
+          "description": "Get one issue (GET /repos/{owner}/{repo}/issues/{issue_number}).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "owner": { "type": "string", "description": "The account owner of the repository." },
+              "repo": { "type": "string", "description": "The name of the repository without the .git extension." },
+              "issue_number": { "type": "integer", "description": "The number that identifies the issue." }
+            },
+            "required": ["owner", "repo", "issue_number"]
+          },
+          "outputDescription": "One GitHub issue object (same shape as an element of listIssues)."
+        },
+        "listIssueComments": {
+          "description": "List comments on an issue (GET /repos/{owner}/{repo}/issues/{issue_number}/comments), oldest first. Paginated with per_page and page.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "owner": { "type": "string", "description": "The account owner of the repository." },
+              "repo": { "type": "string", "description": "The name of the repository without the .git extension." },
+              "issue_number": { "type": "integer", "description": "The number that identifies the issue." },
+              "since": {
+                "type": "string",
+                "description": "Only show results that were last updated after the given time (ISO 8601)."
+              },
+              "per_page": { "type": "integer", "description": "The number of results per page (max 100). Default: 30" },
+              "page": { "type": "integer", "description": "The page number of the results to fetch. Default: 1" }
+            },
+            "required": ["owner", "repo", "issue_number"]
+          },
+          "outputDescription": "Array of issue comment objects: id, user {login, ...}, created_at, updated_at, body, author_association, reactions, html_url, and more."
+        }
+      }
+    }
+  ],
+  "responses": "responses.jsonl",
+  "oracle": "oracle.ts",
+  "programs": [
+    "programs/claude-opus-5-5-1.js",
+    "programs/claude-opus-5-5-2.js",
+    "programs/claude-opus-5-5-3.js",
+    "programs/claude-opus-5-5-4.js",
+    "programs/claude-opus-5-5-5.js"
+  ],
+  "sizes": {},
+  "source": {
+    "data": "real: api.github.com, repository cli/cli, captured by capture.ts (see README.md)",
+    "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + api.d.ts; variants from a second model to be added"
+  }
+}
