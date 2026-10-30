@@ -248,7 +248,7 @@ for (const [service, team] of Object.entries(teams)) {
 }
 
 const insertDeploy = db.prepare('INSERT INTO deploys VALUES (?, ?, ?, ?, ?, ?, ?)');
-DEPLOYS.forEach((d, i) =>
+DEPLOYS.forEach((d, i) => {
   insertDeploy.run(
     5101 + i * 3,
     d.service,
@@ -257,8 +257,8 @@ DEPLOYS.forEach((d, i) =>
     iso(at(d.at) + (i % 4) * 7000 + 13000),
     d.by,
     d.status,
-  ),
-);
+  );
+});
 
 const insertCounter = db.prepare('INSERT INTO request_counters VALUES (?, ?, ?, ?, ?, ?, ?)');
 for (let b = 0; b < BUCKETS; b++) {

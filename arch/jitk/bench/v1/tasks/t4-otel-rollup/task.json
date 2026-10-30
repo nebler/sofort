@@ -76,40 +76,50 @@
         "responseBytes": 3819949,
         "argBytes": 1057,
         "maxReplyBytes": 670533,
+        "maxArgBytes": 186,
         "maxRoundTripBytes": 670719,
-        "toolMsSum": 2011
+        "toolMsSum": 2011,
+        "peakInFlightReplyBytes": 670533
       },
       "programs/claude-opus-5-5-2.js": {
         "calls": 18,
         "responseBytes": 3820745,
         "argBytes": 3048,
         "maxReplyBytes": 341802,
+        "maxArgBytes": 214,
         "maxRoundTripBytes": 341958,
-        "toolMsSum": 3128
+        "toolMsSum": 3128,
+        "peakInFlightReplyBytes": 3183808
       },
       "programs/claude-opus-5-5-3.js": {
         "calls": 3,
         "responseBytes": 3817264,
         "argBytes": 499,
         "maxReplyBytes": 1339238,
+        "maxArgBytes": 186,
         "maxRoundTripBytes": 1339424,
-        "toolMsSum": 1615
+        "toolMsSum": 1615,
+        "peakInFlightReplyBytes": 1339238
       },
       "programs/claude-opus-5-5-4.js": {
         "calls": 23,
         "responseBytes": 7553617,
         "argBytes": 3856,
         "maxReplyBytes": 340134,
+        "maxArgBytes": 172,
         "maxRoundTripBytes": 340304,
-        "toolMsSum": 4674
+        "toolMsSum": 4674,
+        "peakInFlightReplyBytes": 340134
       },
       "programs/claude-opus-5-5-5.js": {
         "calls": 11,
         "responseBytes": 3816910,
         "argBytes": 1573,
         "maxReplyBytes": 459783,
+        "maxArgBytes": 164,
         "maxRoundTripBytes": 459939,
-        "toolMsSum": 2265
+        "toolMsSum": 2265,
+        "peakInFlightReplyBytes": 1283420
       }
     }
   },

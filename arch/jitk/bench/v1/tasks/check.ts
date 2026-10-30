@@ -20,8 +20,30 @@ interface Stats {
   bytes: number;
   maxReply: number;
   argBytes: number;
+  maxArg: number;
   maxRoundTrip: number;
   toolMs: number;
+  intervals: [number, number, number][]; // start, end, reply bytes
+}
+
+// Replayed calls wait 1/50 of their recorded latency, so calls a program runs
+// in parallel overlap as they would live. The peak of overlapping reply bytes
+// is a lower bound on the reply data a guest holds at once.
+const TIME_SCALE = 50;
+
+function peakInFlight(intervals: [number, number, number][]): number {
+  const events = intervals.flatMap(([start, end, bytes]) => [
+    [start, bytes],
+    [end, -bytes],
+  ]);
+  events.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  let live = 0;
+  let peak = 0;
+  for (const [, delta] of events) {
+    live += delta;
+    peak = Math.max(peak, live);
+  }
+  return peak;
 }
 
 function replay(recorded: RecordedCall[], stats: Stats, unmatched: string[], used: Set<string>) {
@@ -46,9 +68,13 @@ function replay(recorded: RecordedCall[], stats: Stats, unmatched: string[], use
               stats.calls++;
               stats.bytes += call.bytes;
               stats.argBytes += argBytes;
+              stats.maxArg = Math.max(stats.maxArg, argBytes);
               stats.maxReply = Math.max(stats.maxReply, call.bytes);
               stats.maxRoundTrip = Math.max(stats.maxRoundTrip, call.bytes + argBytes);
               stats.toolMs += call.latencyMs;
+              const start = performance.now();
+              await new Promise(resolve => setTimeout(resolve, call.latencyMs / TIME_SCALE));
+              stats.intervals.push([start, performance.now(), call.bytes]);
               if (call.error !== undefined) throw new Error(call.error);
               return structuredClone(call.response);
             };
@@ -67,7 +93,7 @@ function replay(recorded: RecordedCall[], stats: Stats, unmatched: string[], use
 function leaves(value: unknown, path: (string | number)[] = [], out: (string | number)[][] = []) {
   if (Array.isArray(value)) {
     if (value.length) out.push([...path, '#drop']);
-    value.forEach((item, i) => leaves(item, [...path, i], out));
+    for (let i = 0; i < value.length; i++) leaves(value[i], [...path, i], out);
   } else if (value !== null && typeof value === 'object') {
     for (const [key, item] of Object.entries(value)) leaves(item, [...path, key], out);
   } else {
@@ -112,7 +138,16 @@ async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
   let ok = true;
   for (const program of task.programs) {
     const code = readFileSync(join(TASKS, id, program), 'utf8');
-    const stats: Stats = { calls: 0, bytes: 0, maxReply: 0, argBytes: 0, maxRoundTrip: 0, toolMs: 0 };
+    const stats: Stats = {
+      calls: 0,
+      bytes: 0,
+      maxReply: 0,
+      argBytes: 0,
+      maxArg: 0,
+      maxRoundTrip: 0,
+      toolMs: 0,
+      intervals: [],
+    };
     const unmatched: string[] = [];
     const proxy = replay(recorded, stats, unmatched, used);
     const namespaces = Object.fromEntries(
@@ -133,11 +168,13 @@ async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
       responseBytes: stats.bytes,
       argBytes: stats.argBytes,
       maxReplyBytes: stats.maxReply,
+      maxArgBytes: stats.maxArg,
       maxRoundTripBytes: stats.maxRoundTrip,
       toolMsSum: Math.round(stats.toolMs),
+      peakInFlightReplyBytes: peakInFlight(stats.intervals),
     };
     console.log(
-      `${verdict.ok ? 'PASS' : 'FAIL'} ${id}/${program} calls=${stats.calls} bytes=${stats.bytes} argBytes=${stats.argBytes} maxReply=${stats.maxReply} toolMsSum=${Math.round(stats.toolMs)} ${verdict.reason ?? ''}`,
+      `${verdict.ok ? 'PASS' : 'FAIL'} ${id}/${program} calls=${stats.calls} bytes=${stats.bytes} argBytes=${stats.argBytes} maxReply=${stats.maxReply} peakInFlight=${peakInFlight(stats.intervals)} toolMsSum=${Math.round(stats.toolMs)} ${verdict.reason ?? ''}`,
     );
   }
   if (writeSizes) {
