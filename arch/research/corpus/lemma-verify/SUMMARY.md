@@ -81,3 +81,9 @@ Speed is a code-quality problem, not an architecture problem.
   - a proof would take 8–16 weeks.
 - **Validator:** now requires exactly one result, with regressions for empty and two-result bodies.
 - **Re-verified independently:** build, test (932 conformance checks), drift, wasmspec and lnsym all pass.
+
+## 2026-10-30: NormalDomain discharged, fill at V8 parity (lemma-spike 5dff9f0)
+
+- NormalDomain: finite prefix-invariant checker (`DomainCheck.checkDomain`) proved sound once (`DomainCheck.sound`), evaluated per artifact. All 6 bodies + 6 whole functions now have LNSym-composed acceptance with no domain premise; `unchecked_load_rejected` for every certificate. Per-artifact, not a universal compileB theorem.
+- Speed: direct local operands, checked-store/discarded-reload fusion, direct local loop comparisons, all inside gate_compiler; no new AArch64 forms, no Spec change. fill 24 → 13 instr/iter; Node 24 rerun 0.644 → 0.362 ns/iter vs V8 0.356 (1.86× → 1.02×). 7 of the 11 saved instructions come from the fusion, a pattern specific to the fixture.
+- Independently rerun: build, test, drift, wasmspec, lnsym all pass; 452 concrete theorem audits, standard axioms only. Lock root unchanged (aaea4081…).
