@@ -27,7 +27,8 @@ export function hvfGate(binary:string,snapshot:string,slots:number):ParkingGate|
   return undefined;
 }
 /** The arena class a ring engine runs: JITK_SHARD_CLASS, default glue-2m.
- *  glue-4m holds bigger values (shard/README.md "Limits") and needs its own
+ *  glue-4m, glue-8m and glue-16m hold bigger values, and glue-8m/16m bigger
+ *  tool replies (shard/README.md "Limits"); each needs its own
  *  snapshot: JITK_SHARD_SNAPSHOT of that class (`deps env` picks it when
  *  JITK_SHARD_CLASS is set). The engine refuses a snapshot of another class. */
 export function shardClass():MemoryClass {

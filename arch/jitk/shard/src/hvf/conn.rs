@@ -34,6 +34,13 @@ impl Conn {
             bound,
         }
     }
+    /// This socket carries Node's messages (the zygote's socket to Node, a
+    /// child's from the zygote): reassemble to Node's bound, which a class
+    /// reply needs, instead of the guest direction's.
+    pub fn carrying_node_messages(mut self) -> Self {
+        self.assembler = Assembler::from_node();
+        self
+    }
     pub fn fd(&self) -> RawFd {
         self.fd.as_raw_fd()
     }

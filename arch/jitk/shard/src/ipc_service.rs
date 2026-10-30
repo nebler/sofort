@@ -31,6 +31,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     confine::die_with_parent().map_err(|_| invalid("IPC parent unavailable"))?;
     let snapshot = Snapshot::load_identified(base)?;
     let charge = ipc_charge(snapshot.class);
+    let snapshot_class = snapshot.class;
     // SAFETY: this binary startup path uniquely adopts the Node-supplied
     // memfd and eventfds 3/4/5 before any owner threads are started.
     let mut endpoint = unsafe { Endpoint::inherited()? };
@@ -50,6 +51,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
         states: (0..slots).map(|_| State::default()).collect(),
         outbound: VecDeque::new(),
         charge,
+        reply_bytes: snapshot_class.reply_bytes(),
     };
     enqueue(
         &mut reactor.outbound,
@@ -88,7 +90,9 @@ struct Reactor {
     pool: Pool,
     states: Vec<State>,
     outbound: VecDeque<Message>,
+    /// The snapshot class's START charge and REPLY bound.
     charge: u32,
+    reply_bytes: usize,
 }
 impl Reactor {
     fn run(&mut self, endpoint: &mut Endpoint) -> io::Result<()> {
@@ -139,7 +143,7 @@ impl Reactor {
                 );
             }
             ipc::REPLY => {
-                if s.reply(&m)? {
+                if s.reply(&m, self.reply_bytes)? {
                     self.pool.reply(
                         id,
                         m.generation,
@@ -214,6 +218,7 @@ impl Reactor {
                             completion.metrics.cpu_ns,
                             completion.stopped_ns,
                             completion.reset_done_ns,
+                            completion.metrics.heap_peak,
                         ],
                         &completion.metrics.policy_round_trips,
                     ),

@@ -469,7 +469,7 @@ fn deliver(s: &mut State, m: &Message) -> bool {
         }),
         service::CALL => s.call(m.id.into(), &m.bytes),
         service::LOG => s.log(&m.bytes),
-        service::REPLY => s.reply(m),
+        service::REPLY => s.reply(m, jitk_abi::arena::Class::Glue2m.reply_bytes()),
         service::CANCEL => s.cancel(m).map(|_| true),
         service::DONE | service::ERROR => s.complete(),
         service::RELEASED | service::QUARANTINED => {

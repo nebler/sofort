@@ -622,8 +622,9 @@ impl<V: Vm> Slot<V> {
     /// Answer open call `r.id`: its RET records join the backlog, and as many
     /// as fit go onto the RX ring now.
     pub fn reply(&mut self, r: &Request) -> Result<(), RunError> {
-        // The trusted broker/fixture must answer a previously decoded request once.
-        assert!(r.bytes.len() <= ring::REPLY_BYTES);
+        // The trusted broker/fixture must answer a previously decoded request
+        // once; the broker bounds it by the class (service::State::reply).
+        assert!(r.bytes.len() <= ring::MAX_REPLY_BYTES);
         assert!(
             self.calls.answer(r.id).is_some(),
             "reply to an unopened call"
@@ -635,6 +636,13 @@ impl<V: Vm> Slot<V> {
     }
     pub fn pause_after_repair(&self) {
         self.store(ring::SAMPLE_READY, 1);
+    }
+    /// The stopped run's heap high-water (ring::HEAP_PEAK, which the guest
+    /// kernel writes): untrusted, so at most the class's arena bytes. Read
+    /// it before the reset, which restores the snapshot's value.
+    pub fn heap_peak(&self) -> u64 {
+        self.load(ring::HEAP_PEAK)
+            .min(self.snapshot().class.bytes() as u64)
     }
     pub fn repaired(&self) -> bool {
         self.load(ring::REPAIRED_GENERATION) == self.generation

@@ -21,7 +21,10 @@ export const DEADLINE_GRACE_MS=1000;
 export const RELEASE_GRACE_MS=3000;
 /** Owner threads of a Linux shard when `owners` is unset (the engine allows 1..4, at most the host's cores). */
 export const SHARD_OWNERS=4;
-export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
+/** One run's IPC STATS. heapPeakBytes: the guest's heap high-water (jitk-abi
+ *  ring::HEAP_PEAK: mmap window plus brk, at most the class's arena bytes;
+ *  0 when no run was bound), what decides whether a run fits its class. */
+export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;heapPeakBytes:number;roundTripsNs:bigint[]};
 /** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are out of service now.
  *  On Linux a lost slot never returns; the HVF engine re-forks it and reports RESTORED. */
 export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:number;slots:number};
@@ -30,8 +33,9 @@ export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
  *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
 /** A prepared snapshot's arena class (jitk-abi arena::Class). glue-2m is the
- *  default; glue-4m gives a run about 4x the QuickJS heap for 4 MiB charged
- *  per run instead of 2 and twice the reset copy (shard/README.md "Limits"). */
+ *  default; glue-4m, glue-8m and glue-16m give a run a larger QuickJS heap for
+ *  a larger charge per run and reset copy, and glue-8m/16m larger tool replies
+ *  (shard/README.md "Limits"). */
 export type MemoryClass=keyof typeof ARENA_CLASSES;
 /** The arena class of a prepared snapshot: its `.layout` sidecar (the
  *  JTKARENA record of jitk-abi arena::Class::layout, covered by the identity
@@ -39,8 +43,8 @@ export type MemoryClass=keyof typeof ARENA_CLASSES;
 export function snapshotClass(base:string):MemoryClass {
   const b=readFileSync(base+'.layout');
   if(b.length!==72||b.readBigUInt64LE(0)!==0x414e4552414b544an||b.readBigUInt64LE(8)!==2n)throw Error('shard snapshot layout record');
-  const mib=Number(b.readBigUInt64LE(16)),bytes=Number(b.readBigUInt64LE(32));
-  const cls=(Object.keys(ARENA_CLASSES) as MemoryClass[]).find(c=>ARENA_CLASSES[c].admissionBytes===mib*(1<<20)&&ARENA_CLASSES[c].arenaBytes===bytes);
+  const mib=Number(b.readBigUInt64LE(16)),gpa=Number(b.readBigUInt64LE(24)),bytes=Number(b.readBigUInt64LE(32));
+  const cls=(Object.keys(ARENA_CLASSES) as MemoryClass[]).find(c=>ARENA_CLASSES[c].admissionBytes===mib*(1<<20)&&ARENA_CLASSES[c].arenaGpa===gpa&&ARENA_CLASSES[c].arenaBytes===bytes);
   if(!cls)throw Error('shard snapshot has an unknown arena class');
   return cls;
 }
@@ -76,11 +80,12 @@ export function shardWire(code:string,names:string[]):string {
 }
 
 /** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots:
- *  the console path's (protocol/dispatcher.ts LIMIT) but for the arena-bound memory of its class. */
+ *  the console path's (protocol/dispatcher.ts LIMIT) but for the arena-bound memory of its class
+ *  and that class's tool-reply bound (1 MiB on glue-2m/4m, LIMIT.frame; more on glue-8m/16m). */
 export function shardLimits(slots:number,memoryClass:MemoryClass='glue-2m'):Limits {
   const arena=ARENA_CLASSES[memoryClass];
   return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
-    js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:IPC.replyBytes,doneBytes:IPC.doneBytes,
+    js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:arena.replyBytes,doneBytes:IPC.doneBytes,
       logs:LIMIT.logs,logBytes:LIMIT.log,timers:true,arenaBytes:arena.arenaBytes}};
 }
 
@@ -179,7 +184,7 @@ export class ShardBackend implements Engine {
   private claim(slot:number):ShardSession {
     const generation=++this.generations[slot];
     if(generation>=1n<<62n)throw Error('shard generation exhausted');
-    const s=new ShardSession(this,slot,generation,ARENA_CLASSES[this.memoryClass].admissionBytes);this.sessions.set(slot,s);return s;
+    const s=new ShardSession(this,slot,generation,this.memoryClass);this.sessions.set(slot,s);return s;
   }
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
   /** Physical slots, and those out of service after a quarantine (capacity is slots - lost). */
@@ -260,8 +265,12 @@ export class ShardSession implements Session {
   private waiter?:(e:GuestEvent)=>void;
   private stopped:Promise<never>;
   private rejectStopped!:(e:Error)=>void;
-  /** charge: the START memory reservation, the snapshot class's admission bytes. */
-  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint,private charge:number=ARENA_CLASSES['glue-2m'].admissionBytes) {
+  /** The START memory reservation (the snapshot class's admission bytes), its REPLY bound and arena bytes. */
+  private charge:number;
+  private replyBytes:number;
+  private arenaBytes:number;
+  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint,memoryClass:MemoryClass='glue-2m') {
+    const c=ARENA_CLASSES[memoryClass];this.charge=c.admissionBytes;this.replyBytes=c.replyBytes;this.arenaBytes=c.arenaBytes;
     this.released=new Promise(resolve=>{this.resolveReleased=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
   }
@@ -339,7 +348,7 @@ export class ShardSession implements Session {
     else if(m.kind===IPC.log){if(m.id||m.bytes.length>IPC.consoleBytes)throw Error('shard IPC log bound');}
     else if(m.kind===IPC.done){if(m.id||m.bytes.length>IPC.doneBytes)throw Error('shard IPC completion bound');}
     else if(m.kind===IPC.error){if(m.id||m.bytes.length>IPC.errorBytes)throw Error('shard IPC error bound');}
-    else if(m.kind===IPC.stats){if(m.id||m.bytes.length<IPC.statsFixedBytes||m.bytes.length>IPC.statsFixedBytes+8*rounds||m.bytes.readBigUInt64LE(24)>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(m.bytes.readBigUInt64LE(24)))throw Error('shard IPC metrics bound');}
+    else if(m.kind===IPC.stats){if(m.id||m.bytes.length<IPC.statsFixedBytes||m.bytes.length>IPC.statsFixedBytes+8*rounds||m.bytes.readBigUInt64LE(IPC.statsCountAt)>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(m.bytes.readBigUInt64LE(IPC.statsCountAt)))throw Error('shard IPC metrics bound');}
     else if(m.kind!==IPC.released&&m.kind!==IPC.quarantined)throw Error('shard IPC direction/kind');
     // DONE/ERROR drained during a reset leave the reset's own bound armed.
     if((m.kind===IPC.done||m.kind===IPC.error)&&run.phase!=='releasing'||m.kind===IPC.released||m.kind===IPC.quarantined)this.disarm();
@@ -358,10 +367,11 @@ export class ShardSession implements Session {
       this.guest(()=>this.log(m.bytes));
     }else if(m.kind===IPC.stats){
       if(m.id||run.stats||m.bytes.length<IPC.statsFixedBytes)throw Error('shard IPC metrics schema');
-      const n=m.bytes.readBigUInt64LE(24);
+      const n=m.bytes.readBigUInt64LE(IPC.statsCountAt),heap=m.bytes.readBigUInt64LE(IPC.statsHeapPeakAt);
       if(n>BigInt(rounds)||m.bytes.length!==IPC.statsFixedBytes+8*Number(n))throw Error('shard IPC metrics bound');
+      if(heap>BigInt(this.arenaBytes))throw Error('shard IPC metrics heap bound');
       run.stats=true;
-      this.backend.metrics({deadlineNs:run.admittedDeadlineNs,slot:this.slot,generation:this.generation,ownerCpuNs:m.bytes.readBigUInt64LE(0),stoppedNs:m.bytes.readBigUInt64LE(8),resetDoneNs:m.bytes.readBigUInt64LE(16),roundTripsNs:Array.from({length:Number(n)},(_,i)=>m.bytes.readBigUInt64LE(32+8*i))});
+      this.backend.metrics({deadlineNs:run.admittedDeadlineNs,slot:this.slot,generation:this.generation,ownerCpuNs:m.bytes.readBigUInt64LE(0),stoppedNs:m.bytes.readBigUInt64LE(8),resetDoneNs:m.bytes.readBigUInt64LE(16),heapPeakBytes:Number(heap),roundTripsNs:Array.from({length:Number(n)},(_,i)=>m.bytes.readBigUInt64LE(IPC.statsFixedBytes+8*i))});
     }else if(m.kind===IPC.done){
       if(m.id||m.bytes.length>IPC.doneBytes||!run.stats||run.wires.size)throw Error('shard IPC done schema/outstanding');
       this.guest(()=>this.done(m.bytes));
@@ -405,17 +415,18 @@ export class ShardSession implements Session {
     if(this.failure)throw Error(this.failure.message);
     const wire=this.run.wires.get(id);if(wire===undefined)throw Error('shard unknown reply');
     // One encode: the protocol's host-output limits apply to exactly these bytes;
-    // the frame bound (LIMIT.frame) is ring::REPLY_BYTES, so a reply
-    // over it fails this generation as it fails a console-path run.
+    // the frame bound is the class's reply bound (jitk-abi Class::reply_bytes:
+    // LIMIT.frame on glue-2m/4m), so a reply over it fails this generation as
+    // it fails a console-path run.
     const text=this.host(()=>{
       let s:string|undefined;
       try{s=JSON.stringify(r);}catch{throw new ProtocolError('SERIALIZE');}
       if(s===undefined)throw new ProtocolError('SERIALIZE');
-      s=ascii(s);checkReply(parseHostJson(s));return s;
+      s=ascii(s);checkReply(parseHostJson(s,this.replyBytes));return s;
     });
     this.run.wires.delete(id);this.run.budget.reply(id);
     const payload=Buffer.from(text);
-    if(payload.length>IPC.replyBytes)throw Error('shard reply bound');
+    if(payload.length>this.replyBytes)throw Error('shard reply bound');
     await this.write(IPC.reply,wire,payload);
   }
   release() {

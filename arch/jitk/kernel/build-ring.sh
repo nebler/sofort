@@ -19,9 +19,11 @@ fi
 case "${JITK_RING_CLASS:-glue-2m}" in
   glue-2m) class_flags= ;;
   glue-4m) class_flags='--cfg ring_glue_4m' ;;
+  glue-8m) class_flags='--cfg ring_glue_8m' ;;
+  glue-16m) class_flags='--cfg ring_glue_16m' ;;
   *) echo "unsupported ring memory class: $JITK_RING_CLASS" >&2; exit 1 ;;
 esac
-export RUSTFLAGS="${RUSTFLAGS:-} --check-cfg=cfg(ring_glue_4m) $class_flags"
+export RUSTFLAGS="${RUSTFLAGS:-} --check-cfg=cfg(ring_glue_4m) --check-cfg=cfg(ring_glue_8m) --check-cfg=cfg(ring_glue_16m) $class_flags"
 mkdir -p dist/ring
 cargo "+$RUST_TOOLCHAIN" build --locked --offline --release --target aarch64-unknown-none --features transport-ring
 OBJCOPY=${OBJCOPY:-llvm-objcopy}

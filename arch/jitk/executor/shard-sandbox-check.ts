@@ -3,8 +3,9 @@
 // SharedChannel.poll turns into die(), i.e. SIGKILL of every slot on the shard.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {DEADLINE_GRACE_MS,RELEASE_GRACE_MS,ShardSession,type ShardHost} from './shard-backend.js';
+import {DEADLINE_GRACE_MS,RELEASE_GRACE_MS,ShardSession,type MemoryClass,type ShardHost} from './shard-backend.js';
 import {IPC,type Message} from './shard-ipc.js';
+import {ARENA_CLASSES} from './abi.js';
 
 // Resolved from the bundle in executor/build/.
 type Row=[kind:'call'|'done'|'log',name:string,outcome:'ok'|'node'|'shard',payload:string];
@@ -23,12 +24,12 @@ class FakeShard implements ShardHost {
   deliver(s:ShardSession,kind:number,id=0,bytes:Buffer=Buffer.alloc(0)) {
     try{s.receive({kind,slot:s.slot,generation:s.generation,id,bytes});}catch(e){this.fatal(e as Error);}
   }
-  async running(slot:number) {
-    const s=new ShardSession(this,slot,1n);await s.armDeadline(Date.now()+5000);
+  async running(slot:number,memoryClass:MemoryClass='glue-2m') {
+    const s=new ShardSession(this,slot,1n,memoryClass);await s.armDeadline(Date.now()+5000);
     await s.start({kind:'js',source:'async()=>1',tools:{ns:['fn']},prelude:''});return s;
   }
 }
-const stats=()=>Buffer.alloc(32);
+const stats=()=>Buffer.alloc(IPC.statsFixedBytes);
 export async function sandboxChecks():Promise<number> {
   let checks=0;
   for(const [kind,name,outcome,payload] of corpus) {
@@ -99,9 +100,9 @@ export async function sandboxChecks():Promise<number> {
   }
   // Host replies pass the same output limits as v1 frames; a bad one fails only
   // its own generation. An oversized valid reply becomes a LIMIT error instead.
-  // A reply over the frame bound (= ring::REPLY_BYTES) fails its generation as on
-  // the console path (FRAME_LIMIT).
-  for(const [name,r,code] of [['unsafe number',{ok:2**60},'NUMBER'],['lone surrogate',{ok:'\ud800'},'UNICODE'],['bad error code',{err:{code:'lower',message:''}},'SCHEMA'],['extra key',{ok:1,x:1},'SCHEMA'],['BigInt',{ok:1n},'SERIALIZE'],['over the frame bound',{ok:'x'.repeat(IPC.replyBytes)},'FRAME_LIMIT']] as const){
+  // A reply over the frame bound (glue-2m's class reply bound, LIMIT.frame) fails
+  // its generation as on the console path (FRAME_LIMIT).
+  for(const [name,r,code] of [['unsafe number',{ok:2**60},'NUMBER'],['lone surrogate',{ok:'\ud800'},'UNICODE'],['bad error code',{err:{code:'lower',message:''}},'SCHEMA'],['extra key',{ok:1,x:1},'SCHEMA'],['BigInt',{ok:1n},'SERIALIZE'],['over the frame bound',{ok:'x'.repeat(ARENA_CLASSES['glue-2m'].replyBytes)},'FRAME_LIMIT']] as const){
     const shard=new FakeShard(),s=await shard.running(0);
     shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));await s.next();
     await assert.rejects(s.reply(1,r as never),{message:code},name);
@@ -114,6 +115,26 @@ export async function sandboxChecks():Promise<number> {
     shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));await s.next();
     await s.reply(1,{ok:'x'.repeat(65536)});
     assert.equal(shard.sent.find(m=>m.kind===IPC.reply)!.bytes.length,65536+'{"ok":""}'.length);checks++;
+  }
+  // A larger class's reply bound: a 1.28 MiB reply (bench v1 T4's OTLP page) goes
+  // through whole on glue-8m and glue-16m (the guest's heap decides whether it
+  // is held); one byte over the class bound fails that generation
+  // (FRAME_LIMIT), and the START charges the class.
+  for(const memoryClass of ['glue-8m','glue-16m'] as const){
+    const bound=ARENA_CLASSES[memoryClass].replyBytes,over='{"ok":""}'.length;
+    {
+      const shard=new FakeShard(),s=await shard.running(0,memoryClass);
+      assert.equal(shard.sent[0]!.bytes.readUInt32LE(20),ARENA_CLASSES[memoryClass].admissionBytes,memoryClass+' START charge');
+      shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));await s.next();
+      await s.reply(1,{ok:'x'.repeat(1342177)});
+      assert.equal(shard.sent.find(m=>m.kind===IPC.reply)!.bytes.length,1342177+over,memoryClass);checks++;
+    }
+    {
+      const shard=new FakeShard(),s=await shard.running(0,memoryClass);
+      shard.deliver(s,IPC.call,1,Buffer.from('["call","ns","fn",[]]'));await s.next();
+      await assert.rejects(s.reply(1,{ok:'x'.repeat(bound-over+1)}),{message:'FRAME_LIMIT'},memoryClass);
+      assert.ok(!shard.sent.some(m=>m.kind===IPC.reply),memoryClass+': no reply over the bound');checks++;
+    }
   }
   {
     // Calls and logs have separate budgets: IPC.logs logs, then calls go on.

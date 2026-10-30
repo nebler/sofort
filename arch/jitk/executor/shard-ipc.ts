@@ -22,9 +22,10 @@ function binding():Bridge {
  *  HVF engine's CLOCK_MONOTONIC_RAW (shard/src/clock.rs ipc_ns). */
 export function monotonicNs():bigint {return process.platform==='darwin'?process.hrtime.bigint():binding().now();}
 /** A message's records (ipc/ABI.md): header and payload each; every record
- *  but the last has flags MORE and a full IPC.payload. */
+ *  but the last has flags MORE and a full IPC.payload. The local bound is
+ *  Node's direction's (IPC.nodeMessageBytes: a class's REPLY may exceed 1 MiB). */
 export function records(m:Message):Buffer[] {
-  if(!Number.isInteger(m.kind)||m.kind<0||m.kind>0xffffffff||!Number.isInteger(m.slot)||m.slot<0||m.slot>=IPC.slots||m.generation<0n||m.generation>=1n<<62n||!Number.isInteger(m.id)||m.id<0||m.id>0xffffffff||m.bytes.length>IPC.messageBytes)throw Error('shard IPC local envelope');
+  if(!Number.isInteger(m.kind)||m.kind<0||m.kind>0xffffffff||!Number.isInteger(m.slot)||m.slot<0||m.slot>=IPC.slots||m.generation<0n||m.generation>=1n<<62n||!Number.isInteger(m.id)||m.id<0||m.id>0xffffffff||m.bytes.length>IPC.nodeMessageBytes)throw Error('shard IPC local envelope');
   const count=Math.max(1,Math.ceil(m.bytes.length/IPC.payload)),out:Buffer[]=[];
   for(let i=0;i<count;i++){
     const chunk=m.bytes.subarray(i*IPC.payload,(i+1)*IPC.payload),b=Buffer.alloc(IPC.headerBytes+chunk.length);
@@ -40,8 +41,9 @@ export function message(b:Buffer):{m:Message;more:boolean} {
   if((flags&~IPC.more)!==0||b.readUInt32LE(IPC.flagsAt+4)!==0||(more&&b.length!==IPC.headerBytes+IPC.payload))throw Error('shard IPC peer envelope');
   return {m:{kind:b.readUInt32LE(0),slot:b.readUInt32LE(4),generation:b.readBigUInt64LE(8),id:b.readUInt32LE(16),bytes:b.subarray(IPC.headerBytes)},more};
 }
-/** Reassembles one direction's messages: their records are consecutive, so
- *  at most one is partial, bounded by IPC.messageBytes. */
+/** Reassembles the shard's messages to Node: their records are consecutive,
+ *  so at most one is partial, bounded by IPC.messageBytes (they carry guest
+ *  bytes; the 1 MiB console frame on every class). */
 export class Assembler {
   private partial?:Message;
   private parts:Buffer[]=[];

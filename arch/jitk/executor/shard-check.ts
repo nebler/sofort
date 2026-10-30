@@ -111,29 +111,45 @@ try {
 
 // Memory classes (../shard/README.md "Limits"). The code-mode shape, a 512 KiB
 // tool result read and a small answer returned, is a clean out-of-memory
-// LIMIT on the default glue-2m class and works on glue-4m, where a 320 KiB
-// value also round-trips (reply in, completion out). The glue-4m snapshot:
-// JITK_SHARD_SNAPSHOT_GLUE_4M, else the jitk cache's.
+// LIMIT on the default glue-2m class and works on the larger ones, where a
+// 320 KiB value also round-trips (reply in, completion out). glue-8m and
+// glue-16m also read a 1,152 KiB tool result (over the 1 MiB frame of
+// glue-2m/4m; glue-8m's heap holds 1,227 KiB) and refuse one past their class
+// reply bound. STATS
+// reports each run's heap high-water within the class's arena. Each class's
+// snapshot: JITK_SHARD_SNAPSHOT_GLUE_<N>M, else the jitk cache's.
 {
   const deps=fileURLToPath(new URL('../../tools/.work/bin/deps',import.meta.url));
-  const large=process.env.JITK_SHARD_SNAPSHOT_GLUE_4M||execFileSync(deps,['path','JITK_SHARD_SNAPSHOT'],{encoding:'utf8',env:{...process.env,JITK_SHARD_SNAPSHOT:'',JITK_SHARD_CLASS:'glue-4m'}}).trim();
+  const classSnapshot=(c:string)=>process.env['JITK_SHARD_SNAPSHOT_'+c.toUpperCase().replace('-','_')]||execFileSync(deps,['path','JITK_SHARD_SNAPSHOT'],{encoding:'utf8',env:{...process.env,JITK_SHARD_SNAPSHOT:'',JITK_SHARD_CLASS:c}}).trim();
+  const large=classSnapshot('glue-4m');
   const {errorClass}=await import(new URL('../../mcp/jitk.mjs',import.meta.url).href);
   /** A tool result whose reply JSON ({"ok":...}) is `bytes` long. */
   const value=(bytes:number,fill:string)=>{const v={rows:Array.from({length:8},(_,id)=>({id,ok:true})),text:''};v.text=fill.repeat(bytes-JSON.stringify({ok:v}).length);assert.equal(JSON.stringify({ok:v}).length,bytes);return v;};
-  const read=value(512*1024,'x'),echoed=value(320*1024,'y');
+  const read=value(512*1024,'x'),echoed=value(320*1024,'y'),page=value(1152*1024,'z');
   const digest='const r=await codemode.big();return [r.rows.length,r.text.length,r.text.slice(-2)]';
-  for(const [memoryClass,base] of [['glue-2m',snapshot],['glue-4m',large]] as const){
-    const b=new ShardBackend({binary,snapshot:base,slots:1,owners:1,memoryClass});
+  const classes=[['glue-2m',snapshot],['glue-4m',large],['glue-8m',classSnapshot('glue-8m')],['glue-16m',classSnapshot('glue-16m')]] as const;
+  for(const [memoryClass,base] of classes){
+    const heaps:number[]=[];
+    const b=new ShardBackend({binary,snapshot:base,slots:1,owners:1,memoryClass,onMetrics:m=>heaps.push(m.heapPeakBytes)});
     const p=new SandboxPool(b,0,1),x=new MicroVMExecutor(p,()=> 'allow',10000);
-    const run=async(code:string,fns:Record<string,()=>Promise<unknown>>={})=>{const r=await x.execute(code,fns);await p.drain();return r;};
+    const run=async(code:string,fns:Record<string,()=>Promise<unknown>>={})=>{heaps.length=0;const r=await x.execute(code,fns);await p.drain();return r;};
+    const cls=ARENA_CLASSES[memoryClass];
     try{
-      check(b.memoryClass===memoryClass&&b.limits.memoryMB===ARENA_CLASSES[memoryClass].admissionBytes>>20&&b.limits.js?.arenaBytes===ARENA_CLASSES[memoryClass].arenaBytes,`${memoryClass}: limits of its class`);
+      check(b.memoryClass===memoryClass&&b.limits.memoryMB===cls.admissionBytes>>20&&b.limits.js?.arenaBytes===cls.arenaBytes&&b.limits.js?.replyBytes===cls.replyBytes,`${memoryClass}: limits of its class`);
       let r=await run(digest,{big:async()=>read});
       if(memoryClass==='glue-2m')check(!!r.error&&/out of memory/.test(r.error)&&errorClass(r)==='LIMIT',`glue-2m: a 512 KiB tool result is a clean LIMIT (${r.error})`);
       else{
-        check(!r.error&&JSON.stringify(r.result)===JSON.stringify([8,read.text.length,'xx']),`glue-4m: a 512 KiB tool result is read (${r.error??'ok'})`);
+        check(!r.error&&JSON.stringify(r.result)===JSON.stringify([8,read.text.length,'xx']),`${memoryClass}: a 512 KiB tool result is read (${r.error??'ok'})`);
+        check(heaps.length===1&&heaps[0]!>512*1024&&heaps[0]!<=cls.arenaBytes,`${memoryClass}: STATS heap high-water above the reply, within the arena (${heaps})`);
         r=await run('return await codemode.big()',{big:async()=>echoed});
-        check(!r.error&&JSON.stringify(r.result)===JSON.stringify(echoed),`glue-4m: a 320 KiB value round-trips (${r.error??'ok'})`);
+        check(!r.error&&JSON.stringify(r.result)===JSON.stringify(echoed),`${memoryClass}: a 320 KiB value round-trips (${r.error??'ok'})`);
+      }
+      if(cls.replyBytes>1<<20){
+        r=await run(digest,{big:async()=>page});
+        check(!r.error&&JSON.stringify(r.result)===JSON.stringify([8,page.text.length,'zz']),`${memoryClass}: a 1,152 KiB tool result is read (${r.error??'ok'})`);
+        // As on the console path, a host reply over the frame fails its run.
+        r=await run(digest,{big:async()=>value(cls.replyBytes+1,'w')});
+        check(!!r.error&&/FRAME_LIMIT/.test(r.error),`${memoryClass}: a reply past the class bound (${cls.replyBytes} bytes) fails its run (${r.error})`);
       }
       r=await run('return 2');check(!r.error&&r.result===2,`${memoryClass}: the slot serves the next run`);
     }finally{await p.close();}

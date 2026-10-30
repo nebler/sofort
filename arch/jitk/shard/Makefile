@@ -17,7 +17,7 @@ ifneq ($(shell uname -s),Linux)
 	$(CARGO_PIN) clippy --locked --offline --all-targets --all-features --target aarch64-unknown-linux-musl -- -D warnings
 endif
 
-# Prepared helper snapshots (glue-2m, glue-4m) in the jitk cache, content-
+# Prepared helper snapshots (glue-2m, glue-4m, glue-8m, glue-16m) in the jitk cache, content-
 # addressed by ring kernel and helper hash; idempotent (snapshot.ts). Needs
 # `make -C .. deps` (Node, shard binary) first.
 .PHONY: snapshot

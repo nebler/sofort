@@ -51,7 +51,7 @@ Node code applies policy, calls the tool with its credentials and replies.
 | [`executor/`](../executor/README.md) | `MicroVMExecutor` (Cloudflare codemode `Executor`, TanStack `IsolateDriver`), `SandboxPool`, the `Engine`/`Session` interface and its adapters, engine selection | `engine.ts`, `executor.ts`, `select-backend.ts` |
 | [`executor/policy/`](../executor/policy/README.md) | host policy: tool lookup, argument and output validation, approvals, per-call credentials | `policy.mjs` |
 | [`shard/`](../shard/README.md) | the ring engine: slots, snapshot reset, the `hv` seam, KVM (`real`) and HVF (`hvf`) backends, IPC service, native worker, snapshot preparation | `src/slot/`, `src/hv.rs` |
-| [`abi/`](../abi/README.md) | `jitk-abi`: ring, arena, IPC values defined once (ABI v11); generates the TS and guest copies | `src/lib.rs` |
+| [`abi/`](../abi/README.md) | `jitk-abi`: ring, arena, IPC values defined once (ABI v12); generates the TS and guest copies | `src/lib.rs` |
 | [`kernel/`](../kernel/README.md) | the guest kernel: syscall handlers, MMU, ring transport; ring and console profiles | `src/main.rs`, [`ARCH.md`](../kernel/ARCH.md) |
 | [`protocol/`](../protocol/README.md) | protocol v1 (console profile) and the frame checks the ring path reuses | `dispatcher.ts` |
 | [`grow/`](../grow/README.md) | GrowOS: grows missing syscall handlers against a Linux oracle (developer loop) | `loop.ts` |
@@ -73,7 +73,7 @@ seam (`shard/src/hv.rs`) are two backends with different process topologies:
 | confinement | none yet | Seatbelt (`jitk.sb`), fork dropped ([CONTRACTS](../CONTRACTS.md)) |
 | role | the production engine | the development engine |
 
-Snapshots are prepared per arena class (`glue-2m`, `glue-4m`) by
+Snapshots are prepared per arena class (`glue-2m`, `glue-4m`, `glue-8m`, `glue-16m`) by
 `make -C shard snapshot` and stored in the jitk cache under a key derived
 from the ring kernel image and helper hashes; both engines refuse a snapshot
 whose ABI version differs (Node checks it too).
@@ -91,13 +91,15 @@ One kernel source tree builds two profiles (`kernel/README.md`):
 
 ## Limits
 
-Both engines admit the same JS jobs (ABI v11, `Engine.limits`): 4,096 calls
-per run with 64 open, 1 MiB calls, replies and completions, 64 KiB of tenant
+Both engines admit the same JS jobs (ABI v12, `Engine.limits`): 4,096 calls
+per run with 64 open, 1 MiB calls and completions, tool replies to the
+class's bound (1 MiB; 2 MiB on glue-8m, 4 MiB on glue-16m), 64 KiB of tenant
 code, 1,024 log lines, guest timers. The practical bound on big values is the
 snapshot's arena class: glue-2m (the default, about 370 KiB of QuickJS heap,
-replies to about 107 KiB) or glue-4m (`JITK_SHARD_CLASS=glue-4m`, about
-1.5 MiB, replies to about 545 KiB). Details:
-`shard/README.md` "Limits (ABI 11)". A 96-case corpus
+replies to about 107 KiB), glue-4m (about 1.5 MiB, replies to about 545 KiB),
+glue-8m (about 4.8 MiB, 1.2 MiB) or glue-16m (about 11.8 MiB, 2.7 MiB), with
+`JITK_SHARD_CLASS`. Details:
+`shard/README.md` "Limits (ABI 12)". A 96-case corpus
 (`executor/parity/`) checks that both engines behave the same.
 
 ## Trust boundaries

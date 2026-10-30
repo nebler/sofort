@@ -3,12 +3,16 @@ use core::arch::asm;
 
 use crate::abi::arena::{BRK_BYTES, CANARY_BYTES, Class, DATA_BYTES, STACK_BYTES};
 
-const CLASS: Class = if cfg!(ring_glue_4m) {
+const CLASS: Class = if cfg!(ring_glue_16m) {
+    Class::Glue16m
+} else if cfg!(ring_glue_8m) {
+    Class::Glue8m
+} else if cfg!(ring_glue_4m) {
     Class::Glue4m
 } else {
     Class::Glue2m
 };
-pub const ARENA: usize = crate::abi::ring::ARENA_GPA as usize;
+pub const ARENA: usize = CLASS.gpa() as usize;
 pub const ARENA_BYTES: usize = CLASS.bytes();
 const ARENA_TABLES: usize = ARENA_BYTES.div_ceil(0x200000);
 const END: usize = ARENA + ARENA_BYTES;

@@ -131,7 +131,11 @@ pub struct Zygote {
     children: Vec<Child>,
     /// Forks, signals and reaps the children.
     template: Template,
+    /// The snapshot class's START charge and REPLY bound.
     charge: u32,
+    reply_bytes: usize,
+    /// A child's STATS heap high-water is at most this (the class's arena).
+    arena_bytes: u64,
     restores: Restores,
 }
 
@@ -191,11 +195,12 @@ impl Zygote {
             return Err(invalid("IPC: fd 3 must be Node's stream socket"));
         }
         // SAFETY: this startup path uniquely adopts the inherited fd 3.
-        let node = Conn::new(unsafe { OwnedFd::from_raw_fd(3) }, wire::OUTBOUND);
+        let node =
+            Conn::new(unsafe { OwnedFd::from_raw_fd(3) }, wire::OUTBOUND).carrying_node_messages();
         node.set_nonblocking()?;
         super::conn::buffers(node.fd());
         let snapshot = Snapshot::<State>::load_identified(base)?;
-        let charge = service::ipc_charge(snapshot.class);
+        let class = snapshot.class;
         super::warm();
         // What needs a file outside the snapshot directory or a sysctl is
         // done: confine this process before the first fork, so every engine
@@ -216,7 +221,7 @@ impl Zygote {
                 }
             }
         })?;
-        let mut z = Self::new(node, slots, charge, template);
+        let mut z = Self::new(node, slots, class, template);
         for i in 0..slots {
             let child = z.spawn(i)?;
             z.children.push(child);
@@ -231,13 +236,15 @@ impl Zygote {
         ))?;
         Ok(z)
     }
-    fn new(node: Conn, slots: usize, charge: u32, template: Template) -> Self {
+    fn new(node: Conn, slots: usize, class: crate::arena::Class, template: Template) -> Self {
         Self {
             node,
             states: (0..slots).map(|_| service::State::default()).collect(),
             children: Vec::with_capacity(slots),
             template,
-            charge,
+            charge: service::ipc_charge(class),
+            reply_bytes: class.reply_bytes(),
+            arena_bytes: class.bytes() as u64,
             restores: Restores::new(restore_budget(slots), RESTORE_WINDOW_NS),
         }
     }
@@ -482,7 +489,9 @@ impl Zygote {
                     || !(wire::STATS_FIXED_BYTES
                         ..=wire::STATS_FIXED_BYTES + 8 * wire::STATS_ROUND_TRIPS)
                         .contains(&n)
-                    || (n - wire::STATS_FIXED_BYTES) as u64 / 8 != service::u64_at(&m.bytes, 24)
+                    || (n - wire::STATS_FIXED_BYTES) as u64 / 8
+                        != service::u64_at(&m.bytes, wire::STATS_COUNT_AT)
+                    || service::u64_at(&m.bytes, wire::STATS_HEAP_PEAK_AT) > self.arena_bytes
                     || !n.is_multiple_of(8)
                 {
                     return Err(invalid("child STATS"));
@@ -549,7 +558,7 @@ impl Zygote {
                 self.node.queue(&service::stats(
                     i,
                     s.generation,
-                    [0, clock::ipc_ns(), 0],
+                    [0, clock::ipc_ns(), 0, 0],
                     &[],
                 ))?;
                 self.node
@@ -591,7 +600,7 @@ impl Zygote {
                         );
                         s.complete()?;
                         self.node
-                            .queue(&service::stats(i, s.generation, [0, now, 0], &[]))?;
+                            .queue(&service::stats(i, s.generation, [0, now, 0, 0], &[]))?;
                         self.node.queue(&Message::new(
                             ERROR,
                             i,
@@ -603,7 +612,7 @@ impl Zygote {
                 }
             }
             REPLY => {
-                if s.reply(&m)?
+                if s.reply(&m, self.reply_bytes)?
                     && let Some(conn) = c.conn.as_mut()
                 {
                     stuck = conn.queue(&m).err();
@@ -1002,7 +1011,7 @@ mod tests {
         let forker = template.pid();
         let node = Conn::new(ours, wire::OUTBOUND);
         node.set_nonblocking().unwrap();
-        let mut z = Zygote::new(node, 2, charge(), template);
+        let mut z = Zygote::new(node, 2, crate::arena::Class::Glue2m, template);
         for i in 0..2 {
             let mut c = z.spawn(i).unwrap();
             c.ready = true;

@@ -120,7 +120,7 @@ export function shardDir(): string {
 // build, so consumers find the entry through an index file keyed by the
 // fingerprint of every snapshot input (kernel and helper sources, toolchain,
 // class); the snapshot step rebuilds and re-verifies on an index miss.
-export const SNAPSHOT_CLASSES = ['glue-2m', 'glue-4m'];
+export const SNAPSHOT_CLASSES = ['glue-2m', 'glue-4m', 'glue-8m', 'glue-16m'];
 
 // The class JITK_SHARD_SNAPSHOT defaults to: JITK_SHARD_CLASS (the executor's
 // selection, executor/select-backend.ts shardClass), else glue-2m.

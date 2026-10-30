@@ -4,9 +4,9 @@
 // so the helper composition is the executor's own module,
 // ../executor/prepared-helpers.mjs.
 //
-// One snapshot per arena class: glue-2m is the executor's default, glue-4m
-// the larger JS class (JITK_SHARD_CLASS=glue-4m) and the class-coverage
-// engine tests'. Each is the ring kernel with the
+// One snapshot per arena class: glue-2m is the executor's default; glue-4m,
+// glue-8m and glue-16m are the larger JS classes (JITK_SHARD_CLASS) and the
+// class-coverage engine tests'. Each is the ring kernel with the
 // executor helpers spliced in before the QuickJS checkpoint, built with the
 // pinned toolchain and prepared by the shard binary, JITK_SHARD_BINARY from
 // `make -C arch/jitk deps` (Linux: `real`; macOS: `hvf`, signed with the
@@ -62,8 +62,8 @@ async function kernelImage(cls: string, out: string, env: Record<string, string>
   settings.JITK_TOOLS_DIR = join(KERNEL, '.work/bin');
   settings.CARGO_TARGET_DIR = join(snapshotRoot(), 'kernel-target-' + hostPlatform() + '-' + cls);
   // The arena GPA comes from the image itself (jitk-abi, kernel mmu_ring.rs).
-  settings.RUSTFLAGS = cls === 'glue-4m' ? '--cfg ring_glue_4m' : '';
   check(SNAPSHOT_CLASSES.includes(cls), 'unsupported ring memory class ' + cls);
+  settings.RUSTFLAGS = cls === 'glue-2m' ? '' : '--cfg ring_' + cls.replace('-', '_');
   await run([tools.CARGO, 'build', '--locked', '--offline', '--release', '--target', 'aarch64-unknown-none', '--features', 'transport-ring'], { cwd: KERNEL, env: settings, inherit: true, timeout: 3600 });
   await run([env.OBJCOPY || 'llvm-objcopy', '-O', 'binary', join(settings.CARGO_TARGET_DIR, 'aarch64-unknown-none/release/jitk-02'), out], { env, timeout: 600 });
   return shaFile(out);

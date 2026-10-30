@@ -40,7 +40,7 @@ is part of their measured cost.
 
 | Adapter | What it is | Where |
 | --- | --- | --- |
-| `sofort-hvf` / `sofort-kvm` | Sofort `MicroVMExecutor`, glue-2m and glue-4m | Mac / Linux |
+| `sofort-hvf` / `sofort-kvm` | Sofort `MicroVMExecutor`, glue-2m, glue-4m, glue-8m and glue-16m | Mac / Linux |
 | `hyperlight-js` | QuickJS in a Hyperlight micro-VM (existing executor backend) | Mac / Linux |
 | `cf-dynamic-worker` | Cloudflare's `DynamicWorkerExecutor` on local workerd (Worker Loader) | Mac / Linux |
 | `ai-sdk-code-mode` | Vercel AI SDK `@ai-sdk/code-mode` (QuickJS in-process) | Mac / Linux |

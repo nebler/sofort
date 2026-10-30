@@ -36,7 +36,7 @@ Prerequisites: rustup with `rustup toolchain install 1.95.0 --profile minimal
 needed: `../tools/npm.sh` bootstraps the pinned one into the cache.
 
 `make snapshot` ([`snapshot.ts`](snapshot.ts)) builds one ring kernel per arena
-class (glue-2m, glue-4m) with the executor helpers spliced in before the QuickJS
+class (glue-2m, glue-4m, glue-8m, glue-16m) with the executor helpers spliced in before the QuickJS
 checkpoint, prepares it with the cache shard binary, and stores it in the jitk
 cache as `shard-snapshot/linux-arm64-<class>-<key>/helpers.{bin,mem,regs,layout,identity}`.
 The key is `sha256(ring kernel image sha256, helper identity sha256)`, so the
@@ -465,41 +465,84 @@ medians) measured the process costs that shape the engine:
 So each engine process is forked once and process creation stays off
 the per-run path.
 
-## Limits (ABI 11)
+## Limits (ABI 12)
 
 The JS profile has the console path's limits (`../executor/ipc/ABI.md`,
 `ABI-R7.md` "JS profile"): 4,096 calls per run with 64 open and 2 MiB in
-flight, 1 MiB calls, replies and completions, a 72 KiB START source (64 KiB
-of tenant code, `LIMIT.code`), 1,024 one-way console lines, and guest timers
-(the WAIT deadline wakes a parked slot). Messages stream over the unchanged
-32 KiB rings and 16 KiB IPC records, so the layout, the arena classes, guest
-RAM and the reset are as before; host memory per slot is a backlog of at most
-the source plus one reply per open call.
+flight, 1 MiB calls and completions, a 72 KiB START source (64 KiB of tenant
+code, `LIMIT.code`), 1,024 one-way console lines, and guest timers (the WAIT
+deadline wakes a parked slot). Tool replies are bounded by the class (below):
+1 MiB on glue-2m and glue-4m as on the console path, more on the larger
+classes. Messages stream over the 32 KiB rings and 16 KiB IPC records; host
+memory per slot is a backlog of at most the source plus one reply per open
+call.
 
-What bounds big values is the snapshot's arena class, the QuickJS heap a
-run has. Two classes serve JS jobs; glue-2m is the default, and
-`JITK_SHARD_CLASS=glue-4m` selects the larger one (`../executor/select-backend.ts`;
-`deps env` and `snapshot.ts env` then name its snapshot, and Node and both
-engines refuse a snapshot of another class: Node reads the class from the
-`.layout` record, the engine charges the class's admission bytes on every
-START). `Engine.limits` reports the class (`memoryMB`, `js.arenaBytes`); the
-frame limits stay 1 MiB on both. Measured on HVF (M4 Pro, `executor/run.sh
-payload-bench memory`; JSON bytes of the value, to 1 KiB; sizes do not move
-with host load, times do):
+What bounds big values is the snapshot's arena class, the QuickJS heap a run
+has. Four classes serve JS jobs; glue-2m is the default, and
+`JITK_SHARD_CLASS=glue-4m|glue-8m|glue-16m` selects a larger one
+(`../executor/select-backend.ts`; `deps env` and `snapshot.ts env` then name
+its snapshot, and Node and both engines refuse a snapshot of another class:
+Node reads the class from the `.layout` record, the engine charges the class's
+admission bytes on every START). Each class places its arena in guest RAM
+(jitk-abi `arena::Class`): glue-2m and glue-4m at `0x81800000` as before,
+glue-8m at `0x81400000`, glue-16m at `0x80c00000`; every arena ends below the
+control page's 2 MiB block. `Engine.limits` reports the class (`memoryMB`,
+`js.arenaBytes`, `js.replyBytes`).
 
-| class | arena | charged per START | usable heap (16 KiB buffers) | largest tool reply | largest completion | largest echo (call + reply) | largest round trip (reply returned) | engine process footprint (HVF) | reset p50 (`hvf bench`, load ~63) |
+Measured on HVF (M4 Pro, `executor/run.sh payload-bench memory`; JSON bytes
+of the value, to 1 KiB; sizes do not move with host load, times do). Heap
+capacity is the STATS heap high-water when a run is out of memory: the mmap
+window plus brk the class gives QuickJS's allocator.
+
+| class | arena | charged per START | reply bound | usable heap (16 KiB buffers) | heap capacity | largest tool reply | largest completion | largest echo (call + reply) | largest round trip (reply returned) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| glue-2m (default) | 1.25 MiB | 2 MiB | 368 KiB | 107 KiB | 141 KiB | 72 KiB | 107 KiB | 5.3 MiB | 105 µs |
-| glue-4m | 2.75 MiB | 4 MiB | 1,584 KiB | 545 KiB | 477 KiB | 359 KiB | 367 KiB | 10.0 MiB | 219 µs |
+| glue-2m (default) | 1.25 MiB | 2 MiB | 1 MiB | 368 KiB | 864 KiB | 107 KiB | 141 KiB | 72 KiB | 107 KiB |
+| glue-4m | 2.75 MiB | 4 MiB | 1 MiB | 1,584 KiB | 2,256 KiB | 545 KiB | 477 KiB | 359 KiB | 367 KiB |
+| glue-8m | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,168 KiB | 1,227 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+| glue-16m | 14.75 MiB | 16 MiB | 4 MiB | 12,096 KiB | 14,480 KiB | 2,759 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+
+A class's reply bound is the power of two above the largest reply its heap
+holds, so that the heap and not the frame refuses a reply: replies are
+trusted host output (the console path's frame bound protects the host from
+guest frames, which keep 1 MiB on every class). Node checks a reply against
+it (`parseHostJson(s, replyBytes)`, `shard-backend.ts`), as do the Linux
+reactor and the HVF zygote (`service::State::reply`); a reply over it fails
+its run (`FRAME_LIMIT`), as on the console path. Node -> shard messages
+reassemble to 4 MiB (`IPC.nodeMessageBytes`), shard -> Node messages, which
+carry guest bytes, to 1 MiB (`IPC.messageBytes`).
+
+Costs, one slot (load 40–58 on the Mac, sizes from 1,000-run benches;
+kvm-dev is nested KVM, so its times are not performance claims):
+
+| class | HVF slot engine process footprint: idle / after the bench v1 tasks / after a run that fills the arena | HVF reset p50 (`hvf bench` `return2`, copy reset) | Linux one-slot shard RSS: after `return 1` / after the bench v1 tasks | KVM reset p50 (`real bench` `return2`, nested) |
+| --- | ---: | ---: | ---: | ---: |
+| glue-2m | 3.0 / 7.9 / 6.4–6.6 MiB | 104 µs | 11.6 / 14.0 MiB | 182 µs |
+| glue-4m | 4.5 / 11.0 / 9.1–10.0 MiB | 218 µs | 15.0 / 17.6 MiB | 188 µs |
+| glue-8m | 8.5 / 17.0 / 20–26 MiB | 523 µs | 16.5 / 26.7 MiB | 230 µs |
+| glue-16m | 17.0 / 24.0 / 31–48 MiB | 1,184 µs | 14.5 / 44.9 MiB | 265 µs |
+
+The HVF copy reset rewrites the whole writable window, so its time and the
+slot process's resident arena grow with the class whatever a run used. KVM
+copies only the pages a run dirtied (pagemap), so a slot's memory follows the
+largest heap its recent runs reached (it stays resident until the 2 s idle
+trim) and its reset barely grows with the class. The zygote's own footprint
+(4.4–4.9 MiB idle) grows with the largest messages it has relayed.
+`bench/v1/results/2026-10-31-capacity.md` has the per-task working sets and the
+fit matrix on each class.
 
 A value past the class's heap ends as a QuickJS out-of-memory error, which
 the MCP server reports as `LIMIT` (parity: `b-json1m`, `t-memory-over-arena`
 on glue-2m; `executor/shard-check.ts`: a 512 KiB tool result is LIMIT on
-glue-2m and is read on glue-4m, where a 320 KiB value also round-trips).
-glue-4m costs about 4.7 MiB more per HVF engine process and twice the reset
-copy. KVM (kvm-dev, nested) gives the same sizes; a one-slot shard's RSS is
-12.4 MiB on glue-2m and 16.8 MiB on glue-4m, and the guest RAM held between
-runs and the reset copy grow with the dirtied part of the writable window.
+glue-2m and is read on the larger classes, where a 320 KiB value also
+round-trips, and glue-8m and glue-16m read a 1,152 KiB reply and refuse one
+past their bound). KVM gives the same sizes as HVF.
+
+Each run's heap high-water is in STATS (`ShardMetrics.heapPeakBytes`): the
+guest kernel writes the highest end of the mmap window and the brk break it
+mapped to the control field `HEAP_PEAK` (`ABI-R7.md`), and the engine reports
+it, at most the class's arena. A run completes on a class whose capacity is at
+least its high-water on a larger class; the converse need not hold (near its
+limit the allocator reuses more), so it is an upper bound on the need.
 
 The guest holds a big value about once: a tool result is revived in place
 (codemode's binary tags) instead of `parse(JSON.stringify(v))`, and the
@@ -746,7 +789,7 @@ child, dead-child quarantine then RESTORED and both slots serving, silent
 replacement of an idle dead child, a crash loop failing the engine after 5
 kills of a one-slot engine, an unsolicited RESTORED, malformed admissions, no
 orphans); the parity
-corpus on `hvf` (ABI 11: 96 cases, 94 ok, 2 allowlisted, 0 undocumented,
+corpus on `hvf` (ABI 12: 96 cases, 94 ok, 2 allowlisted, 0 undocumented,
 as `linux/shard`; both allowlisted cases are the glue-2m arena).
 
 Per run through the canonical executor (`node ../executor/build/engine-bench.js`;

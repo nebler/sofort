@@ -22,7 +22,7 @@ from a prepared native profile (below). Sources: `server.mjs`, `jitk.mjs`,
 - **Engine**: the executor's default, the ring engine: the HVF engine on macOS
   arm64, the KVM shard on Linux (`../executor/select-backend.ts`; set
   `JITK_SHARD_BINARY` and `JITK_SHARD_SNAPSHOT`, which `make` takes from the
-  jitk cache). Its limits (`Engine.limits`, ABI v11: 1 MiB calls and replies,
+  jitk cache). Its limits (`Engine.limits`, ABI v12: 1 MiB calls, replies to the class's bound,
   64 KiB of tenant code, 1,024 log lines, guest timers; `../shard/README.md`
   "Limits") are what the server describes, with the call budget the executor
   enforces: the policy's 256 calls per run (64 open), below the protocol's

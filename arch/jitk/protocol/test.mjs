@@ -98,7 +98,12 @@ function fuzz() {
  assert(wide.length<LIMIT.frame);
  assert.throws(()=>parseFrame(wide),e=>e instanceof ProtocolError&&e.code==='STRUCTURE');
  assert.equal(parseHostJson(wide).ok.length,LIMIT.structure);
- assert.throws(()=>parseHostJson(JSON.stringify({ok:'x'.repeat(LIMIT.frame)})),e=>e instanceof ProtocolError&&e.code==='FRAME_LIMIT');
+ const over=JSON.stringify({ok:'x'.repeat(LIMIT.frame)});
+ assert.throws(()=>parseHostJson(over),e=>e instanceof ProtocolError&&e.code==='FRAME_LIMIT');
+ // A host reply may be given a larger frame (a larger shard class); guest frames may not.
+ assert.equal(parseHostJson(over,4*LIMIT.frame).ok.length,LIMIT.frame);
+ assert.throws(()=>parseHostJson(over,over.length-1),e=>e instanceof ProtocolError&&e.code==='FRAME_LIMIT');
+ assert.throws(()=>parseFrame(JSON.stringify({t:'done',ok:'x'.repeat(LIMIT.frame)})),e=>e instanceof ProtocolError&&e.code==='FRAME_LIMIT');
  let deep='0';for(let i=0;i<LIMIT.depth+1;i++)deep='['+deep+']';
  assert.throws(()=>parseHostJson(deep),e=>e instanceof ProtocolError&&e.code==='DEPTH');
 }

@@ -18,6 +18,8 @@ pub(crate) unsafe fn pages(start: usize, end: usize, w: bool, x: bool) {
         for va in (start & !4095..(end + 4095) & !4095).step_by(4096) {
             m::map(va, w, x);
         }
+        #[cfg(feature = "transport-ring")]
+        crate::console::heap_mapped(start, end);
     }
 }
 /// # Safety

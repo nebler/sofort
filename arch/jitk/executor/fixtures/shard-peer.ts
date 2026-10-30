@@ -72,7 +72,7 @@ if (mode === 'backpressure' || mode === 'quarantine') {
         scalar(128, BigInt(consumed));
       }
       if (kind === 1) {
-        send(22, slot, generation, 0, Buffer.alloc(32));
+        send(22, slot, generation, 0, Buffer.alloc(IPC.statsFixedBytes));
         send(17, slot, generation, 0, Buffer.from('{"ok":1}'));
       } else if (kind === 3 && mode === 'quarantine') {
         send(IPC.quarantined, slot, generation, 0, Buffer.from('reset failed: fixture'));
@@ -121,8 +121,8 @@ if (mode === 'producer') {
 } else if (mode === 'completion') {
   send(17, slot, generation, 0, Buffer.from('{"ok":1}'));
 } else if (mode === 'stats') {
-  const stats = Buffer.alloc(32);
-  stats.writeBigUInt64LE(0xffffffffffffffffn, 24);
+  const stats = Buffer.alloc(IPC.statsFixedBytes);
+  stats.writeBigUInt64LE(0xffffffffffffffffn, IPC.statsCountAt);
   send(22, slot, generation, 0, stats);
 } else {
   throw new Error(mode);

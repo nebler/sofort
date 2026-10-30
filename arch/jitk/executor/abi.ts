@@ -2,7 +2,7 @@
 // Regenerate with `make -C arch/jitk/abi gen`; `make -C arch/jitk/abi test` fails while it is stale.
 
 /** Bumped with any peer-visible ABI change; READY and the prepared snapshot identity carry it. */
-export const ABI_VERSION=11;
+export const ABI_VERSION=12;
 /** Node <-> shard IPC (ipc/ABI.md). */
 export const IPC=Object.freeze({
   // message kinds: Node -> shard
@@ -27,8 +27,10 @@ export const IPC=Object.freeze({
   // header flags word and its MORE bit
   flagsAt:24,
   more:1,
-  // largest message payload (reassembly bound)
+  // largest shard -> Node message payload (Node's reassembly bound)
   messageBytes:1048576,
+  // largest Node -> shard message payload (the shard's reassembly bound)
+  nodeMessageBytes:4194304,
   // physical sandbox slots per shard
   slots:64,
   // READY payload: ABI_VERSION u32 LE
@@ -41,21 +43,26 @@ export const IPC=Object.freeze({
   outstanding:64,
   inflightBytes:2097152,
   callBytes:1048576,
-  replyBytes:1048576,
+  // the largest class reply bound (ARENA_CLASSES replyBytes)
+  maxReplyBytes:4194304,
   doneBytes:1048576,
   sourceBytes:73728,
   logs:1024,
   consoleBytes:32768,
   errorBytes:512,
-  statsFixedBytes:32,
+  statsFixedBytes:40,
+  statsHeapPeakAt:24,
+  statsCountAt:32,
   statsRoundTrips:4096,
   // queue bounds
   messagesPerGeneration:5123,
   outbound:69825,
-  nodeOutbound:262528,
+  nodeOutbound:1048960,
 });
-/** Arena classes of prepared snapshots: the START reservation and the writable arena. */
+/** Arena classes of prepared snapshots: the START reservation, the writable arena (GPA, bytes) and a run's tool-reply bound. */
 export const ARENA_CLASSES=Object.freeze({
-  'glue-2m':Object.freeze({admissionBytes:2097152,arenaBytes:1310720}),
-  'glue-4m':Object.freeze({admissionBytes:4194304,arenaBytes:2883584}),
+  'glue-2m':Object.freeze({admissionBytes:2097152,arenaGpa:2172649472,arenaBytes:1310720,replyBytes:1048576}),
+  'glue-4m':Object.freeze({admissionBytes:4194304,arenaGpa:2172649472,arenaBytes:2883584,replyBytes:1048576}),
+  'glue-8m':Object.freeze({admissionBytes:8388608,arenaGpa:2168455168,arenaBytes:7077888,replyBytes:2097152}),
+  'glue-16m':Object.freeze({admissionBytes:16777216,arenaGpa:2160066560,arenaBytes:15466496,replyBytes:4194304}),
 });

@@ -2,7 +2,7 @@
  * Regenerate with `make -C arch/jitk/abi gen`; `make -C arch/jitk/abi test` fails while it is stale. */
 #ifndef JITK_BRIDGE_ABI_H
 #define JITK_BRIDGE_ABI_H
-#define JITK_ABI_VERSION 11u
+#define JITK_ABI_VERSION 12u
 #define JITK_IPC_CAPACITY 64u
 #define JITK_IPC_PAYLOAD 16384u
 #define JITK_IPC_HEADER_BYTES 32u

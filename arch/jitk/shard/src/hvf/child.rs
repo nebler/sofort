@@ -253,7 +253,7 @@ impl Engine {
             self.outbox.push(service::stats(
                 self.index,
                 generation,
-                [thread_cpu() - cpu, clock::ipc_ns(), 0],
+                [thread_cpu() - cpu, clock::ipc_ns(), 0, 0],
                 &[],
             ));
             self.outbox.push(Message::new(
@@ -430,6 +430,7 @@ impl Engine {
         };
         let mut cpu_ns = run.cpu_ns;
         let mut reset_done = 0;
+        let heap_peak = self.slot.heap_peak();
         if result.is_err() {
             let cpu = thread_cpu();
             let _ = self.slot.reset(); // a failure quarantines the slot
@@ -439,7 +440,7 @@ impl Engine {
         self.outbox.push(service::stats(
             self.index,
             run.generation,
-            [cpu_ns, stopped, reset_done],
+            [cpu_ns, stopped, reset_done, heap_peak],
             &run.round_trips,
         ));
         let (kind, bytes) = match result {
@@ -455,7 +456,11 @@ impl Engine {
 /// the vCPU is stopped whatever it is doing and the command channel closes,
 /// so the main thread returns and the process exits.
 fn reader_loop(fd: OwnedFd, signals: Arc<Signals>, tx: SyncSender<Cmd>) {
-    let _ = read_commands(conn::Conn::new(fd, 0), &signals, &tx);
+    let _ = read_commands(
+        conn::Conn::new(fd, 0).carrying_node_messages(),
+        &signals,
+        &tx,
+    );
     signals.closed.store(true, SeqCst);
     let _ = signals.kicker.kick();
 }

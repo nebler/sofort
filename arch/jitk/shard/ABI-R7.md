@@ -8,7 +8,7 @@ unknown bits, partial feature bundles, JSON-to-byte reinterpretation, or use
 with fixture ABI v0. Host-selected mode is private host state; guest writes to
 control never negotiate features or enlarge bounds.
 
-## JS profile: messages, ring version 3 (ABI 11)
+## JS profile: messages, ring version 3 (ABI 12)
 
 Supersedes ABI-R6's JS-profile call slots and source page; the geometry below
 is unchanged. A message is one or more consecutive records of one kind and
@@ -20,7 +20,7 @@ identity in one ring; every record but the last has flags `JSON_UTF8|MORE`
 |---|---|---|---|
 | SOURCE=9 | RX, 0 | SOURCE_BYTES (control+0x228) <= 73,728, UTF-8 | `read(0)`, blocking in WAIT for the next record; 0 at its end |
 | CALL=1 | TX, call id 1..4096 in order, cap 1 | 1 MiB printable ASCII; at most 64 open | `write(128+id)`; -EINVAL past 64 open |
-| RET=2 / ERR=3 | RX, an open call id, cap 1 | 1 MiB | `read(104)`: 8-byte prefix (id u32, kind u16, flags u16) + one record's payload; -EAGAIN when RX is empty; the final record closes the call |
+| RET=2 / ERR=3 | RX, an open call id, cap 1 | the class's reply bound (`Class::reply_bytes`): 1 MiB on glue-2m/4m, 2 MiB on glue-8m, 4 MiB on glue-16m (`MAX_REPLY_BYTES`); host output, which only the host checks | `read(104)`: 8-byte prefix (id u32, kind u16, flags u16) + one record's payload; -EAGAIN when RX is empty; the final record closes the call |
 | CONSOLE=10 | TX, 0 | 32 KiB, at most 1,024 per run | `write(103)`, one-way; JSON `[level, message]` |
 | DONE=5 | TX, 0 | 1 MiB | `write(102)`, refused (-EBUSY) while a call is open; then FINISH |
 
@@ -32,6 +32,14 @@ runs on; a WAIT runs on while the backlog is not empty, else parks the slot
 until a reply or, when the WAIT's DEADLINE word (control+0x230, the guest's
 ppoll timeout on the slot clock) is finite, until that time; this is how
 setTimeout/setInterval wake a parked guest. The lease bounds every wait.
+
+Since ABI 12 the guest kernel also writes the run's heap high-water to
+control+0x268 (`HEAP_PEAK`, u64): the highest end of the mmap window it mapped
+above the window's base plus the highest brk break above the heap base, raised
+whenever user pages are mapped and again before DONE. It starts each run at
+the prepared snapshot's value (the arena and control page are restored). The
+host reads it when the run stops, before the reset, takes at most the class's
+arena bytes and reports it in IPC STATS; it is a measurement, never trusted.
 
 ## Records and credit
 
@@ -103,7 +111,7 @@ queue, UTF-8 decoding of output, or per-run helper process exists.
 ### Bounded layout identity (R7 integration)
 
 Every prepared `.layout` is exactly nine little-endian u64 words: magic
-`0x414e4552414b544a`, layout version **2**, admission class MiB (2/4), arena
+`0x414e4552414b544a`, layout version **2**, admission class MiB (2/4/8/16), arena
 GPA, arena bytes, ring bytes (81,920), ELF writable-data reservation (65,536),
 brk reservation (65,536), and user stack bytes (131,072). The linked kernel
 contains the identical marker; restore checks the sidecar against that marker
@@ -114,7 +122,12 @@ sidecars are rejected. Class selection is offline, never guest-negotiated.
 |---|---|---:|---|
 | glue-2m | `0x81800000` | 1,310,720 | jq-musl, sqlite3, busybox, lua |
 | glue-4m | `0x81800000` | 2,883,584 | micropython, zstd |
+| glue-8m | `0x81400000` | 7,077,888 | none (JS) |
+| glue-16m | `0x80c00000` | 15,466,496 | none (JS) |
 
+Each arena starts on a 2 MiB block (the kernel maps its own page tables per
+arena block) at or above 8 MiB of RAM, and ends below the control page's
+block (`0x81c00000`); the kernel and its packed payload lie below it.
 `JITK_RING_CLASS` selects the linked layout; unset retains glue-2m for QuickJS.
 The native preparation harness selects the table above per pinned executable
 and records it in `profiles.json` and each snapshot. Five RAM memslots retain
@@ -158,6 +171,7 @@ limitations still apply (trusted local files, no signed/cache-key manifest).
 | 0x250 | u64 | exact RO archive bytes, 16..4,194,304 |
 | 0x258 | u64 | reserved zero |
 | 0x260 | u64 | aggregate capture cap, <=1,048,576 |
+| 0x268 | u64 | guest-written heap high-water (`HEAP_PEAK`, both profiles) |
 | 0x400 | bytes[8192] | argc consecutive NUL-terminated scalar UTF-8 args |
 
 ## Read-only input extent and fd subset
