@@ -63,3 +63,21 @@ Speed is a code-quality problem, not an architecture problem.
     - **An upstream bug:** B, B.cond and CBNZ compute `signExtend 64 (immN <<< 2)` inside N bits, losing the top two displacement bits. Large forward branches go backwards. This is kernel-checked and visible in the source.
   - LNSym has no permissions or TBI, so the spike's full memory model cannot be derived from it unchanged.
   - Estimate: 6–10 weeks for a composed normal-memory result, 8–14 weeks including faults and TBI.
+
+## Phase 2 complete (2026-10-30, spike HEAD `5b992b5`, lock root `aaea4081`)
+- **ABI and wrapper:**
+  - each of the six linked functions proves `Spec.FunctionAccepts` from its symbol to `RET`;
+  - covered: return target, status/result in X0, X19–X29 and SP restored, linear memory, and memory outside linear memory and the frame unchanged;
+  - V2's ABI mutant is rejected.
+- **LNSym:**
+  - 35 forms are refined;
+  - body and whole-function proofs compose through `RET` to LNSym `stepi`, with one local LDR/STR patch;
+  - branches use a checked small-displacement workaround, and CSET is lowered to CSEL;
+  - CPU checks: 240 memory and 202 wrapper comparisons.
+  - Remaining premise: `NormalDomain`. It is discharged only for the memory-free `shift` artifacts; the general case needs a prefix-safety invariant.
+- **Official Wasm:**
+  - tested, not proved: the official reference interpreter agrees with the locked model on 899 calls, with zero disagreements;
+  - the parser agrees with the official decoder on 978 binaries;
+  - a proof would take 8–16 weeks.
+- **Validator:** now requires exactly one result, with regressions for empty and two-result bodies.
+- **Re-verified independently:** build, test (932 conformance checks), drift, wasmspec and lnsym all pass.
