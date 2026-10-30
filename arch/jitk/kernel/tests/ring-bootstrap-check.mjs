@@ -85,14 +85,20 @@ let checks=0;
 { // SOURCE: UTF-8 split anywhere across records (also inside a sequence) decodes as one text,
   // the first NUL separating the run body from its data.
   const short='\u00e9\u{1f600}\u0000z', long='\u00e9\u20ac\u4e2d\u{1f600}'.repeat(3000)+'a\u0000b'+'z'.repeat(5000);
-  for(const [data,size] of [[short,1],[short,2],[short,3],[long,4093],[long,4096],[long,16352]]){
-    const wire=Buffer.from('return data;\u0000'+data), records=[];
+  for(const [data,size,body] of [[short,1],[short,2],[short,3],[long,4093],[long,4096],[long,16352],[long,16352,'return tools.json(JSON.stringify(data));']]){
+    const wire=Buffer.from((body??'return data;')+'\u0000'+data), records=[];
     for(let i=0;i<wire.length;i+=size)records.push(wire.subarray(i,i+size));
     const {payloads,writes}=load({records});
     await new Promise(r=>setImmediate(r));
     assert.equal(writes.at(-1),FD_FINISH);
     assert.equal(payloads.at(-1),encodeReference({ok:data}));
   }
+  checks++;
+}
+{ // A completion as JSON text (tools.json, the prepared helpers' path) is written as the value would be.
+  const run=body=>{const wire=Buffer.from(body),records=[];for(let i=0;i<wire.length;i+=16352)records.push(wire.subarray(i,i+16352));const {payloads}=load({records});return new Promise(r=>setImmediate(r)).then(()=>payloads.at(-1));};
+  for(const v of samples)assert.equal(await run(`return tools.json(${JSON.stringify(JSON.stringify([v,{k:v}]))})`),encodeReference({ok:[v,{k:v}]}));
+  assert.equal(await run('return tools.json(1)'),encodeReference({err:{name:'TypeError',message:'JSON text'}}));
   checks++;
 }
 assert.ok(CALLS>=OUTSTANDING);

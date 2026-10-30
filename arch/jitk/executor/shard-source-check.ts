@@ -6,11 +6,12 @@ import {shardSource} from './shard-backend.js';
 import {IPC} from './abi.js';
 const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
 /** The ring bootstrap's run of a START source (kernel/ring-bootstrap.js.in):
- *  the text before the first NUL is the body, the rest its `data`. */
+ *  the text before the first NUL is the body, the rest its `data`. Its
+ *  json(text) completions come back parsed, as FINISH would write them. */
 function ring(source:string,tools:object):Promise<unknown> {
   const at=source.indexOf('\0');
   assert.ok(at>0,'the run body and the tenant code are separated by NUL');
-  return new AsyncFunction('tools','run','data','"use strict";\n'+source.slice(0,at))(tools,{},source.slice(at+1));
+  return new AsyncFunction('tools','run','data','"use strict";\n'+source.slice(0,at))({json:(text:string)=>JSON.parse(text),...tools},{},source.slice(at+1));
 }
 export async function sourceChecks():Promise<number> {
   new Function(helperSource)();

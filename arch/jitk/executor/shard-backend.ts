@@ -28,7 +28,7 @@ export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
  *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
 /** A prepared snapshot's arena class (jitk-abi arena::Class). glue-2m is the
- *  default; glue-4m gives a run about 5x the QuickJS heap for 4 MiB charged
+ *  default; glue-4m gives a run about 4x the QuickJS heap for 4 MiB charged
  *  per run instead of 2 and twice the reset copy (shard/README.md "Limits"). */
 export type MemoryClass=keyof typeof ARENA_CLASSES;
 /** The arena class of a prepared snapshot: its `.layout` sidecar (the

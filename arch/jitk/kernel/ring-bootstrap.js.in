@@ -16,24 +16,36 @@ let next=1, inflight=0;
 // least per-unit work this build allows (it has no TextEncoder/TextDecoder):
 // ASCII text, the usual case, takes one tight pass.
 const wide=/[^\x00-\x7e]/;
-function encode(v) {
-  const s=JSON.stringify(v);
-  if(!wide.test(s)) {
-    const b=new Uint8Array(s.length);
-    for(let i=0;i<s.length;i++) b[i]=s.charCodeAt(i);
-    return b;
+function ascii(parts) {
+  let n=0;
+  const escaped=parts.map(s=>wide.test(s));
+  for(let j=0;j<parts.length;j++) {
+    const s=parts[j];
+    n+=s.length;
+    if(escaped[j]) for(let i=0;i<s.length;i++) if(s.charCodeAt(i)>0x7e) n+=5;
   }
-  let n=s.length;
-  for(let i=0;i<s.length;i++) if(s.charCodeAt(i)>0x7e) n+=5;
   const b=new Uint8Array(n);
-  for(let i=0,o=0;i<s.length;i++) {
-    const c=s.charCodeAt(i);
-    if(c<0x7f) { b[o++]=c; continue; }
-    const h=c.toString(16).padStart(4,'0');
-    b[o++]=92; b[o++]=117;
-    for(let k=0;k<4;k++) b[o++]=h.charCodeAt(k);
+  for(let j=0,o=0;j<parts.length;j++) {
+    const s=parts[j];
+    if(!escaped[j]) { for(let i=0;i<s.length;i++) b[o+i]=s.charCodeAt(i); o+=s.length; continue; }
+    for(let i=0;i<s.length;i++) {
+      const c=s.charCodeAt(i);
+      if(c<0x7f) { b[o++]=c; continue; }
+      const h=c.toString(16).padStart(4,'0');
+      b[o++]=92; b[o++]=117;
+      for(let k=0;k<4;k++) b[o++]=h.charCodeAt(k);
+    }
   }
   return b;
+}
+function encode(v) { return ascii([JSON.stringify(v)]); }
+// A completion that is JSON text already (tools.json, from the prepared
+// helpers): FINISH writes {"ok":<text>} without parsing it back, which is
+// what JSON.stringify({ok:JSON.parse(text)}) gives for JSON.stringify output.
+class Json { constructor(text) { this.text=text; } }
+function json(text) {
+  if(typeof text!=='string') throw TypeError('JSON text');
+  return Object.freeze(new Json(text));
 }
 // Bytes as Latin-1 text, in native code: fromCharCode.apply reads the typed
 // array directly (a spread would build a JS array first). 4 KiB per call
@@ -44,7 +56,7 @@ function latin1(b,at,n) {
   return s;
 }
 function finish(ok,value) {
-  let b=encode(ok?{ok:value===undefined?null:value}:{err:{name:String(value.name),message:String(value.message)}});
+  let b=ok&&value instanceof Json?ascii(['{"ok":',value.text,'}']):encode(ok?{ok:value===undefined?null:value}:{err:{name:String(value.name),message:String(value.message)}});
   // As protocol/bootstrap.js: a completion over the frame bound ends as a SerializationError.
   if(b.length>{{DONE_BYTES}}) b=encode({err:{name:'SerializationError',message:'Error: output budget'}});
   if(os.write({{FD_FINISH}},b.buffer,0,b.length)!==b.length) throw Error('FINISH failed');
@@ -101,7 +113,12 @@ os.setReadHandler(0,()=>{
     inflight-=p.bytes;
     if(p.error) p.reject(p.error);
     else if(!ok) p.reject(Error('RET failed'));
-    else try { p.resolve(JSON.parse(p.parts.join(''))); } catch(e) { p.reject(e); }
+    else try {
+      // One copy of the text while it is parsed: the fragments go first.
+      const text=p.parts.length===1?p.parts[0]:p.parts.join('');
+      p.parts=undefined;
+      p.resolve(JSON.parse(text));
+    } catch(e) { p.reject(e); }
   }
 });
 // Dedicated checkpoint: QuickJS, helpers and bootstrap initialized; no run input.
@@ -152,5 +169,5 @@ try {
   const body=new AsyncFunction('tools','run','data','"use strict";\n'+text);
   text='';
   const input=data; data=undefined;
-  Promise.resolve(body(Object.freeze({echo,log}),run,input)).then(v=>finish(true,v),e=>finish(false,e));
+  Promise.resolve(body(Object.freeze({echo,log,json}),run,input)).then(v=>finish(true,v),e=>finish(false,e));
 } catch(e) { finish(false,e); }

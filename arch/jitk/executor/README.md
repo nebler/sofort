@@ -251,12 +251,13 @@ and log (1,024 lines, one-way) bounds and its timers (setTimeout,
 setInterval and their clear functions); messages stream over the fixed rings
 and IPC records (`../shard/ABI-R7.md`). What still differs is live memory: the
 snapshot's arena class bounds a run's QuickJS heap. The default glue-2m
-leaves about 320 KiB, so values much past 64 KiB (a reply, a 50 KiB call
-echoed back, a 70 KiB completion) end in a QuickJS out-of-memory error
-(`LIMIT` through MCP), where the console profile has 16 MiB (parity:
-`b-json1m`, `t-memory-over-arena`). `JITK_SHARD_CLASS=glue-4m` gives about
-five times that heap for twice the memory charge and reset copy (sizes per
-class: `../shard/README.md` "Limits"). `/cap`, cancellation of a busy vCPU and broad shadow
+leaves about 370 KiB, so a reply past about 107 KiB, a completion past about
+141 KiB or a call echoed back past about 72 KiB ends in a QuickJS
+out-of-memory error (`LIMIT` through MCP), where the console profile has
+16 MiB (parity: `b-json1m`, `t-memory-over-arena`). `JITK_SHARD_CLASS=glue-4m`
+gives about four times that heap (a 512 KiB tool result is read, a 320 KiB
+value round-trips) for twice the memory charge and reset copy (sizes per
+class and their bound: `../shard/README.md` "Limits"). `/cap`, cancellation of a busy vCPU and broad shadow
 parity remain cutover blockers. Older measurements are in
 [the R7 IPC report](../docs/results/shard-r7-ipc.md).
 

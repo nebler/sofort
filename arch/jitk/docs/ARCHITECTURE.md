@@ -94,8 +94,9 @@ One kernel source tree builds two profiles (`kernel/README.md`):
 Both engines admit the same JS jobs (ABI v11, `Engine.limits`): 4,096 calls
 per run with 64 open, 1 MiB calls, replies and completions, 64 KiB of tenant
 code, 1,024 log lines, guest timers. The practical bound on big values is the
-snapshot's arena class: glue-2m (the default, about 320 KiB of QuickJS heap)
-or glue-4m (`JITK_SHARD_CLASS=glue-4m`, about 1.5 MiB). Details:
+snapshot's arena class: glue-2m (the default, about 370 KiB of QuickJS heap,
+replies to about 107 KiB) or glue-4m (`JITK_SHARD_CLASS=glue-4m`, about
+1.5 MiB, replies to about 545 KiB). Details:
 `shard/README.md` "Limits (ABI 11)". A 96-case corpus
 (`executor/parity/`) checks that both engines behave the same.
 
