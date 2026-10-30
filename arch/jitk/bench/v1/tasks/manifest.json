@@ -30,5 +30,13 @@
       "sha256": "f74dbb3466bae1c07ce3549f92d4a80d940b7c0aff0c9f2297713fd0a37afb93",
       "from": "generate.ts"
     }
+  ],
+  "t5-openapi": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 609339,
+      "sha256": "5469cd19b55ec68ccb5184e3915604919f628e26be14cf0fe6ceb6af8d482d72",
+      "from": "responses.jsonl.gz"
+    }
   ]
 }

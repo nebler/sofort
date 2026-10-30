@@ -1,0 +1,10 @@
+{
+  "capturedFrom": "2026-10-30T20:39:50.991Z",
+  "capturedTo": "2026-10-30T20:39:51.931Z",
+  "api": "https://api.github.com",
+  "spec": "524bcb0799ab2b14c239d68e8e1e7f4508a631f9",
+  "githubRequests": 2,
+  "calls": 21,
+  "bytes": 609339,
+  "gzBytes": 57529
+}

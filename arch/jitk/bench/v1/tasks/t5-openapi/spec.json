@@ -1,0 +1,13 @@
+{
+  "url": "https://raw.githubusercontent.com/github/rest-api-description/524bcb0799ab2b14c239d68e8e1e7f4508a631f9/descriptions/api.github.com/api.github.com.json",
+  "repository": "https://github.com/github/rest-api-description",
+  "commit": "524bcb0799ab2b14c239d68e8e1e7f4508a631f9",
+  "commitDate": "2026-10-30T18:30:46Z",
+  "license": "MIT (Copyright GitHub, Inc.; see the repository's LICENSE.md)",
+  "infoVersion": "1.1.4",
+  "openapi": "3.0.3",
+  "paths": 827,
+  "operations": 1254,
+  "bytes": 13898345,
+  "sha256": "3ee5b5c689d3590aa72dc706bb1b8d84fb3eb0cff9425591531167b47cb67522"
+}
