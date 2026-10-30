@@ -86,7 +86,7 @@ bytes). The native preparer selects glue-2m for
 jq/SQLite/BusyBox/Lua and glue-4m for MicroPython/zstd; each prepared
 snapshot identifies its class and restore verifies the embedded kernel marker.
 See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
-The default QuickJS class remains glue-2m. Late-bound native archives have their
+The default QuickJS class is glue-8m (`DEFAULT_SHARD_CLASS`). Late-bound native archives have their
 own read-only stage-1 mapping and reserved read-only KVM memslot 63.
 
 `make -C arch/jitk/shard check-native-r7` (run by `make -C .. test-linux`) rebuilds six fresh
@@ -478,8 +478,10 @@ memory per slot is a backlog of at most the source plus one reply per open
 call.
 
 What bounds big values is the snapshot's arena class, the QuickJS heap a run
-has. Four classes serve JS jobs; glue-2m is the default, and
-`JITK_SHARD_CLASS=glue-4m|glue-8m|glue-16m` selects a larger one
+has. Four classes serve JS jobs; glue-8m is the default (the smallest that
+completes the real bench tasks: 92 of 100 runs, against 0 on glue-2m and 56 on
+glue-4m; `../bench/v1/results/2026-10-31-capacity.md`), and
+`JITK_SHARD_CLASS=glue-2m|glue-4m|glue-16m` selects another
 (`../executor/select-backend.ts`; `deps env` and `snapshot.ts env` then name
 its snapshot, and Node and both engines refuse a snapshot of another class:
 Node reads the class from the `.layout` record, the engine charges the class's
@@ -496,9 +498,9 @@ window plus brk the class gives QuickJS's allocator.
 
 | class | arena | charged per START | reply bound | usable heap (16 KiB buffers) | heap capacity | largest tool reply | largest completion | largest echo (call + reply) | largest round trip (reply returned) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| glue-2m (default) | 1.25 MiB | 2 MiB | 1 MiB | 368 KiB | 864 KiB | 107 KiB | 141 KiB | 72 KiB | 107 KiB |
+| glue-2m | 1.25 MiB | 2 MiB | 1 MiB | 368 KiB | 864 KiB | 107 KiB | 141 KiB | 72 KiB | 107 KiB |
 | glue-4m | 2.75 MiB | 4 MiB | 1 MiB | 1,584 KiB | 2,256 KiB | 545 KiB | 477 KiB | 359 KiB | 367 KiB |
-| glue-8m | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,168 KiB | 1,227 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+| glue-8m (default) | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,168 KiB | 1,227 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
 | glue-16m | 14.75 MiB | 16 MiB | 4 MiB | 12,096 KiB | 14,480 KiB | 2,759 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
 
 A class's reply bound is the power of two above the largest reply its heap

@@ -73,7 +73,7 @@ artifact hashes in every bundle.
 
 - Policy fixes: done (`c934a045`).
 - Larger JS heap class and bulk guest codec: done (`bc582e39`). `JITK_SHARD_CLASS=glue-4m`:
-  1,584 KiB heap, about 360 KiB round trip; glue-2m stays the default (368 KiB).
+  1,584 KiB heap, about 360 KiB round trip; the default is now glue-8m (4,944 KiB).
 - Harness: one driver (`executor/bench-v1.ts`), reducer, environment capture,
   reusing `onTiming` phase marks, `ShardMetrics`, the hostile fixtures and the
   existing gate/statistics code.
@@ -83,8 +83,9 @@ artifact hashes in every bundle.
 - HVF engine on the M4 Pro (shared host, load 6–7): `return 2` 0.15 ms p50,
   one tool call 0.28 ms p50, 0.44 CPU-ms per run (`engine-bench.ts`,
   shard README).
-- Linux, nested KVM, 4 KiB pages: per-VM memory ≈ Hyperlight
-  (0.515 vs 0.495 MiB, Hyperlight ~4% lower)
+- Linux, nested KVM, 4 KiB pages, glue-2m class, `return 2`: per-VM memory ≈ Hyperlight
+  (0.515 vs 0.495 MiB, Hyperlight ~4% lower). Not the default class any more, and
+  not a real-task working set (real tasks need 1-10 MiB of guest heap).
   ([RESULTS-LINUX-MEMORY-2026-10-27.md](RESULTS-LINUX-MEMORY-2026-10-27.md)).
 
 Not to be quoted: [RESULTS.md](RESULTS.md) (libkrun era), nested-KVM latency

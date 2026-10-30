@@ -11,7 +11,7 @@
 import {IPC,ARENA_CLASSES} from '../abi.js';
 import {LIMIT} from '../../protocol/dispatcher.js';
 import {executionBody,jsJob} from '../code.js';
-import {shardWire} from '../shard-backend.js';
+import {DEFAULT_SHARD_CLASS,shardWire} from '../shard-backend.js';
 import bench from '../../bench/cases.json' with {type:'json'};
 
 /** Error classes are the MCP server's stable codes (mcp/jitk.mjs classify). */
@@ -146,9 +146,9 @@ export const CASES:Case[]=[
   // START source binds the code as base64, so it always fits ring::SOURCE_LIMIT.
   {id:'t-code-at-limit',source:'targeted: LIMIT.code',code:atCode,expect:{ok:atCodeChars}},
   {id:'t-code-over-limit',source:'targeted: LIMIT.code',code:`return ${JSON.stringify('x'.repeat(LIMIT.code))}.length`,expect:{error:'LIMIT',match:'code limit'}},
-  // Targeted: memory class (glue-2m arena vs a 32 MiB VM)
+  // Targeted: memory class (the default ring class's arena vs a 32 MiB VM)
   {id:'t-memory-256k',source:'targeted: ARENA_CLASSES',code:'return new Uint8Array(256*1024).length',expect:{ok:256*1024}},
-  {id:'t-memory-over-arena',source:'targeted: ARENA_CLASSES',code:`return new Uint8Array(${2*ARENA_CLASSES['glue-2m'].arenaBytes}).length`,expect:{ok:2*ARENA_CLASSES['glue-2m'].arenaBytes}},
+  {id:'t-memory-over-arena',source:'targeted: ARENA_CLASSES',code:`return new Uint8Array(${2*ARENA_CLASSES[DEFAULT_SHARD_CLASS].arenaBytes}).length`,expect:{ok:2*ARENA_CLASSES[DEFAULT_SHARD_CLASS].arenaBytes}},
   {id:'t-memory-64m',source:'targeted: memoryLimitMB',code:'return new Uint8Array(64*1024*1024).length',expect:{error:'LIMIT',match:'out of memory'}},
   // Unbounded recursion: QuickJS's --stack-size limit (kernel/generate.ts) throws a
   // catchable InternalError before the 96 KiB guest stack runs out.

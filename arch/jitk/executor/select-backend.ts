@@ -3,7 +3,7 @@ import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {type Backend} from './backend.js';
-import {ShardBackend,type MemoryClass} from './shard-backend.js';
+import {DEFAULT_SHARD_CLASS,ShardBackend,type MemoryClass} from './shard-backend.js';
 import {ARENA_CLASSES} from './abi.js';
 import {ShardSet} from './shard-set.js';
 import type {ParkingGate} from './pool.js';
@@ -26,13 +26,13 @@ export function hvfGate(binary:string,snapshot:string,slots:number):ParkingGate|
   }
   return undefined;
 }
-/** The arena class a ring engine runs: JITK_SHARD_CLASS, default glue-2m.
- *  glue-4m, glue-8m and glue-16m hold bigger values, and glue-8m/16m bigger
- *  tool replies (shard/README.md "Limits"); each needs its own
+/** The arena class a ring engine runs: JITK_SHARD_CLASS, default
+ *  DEFAULT_SHARD_CLASS (glue-8m). glue-2m and glue-4m are smaller; glue-8m/16m
+ *  hold real tool data and take bigger tool replies (shard/README.md "Limits"); each needs its own
  *  snapshot: JITK_SHARD_SNAPSHOT of that class (`deps env` picks it when
  *  JITK_SHARD_CLASS is set). The engine refuses a snapshot of another class. */
 export function shardClass():MemoryClass {
-  const cls=process.env.JITK_SHARD_CLASS||'glue-2m';
+  const cls=process.env.JITK_SHARD_CLASS||DEFAULT_SHARD_CLASS;
   if(!Object.hasOwn(ARENA_CLASSES,cls))throw Error(`unsupported JITK_SHARD_CLASS: ${cls} (one of ${Object.keys(ARENA_CLASSES).join(', ')})`);
   return cls as MemoryClass;
 }

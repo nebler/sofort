@@ -32,11 +32,15 @@ export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:nu
 export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number};
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
  *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
-/** A prepared snapshot's arena class (jitk-abi arena::Class). glue-2m is the
- *  default; glue-4m, glue-8m and glue-16m give a run a larger QuickJS heap for
- *  a larger charge per run and reset copy, and glue-8m/16m larger tool replies
- *  (shard/README.md "Limits"). */
+/** A prepared snapshot's arena class (jitk-abi arena::Class). glue-2m and
+ *  glue-4m are small and fast to reset; glue-8m and glue-16m hold real tool
+ *  data and take larger tool replies (shard/README.md "Limits"). */
 export type MemoryClass=keyof typeof ARENA_CLASSES;
+/** The class a ring engine runs when none is selected. glue-8m: the smallest
+ *  class that completes the real bench tasks (92 of 100 runs; glue-2m: 0, glue-4m:
+ *  56; bench/v1/results/2026-10-31-capacity.md), at about 8.5 MiB per idle HVF
+ *  slot and 0.5 ms reset (glue-2m: 3 MiB, 0.1 ms). tslib/deps.ts mirrors it. */
+export const DEFAULT_SHARD_CLASS:MemoryClass='glue-8m';
 /** The arena class of a prepared snapshot: its `.layout` sidecar (the
  *  JTKARENA record of jitk-abi arena::Class::layout, covered by the identity
  *  that verifyPreparedSnapshot checks): magic, version, MiB, GPA, arena bytes. */
@@ -49,7 +53,7 @@ export function snapshotClass(base:string):MemoryClass {
   return cls;
 }
 export type ShardOptions={binary:string;snapshot:string;slots?:number;
-  /** The snapshot's arena class; the backend refuses a snapshot of another (default glue-2m). */
+  /** The snapshot's arena class; the backend refuses a snapshot of another (default DEFAULT_SHARD_CLASS). */
   memoryClass?:MemoryClass;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void;
   /** Called once when the engine process fails or the backend closes (ShardSet replaces it). */
   onDeath?:(e:Error)=>void;
@@ -82,7 +86,7 @@ export function shardWire(code:string,names:string[]):string {
 /** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots:
  *  the console path's (protocol/dispatcher.ts LIMIT) but for the arena-bound memory of its class
  *  and that class's tool-reply bound (1 MiB on glue-2m/4m, LIMIT.frame; more on glue-8m/16m). */
-export function shardLimits(slots:number,memoryClass:MemoryClass='glue-2m'):Limits {
+export function shardLimits(slots:number,memoryClass:MemoryClass=DEFAULT_SHARD_CLASS):Limits {
   const arena=ARENA_CLASSES[memoryClass];
   return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
     js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:arena.replyBytes,doneBytes:IPC.doneBytes,
@@ -118,7 +122,7 @@ export class ShardBackend implements Engine {
     if(process.platform!=='linux'&&!(hvf&&process.arch==='arm64'))throw Error('shard backend requires Linux (KVM) or macOS arm64 (HVF)');
     verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
     this.memoryClass=snapshotClass(options.snapshot);
-    const want=options.memoryClass??'glue-2m';
+    const want=options.memoryClass??DEFAULT_SHARD_CLASS;
     if(!Object.hasOwn(ARENA_CLASSES,want))throw Error('unsupported shard memory class '+want);
     if(this.memoryClass!==want)throw Error(`shard snapshot is ${this.memoryClass}, not the selected ${want} (JITK_SHARD_CLASS)`);
     const slots=options.slots??(hvf?8:64),owners=options.owners??SHARD_OWNERS;
@@ -269,7 +273,7 @@ export class ShardSession implements Session {
   private charge:number;
   private replyBytes:number;
   private arenaBytes:number;
-  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint,memoryClass:MemoryClass='glue-2m') {
+  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint,memoryClass:MemoryClass=DEFAULT_SHARD_CLASS) {
     const c=ARENA_CLASSES[memoryClass];this.charge=c.admissionBytes;this.replyBytes=c.replyBytes;this.arenaBytes=c.arenaBytes;
     this.released=new Promise(resolve=>{this.resolveReleased=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});

@@ -95,9 +95,10 @@ Both engines admit the same JS jobs (ABI v12, `Engine.limits`): 4,096 calls
 per run with 64 open, 1 MiB calls and completions, tool replies to the
 class's bound (1 MiB; 2 MiB on glue-8m, 4 MiB on glue-16m), 64 KiB of tenant
 code, 1,024 log lines, guest timers. The practical bound on big values is the
-snapshot's arena class: glue-2m (the default, about 370 KiB of QuickJS heap,
-replies to about 107 KiB), glue-4m (about 1.5 MiB, replies to about 545 KiB),
-glue-8m (about 4.8 MiB, 1.2 MiB) or glue-16m (about 11.8 MiB, 2.7 MiB), with
+snapshot's arena class: glue-8m (the default: about 4.8 MiB of QuickJS heap,
+replies to about 1.2 MiB; the smallest class that completes the real bench
+tasks), glue-2m (about 370 KiB, replies to about 107 KiB), glue-4m (about
+1.5 MiB, replies to about 545 KiB) or glue-16m (about 11.8 MiB, 2.7 MiB), with
 `JITK_SHARD_CLASS`. Details:
 `shard/README.md` "Limits (ABI 12)". A 96-case corpus
 (`executor/parity/`) checks that both engines behave the same.

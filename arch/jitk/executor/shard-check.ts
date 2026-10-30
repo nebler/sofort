@@ -10,7 +10,7 @@ import {execFileSync,spawn,type ChildProcess} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
 import {ABI_VERSION,ARENA_CLASSES} from './abi.js';
-import {ShardBackend,type ShardMetrics,type ShardQuarantine,type ShardRestore,type ShardSession} from './shard-backend.js';
+import {DEFAULT_SHARD_CLASS,ShardBackend,type ShardMetrics,type ShardQuarantine,type ShardRestore,type ShardSession} from './shard-backend.js';
 import {ShardSet} from './shard-set.js';
 import {PipeChannel,SharedChannel,IPC,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
@@ -111,7 +111,7 @@ try {
 
 // Memory classes (../shard/README.md "Limits"). The code-mode shape, a 512 KiB
 // tool result read and a small answer returned, is a clean out-of-memory
-// LIMIT on the default glue-2m class and works on the larger ones, where a
+// LIMIT on the glue-2m class and works on the larger ones, where a
 // 320 KiB value also round-trips (reply in, completion out). glue-8m and
 // glue-16m also read a 1,152 KiB tool result (over the 1 MiB frame of
 // glue-2m/4m; glue-8m's heap holds 1,227 KiB) and refuse one past their class
@@ -127,7 +127,7 @@ try {
   const value=(bytes:number,fill:string)=>{const v={rows:Array.from({length:8},(_,id)=>({id,ok:true})),text:''};v.text=fill.repeat(bytes-JSON.stringify({ok:v}).length);assert.equal(JSON.stringify({ok:v}).length,bytes);return v;};
   const read=value(512*1024,'x'),echoed=value(320*1024,'y'),page=value(1152*1024,'z');
   const digest='const r=await codemode.big();return [r.rows.length,r.text.length,r.text.slice(-2)]';
-  const classes=[['glue-2m',snapshot],['glue-4m',large],['glue-8m',classSnapshot('glue-8m')],['glue-16m',classSnapshot('glue-16m')]] as const;
+  const classes=[['glue-2m',classSnapshot('glue-2m')],['glue-4m',large],['glue-8m',classSnapshot('glue-8m')],['glue-16m',classSnapshot('glue-16m')]] as const;
   for(const [memoryClass,base] of classes){
     const heaps:number[]=[];
     const b=new ShardBackend({binary,snapshot:base,slots:1,owners:1,memoryClass,onMetrics:m=>heaps.push(m.heapPeakBytes)});
@@ -154,8 +154,8 @@ try {
       r=await run('return 2');check(!r.error&&r.result===2,`${memoryClass}: the slot serves the next run`);
     }finally{await p.close();}
   }
-  // The backend runs only the class it was given (default glue-2m).
-  assert.throws(()=>new ShardBackend({binary,snapshot:large,slots:1,owners:1}),/shard snapshot is glue-4m, not the selected glue-2m/);assertions++;
+  // The backend runs only the class it was given (default DEFAULT_SHARD_CLASS).
+  assert.throws(()=>new ShardBackend({binary,snapshot:large,slots:1,owners:1}),new RegExp(`shard snapshot is glue-4m, not the selected ${DEFAULT_SHARD_CLASS}`));assertions++;
 }
 
 // Exercise environment selection through the same MCP core used by execute.

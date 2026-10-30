@@ -256,11 +256,13 @@ The ring profile has protocol v1's source (LIMIT.code), call
 and log (1,024 lines, one-way) bounds and its timers (setTimeout,
 setInterval and their clear functions); messages stream over the fixed rings
 and IPC records (`../shard/ABI-R7.md`). What still differs is live memory: the
-snapshot's arena class bounds a run's QuickJS heap. The default glue-2m
-leaves about 370 KiB, so a reply past about 107 KiB, a completion past about
-141 KiB or a call echoed back past about 72 KiB ends in a QuickJS
-out-of-memory error (`LIMIT` through MCP), where the console profile has
-16 MiB (parity: `b-json1m`, `t-memory-over-arena`). `JITK_SHARD_CLASS=glue-4m`
+snapshot's arena class bounds a run's QuickJS heap. The default, glue-8m,
+leaves about 4.8 MiB (replies to about 1.2 MiB): the smallest class that
+completes the real bench tasks (92 of 100 runs; ../bench/v1/results/). The
+smaller glue-2m leaves about 370 KiB, so a reply past about 107 KiB, a
+completion past about 141 KiB or a call echoed back past about 72 KiB ends in
+a QuickJS out-of-memory error (`LIMIT` through MCP), where the console profile
+has 16 MiB (parity: `t-memory-over-arena` on the default class). `JITK_SHARD_CLASS=glue-4m`
 gives about four times that heap (a 512 KiB tool result is read, a 320 KiB
 value round-trips) for twice the memory charge and reset copy; glue-8m and
 glue-16m about 13 and 33 times, with tool replies to 2 and 4 MiB (sizes and
