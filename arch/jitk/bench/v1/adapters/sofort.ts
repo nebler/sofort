@@ -1,10 +1,10 @@
 // Sofort (SPEC-V1 §2): MicroVMExecutor + SandboxPool on selectBackend()'s
 // ring engine, from executor/build (make -C arch/jitk/executor build). One
-// adapter per engine and memory class:
-//   sofort-hvf-2m, sofort-hvf-4m  macOS arm64, Hypervisor.framework engine
-//   sofort-kvm-2m, sofort-kvm-4m  Linux arm64, KVM shard
+// adapter per engine and memory class (shard/README.md "Limits"):
+//   sofort-hvf-{2m,4m,8m,16m}  macOS arm64, Hypervisor.framework engine
+//   sofort-kvm-{2m,4m,8m,16m}  Linux arm64, KVM shard
 // The class picks JITK_SHARD_CLASS and a snapshot of that class:
-// JITK_SHARD_SNAPSHOT_GLUE_2M / _GLUE_4M when set, else JITK_SHARD_SNAPSHOT
+// JITK_SHARD_SNAPSHOT_GLUE_<N>M when set, else JITK_SHARD_SNAPSHOT
 // if it is that class, else `deps env` with JITK_SHARD_CLASS set (JITK_DEPS,
 // default arch/jitk/tools/.work/bin/deps).
 //
@@ -65,8 +65,9 @@ function classify(r: { error?: string; errorCode?: string }): ErrorClass | undef
   }
 }
 
-function sofort(engine: 'hvf' | 'shard', cls: 'glue-2m' | 'glue-4m'): Adapter {
-  const name = `sofort-${engine === 'hvf' ? 'hvf' : 'kvm'}-${cls === 'glue-2m' ? '2m' : '4m'}`;
+const CLASSES = ['glue-2m', 'glue-4m', 'glue-8m', 'glue-16m'] as const;
+function sofort(engine: 'hvf' | 'shard', cls: (typeof CLASSES)[number]): Adapter {
+  const name = `sofort-${engine === 'hvf' ? 'hvf' : 'kvm'}-${cls.replace('glue-', '')}`;
   let provenance: Record<string, string> = { engine, memoryClass: cls };
   return {
     name,
@@ -128,5 +129,5 @@ function sofort(engine: 'hvf' | 'shard', cls: 'glue-2m' | 'glue-4m'): Adapter {
   };
 }
 
-const adapters: Adapter[] = [sofort('hvf', 'glue-2m'), sofort('hvf', 'glue-4m'), sofort('shard', 'glue-2m'), sofort('shard', 'glue-4m')];
+const adapters: Adapter[] = (['hvf', 'shard'] as const).flatMap(engine => CLASSES.map(cls => sofort(engine, cls)));
 export default adapters;

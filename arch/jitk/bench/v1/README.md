@@ -8,7 +8,7 @@ specification is [../SPEC-V1.md](../SPEC-V1.md), and the Mac plan is
 harness/    driver (run.ts), tool replay (replay.ts), env capture (env.ts),
             reducer (reduce.ts), the contract (contract.ts), hostile programs,
             fixtures (example task, node-vm-fixture floor)
-adapters/   one file per competitor; sofort.ts = sofort-{hvf,kvm}-{2m,4m}
+adapters/   one file per competitor; sofort.ts = sofort-{hvf,kvm}-{2m,4m,8m,16m}
 tasks/      T1–T6 (tasks/README.md); responses.jsonl are generated
 specs/      run specs (smoke-mac.json, full-mac.json)
 .work/runs/ raw.jsonl + summary.{json,md} per run (not in git)
