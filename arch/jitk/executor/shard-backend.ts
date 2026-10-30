@@ -19,6 +19,8 @@ export const DEADLINE_GRACE_MS=1000;
  *  reader kicks, within the zygote's 1 s reset grace, RESET_GRACE_NS);
  *  silence past this bound means the engine itself is stuck. */
 export const RELEASE_GRACE_MS=3000;
+/** Owner threads of a Linux shard when `owners` is unset (the engine allows 1..4, at most the host's cores). */
+export const SHARD_OWNERS=4;
 export type ShardMetrics={deadlineNs:bigint;slot:number;generation:bigint;ownerCpuNs:bigint;stoppedNs:bigint;resetDoneNs:bigint;roundTripsNs:bigint[]};
 /** A slot the shard took out of service (IPC QUARANTINED): `lost` of `slots` are out of service now.
  *  On Linux a lost slot never returns; the HVF engine re-forks it and reports RESTORED. */
@@ -114,7 +116,7 @@ export class ShardBackend implements Engine {
     const want=options.memoryClass??'glue-2m';
     if(!Object.hasOwn(ARENA_CLASSES,want))throw Error('unsupported shard memory class '+want);
     if(this.memoryClass!==want)throw Error(`shard snapshot is ${this.memoryClass}, not the selected ${want} (JITK_SHARD_CLASS)`);
-    const slots=options.slots??(hvf?8:64),owners=options.owners??4;
+    const slots=options.slots??(hvf?8:64),owners=options.owners??SHARD_OWNERS;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
     this.limits=shardLimits(slots,this.memoryClass);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});

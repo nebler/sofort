@@ -200,6 +200,14 @@ try {
   } finally {await spool.close();await set.close();}
   const reaped=set.processes.map(p=>p.child).every(c=>c.exitCode!==null||c.signalCode!==null);
   check(reaped,'shard set: close() reaps every engine process');
+  // A set runs one shard's owner threads, split across its engines (at least
+  // one each), not a whole shard's per engine: 8 x 8 ran 32 on 6 cores.
+  const argvOwners=(p:ShardBackend)=>Number(readFileSync(`/proc/${p.child.pid}/cmdline`,'utf8').split('\0').filter(Boolean).at(-1));
+  if(linux)for(const [slots,slotsPerProcess,owners,want] of [[8,4,undefined,[2,2]],[64,8,undefined,Array(8).fill(1)],[8,4,3,[3,3]],[3,2,undefined,[2,1]]] as const){
+    const split=new ShardSet({binary,snapshot,slots,slotsPerProcess,owners});
+    try{await split.ready;check(JSON.stringify(split.processes.map(argvOwners))===JSON.stringify(want),`shard set: ${slots} slots by ${slotsPerProcess}${owners?`, ${owners} owners`:''} run ${want.join('+')} owner threads`);}
+    finally{await split.close();}
+  }
   const bad=new ShardSet({binary:'/nonexistent/jitk-engine',snapshot,slots:2,slotsPerProcess:1});
   await assert.rejects(bad.ready);
   for(let i=0;i<100&&!/keeps failing/.test(String(await bad.park().catch(e=>e)));i++)await new Promise(r=>setTimeout(r,20));
