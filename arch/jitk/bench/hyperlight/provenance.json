@@ -51,5 +51,29 @@
     "gate_passed": 0,
     "raw_sha256": "0cf667760cc30056ccf0c29b5451ba661ca0b50624c105fdeac66e824a699956"
   },
-  "post_run_controller_sha256": "351028ed156d9cdebacf15e57c5076fca725aa95af02ffd75b17da23c1228816"
+  "post_run_controller_sha256": "351028ed156d9cdebacf15e57c5076fca725aa95af02ffd75b17da23c1228816",
+  "transport_rebuild": {
+    "date": "2026-10-30",
+    "change": "README.md 'Fair configuration': virtqueue transport for one 1 MiB v1 frame each way (64 KiB buffers; H2G 288 pages, G2H 1057 pages), frames as JSON strings, scratch 38 MiB (heap + pools + 16 MiB), linear JSON reviver for tenant code, guest aborts reported as done errors; heap stays 16 MiB",
+    "build": "make -C arch/jitk deps (bench/build/hyperlight-build, HYPERLIGHT_FETCH=1, descriptor in the cache entry)",
+    "files": {
+      "worker.rs": "bc50cd2ed2417f953a30bcc678f5b43775fa02ab24dfe6bc12837657f5cbcb72",
+      "bootstrap.js": "aea868f2c76d668f50d4ec3d21bb5231233761829e65bb2c9870862f9d813a95",
+      "Cargo.toml": "a91e850f946403ed2843730b7552b571097aa1e330839ba37693bf05881af8b8",
+      "Cargo.lock": "352f488944fb306637fb7bf90cd3c5077f5c337539bf4ae69530000e2d48c731",
+      "build.ts": "8aa0b83ba0a14d03a7d359d34876ff32f0d264b11b31a64b2b828a10e923d71b",
+      "adapter.json": "7cc2cf73ae5c14cf6688420e90bd4109eee52c0ee02ec187825786b77422a254"
+    },
+    "inputs_sha256": "8df33287a131246b7aa27bd4c03510744c96eed5fe14864faf1a3d4ea3e0950f",
+    "rustc": "rustc 1.101.0-nightly (07e526db9 2026-10-19)",
+    "worker_sha256": "3e8f6e63fcbed5ba59d76c0146895b336ccc902d7bbd3c57140cdb17b641a1df",
+    "snapshot_index_sha256": "d4afdf287419dfa3251624ef82c1159c1c9bf63c1b314099e7e6f3dd3635f65a",
+    "cache_entry": "hyperlight/darwin-arm64-8df33287a131246b",
+    "checks": {
+      "adapter": 13,
+      "bench_v1_conformance": "10/10",
+      "bench_v1_fit_matrix_S1": "88/100"
+    },
+    "note": "files/snapshot_evidence/results above are the round-2 receipt for the earlier worker.rs (default 16 KiB transport)"
+  }
 }

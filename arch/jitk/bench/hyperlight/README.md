@@ -42,6 +42,80 @@ instructions naming `make -C arch/jitk deps`, and the test must pass all 13
 checks. The only skip is on non-macOS hosts (HVF only). Existing built
 artifacts can be supplied with the worker and snapshot overrides above.
 
+## Fair configuration (2026-10-30)
+
+Hyperlight-JS completed 0 of 100 bench v1 fit-matrix runs
+(`../v1/results/2026-10-30-fit-matrix.md`). The causes were our worker and
+bootstrap, not Hyperlight. After the four changes below, it completes 88/100
+with the guest heap still at **16 MiB**. Every change is in `worker.rs` or
+`bootstrap.js`. Hyperlight, the executor and the protocol are unchanged.
+
+1. **Transport.** The worker left Hyperlight-JS's virtqueue transport at its
+   16 KiB-per-message default. A guest reserves a host-function reply from
+   the G2H pool left beside its request, so every tool reply over about
+   16 KiB failed with *Host response exceeds virtqueue capacity*
+   (`hyperlight-host` `sandbox/outb.rs`). The worker now sizes the transport
+   through Hyperlight-JS's own `SandboxBuilder` setters for one 1 MiB v1
+   frame each way (`MAX`, the limit Sofort's ring also accepts):
+
+   | Setter | Value | Why |
+   | --- | --- | --- |
+   | `with_input_transport_buffer_size` / `with_output_transport_buffer_size` | 64 KiB | Fewer descriptors per message than 16 KiB |
+   | `with_input_transport_pool_pages` (H2G) | 288 pages (18 × 64 KiB) | Run frame: 1 MiB + one buffer of framing slack, plus Hyperlight-JS's control spare |
+   | `with_output_transport_pool_pages` (G2H) | 1057 pages (1 + 66 × 64 KiB) | Small-buffer page, then request and reply side by side, each a frame as a JSON string (change 2): at most 2 MiB + slack |
+
+   Hyperlight-JS derives the descriptor counts from these. Through the bench
+   adapter, a 1,040,000-byte host reply, guest call argument and guest result
+   all pass. Run code stops at the protocol's 64 KiB code limit, as it does
+   for Sofort.
+2. **Bridge encoding.** Each frame now crosses `jitk.exchange` as one JSON
+   string, and `bootstrap.js` `JSON.parse`s replies. Hyperlight-JS converts
+   any other host-function value node by node through serde and rquickjs.
+   A 318 KB reply of 7000 objects took 309–517 ms that way and 27–42 ms as
+   a string, measured with the worker driven directly.
+3. **Scratch.** A restored guest takes a scratch page for every heap page it
+   writes (copy-on-write and zero-init faults in `hyperlight-guest-bin`). So
+   the old 16 MiB scratch could never back the whole 16 MiB heap, and the
+   pools above would have shrunk it further: the guest aborted with *Out of
+   physical memory*. Scratch is now heap + pools + the earlier 16 MiB for
+   stack, page tables and runtime, rounded up to a MiB because the macOS host
+   maps 16 KiB pages: **38 MiB**.
+4. **JSON reviver.** The executor's embedded codec revives every tool result
+   with `JSON.parse(text, reviver)` (`executor/codec.mjs`; Sofort's prepared
+   helpers revive in place instead). In Hyperlight-JS's QuickJS that path is
+   quadratic: 7000 objects took 20.4 s against 49 ms without a reviver.
+   `bootstrap.js` gives tenant code a `JSON` whose `parse` walks in the
+   spec's order (InternalizeJSONProperty), 118 ms for the same input. The
+   global `JSON` is untouched.
+
+Two reporting fixes go with these. A guest abort (Hyperlight-JS aborts on
+allocation failure where QuickJS would throw) now ends the run with a `done`
+error instead of exiting the worker. Allocation failures are named *out of
+memory*, so the harness classifies them as `oom` and not as `protocol EOF`.
+The bench adapter also reports a thrown error's message (`boom`) as the other
+adapters do (`../v1/adapters/README.md`).
+
+Fit matrix, S1, 20 runs per task, timeout 30 s
+(`../v1/.work/runs/hl-fit*`, local):
+
+| Worker | T1 | T2 | T3 | T4 | T5 | Total |
+| --- | --: | --: | --: | --: | --: | --: |
+| Before (`../v1/results/2026-10-30-fit-matrix.md`) | 0 | 0 | 0 | 0 | 0 | 0 |
+| Change 1 only | 20 | 16 | 20 | 0 | 20 | 76 |
+| Changes 1 and 3, abort reporting | 20 | 16 | 20 | 0 | 20 | 76 |
+| All (current) | 20 | 20 | 20 | 8 | 20 | 88 |
+
+Change 3 converted scratch exhaustion into honest heap OOMs at the same
+count. The 12 remaining failures are the 16 MiB heap (T4 programs 2 and 5:
+8× `oom`, as `../v1/tasks/README.md` predicts) and the 1 MiB protocol frame
+(T4 program 3, a 1.28 MiB reply: 4× `FRAME_LIMIT`, the same for every
+protocol executor). A diagnostic 64 MiB-heap build passed the T2 program that
+ran out of memory, which confirms the heap as that cause; it was not kept.
+`provenance.json` `transport_rebuild` records the inputs, worker and snapshot
+of the current build (`make -C arch/jitk deps`; the snapshot carries the
+layout, so it is rebuilt with the worker). Its older blocks remain the round-2
+receipt for the earlier worker.
+
 ## Benchmark
 
 `/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/hyperlight-bench 30 --output PATH` imports `../controller.ts` for load gates,

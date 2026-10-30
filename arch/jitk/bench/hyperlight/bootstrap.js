@@ -11,6 +11,28 @@ function clip(text, budget) {
   }
   return {text:out, bytes};
 }
+// QuickJS's JSON.parse with a reviver is quadratic here: 7000 objects took
+// 20 s, against 0.1 s for this walk. The executor's codec revives every tool
+// result that way (executor/codec.mjs parse; Sofort's prepared helpers revive
+// in place instead), so tenant code sees a JSON whose parse walks in the
+// spec's order (InternalizeJSONProperty). The global JSON is untouched.
+const nativeParse = JSON.parse;
+function internalize(holder, key, reviver) {
+  const val = holder[key];
+  if (val && typeof val === 'object') {
+    const keys = Array.isArray(val) ? Array.from({length:val.length}, (_, i) => String(i)) : Object.keys(val);
+    for (const k of keys) {
+      const v = internalize(val, k, reviver);
+      if (v === undefined) delete val[k];
+      else Object.defineProperty(val, k, {value:v, writable:true, enumerable:true, configurable:true});
+    }
+  }
+  return reviver.call(holder, key, val);
+}
+const localJSON = Object.freeze(Object.create(JSON, {parse:{value:function parse(text, reviver) {
+  const value = nativeParse(text);
+  return typeof reviver === 'function' ? internalize({'': value}, '', reviver) : value;
+}}}));
 async function handler(event) {
   let next = 1;
   try {
@@ -21,7 +43,8 @@ async function handler(event) {
         if (next > 4096) throw Error('call limit');
         const id = next++;
         // Synchronous crossing: Promise.all cannot overlap these exchanges.
-        const r = bridge.exchange({t:'call', id, ns, fn, args});
+        // Frames cross as JSON strings (worker.rs bridge()).
+        const r = JSON.parse(bridge.exchange(JSON.stringify({t:'call', id, ns, fn, args})));
         if (r.t !== 'ret' || r.id !== id) throw Error('invalid reply');
         if (Object.hasOwn(r, 'err')) {
           const e = Error(r.err.message); e.code = r.err.code; throw e;
@@ -35,10 +58,12 @@ async function handler(event) {
       ['log','info','warn','error','debug'].map(level => [level, (...args) => {
         const msg = clip(args.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' '),4096);
         if (++logs <= 1024 && (bytes += msg.bytes) <= 262144)
-          bridge.exchange({t:'log', level, msg:msg.text});
+          bridge.exchange(JSON.stringify({t:'log', level, msg:msg.text}));
       }])));
     const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-    const value = await new AsyncFunction(...params,'console','print',event.code)(...values,localConsole,localConsole.log);
+    // A namespace named JSON keeps its own binding.
+    const json = params.includes('JSON') ? [] : ['JSON'];
+    const value = await new AsyncFunction(...params,'console','print',...json,event.code)(...values,localConsole,localConsole.log,...json.map(() => localJSON));
     return {t:'done', ok:value === undefined ? null : value};
   } catch (e) {
     return {t:'done', err:{name:String(e.name || 'Error').slice(0,128),
