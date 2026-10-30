@@ -33,9 +33,20 @@ fn exchange(v:Value) -> Result<Value,E> {
     if r["t"]!="ret" || r["id"]!=v["id"] {return Err("reply mismatch".into())}
     Ok(r)
 }
+// Transport sized for the v1 frame limit in both directions. Hyperlight-JS's
+// default carries 16 KiB per message; a host-function reply gets whatever
+// G2H pool is left beside its request, so that pool holds two messages.
+const BUF: usize = 65536;
+const MSG_BUFS: usize = (MAX+BUF).div_ceil(BUF); // one frame plus framing slack
+const fn pool_pages(bufs: usize) -> usize {bufs*BUF/4096}
 fn fresh() -> Result<LoadedJSSandbox,E> {
     let mut p=SandboxBuilder::new().with_guest_heap_size(16*1048576)
         .with_guest_scratch_size(16*1048576)
+        .with_input_transport_buffer_size(BUF).with_output_transport_buffer_size(BUF)
+        // H2G: the run frame plus Hyperlight-JS's control spare.
+        .with_input_transport_pool_pages(pool_pages(MSG_BUFS+1))
+        // G2H: one small-buffer page, then request and reply side by side.
+        .with_output_transport_pool_pages(1+pool_pages(2*MSG_BUFS))
         .with_host_print_fn((|_:String| Ok::<i32,hyperlight_host::HyperlightError>(0)).into()).build()?;
     p.host_module("jitk").register_js("exchange",|a,b| {
         if !b.is_empty() {return Err(hyperlight_js::HyperlightError::Error("binary disabled".into()))}

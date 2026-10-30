@@ -42,6 +42,32 @@ instructions naming `make -C arch/jitk deps`, and the test must pass all 13
 checks. The only skip is on non-macOS hosts (HVF only). Existing built
 artifacts can be supplied with the worker and snapshot overrides above.
 
+## Transport sizing (2026-10-30)
+
+`worker.rs` keeps the 16 MiB guest heap and 16 MiB scratch. It also sizes
+Hyperlight-JS's virtqueue transport through its own `SandboxBuilder` setters,
+so one v1 protocol frame (1 MiB, `MAX`, the limit Sofort's ring also accepts)
+fits in each direction:
+
+| Setter | Value | Why |
+| --- | --- | --- |
+| `with_input_transport_buffer_size` / `with_output_transport_buffer_size` | 64 KiB | Fewer descriptors per 1 MiB message than the 16 KiB default |
+| `with_input_transport_pool_pages` (H2G) | 288 pages (18 × 64 KiB) | Run frame: 17 buffers (1 MiB + one buffer of framing slack), plus Hyperlight-JS's control spare |
+| `with_output_transport_pool_pages` (G2H) | 545 pages (1 + 34 × 64 KiB) | Small-buffer page, then a request and its reply side by side |
+
+Hyperlight-JS derives the queue descriptor counts from these. Before this
+change the worker used Hyperlight-JS's defaults: 16 KiB per message. The guest
+reserves a host-function reply from the G2H pool left beside its request, so
+every real-task tool reply over about 16 KiB failed with *Host response
+exceeds virtqueue capacity* (`hyperlight-host` `sandbox/outb.rs`). That was
+our configuration, not a Hyperlight limit. With the new settings, a
+1,000,000-byte host reply, guest call argument and guest result all pass
+through the bench v1 adapter. The pools use about 3.3 MiB of the 16 MiB
+scratch. The snapshot carries the layout, so it was rebuilt with the worker
+(`make -C arch/jitk deps`). `provenance.json` `transport_rebuild` records the
+new input, worker and snapshot hashes. Its older blocks remain the round-2
+receipt for the earlier worker.
+
 ## Benchmark
 
 `/usr/bin/lockf -k /tmp/sofort-bench.lock ../build/hyperlight-bench 30 --output PATH` imports `../controller.ts` for load gates,
