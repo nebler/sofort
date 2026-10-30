@@ -1,7 +1,7 @@
 import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
 import {readFileSync} from 'node:fs';
-import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
+import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseHostJson,parseJson} from '../protocol/dispatcher.js';
 import type {Engine,GuestEvent,Job,Limits,Phase,Reply,Session} from './engine.js';
 import {StderrTail,engineEnv,failure} from './engine.js';
 import {executionBody} from './code.js';
@@ -405,13 +405,13 @@ export class ShardSession implements Session {
     if(this.failure)throw Error(this.failure.message);
     const wire=this.run.wires.get(id);if(wire===undefined)throw Error('shard unknown reply');
     // One encode: the protocol's host-output limits apply to exactly these bytes;
-    // parseJson's frame bound (LIMIT.frame) is ring::REPLY_BYTES, so a reply
+    // the frame bound (LIMIT.frame) is ring::REPLY_BYTES, so a reply
     // over it fails this generation as it fails a console-path run.
     const text=this.host(()=>{
       let s:string|undefined;
       try{s=JSON.stringify(r);}catch{throw new ProtocolError('SERIALIZE');}
       if(s===undefined)throw new ProtocolError('SERIALIZE');
-      s=ascii(s);checkReply(parseJson(s));return s;
+      s=ascii(s);checkReply(parseHostJson(s));return s;
     });
     this.run.wires.delete(id);this.run.budget.reply(id);
     const payload=Buffer.from(text);

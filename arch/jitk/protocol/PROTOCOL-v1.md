@@ -119,7 +119,7 @@ Limits apply to untrusted frames regardless of bootstrap behavior:
 |---|---|
 | Frame | 1,048,576 wire bytes excluding LF; check before accumulation |
 | JSON depth | 32 nested containers, envelope counts as depth 1 |
-| Structure | 32,768 opening string quotes and `{ } [ ] , :` outside strings |
+| Structure | 32,768 opening string quotes and `{ } [ ] , :` outside strings (guest frames only; host output is bounded by the frame limit) |
 | Code | 65,536 decoded UTF-8 bytes and the enclosing encoded frame cap |
 | Calls | 64 outstanding; 4,096 total |
 | Inflight args | 2,097,152 complete call-frame bytes including LF until ret commit |

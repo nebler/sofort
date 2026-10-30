@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {Dispatcher,ProtocolError,LIMIT,encode,parseFrame,schema} from './dispatcher.ts';
+import {Dispatcher,ProtocolError,LIMIT,encode,parseFrame,parseHostJson,schema} from './dispatcher.ts';
 const here=fileURLToPath(new URL('.',import.meta.url));
 const ready={t:'ready',v:1},run={t:'run',code:'return 1',ns:{api:['echo']}};
 const call=id=>({t:'call',id,ns:'api',fn:'echo',args:[]});
@@ -89,6 +89,18 @@ function fuzz() {
   if(aa==='ACCEPT')accepted++;else rejected++;
  }
  return {mutations:25000,chunkDifferentialRuns:50000,accepted,rejected,seed:'0x3c0ffee'};
+}
+// Directional structure budget: a guest frame over LIMIT.structure values is
+// rejected before JSON.parse; a host reply of the same shape (a real tool reply
+// can hold 38,746 values) is bounded only by the frame limit.
+{
+ const wide=JSON.stringify({ok:Array.from({length:LIMIT.structure},(_,i)=>i%10)});
+ assert(wide.length<LIMIT.frame);
+ assert.throws(()=>parseFrame(wide),e=>e instanceof ProtocolError&&e.code==='STRUCTURE');
+ assert.equal(parseHostJson(wide).ok.length,LIMIT.structure);
+ assert.throws(()=>parseHostJson(JSON.stringify({ok:'x'.repeat(LIMIT.frame)})),e=>e instanceof ProtocolError&&e.code==='FRAME_LIMIT');
+ let deep='0';for(let i=0;i<LIMIT.depth+1;i++)deep='['+deep+']';
+ assert.throws(()=>parseHostJson(deep),e=>e instanceof ProtocolError&&e.code==='DEPTH');
 }
 const result={node:process.execPath,version:process.version,uptime:execFileSync('/usr/bin/uptime',{encoding:'utf8'}).trim(),corpus:corpus(),boundaries:boundaries(),fuzz:fuzz()};
 const output=here+(process.env.JITK_RECORD==='1'?'':'.work/');

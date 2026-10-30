@@ -37,7 +37,15 @@ function scalar(s       ) {
 export function parseFrame(s       )       { return decode(s,true)         ; }
 // Same limits for a bare JSON value (shard binary records carry no frame object).
 export function parseJson(s       )      { return decode(s,false); }
-function decode(s       , frame        )      {
+// Host output (run, ret: replies from trusted host tools) keeps the frame, depth,
+// ASCII, duplicate-key and scalar checks but has no structure budget. That budget
+// bounds the host's parse work on untrusted guest frames before JSON.parse; host
+// frames are not adversarial, the frame bound already bounds their parse, and real
+// tool replies exceed it (a GitHub workflow-runs page: 38,746 values; an OTLP
+// metrics page: 212,119; bench/v1/results/2026-10-30-fit-matrix.md).
+export function parseHostFrame(s       )       { return decode(s,true,Infinity)         ; }
+export function parseHostJson(s       )      { return decode(s,false,Infinity); }
+function decode(s       , frame        , structure       =LIMIT.structure)      {
   if (!s.length || s.length>LIMIT.frame) bad('FRAME_LIMIT');
   const stack                                                  =[];
   let budget=0;
@@ -45,7 +53,7 @@ function decode(s       , frame        )      {
     const c=s.charCodeAt(i);
     if (c<32 || c>126) bad('ASCII');
     if (c===34) {
-      if (++budget>LIMIT.structure) bad('STRUCTURE');
+      if (++budget>structure) bad('STRUCTURE');
       const start=i, parent=stack[stack.length-1];
       for (i++;i<s.length;i++) {
         const b=s.charCodeAt(i);
@@ -63,14 +71,14 @@ function decode(s       , frame        )      {
         parent.seen.add(key); parent.key=false;
       }
     } else if (c===123 || c===91) {
-      if (++budget>LIMIT.structure) bad('STRUCTURE');
+      if (++budget>structure) bad('STRUCTURE');
       stack.push({object:c===123,key:c===123,seen:new Set()});
       if (stack.length>LIMIT.depth) bad('DEPTH');
     } else if (c===125 || c===93) {
-      if (++budget>LIMIT.structure) bad('STRUCTURE');
+      if (++budget>structure) bad('STRUCTURE');
       const p=stack.pop(); if (!p || p.object!==(c===125)) bad('JSON');
     } else if (c===44 || c===58) {
-      if (++budget>LIMIT.structure) bad('STRUCTURE');
+      if (++budget>structure) bad('STRUCTURE');
       const p=stack[stack.length-1]; if (c===44 && p?.object) p.key=true;
     }
   }
@@ -178,7 +186,7 @@ export function encode(m        )            {
   try { s=JSON.stringify(m); } catch { return bad('SERIALIZE'); }
   if (s===undefined) bad('SERIALIZE');
   s=s.replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
-  parseFrame(s); // Same limits and scalar-value semantics on host output.
+  parseHostFrame(s); // Host-output limits and the same scalar-value semantics.
   return new TextEncoder().encode(s+'\n');
 }
                      
@@ -249,7 +257,7 @@ export class Dispatcher {
   send(value        , enqueue                           )         {
     try {
       this.alive(); const wire=encode(value);
-      const m=parseFrame(new TextDecoder().decode(wire.subarray(0,-1))); schema(m,'host');
+      const m=parseHostFrame(new TextDecoder().decode(wire.subarray(0,-1))); schema(m,'host');
       if (m.t==='run' ? this.state!=='parked' : this.state!=='running') bad('STATE');
       if (m.t==='ret' && !this.run.open(m.id          )) bad('ID');
       if (this.outBytes+wire.length>LIMIT.wire) bad('WIRE_LIMIT');
