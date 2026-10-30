@@ -11,6 +11,7 @@ import {fileURLToPath} from 'node:url';
 import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
 import {ABI_VERSION} from './abi.js';
 import {ShardBackend,type ShardMetrics,type ShardQuarantine,type ShardRestore,type ShardSession} from './shard-backend.js';
+import {ShardSet} from './shard-set.js';
 import {PipeChannel,SharedChannel,IPC,monotonicNs,type Channel,type Message} from './shard-ipc.js';
 import {MicroVMExecutor} from './executor.js';
 import {SandboxPool,OverloadedError} from './pool.js';
@@ -137,6 +138,40 @@ try {
     const busy=await one.park(),waiting=one.park().then(()=>undefined,(e:Error)=>e);await queued();
     await one.close();check(/shard backend closed/.test(String(await waiting)),'shard death rejects queued park() waiters');busy.release();
   } finally {await one.close();}
+}
+
+// A shard set: one engine process per slot here. Runs use every process at
+// once; a killed engine fails only its own run and is replaced; an engine that
+// cannot start fails the set after STARTUP_FAILURES instead of respawning.
+{
+  const set=new ShardSet({binary,snapshot,slots:3,slotsPerProcess:1});
+  const spool=new SandboxPool(set,0,3,{refillConcurrency:3}),sex=new MicroVMExecutor(spool,()=> 'allow',10000);
+  try {
+    await set.ready;
+    const first=set.processes.map(p=>p.child.pid);
+    check(first.length===3&&new Set(first).size===3,'shard set: three engine processes of one slot');
+    let started=0,all!:()=>void,open!:()=>void;
+    const allStarted=new Promise<void>(r=>{all=r;}),gate=new Promise<void>(r=>{open=r;});
+    const wait=async()=>{if(++started===3)all();await gate;return 1;};
+    const runs=[0,1,2].map(()=>sex.execute('return await codemode.wait()',{wait}));
+    await allStarted;
+    check(set.processes.every(p=>p.free===0),'shard set: three concurrent runs take one slot in each process');
+    const victim=set.processes[0];
+    const gone=new Promise(r=>victim.child.once('close',r));victim.child.kill('SIGKILL');await gone;open();
+    const rs=await Promise.all(runs);await spool.drain();
+    check(rs.filter(r=>r.error).length===1&&rs.filter(r=>!r.error&&r.result===1).length===2,'shard set: a killed engine fails only its own run: '+JSON.stringify(rs.map(r=>r.error??r.result)));
+    await set.processes[0].ready;
+    check(set.processes[0]!==victim&&!first.includes(set.processes[0].child.pid),'shard set: the killed engine is replaced by a new process');
+    const again=await Promise.all([1,2,3].map(i=>sex.execute(`return ${i}`,{})));
+    check(again.every((r,i)=>!r.error&&r.result===i+1),'shard set: all three slots serve after the replacement');
+  } finally {await spool.close();await set.close();}
+  const reaped=set.processes.map(p=>p.child).every(c=>c.exitCode!==null||c.signalCode!==null);
+  check(reaped,'shard set: close() reaps every engine process');
+  const bad=new ShardSet({binary:'/nonexistent/jitk-engine',snapshot,slots:2,slotsPerProcess:1});
+  await assert.rejects(bad.ready);
+  for(let i=0;i<100&&!/keeps failing/.test(String(await bad.park().catch(e=>e)));i++)await new Promise(r=>setTimeout(r,20));
+  await assert.rejects(bad.park(),/keeps failing at startup/);await bad.close();
+  check(true,'shard set: an engine that cannot start fails the set');
 }
 
 // Node treats the shard as hostile: private-copy validation, cursor bounds,

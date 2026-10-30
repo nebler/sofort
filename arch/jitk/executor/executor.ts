@@ -10,6 +10,7 @@ import {performance} from 'node:perf_hooks';
 export * from './backend.js';
 export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
+export {ShardSet,type ShardSetOptions} from './shard-set.js';
 export {NativeBackend,NativeExecutor,NativeJobError,NATIVE_LIMITS,encodeNativeJob,type NativeOptions,type NativeResult,type NativeError} from './native-backend.js';
 export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
