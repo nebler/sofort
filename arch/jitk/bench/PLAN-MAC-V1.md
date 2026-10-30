@@ -47,7 +47,7 @@ in the same table.
 | W0 | `return 2` | exact result |
 | W1 | one tool call (echo) | exact result |
 | W2 | ten tool calls in `Promise.all`, each answered after 5 ms | result + observed overlap |
-| W3 | payload sweep: 1 / 8 / 60 KB source, 50 KB result; 512 KB on the larger heap class | exact result; OOM reported, not dropped |
+| W3 | payload sweep: 1 / 8 / 60 KB source, 50 KB result; 512 KB tool result on glue-4m | exact result; OOM reported, not dropped |
 | W4 | CPU-bound JS loop (Sofort is expected to lose to V8) | checksum |
 | W5 | CI triage over fixtures (24 repos, one seeded regression, read-only tools, one gated write) | exact diagnosis + evidence ids; 0 forbidden tool invocations |
 | W6 | read-only SQLite incident query (native profile) | exact rows; write refused; input hash unchanged |
@@ -72,7 +72,8 @@ artifact hashes in every bundle.
 ## Prerequisites
 
 - Policy fixes: done (`c934a045`).
-- Larger JS heap class and bulk guest codec: in progress (W3, W5 depend on them).
+- Larger JS heap class and bulk guest codec: done (`bc582e39`). `JITK_SHARD_CLASS=glue-4m`:
+  1,584 KiB heap, about 360 KiB round trip; glue-2m stays the default (368 KiB).
 - Harness: one driver (`executor/bench-v1.ts`), reducer, environment capture,
   reusing `onTiming` phase marks, `ShardMetrics`, the hostile fixtures and the
   existing gate/statistics code.
