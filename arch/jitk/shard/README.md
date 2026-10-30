@@ -448,11 +448,76 @@ of tenant code, `LIMIT.code`), 1,024 one-way console lines, and guest timers
 RAM and the reset are as before; host memory per slot is a backlog of at most
 the source plus one reply per open call.
 
-What bounds big values is the glue-2m arena: a run has about 400 KiB of
-QuickJS heap (each open call costs ~4 KiB of it), so a 64 KiB reply or source
-works, a 50 KiB call echoed back works, a 64 KiB echo, a 100 KiB reply or a
-100 KiB completion is a QuickJS out-of-memory error. A larger class (glue-4m,
-2.75 MiB arena) would lift that at the price of its reset copy.
+What bounds big values is the snapshot's arena class, the QuickJS heap a
+run has. Two classes serve JS jobs; glue-2m is the default, and
+`JITK_SHARD_CLASS=glue-4m` selects the larger one (`../executor/select-backend.ts`;
+`deps env` and `snapshot.ts env` then name its snapshot, and Node and both
+engines refuse a snapshot of another class: Node reads the class from the
+`.layout` record, the engine charges the class's admission bytes on every
+START). `Engine.limits` reports the class (`memoryMB`, `js.arenaBytes`); the
+frame limits stay 1 MiB on both. Measured on HVF (M4 Pro, `executor/run.sh
+payload-bench memory`; JSON bytes of the value, to 1 KiB; sizes do not move
+with host load, times do):
+
+| class | arena | charged per START | usable heap (16 KiB buffers) | largest tool reply | largest completion | largest echo (call + reply) | largest round trip (reply returned) | engine process footprint (HVF) | reset p50 (`hvf bench`, load ~63) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| glue-2m (default) | 1.25 MiB | 2 MiB | 368 KiB | 107 KiB | 141 KiB | 72 KiB | 107 KiB | 5.3 MiB | 105 µs |
+| glue-4m | 2.75 MiB | 4 MiB | 1,584 KiB | 545 KiB | 477 KiB | 359 KiB | 367 KiB | 10.0 MiB | 219 µs |
+
+A value past the class's heap ends as a QuickJS out-of-memory error, which
+the MCP server reports as `LIMIT` (parity: `b-json1m`, `t-memory-over-arena`
+on glue-2m; `executor/shard-check.ts`: a 512 KiB tool result is LIMIT on
+glue-2m and is read on glue-4m, where a 320 KiB value also round-trips).
+glue-4m costs about 4.7 MiB more per HVF engine process and twice the reset
+copy. KVM (kvm-dev, nested) gives the same sizes; a one-slot shard's RSS is
+12.4 MiB on glue-2m and 16.8 MiB on glue-4m, and the guest RAM held between
+runs and the reset copy grow with the dirtied part of the writable window.
+
+The guest holds a big value about once: a tool result is revived in place
+(codemode's binary tags) instead of `parse(JSON.stringify(v))`, and the
+completion goes to FINISH as the JSON text `stringify` made instead of being
+parsed back and serialized again (`tools.json`, `../kernel/ring-bootstrap.js.in`;
+the bytes are the same, `kernel/tests/ring-bootstrap-check.mjs` and
+`executor/prepared-check.ts` compare them with the former path). Before that,
+glue-2m's largest reply, completion and echo were 83, 94 and 62 KiB and
+glue-4m's 335, 474 and 319 KiB. What still bounds a completion and a round
+trip is the guest allocator, not the live bytes: `JSON.stringify` builds a
+quoted copy and a growing buffer, the kernel has no `mremap` (musl's
+`realloc` of a big block copies) and its `mmap` is first-fit over memory that
+is linear in the address, so after a few awaits the free memory is split.
+On glue-4m one string can reach 1.96 MiB, but a 512 KiB completion does not
+fit; lifting that needs a guest allocator whose pages are not tied to their
+address (open).
+
+The guest codec (`../kernel/ring-bootstrap.js.in`) moves payload bytes with
+what this QuickJS build has natively (it has no TextEncoder/TextDecoder):
+bytes become text through `String.fromCharCode.apply` on the typed array, 4
+KiB per call, and a UTF-8 source chunk with non-ASCII bytes through
+`escape()` then `decodeURIComponent()`, which also rejects invalid UTF-8 (a
+sequence cut by a record end waits for the next). ASCII JSON, the usual
+output, is written in one tight `charCodeAt` pass; text with code units past
+0x7e takes the escaping pass as before. Guest CPU per run (STATS), p50,
+`executor/run.sh payload-bench`, HVF, M4 Pro at load ~17, before (main's
+codec) and after run alternately, two rounds each:
+
+| run | glue-2m before | after | glue-4m before | after |
+| --- | ---: | ---: | ---: | ---: |
+| `return 2` | 122–143 µs | 91–124 µs | 141–157 µs | 100–102 µs |
+| 1 KB source | 269–302 µs | 111–151 µs | 312–371 µs | 129–135 µs |
+| 8 KB source | 1.11–1.35 ms | 0.29 ms | 1.34–1.35 ms | 0.30–0.32 ms |
+| 60 KB source | 7.3–9.1 ms | 1.51 ms | 9.0–9.2 ms | 1.54–1.57 ms |
+| 1 KB tool reply | 237–262 µs | 139–151 µs | 243–279 µs | 155–186 µs |
+| 8 KB tool reply | 0.56–0.65 ms | 0.23–0.24 ms | 0.67 ms | 0.24–0.25 ms |
+| 60 KB tool reply | 3.1–3.7 ms | 0.96 ms | 3.4–3.7 ms | 0.97–1.07 ms |
+| 500 KB tool reply | out of memory | out of memory | out of memory | 6.7 ms |
+| 1 KB completion | 215–261 µs | 158–166 µs | 256–263 µs | 158–181 µs |
+| 8 KB completion | 0.88–1.05 ms | 0.63 ms | 1.06–1.07 ms | 0.57–0.67 ms |
+| 60 KB completion | 5.6–7.2 ms | 4.1–4.2 ms | 7.4–7.5 ms | 4.1–4.2 ms |
+| 500 KB completion | out of memory | out of memory | out of memory | out of memory |
+
+A source is 64 KiB at most (`LIMIT.code`). The completion gains least: its
+JSON text still becomes bytes one code unit at a time (about 65 ns a byte
+here); only a native encoder in the QuickJS payload would remove that.
 
 Cost, `return 2`, glue-2m, p50 of 1,000, before (ABI 10, main) / after:
 

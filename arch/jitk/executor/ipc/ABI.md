@@ -42,7 +42,7 @@ the entire shard connection closed.
 
 | Direction / kind | Payload / identity |
 |---|---|
-| Node START=1 | id=0; deadline monotonic ns u64, call cap u32=4096, call bytes u32=1048576, source bytes u32<=73728, memory reservation u32=2097152, exact UTF-8 source bytes (the run body, NUL, the tenant code as data: `shardWire`); deadline no more than 60 s ahead |
+| Node START=1 | id=0; deadline monotonic ns u64, call cap u32=4096, call bytes u32=1048576, source bytes u32<=73728, memory reservation u32 = the snapshot class's admission bytes (glue-2m 2097152, the default; glue-4m 4194304), exact UTF-8 source bytes (the run body, NUL, the tenant code as data: `shardWire`); deadline no more than 60 s ahead |
 | Node REPLY=2 | id of an open call, exactly one `{"ok":value}` or `{"err":{"code":...,"message":...}}`, escaped ASCII JSON <=1048576 bytes |
 | Node CANCEL=3 | id=0, no payload; reset before RELEASED; reserved but unstarted slots can release directly |
 | Shard CALL=16 | id 1..4096 in sequence, at most 64 open (sent, not answered), <=1048576 printable ASCII bytes; Node requires JSON `["call",namespace,function,args]` |
@@ -72,8 +72,9 @@ both sides' tests. Logs are one-way LOG messages with their own budget (the
 console path's LIMIT.logs/logBytes), not calls. A provider reply over the frame
 bound (LIMIT.frame = the reply bound) fails its generation as it fails a
 console-path run; a call over it reaches the guest as a LIMIT tool error
-(prepared helpers). In practice the glue-2m arena bounds big messages first
-(executor/parity, shard/README.md "Limits").
+(prepared helpers). In practice the snapshot's arena class bounds big messages
+first (glue-2m by default, glue-4m with `JITK_SHARD_CLASS`; executor/parity,
+shard/README.md "Limits").
 
 Node's writer retains at most 262,656 unflushed records (every slot's START, a
 reply per open call, CANCEL). Rust's outbound queue is capped at 69,825

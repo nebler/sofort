@@ -12,27 +12,51 @@ const preparedRandom=Math.random;
 let next=1, inflight=0;
 // JSON as printable ASCII bytes (\uXXXX past 0x7e), written straight into the
 // buffer: no escaped copy of the text, which the arena may not hold twice.
-function encode(v) {
-  const s=JSON.stringify(v);
-  let n=s.length;
-  for(let i=0;i<s.length;i++) if(s.charCodeAt(i)>0x7e) n+=5;
+// Per-unit loops cost ~30-90 ns a unit in QuickJS, so each direction does the
+// least per-unit work this build allows (it has no TextEncoder/TextDecoder):
+// ASCII text, the usual case, takes one tight pass.
+const wide=/[^\x00-\x7e]/;
+function ascii(parts) {
+  let n=0;
+  const escaped=parts.map(s=>wide.test(s));
+  for(let j=0;j<parts.length;j++) {
+    const s=parts[j];
+    n+=s.length;
+    if(escaped[j]) for(let i=0;i<s.length;i++) if(s.charCodeAt(i)>0x7e) n+=5;
+  }
   const b=new Uint8Array(n);
-  for(let i=0,o=0;i<s.length;i++) {
-    const c=s.charCodeAt(i);
-    if(c<0x7f) { b[o++]=c; continue; }
-    const h=c.toString(16).padStart(4,'0');
-    b[o++]=92; b[o++]=117;
-    for(let k=0;k<4;k++) b[o++]=h.charCodeAt(k);
+  for(let j=0,o=0;j<parts.length;j++) {
+    const s=parts[j];
+    if(!escaped[j]) { for(let i=0;i<s.length;i++) b[o+i]=s.charCodeAt(i); o+=s.length; continue; }
+    for(let i=0;i<s.length;i++) {
+      const c=s.charCodeAt(i);
+      if(c<0x7f) { b[o++]=c; continue; }
+      const h=c.toString(16).padStart(4,'0');
+      b[o++]=92; b[o++]=117;
+      for(let k=0;k<4;k++) b[o++]=h.charCodeAt(k);
+    }
   }
   return b;
 }
-function decode(b,at,n) {
+function encode(v) { return ascii([JSON.stringify(v)]); }
+// A completion that is JSON text already (tools.json, from the prepared
+// helpers): FINISH writes {"ok":<text>} without parsing it back, which is
+// what JSON.stringify({ok:JSON.parse(text)}) gives for JSON.stringify output.
+class Json { constructor(text) { this.text=text; } }
+function json(text) {
+  if(typeof text!=='string') throw TypeError('JSON text');
+  return Object.freeze(new Json(text));
+}
+// Bytes as Latin-1 text, in native code: fromCharCode.apply reads the typed
+// array directly (a spread would build a JS array first). 4 KiB per call
+// bounds its argument list (16 bytes a unit) in the arena.
+function latin1(b,at,n) {
   let s='';
-  for(let i=0;i<n;i+=4096) s+=String.fromCharCode(...b.subarray(at+i,at+Math.min(n,i+4096)));
+  for(let i=0;i<n;i+=4096) s+=String.fromCharCode.apply(null,b.subarray(at+i,at+Math.min(n,i+4096)));
   return s;
 }
 function finish(ok,value) {
-  let b=encode(ok?{ok:value===undefined?null:value}:{err:{name:String(value.name),message:String(value.message)}});
+  let b=ok&&value instanceof Json?ascii(['{"ok":',value.text,'}']):encode(ok?{ok:value===undefined?null:value}:{err:{name:String(value.name),message:String(value.message)}});
   // As protocol/bootstrap.js: a completion over the frame bound ends as a SerializationError.
   if(b.length>{{DONE_BYTES}}) b=encode({err:{name:'SerializationError',message:'Error: output budget'}});
   if(os.write({{FD_FINISH}},b.buffer,0,b.length)!==b.length) throw Error('FINISH failed');
@@ -83,13 +107,18 @@ os.setReadHandler(0,()=>{
     const ok=view.getUint16(4,true)==={{RET}}, more=view.getUint16(6,true)&{{MORE}};
     // Out of memory (the arena class) fails this call, not the event loop:
     // its remaining records are still read and dropped.
-    if(!p.error) try { p.parts.push(decode(bytes,{{REPLY_PREFIX_BYTES}},n-{{REPLY_PREFIX_BYTES}})); } catch(e) { p.error=e; p.parts=[]; }
+    if(!p.error) try { p.parts.push(latin1(bytes,{{REPLY_PREFIX_BYTES}},n-{{REPLY_PREFIX_BYTES}})); } catch(e) { p.error=e; p.parts=[]; }
     if(more) continue;
     pending.delete(id);
     inflight-=p.bytes;
     if(p.error) p.reject(p.error);
     else if(!ok) p.reject(Error('RET failed'));
-    else try { p.resolve(JSON.parse(p.parts.join(''))); } catch(e) { p.reject(e); }
+    else try {
+      // One copy of the text while it is parsed: the fragments go first.
+      const text=p.parts.length===1?p.parts[0]:p.parts.join('');
+      p.parts=undefined;
+      p.resolve(JSON.parse(text));
+    } catch(e) { p.reject(e); }
   }
 });
 // Dedicated checkpoint: QuickJS, helpers and bootstrap initialized; no run input.
@@ -104,8 +133,11 @@ const run=Object.freeze({generation:String(dv.getBigUint64(0,true)),
 // The SOURCE message, UTF-8: the run body, then optionally NUL and its `data`
 // text (the executor binds tenant code as data: executor/shard-backend.ts
 // shardWire). read(0) blocks for each record and returns 0 at its end. One
-// streaming decode, so the arena holds the text once.
-let text='', data, units=[], need=0, cp=0;
+// streaming decode, so the arena holds the text once. The engine admitted
+// only valid UTF-8 (shard service::admission); a chunk with non-ASCII bytes
+// is decoded natively as escape() then decodeURIComponent(), which throws on
+// invalid UTF-8, and a sequence cut by a chunk end waits in `tail`.
+let text='', data, tail='';
 const put=s=>{
   if(data===undefined) {
     const z=s.indexOf('\0');
@@ -114,25 +146,28 @@ const put=s=>{
   }
   data+=s;
 };
-const flush=()=>{ if(units.length) { put(String.fromCharCode(...units)); units=[]; } };
+const high=/[\x80-\xff]/;
+// Where a trailing incomplete UTF-8 sequence of Latin-1 text l starts.
+const cut=l=>{
+  let k=l.length, c=0;
+  while(c<3&&k>0&&(l.charCodeAt(k-1)&0xc0)===0x80) { k--; c++; }
+  const lead=k>0?l.charCodeAt(k-1):0;
+  return (lead>=0xf0?3:lead>=0xe0?2:lead>=0xc0?1:0)>c?k-1:l.length;
+};
 for(let n;(n=os.read(0,record,0,record.byteLength))>0;) {
-  for(let i=0;i<n;i++) {
-    const c=bytes[i];
-    if(need) { cp=cp<<6|c&63; if(--need) continue; }
-    else if(c<0x80) cp=c;
-    else if(c>=0xf0) { cp=c&7; need=3; continue; }
-    else if(c>=0xe0) { cp=c&15; need=2; continue; }
-    else { cp=c&31; need=1; continue; }
-    if(cp===0&&data===undefined) { flush(); data=''; continue; }
-    if(cp<0x10000) units.push(cp);
-    else { cp-=0x10000; units.push(0xd800|cp>>10,0xdc00|cp&1023); }
-    if(units.length>=4096) flush();
+  let l=tail+latin1(bytes,0,n);
+  tail='';
+  if(high.test(l)) {
+    const k=cut(l);
+    tail=l.slice(k);
+    l=decodeURIComponent(escape(l.slice(0,k)));
   }
+  put(l);
 }
-flush();
+if(tail) put(decodeURIComponent(escape(tail)));
 try {
   const body=new AsyncFunction('tools','run','data','"use strict";\n'+text);
   text='';
   const input=data; data=undefined;
-  Promise.resolve(body(Object.freeze({echo,log}),run,input)).then(v=>finish(true,v),e=>finish(false,e));
+  Promise.resolve(body(Object.freeze({echo,log,json}),run,input)).then(v=>finish(true,v),e=>finish(false,e));
 } catch(e) { finish(false,e); }

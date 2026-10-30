@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {IDENTITY_VERSION,helperHash,fileHash,verifyPreparedSnapshot} from './prepared-helpers.mjs';
+import vm from 'node:vm';
+import {IDENTITY_VERSION,helperHash,helperSource,fileHash,verifyPreparedSnapshot} from './prepared-helpers.mjs';
+import {parse,stringify} from './codec.mjs';
 import {ABI_VERSION} from './abi.js';
 import {executionBody,jsJob} from './code.js';
 import {shardSource} from './shard-backend.js';
@@ -30,5 +32,27 @@ try {
   assert.ok(legacy.includes('function stringify')&&legacy.includes('installBase64'));
   const source=shardSource(prepared,['codemode']);
   assert.ok(Buffer.byteLength(source)<600,`minimal binding: ${source.length}`);
-  console.log(JSON.stringify({suite:'prepared',status:'PASS',checks:10+await sourceChecks(),sourceBytes:source.length,legacyBodyBytes:legacy.length,helperHash}));
+  // The helpers keep one copy of a big value (tool results revived in place,
+  // the completion handed over as JSON text): the text the ring bootstrap
+  // writes must be what the former deep copies gave, parse(JSON.stringify(v))
+  // per tool result and JSON.parse(stringify(result)) at completion.
+  const helpers=vm.createContext({});vm.runInContext(helperSource,helpers);
+  const tagged=(kind:string,bytes:number[])=>({__codemode_binary_v1__:kind,data:Buffer.from(bytes).toString('base64')});
+  const results:unknown[]=[null,0,'größer 🌍 \ud800',[1,[2,{a:null}]],tagged('Uint8Array',[0,127,255]),tagged('ArrayBuffer',[1,2]),
+    {list:[tagged('Uint8Array',[9]),{deep:tagged('ArrayBufferView',[])}],n:-0,s:'x'.repeat(70000)},JSON.parse('{"__proto__":{"__codemode_binary_v1__":"Uint8Array","data":"AQ=="},"k":1}')];
+  // The tenant also reports the types it received (binary revived or not).
+  const shapeSource="const shape=v=>v instanceof Uint8Array?'U8['+Array.from(v)+']':v instanceof ArrayBuffer?'AB['+new Uint8Array(v)+']':Array.isArray(v)?'['+v.map(shape)+']':v&&typeof v==='object'?'{'+Object.keys(v).map(k=>k+':'+shape(v[k]))+'}':JSON.stringify(v);";
+  const shape=new Function(shapeSource+'return shape')() as (v:unknown)=>string;
+  let checks=0;
+  for(const r of results){
+    let text:string|undefined;
+    const transport={echo:async()=>({ok:JSON.parse(JSON.stringify(r))}),log(){},json:(t:string)=>{text=t;return 'handed over';}};
+    const body=executionBody(jsJob(shapeSource+'const r=await codemode.tool();return [shape(r),r]',[{name:'codemode',fns:{tool:async()=>r}}]),true);
+    assert.equal(await helpers.__jitkPrepared.source(transport,body,['codemode']),'handed over');
+    const before=parse(JSON.stringify(r));
+    assert.equal(text,JSON.stringify(JSON.parse(stringify([shape(before),before]))));checks++;
+  }
+  // No JSON for the value: the error JSON.parse(stringify(fn)) threw before.
+  await assert.rejects(helpers.__jitkPrepared.source({echo(){},log(){},json(){}},executionBody(jsJob('return ()=>1',[]),true),[]),(e:{name:string})=>e.name==='SyntaxError');checks++;
+  console.log(JSON.stringify({suite:'prepared',status:'PASS',checks:10+checks+await sourceChecks(),sourceBytes:source.length,legacyBodyBytes:legacy.length,helperHash}));
 } finally {rmSync(root,{recursive:true,force:true});}

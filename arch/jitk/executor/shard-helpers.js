@@ -3,6 +3,22 @@
 // deliberately writable by tenant code. No helper state survives slot reset.
 installBase64();
 const PreparedAsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+// The arena holds big values once (shard/README.md "Limits"): a tool result
+// is fresh from the ring reply's JSON.parse, so codec.mjs parse(JSON.stringify
+// (v)), a second and third copy, becomes the same binary revival in place;
+// the completion stays JSON text, handed to the ring bootstrap as is.
+// (JSON.parse objects own every key, "__proto__" too, so assignment sets it.)
+const revive=v=>{
+  if(!v||typeof v!=='object')return v;
+  if(Array.isArray(v)){for(let i=0;i<v.length;i++){const x=v[i],y=revive(x);if(y!==x)v[i]=y;}}
+  else for(const k of Object.keys(v)){const x=v[k],y=revive(x);if(y!==x)v[k]=y;}
+  if(tag in v&&typeof v.data==='string'){
+    const binary=atob(v.data),bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return v[tag]==='ArrayBuffer'?bytes.buffer:bytes;
+  }
+  return v;
+};
+// A completion's JSON text from codec(), for run() to give the transport.
+class Serialized{constructor(text){this.text=text;}}
 globalThis.__jitkPrepared={
   // `code` is the START source's data (executor/shard-backend.ts shardWire):
   // the tenant body, its "use strict" directive included. Compiled here, as
@@ -12,10 +28,13 @@ globalThis.__jitkPrepared={
   },
   async codec(descriptors,body,wire) {
     const providers=descriptors.map(([name,allowed])=>new Proxy(Object.create(null),{
-      get:(t,k)=>Object.hasOwn(t,k)?t[k]:k!=='then'&&allowed.includes(k)?async(...a)=>parse(JSON.stringify(await wire[name][k](...JSON.parse(stringify(a))))):undefined
+      get:(t,k)=>Object.hasOwn(t,k)?t[k]:k!=='then'&&allowed.includes(k)?async(...a)=>revive(await wire[name][k](...JSON.parse(stringify(a)))):undefined
     }));
     const result=await body(...providers);
-    return JSON.parse(stringify(result===undefined?null:result));
+    const text=stringify(result===undefined?null:result);
+    // What JSON.parse(text) would throw for a value with no JSON (a function).
+    if(typeof text!=='string')JSON.parse(text);
+    return new Serialized(text);
   },
   async run(transport,body,names) {
     // Open calls; `settled` resolves when the last one settles. (No
@@ -66,7 +85,7 @@ globalThis.__jitkPrepared={
     try {
       const result=await body(console,...providers);
       if(pending.size)throw Error('unawaited calls at completion');
-      return result;
+      return result instanceof Serialized?transport.json(result.text):result;
     } catch(e) {
       throw {name:String(e&&e.name||'Error').slice(0,128),message:String(e&&e.message||e).slice(0,4096)};
     } finally {if(pending.size)await new Promise(r=>{settled=r;});}

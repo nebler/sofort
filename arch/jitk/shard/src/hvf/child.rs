@@ -136,7 +136,7 @@ pub fn serve(
     if confined {
         confine()?;
     }
-    let charge = service::ipc_charge(snapshot.class)?;
+    let charge = service::ipc_charge(snapshot.class);
     let mut slot = Slot::create(HvfVm::create()?, snapshot, policy)?;
     let clock = Clock::start(1);
     slot.set_clock(clock.cell(0));

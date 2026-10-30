@@ -1,5 +1,6 @@
 import {verifyPreparedSnapshot} from './prepared-helpers.mjs';
 import {spawn,type ChildProcess} from 'node:child_process';
+import {readFileSync} from 'node:fs';
 import {LIMIT,ProtocolError,RunBudget,checkCall,checkCode,checkDone,checkLog,checkReply,checkTools,parseFrame,parseJson} from '../protocol/dispatcher.js';
 import type {Engine,GuestEvent,Job,Limits,Phase,Reply,Session} from './engine.js';
 import {StderrTail,engineEnv,failure} from './engine.js';
@@ -26,7 +27,24 @@ export type ShardQuarantine={slot:number;generation:bigint;reason:string;lost:nu
 export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number};
 /** maxWaiting bounds park() callers queued for a free slot (default max(64, 4 x slots)).
  *  onQuarantine/onRestore observe lost and returned capacity; without them each is one stderr line. */
-export type ShardOptions={binary:string;snapshot:string;slots?:number;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void;
+/** A prepared snapshot's arena class (jitk-abi arena::Class). glue-2m is the
+ *  default; glue-4m gives a run about 4x the QuickJS heap for 4 MiB charged
+ *  per run instead of 2 and twice the reset copy (shard/README.md "Limits"). */
+export type MemoryClass=keyof typeof ARENA_CLASSES;
+/** The arena class of a prepared snapshot: its `.layout` sidecar (the
+ *  JTKARENA record of jitk-abi arena::Class::layout, covered by the identity
+ *  that verifyPreparedSnapshot checks): magic, version, MiB, GPA, arena bytes. */
+export function snapshotClass(base:string):MemoryClass {
+  const b=readFileSync(base+'.layout');
+  if(b.length!==72||b.readBigUInt64LE(0)!==0x414e4552414b544an||b.readBigUInt64LE(8)!==2n)throw Error('shard snapshot layout record');
+  const mib=Number(b.readBigUInt64LE(16)),bytes=Number(b.readBigUInt64LE(32));
+  const cls=(Object.keys(ARENA_CLASSES) as MemoryClass[]).find(c=>ARENA_CLASSES[c].admissionBytes===mib*(1<<20)&&ARENA_CLASSES[c].arenaBytes===bytes);
+  if(!cls)throw Error('shard snapshot has an unknown arena class');
+  return cls;
+}
+export type ShardOptions={binary:string;snapshot:string;slots?:number;
+  /** The snapshot's arena class; the backend refuses a snapshot of another (default glue-2m). */
+  memoryClass?:MemoryClass;owners?:number;maxWaiting?:number;onMetrics?:(m:ShardMetrics)=>void;onQuarantine?:(q:ShardQuarantine)=>void;onRestore?:(r:ShardRestore)=>void;
   /** Called once when the engine process fails or the backend closes (ShardSet replaces it). */
   onDeath?:(e:Error)=>void;
   /** Serve even if the host lacks a Linux confinement layer (the engine refuses otherwise; default: JITK_ALLOW_DEGRADED_CONFINEMENT=1). */
@@ -56,9 +74,9 @@ export function shardWire(code:string,names:string[]):string {
 }
 
 /** The ring profile's limits (jitk-abi, executor/ipc/ABI.md) for a shard of this many slots:
- *  the console path's (protocol/dispatcher.ts LIMIT) but for the arena-bound memory. */
-export function shardLimits(slots:number):Limits {
-  const arena=ARENA_CLASSES['glue-2m'];
+ *  the console path's (protocol/dispatcher.ts LIMIT) but for the arena-bound memory of its class. */
+export function shardLimits(slots:number,memoryClass:MemoryClass='glue-2m'):Limits {
+  const arena=ARENA_CLASSES[memoryClass];
   return {memoryMB:arena.admissionBytes/(1<<20),sessions:slots,parallelStarts:slots,deadlineMs:IPC.deadlineHorizonNs/1e6,
     js:{code:LIMIT.code,sourceBytes:IPC.sourceBytes,calls:IPC.calls,callBytes:IPC.callBytes,replyBytes:IPC.replyBytes,doneBytes:IPC.doneBytes,
       logs:LIMIT.logs,logBytes:LIMIT.log,timers:true,arenaBytes:arena.arenaBytes}};
@@ -73,6 +91,7 @@ export function shardLimits(slots:number):Limits {
 export class ShardBackend implements Engine {
   readonly kind:'shard'|'hvf'=process.platform==='darwin'?'hvf':'shard';
   readonly limits:Limits;
+  readonly memoryClass:MemoryClass;
   readonly ready:Promise<void>;
   readonly child:ChildProcess;
   private channel:Channel;
@@ -91,9 +110,13 @@ export class ShardBackend implements Engine {
     const hvf=process.platform==='darwin';
     if(process.platform!=='linux'&&!(hvf&&process.arch==='arm64'))throw Error('shard backend requires Linux (KVM) or macOS arm64 (HVF)');
     verifyPreparedSnapshot(options.snapshot,ABI_VERSION);
+    this.memoryClass=snapshotClass(options.snapshot);
+    const want=options.memoryClass??'glue-2m';
+    if(!Object.hasOwn(ARENA_CLASSES,want))throw Error('unsupported shard memory class '+want);
+    if(this.memoryClass!==want)throw Error(`shard snapshot is ${this.memoryClass}, not the selected ${want} (JITK_SHARD_CLASS)`);
     const slots=options.slots??(hvf?8:64),owners=options.owners??4;
     if(!Number.isInteger(slots)||slots<1||slots>64||!Number.isInteger(owners)||owners<1||owners>4)throw Error('shard capacity limit');
-    this.limits=shardLimits(slots);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
+    this.limits=shardLimits(slots,this.memoryClass);this.generations=Array<bigint>(slots).fill(0n);this.queue=new AdmissionQueue('shard pool',options.maxWaiting??Math.max(64,4*slots));
     this.ready=new Promise<void>((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});this.ready.catch(()=>{});
     // Exactly these descriptors and a credential-free environment are inherited.
     const env=engineEnv(options.allowDegradedConfinement);
@@ -154,7 +177,7 @@ export class ShardBackend implements Engine {
   private claim(slot:number):ShardSession {
     const generation=++this.generations[slot];
     if(generation>=1n<<62n)throw Error('shard generation exhausted');
-    const s=new ShardSession(this,slot,generation);this.sessions.set(slot,s);return s;
+    const s=new ShardSession(this,slot,generation,ARENA_CLASSES[this.memoryClass].admissionBytes);this.sessions.set(slot,s);return s;
   }
   send(kind:number,s:ShardSession,id=0,bytes:Buffer=Buffer.alloc(0)):Promise<void> {return this.channel.send({kind,slot:s.slot,generation:s.generation,id,bytes});}
   /** Physical slots, and those out of service after a quarantine (capacity is slots - lost). */
@@ -235,7 +258,8 @@ export class ShardSession implements Session {
   private waiter?:(e:GuestEvent)=>void;
   private stopped:Promise<never>;
   private rejectStopped!:(e:Error)=>void;
-  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint) {
+  /** charge: the START memory reservation, the snapshot class's admission bytes. */
+  constructor(private backend:ShardHost,readonly slot:number,readonly generation:bigint,private charge:number=ARENA_CLASSES['glue-2m'].admissionBytes) {
     this.released=new Promise(resolve=>{this.resolveReleased=resolve;});
     this.stopped=new Promise((_,reject)=>{this.rejectStopped=reject;});this.stopped.catch(()=>{});
   }
@@ -372,7 +396,7 @@ export class ShardSession implements Session {
     const payload=Buffer.alloc(IPC.startHeaderBytes+source.length);
     this.run.admittedDeadlineNs=this.backend.now()+BigInt(Math.floor(remaining*1e6));
     payload.writeBigUInt64LE(this.run.admittedDeadlineNs,0);
-    payload.writeUInt32LE(IPC.calls,8);payload.writeUInt32LE(IPC.callBytes,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(ARENA_CLASSES['glue-2m'].admissionBytes,20);source.copy(payload,IPC.startHeaderBytes);
+    payload.writeUInt32LE(IPC.calls,8);payload.writeUInt32LE(IPC.callBytes,12);payload.writeUInt32LE(source.length,16);payload.writeUInt32LE(this.charge,20);source.copy(payload,IPC.startHeaderBytes);
     this.run.phase='running';this.arm(remaining+DEADLINE_GRACE_MS,`reported no end ${DEADLINE_GRACE_MS} ms after it`);await this.write(IPC.start,0,payload);
   }
   async reply(id:number,r:Reply):Promise<void> {

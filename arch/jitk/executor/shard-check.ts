@@ -3,13 +3,13 @@
 // per slot). Sections that exercise one transport (the memfd queues and their
 // hostile peer fixture on Linux; engine processes on macOS) say so.
 import assert from 'node:assert/strict';
-import {mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
+import {copyFileSync,mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync,spawn,type ChildProcess} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {IDENTITY_VERSION,helperHash,fileHash} from './prepared-helpers.mjs';
-import {ABI_VERSION} from './abi.js';
+import {ABI_VERSION,ARENA_CLASSES} from './abi.js';
 import {ShardBackend,type ShardMetrics,type ShardQuarantine,type ShardRestore,type ShardSession} from './shard-backend.js';
 import {ShardSet} from './shard-set.js';
 import {PipeChannel,SharedChannel,IPC,monotonicNs,type Channel,type Message} from './shard-ipc.js';
@@ -109,6 +109,39 @@ try {
   r=await execute('return 42');check(!r.error&&r.result===42,'clean reuse after expiry');
 } finally {await pool.close();}
 
+// Memory classes (../shard/README.md "Limits"). The code-mode shape, a 512 KiB
+// tool result read and a small answer returned, is a clean out-of-memory
+// LIMIT on the default glue-2m class and works on glue-4m, where a 320 KiB
+// value also round-trips (reply in, completion out). The glue-4m snapshot:
+// JITK_SHARD_SNAPSHOT_GLUE_4M, else the jitk cache's.
+{
+  const deps=fileURLToPath(new URL('../../tools/.work/bin/deps',import.meta.url));
+  const large=process.env.JITK_SHARD_SNAPSHOT_GLUE_4M||execFileSync(deps,['path','JITK_SHARD_SNAPSHOT'],{encoding:'utf8',env:{...process.env,JITK_SHARD_SNAPSHOT:'',JITK_SHARD_CLASS:'glue-4m'}}).trim();
+  const {errorClass}=await import(new URL('../../mcp/jitk.mjs',import.meta.url).href);
+  /** A tool result whose reply JSON ({"ok":...}) is `bytes` long. */
+  const value=(bytes:number,fill:string)=>{const v={rows:Array.from({length:8},(_,id)=>({id,ok:true})),text:''};v.text=fill.repeat(bytes-JSON.stringify({ok:v}).length);assert.equal(JSON.stringify({ok:v}).length,bytes);return v;};
+  const read=value(512*1024,'x'),echoed=value(320*1024,'y');
+  const digest='const r=await codemode.big();return [r.rows.length,r.text.length,r.text.slice(-2)]';
+  for(const [memoryClass,base] of [['glue-2m',snapshot],['glue-4m',large]] as const){
+    const b=new ShardBackend({binary,snapshot:base,slots:1,owners:1,memoryClass});
+    const p=new SandboxPool(b,0,1),x=new MicroVMExecutor(p,()=> 'allow',10000);
+    const run=async(code:string,fns:Record<string,()=>Promise<unknown>>={})=>{const r=await x.execute(code,fns);await p.drain();return r;};
+    try{
+      check(b.memoryClass===memoryClass&&b.limits.memoryMB===ARENA_CLASSES[memoryClass].admissionBytes>>20&&b.limits.js?.arenaBytes===ARENA_CLASSES[memoryClass].arenaBytes,`${memoryClass}: limits of its class`);
+      let r=await run(digest,{big:async()=>read});
+      if(memoryClass==='glue-2m')check(!!r.error&&/out of memory/.test(r.error)&&errorClass(r)==='LIMIT',`glue-2m: a 512 KiB tool result is a clean LIMIT (${r.error})`);
+      else{
+        check(!r.error&&JSON.stringify(r.result)===JSON.stringify([8,read.text.length,'xx']),`glue-4m: a 512 KiB tool result is read (${r.error??'ok'})`);
+        r=await run('return await codemode.big()',{big:async()=>echoed});
+        check(!r.error&&JSON.stringify(r.result)===JSON.stringify(echoed),`glue-4m: a 320 KiB value round-trips (${r.error??'ok'})`);
+      }
+      r=await run('return 2');check(!r.error&&r.result===2,`${memoryClass}: the slot serves the next run`);
+    }finally{await p.close();}
+  }
+  // The backend runs only the class it was given (default glue-2m).
+  assert.throws(()=>new ShardBackend({binary,snapshot:large,slots:1,owners:1}),/shard snapshot is glue-4m, not the selected glue-2m/);assertions++;
+}
+
 // Exercise environment selection through the same MCP core used by execute.
 {
   const kind=linux?'shard':'hvf';
@@ -185,7 +218,9 @@ const peer=join(scratch,'peer');
 // keeps real snapshot validation enabled on every ShardBackend construction.
 function peerSnapshot(mode:string) {
   const base=join(scratch,mode);
-  for(const ext of ['mem','regs','layout'])writeFileSync(base+'.'+ext,'fixture');
+  for(const ext of ['mem','regs'])writeFileSync(base+'.'+ext,'fixture');
+  // The class record Node reads (shard-backend.ts snapshotClass): the real snapshot's.
+  copyFileSync(snapshot+'.layout',base+'.layout');
   writeFileSync(base+'.identity',JSON.stringify({version:IDENTITY_VERSION,abiVersion:ABI_VERSION,helperSha256:helperHash,files:Object.fromEntries(['mem','regs','layout'].map(ext=>[ext,fileHash(base+'.'+ext)]))}));
   return base;
 }

@@ -3,7 +3,8 @@ import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {type Backend} from './backend.js';
-import {ShardBackend} from './shard-backend.js';
+import {ShardBackend,type MemoryClass} from './shard-backend.js';
+import {ARENA_CLASSES} from './abi.js';
 import {ShardSet} from './shard-set.js';
 import type {ParkingGate} from './pool.js';
 // Every emitted entry lives in executor/build; no checkout-name assumptions.
@@ -25,13 +26,24 @@ export function hvfGate(binary:string,snapshot:string,slots:number):ParkingGate|
   }
   return undefined;
 }
+/** The arena class a ring engine runs: JITK_SHARD_CLASS, default glue-2m.
+ *  glue-4m holds bigger values (shard/README.md "Limits") and needs its own
+ *  snapshot: JITK_SHARD_SNAPSHOT of that class (`deps env` picks it when
+ *  JITK_SHARD_CLASS is set). The engine refuses a snapshot of another class. */
+export function shardClass():MemoryClass {
+  const cls=process.env.JITK_SHARD_CLASS||'glue-2m';
+  if(!Object.hasOwn(ARENA_CLASSES,cls))throw Error(`unsupported JITK_SHARD_CLASS: ${cls} (one of ${Object.keys(ARENA_CLASSES).join(', ')})`);
+  return cls as MemoryClass;
+}
 /** The ring engine for this host: the HVF engine on macOS arm64 (the
  *  default there), the KVM shard on Linux arm64. JITK_BACKEND=hvf|shard
- *  names one explicitly. The selection, engine and snapshot hashes and the
- *  parking gate go to integration-selection.json. */
+ *  names one explicitly, JITK_SHARD_CLASS its memory class. The selection,
+ *  engine and snapshot hashes and the parking gate go to
+ *  integration-selection.json. */
 export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:string} {
   const mac=process.platform==='darwin'&&process.arch==='arm64';
   const selected=process.env.JITK_BACKEND??(mac?'hvf':process.platform==='linux'?'shard':'');
+  const memoryClass=selected==='shard'||selected==='hvf'?shardClass():undefined;
   let backend:ShardBackend|ShardSet,gate:ParkingGate|undefined,selection:string,binary:string,snapshot:string|undefined;
   if(selected==='shard'){
     if(process.platform!=='linux')throw Error('shard backend requires Linux (on macOS: JITK_BACKEND=hvf)');
@@ -42,8 +54,8 @@ export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:str
     // (1..64) splits JITK_SHARD_SLOTS (default 64) across engine processes,
     // each its own trust and failure domain (shard-set.ts).
     const slots=Number(process.env.JITK_SHARD_SLOTS??64),perProcess=Number(process.env.JITK_SHARD_PROCESS_SLOTS??slots);
-    if(perProcess>=slots){backend=new ShardBackend({binary,snapshot,slots});selection='Linux KVM shard / shared-memory Node policy';}
-    else{backend=new ShardSet({binary,snapshot,slots,slotsPerProcess:perProcess});selection=`Linux KVM shard set (${backend.processes.length} engine processes of up to ${perProcess} slots) / shared-memory Node policy`;}
+    if(perProcess>=slots){backend=new ShardBackend({binary,snapshot,slots,memoryClass});selection=`Linux KVM shard (${memoryClass}) / shared-memory Node policy`;}
+    else{backend=new ShardSet({binary,snapshot,slots,slotsPerProcess:perProcess,memoryClass});selection=`Linux KVM shard set (${backend.processes.length} engine processes of up to ${perProcess} slots, ${memoryClass}) / shared-memory Node policy`;}
   }
   // The ring engine on Hypervisor.framework (shard/src/hvf/zygote.rs):
   // JITK_SHARD_BINARY is the signed `hvf` engine and JITK_SHARD_SNAPSHOT a
@@ -54,8 +66,8 @@ export function selectBackend():{backend:Backend;gate?:ParkingGate;selection:str
     binary=process.env.JITK_SHARD_BINARY??'';snapshot=process.env.JITK_SHARD_SNAPSHOT;
     if(!binary||!snapshot)throw Error('hvf backend requires JITK_SHARD_BINARY (the signed hvf engine) and JITK_SHARD_SNAPSHOT (make -C arch/jitk deps; make -C arch/jitk/shard snapshot)');
     const slots=Number(process.env.JITK_HVF_SLOTS??8);
-    backend=new ShardBackend({binary,snapshot,slots});gate=hvfGate(binary,snapshot,slots);
-    selection='macOS HVF engine (one confined process per slot) / socket Node policy';
+    backend=new ShardBackend({binary,snapshot,slots,memoryClass});gate=hvfGate(binary,snapshot,slots);
+    selection=`macOS HVF engine (one confined process per slot, ${memoryClass}) / socket Node policy`;
   }
   else if(selected==='jitk')throw Error('JITK_BACKEND=jitk (libkrun) was removed; the ring engine is the default (hvf on macOS arm64, shard on Linux)');
   else throw Error('unsupported JITK_BACKEND: '+(selected||'(none for this host)'));

@@ -4,8 +4,9 @@
 // so the helper composition is the executor's own module,
 // ../executor/prepared-helpers.mjs.
 //
-// One snapshot per arena class (glue-2m is the executor's default; glue-4m is
-// there for the class-coverage KVM tests). Each is the ring kernel with the
+// One snapshot per arena class: glue-2m is the executor's default, glue-4m
+// the larger JS class (JITK_SHARD_CLASS=glue-4m) and the class-coverage
+// engine tests'. Each is the ring kernel with the
 // executor helpers spliced in before the QuickJS checkpoint, built with the
 // pinned toolchain and prepared by the shard binary, JITK_SHARD_BINARY from
 // `make -C arch/jitk deps` (Linux: `real`; macOS: `hvf`, signed with the
@@ -17,7 +18,8 @@
 // directory and renamed into place.
 //
 //   snapshot.ts [build]   build or verify every class, then print `env`
-//   snapshot.ts env       print `export NAME=base` for JITK_SHARD_SNAPSHOT,
+//   snapshot.ts env       print `export NAME=base` for JITK_SHARD_SNAPSHOT
+//                         (of JITK_SHARD_CLASS, default glue-2m),
 //                         JITK_SHARD_TEST_SNAPSHOT and JITK_SHARD_TEST_SNAPSHOTS
 //                         (set values are kept)
 import { chmodSync, copyFileSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
@@ -27,7 +29,7 @@ import { shaFile } from '../tslib/hash.ts';
 import { dumpJSON, readJSON } from '../tslib/json.ts';
 import { environment } from '../tslib/process.ts';
 import { run } from '../tslib/subprocess.ts';
-import { JITK_ROOT, SNAPSHOT_CLASSES, SNAPSHOT_TARGET, hostPlatform, pins, requireArtifact, snapshotBase, snapshotIndex, snapshotInputs, snapshotKey, snapshotRoot, withLock } from '../tslib/deps.ts';
+import { JITK_ROOT, SNAPSHOT_CLASSES, SNAPSHOT_TARGET, hostPlatform, pins, requireArtifact, shardClass, snapshotBase, snapshotIndex, snapshotInputs, snapshotKey, snapshotRoot, withLock } from '../tslib/deps.ts';
 import { rustToolchain } from '../tslib/rust.ts';
 import { ABI_VERSION } from '../executor/abi.ts';
 import { IDENTITY_VERSION, bootstrapSource, helperHash, helperSource, verifyPreparedSnapshot } from '../executor/prepared-helpers.mjs';
@@ -160,7 +162,7 @@ function quote(value: string): string {
 }
 
 function printEnv(): void {
-  const helpers = process.env.JITK_SHARD_SNAPSHOT || base('glue-2m');
+  const helpers = process.env.JITK_SHARD_SNAPSHOT || base(shardClass());
   const values: Record<string, string> = {
     JITK_SHARD_SNAPSHOT: helpers,
     JITK_SHARD_TEST_SNAPSHOT: process.env.JITK_SHARD_TEST_SNAPSHOT || helpers,
