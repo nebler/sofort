@@ -60,6 +60,50 @@ function replay(recorded: RecordedCall[], stats: Stats, unmatched: string[], use
   });
 }
 
+// Oracle self-test: mutate each leaf of a passing result (numbers +1, strings
+// suffixed, booleans flipped, one array element dropped) and count how many
+// mutants the oracle rejects. Accepted mutants are listed; a few are expected
+// where the oracle tolerates rounding or extra text.
+function leaves(value: unknown, path: (string | number)[] = [], out: (string | number)[][] = []) {
+  if (Array.isArray(value)) {
+    if (value.length) out.push([...path, '#drop']);
+    value.forEach((item, i) => leaves(item, [...path, i], out));
+  } else if (value !== null && typeof value === 'object') {
+    for (const [key, item] of Object.entries(value)) leaves(item, [...path, key], out);
+  } else {
+    out.push(path);
+  }
+  return out;
+}
+
+function mutate(value: unknown, path: (string | number)[]): unknown {
+  const copy = structuredClone(value);
+  if (path.length === 0) return typeof copy === 'number' ? copy + 1 : null;
+  let node = copy as Record<string | number, unknown>;
+  for (const key of path.slice(0, -2)) node = node[key] as Record<string | number, unknown>;
+  const last = path[path.length - 1];
+  if (last === '#drop') {
+    const parent = path.length > 1 ? (node[path[path.length - 2]] as unknown[]) : (copy as unknown[]);
+    parent.pop();
+    return copy;
+  }
+  if (path.length > 1) node = node[path[path.length - 2]] as Record<string | number, unknown>;
+  const leaf = node[last];
+  node[last] =
+    typeof leaf === 'number' ? leaf + 1 : typeof leaf === 'string' ? leaf + 'x' : typeof leaf === 'boolean' ? !leaf : 0;
+  return copy;
+}
+
+function selftest(oracle: Oracle, result: unknown): string {
+  if (oracle(null).ok) return 'oracle accepts null!';
+  const paths = leaves(result);
+  const accepted = paths.filter(path => oracle(mutate(result, path)).ok).map(path => path.join('.'));
+  return (
+    `mutants rejected ${paths.length - accepted.length}/${paths.length}` +
+    (accepted.length ? ` (accepted: ${accepted.slice(0, 6).join(', ')})` : '')
+  );
+}
+
 async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
   const task = readTask(id);
   const recorded = readResponses(id);
@@ -79,6 +123,7 @@ async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
       const result = JSON.parse(JSON.stringify((await runProgram(code, namespaces)) ?? null));
       if (printResults) console.log(JSON.stringify(result).slice(0, 4000));
       verdict = unmatched.length ? { ok: false, reason: 'unrecorded call: ' + unmatched[0] } : oracle(result);
+      if (verdict.ok && program === task.programs[0]) console.log(`selftest ${id}: ${selftest(oracle, result)}`);
     } catch (error) {
       verdict = { ok: false, reason: 'threw: ' + (error instanceof Error ? error.message : String(error)) };
     }
@@ -114,11 +159,13 @@ async function checkSql(id: string, oracle: Oracle): Promise<boolean> {
   const db = new DatabaseSync(join(TASKS, id, task.database ?? 'db.sqlite'), { readOnly: true });
   let ok = true;
   try {
-    for (const program of task.programs) {
+    const query = (task as { query?: string }).query;
+    for (const program of query ? [...task.programs, query] : task.programs) {
       let verdict: Verdict;
       try {
-        const rows = db.prepare(readFileSync(join(TASKS, id, program), 'utf8')).all();
-        verdict = oracle(JSON.parse(JSON.stringify(rows)));
+        const rows = JSON.parse(JSON.stringify(db.prepare(readFileSync(join(TASKS, id, program), 'utf8')).all()));
+        verdict = oracle(rows);
+        if (verdict.ok && program === task.programs[0]) console.log(`selftest ${id}: ${selftest(oracle, rows)}`);
       } catch (error) {
         verdict = { ok: false, reason: 'threw: ' + (error instanceof Error ? error.message : String(error)) };
       }

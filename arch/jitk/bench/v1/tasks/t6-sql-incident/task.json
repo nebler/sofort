@@ -1,0 +1,32 @@
+{
+  "id": "t6-sql-incident",
+  "name": "T6 SQL incident query",
+  "title": "Which service and region regressed after a deploy (read-only SQL)",
+  "description": "A read-only SQL query over a 659 KB SQLite fixture: join deploys to 5-minute request counters in before/after windows, compare 5xx rates, and name the owning team as of the deploy time. Distractors: the same deploy in other regions, a spike without a deploy, a sub-threshold regression, a failed deploy before a spike, and an ownership change after the incident. ISO-8601 text timestamps break naive datetime() comparisons. Programs are SQL, for native profiles.",
+  "kind": "sql",
+  "database": "incident.sqlite",
+  "schema": "schema.sql",
+  "prompt": "The SQLite database incident.sqlite (schema in schema.sql) holds 5-minute request counters, deploys and service ownership history for 2026-10-29. Write one read-only SQL query that finds every successful deploy after which that service regressed in that region. Compare the 5xx error rate (sum of errors_5xx divided by sum of requests) over the buckets whose ts is in [deployed_at - 60 minutes, deployed_at) with the rate over the buckets whose ts is in [deployed_at, deployed_at + 60 minutes): it regressed if the rate after is at least 3 times the rate before and at least 1%. Timestamps are ISO-8601 text such as 2026-10-29T14:06:13Z. Return one row per regression with the columns service, region, version, deployed_at, team (the team that owned the service at the time of the deploy), error_rate_before, error_rate_after, ordered by deployed_at.",
+  "providers": [],
+  "responses": "",
+  "oracle": "oracle.ts",
+  "programs": [
+    "programs/claude-opus-5-5-1.sql",
+    "programs/claude-opus-5-5-2.sql",
+    "programs/claude-opus-5-5-3.sql",
+    "programs/claude-opus-5-5-4.sql",
+    "programs/claude-opus-5-5-5.sql"
+  ],
+  "query": "query.sql",
+  "sizes": {
+    "databaseBytes": 659456,
+    "request_counters": 8640,
+    "deploys": 20,
+    "ownership": 12,
+    "services": 10
+  },
+  "source": {
+    "data": "synthetic, seeded (generate.ts, seed 20261029); incident.sqlite is committed",
+    "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + schema.sql; variants from a second model to be added"
+  }
+}

@@ -38,5 +38,13 @@
       "sha256": "5469cd19b55ec68ccb5184e3915604919f628e26be14cf0fe6ceb6af8d482d72",
       "from": "responses.jsonl.gz"
     }
+  ],
+  "t6-sql-incident": [
+    {
+      "file": "incident.sqlite",
+      "bytes": 659456,
+      "sha256": "c9499a7edf7105994d96e86a73117030f63c4832b6a7f57f484110603e9d50c6",
+      "from": "generate.ts"
+    }
   ]
 }
