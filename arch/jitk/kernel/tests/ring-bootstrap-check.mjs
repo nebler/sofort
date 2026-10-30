@@ -10,31 +10,43 @@ const source=readFileSync(new URL('../ring-bootstrap.js',import.meta.url),'utf8'
 const value=(re)=>Number(source.match(re)[1]);
 const FD_CALL=value(/os\.write\((\d+)\+id/), FD_REPLY=value(/os\.read\((\d+),record/);
 const CALLS=value(/next>(\d+)\|\|/), OUTSTANDING=value(/pending\.size>=(\d+)\)/), CALL_BYTES=value(/b\.length>(\d+)\) return Promise\.reject\(Error\('call bytes'\)\)/);
+const FD_FINISH=value(/os\.write\((\d+),b\.buffer,0,b\.length\)!==b\.length\) throw Error\('FINISH failed'\)/), RECEIPT=value(/repair\.byteLength!==(\d+)\)/);
 
-function load({failWrites=new Set()}={}) {
-  const writes=[], replies=[];
+// `records`: the SOURCE message as read(0) returns it; without it the script
+// stops at the checkpoint.
+function load({failWrites=new Set(),records}={}) {
+  const writes=[], replies=[], payloads=[];
   let reader;
   const os={
-    write(fd,buffer,offset,length){writes.push(fd);return failWrites.has(fd)?-5:length;},
+    write(fd,buffer,offset,length){writes.push(fd);payloads.push(Buffer.from(buffer,offset,length).toString('latin1'));return failWrites.has(fd)?-5:length;},
     // FD_REPLY: the queued records (8-byte prefix + payload), then EAGAIN.
     read(fd,buffer){
+      if(fd===0){const r=records.shift();if(!r)return 0;new Uint8Array(buffer).set(r);return r.length;}
       if(fd!==FD_REPLY||!replies.length)return -11;
       const r=replies.shift();new Uint8Array(buffer).set(r);return r.length;
     },
     setReadHandler(fd,f){reader=f;},
     setTimeout(){},clearTimeout(){},
-    snapshotCheckpoint(){throw Error('stop at checkpoint');},
+    snapshotCheckpoint(){if(!records)throw Error('stop at checkpoint');return new ArrayBuffer(RECEIPT);},
   };
   const context=vm.createContext({os});
-  assert.throws(()=>vm.runInContext(source,context),/stop at checkpoint/);
+  if(records)vm.runInContext(source,context);
+  else assert.throws(()=>vm.runInContext(source,context),/stop at checkpoint/);
   const reply=(id,text,more=false)=>{
     const b=new Uint8Array(8+text.length),v=new DataView(b.buffer);
     v.setUint32(0,id,true);v.setUint16(4,2,true);v.setUint16(6,1|(more?2:0),true);
     for(let i=0;i<text.length;i++)b[8+i]=text.charCodeAt(i);
     replies.push(b);
   };
-  return {echo:context.echo,writes,reply,read:()=>reader()};
+  return {echo:context.echo,encode:context.encode,writes,payloads,reply,read:()=>reader()};
 }
+// The byte-wise encoder the bulk one replaced: the wire bytes must not change.
+function encodeReference(v) {
+  let out='';
+  for(const c of JSON.stringify(v).split('').map(u=>u.charCodeAt(0)))out+=c<0x7f?String.fromCharCode(c):'\\u'+c.toString(16).padStart(4,'0');
+  return out;
+}
+const samples=['', 'plain', 'x'.repeat(70000), 'caf\u00e9 \u20ac \u4e2d\u6587 \u{1f600}', '\ud800 lone \udfff', '\u007f\u0080\u00ff\uffff', 'a\u0000b\n"q"\\', '~\u00e9~'];
 
 let checks=0;
 { // An oversized call must not consume an ID: the next call uses the first call fd.
@@ -58,6 +70,30 @@ let checks=0;
   assert.equal(JSON.stringify(await open[0]),'{"ok":7}');
   echo('next');
   assert.equal(writes.at(-1),FD_CALL+OUTSTANDING+1);checks++;
+}
+{ // Calls encode to the same printable-ASCII JSON as the byte-wise encoder.
+  const {echo,payloads}=load();
+  for(const x of samples){echo(x,{k:[x,1.5,null]});assert.equal(payloads.at(-1),encodeReference([x,{k:[x,1.5,null]}]));}
+  checks++;
+}
+{ // Replies decode byte for byte (Latin-1, as the host sends printable ASCII), across fragments.
+  const {echo,reply,read}=load();
+  const text=JSON.stringify({ok:'\u00e9'+'y'.repeat(9000)}).replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
+  const p=echo('r');reply(1,text.slice(0,5000),true);reply(1,text.slice(5000));read();
+  assert.equal(JSON.stringify(await p),JSON.stringify(JSON.parse(text)));checks++;
+}
+{ // SOURCE: UTF-8 split anywhere across records (also inside a sequence) decodes as one text,
+  // the first NUL separating the run body from its data.
+  const short='\u00e9\u{1f600}\u0000z', long='\u00e9\u20ac\u4e2d\u{1f600}'.repeat(3000)+'a\u0000b'+'z'.repeat(5000);
+  for(const [data,size] of [[short,1],[short,2],[short,3],[long,4093],[long,4096],[long,16352]]){
+    const wire=Buffer.from('return data;\u0000'+data), records=[];
+    for(let i=0;i<wire.length;i+=size)records.push(wire.subarray(i,i+size));
+    const {payloads,writes}=load({records});
+    await new Promise(r=>setImmediate(r));
+    assert.equal(writes.at(-1),FD_FINISH);
+    assert.equal(payloads.at(-1),encodeReference({ok:data}));
+  }
+  checks++;
 }
 assert.ok(CALLS>=OUTSTANDING);
 console.log(JSON.stringify({suite:'ring-bootstrap',status:'PASS',checks}));
