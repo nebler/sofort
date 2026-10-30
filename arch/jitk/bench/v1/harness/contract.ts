@@ -127,13 +127,17 @@ export interface TaskSpec {
   id: string;            // directory name, e.g. 't1-issue-triage'
   name: string;
   description: string;
+  /** 'js' (default): codemode programs. 'sql': native-profile task (programs
+   *  are .sql, `database` names the fixture); JS adapters skip it. */
+  kind?: 'js' | 'sql';
+  database?: string;
   /** One entry per namespace the programs call (`codemode.x(...)`, `github.x(...)`). */
-  providers: {
+  providers?: {
     name: string;        // namespace, e.g. 'codemode'
     /** JSON Schema per tool, as codemode's generateTypesFromJsonSchema takes them. */
     tools: Record<string, { description?: string; inputSchema: unknown; outputSchema?: unknown }>;
   }[];
-  responses: string;     // 'responses.jsonl'
+  responses: string;     // 'responses.jsonl' (may be generated: tasks/materialize.ts)
   oracle: string;        // 'oracle.ts'
   programs: string[];    // ['programs/claude-1.js', ...]
   /** Replay matching fallback (replay.ts): 'strict' (default) or 'nearest'. */
@@ -182,14 +186,19 @@ export interface AttemptRow {
   endMs: number;
   e2eMs: number;          // end - intended start (includes harness queueing in S2)
   serviceMs: number;      // end - actual start
-  toolMs: number;         // summed replayed tool time (sleep + lookup) of this attempt
+  toolMs: number;         // replayed tool time: union of in-flight call intervals
+  toolSumMs: number;      // plain sum of call durations (> toolMs when calls overlap)
   overheadMs: number;     // serviceMs - toolMs, clamped at 0 only in tables
   toolCalls: number;
   toolBytes: number;      // response bytes returned to the guest
   unmatched: number;      // tool calls without a recorded response
+  fallbacks: number;      // calls answered by the 'nearest' policy
+  forbidden: number;      // undeclared-tool calls that reached the HTTP tool server (must be 0)
   ok: boolean;
   reason: string;         // oracle reason or error text (truncated)
   errorClass?: ErrorClass;
   cpu?: { harnessUs: number; childrenUs?: number }; // process CPU deltas over the attempt
   load1: number;
+  /** S4: child-process phases (ms from child start): import, open, first result. */
+  phases?: Record<string, number>;
 }
