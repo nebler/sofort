@@ -48,4 +48,9 @@ process.on('message', (m: any) => {
   }
   handle(m).then(value => send({ t: 'reply', id: m.id, value }), e => send({ t: 'reply', id: m.id, error: e instanceof Error ? e.message : String(e) }));
 });
-process.on('disconnect', () => process.exit(0));
+// The harness went away (it exited or crashed): stop what this adapter started
+// (VMs, workerd), bounded, so nothing is left running.
+process.on('disconnect', () => {
+  setTimeout(() => process.exit(0), 5000).unref();
+  void Promise.allSettled([...executors.values()].map(ex => ex.close())).then(() => process.exit(0));
+});
