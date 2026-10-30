@@ -33,27 +33,43 @@ fn exchange(v:Value) -> Result<Value,E> {
     if r["t"]!="ret" || r["id"]!=v["id"] {return Err("reply mismatch".into())}
     Ok(r)
 }
+// Frames cross the bridge as one JSON string each way and bootstrap.js
+// JSON.parses replies. Hyperlight-JS converts any other host-function value
+// node by node through serde and rquickjs: a 318 KB reply of 7000 objects
+// took 0.3-0.5 s that way and 30-40 ms as a string (bench/hyperlight/README.md).
+fn bridge(args:&Value) -> Result<String,String> {
+    let frame=args.as_array().and_then(|a| if a.len()==1 {a[0].as_str()} else {None}).ok_or("arity")?;
+    let v:Value=serde_json::from_str(frame).map_err(|e|e.to_string())?;
+    let r=exchange(v).map_err(|e|e.to_string())?;
+    Ok(if r.is_null() {r.to_string()} else {Value::String(r.to_string()).to_string()})
+}
 // Transport sized for the v1 frame limit in both directions. Hyperlight-JS's
 // default carries 16 KiB per message; a host-function reply gets whatever
 // G2H pool is left beside its request, so that pool holds two messages.
 const BUF: usize = 65536;
 const MSG_BUFS: usize = (MAX+BUF).div_ceil(BUF); // one frame plus framing slack
+// A frame as a JSON string literal: escaping at most doubles it.
+const STR_BUFS: usize = (2*MAX+BUF).div_ceil(BUF);
 const fn pool_pages(bufs: usize) -> usize {bufs*BUF/4096}
+// H2G: the run frame plus Hyperlight-JS's control spare.
+const H2G_PAGES: usize = pool_pages(MSG_BUFS+1);
+// G2H: one small-buffer page, then request and reply side by side.
+const G2H_PAGES: usize = 1+pool_pages(2*STR_BUFS);
+const HEAP: usize = 16*1048576;
+// A restored guest takes a scratch page for every heap page it writes
+// (copy-on-write and zero-init faults), so scratch holds the whole heap,
+// the pools above, and the earlier 16 MiB for stack, page tables and runtime.
+// Whole MiB: the macOS host maps scratch in 16 KiB pages.
+const SCRATCH: usize = (2*HEAP+(H2G_PAGES+G2H_PAGES)*4096).next_multiple_of(1048576);
 fn fresh() -> Result<LoadedJSSandbox,E> {
-    let mut p=SandboxBuilder::new().with_guest_heap_size(16*1048576)
-        .with_guest_scratch_size(16*1048576)
+    let mut p=SandboxBuilder::new().with_guest_heap_size(HEAP as u64)
+        .with_guest_scratch_size(SCRATCH)
         .with_input_transport_buffer_size(BUF).with_output_transport_buffer_size(BUF)
-        // H2G: the run frame plus Hyperlight-JS's control spare.
-        .with_input_transport_pool_pages(pool_pages(MSG_BUFS+1))
-        // G2H: one small-buffer page, then request and reply side by side.
-        .with_output_transport_pool_pages(1+pool_pages(2*MSG_BUFS))
+        .with_input_transport_pool_pages(H2G_PAGES).with_output_transport_pool_pages(G2H_PAGES)
         .with_host_print_fn((|_:String| Ok::<i32,hyperlight_host::HyperlightError>(0)).into()).build()?;
     p.host_module("jitk").register_js("exchange",|a,b| {
         if !b.is_empty() {return Err(hyperlight_js::HyperlightError::Error("binary disabled".into()))}
-        let v=a.as_array().and_then(|a| if a.len()==1 {a.first()} else {None})
-            .ok_or_else(||hyperlight_js::HyperlightError::Error("arity".into()))?;
-        let r=exchange(v.clone()).map_err(|e|hyperlight_js::HyperlightError::Error(e.to_string()))?;
-        Ok(hyperlight_js::FnReturn::Json(r.to_string()))
+        Ok(hyperlight_js::FnReturn::Json(bridge(&a).map_err(hyperlight_js::HyperlightError::Error)?))
     });
     let mut s=p.load_runtime()?;
     s.add_handler("handler",Script::from_content(SOURCE))?;
@@ -72,16 +88,26 @@ fn funcs() -> Result<HostFunctions,E> {
         if ns!="jitk" || fun!="exchange" || !(sidecar.is_empty() || sidecar==[0,0,0,0]) {
             return Err(hyperlight_host::HyperlightError::Error("invalid host function".into()))
         }
-        let a:Vec<Value>=serde_json::from_slice(&a)?;
-        if a.len()!=1 {return Err(hyperlight_host::HyperlightError::Error("arity".into()))}
-        let r=exchange(a[0].clone()).map_err(|e|hyperlight_host::HyperlightError::Error(e.to_string()))?;
-        Ok(encode_json_return(&r.to_string()))
+        let a:Value=serde_json::from_slice(&a)?;
+        Ok(encode_json_return(&bridge(&a).map_err(hyperlight_host::HyperlightError::Error)?))
     })?; Ok(f)
 }
 fn clone(s:Arc<Snapshot>) -> Result<Sandbox,E> {Ok(Sandbox::from_snapshot(s,funcs()?,None)?)}
 fn call(s:&mut Sandbox,v:&Value) -> Result<Value,E> {
-    let result:Vec<u8>=s.call("RunHandler",("handler".to_string(),v.to_string().into_bytes(),true))?;
-    Ok(serde_json::from_slice(&result)?)
+    match s.call::<Vec<u8>>("RunHandler",("handler".to_string(),v.to_string().into_bytes(),true)) {
+        Ok(result)=>Ok(serde_json::from_slice(&result)?),
+        // An abort poisons this single-use sandbox. Report it as the run's
+        // error instead of exiting: Hyperlight-JS aborts on allocation
+        // failure (MallocFailed = 13, or a Rust alloc panic) where QuickJS
+        // would throw, so name that out of memory.
+        Err(hyperlight_host::HyperlightError::GuestAborted(code,msg))=>{
+            let oom=code==13 || msg.contains("memory allocation");
+            let msg:String=msg.chars().take(1024).collect();
+            Ok(json!({"t":"done","err":{"name":"Error",
+                "message":format!("{}Hyperlight guest stopped (code {code}): {msg}",if oom {"out of memory: "} else {""})}}))
+        }
+        Err(e)=>Err(e.into()),
+    }
 }
 fn main() -> Result<(),E> {
     let args:Vec<String>=std::env::args().collect();
