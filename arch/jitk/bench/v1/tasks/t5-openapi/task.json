@@ -1,0 +1,173 @@
+{
+  "id": "t5-openapi",
+  "name": "T5 OpenAPI search + execute",
+  "title": "Find endpoints in GitHub's 13.9 MB OpenAPI description, then call them",
+  "description": "Cloudflare's code-mode MCP pattern: the OpenAPI spec stays behind search/listOperations/getOperation tools and a request tool executes calls. The program must find the community-profile and list-releases operations (the search ranks lookalikes above them for some queries), fill the path templates, and call the real GitHub API. Real spec (github/rest-api-description, MIT) and real API replies.",
+  "kind": "js",
+  "prompt": "You can call the GitHub REST API, but you don't know its endpoints: search its OpenAPI description first, then call the endpoints you find. For the repository BurntSushi/ripgrep, report (1) its community profile health percentage and which of these community files are missing: code_of_conduct, contributing, issue_template, pull_request_template, license, readme; (2) for its 3 most recent releases (the API's default order, 3 per page), the tag name, the publish time and the total download count over all release assets. Return JSON: {healthPercentage, missingFiles: [...], releases: [{tag, publishedAt, downloads}]}.",
+  "providers": [
+    {
+      "name": "openapi",
+      "tools": {
+        "search": {
+          "description": "Keyword search over the operations of the GitHub REST API OpenAPI description (1254 operations). Ranks by matches in summary, operationId, path, tags and description.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Search words, e.g. 'list repository webhooks'."
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Maximum number of results. Default: 10"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          },
+          "outputDescription": "{query, total, results: [{operationId, method, path, summary, description, tags, score, parameters: [{name, in, required, description, schema}], responses: {status: description}, documentationUrl}]}"
+        },
+        "listOperations": {
+          "description": "List every operation (operationId, method, path, summary, tags), optionally only those with a tag.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "description": "Only operations with this tag, e.g. repos."
+              }
+            }
+          },
+          "outputDescription": "{total, operations: [{operationId, method, path, summary, tags}]}"
+        },
+        "getOperation": {
+          "description": "Get one operation from the spec with all $refs resolved: parameters, requestBody and response schemas.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "operationId": {
+                "type": "string",
+                "description": "The operationId, e.g. repos/get."
+              }
+            },
+            "required": [
+              "operationId"
+            ]
+          },
+          "outputDescription": "{operationId, method, path, summary, description, tags, parameters, requestBody?, responses: {status: {description, content}}, ...}"
+        }
+      }
+    },
+    {
+      "name": "github",
+      "tools": {
+        "request": {
+          "description": "Execute a read-only request against the GitHub REST API (https://api.github.com). Only GET is allowed. Path parameters must already be filled in.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET"
+                ],
+                "description": "HTTP method."
+              },
+              "path": {
+                "type": "string",
+                "description": "Path with parameters filled in, e.g. /repos/octocat/hello-world."
+              },
+              "query": {
+                "type": "object",
+                "description": "Query string parameters.",
+                "additionalProperties": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "method",
+              "path"
+            ]
+          },
+          "outputDescription": "{status, body} where body is the parsed JSON response."
+        }
+      }
+    }
+  ],
+  "responses": "responses.jsonl",
+  "oracle": "oracle.ts",
+  "programs": [
+    "programs/claude-opus-5-5-1.js",
+    "programs/claude-opus-5-5-2.js",
+    "programs/claude-opus-5-5-3.js",
+    "programs/claude-opus-5-5-4.js",
+    "programs/claude-opus-5-5-5.js"
+  ],
+  "sizes": {
+    "recordings": 21,
+    "recordedResponseBytes": 606419,
+    "perProgram": {
+      "programs/claude-opus-5-5-1.js": {
+        "calls": 4,
+        "responseBytes": 183212,
+        "argBytes": 214,
+        "maxReplyBytes": 157918,
+        "maxArgBytes": 85,
+        "maxRoundTripBytes": 158003,
+        "toolMsSum": 1364,
+        "peakInFlightReplyBytes": 157918
+      },
+      "programs/claude-opus-5-5-2.js": {
+        "calls": 4,
+        "responseBytes": 176698,
+        "argBytes": 263,
+        "maxReplyBytes": 157918,
+        "maxArgBytes": 85,
+        "maxRoundTripBytes": 158003,
+        "toolMsSum": 1376,
+        "peakInFlightReplyBytes": 158805
+      },
+      "programs/claude-opus-5-5-3.js": {
+        "calls": 6,
+        "responseBytes": 192498,
+        "argBytes": 353,
+        "maxReplyBytes": 157918,
+        "maxArgBytes": 85,
+        "maxRoundTripBytes": 158003,
+        "toolMsSum": 1460,
+        "peakInFlightReplyBytes": 157918
+      },
+      "programs/claude-opus-5-5-4.js": {
+        "calls": 13,
+        "responseBytes": 517620,
+        "argBytes": 588,
+        "maxReplyBytes": 243227,
+        "maxArgBytes": 85,
+        "maxRoundTripBytes": 243231,
+        "toolMsSum": 1747,
+        "peakInFlightReplyBytes": 243227
+      },
+      "programs/claude-opus-5-5-5.js": {
+        "calls": 4,
+        "responseBytes": 190292,
+        "argBytes": 265,
+        "maxReplyBytes": 157918,
+        "maxArgBytes": 85,
+        "maxRoundTripBytes": 158003,
+        "toolMsSum": 1360,
+        "peakInFlightReplyBytes": 157918
+      }
+    }
+  },
+  "source": {
+    "data": "real: GitHub REST API OpenAPI description (spec.json pins commit and sha256; MIT) served by spec.ts, and api.github.com replies captured by capture.ts",
+    "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + api.d.ts; variants from a second model to be added"
+  }
+}

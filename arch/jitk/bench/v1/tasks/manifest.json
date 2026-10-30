@@ -1,0 +1,50 @@
+{
+  "t1-issue-triage": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 942277,
+      "sha256": "badb4037e676247fc65a0118e251ee51b727c6dace8154b486aff0231d0cd786",
+      "from": "responses.jsonl.gz"
+    }
+  ],
+  "t2-ci-triage": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 7479253,
+      "sha256": "6218682c206d2c2d4052f51c511f433330820b8674a00cfe0d55e777ae63952e",
+      "from": "responses.jsonl.gz"
+    }
+  ],
+  "t3-crm-join": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 461420,
+      "sha256": "4b3df565719d2af7a5eb94e1d2c4887d2fc69c39cb54befe711b92a368831bf1",
+      "from": "generate.ts"
+    }
+  ],
+  "t4-otel-rollup": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 22843053,
+      "sha256": "f74dbb3466bae1c07ce3549f92d4a80d940b7c0aff0c9f2297713fd0a37afb93",
+      "from": "generate.ts"
+    }
+  ],
+  "t5-openapi": [
+    {
+      "file": "responses.jsonl",
+      "bytes": 609339,
+      "sha256": "5469cd19b55ec68ccb5184e3915604919f628e26be14cf0fe6ceb6af8d482d72",
+      "from": "responses.jsonl.gz"
+    }
+  ],
+  "t6-sql-incident": [
+    {
+      "file": "incident.sqlite",
+      "bytes": 659456,
+      "sha256": "c9499a7edf7105994d96e86a73117030f63c4832b6a7f57f484110603e9d50c6",
+      "from": "generate.ts"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "id": "t4-otel-rollup",
+  "name": "T4 observability rollup",
+  "title": "p95 latency and error rate per service over one hour of OTLP histograms",
+  "description": "Page through one hour of OpenTelemetry http.server.request.duration delta histograms (3.8 MB of OTLP/JSON for the hour: 10 services, 2 instances each, per minute, route and status code), merge buckets per service and compute p95 (Prometheus histogram_quantile method) and 5xx error rate. Synthetic, generated with a fixed seed by dataset.ts.",
+  "kind": "js",
+  "prompt": "Build an SLO rollup for the hour 2026-10-30T13:00:00Z to 2026-10-30T14:00:00Z from the `http.server.request.duration` metric (OpenTelemetry delta histograms in OTLP/JSON, one data point per minute per service instance, route and status code). Use the data points whose interval ends after 13:00:00Z and at or before 14:00:00Z. For each service (resource attribute service.name), across all its instances, routes and status codes, compute:\n- requests: the total count;\n- errorRate: the count of requests with http.response.status_code >= 500 divided by requests;\n- p95Ms: the 95th percentile latency in milliseconds, computed the way Prometheus histogram_quantile(0.95, ...) does over the hour's merged bucket counts: rank = 0.95 × total count; take the first bucket whose cumulative count is >= rank; interpolate linearly between that bucket's lower bound (0 for the first bucket) and its upper bound; if it is the overflow bucket, use the largest finite bound.\nReturn JSON: {window: {start, end}, services: [{service, requests, errorRate, p95Ms}] sorted by p95Ms descending, breaching: [the names of services with p95Ms > 500 or errorRate > 0.01, sorted alphabetically]}.",
+  "providers": [
+    {
+      "name": "metrics",
+      "tools": {
+        "listServices": {
+          "description": "List the services that report metrics, with their instances.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "outputDescription": "{services: [{name, region, instances: [service.instance.id, ...]}]}"
+        },
+        "queryRange": {
+          "description": "Read raw metric data points in OTLP/JSON for a time range, paginated. Returns the data points whose interval end (timeUnixNano) is after startTime and at or before endTime, ordered by time. Pass nextPageToken back as pageToken to get the next page; it is absent on the last page.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "metric": {
+                "type": "string",
+                "description": "Metric name, e.g. http.server.request.duration"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Range start, RFC 3339 (exclusive)."
+              },
+              "endTime": {
+                "type": "string",
+                "description": "Range end, RFC 3339 (inclusive)."
+              },
+              "serviceName": {
+                "type": "string",
+                "description": "Only data from this service.name."
+              },
+              "pageSize": {
+                "type": "integer",
+                "description": "Data points per page, 1-2000. Default: 500"
+              },
+              "pageToken": {
+                "type": "string",
+                "description": "nextPageToken from the previous page."
+              }
+            },
+            "required": [
+              "metric",
+              "startTime",
+              "endTime"
+            ]
+          },
+          "outputDescription": "{resourceMetrics: [{resource: {attributes: [{key, value: {stringValue|intValue}}]}, scopeMetrics: [{scope, metrics: [{name, unit, histogram: {aggregationTemporality, dataPoints: [{attributes, startTimeUnixNano, timeUnixNano, count, sum, bucketCounts, explicitBounds, min, max}]}}]}]}], nextPageToken?}. As in OTLP/JSON, 64-bit integers (count, bucketCounts, timeUnixNano, intValue) are strings; the unit of sum, min, max and explicitBounds is seconds; bucketCounts has one more entry than explicitBounds (the last bucket is the overflow)."
+        }
+      }
+    }
+  ],
+  "responses": "responses.jsonl",
+  "oracle": "oracle.ts",
+  "programs": [
+    "programs/claude-opus-5-5-1.js",
+    "programs/claude-opus-5-5-2.js",
+    "programs/claude-opus-5-5-3.js",
+    "programs/claude-opus-5-5-4.js",
+    "programs/claude-opus-5-5-5.js"
+  ],
+  "sizes": {
+    "recordings": 60,
+    "recordedResponseBytes": 22827219,
+    "perProgram": {
+      "programs/claude-opus-5-5-1.js": {
+        "calls": 6,
+        "responseBytes": 3819949,
+        "argBytes": 1057,
+        "maxReplyBytes": 670533,
+        "maxArgBytes": 186,
+        "maxRoundTripBytes": 670719,
+        "toolMsSum": 2011,
+        "peakInFlightReplyBytes": 670533
+      },
+      "programs/claude-opus-5-5-2.js": {
+        "calls": 18,
+        "responseBytes": 3820745,
+        "argBytes": 3048,
+        "maxReplyBytes": 341802,
+        "maxArgBytes": 214,
+        "maxRoundTripBytes": 341958,
+        "toolMsSum": 3128,
+        "peakInFlightReplyBytes": 3183808
+      },
+      "programs/claude-opus-5-5-3.js": {
+        "calls": 3,
+        "responseBytes": 3817264,
+        "argBytes": 499,
+        "maxReplyBytes": 1339238,
+        "maxArgBytes": 186,
+        "maxRoundTripBytes": 1339424,
+        "toolMsSum": 1615,
+        "peakInFlightReplyBytes": 1339238
+      },
+      "programs/claude-opus-5-5-4.js": {
+        "calls": 23,
+        "responseBytes": 7553617,
+        "argBytes": 3856,
+        "maxReplyBytes": 340134,
+        "maxArgBytes": 172,
+        "maxRoundTripBytes": 340304,
+        "toolMsSum": 4674,
+        "peakInFlightReplyBytes": 340134
+      },
+      "programs/claude-opus-5-5-5.js": {
+        "calls": 11,
+        "responseBytes": 3816910,
+        "argBytes": 1573,
+        "maxReplyBytes": 459783,
+        "maxArgBytes": 164,
+        "maxRoundTripBytes": 459939,
+        "toolMsSum": 2265,
+        "peakInFlightReplyBytes": 1283420
+      }
+    }
+  },
+  "source": {
+    "data": "synthetic, seeded (dataset.ts, seed 20261030); generate.ts serves it through a mock OTLP query API and records the programs' calls",
+    "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + api.d.ts; variants from a second model to be added"
+  }
+}
