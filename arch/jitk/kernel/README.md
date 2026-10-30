@@ -6,7 +6,7 @@ source tree builds two profiles:
 
 | Profile | Build | Transport | Booted by | Used for |
 | --- | --- | --- | --- | --- |
-| ring (`transport-ring`) | `make ring` or `sh build-ring.sh` → `dist/kernel-ring.bin` (cache `target-ring/`), packing `payload/qjs-ring` and `ring-bootstrap.js` | shared-memory rings and a doorbell, ABI v11 ([`../abi/`](../abi/README.md), [`../shard/ABI-R7.md`](../shard/ABI-R7.md)) | the ring engine from a prepared snapshot (`make -C ../shard snapshot`): `hvf` on macOS, `real` (KVM) on Linux | the product: executor and MCP |
+| ring (`transport-ring`) | `make ring` or `sh build-ring.sh` → `dist/kernel-ring.bin` (cache `target-ring/`), packing `payload/qjs-ring` and `ring-bootstrap.js` | shared-memory rings and a doorbell, ABI v12 ([`../abi/`](../abi/README.md), [`../shard/ABI-R7.md`](../shard/ABI-R7.md)) | the ring engine from a prepared snapshot (`make -C ../shard snapshot`): `hvf` on macOS, `real` (KVM) on Linux | the product: executor and MCP |
 | console (default) | `sh build.sh` (run by `make -C .. build`) → `dist/kernel.bin`, packing `payload/qjs` and `../protocol/bootstrap.js` | one virtio-mmio console, protocol v1 on stdio | `hvf console` on macOS (below) | GrowOS, `scriptc-corpus`, this subtree's VM tests, the protocol VM tests |
 
 [`.READY`](.READY) pins the console image and the gates that ran on it; it

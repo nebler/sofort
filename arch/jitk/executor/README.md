@@ -68,7 +68,8 @@ Linux arm64 (the default there, `JITK_BACKEND=shard`), from
 `JITK_SHARD_SNAPSHOT` (a prepared snapshot base; `run.sh` and the delegate
 take both from the jitk cache: `make -C .. deps`, `make -C ../shard
 snapshot`). `JITK_SHARD_CLASS` picks the memory class (`glue-2m`, the
-default, or `glue-4m` for values past about 64 KiB; `../shard/README.md`
+default; `glue-4m` for values past about 64 KiB; `glue-8m` or `glue-16m` for
+real code-mode tasks and tool replies over 1 MiB; `../shard/README.md`
 "Limits"): `deps env` then names that class's snapshot, and the backend
 refuses a snapshot of another class. It reads no `.READY` marker. The selection, the engine's and the
 snapshot identity's hashes and the parking gate are written to
@@ -261,8 +262,11 @@ leaves about 370 KiB, so a reply past about 107 KiB, a completion past about
 out-of-memory error (`LIMIT` through MCP), where the console profile has
 16 MiB (parity: `b-json1m`, `t-memory-over-arena`). `JITK_SHARD_CLASS=glue-4m`
 gives about four times that heap (a 512 KiB tool result is read, a 320 KiB
-value round-trips) for twice the memory charge and reset copy (sizes per
-class and their bound: `../shard/README.md` "Limits"). `/cap`, cancellation of a busy vCPU and broad shadow
+value round-trips) for twice the memory charge and reset copy; glue-8m and
+glue-16m about 13 and 33 times, with tool replies to 2 and 4 MiB (sizes and
+costs per class: `../shard/README.md` "Limits"; which real tasks each class
+completes: `../bench/v1/results/2026-10-31-capacity.md`). The run's heap
+high-water is `ShardMetrics.heapPeakBytes` (STATS). `/cap`, cancellation of a busy vCPU and broad shadow
 parity remain cutover blockers. Older measurements are in
 [the R7 IPC report](../docs/results/shard-r7-ipc.md).
 

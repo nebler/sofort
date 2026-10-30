@@ -67,6 +67,8 @@ try {
     const reply=await largest(async bytes=>{const text='x'.repeat(bytes-9);const r=await run('return (await codemode.big()).length',{big:async()=>text});return r.result===text.length;},replyBound);
     const completion=await largest(async bytes=>{const r=await run(`return 'x'.repeat(${bytes-9})`);return typeof r.result==='string';});
     const echo=await largest(async bytes=>{const r=await run(`const s='x'.repeat(${bytes-9});return (await codemode.echo(s)).length`,{echo:async x=>x});return r.result===bytes-9;});
+    // A tool reply returned as the completion (both directions, the 1 MiB DONE frame).
+    const roundTrip=await largest(async bytes=>{const text='x'.repeat(bytes-9);const r=await run('return await codemode.big()',{big:async()=>text});return r.result===text;});
     // macOS footprint (dirty memory charged to the process), in KiB; RSS also counts clean file pages.
     const footprint=(pid:number)=>{if(process.platform!=='darwin')return undefined;try{const m=/Footprint: ([\d.]+) (KB|MB)/.exec(execFileSync('/usr/bin/footprint',['-p',String(pid)],{encoding:'utf8'}));return m?Math.round(Number(m[1])*(m[2]==='MB'?1024:1)):undefined;}catch{return undefined;}};
     // Resident memory of the engine processes (macOS: the zygote, its template and the slot's engine process).
@@ -79,6 +81,6 @@ try {
     const idle=rss();
     await run(`return 'x'.repeat(${Math.max(0,completion-64*KB)})`);
     const afterLarge=rss();
-    console.log(JSON.stringify({event:'memory',memoryClass,heapBytes:heap.result,heapCapacityBytes:heap.heapPeakBytes,replyBoundBytes:replyBound,largestReplyBytes:reply,largestCompletionBytes:completion,largestEchoBytes:echo,rssKiB:{idle,afterLarge},load:load()}));
+    console.log(JSON.stringify({event:'memory',memoryClass,heapBytes:heap.result,heapCapacityBytes:heap.heapPeakBytes,replyBoundBytes:replyBound,largestReplyBytes:reply,largestCompletionBytes:completion,largestEchoBytes:echo,largestRoundTripBytes:roundTrip,rssKiB:{idle,afterLarge},load:load()}));
   }
 } finally {await pool.close();}

@@ -9,10 +9,12 @@ the Node executor must agree on:
   field offsets, doorbell operations, record kinds/flags and the one
   `RecordHeader` codec, the MORE flag of multi-record messages, the JS
   profile's pseudo-fds, and the guest limits (since ABI 11 the console
-  path's: calls, open calls, call/reply/done/source/console bytes, logs;
-  argv, output cap).
-- `arena`: arena classes (`glue-2m`, `glue-4m`) and the `JTKARENA` layout
-  record that the kernel links and the preparer checks.
+  path's: calls, open calls, call/done/source/console bytes, logs; argv,
+  output cap; since ABI 12 replies are bounded per class, and the guest's
+  heap high-water field `HEAP_PEAK`).
+- `arena`: arena classes (`glue-2m`, `glue-4m`, `glue-8m`, `glue-16m`): each
+  one's arena placement and bytes, START charge and tool-reply bound, and the
+  `JTKARENA` layout record that the kernel links and the preparer checks.
 - `ipc`: Node <-> shard IPC geometry, header offsets, message kinds and
   per-kind bounds of `executor/ipc/ABI.md`.
 - `ABI_VERSION`: sent by the shard in READY (u32 LE payload) and recorded as
