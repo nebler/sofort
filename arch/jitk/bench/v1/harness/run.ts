@@ -9,6 +9,7 @@
 // --duration S (S2/S3) --levels 1,2,4 (S5) --per-level N (S5) --cold N (S4)
 // --reps N --seed N --timeout-ms N --slo-ms N --latency-scale X --out DIR
 // --hostile-fraction F --tool-server (start the replay HTTP endpoint).
+// --in-process (load adapters into this process; default: one process each, isolate.ts).
 //
 // Scenarios:
 //   S1  sequential: every (task, program) round-robin in a seeded shuffle;
@@ -25,6 +26,7 @@
 //   S5  concurrency levels: per level a fresh open with that concurrency and
 //       closed-loop workers running the real tasks; peak RSS of the harness
 //       process tree sampled during load. Stops after the first failing level.
+import { isolatedAdapter } from './isolate.ts';
 import { spawn } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import * as os from 'node:os';
@@ -52,6 +54,8 @@ export interface RunSpec {
   latencyScale: number;
   sloP99Ms: number;
   toolServer: boolean;
+  /** Load every adapter into the harness process instead of one process each (isolate.ts). */
+  inProcess?: boolean;
   S1: { samples: number; warmups: number; interleave: boolean };
   S2: { rates: number[]; durationS: number; warmupS: number; concurrency: number; stopAfterFail: boolean; settleMs: number };
   S3: { rate: number; durationS: number; fraction: number; programs?: string[]; concurrency: number; canaryRounds: number };
@@ -513,6 +517,7 @@ function parseArgs(argv: string[]): RunSpec {
       case '--latency-scale': spec.latencyScale = Number(value()); break;
       case '--hostile-fraction': spec.S3.fraction = Number(value()); break;
       case '--tool-server': spec.toolServer = true; break;
+      case '--in-process': spec.inProcess = true; break;
       case '--out': spec.out = value(); break;
       case '--help': case '-h':
         console.log(readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 14).map(l => l.slice(3)).join('\n'));
@@ -543,7 +548,8 @@ async function main(argv: string[]) {
   const ctx = new Context(spec, runId, rawPath, server);
   const adapters: Adapter[] = [];
   for (const ref of spec.adapters) {
-    const a = await resolveAdapter(ref);
+    // Each adapter in its own process unless --in-process (isolate.ts).
+    const a = spec.inProcess ? await resolveAdapter(ref) : await isolatedAdapter(ref);
     const why = await a.available?.();
     if (why) { ctx.emit({ kind: 'skipped', run: runId, adapter: a.name, scenario: '*', reason: why }); console.error(`skip ${a.name}: ${why}`); continue; }
     adapters.push(a);
