@@ -42,3 +42,15 @@ T1 issue triage, T2 CI triage, T3 CRM join, T4 OTLP rollup, T5 OpenAPI search + 
 - Hyperlight-JS: its host bridge refuses replies over its virtqueue capacity (`exchange` host function error), plus the same protocol limits.
 
 Software sandboxes (V8 isolates, QuickJS in Wasm, node:vm) completed nearly everything; Vercel's AI SDK code mode stops programs with more than 32 tool calls in flight.
+
+## After the structure fix (`11737397`), same run settings (`fit-matrix3`)
+
+The structure budget no longer applies to trusted host replies. Remaining failures by class:
+
+| adapter | T1 | T2 | T3 | T4 | T5 |
+|---|---:|---:|---:|---:|---:|
+| sofort-hvf-2m | 0/20 (oom 20) | 0/20 (oom 16, guest 4) | 0/20 (oom 20) | 0/20 (oom 16, sandbox 4) | 0/20 (oom 20) |
+| sofort-hvf-4m | 20/20 | 4/20 (oom 16) | 16/20 (oom 4) | 0/20 (oom 12, sandbox 4, guest 4) | 16/20 (oom 4) |
+| hyperlight-js | 0/20 (guest 20) | 0/20 (guest 20) | 0/20 (guest 20) | 0/20 (guest 20) | 0/20 (guest 20) |
+
+Sofort is now bound by its heap (oom) and, for one T4 page, the 1 MiB reply frame; Hyperlight-JS by the virtqueue buffer sizes of our own worker (`bench/hyperlight/worker.rs` leaves Hyperlight's defaults), which is a fairness problem in the baseline, not a Hyperlight limit.
