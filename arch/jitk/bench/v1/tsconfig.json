@@ -5,6 +5,6 @@
   "types": ["node"], "typeRoots": ["../../executor/node_modules/@types"],
   "paths": { "@cloudflare/codemode": ["../../executor/node_modules/@cloudflare/codemode"] }
  },
- "include": ["harness/**/*.ts", "adapters/*.ts", "tasks/**/*.ts"],
+ "include": ["harness/**/*.ts", "adapters/*.ts", "tasks/**/*.ts", "promote/*.ts"],
  "exclude": ["**/node_modules", ".work"]
 }
