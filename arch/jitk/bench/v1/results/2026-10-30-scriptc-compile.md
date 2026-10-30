@@ -55,3 +55,9 @@ the `localeCompare` case.
 - **"Builds" does not mean "runs".** 28% of real model-written programs fail at
   runtime. Each one would need a Node differential check before it is accepted,
   which is what GrowOS qualification already does for kernel handlers.
+
+## scriptc 0.4.6
+
+0.4.6 (published 2026-10-29; the pin is still 0.4.5) was tried in a scratch
+install on the 7 failures. It fixes t2-p2 (`Promise.all` over a tuple; its
+output now matches Node). The other 6 fail exactly as on 0.4.5.
