@@ -5,20 +5,20 @@
 //   node bench/v1/tasks/t1-issue-triage/capture.ts      (needs `gh auth login`)
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { getJson, query, requests, scrub } from '../lib/github.ts';
-import { Recorder, writeResponses } from '../lib/record.ts';
+import { getJson, query, requests, scrub, window } from '../lib/github.ts';
+import { Recorder, Timed, writeResponses } from '../lib/record.ts';
 import { readTask, TASKS } from '../lib/tasks.ts';
 
 const id = 't1-issue-triage';
 const task = readTask(id);
-const capturedAt = new Date().toISOString();
 
+const live = (path: string) => getJson(path).then(r => new Timed(r.value, r.ms));
 const recorder = new Recorder({
   github: {
-    listIssues: args => getJson(`/repos/${args.owner}/${args.repo}/issues` + query(args, ['owner', 'repo'])),
-    getIssue: args => getJson(`/repos/${args.owner}/${args.repo}/issues/${args.issue_number}`),
+    listIssues: args => live(`/repos/${args.owner}/${args.repo}/issues` + query(args, ['owner', 'repo'])),
+    getIssue: args => live(`/repos/${args.owner}/${args.repo}/issues/${args.issue_number}`),
     listIssueComments: args =>
-      getJson(
+      live(
         `/repos/${args.owner}/${args.repo}/issues/${args.issue_number}/comments` +
           query(args, ['owner', 'repo', 'issue_number']),
       ),
@@ -31,7 +31,16 @@ const size = writeResponses(id, calls);
 writeFileSync(
   join(TASKS, id, 'capture.json'),
   JSON.stringify(
-    { capturedAt, api: 'https://api.github.com', apiVersion: '2022-11-28', requests, calls: calls.length, ...size },
+    {
+      capturedFrom: window.first,
+      capturedTo: window.last,
+      api: 'https://api.github.com',
+      apiVersion: '2022-11-28',
+      githubRequests: window.paths.size,
+      uncachedRequests: requests,
+      calls: calls.length,
+      ...size,
+    },
     null,
     2,
   ) + '\n',

@@ -7,6 +7,19 @@ import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 import { bytesOf, callKey, type RecordedCall, runProgram, TASKS, type TaskSpec } from './tasks.ts';
 
+// A live tool may return Timed to record a latency other than its own wall
+// time: a reply derived from an earlier real request (a log tail cut from a
+// cached full log, a synthetic reply standing in for a real one) records the
+// latency of that real request.
+export class Timed {
+  value: unknown;
+  latencyMs: number;
+  constructor(value: unknown, latencyMs: number) {
+    this.value = value;
+    this.latencyMs = latencyMs;
+  }
+}
+
 export type LiveTools = Record<string, Record<string, (args: Record<string, unknown>) => Promise<unknown>>>;
 
 export class Recorder {
@@ -43,8 +56,12 @@ export class Recorder {
       flight = (async () => {
         const started = performance.now();
         try {
-          const response = await this.live[namespace][tool](args[0]);
-          const latencyMs = Math.round((performance.now() - started) * 10) / 10;
+          let response = await this.live[namespace][tool](args[0]);
+          let latencyMs = Math.round((performance.now() - started) * 10) / 10;
+          if (response instanceof Timed) {
+            latencyMs = response.latencyMs;
+            response = response.value;
+          }
           this.calls.set(key, { namespace, tool, args, response, latencyMs, bytes: bytesOf(response) });
           return response;
         } catch (error) {

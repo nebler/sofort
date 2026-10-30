@@ -1,0 +1,333 @@
+{
+  "rolloutStart": "2026-10-29T06:00:00Z",
+  "imageVersion": "20261028.371.1",
+  "seeded": [
+    {
+      "repo": "cli/cli",
+      "baseRunId": 41106691482,
+      "runId": 41137691482,
+      "headSha": "debbab8cf2e50f7fadc695991c2224c43117adf3",
+      "shiftMs": 3681000,
+      "jobs": [
+        {
+          "id": 124331262638,
+          "baseId": 124238262638,
+          "name": "integration-tests (ubuntu-latest)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124331262916,
+          "baseId": 124238262916,
+          "name": "build (ubuntu-latest)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124331262927,
+          "baseId": 124238262927,
+          "name": "build (windows-latest)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124331262979,
+          "baseId": 124238262979,
+          "name": "integration-tests (windows-latest)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124331263039,
+          "baseId": 124238263039,
+          "name": "build (macos-latest)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124331263062,
+          "baseId": 124238263062,
+          "name": "integration-tests (macos-latest)",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "repo": "eslint/eslint",
+      "baseRunId": 41069503293,
+      "runId": 41100503293,
+      "headSha": "2dbf2374fe1dbdda05b3699a1ecd01e8e6ea38d2",
+      "shiftMs": 11266000,
+      "jobs": [
+        {
+          "id": 124202570606,
+          "baseId": 124109570606,
+          "name": "Verify Files",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202570856,
+          "baseId": 124109570856,
+          "name": "Browser Test",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202570933,
+          "baseId": 124109570933,
+          "name": "Test Types",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202570963,
+          "baseId": 124109570963,
+          "name": "Test (macOS-latest, lts/*)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124202570974,
+          "baseId": 124109570974,
+          "name": "Test (ubuntu-latest, 20.19.0)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571018,
+          "baseId": 124109571018,
+          "name": "Test Package Managers / build-tarball",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571027,
+          "baseId": 124109571027,
+          "name": "Test pnpm Type Support",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571104,
+          "baseId": 124109571104,
+          "name": "Test (ubuntu-latest, 26.x)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571112,
+          "baseId": 124109571112,
+          "name": "Test (ubuntu-latest, 24.x)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571176,
+          "baseId": 124109571176,
+          "name": "Test (windows-latest, lts/*)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124202571183,
+          "baseId": 124109571183,
+          "name": "Test (ubuntu-latest, 24.x, --experimental-transform-types)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571325,
+          "baseId": 124109571325,
+          "name": "Test (ubuntu-latest, 22.x)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202571486,
+          "baseId": 124109571486,
+          "name": "Test (ubuntu-latest, 20.x)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124202991849,
+          "baseId": 124109991849,
+          "name": "Test Package Managers / bun-install",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 124202991959,
+          "baseId": 124109991959,
+          "name": "Test Package Managers / npm-install",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 124202991998,
+          "baseId": 124109991998,
+          "name": "Test Package Managers / yarn-install",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 124202992058,
+          "baseId": 124109992058,
+          "name": "Test Package Managers / yarn-v1-install",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 124202992064,
+          "baseId": 124109992064,
+          "name": "Test Package Managers / pnpm-install",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "repo": "neovim/neovim",
+      "baseRunId": 41083166215,
+      "runId": 41114166215,
+      "headSha": "e70fcfe06668240aad5b371dcf827fa38b4d59ca",
+      "shiftMs": 8918000,
+      "jobs": [
+        {
+          "id": 124250317260,
+          "baseId": 124157317260,
+          "name": "clang-analyzer",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250317488,
+          "baseId": 124157317488,
+          "name": "lint",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250317545,
+          "baseId": 124157317545,
+          "name": "ubuntu release gcc oldtest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250317620,
+          "baseId": 124157317620,
+          "name": "build using zig build (windows)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250317773,
+          "baseId": 124157317773,
+          "name": "lintc",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250317817,
+          "baseId": 124157317817,
+          "name": "windows / windows (functional)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250317837,
+          "baseId": 124157317837,
+          "name": "with-external-deps",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250317863,
+          "baseId": 124157317863,
+          "name": "build using zig build (macos 15)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250317963,
+          "baseId": 124157317963,
+          "name": "ubuntu asan clang unittest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250317972,
+          "baseId": 124157317972,
+          "name": "ubuntu tsan clang functionaltest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318000,
+          "baseId": 124157318000,
+          "name": "ubuntu asan clang functionaltest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318057,
+          "baseId": 124157318057,
+          "name": "macos arm clang unittest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318112,
+          "baseId": 124157318112,
+          "name": "macos intel clang functionaltest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318115,
+          "baseId": 124157318115,
+          "name": "windows / windows (old)",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318130,
+          "baseId": 124157318130,
+          "name": "ubuntu puc-lua gcc oldtest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318132,
+          "baseId": 124157318132,
+          "name": "ubuntu arm clang unittest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318153,
+          "baseId": 124157318153,
+          "name": "ubuntu puc-lua gcc functionaltest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318228,
+          "baseId": 124157318228,
+          "name": "ubuntu release gcc unittest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318262,
+          "baseId": 124157318262,
+          "name": "build using zig build (linux)",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318279,
+          "baseId": 124157318279,
+          "name": "ubuntu arm clang functionaltest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318288,
+          "baseId": 124157318288,
+          "name": "ubuntu asan clang oldtest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318316,
+          "baseId": 124157318316,
+          "name": "macos intel clang oldtest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318360,
+          "baseId": 124157318360,
+          "name": "macos arm clang functionaltest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318388,
+          "baseId": 124157318388,
+          "name": "macos arm clang oldtest",
+          "conclusion": "success"
+        },
+        {
+          "id": 124250318442,
+          "baseId": 124157318442,
+          "name": "ubuntu release gcc functionaltest",
+          "conclusion": "failure"
+        },
+        {
+          "id": 124250318456,
+          "baseId": 124157318456,
+          "name": "macos intel clang unittest",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

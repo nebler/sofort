@@ -2,6 +2,10 @@
 // logged-in `gh` CLI and is never recorded. Every request is counted so a
 // capture can report how much of the rate limit it used.
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 let token = '';
 export let requests = 0;
@@ -34,27 +38,63 @@ async function request(path: string, accept: string): Promise<Response> {
     });
     const remaining = Number(response.headers.get('x-ratelimit-remaining') ?? '1000');
     if (remaining < 200) throw new Error('rate limit nearly used up: ' + remaining + ' left');
-    if ((response.status === 502 || response.status === 503) && attempt < 2) continue;
+    if ((response.status === 502 || response.status === 503) && attempt < 2) {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      continue;
+    }
     return response;
   }
 }
 
-export async function getJson(path: string): Promise<unknown> {
-  const response = await request(path, 'application/vnd.github+json');
-  const body = await response.text();
-  if (!response.ok) throw new Error('GitHub ' + response.status + ' for ' + path + ': ' + body.slice(0, 200));
-  return JSON.parse(body);
+export interface Fetched {
+  status: number;
+  text: string;
+  ms: number;
 }
 
-export async function getText(path: string): Promise<{ status: number; text: string }> {
+// Raw responses are kept under .work/github-cache/ (gitignored): a re-run of
+// a capture script reuses them, with their original latency, instead of
+// spending rate limit. Delete the directory to re-record from scratch.
+const CACHE = join(dirname(dirname(fileURLToPath(import.meta.url))), '.work', 'github-cache');
+
+// When the data was fetched from GitHub (first and last request, cached or not).
+export const window = { first: '', last: '', paths: new Set<string>() };
+function seen(at: string) {
+  if (!window.first || at < window.first) window.first = at;
+  if (!window.last || at > window.last) window.last = at;
+}
+
+export async function fetchTimed(path: string): Promise<Fetched> {
+  const file = join(CACHE, createHash('sha256').update(path).digest('hex') + '.json');
+  window.paths.add(path);
+  if (existsSync(file)) {
+    seen(statSync(file).mtime.toISOString());
+    return JSON.parse(readFileSync(file, 'utf8')) as Fetched;
+  }
+  seen(new Date().toISOString());
+  const started = performance.now();
   const response = await request(path, 'application/vnd.github+json');
-  return { status: response.status, text: await response.text() };
+  const text = await response.text();
+  const fetched = { status: response.status, text, ms: Math.round((performance.now() - started) * 10) / 10 };
+  if (fetched.status === 200) {
+    mkdirSync(CACHE, { recursive: true });
+    writeFileSync(file, JSON.stringify({ path, ...fetched }));
+  }
+  return fetched;
+}
+
+export async function getJson(path: string): Promise<{ value: any; ms: number }> {
+  const fetched = await fetchTimed(path);
+  if (fetched.status !== 200) {
+    throw new Error('GitHub ' + fetched.status + ' for ' + path + ': ' + fetched.text.slice(0, 200));
+  }
+  return { value: JSON.parse(fetched.text), ms: fetched.ms };
 }
 
 // Email addresses are the one personal field beyond public usernames that
 // GitHub returns (commit author/committer emails, addresses typed into issue
 // bodies). They are replaced in every string; nothing else is changed.
-const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
+const EMAIL = /[A-Za-z0-9._%+[\]-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
 export const REDACTED = 'redacted@example.invalid';
 
 export function scrub<T>(value: T): T {
