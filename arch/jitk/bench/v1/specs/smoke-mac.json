@@ -1,0 +1,11 @@
+{
+ "adapters": ["sofort-hvf-2m", "node-vm-fixture"],
+ "tasks": ["harness/fixtures/example"],
+ "scenarios": ["S1", "S2"],
+ "repetitions": 1,
+ "seed": 1,
+ "timeoutMs": 10000,
+ "sloP99Ms": 1000,
+ "S1": {"samples": 200, "warmups": 20, "interleave": true},
+ "S2": {"rates": [5, 10, 20, 40], "durationS": 10, "warmupS": 1, "concurrency": 8}
+}

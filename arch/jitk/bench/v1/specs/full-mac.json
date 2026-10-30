@@ -1,0 +1,14 @@
+{
+ "adapters": ["sofort-hvf-2m", "sofort-hvf-4m", "hyperlight-js", "cf-dynamic-worker", "ai-sdk-code-mode", "tanstack-isolated-vm", "tanstack-quickjs", "node-vm"],
+ "tasks": ["t1-issue-triage", "t2-ci-triage", "t3-crm-join", "t4-otel-rollup", "t5-openapi"],
+ "scenarios": ["S1", "S2", "S3", "S4", "S5"],
+ "repetitions": 3,
+ "seed": 1,
+ "timeoutMs": 30000,
+ "sloP99Ms": 2000,
+ "S1": {"samples": 1000, "warmups": 50, "interleave": true},
+ "S2": {"rates": [1, 2, 5, 10, 20, 40, 80], "durationS": 60, "warmupS": 5, "concurrency": 32},
+ "S3": {"rate": 10, "durationS": 120, "fraction": 0.01, "concurrency": 32, "canaryRounds": 2},
+ "S4": {"samples": 20},
+ "S5": {"levels": [1, 2, 4, 8, 16, 32, 64], "perLevel": 8}
+}
