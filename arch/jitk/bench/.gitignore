@@ -1,3 +1,4 @@
 /build/
 /.scriptc/
 /parity-work/
+.wrangler/
