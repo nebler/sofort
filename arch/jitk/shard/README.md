@@ -248,18 +248,46 @@ tenants apart:
   set after three tries.
 
 What the split costs (`executor/shard-set-bench.ts`, 64 slots, nested KVM
-on kvm-dev, 6 vCPUs, host under load; two runs, 2026-10-30):
+on kvm-dev, 6 vCPUs; two runs, 2026-10-30, after the owner budget below,
+host less loaded than in the first runs). "First use": 64 runs at once, each
+slot's first; "held start": 64 runs started and held at once.
 
-| Engine processes x slots | READY | PSS (engines + watchdogs) | per slot | sequential run p50 |
-| --- | --- | --- | --- | --- |
-| 1 x 64 (default) | 0.11-0.17 s | 33 MiB | 0.52 MiB | 1.6-1.9 ms |
-| 8 x 8 | 0.26-0.32 s | 43-44 MiB | 0.68 MiB | 1.7-2.2 ms |
-| 64 x 1 | 1.9-2.2 s | 95 MiB | 1.48 MiB | 1.7-2.2 ms |
+| Engine processes x slots | owner threads | READY | PSS (engines + watchdogs) | per slot | sequential run p50 | first use | held start |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 x 64 (default) | 4 | 0.06 s | 31-32 MiB | 0.48-0.50 MiB | 0.92-0.98 ms | 1.7 s | 0.04 s |
+| 8 x 8 | 8 | 0.18 s | 39-40 MiB | 0.61-0.62 MiB | 0.89 ms | 2.7-2.8 s | 0.29-0.31 s |
+| 64 x 1 | 64 | 1.4 s | 93-94 MiB | 1.46-1.47 MiB | 0.89-0.91 ms | 12.6 s | 8.0-8.6 s |
 
 One VM per process costs about 1 MiB more per slot and a slower start (128
-processes); a run costs the same. The first use of every slot (64 at once)
-took 4-6 s for 1x64 and 64x1 but 13-14 s for 8x8, in both runs; that is
-not explained yet.
+processes); a sequential run costs the same.
+
+**Owner threads, not processes, set the cost of concurrent work.** Each
+engine used to take a whole shard's four owner threads, so 8 x 8 ran 32 of
+them on 6 vCPUs; its first use took 13-14 s, and 2.6-21 s in later runs
+(1 x 64: 1.8-10 s in the same windows). The time is in the guests and in the engines,
+not in Node: `ShardSet.park` placed exactly 8 runs per engine within 10 ms,
+with no queued park, and every first use in every shape took the same 28,032
+stage-2 guest faults (about 440 per slot: the cold restore work is the same).
+What changed was the number of vCPU switches (`kvm:kvm_timer_save_state`, one
+per vCPU put): about 1,300 per first use with 4 owner threads, 10,000-70,000
+with 8-64, each adding about 0.6-1 ms of guest time. Owner threads beyond
+the vCPUs (beside Node, the reactors and the clock threads) are preempted
+inside KVM_RUN; on nested KVM that guest time likely includes the outer
+hypervisor's (HVF's) work for each switch, far more than a bare-metal switch. At the same four owner threads in total,
+1 x 64, 2 x 32 and 4 x 16 all took 2.2-2.8 s in one window; 8 x 8 with one
+owner each took 3.2-5.9 s. A `ShardSet` therefore splits one shard's owner
+budget (`SHARD_OWNERS`, 4) across its engines, at least one each (an
+explicit `owners` is per engine): 8 x 8 runs 8 owner threads. In two
+interleaved runs, that took first use from 6.2-6.9 s to 2.7-2.8 s and the
+held start from 3.5-3.8 s to 0.3 s; 1 x 64 and 64 x 1 are unchanged
+(`executor/shard-check.ts` checks the split from each engine's argv).
+
+64 x 1 still needs one owner per process, 64 for 6 vCPUs; its concurrent
+numbers are this nested oversubscription (and vary with the Mac's load,
+2-27 s in other runs) and say little about bare metal. There a vCPU switch
+costs microseconds, so the shapes should converge to the CPU work divided by
+the cores in use, and 64 x 1 costs ordinary context switches when more runs
+are busy than cores; that is not measured here.
 
 ## Confinement (Linux shard)
 
