@@ -140,7 +140,52 @@
     "programs/claude-opus-5-5-4.js",
     "programs/claude-opus-5-5-5.js"
   ],
-  "sizes": {},
+  "sizes": {
+    "recordings": 202,
+    "recordedResponseBytes": 7443698,
+    "perProgram": {
+      "programs/claude-opus-5-5-1.js": {
+        "calls": 69,
+        "responseBytes": 2009350,
+        "argBytes": 6118,
+        "maxReplyBytes": 301955,
+        "maxRoundTripBytes": 302040,
+        "toolMsSum": 63685
+      },
+      "programs/claude-opus-5-5-2.js": {
+        "calls": 69,
+        "responseBytes": 2260336,
+        "argBytes": 5489,
+        "maxReplyBytes": 301955,
+        "maxRoundTripBytes": 302040,
+        "toolMsSum": 63685
+      },
+      "programs/claude-opus-5-5-3.js": {
+        "calls": 44,
+        "responseBytes": 1488933,
+        "argBytes": 4359,
+        "maxReplyBytes": 301955,
+        "maxRoundTripBytes": 302058,
+        "toolMsSum": 36053
+      },
+      "programs/claude-opus-5-5-4.js": {
+        "calls": 87,
+        "responseBytes": 3873755,
+        "argBytes": 7133,
+        "maxReplyBytes": 494506,
+        "maxRoundTripBytes": 494589,
+        "toolMsSum": 91286
+      },
+      "programs/claude-opus-5-5-5.js": {
+        "calls": 74,
+        "responseBytes": 2126624,
+        "argBytes": 6343,
+        "maxReplyBytes": 99116,
+        "maxRoundTripBytes": 99189,
+        "toolMsSum": 66384
+      }
+    }
+  },
   "source": {
     "data": "real GitHub Actions runs, jobs and logs from 24 public repositories (api.github.com, captured by capture.ts) plus one synthetic regression seeded into 3 of them (seed.ts); see README.md",
     "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + api.d.ts; variants from a second model to be added"

@@ -5,8 +5,8 @@
 // programs (kind 'sql') run read-only against the task's SQLite file.
 // Exits non-zero on any failure.
 //
-//   node bench/v1/tasks/materialize.ts && node bench/v1/tasks/check.ts [task-id...]
-import { readFileSync } from 'node:fs';
+//   node bench/v1/tasks/materialize.ts && node bench/v1/tasks/check.ts [--sizes] [task-id...]
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { pathToFileURL } from 'node:url';
@@ -19,6 +19,8 @@ interface Stats {
   calls: number;
   bytes: number;
   maxReply: number;
+  argBytes: number;
+  maxRoundTrip: number;
   toolMs: number;
 }
 
@@ -40,9 +42,12 @@ function replay(recorded: RecordedCall[], stats: Stats, unmatched: string[], use
                 throw new Error('no recorded response for ' + key.slice(0, 300));
               }
               used.add(key);
+              const argBytes = Buffer.byteLength(JSON.stringify(args));
               stats.calls++;
               stats.bytes += call.bytes;
+              stats.argBytes += argBytes;
               stats.maxReply = Math.max(stats.maxReply, call.bytes);
+              stats.maxRoundTrip = Math.max(stats.maxRoundTrip, call.bytes + argBytes);
               stats.toolMs += call.latencyMs;
               if (call.error !== undefined) throw new Error(call.error);
               return structuredClone(call.response);
@@ -59,10 +64,11 @@ async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
   const task = readTask(id);
   const recorded = readResponses(id);
   const used = new Set<string>();
+  const sizes: Record<string, Record<string, number>> = {};
   let ok = true;
   for (const program of task.programs) {
     const code = readFileSync(join(TASKS, id, program), 'utf8');
-    const stats: Stats = { calls: 0, bytes: 0, maxReply: 0, toolMs: 0 };
+    const stats: Stats = { calls: 0, bytes: 0, maxReply: 0, argBytes: 0, maxRoundTrip: 0, toolMs: 0 };
     const unmatched: string[] = [];
     const proxy = replay(recorded, stats, unmatched, used);
     const namespaces = Object.fromEntries(
@@ -76,9 +82,26 @@ async function checkJs(id: string, oracle: Oracle): Promise<boolean> {
       verdict = { ok: false, reason: 'threw: ' + (error instanceof Error ? error.message : String(error)) };
     }
     ok &&= verdict.ok;
+    sizes[program] = {
+      calls: stats.calls,
+      responseBytes: stats.bytes,
+      argBytes: stats.argBytes,
+      maxReplyBytes: stats.maxReply,
+      maxRoundTripBytes: stats.maxRoundTrip,
+      toolMsSum: Math.round(stats.toolMs),
+    };
     console.log(
-      `${verdict.ok ? 'PASS' : 'FAIL'} ${id}/${program} calls=${stats.calls} bytes=${stats.bytes} maxReply=${stats.maxReply} toolMsSum=${Math.round(stats.toolMs)} ${verdict.reason ?? ''}`,
+      `${verdict.ok ? 'PASS' : 'FAIL'} ${id}/${program} calls=${stats.calls} bytes=${stats.bytes} argBytes=${stats.argBytes} maxReply=${stats.maxReply} toolMsSum=${Math.round(stats.toolMs)} ${verdict.reason ?? ''}`,
     );
+  }
+  if (writeSizes) {
+    const raw = JSON.parse(readFileSync(join(TASKS, id, 'task.json'), 'utf8'));
+    raw.sizes = {
+      recordings: recorded.length,
+      recordedResponseBytes: recorded.reduce((sum, call) => sum + call.bytes, 0),
+      perProgram: sizes,
+    };
+    writeFileSync(join(TASKS, id, 'task.json'), JSON.stringify(raw, null, 2) + '\n');
   }
   const unused = recorded.length - used.size;
   if (unused) console.log(`note ${id}: ${unused} of ${recorded.length} recordings unused by any program`);
@@ -107,7 +130,10 @@ async function checkSql(id: string, oracle: Oracle): Promise<boolean> {
   return ok;
 }
 
-const ids = process.argv.length > 2 ? process.argv.slice(2) : taskIds();
+// --sizes writes the per-program call counts and byte totals into task.json.
+const writeSizes = process.argv.includes('--sizes');
+const args = process.argv.slice(2).filter(arg => !arg.startsWith('--'));
+const ids = args.length ? args : taskIds();
 let failed = 0;
 for (const id of ids) {
   const task = readTask(id);

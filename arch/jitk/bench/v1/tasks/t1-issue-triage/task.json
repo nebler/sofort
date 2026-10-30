@@ -14,8 +14,14 @@
           "inputSchema": {
             "type": "object",
             "properties": {
-              "owner": { "type": "string", "description": "The account owner of the repository." },
-              "repo": { "type": "string", "description": "The name of the repository without the .git extension." },
+              "owner": {
+                "type": "string",
+                "description": "The account owner of the repository."
+              },
+              "repo": {
+                "type": "string",
+                "description": "The name of the repository without the .git extension."
+              },
               "state": {
                 "type": "string",
                 "enum": ["open", "closed", "all"],
@@ -39,8 +45,14 @@
                 "type": "string",
                 "description": "Only show results that were last updated after the given time (ISO 8601: YYYY-MM-DDTHH:MM:SSZ)."
               },
-              "per_page": { "type": "integer", "description": "The number of results per page (max 100). Default: 30" },
-              "page": { "type": "integer", "description": "The page number of the results to fetch. Default: 1" }
+              "per_page": {
+                "type": "integer",
+                "description": "The number of results per page (max 100). Default: 30"
+              },
+              "page": {
+                "type": "integer",
+                "description": "The page number of the results to fetch. Default: 1"
+              }
             },
             "required": ["owner", "repo"]
           },
@@ -51,9 +63,18 @@
           "inputSchema": {
             "type": "object",
             "properties": {
-              "owner": { "type": "string", "description": "The account owner of the repository." },
-              "repo": { "type": "string", "description": "The name of the repository without the .git extension." },
-              "issue_number": { "type": "integer", "description": "The number that identifies the issue." }
+              "owner": {
+                "type": "string",
+                "description": "The account owner of the repository."
+              },
+              "repo": {
+                "type": "string",
+                "description": "The name of the repository without the .git extension."
+              },
+              "issue_number": {
+                "type": "integer",
+                "description": "The number that identifies the issue."
+              }
             },
             "required": ["owner", "repo", "issue_number"]
           },
@@ -64,15 +85,30 @@
           "inputSchema": {
             "type": "object",
             "properties": {
-              "owner": { "type": "string", "description": "The account owner of the repository." },
-              "repo": { "type": "string", "description": "The name of the repository without the .git extension." },
-              "issue_number": { "type": "integer", "description": "The number that identifies the issue." },
+              "owner": {
+                "type": "string",
+                "description": "The account owner of the repository."
+              },
+              "repo": {
+                "type": "string",
+                "description": "The name of the repository without the .git extension."
+              },
+              "issue_number": {
+                "type": "integer",
+                "description": "The number that identifies the issue."
+              },
               "since": {
                 "type": "string",
                 "description": "Only show results that were last updated after the given time (ISO 8601)."
               },
-              "per_page": { "type": "integer", "description": "The number of results per page (max 100). Default: 30" },
-              "page": { "type": "integer", "description": "The page number of the results to fetch. Default: 1" }
+              "per_page": {
+                "type": "integer",
+                "description": "The number of results per page (max 100). Default: 30"
+              },
+              "page": {
+                "type": "integer",
+                "description": "The page number of the results to fetch. Default: 1"
+              }
             },
             "required": ["owner", "repo", "issue_number"]
           },
@@ -90,7 +126,52 @@
     "programs/claude-opus-5-5-4.js",
     "programs/claude-opus-5-5-5.js"
   ],
-  "sizes": {},
+  "sizes": {
+    "recordings": 69,
+    "recordedResponseBytes": 931340,
+    "perProgram": {
+      "programs/claude-opus-5-5-1.js": {
+        "calls": 21,
+        "responseBytes": 321290,
+        "argBytes": 1398,
+        "maxReplyBytes": 144159,
+        "maxRoundTripBytes": 144252,
+        "toolMsSum": 7610
+      },
+      "programs/claude-opus-5-5-2.js": {
+        "calls": 21,
+        "responseBytes": 321290,
+        "argBytes": 1398,
+        "maxReplyBytes": 144159,
+        "maxRoundTripBytes": 144252,
+        "toolMsSum": 7610
+      },
+      "programs/claude-opus-5-5-3.js": {
+        "calls": 21,
+        "responseBytes": 321290,
+        "argBytes": 1314,
+        "maxReplyBytes": 144159,
+        "maxRoundTripBytes": 144288,
+        "toolMsSum": 7413
+      },
+      "programs/claude-opus-5-5-4.js": {
+        "calls": 47,
+        "responseBytes": 465891,
+        "argBytes": 2752,
+        "maxReplyBytes": 144159,
+        "maxRoundTripBytes": 144252,
+        "toolMsSum": 19834
+      },
+      "programs/claude-opus-5-5-5.js": {
+        "calls": 21,
+        "responseBytes": 321290,
+        "argBytes": 1432,
+        "maxReplyBytes": 144159,
+        "maxRoundTripBytes": 144286,
+        "toolMsSum": 7165
+      }
+    }
+  },
   "source": {
     "data": "real: api.github.com, repository cli/cli, captured by capture.ts (see README.md)",
     "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + api.d.ts; variants from a second model to be added"

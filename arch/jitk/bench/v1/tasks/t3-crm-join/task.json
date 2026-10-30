@@ -1,0 +1,192 @@
+{
+  "id": "t3-crm-join",
+  "name": "T3 cross-tool join",
+  "title": "Meeting transcript to CRM: action items become Salesforce tasks",
+  "description": "Anthropic's code-execution-with-MCP example made concrete: fetch a 125 KB meeting doc from a document store, extract the action items, resolve each against Salesforce (exact account name, active user, open opportunity), create tasks, update next steps, and attach the full transcript to a Salesforce record. The transcript flows tool to tool and never returns to the model. Synthetic data, Drive and Salesforce REST shapes.",
+  "kind": "js",
+  "prompt": "In Google Drive, find the notes-and-transcript doc (Notes by Gemini) of the weekly pipeline review held on 2026-10-29. For every item under \"Suggested next steps\" that names a customer account (skip [Internal] items):\n1. look up the Salesforce Account with exactly that name, the active Salesforce User whose name is the item's owner, and the account's open Opportunity (IsClosed = false);\n2. create a Task with WhatId = the opportunity Id, OwnerId = the user Id, Subject = the action text (without the trailing period and the \"Due ...\" part), ActivityDate = the due date, Status = 'Not Started', Priority = 'Normal';\n3. set the opportunity's NextStep to the same action text.\nFinally, attach the whole doc to Salesforce: create a Meeting_Note__c record with Name = the doc's name, Meeting_Date__c = 2026-10-29 and Transcript__c = the doc's full text.\nReturn JSON: {meetingNoteId, items: [{account, accountId, owner, ownerId, opportunityId, subject, dueDate, taskId}]} in the order the items appear in the doc. Do not include the transcript in your answer.",
+  "providers": [
+    {
+      "name": "drive",
+      "tools": {
+        "searchFiles": {
+          "description": "Search Google Drive files by name (files.list with name contains each word), newest first.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Words that must all appear in the file name (case-insensitive)."
+              },
+              "pageSize": {
+                "type": "integer",
+                "description": "Maximum number of files to return. Default: 100"
+              }
+            },
+            "required": ["query"]
+          },
+          "outputDescription": "{kind, incompleteSearch, files: [{id, name, mimeType, modifiedTime, owners: [{displayName, emailAddress}], size}]}"
+        },
+        "getDocument": {
+          "description": "Get a Google Docs document exported as plain text.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "fileId": {
+                "type": "string",
+                "description": "The ID of the file."
+              }
+            },
+            "required": ["fileId"]
+          },
+          "outputDescription": "{id, name, mimeType, modifiedTime, content} where content is the full document text."
+        }
+      }
+    },
+    {
+      "name": "salesforce",
+      "tools": {
+        "query": {
+          "description": "Run a SOQL query (GET /services/data/v62.0/query?q=...). String literals use single quotes; escape a quote inside a literal as \\'.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "q": {
+                "type": "string",
+                "description": "The SOQL query, e.g. SELECT Id, Name FROM Account WHERE Name = 'Acme'"
+              }
+            },
+            "required": ["q"]
+          },
+          "outputDescription": "{totalSize, done, records: [{attributes: {type, url}, Id, ...selected fields}]}. Objects: Account (Id, Name, Industry, Type, BillingCountry, AnnualRevenue, NumberOfEmployees, OwnerId), User (Id, Name, Email, IsActive, Title, Department), Opportunity (Id, Name, AccountId, StageName, IsClosed, IsWon, Amount, CloseDate, Probability, NextStep, OwnerId)."
+        },
+        "getRecord": {
+          "description": "Retrieve one record (GET /services/data/v62.0/sobjects/{sobject}/{id}).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "sobject": {
+                "type": "string",
+                "description": "The sObject type, e.g. Account."
+              },
+              "id": {
+                "type": "string",
+                "description": "The 18-character record Id."
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Fields to return. Default: all fields."
+              }
+            },
+            "required": ["sobject", "id"]
+          },
+          "outputDescription": "{attributes: {type, url}, Id, ...fields}"
+        },
+        "createRecord": {
+          "description": "Create a record (POST /services/data/v62.0/sobjects/{sobject}). Supported: Task, Event, Meeting_Note__c (Name, Meeting_Date__c, Transcript__c long text up to 131072 characters).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "sobject": {
+                "type": "string",
+                "description": "The sObject type."
+              },
+              "record": {
+                "type": "object",
+                "description": "Field values of the new record.",
+                "additionalProperties": true
+              }
+            },
+            "required": ["sobject", "record"]
+          },
+          "outputDescription": "{id, success, errors} on success. Failures reject with a Salesforce error list [{message, errorCode}]."
+        },
+        "updateRecord": {
+          "description": "Update fields of a record (PATCH /services/data/v62.0/sobjects/{sobject}/{id}).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "sobject": {
+                "type": "string",
+                "description": "The sObject type."
+              },
+              "id": {
+                "type": "string",
+                "description": "The 18-character record Id."
+              },
+              "record": {
+                "type": "object",
+                "description": "Field values to set.",
+                "additionalProperties": true
+              }
+            },
+            "required": ["sobject", "id", "record"]
+          },
+          "outputDescription": "{id, success, errors}"
+        }
+      }
+    }
+  ],
+  "responses": "responses.jsonl",
+  "oracle": "oracle.ts",
+  "programs": [
+    "programs/claude-opus-5-5-1.js",
+    "programs/claude-opus-5-5-2.js",
+    "programs/claude-opus-5-5-3.js",
+    "programs/claude-opus-5-5-4.js",
+    "programs/claude-opus-5-5-5.js"
+  ],
+  "sizes": {
+    "recordings": 129,
+    "recordedResponseBytes": 308477,
+    "perProgram": {
+      "programs/claude-opus-5-5-1.js": {
+        "calls": 58,
+        "responseBytes": 135964,
+        "argBytes": 134360,
+        "maxReplyBytes": 127395,
+        "maxRoundTripBytes": 127454,
+        "toolMsSum": 12010
+      },
+      "programs/claude-opus-5-5-2.js": {
+        "calls": 58,
+        "responseBytes": 136752,
+        "argBytes": 134708,
+        "maxReplyBytes": 127395,
+        "maxRoundTripBytes": 127454,
+        "toolMsSum": 12123
+      },
+      "programs/claude-opus-5-5-3.js": {
+        "calls": 28,
+        "responseBytes": 135508,
+        "argBytes": 132218,
+        "maxReplyBytes": 127395,
+        "maxRoundTripBytes": 127454,
+        "toolMsSum": 6284
+      },
+      "programs/claude-opus-5-5-4.js": {
+        "calls": 42,
+        "responseBytes": 278550,
+        "argBytes": 132375,
+        "maxReplyBytes": 127395,
+        "maxRoundTripBytes": 127454,
+        "toolMsSum": 9163
+      },
+      "programs/claude-opus-5-5-5.js": {
+        "calls": 58,
+        "responseBytes": 140593,
+        "argBytes": 134052,
+        "maxReplyBytes": 127395,
+        "maxRoundTripBytes": 127454,
+        "toolMsSum": 11409
+      }
+    }
+  },
+  "source": {
+    "data": "synthetic, seeded (fixture.ts, seed 20261029); mock Drive and Salesforce in mock.ts; generate.ts records the programs' calls",
+    "programs": "model-written by Claude Opus 5.5 (claude-opus-5-5) from prompt + api.d.ts; variants from a second model to be added"
+  }
+}
