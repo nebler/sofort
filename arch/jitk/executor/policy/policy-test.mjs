@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { LineReader, ToolError, Violation, createRun, decide, approve, dispatch } from './policy.mjs';
+import { LineReader, ToolError, Violation, Denial, denial, createRun, decide, approve, dispatch } from './policy.mjs';
 let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
 const kills = (fn, m) => { assert.throws(fn, Violation, m); n++; };
 const str = a => { if (typeof a !== 'object' || a === null || Object.keys(a).join() !== 'q' || typeof a.q !== 'string' || a.q.length > 256) throw 0; return { q: a.q }; };
@@ -77,4 +77,34 @@ ok(r.tainted.privateRead && decide(r, c(2, 'web', 'fetch')).kind === 'deny', 'fa
 const redacted = { mail: { search: { ...leaky.mail.search, error: e => String(e.message).replace(/\{.*\}|TOKEN/g, '[redacted]') } } };
 r = createRun({ tools: redacted, deadline: Date.now() + 60_000 });
 await assert.rejects(dispatch(r, decide(r, c(1, 'mail', 'search')).call, { issuer }), { message: 'got [redacted] [redacted]' }); n++;
+// 11. a grant covers only the labels it saw: a private read landing while an egress call waits for
+// its credential (or an approver) makes that call DENIED, never invoked, its credential revoked
+{
+  let fetched = 0; const mixed = { mail: tools.mail, web: { fetch: { ...tools.web.fetch, invoke: async () => { fetched++; return 'page'; } } } };
+  r = createRun({ tools: mixed, deadline: Date.now() + 60_000 });
+  let mint; const slow = { issue: () => new Promise(res => { mint = res; }), revoke: async () => { slow.revoked = true; } };
+  const egress = dispatch(r, decide(r, c(1, 'web', 'fetch', { q: 'bit=1' })).call, { issuer: slow });
+  await dispatch(r, decide(r, c(2, 'mail', 'search')).call, { issuer });
+  mint('TOKEN');
+  await assert.rejects(egress, e => e instanceof Denial && /labels changed/.test(e.message)); n++;
+  ok(fetched === 0 && slow.revoked && r.denials === 1, 'stale egress grant never invoked, revoked, counted');
+}
+// 12. an approval covers the reasons it was asked for, not reasons that arise after it
+r = mk(); await dispatch(r, decide(r, c(1, 'web', 'fetch')).call, { issuer });
+d = decide(r, c(2, 'mail', 'send')); ok(d.kind === 'approve', 'untrusted then write needs approval');
+const approved = approve(r, d.digest);
+await dispatch(r, decide(r, c(3, 'mail', 'search')).call, { issuer });
+await assert.rejects(dispatch(r, approved, { issuer }), Denial); n++;
+// 13. a failing credential broker reaches the guest as fixed text only
+const broker = { issue: async () => { throw Error('broker: TOKEN-xyz for alice@corp'); }, revoke: async () => {} };
+r = mk();
+await assert.rejects(dispatch(r, decide(r, c(1, 'mail', 'search')).call, { issuer: broker }),
+  e => e instanceof ToolError && e.message === 'mail.search credential unavailable'); n++;
+// 14. labels carried in from an earlier run of the same conversation start the run tainted
+r = createRun({ tools, deadline: Date.now() + 60_000, tainted: { privateRead: true } });
+ok(decide(r, c(1, 'web', 'fetch')).kind === 'deny' && decide(r, c(2, 'mail', 'send')).kind === 'approve', 'carried private label gates egress');
+// 15. denial() counts against the same budget as decide()'s denials
+r = createRun({ tools, deadline: Date.now() + 60_000, limits: { denials: 1 } });
+ok(denial(r, 'approval required') instanceof Denial);
+kills(() => denial(r, 'approval required'), 'denial budget via denial()');
 console.log(`${n} policy assertions passed`);

@@ -5,6 +5,9 @@
 //   'deny'    -> {t:'ret',id,err:{code:'DENIED',...}}
 export declare class Violation extends Error {}
 export declare class ToolError extends Error {} // the only tool failure text the guest sees
+export declare class Denial extends Error {} // guest sees DENIED; counted against limits.denials
+/** Count one more denial for the run (throws Violation past the budget) and return the refusal. */
+export declare function denial(run: Run, reason: string): Denial;
 export declare class LineReader {
   constructor(cap?: number); len: number;
   push(chunk: Uint8Array, onLine: (line: string) => void): void; // throws Violation past cap
@@ -43,7 +46,9 @@ export type Issuer = {
   revoke(credential: unknown): Promise<void>;
 };
 export declare function digest(v: unknown): string;
-export declare function createRun(o: { tools: Tools; deadline: number; now?: () => number; limits?: Limits }): Run;
+export declare function createRun(o: { tools: Tools; deadline: number; now?: () => number; limits?: Limits;
+  /** Labels carried in from earlier runs of the same conversation. */
+  tainted?: { privateRead?: boolean; untrusted?: boolean } }): Run;
 export declare function decide(run: Run, frame: CallFrame): Decision;
 export declare function approve(run: Run, digest: string): Call | null;
 export declare function dispatch(run: Run, call: Call, o: { issuer: Issuer; signal?: AbortSignal }): Promise<unknown>;

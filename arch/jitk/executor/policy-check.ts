@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {MicroVMExecutor,SandboxPool} from './executor.js';
 import {policySource,type Tool,type Issuer} from './policy-adapter.js';
 import {selectBackend} from './select-backend.js';
-// Preserve all 22 assertions from the security owner against the exact imported module.
+// Preserve all the assertions from the security owner against the exact imported module.
 const testPath=policySource.replace('policy.mjs','policy-test.mjs');
 const original=readFileSync(testPath,'utf8')
  .replace("'./policy.mjs'",JSON.stringify(pathToFileURL(policySource).href));
@@ -57,6 +57,13 @@ try{
  await pool.drain();r=await legacy.execute("try{await codemode.ok({__codemode_binary_v1__:'Uint8Array',data:'!'})}catch(e){}return await codemode.ok({a:7})",echo);
  check('undecodable call args spend their id; the next call runs',r.result===7);
  r=await run("await api.pure({q:'x'});return await api.pure({q:'y'})");check('none-read computation does not taint',!r.error);
+ // Taint follows the conversation: a run's final labels, passed into the next execute, gate egress there.
+ r=await run("return (await mail.search({q:'x'})).q");check('result provenance carries the private label',r.provenance?.includes('private-data')===true);
+ await pool.drain();const next=await ex.execute("return await web.fetch({q:'secret'})",providers,{provenance:r.provenance});
+ check('carried private label denies the next run\'s egress',/private data may not leave/.test(next.error??''));
+ // Refusals by the approver count against the denial budget (17 > 16 by default).
+ r=await run("await web.fetch({q:'x'});for(let i=0;i<17;i++){try{await mail.send({q:'w'})}catch{}}return 2",async()=>false);
+ check('approval refusals count against the denial budget',r.error==='policy violation: denial budget'&&r.errorCode==='LIMIT');
  check('no credentials left live at end',live===0&&minted===revoked);
 }finally{await pool.close();}
-assert.equal(rows.length,26);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log('26 executor policy assertions passed (plus 22 security owner assertions)');
+assert.equal(rows.length,29);writeFileSync(receiptPath('policy-check-results.json'),JSON.stringify({policySource,selection:selected.selection,loadBefore,loadAfter:execFileSync('/usr/bin/uptime',[],{encoding:'utf8'}).trim(),rows,minted,revoked,live},null,2)+'\n');console.log(`${rows.length} executor policy assertions passed (plus the security owner's policy-test.mjs)`);

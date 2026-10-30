@@ -6,7 +6,16 @@ export class Violation extends Error {} // any Violation => SIGKILL the VM, fail
 // A tool failure as the guest sees it: the tool's declared error() redaction, else only its name.
 // Never the raw error, which may carry private data or a credential the output() redaction never saw.
 export class ToolError extends Error { name = 'ToolError'; }
-const granted = new WeakSet(); // calls produced by decide(allow)/approve(); dispatch is single-use
+// A refusal the guest sees as DENIED. Every one counts against the run's denial budget.
+export class Denial extends Error { name = 'Denial'; }
+export function denial(run, reason) {
+  if (++run.denials > run.limits.denials) { run.dead = true; throw new Violation('denial budget'); }
+  return new Denial(reason);
+}
+// Calls produced by decide(allow)/approve() -> the label reasons their grant covered.
+// dispatch is single-use and refuses a call whose reasons grew since it was granted.
+const granted = new WeakMap();
+const grantReasons = new WeakMap(); // approval-pending call -> reasons it was approved for
 
 // Frame cap BEFORE accumulation: never buffer more than cap bytes without a LF.
 export class LineReader {
@@ -38,9 +47,11 @@ export const digest = v => createHash('sha256').update(canon(v)).digest('hex');
 // Per-run policy budgets. The call budget sits below the protocol's own (LIMIT.calls): a run is
 // admitted far fewer host calls than the wire could carry.
 export const DEFAULT_LIMITS = Object.freeze({ calls: 256, outstanding: 64, denials: 16 });
-export function createRun({ tools, deadline, now = Date.now, limits = {} }) {
+// tainted: labels the run starts with, e.g. carried from an earlier run of the same conversation:
+// a model that saw private or untrusted data writes the next run's code under that influence.
+export function createRun({ tools, deadline, now = Date.now, limits = {}, tainted = {} }) {
   return { id: randomUUID(), tools, deadline, now, nextId: 1, outstanding: 0, calls: 0, denials: 0,
-    tainted: { privateRead: false, untrusted: false }, approvals: new Map(),
+    tainted: { privateRead: !!tainted.privateRead, untrusted: !!tainted.untrusted }, approvals: new Map(),
     limits: { ...DEFAULT_LIMITS, ...limits }, dead: false };
 }
 
@@ -67,24 +78,34 @@ function decide1(run, f) {
   // v0 provenance: sticky whole-run labels, host-owned. Confidentiality: private data + egress.
   // Integrity: untrusted content (any tool output) steering a state-changing (writes) tool.
   const call = { run: run.id, id: f.id, ns: f.ns, fn: f.fn, args };
-  const conf = tool.egress && run.tainted.privateRead, integ = tool.writes && run.tainted.untrusted;
-  if (conf && !tool.endorsable) return deny('private data may not leave via this tool');
-  if (conf || integ || tool.approval === 'always') {
-    const d = digest(call); run.approvals.set(d, call); return { kind: 'approve', digest: d, call };
+  const e = effects(run, tool);
+  if (e.blocked) return deny('private data may not leave via this tool');
+  if (e.reasons.length) {
+    const d = digest(call); run.approvals.set(d, call); grantReasons.set(call, e.reasons); return { kind: 'approve', digest: d, call };
   }
-  granted.add(call);
+  granted.set(call, e.reasons);
   return { kind: 'allow', call };
+}
+// What the run's current labels require of this tool: blocked outright, or approval for these reasons.
+function effects(run, tool) {
+  const conf = tool.egress && run.tainted.privateRead, integ = tool.writes && run.tainted.untrusted;
+  const reasons = [];
+  if (conf) reasons.push('private-egress');
+  if (integ) reasons.push('untrusted-write');
+  if (tool.approval === 'always') reasons.push('always');
+  return { blocked: conf && !tool.endorsable, reasons };
 }
 
 // Approval is decided by an authenticated human/host service, bound to the exact call digest.
 export function approve(run, d) {
   const c = run.approvals.get(d); run.approvals.delete(d);
   if (!c || run.dead) return null;
-  granted.add(c); return c;
+  granted.set(c, grantReasons.get(c) ?? []); return c;
 }
 
 // Execute an allowed call. Credentials are minted per call, never serialized to the guest.
 export async function dispatch(run, call, { issuer, signal }) {
+  const covered = granted.get(call);
   if (run.dead || !granted.delete(call)) throw new Violation('call not granted (forged, replayed or dead run)');
   const tool = run.tools[call.ns][call.fn];
   const remaining = run.deadline - run.now();
@@ -95,9 +116,16 @@ export async function dispatch(run, call, { issuer, signal }) {
   const cancel = () => ac.abort(); signal?.addEventListener('abort', cancel, { once: true });
   let cred;
   try {
-    cred = await issuer.issue({ run: run.id, scope: `${call.ns}.${call.fn}`, ttlMs: Math.min(tool.timeoutMs, remaining) });
+    // A broker failure reaches the guest only as this fixed text: its own message may carry
+    // secrets, and nothing has been read into the run to label it.
+    try { cred = await issuer.issue({ run: run.id, scope: `${call.ns}.${call.fn}`, ttlMs: Math.min(tool.timeoutMs, remaining) }); }
+    catch { throw new ToolError(`${call.ns}.${call.fn} credential unavailable`); }
     // Cancelled, timed out or killed while the credential was minted: the tool never starts.
     if (ac.signal.aborted || run.dead || run.now() >= run.deadline) throw new Error('call cancelled before invocation');
+    // Labels may have risen while this call waited (policy hook, approver, issuer): other calls of
+    // the run read private or untrusted data meanwhile. The grant covers only the labels it saw.
+    const e = effects(run, tool);
+    if (e.blocked || e.reasons.some(r => !covered.includes(r))) throw denial(run, 'labels changed before invocation');
     // Labels before invoke: a result, an error or a timeout can each carry what the tool read.
     if (tool.reads === 'private') run.tainted.privateRead = true;
     if (tool.reads !== 'none') run.tainted.untrusted = true;

@@ -39,7 +39,9 @@ try {
     // code: engines do not expose the executor's own codec to tenants.
     const body=`${codec}\nconst C=(()=>{const console={...globalThis.console};${timerShim}\n${linked}\n})();return await new C().evaluate({github:{call:async(name,args)=>stringify({result:await github[name](...parse(args))})}});`;
     const result=await ex.execute(body,[{name:'github',fns:{listIssues:async(...args:unknown[])=>{assert.deepEqual(args,[{repo:'x'}]);return [{id:1},{id:2}];},echo:async(x)=>x}}]);
-    assert.deepEqual(result,{result:expected,logs:[]});results.push({name,result,linkageOnly:true,timerShim:!!timerShim});
+    // The codemode ExecuteResult contract: result, logs, error. Sofort's extra fields (errorCode,
+    // provenance) are additions a codemode caller ignores.
+    assert.deepEqual({result:result.result,logs:result.logs,...(result.error===undefined?{}:{error:result.error})},{result:expected,logs:[]});results.push({name,result,linkageOnly:true,timerShim:!!timerShim});
     console.log('PASS Cloudflare wrapper '+name);
   }
 }finally{await pool.close();}

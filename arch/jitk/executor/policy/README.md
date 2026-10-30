@@ -31,11 +31,13 @@ try {
   - dispatching any call object that `decide`/`approve` did not grant, including replays.
 
   A violation makes the run dead, so every later call is also a violation.
-- **Deny (sent to the guest as `err`).** The strict `tool.args` validator throws, or a taint rule forbids the call.
+- **Deny (sent to the guest as `err`).** The strict `tool.args` validator throws, or a taint rule forbids the call. The host's own refusals (a policy hook, an approver saying no) go through `denial(run, reason)`, so every DENIED counts against the same 16-denial budget.
 - **Taint (v0).** Labels are sticky, owned by the host, and kept per run.
   - **Confidentiality.** After a `reads:'private'` result, an `egress` tool needs approval if it is `endorsable`; otherwise it is denied.
   - **Integrity.** After any tool output, a `writes` tool needs approval.
-- **Credentials.** Each call gets one from `issuer.issue({run,scope:'ns.fn',ttlMs})`, which is passed only to `tool.invoke` and revoked in `finally`. It is never placed in a frame.
+  - **Rechecked at dispatch.** A grant covers only the label reasons it saw. If another call of the run raised the labels while this one waited (policy hook, approver, credential issuer), `dispatch` refuses it with a `Denial` before invoking: it would otherwise run on a stale decision, and whether it ran would leak what was read.
+  - **Across runs.** `createRun({tainted})` starts a run with labels carried from earlier runs of the same conversation. The model that saw private or untrusted output writes the next run's code; the executor passes them in as `provenance` (`'private-data'`, `'tool-untrusted'`) and returns them in `RunResult.provenance`.
+- **Credentials.** Each call gets one from `issuer.issue({run,scope:'ns.fn',ttlMs})`, which is passed only to `tool.invoke` and revoked in `finally`. It is never placed in a frame. A failing issuer reaches the guest only as `ns.fn credential unavailable`: the broker's own message may carry secrets.
 - **v1 (not built).** Host-side opaque handles for private data. Per-value labels inside the VM are unsound because the interpreter is attacker-controlled.
 - **Framing.** `LineReader` enforces the frame cap before accumulating bytes. It is a reference for 03's decoder.
 

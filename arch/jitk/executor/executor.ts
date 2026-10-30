@@ -12,13 +12,17 @@ export * from './pool.js';
 export {ShardBackend} from './shard-backend.js';
 export {ShardSet,type ShardSetOptions} from './shard-set.js';
 export {NativeBackend,NativeExecutor,NativeJobError,NATIVE_LIMITS,encodeNativeJob,type NativeOptions,type NativeResult,type NativeError} from './native-backend.js';
-export type Label='user'|'model'|'tool-untrusted'|'host-trusted';
+/** 'tool-untrusted' and 'private-data' are the policy's taint labels: passed in through
+ *  RunOptions.provenance they start the run tainted, and RunResult.provenance carries them on. */
+export type Label='user'|'model'|'tool-untrusted'|'private-data'|'host-trusted';
 export type Call=Readonly<{id:number;ns:string;fn:string;args:unknown[]}>;
 export type Context=Readonly<{executionId:string;signal:AbortSignal;provenance:readonly Label[]}>;
 export type Decision='allow'|'deny'|'requireApproval';
 /** Why a run failed, from structure (abort, policy violation, the engine's fail cause), never from guest text. */
 export type ErrorCode='TIMEOUT'|'POLICY'|'LIMIT'|'SANDBOX'|'GUEST_ERROR';
-export type RunResult=ExecuteResult&{errorCode?:ErrorCode};
+/** provenance: the labels after the run. A caller that shows the result to a model passes them
+ *  into that model's next execute(), so taint follows the conversation, not only one run. */
+export type RunResult=ExecuteResult&{errorCode?:ErrorCode;provenance?:readonly Label[]};
 const CAUSE:Record<string,ErrorCode>={guest:'GUEST_ERROR',limit:'LIMIT',deadline:'TIMEOUT',engine:'SANDBOX'};
 /** A 'guest' failure mixes the host decoder's protocol errors with errors the guest raised (its own,
  *  its runtime's resource limits), and the guest picks its error's name and message. It is POLICY only
@@ -59,6 +63,8 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
     const baseContext={executionId:crypto.randomUUID(),signal:controller.signal};
     const getContext=():Context=>Object.freeze({...baseContext,provenance:Object.freeze([...labels])});
     const ctx=getContext();
+    // Labels after the run, from the policy's own (a failed private read still tainted it).
+    const provenance=():readonly Label[]=>{if(run?.tainted.untrusted)labels.add('tool-untrusted');if(run?.tainted.privateRead)labels.add('private-data');return Object.freeze([...labels]);};
     let sandbox:Session|undefined;let stop:(()=>void)|undefined;let live=true;let run:any;let violation:string|undefined;let failCause:string|undefined;let pending=0;const denials=new Set<string>();
     let firstCall=true,firstRet=true;
     try {
@@ -92,7 +98,8 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
             error:(e:unknown)=>String(e)};
         }
       }
-      run=rules.createRun({tools,deadline,limits:{...this.security.limits,calls:this.callLimit}});
+      run=rules.createRun({tools,deadline,limits:{...this.security.limits,calls:this.callLimit},
+        tainted:{privateRead:labels.has('private-data'),untrusted:labels.has('tool-untrusted')}});
       sandbox=await this.pool.acquire(ctx.signal,deadline);mark('acquired');const s=sandbox;
       stop=()=>s.release();ctx.signal.addEventListener('abort',stop,{once:true});
       if(expired())abort();
@@ -112,24 +119,27 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           const frozen=deepFreeze({...call,args:structuredClone(decision.call.args)}) as Call;
           const callContext=getContext();
           const d=await this.policy(frozen,callContext);
-          if(d!=='allow'&&d!=='requireApproval')throw new Denied('policy denied');
+          // These refusals count against the denial budget like the policy's own (decide()).
+          if(d!=='allow'&&d!=='requireApproval')throw rules.denial(run,'policy denied');
           if(decision.kind==='approve'||d==='requireApproval'){
-            if(!(await options.approve?.(frozen,callContext)))throw new Denied('approval required');
+            if(!(await options.approve?.(frozen,callContext)))throw rules.denial(run,'approval required');
             if(decision.kind==='approve'&&!rules.approve(run,decision.digest))throw new rules.Violation('approval digest');
           }
           if(expired())abort();
           if(!live||ctx.signal.aborted)throw new Error('execution ended');
           const ok=await rules.dispatch(run,decision.call,{issuer:this.security.issuer??noCredentials,signal:ctx.signal});
-          // Compatibility provenance is observational; only 07's effects decide admission.
+          // The policy's run labels decide admission; the provenance set mirrors them for callers.
           if(run.tainted.untrusted)labels.add('tool-untrusted');
+          if(run.tainted.privateRead)labels.add('private-data');
           if(expired())abort();
           if(live&&!ctx.signal.aborted){await s.reply(call.id,{ok:JSON.parse(stringify(ok===undefined?null:ok))});if(firstRet){firstRet=false;mark('firstRet');}}
         }catch(e){
           if(e instanceof rules.Violation){run.dead=true;violation??=(e as Error).message;s.release();return;}
           if(!live||ctx.signal.aborted)return;
           const message=(e instanceof rules.ToolError?(e as Error).message:String(e)).slice(0,4096);
-          if(e instanceof Denied)denials.add(message);
-          await s.reply(call.id,{err:{code:e instanceof Denied?'DENIED':'TOOL_ERROR',message}}).catch(()=>s.release());
+          const denied=e instanceof Denied||e instanceof rules.Denial;
+          if(denied)denials.add(message);
+          await s.reply(call.id,{err:{code:denied?'DENIED':'TOOL_ERROR',message}}).catch(()=>s.release());
         }finally{pending--;}
       };
       while(true){
@@ -145,7 +155,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
           void dispatch({id:ev.id,ns:ev.ns,fn:ev.fn,args:ev.args});
         }else if(ev.kind==='done'){
           mark('done');
-          return {result:guestValue(JSON.stringify(ev.ok)),logs};
+          return {result:guestValue(JSON.stringify(ev.ok)),logs,provenance:provenance()};
         }else if(ev.kind==='fail'){failCause=ev.cause;throw Error(ev.message);}
         else throw Error(`engine sent a native ${ev.kind} event to a JS job`);
       }
@@ -154,7 +164,7 @@ export class MicroVMExecutor implements Executor, IsolateDriver {
       const error=violation?'policy violation: '+violation:ctx.signal.aborted?'Execution aborted or timed out':String(e);
       const errorCode:ErrorCode|undefined=violation?(/budget|outstanding/.test(violation)?'LIMIT':violation==='deadline'?'TIMEOUT':'POLICY')
         :ctx.signal.aborted?'TIMEOUT':failCause==='guest'?guestCode(error,denials):failCause?CAUSE[failCause]:undefined;
-      return {result:undefined,error,errorCode,logs};
+      return {result:undefined,error,errorCode,logs,provenance:provenance()};
     }
     finally {
       live=false;if(run){run.dead=true;run.approvals.clear();}

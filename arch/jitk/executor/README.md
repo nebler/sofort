@@ -136,8 +136,13 @@ fail closed without the caller's authenticated approval callback. The guest
 cannot alter host labels. Legacy ResolvedProvider functions without a registry
 are a **trusted caller declaration of credential-free public computation**:
 no egress and no writes. Supply explicit effects for every real external tool;
-the executor cannot infer side effects from function code. The older provenance
-array remains observational compatibility metadata and does not drive admission.
+the executor cannot infer side effects from function code.
+
+Taint follows the conversation, not only one run: the labels a run ends with come
+back in `RunResult.provenance` (`'private-data'`, `'tool-untrusted'`), and a caller
+that shows the result to a model passes them as `RunOptions.provenance` to that
+model's next `execute()`, which starts tainted. A fresh conversation passes none.
+Other provenance labels are metadata for the policy callback and do not drive admission.
 Opaque host handles remain v1, per E5.
 
 `policy-check.ts` imports the canonical `policy/policy-test.mjs` assertions
