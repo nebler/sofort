@@ -3,7 +3,7 @@
 // per slot). Sections that exercise one transport (the memfd queues and their
 // hostile peer fixture on Linux; engine processes on macOS) say so.
 import assert from 'node:assert/strict';
-import {mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
+import {copyFileSync,mkdtempSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync,spawn,type ChildProcess} from 'node:child_process';
@@ -185,7 +185,9 @@ const peer=join(scratch,'peer');
 // keeps real snapshot validation enabled on every ShardBackend construction.
 function peerSnapshot(mode:string) {
   const base=join(scratch,mode);
-  for(const ext of ['mem','regs','layout'])writeFileSync(base+'.'+ext,'fixture');
+  for(const ext of ['mem','regs'])writeFileSync(base+'.'+ext,'fixture');
+  // The class record Node reads (shard-backend.ts snapshotClass): the real snapshot's.
+  copyFileSync(snapshot+'.layout',base+'.layout');
   writeFileSync(base+'.identity',JSON.stringify({version:IDENTITY_VERSION,abiVersion:ABI_VERSION,helperSha256:helperHash,files:Object.fromEntries(['mem','regs','layout'].map(ext=>[ext,fileHash(base+'.'+ext)]))}));
   return base;
 }

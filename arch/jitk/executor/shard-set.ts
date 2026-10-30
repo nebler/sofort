@@ -32,7 +32,7 @@ export class ShardSet implements Engine {
   constructor(readonly options:ShardSetOptions) {
     const {slots,slotsPerProcess}=options;
     if(!Number.isInteger(slots)||!Number.isInteger(slotsPerProcess)||slotsPerProcess<1||slotsPerProcess>64||slots<1||slots>4096)throw Error('shard set capacity limit');
-    this.limits=shardLimits(slots);
+    this.limits=shardLimits(slots,options.memoryClass);
     for(let left=slots;left>0;left-=slotsPerProcess)this.shards.push(this.spawn(this.shards.length,Math.min(left,slotsPerProcess)));
     this.ready=Promise.all(this.shards.map(s=>s.ready)).then(()=>{});this.ready.catch(()=>{});
   }

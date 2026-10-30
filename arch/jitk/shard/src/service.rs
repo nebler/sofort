@@ -267,12 +267,11 @@ impl State {
         Ok(admitted)
     }
 }
-/// The START reservation of a snapshot class; IPC serves only glue-2m.
-pub fn ipc_charge(class: crate::arena::Class) -> io::Result<u32> {
-    if class != crate::arena::Class::Glue2m {
-        return Err(invalid("IPC supports only verified glue-2m snapshots"));
-    }
-    Ok(class.admission_bytes())
+/// The START reservation of a snapshot class. IPC serves both JS classes:
+/// glue-2m (the default) and glue-4m (larger values; Node selects it with
+/// JITK_SHARD_CLASS). Every START must carry exactly this charge.
+pub fn ipc_charge(class: crate::arena::Class) -> u32 {
+    class.admission_bytes()
 }
 pub fn admission(m: &Message, now: u64, charge: u32) -> io::Result<(u64, String)> {
     let b = &m.bytes;
@@ -345,9 +344,16 @@ pub fn enqueue(out: &mut VecDeque<Message>, m: Message) -> io::Result<()> {
 mod tests {
     use super::*;
     #[test]
-    fn ipc_rejects_unsupported_snapshot_classes() {
-        assert_eq!(ipc_charge(crate::arena::Class::Glue2m).unwrap(), 2 << 20);
-        assert!(ipc_charge(crate::arena::Class::Glue4m).is_err());
+    fn ipc_charges_the_snapshot_class() {
+        assert_eq!(ipc_charge(crate::arena::Class::Glue2m), 2 << 20);
+        assert_eq!(ipc_charge(crate::arena::Class::Glue4m), 4 << 20);
+        // A START charging another class than the snapshot's is refused.
+        let mut m = Message::new(START, 0, 1, 0, vec![0; 24]);
+        m.bytes[8..12].copy_from_slice(&(ring::MAX_CALLS as u32).to_le_bytes());
+        m.bytes[12..16].copy_from_slice(&(ring::CALL_BYTES as u32).to_le_bytes());
+        m.bytes[20..24].copy_from_slice(&(2u32 << 20).to_le_bytes());
+        assert!(admission(&m, 0, 2 << 20).is_ok());
+        assert!(admission(&m, 0, 4 << 20).is_err());
     }
     #[test]
     fn malformed_admissions() {

@@ -122,6 +122,14 @@ export function shardDir(): string {
 // class); the snapshot step rebuilds and re-verifies on an index miss.
 export const SNAPSHOT_CLASSES = ['glue-2m', 'glue-4m'];
 
+// The class JITK_SHARD_SNAPSHOT defaults to: JITK_SHARD_CLASS (the executor's
+// selection, executor/select-backend.ts shardClass), else glue-2m.
+export function shardClass(): string {
+  const cls = process.env.JITK_SHARD_CLASS || 'glue-2m';
+  check(SNAPSHOT_CLASSES.includes(cls), 'unsupported JITK_SHARD_CLASS ' + cls + ' (one of ' + SNAPSHOT_CLASSES.join(', ') + ')');
+  return cls;
+}
+
 export function snapshotInputs(cls: string): string {
   const kernel = ['Cargo.toml', 'Cargo.lock', 'build.rs', 'slots.json', 'prepare.ts', 'packer.ts', 'generate.ts', 'build-args.ts', 'lib.ts', 'native.c', 'native-ffi.json', 'ring-bootstrap.js', 'payload/qjs-ring'].map(name => 'kernel/' + name);
   const helpers = ['executor/codec.mjs', 'executor/shard-helpers.js', 'executor/prepared-helpers.mjs', 'executor/abi.ts', 'shard/snapshot.ts', 'protocol/bootstrap.js', 'abi/src/lib.rs'];
@@ -238,7 +246,7 @@ export function cachePath(name: string): string {
     return join(shardDir(), shardBinaryName());
   }
   if (name === 'JITK_SHARD_SNAPSHOT') {
-    return snapshotBase('glue-2m');
+    return snapshotBase(shardClass());
   }
   throw new Error('unknown jitk artifact ' + name);
 }
@@ -261,7 +269,7 @@ export function completeMarker(name: string): string {
     return join(shardDir(), 'manifest.json');
   }
   if (name === 'JITK_SHARD_SNAPSHOT') {
-    return join(dirname(snapshotBase('glue-2m')), 'manifest.json');
+    return join(dirname(snapshotBase(shardClass())), 'manifest.json');
   }
   return join(hyperlightDir(), 'manifest.json');
 }

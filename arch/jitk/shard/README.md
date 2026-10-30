@@ -448,11 +448,28 @@ of tenant code, `LIMIT.code`), 1,024 one-way console lines, and guest timers
 RAM and the reset are as before; host memory per slot is a backlog of at most
 the source plus one reply per open call.
 
-What bounds big values is the glue-2m arena: a run has about 400 KiB of
-QuickJS heap (each open call costs ~4 KiB of it), so a 64 KiB reply or source
-works, a 50 KiB call echoed back works, a 64 KiB echo, a 100 KiB reply or a
-100 KiB completion is a QuickJS out-of-memory error. A larger class (glue-4m,
-2.75 MiB arena) would lift that at the price of its reset copy.
+What bounds big values is the snapshot's arena class, the QuickJS heap a
+run has. Two classes serve JS jobs; glue-2m is the default, and
+`JITK_SHARD_CLASS=glue-4m` selects the larger one (`../executor/select-backend.ts`;
+`deps env` and `snapshot.ts env` then name its snapshot, and Node and both
+engines refuse a snapshot of another class: Node reads the class from the
+`.layout` record, the engine charges the class's admission bytes on every
+START). `Engine.limits` reports the class (`memoryMB`, `js.arenaBytes`); the
+frame limits stay 1 MiB on both. Measured on HVF (M4 Pro, `executor/run.sh
+payload-bench memory`; JSON bytes of the value, to 1 KiB; the host was at
+load 30–70, which moves times, not sizes):
+
+| class | arena | charged per START | usable heap (16 KiB buffers) | largest tool reply | largest completion | largest echo (call + reply) | engine process footprint (HVF) | reset p50 (`hvf bench`, load ~63) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| glue-2m (default) | 1.25 MiB | 2 MiB | 320 KiB | 83 KiB | 94 KiB | 62 KiB | 5.2 MiB | 105 µs |
+| glue-4m | 2.75 MiB | 4 MiB | 1,584 KiB | 335 KiB | 474 KiB | 319 KiB | 9.7 MiB | 219 µs |
+
+A value past the class's heap ends as a QuickJS out-of-memory error, which
+the MCP server reports as `LIMIT` (parity: `b-json1m`, `t-memory-over-arena`
+on glue-2m). glue-4m costs about 4.5 MiB more per HVF engine process and
+twice the reset copy; on KVM the guest RAM held between runs and the reset
+copy grow the same way (both scale with the dirtied part of the writable
+window).
 
 Cost, `return 2`, glue-2m, p50 of 1,000, before (ABI 10, main) / after:
 

@@ -67,7 +67,10 @@ Linux arm64 (the default there, `JITK_BACKEND=shard`), from
 `JITK_SHARD_BINARY` (the signed `hvf` / `real` binary) and
 `JITK_SHARD_SNAPSHOT` (a prepared snapshot base; `run.sh` and the delegate
 take both from the jitk cache: `make -C .. deps`, `make -C ../shard
-snapshot`). It reads no `.READY` marker. The selection, the engine's and the
+snapshot`). `JITK_SHARD_CLASS` picks the memory class (`glue-2m`, the
+default, or `glue-4m` for values past about 64 KiB; `../shard/README.md`
+"Limits"): `deps env` then names that class's snapshot, and the backend
+refuses a snapshot of another class. It reads no `.READY` marker. The selection, the engine's and the
 snapshot identity's hashes and the parking gate are written to
 `integration-selection.json` (`.work/`, `JITK_RECORD=1`: here). Missing
 artifacts fail with build instructions.
@@ -246,11 +249,14 @@ The ring profile has protocol v1's source (LIMIT.code), call
 (4,096 per run, 64 open, 2 MiB in flight), reply and completion (LIMIT.frame)
 and log (1,024 lines, one-way) bounds and its timers (setTimeout,
 setInterval and their clear functions); messages stream over the fixed rings
-and IPC records (`../shard/ABI-R7.md`). What still differs is live memory:
-the glue-2m arena leaves a run about 400 KiB of heap, so values much past
-64 KiB (a reply, a 50 KiB call echoed back, a 70 KiB completion) end in a
-QuickJS out-of-memory error, where the console profile has 16 MiB (parity: `b-json1m`,
-`t-memory-over-arena`). `/cap`, cancellation of a busy vCPU and broad shadow
+and IPC records (`../shard/ABI-R7.md`). What still differs is live memory: the
+snapshot's arena class bounds a run's QuickJS heap. The default glue-2m
+leaves about 320 KiB, so values much past 64 KiB (a reply, a 50 KiB call
+echoed back, a 70 KiB completion) end in a QuickJS out-of-memory error
+(`LIMIT` through MCP), where the console profile has 16 MiB (parity:
+`b-json1m`, `t-memory-over-arena`). `JITK_SHARD_CLASS=glue-4m` gives about
+five times that heap for twice the memory charge and reset copy (sizes per
+class: `../shard/README.md` "Limits"). `/cap`, cancellation of a busy vCPU and broad shadow
 parity remain cutover blockers. Older measurements are in
 [the R7 IPC report](../docs/results/shard-r7-ipc.md).
 

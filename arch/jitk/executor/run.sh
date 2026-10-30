@@ -45,5 +45,6 @@ case "${1:-test}" in
  hvf-parking-gate) shift; "$TASK_NODE" build/hvf-parking-gate.js "$@" ;;
  demo) "$TASK_NODE" build/demo.js ;;
  bench) "$TASK_NODE" build/breakdown.js ;;
- *) echo 'usage: run.sh [build|test|shard-test|parity|parity-compare|demo|bench|hvf-parking-gate]' >&2; exit 2;;
+ payload-bench) shift; "$TASK_NODE" build/payload-bench.js "$@" ;;
+ *) echo 'usage: run.sh [build|test|shard-test|parity|parity-compare|demo|bench|payload-bench|hvf-parking-gate]' >&2; exit 2;;
 esac

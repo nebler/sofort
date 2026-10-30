@@ -30,7 +30,7 @@ pub fn run(base: &str, slots: usize, owners: usize, policy: kvm::ResetPolicy) ->
     // PR_SET_PDEATHSIG closes the Node death window without a helper process.
     confine::die_with_parent().map_err(|_| invalid("IPC parent unavailable"))?;
     let snapshot = Snapshot::load_identified(base)?;
-    let charge = ipc_charge(snapshot.class)?;
+    let charge = ipc_charge(snapshot.class);
     // SAFETY: this binary startup path uniquely adopts the Node-supplied
     // memfd and eventfds 3/4/5 before any owner threads are started.
     let mut endpoint = unsafe { Endpoint::inherited()? };

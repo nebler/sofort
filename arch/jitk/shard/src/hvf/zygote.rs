@@ -195,7 +195,7 @@ impl Zygote {
         node.set_nonblocking()?;
         super::conn::buffers(node.fd());
         let snapshot = Snapshot::<State>::load_identified(base)?;
-        let charge = service::ipc_charge(snapshot.class)?;
+        let charge = service::ipc_charge(snapshot.class);
         super::warm();
         // What needs a file outside the snapshot directory or a sysctl is
         // done: confine this process before the first fork, so every engine
