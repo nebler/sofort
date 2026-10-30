@@ -89,7 +89,79 @@ ignored by the driver.
   T2 89, T5 2), plus about 300 exploratory requests while choosing
   repositories and labels.
 
-## What probably won't fit Sofort's heap
+## Working sets (measured)
+
+How much heap each program needs to complete, three ways
+(`harness/working-set.ts`, 2026-10-31):
+
+- **QuickJS (Wasm)**: the smallest QuickJS memory limit, in 16 KiB steps, at
+  which the program completes and its oracle passes. This is
+  quickjs-emscripten 0.31 (Bellard QuickJS) under Node, with replies parsed
+  from JSON text as the Sofort guest does. The empty context is 67 KiB.
+- **V8**: the peak of V8's used heap, sampled at every call, reply and the
+  end. It is an upper bound, since V8 collects lazily.
+- **Sofort**: the guest's heap high-water on glue-16m (STATS
+  `heapPeakBytes`: mmap window plus brk, max of 3 runs). `return 1` alone is
+  428 KiB, which is the prepared snapshot's heap.
+
+The last column is the smallest class on which all four S1 attempts
+completed (fit matrix `fit-matrix4`, HVF). A class's heap capacity is
+864 KiB (glue-2m), 2,256 KiB (glue-4m), 6,168 KiB (glue-8m) and 14,480 KiB
+(glue-16m) (`../../../shard/README.md` "Limits").
+
+| Task / program | QuickJS (Wasm) limit | V8 used-heap peak | Sofort heap high-water (glue-16m) | Smallest class that completes it |
+| --- | ---: | ---: | ---: | --- |
+| T1 1 | 432 KiB | 528 KiB | 1,048 KiB | glue-4m |
+| T1 2 | 432 KiB | 535 KiB | 1,148 KiB | glue-4m |
+| T1 3 | 432 KiB | 549 KiB | 1,048 KiB | glue-4m |
+| T1 4 | 432 KiB | 862 KiB | 1,672 KiB | glue-4m |
+| T1 5 | 432 KiB | 520 KiB | 1,048 KiB | glue-4m |
+| T2 1 | 352 KiB | 4,582 KiB | 2,516 KiB | glue-8m |
+| T2 2 | 448 KiB | 6,244 KiB | 4,076 KiB | glue-8m |
+| T2 3 | 400 KiB | 2,335 KiB | 3,148 KiB | glue-8m |
+| T2 4 | 992 KiB | 8,726 KiB | 10,484 KiB | glue-16m |
+| T2 5 | 304 KiB | 5,473 KiB | 2,340 KiB | glue-4m (borderline: fails on kvm-dev) |
+| T3 1 | 400 KiB | 1,298 KiB | 2,172 KiB | glue-4m |
+| T3 2 | 384 KiB | 1,285 KiB | 2,204 KiB | glue-4m |
+| T3 3 | 384 KiB | 1,172 KiB | 2,104 KiB | glue-4m |
+| T3 4 | 400 KiB | 1,518 KiB | 2,652 KiB | glue-8m |
+| T3 5 | 400 KiB | 1,370 KiB | 2,220 KiB | glue-4m |
+| T4 1 | 672 KiB | 9,077 KiB | 5,544 KiB | glue-8m |
+| T4 2 | 2,336 KiB | 8,677 KiB | 3,596 KiB | glue-8m |
+| T4 3 | 1,472 KiB | 13,769 KiB | > 14,636 KiB (out of memory) | none |
+| T4 4 | 352 KiB | 18,556 KiB | 4,000 KiB | glue-8m |
+| T4 5 | 960 KiB | 8,643 KiB | 3,932 KiB | glue-8m |
+| T5 1 | 176 KiB | 234 KiB | 1,112 KiB | glue-4m |
+| T5 2 | 176 KiB | 241 KiB | 1,112 KiB | glue-4m |
+| T5 3 | 176 KiB | 257 KiB | 1,276 KiB | glue-4m |
+| T5 4 | 304 KiB | 809 KiB | 2,428 KiB | glue-8m |
+| T5 5 | 176 KiB | 247 KiB | 1,080 KiB | glue-4m |
+
+QuickJS itself needs 0.2 to 2.3 MiB for every program. The Sofort guest's
+high-water is 2 to 10 times that: the reply's fragments, the joined text
+and the parsed value coexist, and the guest allocator fragments the arena.
+The kernel's `mmap` is first-fit over memory that is linear in the address
+and has no `mremap`, so freed big blocks leave holes that later, bigger
+blocks cannot use (`../../../shard/README.md`).
+
+A high-water is an upper bound on the need. Near its limit the allocator
+reuses more, so T2 5 (2,340 KiB on glue-16m) completes on glue-4m (2,256 KiB)
+on HVF but not on kvm-dev, where its four parallel calls interleave
+differently.
+
+T4 3 keeps every point of every 2,000-point page. It is the one program that
+no class completes. Its QuickJS need is 1.47 MiB, so the guest allocator is
+what fails it, not the class size.
+
+    $JITK_NODE --expose-gc bench/v1/harness/working-set.ts --engines quickjs,v8 --out ref.json
+    JITK_SHARD_CLASS=glue-16m eval "$(arch/jitk/tools/.work/bin/deps env)"
+    $JITK_NODE --expose-gc bench/v1/harness/working-set.ts --engines sofort --class glue-16m --repeat 3 [--memory]
+
+## What probably won't fit Sofort's heap (prediction, before measuring)
+
+The table below is the prediction made before the classes and the
+measurement above existed. It is kept for the record. The measured working
+sets above and `../results/2026-10-31-capacity.md` replace it.
 
 Measured sizes, compared with `shard/README.md` "Limits":
 
