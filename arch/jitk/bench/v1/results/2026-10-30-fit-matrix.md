@@ -54,3 +54,18 @@ The structure budget no longer applies to trusted host replies. Remaining failur
 | hyperlight-js | 0/20 (guest 20) | 0/20 (guest 20) | 0/20 (guest 20) | 0/20 (guest 20) | 0/20 (guest 20) |
 
 Sofort is now bound by its heap (oom) and, for one T4 page, the 1 MiB reply frame; Hyperlight-JS by the virtqueue buffer sizes of our own worker (`bench/hyperlight/worker.rs` leaves Hyperlight's defaults), which is a fairness problem in the baseline, not a Hyperlight limit.
+
+## Hyperlight-JS with a fair configuration (`aabce2f3`)
+
+Our worker had left Hyperlight's virtqueue transport at its defaults; with
+buffers sized for 1 MiB frames, scratch able to back the full 16 MiB heap,
+and a linear JSON reviver (run `hl-fit`, same settings):
+
+| adapter | T1 | T2 | T3 | T4 | T5 |
+|---|---:|---:|---:|---:|---:|
+| hyperlight-js (before) | 0/20 | 0/20 | 0/20 | 0/20 | 0/20 |
+| hyperlight-js (fair) | 20/20 | 20/20 | 20/20 | 8/20 | 20/20 |
+
+The 12 remaining failures: 8 out of memory at its 16 MiB heap (T4 programs 2
+and 5), 4 the 1 MiB protocol frame (one T4 page is 1.28 MiB), which applies to
+every executor using this protocol.
