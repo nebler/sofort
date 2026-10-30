@@ -75,3 +75,20 @@ smoke: build
 
 clean:
 	rm -rf build .scriptc
+
+# sofort-bench v1 (v1/README.md), run with the pinned Node under the bench
+# lock: make v1 ARGS='--spec v1/specs/smoke-mac.json'. v1-check typechecks
+# bench/v1 (harness, adapters, tasks); v1-reduce RUN=dir re-derives a run's
+# tables and v1-verify RUN=dir diffs them against the stored ones.
+JITK_DEPS ?= $(abspath ../tools/.work/bin/deps)
+BENCH_LOCK := $(if $(wildcard /usr/bin/lockf),/usr/bin/lockf -k,flock)
+V1_NODE = eval "$$($(JITK_DEPS) env)" && JITK_DEPS=$(JITK_DEPS)
+.PHONY: v1 v1-check v1-reduce v1-verify
+v1:
+	$(V1_NODE) $(BENCH_LOCK) /tmp/sofort-bench.lock "$$JITK_NODE" v1/harness/run.ts $(ARGS)
+v1-check:
+	$(V1_NODE) "$$JITK_NODE" ../executor/node_modules/typescript/bin/tsc -p v1/tsconfig.json
+v1-reduce:
+	$(V1_NODE) "$$JITK_NODE" v1/harness/reduce.ts $(RUN)
+v1-verify:
+	$(V1_NODE) "$$JITK_NODE" v1/harness/reduce.ts $(RUN) --verify

@@ -1,0 +1,20 @@
+{
+ "id": "example",
+ "name": "Example: top customers by shipped revenue",
+ "description": "List all orders (paginated), fetch every shipped order's line items, and return the three customers with the highest shipped revenue in cents.",
+ "providers": [{
+  "name": "codemode",
+  "tools": {
+   "listOrders": {"description": "One page of orders (20 per page); next is the next page number or null.",
+    "inputSchema": {"type": "object", "properties": {"page": {"type": "integer", "minimum": 1}}, "required": ["page"]},
+    "outputSchema": {"type": "object", "properties": {"orders": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "customer": {"type": "string"}, "status": {"type": "string"}, "placed": {"type": "string"}}}}, "next": {"type": ["integer", "null"]}}}},
+   "getOrder": {"description": "One order with its line items (qty, priceCents).",
+    "inputSchema": {"type": "object", "properties": {"id": {"type": "string"}}, "required": ["id"]},
+    "outputSchema": {"type": "object", "properties": {"id": {"type": "string"}, "customer": {"type": "string"}, "status": {"type": "string"}, "items": {"type": "array", "items": {"type": "object", "properties": {"sku": {"type": "string"}, "qty": {"type": "integer"}, "priceCents": {"type": "integer"}}}}}}}
+  }
+ }],
+ "responses": "responses.jsonl",
+ "oracle": "oracle.ts",
+ "programs": ["programs/parallel.js", "programs/sequential.js"],
+ "source": {"data": "seeded generator (generate.ts)", "programs": "hand-written harness fixture"}
+}

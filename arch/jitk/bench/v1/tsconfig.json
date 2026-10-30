@@ -1,0 +1,10 @@
+{
+ "compilerOptions": {
+  "target": "ES2022", "module": "preserve", "moduleResolution": "bundler", "strict": true, "skipLibCheck": true,
+  "noEmit": true, "allowImportingTsExtensions": true, "erasableSyntaxOnly": true, "verbatimModuleSyntax": true,
+  "types": ["node"], "typeRoots": ["../../executor/node_modules/@types"],
+  "paths": { "@cloudflare/codemode": ["../../executor/node_modules/@cloudflare/codemode"] }
+ },
+ "include": ["harness/**/*.ts", "adapters/*.ts", "tasks/**/*.ts"],
+ "exclude": ["**/node_modules", ".work"]
+}
