@@ -26,7 +26,7 @@ const work = mkdtempSync(join(tmpdir(), 'jitk-contract-refresh-'));
 try {
   const kernel = join(work, 'kernel');
   copyTree(root, kernel, ignored);
-  for (const sibling of ['protocol', 'grow', 'bench', 'docs', 'shard']) {
+  for (const sibling of ['protocol', 'grow', 'bench', 'docs', 'shard', 'tools', 'tslib', 'abi']) {
     symlinkSync(resolve(root, '..', sibling), join(work, sibling));
   }
   const env = environment();
@@ -49,7 +49,13 @@ try {
   const receipt = { status: 'PASS', at: new Date().toISOString(), command: 'make -C SCRATCH/kernel test', sources: before, changed_hashes: changed, log_sha256: sha(readFileSync(join(out, 'contracts.log'))) };
   const raw = json(receipt) + '\n';
   writeFileSync(join(out, 'contract-refresh.json'), raw);
-  value.r8_amendment = { scope: 'Historical gates retained; source digests refreshed only after the complete R8 kernel contract suite passed on an unverified scratch build.', generator: 'refresh-contracts.ts', receipt: 'dist/r8/contract-refresh.json', receipt_sha256: sha(Buffer.from(raw)), changed_hashes: changed };
+  // Write the refreshed rows back explicitly (a cast copy is not the
+  // manifest's own array), and append this refresh: r8_amendment is history.
+  value.contracts = contracts;
+  interface Amendment { scope: string; at: string; generator: string; receipt: string; receipt_sha256: string; changed_hashes: Record<string, { old: string; new: string }> }
+  const earlier: Amendment[] = Array.isArray(value.refresh_amendments) ? (value.refresh_amendments as Amendment[]) : [];
+  const amendment: Amendment = { scope: 'Source digests refreshed only after the complete kernel contract suite passed on an unverified scratch build.', at: receipt.at, generator: 'refresh-contracts.ts', receipt: 'dist/r8/contract-refresh.json', receipt_sha256: sha(Buffer.from(raw)), changed_hashes: changed };
+  value.refresh_amendments = [...earlier, amendment];
   if (record) {
     const pending = manifest + '.tmp';
     writeFileSync(pending, json(value) + '\n');

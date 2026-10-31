@@ -25,6 +25,6 @@ semantic.pipe=0
 semantic.pipe-type=4096
 semantic.pipe=0
 semantic.pipe-type=4096
-semantic.unreadable-metadata=0
+semantic.unreadable-metadata=-9
 semantic.truncated-fd=0
 error.closed=-9

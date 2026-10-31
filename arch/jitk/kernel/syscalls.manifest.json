@@ -51,7 +51,7 @@
     {
       "nr": 56,
       "name": "openat",
-      "source_sha256": "f24d41fcdc40360bad79c386ed823d60d5d45ae334e75f04c26d40b5a3863f34",
+      "source_sha256": "f96704e782e5d0c90fa3f81c61e4ca10319a9ecb88e9784ae7f9df5d6ca9c228",
       "status": "restricted",
       "domain": "read-only resource archive: archive paths; RO flag/error precedence of a ro bind mount; O_PATH EINVAL",
       "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -393,5 +393,20 @@
         "new": "489ce6b3f7298b9c5cf2b4e761aad8547c99feeac683ff9f69a27986e9e83635"
       }
     }
-  }
+  },
+  "refresh_amendments": [
+    {
+      "scope": "Source digests refreshed only after the complete kernel contract suite passed on an unverified scratch build.",
+      "at": "2026-10-31T12:46:55.910Z",
+      "generator": "refresh-contracts.ts",
+      "receipt": "dist/r8/contract-refresh.json",
+      "receipt_sha256": "edce5a252f6df5c8092d2287dcc3eaaaf151b9cc46a8975763cc3da99de0c4bb",
+      "changed_hashes": {
+        "openat": {
+          "old": "f24d41fcdc40360bad79c386ed823d60d5d45ae334e75f04c26d40b5a3863f34",
+          "new": "f96704e782e5d0c90fa3f81c61e4ca10319a9ecb88e9784ae7f9df5d6ca9c228"
+        }
+      }
+    }
+  ]
 }

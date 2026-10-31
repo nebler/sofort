@@ -34,5 +34,5 @@
     "linux-summary.json",
     "oracle-image.json"
   ],
-  "provenance": "seeded from a recorded Linux run in /Users/noah/code/sofort/arch/jitk/kernel/.work/promote/5325be7f137ea6aa76f47b7167a3defab8f9baef569abc2ba1a488a18f6eae3c/grow-sqlite-checks/linux-pread64 (config, payload and mounts proven equal)"
+  "provenance": "recorded by oracle(): GitHub run 41201631336 on 2026-10-31T12:35:41.566Z"
 }

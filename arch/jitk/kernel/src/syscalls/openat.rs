@@ -1,6 +1,12 @@
-// Read-only archive open. Error order follows Linux do_open/may_open on a
-// read-only bind mount (O_ACCMODE 3 opens a file with neither read nor write
-// access, as Linux does); O_PATH is outside this contract (EINVAL).
+// Read-only archive open, as Linux answers an unprivileged process (the
+// guest; the oracles run payloads as uid 65534) on a read-only bind mount
+// whose files are 0444 and directories 0555: O_TRUNC fails at the mount
+// (EROFS); any write access mode, including O_ACCMODE 3 (which Linux checks
+// for read and write permission), fails the permission check (EACCES);
+// directories refuse writes (EISDIR). As root, Linux skips the permission
+// check, and Docker Desktop's file sharing let mode 3 open: both differ
+// (docs/results/oracle-recordings.md). O_PATH is outside this contract
+// (EINVAL).
 use crate::fs;
 pub fn call(a: &[usize]) -> isize {
     let flags = a[2] as u32;
@@ -38,8 +44,11 @@ pub fn call(a: &[usize]) -> isize {
     if dirflag && !n.is_dir() {
         return -20;
     }
-    if write && (flags & 3 != 3 || trunc) {
+    if trunc {
         return -30;
     }
-    fs::alloc(i, flags & 0x80000 != 0, flags & 3 != 3)
+    if flags & 3 != 0 {
+        return -13;
+    }
+    fs::alloc(i, flags & 0x80000 != 0, true)
 }

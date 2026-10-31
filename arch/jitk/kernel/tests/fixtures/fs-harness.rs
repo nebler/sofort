@@ -82,7 +82,9 @@ fn exercise() {
     }
     assert_eq!(open("/b/../b/c/./z", 0), 3); assert_eq!(close::call(&[3]), 0);
     assert_eq!(open("/a.txt/", 0), -20); assert_eq!(open("/nope/x", 0x40), -2); assert_eq!(open("/new", 0x41), -30);
-    assert_eq!(open("/../../a.txt", 1), -30); assert_eq!(open("/b", 1), -21); assert_eq!(open("", 0), -2);
+    // O_WRONLY on a 0444 file: EACCES for the unprivileged guest (Linux as uid 65534, openat.rs).
+    assert_eq!(open("/../../a.txt", 1), -13); assert_eq!(open("/a.txt", 3), -13); assert_eq!(open("/a.txt", 0x201), -30);
+    assert_eq!(open("/b", 1), -21); assert_eq!(open("", 0), -2);
     assert_eq!(openat::call(&[CWD, 12, 0, 0]), -14);
     let long = "/".repeat(4096); assert_eq!(open(&long[..4095], 0), 3); assert_eq!(close::call(&[3]), 0);
     syscalls::MEM[..4096].fill(b'/'); assert_eq!(openat::call(&[CWD, syscalls::MEM.as_ptr() as usize, 0, 0]), -36);
