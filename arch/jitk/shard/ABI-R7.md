@@ -34,9 +34,11 @@ ppoll timeout on the slot clock) is finite, until that time; this is how
 setTimeout/setInterval wake a parked guest. The lease bounds every wait.
 
 Since ABI 12 the guest kernel also writes the run's heap high-water to
-control+0x268 (`HEAP_PEAK`, u64): the highest end of the mmap window it mapped
-above the window's base plus the highest brk break above the heap base, raised
-whenever user pages are mapped and again before DONE. It starts each run at
+control+0x268 (`HEAP_PEAK`, u64): the most arena pages its heap pool (brk and
+mmap pages and the user page tables, `../kernel/src/heap.rs`) held at once, in
+bytes, raised whenever the pool's use reaches a new high and again before DONE.
+(Until the page-granular pool, it was the highest end of the mmap window plus
+the brk break.) It starts each run at
 the prepared snapshot's value (the arena and control page are restored). The
 host reads it when the run stops, before the reset, takes at most the class's
 arena bytes and reports it in IPC STATS; it is a measurement, never trusted.

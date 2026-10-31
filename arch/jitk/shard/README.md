@@ -478,9 +478,11 @@ memory per slot is a backlog of at most the source plus one reply per open
 call.
 
 What bounds big values is the snapshot's arena class, the QuickJS heap a run
-has. Four classes serve JS jobs; glue-8m is the default (the smallest that
-completes the real bench tasks: 92 of 100 runs, against 0 on glue-2m and 56 on
-glue-4m; `../bench/v1/results/2026-10-31-capacity.md`), and
+has. Four classes serve JS jobs; glue-8m is the default (92 of 100 real bench
+task runs; `../bench/v1/results/2026-10-31-capacity.md`). Since the
+page-granular heap pool, glue-16m completes all 100 (glue-2m 8, glue-4m 68)
+and, with the HVF dirty reset, costs a small job what glue-2m does; it is the
+recommended default (`../bench/v1/results/2026-10-31-memory.md`), and
 `JITK_SHARD_CLASS=glue-2m|glue-4m|glue-16m` selects another
 (`../executor/select-backend.ts`; `deps env` and `snapshot.ts env` then name
 its snapshot, and Node and both engines refuse a snapshot of another class:
@@ -493,15 +495,23 @@ control page's 2 MiB block. `Engine.limits` reports the class (`memoryMB`,
 
 Measured on HVF (M4 Pro, `executor/run.sh payload-bench memory`; JSON bytes
 of the value, to 1 KiB; sizes do not move with host load, times do). Heap
-capacity is the STATS heap high-water when a run is out of memory: the mmap
-window plus brk the class gives QuickJS's allocator.
+capacity is the STATS heap high-water when a run is out of memory: the most
+arena pages the guest's heap pool held (`../kernel/src/heap.rs`). Measured
+2026-10-31 after the page-granular pool and the rope reply assembly; the
+sizes before are in `../bench/v1/results/2026-10-31-memory.md`.
 
 | class | arena | charged per START | reply bound | usable heap (16 KiB buffers) | heap capacity | largest tool reply | largest completion | largest echo (call + reply) | largest round trip (reply returned) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| glue-2m | 1.25 MiB | 2 MiB | 1 MiB | 368 KiB | 864 KiB | 107 KiB | 141 KiB | 72 KiB | 107 KiB |
-| glue-4m | 2.75 MiB | 4 MiB | 1 MiB | 1,584 KiB | 2,256 KiB | 545 KiB | 477 KiB | 359 KiB | 367 KiB |
-| glue-8m (default) | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,168 KiB | 1,227 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
-| glue-16m | 14.75 MiB | 16 MiB | 4 MiB | 12,096 KiB | 14,480 KiB | 2,759 KiB | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+| glue-2m | 1.25 MiB | 2 MiB | 1 MiB | 368 KiB | 844 KiB | 212 KiB | 212 KiB | 111 KiB | 212 KiB |
+| glue-4m | 2.75 MiB | 4 MiB | 1 MiB | 1,584 KiB | 2,248 KiB | 910 KiB | 939 KiB | 499 KiB | 910 KiB |
+| glue-8m (default) | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,160 KiB | 2,048 KiB (bound) | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+| glue-16m | 14.75 MiB | 16 MiB | 4 MiB | 12,096 KiB | 14,484 KiB | 4,096 KiB (bound) | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+
+With the heap's pages no longer tied to their address and the reply
+assembled as a rope, the largest reply roughly doubled on glue-2m and glue-4m
+(107 and 545 KiB before) and now reaches the reply bound on glue-8m and
+glue-16m (1,227 and 2,759 KiB before); the capacity is about the same (the
+64 KiB of static page tables freed, less the heap's emergency reserve).
 
 A class's reply bound is the power of two above the largest reply its heap
 holds, so that the heap and not the frame refuses a reply: replies are
@@ -513,24 +523,41 @@ its run (`FRAME_LIMIT`), as on the console path. Node -> shard messages
 reassemble to 4 MiB (`IPC.nodeMessageBytes`), shard -> Node messages, which
 carry guest bytes, to 1 MiB (`IPC.messageBytes`).
 
-Costs, one slot (load 40–58 on the Mac, sizes from 1,000-run benches;
-kvm-dev is nested KVM, so its times are not performance claims):
+Costs, one slot (load 9–18 on the Mac; kvm-dev is nested KVM, so its times
+are not performance claims; before/after in
+`../bench/v1/results/2026-10-31-memory.md`):
 
-| class | HVF slot engine process footprint: idle / after the bench v1 tasks / after a run that fills the arena | HVF reset p50 (`hvf bench` `return2`, copy reset) | Linux one-slot shard RSS: after `return 1` / after the bench v1 tasks | KVM reset p50 (`real bench` `return2`, nested) |
+| class | HVF engine child footprint: idle / after the bench v1 tasks | HVF reset p50 (`hvf bench` `return2`, dirty reset) / bench task resets | Linux one-slot shard RSS: after `return 1` / after the bench v1 tasks | KVM reset p50 (`real bench` `return2`, nested) |
 | --- | ---: | ---: | ---: | ---: |
-| glue-2m | 3.0 / 7.9 / 6.4–6.6 MiB | 104 µs | 11.6 / 14.0 MiB | 182 µs |
-| glue-4m | 4.5 / 11.0 / 9.1–10.0 MiB | 218 µs | 15.0 / 17.6 MiB | 188 µs |
-| glue-8m | 8.5 / 17.0 / 20–26 MiB | 523 µs | 16.5 / 26.7 MiB | 230 µs |
-| glue-16m | 17.0 / 24.0 / 31–48 MiB | 1,184 µs | 14.5 / 44.9 MiB | 265 µs |
+| glue-2m | 2.5 / 11.0 MiB | 34 / 83 µs | 9.5 / 11.8 MiB | 106 µs |
+| glue-4m | 2.4 / 15.0 MiB | 34 / 137 µs | 14.5 / 16.8 MiB | 108 µs |
+| glue-8m | 2.4 / 13.0 MiB | 40 / 155 µs | 12.9 / 23.8 MiB | 128 µs |
+| glue-16m | 2.5 / 14.0 MiB | 40 / 208 µs | 12.9 / 39.4 MiB | 167 µs |
 
-The HVF copy reset rewrites the whole writable window, so its time and the
-slot process's resident arena grow with the class whatever a run used. KVM
-copies only the pages a run dirtied (pagemap), so a slot's memory follows the
-largest heap its recent runs reached (it stays resident until the 2 s idle
-trim) and its reset barely grows with the class. The zygote's own footprint
-(4.4–4.9 MiB idle) grows with the largest messages it has relayed.
-`bench/v1/results/2026-10-31-capacity.md` has the per-task working sets and the
-fit matrix on each class.
+Both engines now restore only what a run wrote, so a slot's reset time and
+memory follow what its runs use, not the class:
+
+- **HVF** (`src/hvf.rs` `MemoryReset::Dirty`, the default). The arena is
+  read-only at stage 2. A guest write to a read-only 16 KiB granule exits
+  to the engine, which makes it writable, records it and resumes the same
+  instruction (~6 µs). The reset copies and cleans every recorded granule.
+  A hot set of up to 128 granules stays writable across resets (repeated
+  small runs take no write faults) and is re-protected every 16th reset; a
+  larger set is not copied back but remapped from the file, read-only, which
+  returns its pages to the kernel at once. The child then releases the host
+  heap a large run's messages grew (`malloc_zone_pressure_relief`). Copy (the
+  whole arena, 82–909 µs) and Remap stay selectable (`hvf bench`).
+- **KVM** copies only the pages a run dirtied (pagemap), so a slot's memory
+  follows the largest heap its recent runs reached (it stays resident until
+  the 2 s idle trim). The guest's heap pool takes the lowest free page, so a
+  run dirties fewer distinct pages.
+
+What stays in an HVF child after large runs is its own host heap and the hot
+set. The zygote's own footprint (4.4–4.9 MiB idle) grows with the largest
+messages it has relayed. `JITK_SHARD_RESET_LOG` (set in the engine's
+environment) prints each release reset's time and restored granules.
+`bench/v1/results/2026-10-31-capacity.md` and `2026-10-31-memory.md` have the
+per-task working sets and the fit matrix on each class.
 
 A value past the class's heap ends as a QuickJS out-of-memory error, which
 the MCP server reports as `LIMIT` (parity: `b-json1m`, `t-memory-over-arena`
@@ -540,9 +567,9 @@ round-trips, and glue-8m and glue-16m read a 1,152 KiB reply and refuse one
 past their bound). KVM gives the same sizes as HVF.
 
 Each run's heap high-water is in STATS (`ShardMetrics.heapPeakBytes`): the
-guest kernel writes the highest end of the mmap window and the brk break it
-mapped to the control field `HEAP_PEAK` (`ABI-R7.md`), and the engine reports
-it, at most the class's arena. A run completes on a class whose capacity is at
+guest kernel writes the most pages its heap pool held at once to the control
+field `HEAP_PEAK` (`ABI-R7.md`), and the engine reports it, at most the
+class's arena. A run completes on a class whose capacity is at
 least its high-water on a larger class; the converse need not hold (near its
 limit the allocator reuses more), so it is an upper bound on the need.
 
@@ -553,14 +580,14 @@ parsed back and serialized again (`tools.json`, `../kernel/ring-bootstrap.js.in`
 the bytes are the same, `kernel/tests/ring-bootstrap-check.mjs` and
 `executor/prepared-check.ts` compare them with the former path). Before that,
 glue-2m's largest reply, completion and echo were 83, 94 and 62 KiB and
-glue-4m's 335, 474 and 319 KiB. What still bounds a completion and a round
-trip is the guest allocator, not the live bytes: `JSON.stringify` builds a
-quoted copy and a growing buffer, the kernel has no `mremap` (musl's
-`realloc` of a big block copies) and its `mmap` is first-fit over memory that
-is linear in the address, so after a few awaits the free memory is split.
-On glue-4m one string can reach 1.96 MiB, but a 512 KiB completion does not
-fit; lifting that needs a guest allocator whose pages are not tied to their
-address (open).
+glue-4m's 335, 474 and 319 KiB. Until the page-granular heap pool, what bounded a completion and a round
+trip was the guest allocator, not the live bytes: the kernel had no `mremap`
+(musl's `realloc` of a big block copied) and its `mmap` was first-fit over
+memory linear in the address, so after a few awaits the free memory was
+split. Now every heap page comes from one pool at any free VA and `mremap`
+moves page descriptors (`../kernel/src/heap.rs`, `../kernel/README.md`), and a
+reply is assembled as a rope that JSON.parse flattens once, instead of a
+join whose buffer grows 1.5x at a time.
 
 The guest codec (`../kernel/ring-bootstrap.js.in`) moves payload bytes with
 what this QuickJS build has natively (it has no TextEncoder/TextDecoder):

@@ -91,69 +91,78 @@ ignored by the driver.
 
 ## Working sets (measured)
 
-How much heap each program needs to complete, three ways
-(`harness/working-set.ts`, 2026-10-31):
+How much heap each program needs to complete, four ways
+(`harness/quickjs-ref.ts`, `harness/working-set.ts`, 2026-10-31):
 
-- **QuickJS (Wasm)**: the smallest QuickJS memory limit, in 16 KiB steps, at
-  which the program completes and its oracle passes. This is
-  quickjs-emscripten 0.31 (Bellard QuickJS) under Node, with replies parsed
-  from JSON text as the Sofort guest does. The empty context is 67 KiB.
+- **QuickJS (native)**: the peak of the bytes QuickJS itself has allocated
+  at once (requested sizes: no allocator overhead or fragmentation), on
+  Bellard QuickJS 2026-06-04, the guest's own version, 64-bit, run natively
+  (`harness/quickjs-ref/ws.c`). Replies are parsed from JSON text, as in
+  the guest, but each arrives as one string, and all of a `Promise.all`'s
+  replies arrive at once (so T4 2 and T4 5 peak higher here than in the
+  guest, which reads replies one after another). The runtime and context
+  with `std`/`os` are 160 KiB.
+- **QuickJS (Wasm), block count**: the former reference column, kept for
+  the record: the smallest quickjs-emscripten 0.31 memory limit at which the
+  program completes. It is **not a byte count**: that build (QuickJS
+  2024-02-14, 32-bit) has no `malloc_usable_size`, so QuickJS charges every
+  block 8 bytes ("memory allocated 964 7712 (8.0 per block)"), and a 1.5 MiB
+  limit admits a program holding 5 MB of objects.
 - **V8**: the peak of V8's used heap, sampled at every call, reply and the
   end. It is an upper bound, since V8 collects lazily.
-- **Sofort**: the guest's heap high-water on glue-16m (STATS
-  `heapPeakBytes`: mmap window plus brk, max of 3 runs). `return 1` alone is
-  428 KiB, which is the prepared snapshot's heap.
+- **Sofort**: the guest's heap high-water on glue-16m, max of 3 runs (STATS
+  `heapPeakBytes`). Before: the mmap window's highest page plus brk
+  (`return 1`: 428 KiB). After (`../../../kernel/src/heap.rs`): the most
+  pool pages in use at once (`return 1`: 416 KiB, the prepared snapshot's
+  heap with the helpers).
 
-The last column is the smallest class on which all four S1 attempts
-completed (fit matrix `fit-matrix4`, HVF). A class's heap capacity is
-864 KiB (glue-2m), 2,256 KiB (glue-4m), 6,168 KiB (glue-8m) and 14,480 KiB
-(glue-16m) (`../../../shard/README.md` "Limits").
+The class columns are the smallest class on which all four S1 attempts
+completed, before (`fit-matrix4`) and after (`fit-matrix9`), HVF.
 
-| Task / program | QuickJS (Wasm) limit | V8 used-heap peak | Sofort heap high-water (glue-16m) | Smallest class that completes it |
-| --- | ---: | ---: | ---: | --- |
-| T1 1 | 432 KiB | 528 KiB | 1,048 KiB | glue-4m |
-| T1 2 | 432 KiB | 535 KiB | 1,148 KiB | glue-4m |
-| T1 3 | 432 KiB | 549 KiB | 1,048 KiB | glue-4m |
-| T1 4 | 432 KiB | 862 KiB | 1,672 KiB | glue-4m |
-| T1 5 | 432 KiB | 520 KiB | 1,048 KiB | glue-4m |
-| T2 1 | 352 KiB | 4,582 KiB | 2,516 KiB | glue-8m |
-| T2 2 | 448 KiB | 6,244 KiB | 4,076 KiB | glue-8m |
-| T2 3 | 400 KiB | 2,335 KiB | 3,148 KiB | glue-8m |
-| T2 4 | 992 KiB | 8,726 KiB | 10,484 KiB | glue-16m |
-| T2 5 | 304 KiB | 5,473 KiB | 2,340 KiB | glue-4m (borderline: fails on kvm-dev) |
-| T3 1 | 400 KiB | 1,298 KiB | 2,172 KiB | glue-4m |
-| T3 2 | 384 KiB | 1,285 KiB | 2,204 KiB | glue-4m |
-| T3 3 | 384 KiB | 1,172 KiB | 2,104 KiB | glue-4m |
-| T3 4 | 400 KiB | 1,518 KiB | 2,652 KiB | glue-8m |
-| T3 5 | 400 KiB | 1,370 KiB | 2,220 KiB | glue-4m |
-| T4 1 | 672 KiB | 9,077 KiB | 5,544 KiB | glue-8m |
-| T4 2 | 2,336 KiB | 8,677 KiB | 3,596 KiB | glue-8m |
-| T4 3 | 1,472 KiB | 13,769 KiB | > 14,636 KiB (out of memory) | none |
-| T4 4 | 352 KiB | 18,556 KiB | 4,000 KiB | glue-8m |
-| T4 5 | 960 KiB | 8,643 KiB | 3,932 KiB | glue-8m |
-| T5 1 | 176 KiB | 234 KiB | 1,112 KiB | glue-4m |
-| T5 2 | 176 KiB | 241 KiB | 1,112 KiB | glue-4m |
-| T5 3 | 176 KiB | 257 KiB | 1,276 KiB | glue-4m |
-| T5 4 | 304 KiB | 809 KiB | 2,428 KiB | glue-8m |
-| T5 5 | 176 KiB | 247 KiB | 1,080 KiB | glue-4m |
+| Task / program | QuickJS (native) | QuickJS (Wasm), block count | V8 used-heap peak | Sofort before | Sofort after | after / native | smallest class before | after |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| T1 1 | 1,187 KiB | 432 KiB | 528 KiB | 1,048 KiB | 888 KiB | 0.75 | glue-4m | glue-2m |
+| T1 2 | 1,187 KiB | 432 KiB | 535 KiB | 1,148 KiB | 1,140 KiB | 0.96 | glue-4m | glue-4m |
+| T1 3 | 1,188 KiB | 432 KiB | 549 KiB | 1,048 KiB | 880 KiB | 0.74 | glue-4m | glue-2m |
+| T1 4 | 1,191 KiB | 432 KiB | 862 KiB | 1,672 KiB | 1,648 KiB | 1.38 | glue-4m | glue-4m |
+| T1 5 | 1,188 KiB | 432 KiB | 520 KiB | 1,048 KiB | 992 KiB | 0.83 | glue-4m | glue-4m |
+| T2 1 | 1,780 KiB | 352 KiB | 4,582 KiB | 2,516 KiB | 2,144 KiB | 1.20 | glue-8m | glue-4m |
+| T2 2 | 3,368 KiB | 448 KiB | 6,244 KiB | 4,076 KiB | 3,908 KiB | 1.16 | glue-8m | glue-8m |
+| T2 3 | 2,166 KiB | 400 KiB | 2,335 KiB | 3,148 KiB | 2,556 KiB | 1.18 | glue-8m | glue-8m |
+| T2 4 | 9,300 KiB | 992 KiB | 8,726 KiB | 10,484 KiB | 10,356 KiB | 1.11 | glue-16m | glue-16m |
+| T2 5 | 1,994 KiB | 304 KiB | 5,473 KiB | 2,340 KiB | 2,252 KiB | 1.13 | glue-4m | glue-4m |
+| T3 1 | 1,315 KiB | 400 KiB | 1,298 KiB | 2,172 KiB | 1,848 KiB | 1.40 | glue-4m | glue-4m |
+| T3 2 | 1,138 KiB | 384 KiB | 1,285 KiB | 2,204 KiB | 1,756 KiB | 1.54 | glue-4m | glue-4m |
+| T3 3 | 1,137 KiB | 384 KiB | 1,172 KiB | 2,104 KiB | 1,668 KiB | 1.47 | glue-4m | glue-4m |
+| T3 4 | 1,426 KiB | 400 KiB | 1,518 KiB | 2,652 KiB | 2,092 KiB | 1.47 | glue-8m | glue-4m |
+| T3 5 | 1,318 KiB | 400 KiB | 1,370 KiB | 2,220 KiB | 1,896 KiB | 1.44 | glue-4m | glue-4m |
+| T4 1 | 4,970 KiB | 672 KiB | 9,077 KiB | 5,544 KiB | 5,416 KiB | 1.09 | glue-8m | glue-8m |
+| T4 2 | 10,371 KiB | 2,336 KiB | 8,677 KiB | 3,596 KiB | 3,128 KiB | 0.30 | glue-8m | glue-8m |
+| T4 3 | 13,464 KiB | 1,472 KiB | 13,769 KiB | > 14,636 KiB (out of memory) | 14,296 KiB | 1.06 | none | glue-16m |
+| T4 4 | 2,636 KiB | 352 KiB | 18,556 KiB | 4,000 KiB | 2,956 KiB | 1.12 | glue-8m | glue-8m |
+| T4 5 | 5,910 KiB | 960 KiB | 8,643 KiB | 3,932 KiB | 3,912 KiB | 0.66 | glue-8m | glue-8m |
+| T5 1 | 708 KiB | 176 KiB | 234 KiB | 1,112 KiB | 932 KiB | 1.32 | glue-4m | glue-4m |
+| T5 2 | 694 KiB | 176 KiB | 241 KiB | 1,112 KiB | 932 KiB | 1.34 | glue-4m | glue-4m |
+| T5 3 | 757 KiB | 176 KiB | 257 KiB | 1,276 KiB | 1,004 KiB | 1.33 | glue-4m | glue-4m |
+| T5 4 | 1,827 KiB | 304 KiB | 809 KiB | 2,428 KiB | 2,108 KiB | 1.15 | glue-8m | glue-4m |
+| T5 5 | 645 KiB | 176 KiB | 247 KiB | 1,080 KiB | 896 KiB | 1.39 | glue-4m | glue-4m |
 
-QuickJS itself needs 0.2 to 2.3 MiB for every program. The Sofort guest's
-high-water is 2 to 10 times that: the reply's fragments, the joined text
-and the parsed value coexist, and the guest allocator fragments the arena.
-The kernel's `mmap` is first-fit over memory that is linear in the address
-and has no `mremap`, so freed big blocks leave holes that later, bigger
-blocks cannot use (`../../../shard/README.md`).
+The guest now holds 1.06 to 1.54 times what QuickJS itself holds for the
+other programs. Four T1 programs and the two parallel T4 programs peak lower
+in the guest than in the native reference (0.30 to 0.96), whose reply
+arrival and GC timing differ; the reference bounds what QuickJS needs, not
+what a guest run reaches. What is left above the reference: the snapshot's
+416 KiB heap (native: 160 KiB), musl's size classes and groups (QuickJS asks
+malloc for its 4 KiB small-block arenas and for every large block), and a
+reply's text twice while it is assembled. Before, the guest's mmap took the
+first free run of pages in a window linear in the physical address and had
+no `mremap`: the window's high-water ran 3 to 35% above the pages mapped,
+and T4 3 ran out with 440 pages free for a 307-page request
+(`../results/2026-10-31-memory.md`). T4 3 needs 13,464 KiB in QuickJS itself
+and now completes on glue-16m; T2 4 needs 9,300 KiB, more than glue-8m's heap.
 
-A high-water is an upper bound on the need. Near its limit the allocator
-reuses more, so T2 5 (2,340 KiB on glue-16m) completes on glue-4m (2,256 KiB)
-on HVF but not on kvm-dev, where its four parallel calls interleave
-differently.
-
-T4 3 keeps every point of every 2,000-point page. It is the one program that
-no class completes. Its QuickJS need is 1.47 MiB, so the guest allocator is
-what fails it, not the class size.
-
-    $JITK_NODE --expose-gc bench/v1/harness/working-set.ts --engines quickjs,v8 --out ref.json
+    sh bench/v1/harness/quickjs-ref/build.sh && $JITK_NODE bench/v1/harness/quickjs-ref.ts --out ref.json
+    $JITK_NODE --expose-gc bench/v1/harness/working-set.ts --engines v8 --out v8.json
     JITK_SHARD_CLASS=glue-16m eval "$(arch/jitk/tools/.work/bin/deps env)"
     $JITK_NODE --expose-gc bench/v1/harness/working-set.ts --engines sofort --class glue-16m --repeat 3 [--memory]
 

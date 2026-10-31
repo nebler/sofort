@@ -23,7 +23,14 @@
 use crate::constants::ring;
 use crate::hv::{self, ArchState, Exit, Memory, Region};
 use crate::slot::reset::ResetReport;
-use std::{ffi::c_void, io, ptr, sync::OnceLock};
+use std::{
+    ffi::c_void,
+    io, ptr,
+    sync::{
+        Arc, OnceLock,
+        atomic::{AtomicU64, Ordering::Relaxed},
+    },
+};
 
 #[repr(C)]
 struct ExitInfo {
@@ -399,7 +406,7 @@ impl Kicker {
 ///
 /// So the writable extents are mapped without execute permission at stage 2
 /// (`Region::Writable`): no guest instruction fetch, and so no instruction
-/// cache line, ever comes from tenant-writable memory. For data, neither mode
+/// cache line, ever comes from tenant-writable memory. For data, no mode
 /// below relies on the coherency measured above.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MemoryReset {
@@ -410,7 +417,8 @@ pub enum MemoryReset {
     /// the line there), which macOS executes at EL0 (SCTLR_EL1.UCI): 1.39 MiB
     /// takes ~42 µs, whereas libkern's `sys_dcache_flush` (to PoU) is a
     /// no-op. Afterwards DRAM and every cache hold the snapshot bytes. The
-    /// pages stay mapped. The default: ~70 µs per glue-2m reset.
+    /// pages stay mapped. It rewrites the whole arena: ~70 µs per glue-2m reset,
+    /// ~0.8 ms on glue-16m.
     Copy,
     /// Replace both writable extents with fresh `MAP_PRIVATE` mappings of the
     /// snapshot file (hv_vm_unmap, mmap MAP_FIXED, hv_vm_map). The last
@@ -423,11 +431,156 @@ pub enum MemoryReset {
     Remap,
     /// memcpy only. Measurement and tests.
     Unclean,
+    /// The default. Copy's restore, of only the arena granules that may
+    /// have been written (the transport is always copied whole). The arena
+    /// is mapped read-only at stage 2; a guest write to a read-only granule
+    /// exits to the engine, which makes that 16 KiB granule writable,
+    /// records it (`Tracker`) and resumes the guest at the same instruction.
+    /// The reset copies and cleans every recorded granule, or, when more are
+    /// recorded than the hot set holds, replaces the arena with a fresh
+    /// read-only mapping of the file as Remap does. Only a recorded granule
+    /// is ever writable, so one not recorded is one no guest access could
+    /// change since it was last restored (or mapped from the file).
+    /// Host writes into the arena (offline fixtures) record their granules
+    /// too (`hv::Vm::host_wrote`). A small hot set stays writable and
+    /// recorded across resets (STICKY, DECAY). Reset time and the slot's
+    /// private pages follow what runs write, not the class.
+    Dirty,
+}
+
+/// One bit per arena granule.
+struct Bits(Vec<AtomicU64>);
+impl Bits {
+    fn new(n: usize) -> Self {
+        Self((0..n.div_ceil(64)).map(|_| AtomicU64::new(0)).collect())
+    }
+    fn get(&self, g: usize) -> bool {
+        self.0[g / 64].load(Relaxed) & 1 << (g % 64) != 0
+    }
+    fn set(&self, g: usize) {
+        self.0[g / 64].fetch_or(1 << (g % 64), Relaxed);
+    }
+    fn clear(&self) {
+        for w in &self.0 {
+            w.store(0, Relaxed);
+        }
+    }
+}
+/// The arena's write record for `MemoryReset::Dirty`, per 16 KiB granule:
+/// `writable` while it is writable at stage 2, `recorded` while the next
+/// reset must restore it. Writable implies recorded. Shared by the VM
+/// (reset) and its vCPU (write faults).
+pub(crate) struct Tracker {
+    gpa: u64,
+    granules: usize,
+    writable: Bits,
+    recorded: Bits,
+    resets: std::sync::atomic::AtomicU32,
+}
+/// A reset leaves the granules it restored writable (and recorded, so every
+/// later reset restores them too) when they are at most STICKY, and remaps
+/// the arena read-only otherwise and at each DECAY-th reset. A run that
+/// writes what the last one wrote then takes no write faults, at ~6 µs each
+/// on an M4 Pro (`hvf bench return2`: 29 faults per run, 220 µs against 34
+/// µs with the hot set), while a large run's granules do not stay in every
+/// later reset. 128 granules (2 MiB) hold a T1 or T5 bench task's (~70);
+/// a decay every 16th reset costs a repeated `return 2` ~13 µs a run.
+pub(crate) const STICKY: usize = 128;
+const DECAY: u32 = 16;
+impl Tracker {
+    fn new(gpa: u64, len: usize) -> Self {
+        assert!(gpa.is_multiple_of(GRANULE) && (len as u64).is_multiple_of(GRANULE));
+        let granules = len / GRANULE as usize;
+        Self {
+            gpa,
+            granules,
+            writable: Bits::new(granules),
+            recorded: Bits::new(granules),
+            resets: Default::default(),
+        }
+    }
+    fn granule(&self, gpa: u64) -> Option<usize> {
+        let g = (gpa.checked_sub(self.gpa)? / GRANULE) as usize;
+        (g < self.granules).then_some(g)
+    }
+    /// A stage-2 data abort at `gpa`: a write to a read-only arena granule
+    /// makes it writable and records it (true: resume the guest at the same
+    /// instruction). Anything else is the guest's fault.
+    fn write_fault(&self, gpa: u64) -> io::Result<bool> {
+        let Some(g) = self.granule(gpa) else {
+            return Ok(false);
+        };
+        if self.writable.get(g) {
+            return Ok(false);
+        }
+        self.recorded.set(g);
+        check(
+            // SAFETY: one granule of the arena this VM maps; only its
+            // permission changes.
+            unsafe {
+                hv_vm_protect(
+                    self.gpa + g as u64 * GRANULE,
+                    GRANULE as usize,
+                    READ | WRITE,
+                )
+            },
+            "hv_vm_protect (write fault)",
+        )?;
+        self.writable.set(g);
+        Ok(true)
+    }
+    /// The granules of `gpa..gpa + len`: the host wrote them (`writable`
+    /// false), or made them writable at stage 2 (true).
+    fn note(&self, gpa: u64, len: usize, writable: bool) {
+        let end = gpa + len.max(1) as u64;
+        let mut at = gpa & !(GRANULE - 1);
+        while at < end {
+            if let Some(g) = self.granule(at) {
+                self.recorded.set(g);
+                if writable {
+                    self.writable.set(g);
+                }
+            }
+            at += GRANULE;
+        }
+    }
+    /// Whether this reset leaves the `recorded` granules as they are
+    /// (writable ones writable, all recorded): a hot set of at most STICKY,
+    /// but not at a DECAY-th reset.
+    fn keep(&self, recorded: usize) -> bool {
+        let n = self.resets.fetch_add(1, Relaxed) + 1;
+        recorded <= STICKY && !n.is_multiple_of(DECAY)
+    }
+    /// Runs of recorded granules, as (first granule, count).
+    fn runs(&self) -> Vec<(usize, usize)> {
+        let mut runs = Vec::new();
+        let mut g = 0;
+        while g < self.granules {
+            if !self.recorded.get(g) {
+                g += 1;
+                continue;
+            }
+            let start = g;
+            while g < self.granules && self.recorded.get(g) {
+                g += 1;
+            }
+            runs.push((start, g - start));
+        }
+        runs
+    }
+    /// Every granule read-only (the caller made it so) and none recorded.
+    fn clear(&self) {
+        self.writable.clear();
+        self.recorded.clear();
+    }
 }
 
 pub struct HvfVm {
-    /// How resets restore memory.
+    /// How resets restore memory. Dirty is chosen before the arena is mapped
+    /// (`Slot::create`) and stays for the VM's lifetime.
     pub reset: MemoryReset,
+    /// The arena's write record, when `reset` was Dirty as it was mapped.
+    track: Option<Arc<Tracker>>,
     /// A writable range an offline probe made executable (`executable`); the
     /// next reset makes it non-executable again.
     exec: Option<(u64, usize)>,
@@ -438,7 +591,8 @@ impl HvfVm {
         // SAFETY: NULL selects the default configuration; one VM per process.
         check(unsafe { hv_vm_create(ptr::null_mut()) }, "hv_vm_create")?;
         Ok(Self {
-            reset: MemoryReset::Copy,
+            reset: MemoryReset::Dirty,
+            track: None,
             exec: None,
         })
     }
@@ -463,6 +617,14 @@ impl HvfVm {
             unsafe { hv_vm_unmap(ring::ARCHIVE_GPA, len) },
             "hv_vm_unmap (input)",
         )
+    }
+    /// The stage-2 flags of the extent at `gpa`: a tracked arena is read-only
+    /// until written.
+    fn extent_flags(&self, gpa: u64, kind: Region) -> u64 {
+        match &self.track {
+            Some(t) if kind == Region::Writable && t.gpa == gpa => READ,
+            _ => Self::flags(kind),
+        }
     }
     fn flags(kind: Region) -> u64 {
         match kind {
@@ -519,10 +681,19 @@ const GRANULE: u64 = 16384;
 impl hv::Vm for HvfVm {
     type Vcpu = HvfVcpu;
     unsafe fn map(&mut self, gpa: u64, host: *mut u8, len: usize, kind: Region) -> io::Result<()> {
+        // The arena is the class's first writable extent; the transport (at
+        // the control page) is always copied whole.
+        if self.reset == MemoryReset::Dirty
+            && kind == Region::Writable
+            && gpa != ring::CONTROL_GPA
+            && self.track.is_none()
+        {
+            self.track = Some(Arc::new(Tracker::new(gpa, len)));
+        }
         check(
             // SAFETY: the caller keeps host..host+len live for the VM's lifetime;
             // HVF only records the translation.
-            unsafe { hv_vm_map(host.cast(), gpa, len, Self::flags(kind)) },
+            unsafe { hv_vm_map(host.cast(), gpa, len, self.extent_flags(gpa, kind)) },
             "hv_vm_map",
         )
     }
@@ -541,6 +712,8 @@ impl hv::Vm for HvfVm {
             exit,
             exits: 0,
             syndrome: 0,
+            write_faults: 0,
+            track: self.track.clone(),
             checked: Vec::new(),
         };
         v.checked = v.read(registers(Checked))?;
@@ -557,34 +730,83 @@ impl hv::Vm for HvfVm {
         }
         for (start, end) in m.writable() {
             let (gpa, len) = (ring::RAM_GPA + start as u64, end - start);
-            report.private += (len as u64 / GRANULE) as u32;
-            match self.reset {
-                MemoryReset::Copy | MemoryReset::Unclean => {
+            let tracked = self.track.as_ref().filter(|t| t.gpa == gpa);
+            match (self.reset, tracked) {
+                (MemoryReset::Dirty, Some(t)) => {
+                    let runs = t.runs();
+                    let recorded = runs.iter().map(|r| r.1).sum::<usize>();
+                    report.private += recorded as u32;
+                    if t.keep(recorded) {
+                        for (g, n) in runs {
+                            let (off, bytes) = (g * GRANULE as usize, n * GRANULE as usize);
+                            // SAFETY: both views cover RAM; the run lies within
+                            // the arena; the vCPU is stopped and the reference
+                            // is read-only. The hot set stays as it is: its
+                            // writable granules writable, every one recorded.
+                            unsafe {
+                                let dst = m.ram.ptr.add(start + off);
+                                ptr::copy_nonoverlapping(
+                                    m.snapshot.reference.ptr().add(start + off),
+                                    dst,
+                                    bytes,
+                                );
+                                clean_to_poc(dst, bytes);
+                            }
+                        }
+                    } else {
+                        // A large (or decaying) set: Remap's restore, read-only.
+                        // Cheaper than copying it back, and its private pages
+                        // go back to the kernel now rather than at idle trim.
+                        report.discard = Some(crate::slot::reset::Discard::Limit);
+                        // SAFETY: the vCPU is stopped on this thread; the
+                        // extent was mapped by Slot::create and is mapped
+                        // again below, from the slot's RAM mapping.
+                        unsafe {
+                            check(hv_vm_unmap(gpa, len), "hv_vm_unmap")?;
+                            m.ram.remap(&m.snapshot.memory, start, len)?;
+                            t.clear();
+                            let host = m.ram.ptr.wrapping_add(start).cast();
+                            check(hv_vm_map(host, gpa, len, READ), "hv_vm_map")?;
+                        }
+                    }
+                }
+                (MemoryReset::Copy | MemoryReset::Unclean | MemoryReset::Dirty, _) => {
+                    report.private += (len as u64 / GRANULE) as u32;
                     // SAFETY: both views cover RAM; the extent lies within them;
                     // the vCPU is stopped and the reference is read-only.
                     unsafe {
                         let dst = m.ram.ptr.add(start);
                         ptr::copy_nonoverlapping(m.snapshot.reference.ptr().add(start), dst, len);
-                        if self.reset == MemoryReset::Copy {
+                        if self.reset != MemoryReset::Unclean {
                             clean_to_poc(dst, len);
                         }
                     }
                 }
-                MemoryReset::Remap => {
+                (MemoryReset::Remap, _) => {
+                    report.private += (len as u64 / GRANULE) as u32;
                     // SAFETY: the vCPU is stopped on this thread; the extent was
                     // mapped by Slot::create and is mapped again below.
                     check(unsafe { hv_vm_unmap(gpa, len) }, "hv_vm_unmap")?;
                     m.ram.remap(&m.snapshot.memory, start, len)?;
+                    if let Some(t) = tracked {
+                        t.clear();
+                    }
                     let host = m.ram.ptr.wrapping_add(start).cast();
+                    let flags = self.extent_flags(gpa, Region::Writable);
                     // SAFETY: the fresh mapping lives in the slot's RAM mapping,
                     // which outlives the VM.
-                    let r = unsafe { hv_vm_map(host, gpa, len, Self::flags(Region::Writable)) };
+                    let r = unsafe { hv_vm_map(host, gpa, len, flags) };
                     check(r, "hv_vm_map")?;
                 }
             }
         }
         m.resident.set(self.reset != MemoryReset::Remap);
         Ok(report)
+    }
+    fn host_wrote(&self, gpa: u64, len: usize) {
+        if let Some(t) = &self.track {
+            t.note(gpa, len, false);
+        }
     }
     fn discard_memory(&mut self, m: &Memory<'_, State>) -> io::Result<()> {
         let mode = std::mem::replace(&mut self.reset, MemoryReset::Remap);
@@ -609,6 +831,11 @@ impl hv::Vm for HvfVm {
             "hv_vm_protect",
         )?;
         self.exec = Some((start, (end - start) as usize));
+        // A tracked arena: the reset restores these granules and makes them
+        // read-only again.
+        if let Some(t) = &self.track {
+            t.note(start, (end - start) as usize, true);
+        }
         Ok(())
     }
 }
@@ -619,6 +846,9 @@ pub struct HvfVcpu {
     pub exits: u64,
     /// ESR of the last exit, for diagnostics.
     pub syndrome: u64,
+    /// Arena granules this vCPU's writes made writable (MemoryReset::Dirty).
+    pub write_faults: u64,
+    track: Option<Arc<Tracker>>,
     /// `Checked` registers at creation: what the verify compares them with.
     checked: Vec<(u16, u64)>,
 }
@@ -730,6 +960,12 @@ impl HvfVcpu {
             0x24 => {
                 // Data abort from the guest: ISV, SAS, SRT, WnR.
                 if e.physical_address != ring::DOORBELL_GPA {
+                    if let Some(t) = &self.track
+                        && t.write_fault(e.physical_address)?
+                    {
+                        self.write_faults += 1;
+                        return Ok(None); // the same instruction, now writable
+                    }
                     return Ok(Some(Exit::Fault {
                         gpa: e.physical_address,
                     }));

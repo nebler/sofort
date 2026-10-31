@@ -303,7 +303,9 @@ impl<V: Vm> Slot<V> {
     }
     pub fn corrupt_canary(&self, v: u64) {
         self.wrote_ram();
-        self.ram.put(self.snapshot().class.canary(), v);
+        let at = self.snapshot().class.canary();
+        self.vm.host_wrote(ring::RAM_GPA + at as u64, 8);
+        self.ram.put(at, v);
     }
     pub fn canary(&self) -> u64 {
         self.ram.word(self.snapshot().class.canary())
@@ -332,6 +334,7 @@ impl<V: Vm> Slot<V> {
     pub(crate) fn copy(&self, off: usize, b: &[u8]) {
         assert!(off.checked_add(b.len()).is_some_and(|end| end <= RAM));
         self.wrote_ram();
+        self.vm.host_wrote(ring::RAM_GPA + off as u64, b.len());
         // SAFETY: b owns/borrows host memory, never this mapping. Bounds are
         // checked; only this stopped slot's owner writes its writable RAM.
         unsafe {

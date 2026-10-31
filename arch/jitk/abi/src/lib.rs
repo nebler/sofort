@@ -152,8 +152,8 @@ pub mod ring {
     pub const ARCHIVE_BYTES: usize = 0x250;
     pub const OUTPUT_BYTES: usize = 0x260;
     /// Written by the guest kernel: the run's heap high-water in bytes, the
-    /// highest end of the mmap window it mapped (above its base) plus the
-    /// highest brk break (above the heap base). It only rises within a run
+    /// most arena pages its heap pool (brk and mmap pages and the user page
+    /// tables, kernel/src/heap.rs) held at once. It only rises within a run
     /// and starts at the prepared snapshot's value. Untrusted; the host
     /// reports it in IPC STATS, at most the class's arena bytes.
     pub const HEAP_PEAK: usize = 0x268;

@@ -69,6 +69,39 @@ unregistered syscall number once, for at most 8 numbers per run (further
 calls still return -38 silently). `write` to the checkpoint fd outside the
 bootstrap state returns EBADF.
 
+## Ring heap
+
+The ring profile has one heap pool (`src/heap.rs`): every arena page between
+the user data copy and the stack. brk, mmap and the user L3 page tables take
+single pool pages, lowest first, each zeroed when taken, and map them at any
+free VA, so physical memory never fragments: a request fails only when the
+pool has fewer free pages than it asks for. brk owns VA [HEAP, HEAP + 1.5 MiB);
+mmap owns [0x2000000, 0xc000000), above the stack (the VA between the brk
+heap and the stack stays unmapped), several times any class's pool, searched
+first fit from its lowest free page. munmap and mremap act on mmap VA only.
+mremap takes flags 0 or `MREMAP_MAYMOVE`: it shrinks in place, grows in place
+when the next pages are free, or moves the block's page descriptors (never
+its bytes). A table is allocated with its 2 MiB block's first page and freed
+with its last. Heap pages are RW and never executable; tables are reachable
+only through the EL1 identity alias; the pool and its bitmap are arena
+pages, restored by every reset.
+
+Every request leaves the last 1/32 of the pool (24 to 40 pages) free until one
+fails in the run; then requests of up to 32 pages (musl's largest malloc
+group) may take it, and a small brk growth always may. Without it the
+request that ran out was often a small one, and QuickJS could not allocate
+its out-of-memory error (the run failed with `null` thrown, not the
+InternalError Node reports as `LIMIT`). `HEAP_PEAK` (`../shard/ABI-R7.md`)
+is the most pool pages in use at once. The console profile keeps its first-fit
+window. `../bench/v1/results/2026-10-31-memory.md` has the measurements.
+
+`--features heap-trace` (diagnostic only, never a product image) records
+every memory syscall and the mmap layout at the first ENOMEM and sends them
+as console lines before the completion; `../bench/v1/harness/heap-trace.ts`
+runs programs on such a snapshot (`JITK_CACHE=<own dir>
+JITK_DIAG_FEATURES=heap-trace make -C ../shard snapshot`, or `snapshot.ts`
+with `JITK_DIAG_CLASSES`).
+
 ## Ring payload and entropy after restore
 
 The ring payload has a native `os.snapshotCheckpoint()` hook: after the EL1
@@ -156,7 +189,8 @@ The owner-applied 6-line patch and native Linux injection evidence come from
 `arch/08-grow-loop/r3/grow-results/canonical-r3/`. `syscalls.manifest.json` records that restricted
 contract; the artifact manifest includes its contents and SHA256. A growth replay
 deletes these handlers in its copied tree before rediscovery.
-216 mremap is registered and returns -38 (musl fallback). Unregistered syscalls
+216 mremap is registered; the console profile returns -38 (musl falls back to
+malloc, copy and free), the ring profile implements it (below, "Ring heap"). Unregistered syscalls
 return -38 and ALWAYS emit the v2 `missing` record in the console profile (ring
 builds: once per number, at most 8 numbers per run); a registered handler returning
 -38 is ordinary and NEVER emits missing. The pure-Rust candidate helper API in

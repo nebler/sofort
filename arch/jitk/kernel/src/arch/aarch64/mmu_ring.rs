@@ -40,7 +40,11 @@ static mut RAM: Table = Table([0; 512]);
 static mut KERNEL: Table = Table([0; 512]);
 static mut ARENA_TABLE: [Table; ARENA_TABLES] = [Table([0; 512]); ARENA_TABLES];
 static mut DATA_VA: usize = 0;
-static mut USER: [Table; 16] = [Table([0; 512]); 16];
+// User L3 tables come from the heap pool (crate::heap) when a 2 MiB block of
+// user VA gets its first page; MAPPED counts each block's valid entries, and
+// a table whose count drops to zero goes back to the pool.
+const USER_BLOCKS: usize = crate::memory::USER_END / 0x200000;
+static mut MAPPED: [u16; USER_BLOCKS] = [0; USER_BLOCKS];
 // SAFETY: these symbols are supplied by the guest linker/assembly with the declared addresses
 // and storage.
 unsafe extern "C" {
@@ -58,14 +62,20 @@ fn data_base() -> usize {
 fn brk_base() -> usize {
     data_base() + DATA_BYTES
 }
-fn mmap_base() -> usize {
-    brk_base() + BRK_BYTES
+/// The heap pool: every arena page from the user data copy to the stack
+/// (the former brk and mmap windows), as (first physical page, pages).
+pub fn pool() -> (usize, usize) {
+    (brk_base(), (STACK - brk_base()) / 4096)
 }
+/// brk owns user VA [HEAP, MMAP); its pages come from the pool.
 pub fn heap_limit() -> usize {
-    crate::user::HEAP + BRK_BYTES
+    crate::user::MMAP
 }
+/// mmap owns user VA [MMAP_VA, USER_END), above the stack; the VA below the
+/// stack's bottom down to MMAP stays unmapped (its guard).
+pub const MMAP_VA: usize = crate::memory::STACK_END;
 pub fn mmap_limit() -> usize {
-    crate::user::MMAP + STACK - mmap_base()
+    crate::memory::USER_END
 }
 fn data_va() -> usize {
     // SAFETY: DATA_VA is initialized and read only on the sole masked-IRQ vCPU; no mutable
@@ -82,8 +92,8 @@ pub unsafe fn init() {
     unsafe {
         assert_eq!(&raw const __rw_start as usize, ARENA);
         assert!(
-            mmap_base() + 0x80000 <= STACK,
-            "ring kernel leaves <512 KiB mmap"
+            brk_base() + BRK_BYTES + 0x80000 <= STACK,
+            "ring kernel leaves <512 KiB heap"
         );
         ROOT.0[0] = table(&raw const LOW);
         ROOT.0[2] = table(&raw const RAM);
@@ -135,6 +145,69 @@ pub unsafe fn init() {
     }
 }
 
+/// The L3 descriptor of user `va`, or null when its block has no table.
+fn slot(va: usize) -> *mut u64 {
+    // SAFETY: the sole masked-IRQ EL1 context owns LOW; callers pass user VA,
+    // whose block index is in LOW and MAPPED.
+    unsafe {
+        let b = LOW.0[va / 0x200000];
+        if b & 3 != 3 {
+            return core::ptr::null_mut();
+        }
+        ((b & ADDRESS) as *mut u64).add((va >> 12) & 511)
+    }
+}
+/// Write user `va`'s descriptor (zero: unmap), keeping its block's count and
+/// table: a block's first page takes a table from the pool, its last returns
+/// it. false: the pool has no page for the table.
+///
+/// # Safety
+/// The sole masked-IRQ EL1 context owns tables and flushes before EL0 resumes.
+unsafe fn set(va: usize, d: u64) -> bool {
+    // SAFETY: as above; a pool page is zeroed before it becomes a table, and
+    // a table is unlinked before it returns to the pool.
+    unsafe {
+        assert!((crate::memory::USER_BASE..crate::memory::USER_END).contains(&va));
+        let k = va / 0x200000;
+        let mut e = slot(va);
+        if e.is_null() {
+            if d == 0 {
+                return true;
+            }
+            let Some(pa) = crate::heap::alloc() else {
+                return false;
+            };
+            LOW.0[k] = table(pa as *const Table);
+            e = slot(va);
+        }
+        match (*e != 0, d != 0) {
+            (false, true) => MAPPED[k] += 1,
+            (true, false) => MAPPED[k] -= 1,
+            _ => {}
+        }
+        *e = d;
+        if MAPPED[k] == 0 {
+            let pa = (LOW.0[k] & ADDRESS) as usize;
+            LOW.0[k] = 0;
+            crate::heap::free(pa);
+        }
+        true
+    }
+}
+fn user(pa: usize, write: bool, exec: bool) -> u64 {
+    pa as u64
+        | 3
+        | AF
+        | SH
+        | (1 << 6)
+        | if write { 0 } else { RO }
+        | PXN
+        | if exec { 0 } else { UXN }
+}
+/// Boot mappings: the image (read-only or executable from the packed copy),
+/// its writable data (copied into the arena) and the stack. Heap pages are
+/// `map_page`'s.
+///
 /// # Safety
 /// The sole masked-IRQ EL1 context owns tables. va and W^X are asserted; writable backing stays
 /// in the admitted arena and relocated copies are disjoint.
@@ -145,16 +218,11 @@ pub unsafe fn map(va: usize, write: bool, exec: bool) {
         assert!(
             (crate::memory::USER_BASE..crate::memory::USER_END).contains(&va) && !(write && exec)
         );
-        let i = va / 0x200000 - 2;
-        LOW.0[i + 2] = table(&raw const USER[i]);
         let pa = if write {
             if (crate::memory::STACK_START..crate::memory::STACK_END).contains(&va) {
                 STACK + va - crate::memory::STACK_START
-            } else if (crate::user::HEAP..heap_limit()).contains(&va) {
-                brk_base() + va - crate::user::HEAP
-            } else if (crate::user::MMAP..mmap_limit()).contains(&va) {
-                mmap_base() + va - crate::user::MMAP
             } else {
+                assert!(va < crate::user::HEAP);
                 if DATA_VA == 0 {
                     DATA_VA = va;
                 }
@@ -170,21 +238,70 @@ pub unsafe fn map(va: usize, write: bool, exec: bool) {
         } else {
             crate::memory::PACKED_GPA + va - crate::memory::USER_BASE
         };
-        USER[i].0[(va >> 12) & 511] = pa as u64
-            | 3
-            | AF
-            | SH
-            | (1 << 6)
-            | if write { 0 } else { RO }
-            | PXN
-            | if exec { 0 } else { UXN };
+        assert!(set(va, user(pa, write, exec)));
     }
+}
+/// Map heap page `va` (brk or mmap VA, unmapped) to pool page `pa`,
+/// writable and never executable. false: no pool page for its table.
+///
+/// # Safety
+/// `pa` is a pool page no descriptor names; the sole masked-IRQ EL1 context
+/// owns tables and flushes before EL0 resumes.
+pub unsafe fn map_page(va: usize, pa: usize) -> bool {
+    // SAFETY: as above.
+    unsafe {
+        assert!(va >= crate::user::HEAP && !valid(va, false));
+        let (base, pages) = pool();
+        assert!((base..base + pages * 4096).contains(&pa));
+        set(va, user(pa, true, false))
+    }
+}
+/// Unmap heap page `va`; its pool page, if it was mapped.
+///
+/// # Safety
+/// `va` is heap VA (brk or mmap); the sole masked-IRQ EL1 context owns
+/// tables and flushes before EL0 resumes.
+pub unsafe fn take(va: usize) -> Option<usize> {
+    // SAFETY: as above.
+    unsafe {
+        assert!(
+            va >= crate::user::HEAP
+                && !(crate::memory::STACK_START..crate::memory::STACK_END).contains(&va)
+        );
+        let e = slot(va);
+        if e.is_null() || *e & 3 != 3 {
+            return None;
+        }
+        let pa = (*e & ADDRESS) as usize;
+        set(va, 0);
+        Some(pa)
+    }
+}
+/// The pool page heap page `va` maps, if any.
+pub fn page(va: usize) -> Option<usize> {
+    let e = slot(va);
+    let d = if e.is_null() {
+        0
+    } else {
+        // SAFETY: a non-null slot is a live descriptor in a pool table.
+        unsafe { *e }
+    };
+    (d & 3 == 3).then_some((d & ADDRESS) as usize)
+}
+/// Every 2 MiB block from `va` holds no mapping: the VA search skips it.
+pub fn block_empty(va: usize) -> bool {
+    slot(va).is_null()
 }
 pub fn physical(va: usize) -> usize {
     // Early stack construction also uses this function after map().
-    // SAFETY: va is in the kernel user-image range at each call. The sole masked-IRQ context
-    // owns USER; only a copied descriptor is read.
-    let p = unsafe { USER[va / 0x200000 - 2].0[(va >> 12) & 511] };
+    let e = slot(va);
+    let p = if e.is_null() {
+        0
+    } else {
+        // SAFETY: va is in the kernel user-image range at each call. The sole masked-IRQ
+        // context owns the tables; only a copied descriptor is read.
+        unsafe { *e }
+    };
     if p & 3 == 3 {
         (p & ADDRESS) as usize + (va & 4095)
     } else {
@@ -202,24 +319,25 @@ pub unsafe fn flush() {
     }
 }
 pub fn valid(va: usize, w: bool) -> bool {
-    // SAFETY: The sole masked-IRQ syscall context owns USER and the checked range keeps the
+    // SAFETY: The sole masked-IRQ syscall context owns the tables and the checked range keeps the
     // descriptor index in bounds.
     unsafe {
         if !(crate::memory::USER_BASE..crate::memory::USER_END).contains(&va) {
             return false;
         }
-        let p = USER[va / 0x200000 - 2].0[(va >> 12) & 511];
-        p & 3 == 3 && (!w || p & RO == 0)
+        let e = slot(va);
+        !e.is_null() && *e & 3 == 3 && (!w || *e & RO == 0)
     }
 }
 /// # Safety
-/// va is page-aligned and inside the mmap range checked by munmap. The sole masked-IRQ vCPU
-/// owns USER and flushes before EL0 resumes.
+/// va is page-aligned heap VA. The sole masked-IRQ vCPU owns the tables and
+/// flushes before EL0 resumes.
 pub unsafe fn unmap(va: usize) {
-    // SAFETY: va is page-aligned and inside the mmap range checked by munmap. The sole
-    // masked-IRQ vCPU owns USER and flushes before EL0 resumes.
+    // SAFETY: as above; the page returns to the pool.
     unsafe {
-        USER[va / 0x200000 - 2].0[(va >> 12) & 511] = 0;
+        if let Some(pa) = take(va) {
+            crate::heap::free(pa);
+        }
     }
 }
 /// # Safety

@@ -57,6 +57,7 @@ mod mac {
                     "remap" => MemoryReset::Remap,
                     "" | "copy" => MemoryReset::Copy,
                     "unclean" => MemoryReset::Unclean,
+                    "dirty" => MemoryReset::Dirty,
                     m => panic!("unknown reset mode {m}"),
                 },
             ),
@@ -267,12 +268,15 @@ mod mac {
         vm.reset = mode;
         let mut s = Slot::create(vm, snapshot, ResetPolicy::default()).unwrap();
         let mut entropy = File::open("/dev/urandom").unwrap();
-        let (mut run, mut cpu, mut reset, mut total, mut exits) =
-            (vec![], vec![], vec![], vec![], vec![]);
+        let (mut run, mut cpu, mut reset, mut total, mut exits, mut copied) =
+            (vec![], vec![], vec![], vec![], vec![], vec![]);
+        let mut last_copied = 0u64;
         for i in 0..n {
             let t0 = Instant::now();
             if i > 0 {
-                reset.push(s.reset().unwrap().ns);
+                let r = s.reset().unwrap();
+                reset.push(r.ns);
+                last_copied = u64::from(r.private);
             }
             let (t, c) = (Instant::now(), thread_cpu_ns());
             s.bind(i as u64 + 2, source, &mut entropy);
@@ -291,15 +295,17 @@ mod mac {
                 cpu.push(thread_cpu_ns() - c);
                 total.push(t0.elapsed().as_nanos() as u64);
                 exits.push(s.exits);
+                copied.push(last_copied);
             }
         }
         println!(
-            "{{\"event\":\"bench\",\"hypervisor\":\"hvf\",\"fixture\":\"{name}\",\"reset\":\"{mode:?}\",\"n\":{n},\"run_wall_ns\":{},\"run_cpu_ns\":{},\"reset_ns\":{},\"reset_plus_run_wall_ns\":{},\"exits\":{}}}",
+            "{{\"event\":\"bench\",\"hypervisor\":\"hvf\",\"fixture\":\"{name}\",\"reset\":\"{mode:?}\",\"n\":{n},\"run_wall_ns\":{},\"run_cpu_ns\":{},\"reset_ns\":{},\"reset_plus_run_wall_ns\":{},\"exits\":{},\"granules_restored\":{}}}",
             stats(&mut run),
             stats(&mut cpu),
             stats(&mut reset),
             stats(&mut total),
             stats(&mut exits),
+            stats(&mut copied),
         );
     }
 }

@@ -69,7 +69,7 @@ function echo(...args) {
   if(inflight+b.length>2097152) return Promise.reject(Error('call byte budget'));
   const id=next++;
   return new Promise((resolve,reject)=>{
-    pending.set(id,{resolve,reject,bytes:b.length,parts:[]});
+    pending.set(id,{resolve,reject,bytes:b.length,text:''});
     inflight+=b.length;
     // A failed write keeps its ID consumed: the host may have seen part of it.
     if(os.write(128+id,b.buffer,0,b.length)!==b.length) {
@@ -104,17 +104,19 @@ os.setReadHandler(0,()=>{
     if(n<8||!p) throw Error('RET failed');
     const ok=view.getUint16(4,true)===2, more=view.getUint16(6,true)&2;
     // Out of memory (the arena class) fails this call, not the event loop:
-    // its remaining records are still read and dropped.
-    if(!p.error) try { p.parts.push(latin1(bytes,8,n-8)); } catch(e) { p.error=e; p.parts=[]; }
+    // its remaining records are still read and dropped. The fragments form a
+    // rope: JSON.parse flattens it into one exact-size string and drops the
+    // fragments, where a join held them with a buffer growing 1.5x at a time
+    // (2.5x the reply's bytes at once, against 2x).
+    if(!p.error) try { p.text+=latin1(bytes,8,n-8); } catch(e) { p.error=e; p.text=''; }
     if(more) continue;
     pending.delete(id);
     inflight-=p.bytes;
     if(p.error) p.reject(p.error);
     else if(!ok) p.reject(Error('RET failed'));
     else try {
-      // One copy of the text while it is parsed: the fragments go first.
-      const text=p.parts.length===1?p.parts[0]:p.parts.join('');
-      p.parts=undefined;
+      const text=p.text;
+      p.text=undefined;
       p.resolve(JSON.parse(text));
     } catch(e) { p.reject(e); }
   }

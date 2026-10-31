@@ -16,6 +16,10 @@ mod console;
 #[allow(unused_attributes, dead_code)]
 #[path = "../../abi/src/lib.rs"]
 mod abi;
+#[cfg(feature = "transport-ring")]
+mod heap;
+#[cfg(feature = "heap-trace")]
+mod heap_trace;
 mod memory;
 mod syscalls;
 mod trace;

@@ -7,6 +7,8 @@ default = ["qjs"]
 qjs = []
 transport-ring = ["qjs"]
 grow-trace = []
+# Diagnostic only: memory syscall trace (src/heap_trace.rs).
+heap-trace = ["transport-ring"]
 probe = ["qjs"]
 [profile.release]
 panic = "abort"

@@ -33,10 +33,9 @@ pub fn writable(addr: usize, len: usize) -> bool {
 )]
 pub fn mmap_arena() -> (usize, usize) {
     #[cfg(feature = "transport-ring")]
-    let limit = crate::mmu::mmap_limit();
+    return (crate::mmu::MMAP_VA, crate::mmu::mmap_limit());
     #[cfg(not(feature = "transport-ring"))]
-    let limit = crate::memory::MMAP_END;
-    (crate::user::MMAP, limit)
+    (crate::user::MMAP, crate::memory::MMAP_END)
 }
 #[allow(
     dead_code,
@@ -69,15 +68,20 @@ pub fn map_zeroed(base: usize, len: usize) -> bool {
     {
         return false;
     }
-    // SAFETY: the range is page-aligned, inside the mmap arena and unmapped, so
-    // its backing is disjoint from every live mapping. This masked-IRQ trap owns
-    // the tables and flushes before EL0 resumes.
-    unsafe {
-        crate::user::pages(base, stop, true, false);
-        core::ptr::write_bytes(crate::mmu::physical(base) as *mut u8, 0, len);
-        crate::mmu::flush();
+    #[cfg(feature = "transport-ring")]
+    return crate::heap::map_fixed(base, len);
+    #[cfg(not(feature = "transport-ring"))]
+    {
+        // SAFETY: the range is page-aligned, inside the mmap arena and unmapped, so
+        // its backing is disjoint from every live mapping. This masked-IRQ trap owns
+        // the tables and flushes before EL0 resumes.
+        unsafe {
+            crate::user::pages(base, stop, true, false);
+            core::ptr::write_bytes(crate::mmu::physical(base) as *mut u8, 0, len);
+            crate::mmu::flush();
+        }
+        true
     }
-    true
 }
 pub fn now_ns() -> u64 {
     crate::wait::now_ns()

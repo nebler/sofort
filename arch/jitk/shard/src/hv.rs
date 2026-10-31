@@ -133,6 +133,9 @@ pub trait Vm: Sized {
     /// Drop the private pages of a pristine slot (idle trim); the bytes stay
     /// the snapshot's.
     fn discard_memory(&mut self, m: &Memory<'_, <Self::Vcpu as Vcpu>::State>) -> io::Result<()>;
+    /// The host wrote `len` bytes of a writable extent at `gpa` (offline
+    /// fixtures); a backend that restores only what was written records it.
+    fn host_wrote(&self, _gpa: u64, _len: usize) {}
     /// Offline fault probes only: let the guest execute the `len` bytes of a
     /// writable extent at `gpa` (host address `host`), which the host just
     /// wrote, until the next reset. Backends without execute control: no-op.
