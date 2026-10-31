@@ -436,9 +436,11 @@ pub enum MemoryReset {
     /// is mapped read-only at stage 2; a guest write to a read-only granule
     /// exits to the engine, which makes that 16 KiB granule writable,
     /// records it (`Tracker`) and resumes the guest at the same instruction.
-    /// The reset copies and cleans every recorded granule. Only a recorded
-    /// granule is ever writable, so one not recorded is one no guest access
-    /// could change since it was last restored (or mapped from the file).
+    /// The reset copies and cleans every recorded granule, or, when more are
+    /// recorded than the hot set holds, replaces the arena with a fresh
+    /// read-only mapping of the file as Remap does. Only a recorded granule
+    /// is ever writable, so one not recorded is one no guest access could
+    /// change since it was last restored (or mapped from the file).
     /// Host writes into the arena (offline fixtures) record their granules
     /// too (`hv::Vm::host_wrote`). A small hot set stays writable and
     /// recorded across resets (STICKY, DECAY). Reset time and the slot's
@@ -476,14 +478,15 @@ pub(crate) struct Tracker {
     resets: std::sync::atomic::AtomicU32,
 }
 /// A reset leaves the granules it restored writable (and recorded, so every
-/// later reset restores them too) when they are at most STICKY, and makes
-/// every granule read-only at each DECAY-th reset regardless. A run that
+/// later reset restores them too) when they are at most STICKY, and remaps
+/// the arena read-only otherwise and at each DECAY-th reset. A run that
 /// writes what the last one wrote then takes no write faults, at ~6 µs each
 /// on an M4 Pro (`hvf bench return2`: 29 faults per run, 220 µs against 34
 /// µs with the hot set), while a large run's granules do not stay in every
-/// later reset. 256 granules: 4 MiB.
-pub(crate) const STICKY: usize = 256;
-const DECAY: u32 = 64;
+/// later reset. 128 granules (2 MiB) hold a T1 or T5 bench task's (~70);
+/// a decay every 16th reset costs a repeated `return 2` ~13 µs a run.
+pub(crate) const STICKY: usize = 128;
+const DECAY: u32 = 16;
 impl Tracker {
     fn new(gpa: u64, len: usize) -> Self {
         assert!(gpa.is_multiple_of(GRANULE) && (len as u64).is_multiple_of(GRANULE));
@@ -731,32 +734,39 @@ impl hv::Vm for HvfVm {
             match (self.reset, tracked) {
                 (MemoryReset::Dirty, Some(t)) => {
                     let runs = t.runs();
-                    let keep = t.keep(runs.iter().map(|r| r.1).sum());
-                    if !keep {
-                        t.clear();
-                    }
-                    for (g, n) in runs {
-                        let (off, bytes) = (g * GRANULE as usize, n * GRANULE as usize);
-                        report.private += n as u32;
-                        // SAFETY: both views cover RAM; the run lies within the
-                        // arena; the vCPU is stopped and the reference is
-                        // read-only. Unless the hot set is kept (writable
-                        // granules stay writable and every one recorded), the
-                        // run is read-only again before the next guest access.
-                        unsafe {
-                            let dst = m.ram.ptr.add(start + off);
-                            ptr::copy_nonoverlapping(
-                                m.snapshot.reference.ptr().add(start + off),
-                                dst,
-                                bytes,
-                            );
-                            clean_to_poc(dst, bytes);
-                            if !keep {
-                                check(
-                                    hv_vm_protect(gpa + off as u64, bytes, READ),
-                                    "hv_vm_protect (reset)",
-                                )?;
+                    let recorded = runs.iter().map(|r| r.1).sum::<usize>();
+                    report.private += recorded as u32;
+                    if t.keep(recorded) {
+                        for (g, n) in runs {
+                            let (off, bytes) = (g * GRANULE as usize, n * GRANULE as usize);
+                            // SAFETY: both views cover RAM; the run lies within
+                            // the arena; the vCPU is stopped and the reference
+                            // is read-only. The hot set stays as it is: its
+                            // writable granules writable, every one recorded.
+                            unsafe {
+                                let dst = m.ram.ptr.add(start + off);
+                                ptr::copy_nonoverlapping(
+                                    m.snapshot.reference.ptr().add(start + off),
+                                    dst,
+                                    bytes,
+                                );
+                                clean_to_poc(dst, bytes);
                             }
+                        }
+                    } else {
+                        // A large (or decaying) set: Remap's restore, read-only.
+                        // Cheaper than copying it back, and its private pages
+                        // go back to the kernel now rather than at idle trim.
+                        report.discard = Some(crate::slot::reset::Discard::Limit);
+                        // SAFETY: the vCPU is stopped on this thread; the
+                        // extent was mapped by Slot::create and is mapped
+                        // again below, from the slot's RAM mapping.
+                        unsafe {
+                            check(hv_vm_unmap(gpa, len), "hv_vm_unmap")?;
+                            m.ram.remap(&m.snapshot.memory, start, len)?;
+                            t.clear();
+                            let host = m.ram.ptr.wrapping_add(start).cast();
+                            check(hv_vm_map(host, gpa, len, READ), "hv_vm_map")?;
                         }
                     }
                 }
