@@ -324,11 +324,7 @@ part_oracle() {
   fi
   step 'oracle image' oracle_image
   step 'oracle tools' oracle_tools
-  # Report-only for now: the grow recordings were made under Docker Desktop on
-  # the Mac, and file ownership and /dev differ on a Linux host (fstat's
-  # unreadable-metadata, SQLite exit codes). Re-recording on Linux and
-  # re-promoting is the fix (docs/results/oracle-recordings.md).
-  report 'oracle recordings (grow)' "$JITK/grow/build/oracle-verify"
+  step 'oracle recordings (grow)' "$JITK/grow/build/oracle-verify"
   step 'oracle recordings (fs_diff)' fs_diff_verify
 }
 
