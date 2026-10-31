@@ -12,6 +12,13 @@ another agent writes the missing piece. That piece is only accepted if it behave
 exactly like real Linux on tests the agent never saw. So Sofort gets more capable
 with use, and every step is checked.
 
+<p align="center"><img src="arch/viz/brand/providers.svg" alt="Real agent tasks per GiB: tanstack isolated-vm 212, node:vm 78, sofort 48 (hardware VM, 100/100 solved), tanstack quickjs 41, hyperlight-js 16 (hardware VM), cloudflare worker 9" width="820"></p>
+
+Among sandboxes that give every run its own hardware VM, Sofort fits about 3× more
+real agent tasks into the same memory, and solves all of them. (Measured on one Mac
+with our [bench](arch/jitk/bench/v1/results/2026-10-31-memory.md); "cloudflare worker"
+is Cloudflare's local workerd, not the hosted service.)
+
 ## How it works
 
 1. **Run:** agents run code in a fresh, isolated machine.

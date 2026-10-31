@@ -70,6 +70,30 @@ def c():
         b += f'<rect x="{wx}" y="{y-34}" width="240" height="52" rx="8" fill="{BG}" stroke="{A if w=="grow" else "#3a4266"}" stroke-width="2"/>'
         b += f'<text x="{wx+120}" y="{y}" text-anchor="middle" fill="{A if w=="grow" else FG}" font-family="{MONO}" font-size="26">{w}</text>'
     write('.', 'og.svg', svg(1280, 640, b))
+    # providers: one table, sorted by tasks per GiB, from bench v1 (memory-s5b, fit-matrix2/9)
+    rows = [('tanstack isolated-vm', 'V8 isolate', False, 212, 100), ('node:vm', 'none', False, 78, 100),
+            ('sofort', 'hardware VM', True, 48, 100), ('tanstack quickjs', 'Wasm', False, 41, 99),
+            ('hyperlight-js', 'hardware VM', True, 16, 88), ('cloudflare worker', 'V8 isolate', False, 9, 100)]
+    b = f'<rect width="900" height="400" rx="16" fill="{BG}"/>'
+    b += f'<text x="50" y="46" fill="{FG}" font-family="{MONO}" font-size="17">real agent tasks per GiB of memory</text>'
+    b += f'<text x="50" y="68" fill="{M}" font-family="{MONO}" font-size="12">same 25 programs on the same Mac</text>'
+    cols = [(50, 'sandbox', 'start'), (280, 'isolation', 'start'), (430, 'tasks per GiB', 'start'), (850, 'solved', 'end')]
+    for x, h, anchor in cols:
+        b += f'<text x="{x}" y="110" text-anchor="{anchor}" fill="{M}" font-family="{MONO}" font-size="11" letter-spacing="1">{h.upper()}</text>'
+    b += f'<line x1="50" y1="122" x2="850" y2="122" stroke="#2a3150" stroke-width="1"/>'
+    y, bx, bw = 154, 430, 290
+    for name, iso, hw, gib, ok in rows:
+        me = name == 'sofort'
+        if me:
+            b += f'<rect x="38" y="{y-21}" width="824" height="38" rx="8" fill="#151b33"/>'
+        b += f'<text x="50" y="{y+4}" fill="{A if me else FG}" font-family="{MONO}" font-size="14" font-weight="{700 if me else 400}">{name}</text>'
+        b += f'<text x="280" y="{y+4}" fill="{A if hw else M}" font-family="{MONO}" font-size="13">{iso}</text>'
+        w = max(gib/212*bw, 6)
+        b += f'<rect x="{bx}" y="{y-8}" width="{w:.0f}" height="14" rx="5" fill="{A if hw else "#3a4266"}"/>'
+        b += f'<text x="{bx+w+10:.0f}" y="{y+4}" fill="{A if me else FG}" font-family="{MONO}" font-size="13">{gib}</text>'
+        b += f'<text x="850" y="{y+4}" text-anchor="end" fill="{FG if ok == 100 else M}" font-family="{MONO}" font-size="13">{ok}/100</text>'
+        y += 40
+    write('.', 'providers.svg', svg(900, 400, b))
 
 c()
 print('ok')
