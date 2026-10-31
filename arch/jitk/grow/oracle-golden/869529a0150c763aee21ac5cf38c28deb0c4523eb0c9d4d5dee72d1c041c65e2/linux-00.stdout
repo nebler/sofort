@@ -1,0 +1,7 @@
+/repo/docs:
+notes.md
+
+/repo/src:
+app.ts
+lib
+util.ts

@@ -1,0 +1,103 @@
+{
+  "run_id": "routable-baseline-2",
+  "kernel_ready": "{\n  \"image\": \"dist/kernel-8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d",
+  "workloads": 75,
+  "verdicts": {
+    "match": 59,
+    "mismatch": 16
+  },
+  "shapes": 53,
+  "proven": 39,
+  "missing_syscalls_by_workloads": {
+    "setgid": 69,
+    "setuid": 69,
+    "getuid": 69,
+    "getgid": 69,
+    "sched_getaffinity": 6,
+    "tkill": 6,
+    "madvise": 6,
+    "sendfile": 5
+  },
+  "mismatches": [
+    {
+      "id": "grep-07",
+      "shape": "grep -rn <arg> <arg>",
+      "detail": "linux exit=0 stdout=\"/repo/src/util.ts:9:// TODO: remove once callers use clamp\\n/repo/src/app.ts:4:// TODO: read the limit from the config file\\n/repo/docs/notes.md:5:TODO: document \" stderr=\"\" / guest exit=0 stdout=\"/repo/docs/notes.md:5:"
+    },
+    {
+      "id": "grep-08",
+      "shape": "grep -rn <arg> <arg>",
+      "detail": "linux exit=0 stdout=\"/repo/src/util.ts:5:export function clamp(value: number, low: number, high: number): number {\\n/repo/src/util.ts:9:// TODO: remove once callers use clamp\\n/repo/s\" stderr=\"\" / guest exit=0 stdout=\"/repo/src/app.ts:2:imp"
+    },
+    {
+      "id": "head-07",
+      "shape": "head -c N <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"{\\n  \\\"name\\\": \\\"fixture-app\\\",\\n  \\\"version\\\": \\\"1.4.2\\\",\\n  \\\"type\\\": \\\"modu\" stderr=\"\" / guest exit=null stdout=\"{\\n  \\\"name\\\": \\\"fixture-app\\\",\\n  \\\"version\\\": \\\"1.4.2\\\",\\n  \\\"type\\\": \\\"modu\" stder"
+    },
+    {
+      "id": "head-08",
+      "shape": "head -c N",
+      "detail": "incomplete trace; linux exit=0 stdout=\"2026-10-31T12:00:01Z INFO step 1 done in 53ms\\n2026-10-31T12:00:02Z INFO step 2 done in 106ms\\n2026-10\" stderr=\"\" / guest exit=null stdout=\"2026-10-31T12:00:01Z INFO step 1 done in 53ms\\n2026-10-31T12:"
+    },
+    {
+      "id": "cat-06",
+      "shape": "cat -n <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"     1\\t# fixture-app\\n     2\\t\\n     3\\tA small app used as a fixed file tree for routable-command workloads.\\n     4\\t\\n     5\\t## Usage\\n     6\\t\\n     7\\tRun `main` with\" stderr=\"\" / guest exit=nul"
+    },
+    {
+      "id": "ls-04",
+      "shape": "ls -la <arg>",
+      "detail": "linux exit=0 stdout=\"total 20\\ndrwxr-xr-x    3 1001     1001          4096 Jan  1  2026 .\\ndrwxr-xr-x    5 1001     1001          4096 Jan  1  2026 ..\\n-rw-r--r--    1 1001     1001   \" stderr=\"\" / guest exit=0 stdout=\"total 1\\ndr-xr-xr-x  "
+    },
+    {
+      "id": "ls-05",
+      "shape": "ls -l <arg>",
+      "detail": "linux exit=0 stdout=\"total 4\\n-rw-r--r--    1 1001     1001           124 Jan  1  2026 notes.md\\n\" stderr=\"\" / guest exit=0 stdout=\"total 1\\n-r--r--r--    1 0        0              124 Jan  1  1970 notes.md\\n\" stderr=\"\""
+    },
+    {
+      "id": "awk-03",
+      "shape": "awk -<other> <arg>",
+      "detail": "linux exit=0 stdout=\"1550\\n\" stderr=\"\" / guest exit=0 stdout=\"0\\n\" stderr=\"\""
+    },
+    {
+      "id": "find-01",
+      "shape": "find <arg> -name <arg>",
+      "detail": "linux exit=0 stdout=\"/repo/src/util.ts\\n/repo/src/lib/parse.ts\\n/repo/src/app.ts\\n\" stderr=\"\" / guest exit=0 stdout=\"/repo/src/app.ts\\n/repo/src/lib/parse.ts\\n/repo/src/util.ts\\n\" stderr=\"\""
+    },
+    {
+      "id": "find-02",
+      "shape": "find <arg> -type <arg>",
+      "detail": "linux exit=0 stdout=\"/repo/logs/build.log\\n/repo/package.json\\n/repo/README.md\\n/repo/src/util.ts\\n/repo/src/lib/parse.ts\\n/repo/src/app.ts\\n/repo/docs/notes.md\\n/repo/data.csv\\n\" stderr=\"\" / guest exit=0 stdout=\"/repo/README.md\\n/repo/data"
+    },
+    {
+      "id": "rg-01",
+      "shape": "rg -n <arg> <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"/repo/src/util.ts:9:// TODO: remove once callers use clamp\\n/repo/src/app.ts:4:// TODO: read the limit from the config file\\n/repo/docs/notes.md:5:TODO: document \" stderr=\"\" / guest exit=null stdout=\"\""
+    },
+    {
+      "id": "rg-02",
+      "shape": "rg -n <arg> <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"/repo/src/util.ts:1:export function format(value: number): string {\\n/repo/src/util.ts:5:export function clamp(value: number, low: number, high: number): number \" stderr=\"\" / guest exit=null stdout=\"\" "
+    },
+    {
+      "id": "rg-03",
+      "shape": "rg <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"2026-10-31T12:00:17Z ERROR step 17 done in 1ms\\n2026-10-31T12:00:34Z ERROR step 34 done in 2ms\\n2026-10-31T12:00:51Z ERROR step 51 done in 3ms\\n2026-10-31T12:01:08\" stderr=\"\" / guest exit=null stdout=\""
+    },
+    {
+      "id": "rg-04",
+      "shape": "rg --files <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"/repo/logs/build.log\\n/repo/package.json\\n/repo/README.md\\n/repo/src/util.ts\\n/repo/src/lib/parse.ts\\n/repo/src/app.ts\\n/repo/docs/notes.md\\n/repo/data.csv\\n\" stderr=\"\" / guest exit=null stdout=\"\" stde"
+    },
+    {
+      "id": "rg-05",
+      "shape": "rg -n <arg> <arg> -g <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"/repo/src/util.ts:5:export function clamp(value: number, low: number, high: number): number {\\n/repo/src/util.ts:9:// TODO: remove once callers use clamp\\n/repo/s\" stderr=\"\" / guest exit=null stdout=\"\""
+    },
+    {
+      "id": "rg-06",
+      "shape": "rg -n -i <arg> <arg>",
+      "detail": "incomplete trace; linux exit=0 stdout=\"/repo/docs/notes.md:3:Error policy: every error is logged once, then rethrown.\\n/repo/docs/notes.md:4:Warnings are not errors.\\n\" stderr=\"\" / guest exit=null stdout=\"\" stderr=\"fatal runtime error: asse"
+    }
+  ]
+}

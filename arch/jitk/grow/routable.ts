@@ -17,6 +17,7 @@ import { check, detail, dump, readJSON } from './lib.ts';
 import { ROOT, build, checkHost, cleanup, copyKernel, hostCommand, processGuest, scratch, selectHost, sha } from './runtime.ts';
 import { oracle } from './oracle.ts';
 import { observe, outcome, type Outcome } from './observations.ts';
+import { guestStdout } from '../scriptc-corpus/guest-output.ts';
 
 interface Artifact {
   url: string;
@@ -150,7 +151,9 @@ async function main(argv: string[]): Promise<void> {
           try {
             checkHost(run.info, run.err);
             const value = observe(run.raw);
-            result.guest = outcome(value);
+            // Grow's probe observer drops blank lines by design; stdout comes from the
+            // corpus's byte-exact decoder (exit, stderr and the trace from observe()).
+            result.guest = { stdout_hex: guestStdout(run.raw).toString('hex'), stderr_hex: value.stderr_hex, exit: value.exit };
             result.missing = [...new Set(value.missing.map((r) => r.nr))].sort((a, b) => a - b);
             result.registered_enosys = [...new Set(value.registered_enosys.map((r) => r.nr))].sort((a, b) => a - b);
             if (result.linux === null) {

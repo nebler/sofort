@@ -1,0 +1,36 @@
+{
+  "key": "1658a91e329f52c9798e6fbc2fc322b9765f2ce2c9dede5e0d6fdef1f229d16b",
+  "inputs": {
+    "payload_sha256": "c14cdb389f34e504d69e386cfc67d5c5d9a730a990de03ca6910b2a15e30386a",
+    "config": {
+      "argv": [
+        "rg",
+        "-j1",
+        "-n",
+        "TODO",
+        "/repo"
+      ],
+      "expected_hex": null,
+      "stdin_hex": "",
+      "samples": 1,
+      "injections": [],
+      "annotate": false,
+      "memory_kib": 0,
+      "root": null,
+      "tree_sha256": null,
+      "stdin_eof": true
+    },
+    "mounts_sha256": "e97757270c1b9873ec49eee9013c535e2cbbbd788cc387b0d19dcc332f61f3fd",
+    "tree_sha256": null
+  },
+  "files": [
+    "driver.stderr",
+    "driver.stdout",
+    "linux-00.stderr",
+    "linux-00.stdout",
+    "linux-00.strace",
+    "linux-summary.json",
+    "oracle-image.json"
+  ],
+  "provenance": "recorded by oracle(): GitHub run 41230752523 on 2026-10-31T18:45:27.882Z"
+}

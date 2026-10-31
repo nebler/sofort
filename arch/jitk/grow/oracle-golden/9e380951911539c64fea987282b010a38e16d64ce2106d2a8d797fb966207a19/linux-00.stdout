@@ -1,0 +1,4 @@
+13:export function handleError(error: unknown): never {
+14-  console.error('app failed:', error);
+15-  throw error;
+16-}

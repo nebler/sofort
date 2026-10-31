@@ -1,0 +1,34 @@
+{
+  "key": "9610863736fb526cf71ce591cd77a26665bbb151f4bcb1de3f74e78ff49abee0",
+  "inputs": {
+    "payload_sha256": "a6bb1e6e349cbdfa690a78cd0017413c5446bdae02ee003ceb682d4ae1a004ff",
+    "config": {
+      "argv": [
+        "busybox",
+        "sort"
+      ],
+      "expected_hex": null,
+      "stdin_hex": "6e616d652c76616c75650a6974656d30312c33370a6974656d30322c37340a6974656d30332c31300a6974656d30342c34370a6974656d30352c38340a6974656d30362c32300a6974656d30372c35370a6974656d30382c39340a6974656d30392c33300a6974656d31302c36370a6974656d31312c330a6974656d31322c34300a6974656d31332c37370a6974656d31342c31330a6974656d31352c35300a6974656d31362c38370a6974656d31372c32330a6974656d31382c36300a6974656d31392c39370a6974656d32302c33330a6974656d32312c37300a6974656d32322c360a6974656d32332c34330a6974656d32342c38300a6974656d32352c31360a6974656d32362c35330a6974656d32372c39300a6974656d32382c32360a6974656d32392c36330a6974656d33302c3130300a",
+      "samples": 1,
+      "injections": [],
+      "annotate": false,
+      "memory_kib": 0,
+      "root": null,
+      "tree_sha256": null,
+      "payload_path": "/busybox",
+      "stdin_eof": true
+    },
+    "mounts_sha256": "e97757270c1b9873ec49eee9013c535e2cbbbd788cc387b0d19dcc332f61f3fd",
+    "tree_sha256": null
+  },
+  "files": [
+    "driver.stderr",
+    "driver.stdout",
+    "linux-00.stderr",
+    "linux-00.stdout",
+    "linux-00.strace",
+    "linux-summary.json",
+    "oracle-image.json"
+  ],
+  "provenance": "recorded by oracle(): GitHub run 41230752523 on 2026-10-31T18:45:25.923Z"
+}

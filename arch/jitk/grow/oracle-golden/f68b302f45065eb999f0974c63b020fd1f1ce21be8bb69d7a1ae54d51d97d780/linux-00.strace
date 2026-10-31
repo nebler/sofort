@@ -1,0 +1,37 @@
+11    execve("\x2f\x62\x75\x73\x79\x62\x6f\x78", ["\x2f\x62\x75\x73\x79\x62\x6f\x78", "\x6c\x73", "\x2f\x72\x65\x70\x6f"], ["\x50\x41\x54\x48\x3d\x2f\x62\x69\x6e\x3a\x2f\x75\x73\x72\x2f\x62\x69\x6e", "\x4c\x43\x5f\x41\x4c\x4c\x3d\x43", "\x4c\x41\x4e\x47\x3d\x43", "\x54\x5a\x3d\x55\x54\x43"]) = 0
+11    set_tid_address(0x522100)         = 11
+11    getuid()                          = 65534
+11    getgid()                          = 65534
+11    rt_sigprocmask(0, ~[32 33 34], [], 8) = 0
+11    rt_sigprocmask(0, ~[], NULL, 8)   = 0
+11    setgid(65534)                     = 0
+11    rt_sigprocmask(0x2, [], NULL, 8)  = 0
+11    rt_sigprocmask(0, ~[32 33 34], [], 8) = 0
+11    rt_sigprocmask(0, ~[], NULL, 8)   = 0
+11    setuid(65534)                     = 0
+11    rt_sigprocmask(0x2, [], NULL, 8)  = 0
+11    ioctl(0, 0x5413, 0xffffefedb890)  = -1 ENOTTY (Not a tty)
+11    ioctl(1, 0x5413, 0xffffefedb8e8)  = -1 ENOTTY (Not a tty)
+11    ioctl(1, 0x5413, 0xffffefedb8e8)  = -1 ENOTTY (Not a tty)
+11    brk(NULL)                         = 0x285ce000
+11    brk(0x285d0000)                   = 0x285d0000
+11    mmap(0x285ce000, 4096, 0, 0x32, -1, 0) = 0x285ce000
+11    mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xff0a39d2b000
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f", {st_dev=0x801, st_ino=274521, st_mode=040755, st_nlink=5, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0) = 0
+11    openat(-100, "\x2f\x72\x65\x70\x6f", 0xa4000) = 3
+11    fcntl(3, 0x2, 0x1)                = 0
+11    mmap(NULL, 8192, 0x3, 0x22, -1, 0) = 0xff0a39d29000
+11    getdents64(3, [{d_ino=274520, d_off=489978905425076104, d_reclen=24, d_type=0x4, d_name="\x2e\x2e"}, {d_ino=274522, d_off=2039502044771935556, d_reclen=24, d_type=0x4, d_name="\x6c\x6f\x67\x73"}, {d_ino=274524, d_off=2339419037041044644, d_reclen=32, d_type=0x8, d_name="\x70\x61\x63\x6b\x61\x67\x65\x2e\x6a\x73\x6f\x6e"}, {d_ino=274525, d_off=4321737654401785459, d_reclen=32, d_type=0x8, d_name="\x52\x45\x41\x44\x4d\x45\x2e\x6d\x64"}, {d_ino=274526, d_off=5076589479850127821, d_reclen=24, d_type=0x4, d_name="\x73\x72\x63"}, {d_ino=274531, d_off=5983860202700651470, d_reclen=24, d_type=0x4, d_name="\x64\x6f\x63\x73"}, {d_ino=274521, d_off=9118949747795425594, d_reclen=24, d_type=0x4, d_name="\x2e"}, {d_ino=274533, d_off=9223372036854775807, d_reclen=32, d_type=0x8, d_name="\x64\x61\x74\x61\x2e\x63\x73\x76"}], 2048) = 216
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x6c\x6f\x67\x73", {st_dev=0x801, st_ino=274522, st_mode=040755, st_nlink=2, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x70\x61\x63\x6b\x61\x67\x65\x2e\x6a\x73\x6f\x6e", {st_dev=0x801, st_ino=274524, st_mode=0100644, st_nlink=1, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=163, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x52\x45\x41\x44\x4d\x45\x2e\x6d\x64", {st_dev=0x801, st_ino=274525, st_mode=0100644, st_nlink=1, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=247, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63", {st_dev=0x801, st_ino=274526, st_mode=040755, st_nlink=3, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x64\x6f\x63\x73", {st_dev=0x801, st_ino=274531, st_mode=040755, st_nlink=2, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+11    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x64\x61\x74\x61\x2e\x63\x73\x76", {st_dev=0x801, st_ino=274533, st_mode=0100644, st_nlink=1, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=310, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+11    getdents64(3, [], 2048)           = 0
+11    close(3)                          = 0
+11    munmap(0xff0a39d29000, 8192)      = 0
+11    ioctl(1, 0x5413, 0xffffefedb7a8)  = -1 ENOTTY (Not a tty)
+11    writev(1, [{iov_base="\x52\x45\x41\x44\x4d\x45\x2e\x6d\x64", iov_len=9}, {iov_base="\x0a", iov_len=1}], 2) = 10
+11    writev(1, [{iov_base="\x64\x61\x74\x61\x2e\x63\x73\x76\x0a\x64\x6f\x63\x73\x0a\x6c\x6f\x67\x73\x0a\x70\x61\x63\x6b\x61\x67\x65\x2e\x6a\x73\x6f\x6e\x0a\x73\x72\x63\x0a", iov_len=36}, {iov_base=NULL, iov_len=0}], 2) = 36
+11    exit_group(0)                     = ?

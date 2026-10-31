@@ -1,0 +1,34 @@
+12    execve("\x2f\x62\x75\x73\x79\x62\x6f\x78", ["\x2f\x62\x75\x73\x79\x62\x6f\x78", "\x6c\x73", "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63"], ["\x50\x41\x54\x48\x3d\x2f\x62\x69\x6e\x3a\x2f\x75\x73\x72\x2f\x62\x69\x6e", "\x4c\x43\x5f\x41\x4c\x4c\x3d\x43", "\x4c\x41\x4e\x47\x3d\x43", "\x54\x5a\x3d\x55\x54\x43"]) = 0
+12    set_tid_address(0x522100)         = 12
+12    getuid()                          = 65534
+12    getgid()                          = 65534
+12    rt_sigprocmask(0, ~[32 33 34], [], 8) = 0
+12    rt_sigprocmask(0, ~[], NULL, 8)   = 0
+12    setgid(65534)                     = 0
+12    rt_sigprocmask(0x2, [], NULL, 8)  = 0
+12    rt_sigprocmask(0, ~[32 33 34], [], 8) = 0
+12    rt_sigprocmask(0, ~[], NULL, 8)   = 0
+12    setuid(65534)                     = 0
+12    rt_sigprocmask(0x2, [], NULL, 8)  = 0
+12    ioctl(0, 0x5413, 0xffffc959d350)  = -1 ENOTTY (Not a tty)
+12    ioctl(1, 0x5413, 0xffffc959d3a8)  = -1 ENOTTY (Not a tty)
+12    ioctl(1, 0x5413, 0xffffc959d3a8)  = -1 ENOTTY (Not a tty)
+12    brk(NULL)                         = 0x3bb93000
+12    brk(0x3bb95000)                   = 0x3bb95000
+12    mmap(0x3bb93000, 4096, 0, 0x32, -1, 0) = 0x3bb93000
+12    mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xff66aff1b000
+12    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63", {st_dev=0x801, st_ino=274526, st_mode=040755, st_nlink=3, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0) = 0
+12    openat(-100, "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63", 0xa4000) = 3
+12    fcntl(3, 0x2, 0x1)                = 0
+12    mmap(NULL, 8192, 0x3, 0x22, -1, 0) = 0xff66aff19000
+12    getdents64(3, [{d_ino=274521, d_off=605586810031931847, d_reclen=24, d_type=0x4, d_name="\x2e\x2e"}, {d_ino=274527, d_off=1832233063792611836, d_reclen=32, d_type=0x8, d_name="\x75\x74\x69\x6c\x2e\x74\x73"}, {d_ino=274528, d_off=2384527893205638701, d_reclen=24, d_type=0x4, d_name="\x6c\x69\x62"}, {d_ino=274530, d_off=5983860202700651470, d_reclen=32, d_type=0x8, d_name="\x61\x70\x70\x2e\x74\x73"}, {d_ino=274526, d_off=9223372036854775807, d_reclen=24, d_type=0x4, d_name="\x2e"}], 2048) = 136
+12    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63\x2f\x75\x74\x69\x6c\x2e\x74\x73", {st_dev=0x801, st_ino=274527, st_mode=0100644, st_nlink=1, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=286, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+12    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63\x2f\x6c\x69\x62", {st_dev=0x801, st_ino=274528, st_mode=040755, st_nlink=2, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+12    newfstatat(-100, "\x2f\x72\x65\x70\x6f\x2f\x73\x72\x63\x2f\x61\x70\x70\x2e\x74\x73", {st_dev=0x801, st_ino=274530, st_mode=0100644, st_nlink=1, st_uid=1001, st_gid=1001, st_blksize=4096, st_blocks=8, st_size=475, st_atime=1793472316 /* 2026-10-31T18:45:16.945178839+0000 */, st_atime_nsec=945178839, st_mtime=1767225600 /* 2026-01-01T00:00:00+0000 */, st_mtime_nsec=0, st_ctime=1793472316 /* 2026-10-31T18:45:16.941085774+0000 */, st_ctime_nsec=941085774}, 0x100) = 0
+12    getdents64(3, [], 2048)           = 0
+12    close(3)                          = 0
+12    munmap(0xff66aff19000, 8192)      = 0
+12    ioctl(1, 0x5413, 0xffffc959d268)  = -1 ENOTTY (Not a tty)
+12    writev(1, [{iov_base="\x61\x70\x70\x2e\x74\x73", iov_len=6}, {iov_base="\x0a", iov_len=1}], 2) = 7
+12    writev(1, [{iov_base="\x6c\x69\x62\x0a\x75\x74\x69\x6c\x2e\x74\x73\x0a", iov_len=12}, {iov_base=NULL, iov_len=0}], 2) = 12
+12    exit_group(0)                     = ?

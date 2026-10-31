@@ -1,0 +1,12 @@
+     1	# fixture-app
+     2	
+     3	A small app used as a fixed file tree for routable-command workloads.
+     4	
+     5	## Usage
+     6	
+     7	Run `main` with CSV lines. Errors are reported through `handleError`.
+     8	
+     9	## Notes
+    10	
+    11	- The limit is fixed at 40.
+    12	- See docs/notes.md for the error policy.

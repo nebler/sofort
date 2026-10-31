@@ -1,0 +1,5 @@
+
+# Notes
+Error policy: every error is logged once, then rethrown.
+TODO: document the retry policy.
+Warnings are not errors.

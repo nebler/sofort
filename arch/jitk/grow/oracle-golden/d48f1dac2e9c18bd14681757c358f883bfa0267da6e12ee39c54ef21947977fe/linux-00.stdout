@@ -1,0 +1,2 @@
+7:Run `main` with CSV lines. Errors are reported through `handleError`.
+12:- See docs/notes.md for the error policy.

@@ -1,0 +1,5 @@
+/repo/src/util.ts:5:export function clamp(value: number, low: number, high: number): number {
+/repo/src/util.ts:9:// TODO: remove once callers use clamp
+/repo/src/util.ts:10:export const legacyClamp = clamp;
+/repo/src/app.ts:2:import { format, clamp } from './util.ts';
+/repo/src/app.ts:10:  return format(clamp(total, 0, LIMIT));

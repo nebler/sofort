@@ -1,0 +1,35 @@
+{
+  "key": "3ab3755ae4acbf1d9422b39f93e3d37b51bb957e25730cfc99f90c3e4cf70353",
+  "inputs": {
+    "payload_sha256": "a6bb1e6e349cbdfa690a78cd0017413c5446bdae02ee003ceb682d4ae1a004ff",
+    "config": {
+      "argv": [
+        "busybox",
+        "grep",
+        "version"
+      ],
+      "expected_hex": null,
+      "stdin_hex": "7b0a2020226e616d65223a2022666978747572652d617070222c0a20202276657273696f6e223a2022312e342e32222c0a20202274797065223a20226d6f64756c65222c0a20202273637269707473223a207b0a202020202274657374223a20226e6f6465202d2d74657374222c0a20202020226275696c64223a2022747363202d70202e220a20207d2c0a202022646570656e64656e63696573223a207b7d0a7d0a",
+      "samples": 1,
+      "injections": [],
+      "annotate": false,
+      "memory_kib": 0,
+      "root": null,
+      "tree_sha256": null,
+      "payload_path": "/busybox",
+      "stdin_eof": true
+    },
+    "mounts_sha256": "e97757270c1b9873ec49eee9013c535e2cbbbd788cc387b0d19dcc332f61f3fd",
+    "tree_sha256": null
+  },
+  "files": [
+    "driver.stderr",
+    "driver.stdout",
+    "linux-00.stderr",
+    "linux-00.stdout",
+    "linux-00.strace",
+    "linux-summary.json",
+    "oracle-image.json"
+  ],
+  "provenance": "recorded by oracle(): GitHub run 41230752523 on 2026-10-31T18:45:19.166Z"
+}

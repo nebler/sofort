@@ -1,0 +1,16 @@
+import { parse } from './lib/parse.ts';
+import { format, clamp } from './util.ts';
+
+// TODO: read the limit from the config file
+const LIMIT = 40;
+
+export function main(lines: string[]): string {
+  const rows = lines.map(parse).filter((row) => row !== null);
+  const total = rows.reduce((sum, row) => sum + row.value, 0);
+  return format(clamp(total, 0, LIMIT));
+}
+
+export function handleError(error: unknown): never {
+  console.error('app failed:', error);
+  throw error;
+}

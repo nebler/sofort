@@ -1,0 +1,8 @@
+## Usage
+
+Run `main` with CSV lines. Errors are reported through `handleError`.
+
+## Notes
+
+- The limit is fixed at 40.
+- See docs/notes.md for the error policy.

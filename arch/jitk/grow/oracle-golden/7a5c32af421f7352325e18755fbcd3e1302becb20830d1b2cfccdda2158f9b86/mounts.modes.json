@@ -1,0 +1,15 @@
+{
+  "repo": "755",
+  "repo/README.md": "644",
+  "repo/data.csv": "644",
+  "repo/docs": "755",
+  "repo/docs/notes.md": "644",
+  "repo/logs": "755",
+  "repo/logs/build.log": "644",
+  "repo/package.json": "644",
+  "repo/src": "755",
+  "repo/src/app.ts": "644",
+  "repo/src/lib": "755",
+  "repo/src/lib/parse.ts": "644",
+  "repo/src/util.ts": "644"
+}

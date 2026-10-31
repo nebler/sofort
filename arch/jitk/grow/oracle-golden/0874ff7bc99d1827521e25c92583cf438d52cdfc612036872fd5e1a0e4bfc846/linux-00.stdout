@@ -1,0 +1,21 @@
+--- /repo/src/util.ts
++++ /repo/src/lib/parse.ts
+@@ -1,10 +1,11 @@
+-export function format(value: number): string {
+-  return 'total=' + value.toFixed(2);
++export interface Row {
++  name: string;
++  value: number;
+ }
+ 
+-export function clamp(value: number, low: number, high: number): number {
+-  return Math.min(high, Math.max(low, value));
++export function parse(line: string): Row | null {
++  const [name, raw] = line.split(',');
++  const value = Number(raw);
++  if (!name || Number.isNaN(value)) return null;
++  return { name: name.trim(), value };
+ }
+-
+-// TODO: remove once callers use clamp
+-export const legacyClamp = clamp;

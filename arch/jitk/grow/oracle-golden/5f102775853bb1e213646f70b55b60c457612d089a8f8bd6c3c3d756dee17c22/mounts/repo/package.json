@@ -1,0 +1,10 @@
+{
+  "name": "fixture-app",
+  "version": "1.4.2",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build": "tsc -p ."
+  },
+  "dependencies": {}
+}

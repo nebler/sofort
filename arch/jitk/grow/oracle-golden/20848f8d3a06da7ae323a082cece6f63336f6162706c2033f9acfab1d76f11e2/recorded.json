@@ -1,0 +1,37 @@
+{
+  "key": "20848f8d3a06da7ae323a082cece6f63336f6162706c2033f9acfab1d76f11e2",
+  "inputs": {
+    "payload_sha256": "a6bb1e6e349cbdfa690a78cd0017413c5446bdae02ee003ceb682d4ae1a004ff",
+    "config": {
+      "argv": [
+        "busybox",
+        "sed",
+        "-n",
+        "1,10p",
+        "/repo/src/app.ts"
+      ],
+      "expected_hex": null,
+      "stdin_hex": "",
+      "samples": 1,
+      "injections": [],
+      "annotate": false,
+      "memory_kib": 0,
+      "root": null,
+      "tree_sha256": null,
+      "payload_path": "/busybox",
+      "stdin_eof": true
+    },
+    "mounts_sha256": "e97757270c1b9873ec49eee9013c535e2cbbbd788cc387b0d19dcc332f61f3fd",
+    "tree_sha256": null
+  },
+  "files": [
+    "driver.stderr",
+    "driver.stdout",
+    "linux-00.stderr",
+    "linux-00.stdout",
+    "linux-00.strace",
+    "linux-summary.json",
+    "oracle-image.json"
+  ],
+  "provenance": "recorded by oracle(): GitHub run 41230752523 on 2026-10-31T18:45:21.111Z"
+}

@@ -1,0 +1,5 @@
+/repo/src/util.ts:1:export function format(value: number): string {
+/repo/src/util.ts:5:export function clamp(value: number, low: number, high: number): number {
+/repo/src/lib/parse.ts:6:export function parse(line: string): Row | null {
+/repo/src/app.ts:7:export function main(lines: string[]): string {
+/repo/src/app.ts:13:export function handleError(error: unknown): never {

@@ -1,0 +1,2 @@
+/repo/docs/notes.md:3:Error policy: every error is logged once, then rethrown.
+/repo/docs/notes.md:4:Warnings are not errors.
