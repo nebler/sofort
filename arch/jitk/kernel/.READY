@@ -1,27 +1,27 @@
 {
-  "image": "dist/kernel-33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d.bin",
-  "manifest": "dist/kernel-33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d.json",
-  "sha256": "33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d",
+  "image": "dist/kernel-8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d46300a33c9.bin",
+  "manifest": "dist/kernel-8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d46300a33c9.json",
+  "sha256": "8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d46300a33c9",
   "bytes": 2924584,
   "ram_mib": 32,
-  "created_utc": "2026-10-31T10:12:34.923Z",
-  "guest_loc": 4975,
+  "created_utc": "2026-10-31T12:47:07.786Z",
+  "guest_loc": 4984,
   "build_rs_loc": 75,
   "gates": {
-    "G1": "0.099993% idle core; 1000/1000 exchanges on 33b89b07 image",
-    "G2": "30 x 64 reversed replies; 33b89b07 image",
+    "G1": "0.000000% idle core; 1000/1000 exchanges on 8957bc35 image",
+    "G2": "30 x 64 reversed replies; 8957bc35 image",
     "isolation": "20/20 (incl. fs-alias-write, fs-user-read)",
     "packer": "12/12",
     "grow_contract": "4/4; both exit slots exercised",
-    "clocks": "30/30; origin error <1ms (worst bound 0.965 ms)",
+    "clocks": "30/30; origin error <1ms (worst bound 0.991 ms)",
     "fs_differential": "probe/Lua/QuickJS 30/30 byte-identical vs Linux ro bind mount; bootstrap 3/3; test_fs corruption PASS",
     "grow_r7": "fstat 30/30 + pread64 30/30 fresh VMs; mutants 7/7 rejected; SQLite corpus 20/20 exact; sqlite-checks PASS"
   },
   "test_host": "HVF engine console runner (JITK_SHARD_BINARY console, shard/src/hvf/console.rs)",
   "test_host_sha256": "7d29062e2dfb93e69e1e214bed9591463a0849e32098e235153d9fd0e5d12290",
   "linux_oracle": "recorded Linux runs (grow/oracle-golden, sealed held-out store, tests/fixtures/fs/linux), verified against Linux by the CI linux-oracle job",
-  "note": "Promoted by kernel/promote.ts: every gate run on this image (timing gates under the Mac bench lock); sources rebuild 33b89b07 byte-identically and the source-built gates (isolation, grow_contract, fs_differential, grow_r7) used that unchanged source tree (inventory ffd68ea926a7f5d5). guest_loc/build_rs_loc are physical lines (wc -l) of src/**/*.rs and build.rs. Receipts: kernel/.work/promote/33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d/.",
-  "previous_image": "dist/kernel-5325be7f137ea6aa76f47b7167a3defab8f9baef569abc2ba1a488a18f6eae3c.bin",
+  "note": "Promoted by kernel/promote.ts: every gate run on this image (timing gates under the Mac bench lock); sources rebuild 8957bc35 byte-identically and the source-built gates (isolation, grow_contract, fs_differential, grow_r7) used that unchanged source tree (inventory 4f146301808ea7b6). guest_loc/build_rs_loc are physical lines (wc -l) of src/**/*.rs and build.rs. Receipts: kernel/.work/promote/8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d46300a33c9/.",
+  "previous_image": "dist/kernel-33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d.bin",
   "verification_manifest": "syscalls.manifest.json",
-  "verification_sha256": "c78050cc18067068dd5c8c6730e197b9e8f2e7277cc4c4eb67b1f0ce30c24781"
+  "verification_sha256": "076df6ccbcd139d393fffb156d155e96003e5d9e11558efe6d57d306a5d87b96"
 }

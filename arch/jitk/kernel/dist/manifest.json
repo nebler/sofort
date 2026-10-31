@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sha256": "33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d",
-  "image": "kernel-33b89b0760572bb100f0e4c4df79f37ba9fc3ad1a828b998b6684eb81812d71d.bin",
+  "sha256": "8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d46300a33c9",
+  "image": "kernel-8957bc35929d3f8d6e4eafc207aba441177dce367ed2f4989d1c9d46300a33c9.bin",
   "bytes": 2924584,
   "ram_mib": 32,
   "features": [
@@ -61,7 +61,7 @@
       "nr": 56,
       "name": "openat",
       "registered": true,
-      "sha256": "f24d41fcdc40360bad79c386ed823d60d5d45ae334e75f04c26d40b5a3863f34"
+      "sha256": "f96704e782e5d0c90fa3f81c61e4ca10319a9ecb88e9784ae7f9df5d6ca9c228"
     },
     {
       "nr": 57,
@@ -348,7 +348,7 @@
       {
         "nr": 56,
         "name": "openat",
-        "source_sha256": "f24d41fcdc40360bad79c386ed823d60d5d45ae334e75f04c26d40b5a3863f34",
+        "source_sha256": "f96704e782e5d0c90fa3f81c61e4ca10319a9ecb88e9784ae7f9df5d6ca9c228",
         "status": "restricted",
         "domain": "read-only resource archive: archive paths; RO flag/error precedence of a ro bind mount; O_PATH EINVAL",
         "oracle": "native Linux arm64 (Docker jitk-oracle:08, tree bind-mounted :ro, ulimit -n 64)",
@@ -690,7 +690,22 @@
           "new": "489ce6b3f7298b9c5cf2b4e761aad8547c99feeac683ff9f69a27986e9e83635"
         }
       }
-    }
+    },
+    "refresh_amendments": [
+      {
+        "scope": "Source digests refreshed only after the complete kernel contract suite passed on an unverified scratch build.",
+        "at": "2026-10-31T12:46:55.910Z",
+        "generator": "refresh-contracts.ts",
+        "receipt": "dist/r8/contract-refresh.json",
+        "receipt_sha256": "edce5a252f6df5c8092d2287dcc3eaaaf151b9cc46a8975763cc3da99de0c4bb",
+        "changed_hashes": {
+          "openat": {
+            "old": "f24d41fcdc40360bad79c386ed823d60d5d45ae334e75f04c26d40b5a3863f34",
+            "new": "f96704e782e5d0c90fa3f81c61e4ca10319a9ecb88e9784ae7f9df5d6ca9c228"
+          }
+        }
+      }
+    ]
   },
-  "verification_sha256": "c78050cc18067068dd5c8c6730e197b9e8f2e7277cc4c4eb67b1f0ce30c24781"
+  "verification_sha256": "076df6ccbcd139d393fffb156d155e96003e5d9e11558efe6d57d306a5d87b96"
 }
