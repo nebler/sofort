@@ -102,7 +102,10 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
     command.push('-v', `${join(out, 'tree')}:${SHARED_ROOT}:ro`, '-v', `${ROOT}/build/oracle-root:/oracle-root:ro`);
   }
   if (options.resources) {
-    for (const child of readdirSync(options.resources).sort()) {
+    // Not over /dev: the container's own /dev (null, zero, urandom) stands in
+    // for a tree's dev/ placeholders, and runc refuses a /dev/null that is not
+    // a device. Both read as empty files to the payloads that use it.
+    for (const child of readdirSync(options.resources).sort().filter(name => name !== 'dev')) {
       command.push('-v', `${realpathSync(join(options.resources, child))}:/${child}:ro`);
     }
   }
@@ -117,7 +120,12 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
   if (mode === 'record') store(out, key, inputs, 'recorded by oracle(): ' + (process.env.GITHUB_RUN_ID ? 'GitHub run ' + process.env.GITHUB_RUN_ID : 'live run') + ' on ' + new Date().toISOString(), elf, options.resources);
   if (mode === 'verify') {
     check(recorded !== null, 'verify: no recorded run for key ' + key);
-    check(outcomes(out) === outcomes(recorded!), 'verify: Linux outcomes differ from the recorded run ' + key);
+    if (outcomes(out) !== outcomes(recorded!)) {
+      const lines = (dir: string) => readJSON<{ stdout_hex: string; exit: number }[]>(join(dir, 'linux-summary.json')).map(r => 'exit=' + r.exit + '\n' + Buffer.from(r.stdout_hex, 'hex').toString());
+      const [got, want] = [lines(out).join('\n').split('\n'), lines(recorded!).join('\n').split('\n')];
+      const diff = want.map((w, i) => (w === got[i] ? null : '  recorded ' + JSON.stringify(w) + ' / linux ' + JSON.stringify(got[i] ?? null))).filter(Boolean);
+      throw new Error('verify: Linux outcomes differ from the recorded run ' + key + ':\n' + diff.slice(0, 20).join('\n'));
+    }
   }
   return readJSON<Outcome[]>(join(out, 'linux-summary.json'));
 };
