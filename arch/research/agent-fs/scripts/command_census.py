@@ -457,6 +457,50 @@ def classify(name, args):
     return kind, flags
 
 
+GIT_SUBCOMMANDS = set('status log diff show branch rev-parse ls-files grep blame add commit checkout switch restore reset stash merge rebase fetch pull push remote tag config worktree cherry-pick describe shortlog cat-file ls-tree for-each-ref'.split())
+SHAPED = set('rg sed cat git ls head grep find wc jq tail sort uniq cut tr awk diff'.split())
+
+
+def shape(name, args):
+    # Generic argument shape for the routable census: flag names only. Numbers
+    # become N, every other operand <arg>; sed scripts keep only their kind.
+    # Patterns, paths and values never survive.
+    if name not in SHAPED:
+        return None
+    out = []
+    for i, a in enumerate(args):
+        if a.startswith('--'):
+            out.append(a.split('=', 1)[0] + ('=<v>' if '=' in a else ''))
+        elif a == '-':
+            out.append('-')
+        elif a.startswith('-') and len(a) > 1:
+            if re.fullmatch(r'-\d+', a):
+                out.append('-N')
+            elif re.fullmatch(r'-[A-Za-z]+\d+', a):
+                out.append(re.sub(r'\d+$', 'N', a))
+            elif re.fullmatch(r'-[A-Za-z]+', a):
+                out.append(a)
+            else:
+                out.append('-<other>')
+        elif re.fullmatch(r'\d+', a):
+            out.append('N')
+        elif name == 'git' and a in GIT_SUBCOMMANDS and not any(t in GIT_SUBCOMMANDS for t in out):
+            out.append(a)
+        elif name == 'sed' and (i == 0 or args[i - 1] in ['-e', '-n']) or (name == 'sed' and all(x.startswith('-') for x in args[:i])):
+            out.append('<sed:range-p>' if re.fullmatch(r'\$?\d*(,\$?\d*)?p', a) else '<sed:s>' if a.startswith('s') else '<sed:other>')
+        else:
+            out.append('<arg>')
+    # The lexer leaves a redirection's descriptor (`2>/dev/null`) as an operand.
+    if len(out) > 1 and out[-1] == 'N' and not out[-2].startswith('-'):
+        out.pop()
+    collapsed = []
+    for t in out:
+        if t == '<arg>' and collapsed[-2:] == ['<arg>', '<arg>']:
+            continue
+        collapsed.append(t)
+    return name + (' ' + ' '.join(collapsed) if collapsed else '')
+
+
 def parse_shell(s, depth=0):
     if depth > 12:
         return [], {'lexical_uncertainty', 'complex_shell'}
@@ -602,7 +646,7 @@ def parse_shell(s, depth=0):
             flags.add('opaque_dispatch')
         # A bounded offline Node candidate is only a forecast, not certification.
         ff.add('node_candidate') if n == 'node' and kind == 'C' and 'embedded_process' not in ff else None
-        inv.append({'name': n, 'kind': kind, 'flags': ff})
+        inv.append({'name': n, 'kind': kind, 'flags': ff, 'shape': shape(n, args)})
     for body in nested:
         child, ff = parse_shell(body, depth + 1)
         inv.extend(child)
