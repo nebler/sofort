@@ -29,7 +29,9 @@ const flag = (name: string): string | undefined => {
 const out = flag('--out');
 const traceDir = flag('--trace');
 const ws = flag('--ws') ?? join(here, '../.work/quickjs-ref/ws');
-const selected = argv.length ? argv : ['t1-issue-triage', 't2-ci-triage', 't3-crm-join', 't4-otel-rollup', 't5-openapi'];
+const selected = argv.length
+  ? argv
+  : ['t1-issue-triage', 't2-ci-triage', 't3-crm-join', 't4-otel-rollup', 't5-openapi'];
 
 export async function reference(task: LoadedTask, program: string, code: string, trace?: string) {
   const dir = mkdtempSync(join(tmpdir(), 'qjs-ref-'));
@@ -43,7 +45,9 @@ export async function reference(task: LoadedTask, program: string, code: string,
     env: { ...process.env, WS_NAMESPACES: JSON.stringify([...fns.keys()]), ...(trace ? { WS_TRACE: trace } : {}) },
   });
   let stderr = '';
-  child.stderr.on('data', b => { stderr += b; });
+  child.stderr.on('data', b => {
+    stderr += b;
+  });
   let result: { ok: boolean; value?: unknown; error?: string } = { ok: false, error: 'no result' };
   const done = new Promise<number>(r => child.on('close', c => r(c ?? -1)));
   for await (const line of createInterface({ input: child.stdout })) {
@@ -51,8 +55,14 @@ export async function reference(task: LoadedTask, program: string, code: string,
       const [id, ns, tool, args] = JSON.parse(line.slice(1)) as [number, string, string, unknown[]];
       void Promise.resolve()
         .then(() => fns.get(ns)![tool]!(...args))
-        .then(v => JSON.stringify(v ?? null), e => '!' + String((e as Error)?.message ?? e))
-        .then(text => { writeFileSync(join(dir, String(id)), text); child.stdin.write(id + '\n'); });
+        .then(
+          v => JSON.stringify(v ?? null),
+          e => '!' + String((e as Error)?.message ?? e),
+        )
+        .then(text => {
+          writeFileSync(join(dir, String(id)), text);
+          child.stdin.write(id + '\n');
+        });
     } else if (line[0] === 'D') result = { ok: true, value: JSON.parse(line.slice(1)) };
     else if (line[0] === 'E') result = { ok: false, error: JSON.parse(line.slice(1)) as string };
   }
@@ -62,8 +72,13 @@ export async function reference(task: LoadedTask, program: string, code: string,
   const m = /peak (\d+) floor (\d+)/.exec(stderr);
   const verdict = result.ok ? task.oracle(result.value) : { ok: false, reason: result.error };
   return {
-    engine: 'quickjs-native', task: task.spec.id, program, ok: verdict.ok && !ledger.unmatched && code_ === 0,
-    bytes: m ? Number(m[1]) : null, floor: m ? Number(m[2]) : null, detail: verdict.reason ?? (m ? undefined : stderr.slice(0, 300)),
+    engine: 'quickjs-native',
+    task: task.spec.id,
+    program,
+    ok: verdict.ok && !ledger.unmatched && code_ === 0,
+    bytes: m ? Number(m[1]) : null,
+    floor: m ? Number(m[2]) : null,
+    detail: verdict.reason ?? (m ? undefined : stderr.slice(0, 300)),
   };
 }
 
