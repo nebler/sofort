@@ -45,6 +45,13 @@ const env = environment();
 for (const key of ['JITK_ELF', 'JITK_ARGV_JSON', 'JITK_SCRIPT', 'JITK_RESOURCES', 'JITK_OUT_DIR', 'CARGO_TARGET_DIR', 'JITK_FS_WORK', 'JITK_GROW_CONTRACT_WORK', 'JITK_PROBE_WORK', 'JITK_TOOLS_DIR', 'JITK_RECORD', 'JITK_TEST_HOST', 'JITK_FS_SAMPLES']) {
   delete env[key];
 }
+// The Linux sides of fs_differential and grow_r7 replay recorded Linux runs
+// (grow/oracle-golden, the sealed held-out store, tests/fixtures/fs/linux) by
+// default, so promotion needs no Docker on the Mac; CI's linux-oracle job
+// verifies those recordings against Linux. JITK_ORACLE=live runs Docker here.
+const oracleMode = process.env.JITK_ORACLE ?? 'replay';
+check(oracleMode === 'replay' || oracleMode === 'live', 'promote: JITK_ORACLE is replay or live');
+env.JITK_ORACLE = oracleMode;
 env.JITK_SHARD_BINARY = engine;
 env.JITK_TEST_KERNEL = image;
 env.JITK_KERNEL_IMAGE = image;
@@ -216,6 +223,7 @@ const marker = {
   gates: ready,
   test_host: 'HVF engine console runner (JITK_SHARD_BINARY console, shard/src/hvf/console.rs)',
   test_host_sha256: sha(readFileSync(engine)),
+  linux_oracle: oracleMode === 'replay' ? 'recorded Linux runs (grow/oracle-golden, sealed held-out store, tests/fixtures/fs/linux), verified against Linux by the CI linux-oracle job' : 'live Docker (jitk-oracle:08) on this host',
   note: 'Promoted by kernel/promote.ts: every gate run on this image (timing gates under the Mac bench lock); ' + gates.rebuild + ' byte-identically and the source-built gates (isolation, grow_contract, fs_differential, grow_r7) used that unchanged source tree (inventory ' + sources.slice(0, 16) + '). guest_loc/build_rs_loc are physical lines (wc -l) of src/**/*.rs and build.rs. Receipts: kernel/.work/promote/' + hash + '/.',
   // Re-promoting the same image keeps the image it replaced.
   previous_image: previous.sha256 === hash && previous.previous_image ? previous.previous_image : previous.image,

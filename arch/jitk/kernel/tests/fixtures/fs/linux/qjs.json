@@ -1,0 +1,14 @@
+{
+  "payload_sha256": "ea2367e9dfc7484b6ad6d551b0bbc25d0247e2781f49ad822fa04c2753f80341",
+  "argv": [
+    "qjs",
+    "--std",
+    "--memory-limit",
+    "16777216",
+    "-e",
+    "// QuickJS std/os file access against the read-only archive.\nconst esc = s => String(s).replace(/[^\\x20-\\x7e]/g, c => '\\\\x' + c.charCodeAt(0).toString(16).padStart(2, '0'));\nconst out = (...a) => { std.out.puts(a.map(esc).join(' ') + '\\n'); std.out.flush(); };\nout(std.loadFile('/skills/readme.md'));\nconst [st, e] = os.stat('/skills/readme.md'); out(st.mode, st.size, e);\nconst [ds, de] = os.stat('/skills'); out(ds.mode, de);\nconst [lst, le] = os.lstat('/scripts/x.lua'); out(lst.size, le);\nconst [names, re] = os.readdir('/skills'); out(names.sort().join(','), re);\nout(JSON.stringify(os.readdir('/nope')));\nconst f = std.open('/skills/readme.md', 'r'); f.seek(2, std.SEEK_SET); out(f.getline(), f.tell()); out(f.readAsString()); f.close();\nout(std.open('/nope', 'r'));\nconst err = {}; out(std.open('/skills/readme.md', 'w', err), err.errno);\nconst fd = os.open('/data/big.bin', os.O_RDONLY); const ab = new ArrayBuffer(70000);\nout(os.read(fd, ab, 0, 70000), new Uint8Array(ab, 65530, 4).join(','), os.seek(fd, 0, std.SEEK_END)); os.close(fd);\nout(os.open('/skills/x', os.O_WRONLY | os.O_CREAT));\nout(JSON.stringify(os.readlink('/skills/readme.md')), JSON.stringify(os.getcwd()));\nout(std.loadFile('/nope'));\n"
+  ],
+  "tree_sha256": "1e54b51b2da23ae05ce9e2495938d0b718dbe2bfb150345d01cf16bfefb8c27a",
+  "stdout_hex": "2320526561646d655c78306168656c6c6f20736b696c6c735c7830615c7830395461625c7830610a333330363020323720300a313637343920300a313220300a2e2c2e2e2c656d7074792e7478742c726561646d652e6d642c73756220300a5b5b5d2c325d0a526561646d6520390a68656c6c6f20736b696c6c735c7830615c7830395461625c7830610a6e756c6c0a6e756c6c2033300a3730303030203231392c3232362c3233332c3234302037303030300a2d33300a5b22222c32325d205b222f222c305d0a6e756c6c0a",
+  "provenance": "seeded: guest stdout sha256 equals linux_stdout_sha256 in /Users/noah/code/sofort/arch/jitk/kernel/.work/promote/5325be7f137ea6aa76f47b7167a3defab8f9baef569abc2ba1a488a18f6eae3c/fs-diff.json"
+}
