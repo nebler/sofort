@@ -67,9 +67,9 @@ Linux arm64 (the default there, `JITK_BACKEND=shard`), from
 `JITK_SHARD_BINARY` (the signed `hvf` / `real` binary) and
 `JITK_SHARD_SNAPSHOT` (a prepared snapshot base; `run.sh` and the delegate
 take both from the jitk cache: `make -C .. deps`, `make -C ../shard
-snapshot`). `JITK_SHARD_CLASS` picks the memory class (`glue-2m`, the
-default; `glue-4m` for values past about 64 KiB; `glue-8m` or `glue-16m` for
-real code-mode tasks and tool replies over 1 MiB; `../shard/README.md`
+snapshot`). `JITK_SHARD_CLASS` picks the memory class (`glue-16m`, the
+default, for real code-mode tasks and tool replies to 4 MiB; `glue-8m`,
+`glue-4m` or `glue-2m` for smaller values; `../shard/README.md`
 "Limits"): `deps env` then names that class's snapshot, and the backend
 refuses a snapshot of another class. It reads no `.READY` marker. The selection, the engine's and the
 snapshot identity's hashes and the parking gate are written to
@@ -256,10 +256,11 @@ The ring profile has protocol v1's source (LIMIT.code), call
 and log (1,024 lines, one-way) bounds and its timers (setTimeout,
 setInterval and their clear functions); messages stream over the fixed rings
 and IPC records (`../shard/ABI-R7.md`). What still differs is live memory: the
-snapshot's arena class bounds a run's QuickJS heap. The default, glue-8m,
-leaves about 4.8 MiB (replies to about 1.2 MiB): the smallest class that
-completes the real bench tasks (92 of 100 runs; ../bench/v1/results/). The
-smaller glue-2m leaves about 370 KiB, so a reply past about 107 KiB, a
+snapshot's arena class bounds a run's QuickJS heap. The default, glue-16m,
+leaves about 11.8 MiB (replies to the 4 MiB bound): the only class that
+completes all 100 real bench task runs (glue-8m 92; ../bench/v1/results/), and
+it resets only what a run wrote, so small runs cost what they do on glue-2m. The
+smallest, glue-2m, leaves about 370 KiB, so a reply past about 107 KiB, a
 completion past about 141 KiB or a call echoed back past about 72 KiB ends in
 a QuickJS out-of-memory error (`LIMIT` through MCP), where the console profile
 has 16 MiB (parity: `t-memory-over-arena` on the default class). `JITK_SHARD_CLASS=glue-4m`

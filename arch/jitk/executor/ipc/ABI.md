@@ -44,7 +44,7 @@ the entire shard connection closed.
 
 | Direction / kind | Payload / identity |
 |---|---|
-| Node START=1 | id=0; deadline monotonic ns u64, call cap u32=4096, call bytes u32=1048576, source bytes u32<=73728, memory reservation u32 = the snapshot class's admission bytes (glue-2m 2097152, the default; glue-4m 4194304; glue-8m 8388608; glue-16m 16777216), exact UTF-8 source bytes (the run body, NUL, the tenant code as data: `shardWire`); deadline no more than 60 s ahead |
+| Node START=1 | id=0; deadline monotonic ns u64, call cap u32=4096, call bytes u32=1048576, source bytes u32<=73728, memory reservation u32 = the snapshot class's admission bytes (glue-2m 2097152; glue-4m 4194304; glue-8m 8388608; glue-16m 16777216, the default), exact UTF-8 source bytes (the run body, NUL, the tenant code as data: `shardWire`); deadline no more than 60 s ahead |
 | Node REPLY=2 | id of an open call, exactly one `{"ok":value}` or `{"err":{"code":...,"message":...}}`, escaped ASCII JSON of at most the snapshot class's reply bound (`ARENA_CLASSES[class].replyBytes`: 1048576 on glue-2m/4m, 2097152 on glue-8m, 4194304 on glue-16m) |
 | Node CANCEL=3 | id=0, no payload; reset before RELEASED; reserved but unstarted slots can release directly |
 | Shard CALL=16 | id 1..4096 in sequence, at most 64 open (sent, not answered), <=1048576 printable ASCII bytes; Node requires JSON `["call",namespace,function,args]` |
@@ -75,7 +75,7 @@ console path's LIMIT.logs/logBytes), not calls. A provider reply over its
 class's reply bound (LIMIT.frame on glue-2m and glue-4m) fails its generation
 as it fails a console-path run; a call over LIMIT.frame reaches the guest as a
 LIMIT tool error (prepared helpers). In practice the snapshot's arena class
-bounds big messages first (glue-2m by default, glue-4m, glue-8m or glue-16m with
+bounds big messages first (glue-16m by default, glue-2m, glue-4m or glue-8m with
 `JITK_SHARD_CLASS`; executor/parity, shard/README.md "Limits").
 
 Node's writer retains at most 1,048,960 unflushed records (every slot's START, a

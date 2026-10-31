@@ -73,7 +73,7 @@ artifact hashes in every bundle.
 
 - Policy fixes: done (`c934a045`).
 - Larger JS heap class and bulk guest codec: done (`bc582e39`). `JITK_SHARD_CLASS=glue-4m`:
-  1,584 KiB heap, about 360 KiB round trip; the default is now glue-8m (4,944 KiB).
+  1,584 KiB heap, about 360 KiB round trip; the default is now glue-16m (12,096 KiB; the only class that completes all 100 task runs).
 - Harness: one driver (`executor/bench-v1.ts`), reducer, environment capture,
   reusing `onTiming` phase marks, `ShardMetrics`, the hostile fixtures and the
   existing gate/statistics code.

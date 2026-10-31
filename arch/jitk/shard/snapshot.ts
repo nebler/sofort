@@ -4,9 +4,9 @@
 // so the helper composition is the executor's own module,
 // ../executor/prepared-helpers.mjs.
 //
-// One snapshot per arena class: glue-2m is the executor's default; glue-4m,
-// glue-8m and glue-16m are the larger JS classes (JITK_SHARD_CLASS) and the
-// class-coverage engine tests'. Each is the ring kernel with the
+// One snapshot per arena class: glue-16m is the executor's default
+// (../tslib/deps.ts DEFAULT_SHARD_CLASS); glue-2m, glue-4m and glue-8m are
+// selected with JITK_SHARD_CLASS, and the engine tests cover every class. Each is the ring kernel with the
 // executor helpers spliced in before the QuickJS checkpoint, built with the
 // pinned toolchain and prepared by the shard binary, JITK_SHARD_BINARY from
 // `make -C arch/jitk deps` (Linux: `real`; macOS: `hvf`, signed with the
@@ -21,7 +21,7 @@
 //   JITK_CACHE=/tmp/diag JITK_DIAG_FEATURES=heap-trace JITK_DIAG_CLASSES=glue-16m snapshot.ts build
 //                         a diagnostic kernel's snapshots (../bench/v1/harness/heap-trace.ts)
 //   snapshot.ts env       print `export NAME=base` for JITK_SHARD_SNAPSHOT
-//                         (of JITK_SHARD_CLASS, default glue-2m),
+//                         (of JITK_SHARD_CLASS, default DEFAULT_SHARD_CLASS),
 //                         JITK_SHARD_TEST_SNAPSHOT and JITK_SHARD_TEST_SNAPSHOTS
 //                         (set values are kept)
 import { chmodSync, copyFileSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';

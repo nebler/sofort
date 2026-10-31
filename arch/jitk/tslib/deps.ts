@@ -125,7 +125,7 @@ export const SNAPSHOT_CLASSES = ['glue-2m', 'glue-4m', 'glue-8m', 'glue-16m'];
 // The class JITK_SHARD_SNAPSHOT defaults to: JITK_SHARD_CLASS (the executor's
 // selection, executor/select-backend.ts shardClass), else the default class
 // (executor/shard-backend.ts DEFAULT_SHARD_CLASS).
-export const DEFAULT_SHARD_CLASS = 'glue-8m';
+export const DEFAULT_SHARD_CLASS = 'glue-16m';
 export function shardClass(): string {
   const cls = process.env.JITK_SHARD_CLASS || DEFAULT_SHARD_CLASS;
   check(SNAPSHOT_CLASSES.includes(cls), 'unsupported JITK_SHARD_CLASS ' + cls + ' (one of ' + SNAPSHOT_CLASSES.join(', ') + ')');

@@ -37,11 +37,12 @@ export type ShardRestore={slot:number;generation:bigint;lost:number;slots:number
  *  tool replies (shard/README.md "Limits"). Both engines reset only what a run
  *  wrote, so an idle slot and a small run cost about the same on every class. */
 export type MemoryClass=keyof typeof ARENA_CLASSES;
-/** The class a ring engine runs when none is selected. glue-8m completes 92 of
- *  100 real bench task runs; glue-16m completes all 100 and is the recommended
- *  default (glue-2m: 8, glue-4m: 68; bench/v1/results/2026-10-31-memory.md).
+/** The class a ring engine runs when none is selected. glue-16m is the only
+ *  class that completes all 100 real bench task runs (glue-2m 8, glue-4m 68,
+ *  glue-8m 92; bench/v1/results/2026-10-31-memory.md), and with the dirty reset
+ *  an idle slot or a small run costs what it does on glue-2m.
  *  tslib/deps.ts mirrors it. */
-export const DEFAULT_SHARD_CLASS:MemoryClass='glue-8m';
+export const DEFAULT_SHARD_CLASS:MemoryClass='glue-16m';
 /** The arena class of a prepared snapshot: its `.layout` sidecar (the
  *  JTKARENA record of jitk-abi arena::Class::layout, covered by the identity
  *  that verifyPreparedSnapshot checks): magic, version, MiB, GPA, arena bytes. */

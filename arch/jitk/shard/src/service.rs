@@ -287,8 +287,8 @@ impl State {
     }
 }
 /// The START reservation of a snapshot class. IPC serves every JS class:
-/// glue-2m (the default), glue-4m, glue-8m and glue-16m (larger values and
-/// replies; Node selects one with JITK_SHARD_CLASS). Every START must carry
+/// glue-2m, glue-4m, glue-8m and glue-16m (Node's default; Node selects
+/// another with JITK_SHARD_CLASS). Every START must carry
 /// exactly this charge.
 pub fn ipc_charge(class: crate::arena::Class) -> u32 {
     class.admission_bytes()

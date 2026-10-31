@@ -1,5 +1,5 @@
 // Payload cost and memory class measurement on this host's ring engine (one
-// slot, JITK_SHARD_CLASS, default glue-2m): guest CPU (STATS owner CPU) and
+// slot, JITK_SHARD_CLASS, default DEFAULT_SHARD_CLASS): guest CPU (STATS owner CPU) and
 // wall time of runs that move a big source, tool reply or completion through
 // the guest codec (kernel/ring-bootstrap.js.in), then the class's usable heap
 // and heap capacity (STATS heapPeakBytes at out of memory), the largest reply

@@ -86,7 +86,7 @@ bytes). The native preparer selects glue-2m for
 jq/SQLite/BusyBox/Lua and glue-4m for MicroPython/zstd; each prepared
 snapshot identifies its class and restore verifies the embedded kernel marker.
 See [ABI-R7.md](ABI-R7.md) for physical addresses and the identity format.
-The default QuickJS class is glue-8m (`DEFAULT_SHARD_CLASS`). Late-bound native archives have their
+The default QuickJS class is glue-16m (`DEFAULT_SHARD_CLASS`). Late-bound native archives have their
 own read-only stage-1 mapping and reserved read-only KVM memslot 63.
 
 `make -C arch/jitk/shard check-native-r7` (run by `make -C .. test-linux`) rebuilds six fresh
@@ -478,12 +478,11 @@ memory per slot is a backlog of at most the source plus one reply per open
 call.
 
 What bounds big values is the snapshot's arena class, the QuickJS heap a run
-has. Four classes serve JS jobs; glue-8m is the default (92 of 100 real bench
-task runs; `../bench/v1/results/2026-10-31-capacity.md`). Since the
-page-granular heap pool, glue-16m completes all 100 (glue-2m 8, glue-4m 68)
-and, with the HVF dirty reset, costs a small job what glue-2m does; it is the
-recommended default (`../bench/v1/results/2026-10-31-memory.md`), and
-`JITK_SHARD_CLASS=glue-2m|glue-4m|glue-16m` selects another
+has. Four classes serve JS jobs; glue-16m is the default. Since the
+page-granular heap pool it is the only class that completes all 100 real bench
+task runs (glue-2m 8, glue-4m 68, glue-8m 92), and with the dirty reset it
+costs a small job what glue-2m does (`../bench/v1/results/2026-10-31-memory.md`);
+`JITK_SHARD_CLASS=glue-2m|glue-4m|glue-8m` selects another
 (`../executor/select-backend.ts`; `deps env` and `snapshot.ts env` then name
 its snapshot, and Node and both engines refuse a snapshot of another class:
 Node reads the class from the `.layout` record, the engine charges the class's
@@ -504,8 +503,8 @@ sizes before are in `../bench/v1/results/2026-10-31-memory.md`.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | glue-2m | 1.25 MiB | 2 MiB | 1 MiB | 368 KiB | 844 KiB | 212 KiB | 212 KiB | 111 KiB | 212 KiB |
 | glue-4m | 2.75 MiB | 4 MiB | 1 MiB | 1,584 KiB | 2,248 KiB | 910 KiB | 939 KiB | 499 KiB | 910 KiB |
-| glue-8m (default) | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,160 KiB | 2,048 KiB (bound) | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
-| glue-16m | 14.75 MiB | 16 MiB | 4 MiB | 12,096 KiB | 14,484 KiB | 4,096 KiB (bound) | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+| glue-8m | 6.75 MiB | 8 MiB | 2 MiB | 4,944 KiB | 6,160 KiB | 2,048 KiB (bound) | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
+| glue-16m (default) | 14.75 MiB | 16 MiB | 4 MiB | 12,096 KiB | 14,484 KiB | 4,096 KiB (bound) | 1,024 KiB (frame) | 1,023 KiB (frame) | 1,024 KiB (frame) |
 
 With the heap's pages no longer tied to their address and the reply
 assembled as a rope, the largest reply roughly doubled on glue-2m and glue-4m
