@@ -87,6 +87,18 @@ pub unsafe fn free(pa: usize) {
 fn tables(pages: usize) -> usize {
     pages.div_ceil(512) + 1
 }
+/// The last RESERVE free pages serve only requests of at most SMALL pages.
+/// The pool has no holes, so without it the request that fails is whichever
+/// comes last, often a small one: then QuickJS cannot allocate its "out of
+/// memory" error either, and the run fails with `null` thrown instead of an
+/// InternalError. A large request (a big string or array) fails first.
+const RESERVE: usize = 32;
+const SMALL: usize = 16;
+/// Whether `pages` new pages (and their tables) may be taken now.
+fn room(pages: usize) -> bool {
+    let reserve = if pages > SMALL { RESERVE } else { 0 };
+    available() >= pages + tables(pages) + reserve
+}
 /// Map `count` fresh pages at `va..`; false (with every page it mapped
 /// unmapped again) if the pool ran out.
 ///
@@ -175,7 +187,7 @@ fn mmap_range(va: usize, len: usize) -> bool {
 /// mmap of `len` (page-rounded) anonymous bytes; the caller checked flags.
 pub fn mmap(len: usize) -> isize {
     let count = len / 4096;
-    let Some(va) = find(count).filter(|_| available() >= count + tables(count)) else {
+    let Some(va) = find(count).filter(|_| room(count)) else {
         enomem(len);
         return -12;
     };
@@ -197,7 +209,7 @@ pub fn mmap(len: usize) -> isize {
 /// grown mmap policies' `syscalls::map_zeroed`); false if the pool is short.
 pub fn map_fixed(va: usize, len: usize) -> bool {
     let count = len / 4096;
-    if available() < count + tables(count) {
+    if !room(count) {
         return false;
     }
     // SAFETY: the caller checked the range is unmapped mmap VA; the trap owns
@@ -243,7 +255,9 @@ pub fn mremap(va: usize, old: usize, new: usize, flags: usize) -> isize {
             return va as isize;
         }
         let grow = (new - old) / 4096;
-        if available() < grow + tables(new / 4096) {
+        // As room(grow), with tables for the whole new range (a move).
+        let reserve = if grow > SMALL { RESERVE } else { 0 };
+        if available() < grow + tables(new / 4096) + reserve {
             return -12;
         }
         let tail = va + old;
@@ -288,7 +302,7 @@ pub fn brk(want: usize, current: usize) -> usize {
     unsafe {
         if new_end > old_end {
             let count = (new_end - old_end) / 4096;
-            if available() < count + tables(count) || !populate(old_end, count) {
+            if !room(count) || !populate(old_end, count) {
                 m::flush();
                 return current;
             }
