@@ -17,7 +17,7 @@
 use crate::syscalls::nr;
 
 const RECORDS: usize = 14000;
-const PAGES: usize = 0x2400000 / 4096;
+const PAGES: usize = crate::memory::USER_END / 4096;
 static mut TRACE: [u64; RECORDS] = [0; RECORDS];
 static mut COUNT: usize = 0;
 static mut DROPPED: usize = 0;
@@ -43,12 +43,9 @@ unsafe fn push(op: u64, a: u64, b: u64, c: u64) {
         }
     }
 }
+// Heap-pool pages in use (kernel/src/heap.rs).
 fn live() -> usize {
-    let (start, end) = crate::syscalls::mmap_arena();
-    (start..end)
-        .step_by(4096)
-        .filter(|&va| crate::mmu::valid(va, false))
-        .count()
+    crate::mmu::pool().1 - crate::heap::available()
 }
 /// Called by mmap before it returns ENOMEM.
 ///
@@ -89,7 +86,12 @@ pub unsafe fn record(n: usize, a: &[usize; 6], ret: isize) {
                 1
             }
             nr::MUNMAP => {
-                push(2, pages(a[1]), if ret != 0 { 0xfffff } else { page(a[0]) }, l);
+                push(
+                    2,
+                    pages(a[1]),
+                    if ret != 0 { 0xfffff } else { page(a[0]) },
+                    l,
+                );
                 2
             }
             nr::MREMAP => {

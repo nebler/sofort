@@ -22,32 +22,15 @@ static mut INPUT: usize = 0;
 static mut HEAD_AT: usize = 0;
 static mut CANARY: u64 = 0;
 static mut REPAIR_READ: bool = false;
-// The highest mapped ends of the mmap window and of the brk heap, above
-// their bases; HEAP_PEAK is their sum. Restored with the arena each run, so
-// a run starts from the prepared snapshot's high-water.
-static mut MMAP_HIGH: usize = 0;
-static mut BRK_HIGH: usize = 0;
-
-/// User pages `start..end` were just mapped: raise HEAP_PEAK when they
-/// extend the mmap window's or the brk heap's high-water.
+/// Publish the heap high-water (`crate::heap::peak_bytes`) to the guest-owned
+/// HEAP_PEAK control field. The counter is restored with the arena each run,
+/// so a run starts from the prepared snapshot's high-water.
 ///
 /// # Safety
-/// Called by `user::pages` (this is `crate::console` in ring builds) in the sole masked-IRQ EL1 context, which owns
-/// these counters and the guest-owned HEAP_PEAK control field.
-pub unsafe fn heap_mapped(start: usize, end: usize) {
-    let end = (end + 4095) & !4095;
-    // SAFETY: the caller's masked-IRQ context exclusively owns both counters
-    // (read and written by value, no reference escapes) and the field.
-    unsafe {
-        if (crate::user::MMAP..crate::mmu::mmap_limit()).contains(&start) {
-            MMAP_HIGH = MMAP_HIGH.max(end - crate::user::MMAP);
-        } else if (crate::user::HEAP..crate::mmu::heap_limit()).contains(&start) {
-            BRK_HIGH = BRK_HIGH.max(end - crate::user::HEAP);
-        } else {
-            return;
-        }
-        store(HEAP_PEAK, (MMAP_HIGH + BRK_HIGH) as u64);
-    }
+/// Called in the sole masked-IRQ EL1 context, which owns the field.
+pub unsafe fn heap_peak(bytes: u64) {
+    // SAFETY: as above.
+    unsafe { store(HEAP_PEAK, bytes) }
 }
 
 /// # Safety
@@ -425,7 +408,7 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             #[cfg(feature = "heap-trace")]
             crate::heap_trace::emit();
             // Published again with the completion, whatever the host did to it.
-            store(HEAP_PEAK, (MMAP_HIGH + BRK_HIGH) as u64);
+            store(HEAP_PEAK, crate::heap::peak_bytes());
             send_message(DONE, 0, core::slice::from_raw_parts(pa as *const u8, len));
             crate::arch::doorbell(FINISH);
             loop {
