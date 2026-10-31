@@ -18,6 +18,8 @@
 // directory and renamed into place.
 //
 //   snapshot.ts [build]   build or verify every class, then print `env`
+//   JITK_CACHE=/tmp/diag JITK_DIAG_FEATURES=heap-trace JITK_DIAG_CLASSES=glue-16m snapshot.ts build
+//                         a diagnostic kernel's snapshots (../bench/v1/harness/heap-trace.ts)
 //   snapshot.ts env       print `export NAME=base` for JITK_SHARD_SNAPSHOT
 //                         (of JITK_SHARD_CLASS, default glue-2m),
 //                         JITK_SHARD_TEST_SNAPSHOT and JITK_SHARD_TEST_SNAPSHOTS
@@ -64,7 +66,7 @@ async function kernelImage(cls: string, out: string, env: Record<string, string>
   // The arena GPA comes from the image itself (jitk-abi, kernel mmu_ring.rs).
   check(SNAPSHOT_CLASSES.includes(cls), 'unsupported ring memory class ' + cls);
   settings.RUSTFLAGS = cls === 'glue-2m' ? '' : '--cfg ring_' + cls.replace('-', '_');
-  await run([tools.CARGO, 'build', '--locked', '--offline', '--release', '--target', 'aarch64-unknown-none', '--features', 'transport-ring'], { cwd: KERNEL, env: settings, inherit: true, timeout: 3600 });
+  await run([tools.CARGO, 'build', '--locked', '--offline', '--release', '--target', 'aarch64-unknown-none', '--features', ['transport-ring', ...(process.env.JITK_DIAG_FEATURES ? [process.env.JITK_DIAG_FEATURES] : [])].join(',')], { cwd: KERNEL, env: settings, inherit: true, timeout: 3600 });
   await run([env.OBJCOPY || 'llvm-objcopy', '-O', 'binary', join(settings.CARGO_TARGET_DIR, 'aarch64-unknown-none/release/jitk-02'), out], { env, timeout: 600 });
   return shaFile(out);
 }
@@ -178,8 +180,11 @@ async function main(): Promise<void> {
   if (command === 'build') {
     check(process.arch === 'arm64' && ['linux', 'darwin'].includes(process.platform), 'shard snapshots need Linux arm64 with /dev/kvm or macOS arm64');
     const env = environment();
+    // Diagnostic kernels (JITK_DIAG_FEATURES, e.g. heap-trace) are keyed like
+    // product ones, so they may only go to a cache of their own.
+    check(!process.env.JITK_DIAG_FEATURES || Boolean(process.env.JITK_CACHE), 'JITK_DIAG_FEATURES needs a separate JITK_CACHE');
     const shard = requireArtifact('JITK_SHARD_BINARY');
-    for (const cls of SNAPSHOT_CLASSES) {
+    for (const cls of SNAPSHOT_CLASSES.filter(c => !process.env.JITK_DIAG_CLASSES || process.env.JITK_DIAG_CLASSES.split(',').includes(c))) {
       await buildClass(cls, shard, env);
     }
     printEnv();

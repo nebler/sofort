@@ -148,6 +148,15 @@ unsafe fn send(kind: u16, flags: u16, id: u64, payload: &[u8]) {
         store(TX_PRODUCER, prod.checked_add(len).unwrap() as u64);
     }
 }
+/// A diagnostic console line (`crate::heap_trace`).
+///
+/// # Safety
+/// As `send_message`.
+#[cfg(feature = "heap-trace")]
+pub unsafe fn send_console(b: &[u8]) {
+    // SAFETY: as send_message's.
+    unsafe { send_message(CONSOLE, 0, b) }
+}
 /// One JSON message as consecutive records: full MORE fragments, then the rest.
 /// # Safety
 /// As `send`; payload stays readable until the last fragment is copied.
@@ -413,6 +422,8 @@ pub unsafe fn syscall(n: usize, a: &[usize; 6]) -> Option<isize> {
             if OUTSTANDING != 0 {
                 return Some(-16);
             }
+            #[cfg(feature = "heap-trace")]
+            crate::heap_trace::emit();
             // Published again with the completion, whatever the host did to it.
             store(HEAP_PEAK, (MMAP_HIGH + BRK_HIGH) as u64);
             send_message(DONE, 0, core::slice::from_raw_parts(pa as *const u8, len));

@@ -24,6 +24,11 @@ pub fn call(a: &[usize; 6]) -> isize {
         }
     }
     if base == 0 {
+        #[cfg(feature = "heap-trace")]
+        // SAFETY: this trap owns the trace.
+        unsafe {
+            crate::heap_trace::enomem(len)
+        };
         #[cfg(feature = "transport-ring")]
         {
             // SAFETY: This masked-IRQ trap owns MMU and console state. The

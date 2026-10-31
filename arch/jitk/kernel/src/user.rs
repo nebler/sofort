@@ -238,6 +238,8 @@ macro_rules! syscall_entry {
         #[cfg(not(feature = "probe"))]
         let ret = crate::syscalls::dispatch(n, &args);
         crate::trace::exit(n, &args, ret);
+        #[cfg(feature = "heap-trace")]
+        crate::heap_trace::record(n, &args, ret);
         f[frame::RET] = ret as usize;
     }};
 }
