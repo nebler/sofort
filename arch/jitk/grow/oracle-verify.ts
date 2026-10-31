@@ -12,7 +12,7 @@
 // oracle-golden/payloads/ or JITK_ORACLE_PAYLOADS/<sha256>) and mounts, and that
 // they hash to the recording's key. Payloads over 1 MiB are not in git; CI
 // fetches them into JITK_ORACLE_PAYLOADS.
-import { existsSync, mkdtempSync, readdirSync, readFileSync } from 'node:fs';
+import { chmodSync, copyFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { check, hashBytes, readJSON } from './lib.ts';
@@ -52,6 +52,13 @@ for (const root of stores) {
       const payload = [payloadPath(root, sha), ...(process.env.JITK_ORACLE_PAYLOADS ? [join(process.env.JITK_ORACLE_PAYLOADS, sha)] : [])].find(existsSync);
       check(payload !== undefined, 'payload ' + sha + ' missing (over 1 MiB? set JITK_ORACLE_PAYLOADS)');
       check(hashBytes(readFileSync(payload!)) === sha, 'payload bytes do not match ' + sha);
+      // A downloaded release asset has no exec bit: run an executable copy.
+      let runnable = payload!;
+      if ((statSync(runnable).mode & 0o111) === 0) {
+        runnable = join(mkdtempSync(join(tmpdir(), 'oracle-payload-')), sha);
+        copyFileSync(payload!, runnable);
+        chmodSync(runnable, 0o755);
+      }
       const mounts = recorded.inputs.mounts_sha256 === null ? undefined : join(dir, 'mounts');
       if (mounts) {
         check(existsSync(join(dir, 'mounts.modes.json')), 'mounts.modes.json missing');
@@ -63,7 +70,7 @@ for (const root of stores) {
         // Same store layout under a temp root, so verify finds the recording.
         const out = join(mkdtempSync(join(tmpdir(), 'oracle-verify-')), root === GOLDEN ? 'run' : 'heldout');
         lastOut = out;
-        await oracle(payload!, config.argv, out, config.expected_hex === null ? null : Buffer.from(config.expected_hex, 'hex'), {
+        await oracle(runnable, config.argv, out, config.expected_hex === null ? null : Buffer.from(config.expected_hex, 'hex'), {
           samples: config.samples,
           injections: config.injections,
           data: Buffer.from(config.stdin_hex, 'hex'),

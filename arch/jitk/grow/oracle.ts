@@ -117,6 +117,12 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
   } finally {
     await capture(['docker', 'rm', '-f', container], { timeout: 10 });
   }
+  // A run where strace could not start the payload is not a Linux reference.
+  if (mode === 'record' || mode === 'verify') {
+    for (const name of readdirSync(out).filter(n => /^linux-\d+\.stderr$/.test(n))) {
+      check(!readFileSync(join(out, name), 'utf8').startsWith('strace: '), 'the tracer failed, not the payload: ' + readFileSync(join(out, name), 'utf8').slice(0, 200));
+    }
+  }
   if (mode === 'record') store(out, key, inputs, 'recorded by oracle(): ' + (process.env.GITHUB_RUN_ID ? 'GitHub run ' + process.env.GITHUB_RUN_ID : 'live run') + ' on ' + new Date().toISOString(), elf, options.resources);
   if (mode === 'verify') {
     check(recorded !== null, 'verify: no recorded run for key ' + key);
