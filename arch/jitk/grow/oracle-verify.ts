@@ -83,7 +83,10 @@ for (const root of stores) {
         const names = config.injections.map(i => i.split(':')[0]!);
         const lines = readFileSync(trace, 'utf8').split('\n');
         console.log('  strace: ' + lines.length + ' lines; ' + names.map(n => n + ': ' + lines.filter(l => l.includes(n)).length).join(', '));
-        for (const l of lines.filter(l => names.some(n => l.includes(n)) || /stat|read/.test(l)).slice(0, 12)) console.log('    ' + l.slice(0, 160));
+        const shown = lines.length < 20 ? lines : lines.filter(l => names.some(n => l.includes(n)) || /stat|read/.test(l));
+        for (const l of shown.slice(0, 12)) console.log('    ' + l.slice(0, 200));
+        const stderr = join(lastOut, 'linux-00.stderr');
+        if (existsSync(stderr)) console.log('  payload stderr: ' + readFileSync(stderr, 'utf8').slice(0, 300));
       }
       console.log('FAIL ' + label + ': ' + (text.length > 1500 ? text.slice(0, 200) + ' … ' + text.slice(-1300) : text));
     }
