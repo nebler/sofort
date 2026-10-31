@@ -1,0 +1,91 @@
+# Re-records the visible grow oracle runs (arch/jitk/grow/oracle-golden) on
+# GitHub's Linux arm64 runner, the reference Linux host, and uploads the
+# re-recorded store as the artifact `oracle-golden`. Run by hand
+# (workflow_dispatch); commit the artifact's recordings, then re-promote the
+# kernel on the Mac (kernel/promote.ts replays them). See
+# arch/jitk/docs/results/oracle-recordings.md.
+name: oracle-record
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    name: re-record oracle runs on linux-arm64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    env:
+      JITK_CACHE: /home/runner/.cache/jitk
+      JITK_NPM_CACHE: /home/runner/.cache/jitk-npm
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Native tools
+        run: |
+          missing=
+          for pair in cc:build-essential clang:clang ld.lld:lld llvm-objcopy:llvm flock:util-linux xz:xz-utils curl:curl git:git; do
+            command -v "${pair%%:*}" >/dev/null 2>&1 || missing="$missing ${pair#*:}"
+          done
+          if [ -n "$missing" ]; then
+            sudo apt-get update -q
+            # shellcheck disable=SC2086 # one word per package
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends $missing
+          fi
+          for path in $(type -ap npm npx corepack node); do sudo rm -f "$path"; done
+          hash -r
+
+      - name: Rust toolchain (musl target for grow/oracle-root)
+        run: |
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf -o "$RUNNER_TEMP/rustup-init" https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init
+            sh -c 'chmod +x "$1" && "$1" -y --no-modify-path --profile minimal --default-toolchain none' _ "$RUNNER_TEMP/rustup-init"
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh)" --profile minimal \
+            --target aarch64-unknown-none --target aarch64-unknown-linux-musl
+
+      - name: Restore caches
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            /home/runner/.cache/jitk
+            /home/runner/.cache/jitk-npm
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: jitk-linux-arm64-${{ hashFiles('arch/jitk/tools/deps.json', 'arch/jitk/**/Cargo.lock', 'arch/jitk/**/package-lock.json') }}
+          restore-keys: jitk-linux-arm64-
+
+      - name: Payloads over 1 MiB (release oracle-payloads)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          JITK_ORACLE_PAYLOADS=$RUNNER_TEMP/oracle-payloads
+          echo "JITK_ORACLE_PAYLOADS=$JITK_ORACLE_PAYLOADS" >> "$GITHUB_ENV"
+          mkdir -p "$JITK_ORACLE_PAYLOADS"
+          gh release download oracle-payloads -R "$GITHUB_REPOSITORY" -D "$JITK_ORACLE_PAYLOADS"
+
+      - name: Tools and oracle image
+        run: |
+          eval "$(make -s -C arch/jitk deps >/dev/null && arch/jitk/tools/.work/bin/deps env)"
+          docker build -q -t jitk-oracle:08 arch/jitk/grow/oracle
+          make -s -C arch/jitk/grow kernel-tools build/oracle-profile build/oracle-root build/oracle-verify
+
+      - name: Re-record
+        run: |
+          eval "$(arch/jitk/tools/.work/bin/deps env)"
+          arch/jitk/grow/build/oracle-verify --record
+          arch/jitk/grow/build/oracle-verify
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: oracle-golden
+          path: arch/jitk/grow/oracle-golden
+          retention-days: 30

@@ -2,8 +2,11 @@
 // inputs and fails unless Linux still gives the recorded outcomes. Runs where
 // Docker may run (CI's linux-oracle job), never on the Mac.
 //
-//   oracle-verify [--sealed] [--inputs-only]
+//   oracle-verify [--sealed] [--inputs-only | --record]
 //
+// --record reruns each recording on this Linux host and replaces its outputs
+// (same key: the inputs are unchanged), for re-recording the reference on a
+// real Linux host (.github/workflows/oracle-record.yml).
 // --sealed also checks the held-out store (JITK_ORACLE_SEALED). --inputs-only
 // runs no Linux: it checks that every recording has its payload (in
 // oracle-golden/payloads/ or JITK_ORACLE_PAYLOADS/<sha256>) and mounts, and that
@@ -29,6 +32,7 @@ interface Config {
 
 const args = process.argv.slice(2);
 const inputsOnly = args.includes('--inputs-only');
+const recording = args.includes('--record');
 const stores = [GOLDEN, ...(args.includes('--sealed') ? [sealedStore()] : [])];
 let failures = 0;
 let checked = 0;
@@ -54,7 +58,7 @@ for (const root of stores) {
       }
       check(mounts === undefined || mountHash(mounts) === recorded.inputs.mounts_sha256, 'stored mounts do not hash to the recording');
       if (!inputsOnly) {
-        process.env.JITK_ORACLE = 'verify';
+        process.env.JITK_ORACLE = recording ? 'record' : 'verify';
         // Same store layout under a temp root, so verify finds the recording.
         const out = join(mkdtempSync(join(tmpdir(), 'oracle-verify-')), root === GOLDEN ? 'run' : 'heldout');
         await oracle(payload!, config.argv, out, config.expected_hex === null ? null : Buffer.from(config.expected_hex, 'hex'), {
@@ -75,5 +79,5 @@ for (const root of stores) {
     }
   }
 }
-console.log(`${checked} ${inputsOnly ? 'complete' : 'verified against Linux'}, ${failures} failed`);
+console.log(`${checked} ${inputsOnly ? 'complete' : recording ? 're-recorded on this Linux host' : 'verified against Linux'}, ${failures} failed`);
 if (failures) process.exit(1);
