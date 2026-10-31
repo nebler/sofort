@@ -1,0 +1,38 @@
+{
+  "key": "b383aa439ba445f7654bedee9ca012417bfc8fa3cd79b12f30f1e98302938f42",
+  "inputs": {
+    "payload_sha256": "005073a6c1c0e71c22ad8b752f1ffb6c35c8d913fe91f5795038c7d52cf639ff",
+    "config": {
+      "argv": [
+        "sqlite3",
+        "-batch",
+        "-init",
+        "/dev/null",
+        "file:/demo.db?mode=ro&immutable=1",
+        "SELECT json_object('count',count(*),'sum',sum(v),'max',max(v)) FROM n;"
+      ],
+      "expected_hex": null,
+      "stdin_hex": "",
+      "samples": 1,
+      "injections": [
+        "fstat:error=ENOSYS"
+      ],
+      "annotate": false,
+      "memory_kib": 0,
+      "root": null,
+      "tree_sha256": null
+    },
+    "mounts_sha256": "a84ffa28b356592eef5e80aa469cf99627dc66c321888d873a30e9aa2a4fab07",
+    "tree_sha256": null
+  },
+  "files": [
+    "driver.stderr",
+    "driver.stdout",
+    "linux-00.stderr",
+    "linux-00.stdout",
+    "linux-00.strace",
+    "linux-summary.json",
+    "oracle-image.json"
+  ],
+  "provenance": "seeded from a recorded Linux run in /Users/noah/code/sofort/arch/jitk/kernel/.work/promote/5325be7f137ea6aa76f47b7167a3defab8f9baef569abc2ba1a488a18f6eae3c/grow-sqlite-checks/linux-fstat (config, payload and mounts proven equal)"
+}

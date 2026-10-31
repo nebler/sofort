@@ -1,0 +1,41 @@
+11    execve("\x2f\x70\x61\x79\x6c\x6f\x61\x64", ["\x2f\x70\x61\x79\x6c\x6f\x61\x64", "\x2d\x62\x61\x74\x63\x68", "\x2d\x69\x6e\x69\x74", "\x2f\x64\x65\x76\x2f\x6e\x75\x6c\x6c", "\x66\x69\x6c\x65\x3a\x2f\x64\x65\x6d\x6f\x2e\x64\x62\x3f\x6d\x6f\x64\x65\x3d\x72\x6f\x26\x69\x6d\x6d\x75\x74\x61\x62\x6c\x65\x3d\x31", "\x53\x45\x4c\x45\x43\x54\x20\x6a\x73\x6f\x6e\x5f\x6f\x62\x6a\x65\x63\x74\x28\x27\x63\x6f\x75\x6e\x74\x27\x2c\x63\x6f\x75\x6e\x74\x28\x2a\x29\x2c\x27\x73\x75\x6d\x27\x2c\x73\x75\x6d\x28\x76\x29\x2c\x27\x6d\x61\x78\x27\x2c\x6d\x61\x78\x28\x76\x29\x29\x20\x46\x52\x4f\x4d\x20\x6e\x3b"], ["\x50\x41\x54\x48\x3d\x2f\x62\x69\x6e\x3a\x2f\x75\x73\x72\x2f\x62\x69\x6e", "\x4c\x43\x5f\x41\x4c\x4c\x3d\x43", "\x4c\x41\x4e\x47\x3d\x43", "\x54\x5a\x3d\x55\x54\x43"]) = 0
+11    set_tid_address(0x565530)         = 11
+11    ioctl(0, 0x5413, 0xffffdf1e1288)  = -1 ENOTTY (Not a tty)
+11    ioctl(1, 0x5413, 0xffffdf1e1288)  = -1 ENOTTY (Not a tty)
+11    rt_sigprocmask(0x1, [33 34], NULL, 8) = 0
+11    rt_sigaction(2, {sa_handler=0x411388, sa_mask=[], sa_flags=0x14000000, sa_restorer=0x5092a4}, {sa_handler=0, sa_mask=[], sa_flags=0}, 8) = 0
+11    brk(NULL)                         = 0x4605000
+11    brk(0x4607000)                    = 0x4607000
+11    mmap(0x4605000, 4096, 0, 0x32, -1, 0) = 0x4605000
+11    mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffff8e93b000
+11    faccessat(-100, "\x66\x69\x6c\x65\x3a\x2f\x64\x65\x6d\x6f\x2e\x64\x62\x3f\x6d\x6f\x64\x65\x3d\x72\x6f\x26\x69\x6d\x6d\x75\x74\x61\x62\x6c\x65\x3d\x31", 0) = -1 ENOENT (No such file or directory)
+11    openat(-100, "\x2f\x64\x65\x76\x2f\x6e\x75\x6c\x6c", 0x20000) = 3
+11    mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffff8e93a000
+11    read(3, "", 1024)                 = 0
+11    close(3)                          = 0
+11    munmap(0xffff8e93a000, 4096)      = 0
+11    openat(-100, "\x66\x69\x6c\x65\x3a\x2f\x64\x65\x6d\x6f\x2e\x64\x62\x3f\x6d\x6f\x64\x65\x3d\x72\x6f\x26\x69\x6d\x6d\x75\x74\x61\x62\x6c\x65\x3d\x31", 0x20000) = -1 ENOENT (No such file or directory)
+11    mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffff8e93a000
+11    newfstatat(-100, "\x2f\x64\x65\x6d\x6f\x2e\x64\x62", {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}, 0x100) = 0
+11    mmap(NULL, 4096, 0x3, 0x22, -1, 0) = 0xffff8e939000
+11    munmap(0xffff8e93a000, 4096)      = 0
+11    getpid()                          = 11
+11    getpid()                          = 11
+11    openat(-100, "\x2f\x64\x65\x6d\x6f\x2e\x64\x62", 0xa8000) = 3
+11    fcntl(3, 0x2, 0x1)                = 0
+11    fstat(3, {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}) = 0
+11    fstat(3, {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}) = 0
+11    newfstatat(-100, "\x2f\x64\x65\x6d\x6f\x2e\x64\x62", {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}, 0) = 0
+11    fstat(3, {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}) = 0
+11    mmap(NULL, 16384, 0x3, 0x22, -1, 0) = 0xffff8e935000
+11    mmap(NULL, 8192, 0x3, 0x22, -1, 0) = 0xffff8e933000
+11    pread64(3, 0xffffdf1e10f0, 100, 0) = -1 ENOSYS (Function not implemented) (INJECTED)
+11    fstat(3, {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}) = 0
+11    newfstatat(-100, "\x2f\x64\x65\x6d\x6f\x2e\x64\x62", {st_dev=0x2c, st_ino=16974, st_mode=0100644, st_nlink=1, st_uid=65534, st_gid=65534, st_blksize=4096, st_blocks=16, st_size=8192, st_atime=1793301392 /* 2026-10-29T19:16:32.894712640+0000 */, st_atime_nsec=894712640, st_mtime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_mtime_nsec=737184895, st_ctime=1793301390 /* 2026-10-29T19:16:30.737184895+0000 */, st_ctime_nsec=737184895}, 0) = 0
+11    close(3)                          = 0
+11    munmap(0xffff8e935000, 16384)     = 0
+11    munmap(0xffff8e933000, 8192)      = 0
+11    munmap(0xffff8e939000, 4096)      = 0
+11    writev(2, [{iov_base="\x45\x72\x72\x6f\x72\x3a\x20\x75\x6e\x61\x62\x6c\x65\x20\x74\x6f\x20\x6f\x70\x65\x6e\x20\x64\x61\x74\x61\x62\x61\x73\x65\x20\x22\x66\x69\x6c\x65\x3a\x2f\x64\x65\x6d\x6f\x2e\x64\x62\x3f\x6d\x6f\x64\x65\x3d\x72\x6f\x26\x69\x6d\x6d\x75\x74\x61\x62\x6c\x65\x3d\x31\x22\x3a\x20", iov_len=68}, {iov_base="\x64\x69\x73\x6b\x20\x49\x2f\x4f\x20\x65\x72\x72\x6f\x72", iov_len=14}], 2) = 82
+11    writev(2, [{iov_base="\x0a", iov_len=1}, {iov_base=NULL, iov_len=0}], 2) = 1
+11    exit_group(1)                     = ?
