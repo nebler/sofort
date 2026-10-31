@@ -104,6 +104,12 @@ async function traces(argv: string[]): Promise<void> {
   }
 }
 
+function heldoutTree(argv: string[]): 'variant' | 'same' {
+  const tree = arg(argv, '--heldout-tree', 'variant');
+  check(tree === 'variant' || tree === 'same', '--heldout-tree is variant or same');
+  return tree;
+}
+
 async function prepare(argv: string[]): Promise<void> {
   const out = resolve(arg(argv, '--profiles')); mkdirSync(out, { recursive: true });
   const index = readJSON<Record<string, string[]>>(join(resolve(arg(argv, '--traces')), 'index.json'));
@@ -125,12 +131,13 @@ async function prepare(argv: string[]): Promise<void> {
     const fixtures: Fixture[] = [], hashes: Record<string, string> = {}, runs: Outcome[][] = [];
     for (const split of ['visible', 'heldout']) {
       const d = join(dest, split); mkdirSync(d); const resources = join(d, 'resources'); mkdirSync(resources);
-      // Tree-variant audit (--heldout-tree variant): the held-out split runs on a
-      // different archive, where data.bin is a directory holding the database and
-      // an empty directory sits beside it. Expected values are still learned from
-      // Linux on that tree; a handler that special-cases the visible tree's names
-      // fails there. Default: both splits use { data.bin }.
-      if (split === 'heldout' && arg(argv, '--heldout-tree') === 'variant') {
+      // Tree variant (default; --heldout-tree same opts out): the held-out split
+      // runs on a different archive, where data.bin is a directory holding the
+      // database and an empty directory sits beside it. Expected values are still
+      // learned from Linux on that tree; a handler that special-cases the visible
+      // tree's names fails the held-out gate. One variant does not prove
+      // generality (EXPERIMENTS-PATHFS-2026-10-27.md, Limits).
+      if (split === 'heldout' && heldoutTree(argv) === 'variant') {
         mkdirSync(join(resources, 'data.bin')); mkdirSync(join(resources, 'empty'));
         copyFileSync(arg(argv, '--database'), join(resources, 'data.bin', 'data.bin'));
       } else copyFileSync(arg(argv, '--database'), join(resources, 'data.bin'));
@@ -158,7 +165,7 @@ async function prepare(argv: string[]): Promise<void> {
       f.learned = learn(runs[i], identities); dump(join(d, 'expected.json'), f.learned);
       for (const p of [f.source, f.elf, ...files(f.resources), join(d, 'expected.json'), join(f.oracle, 'linux-summary.json'), join(d, 'oracle-2/linux-summary.json'), join(f.oracle, 'tree.json'), join(d, 'oracle-2/tree.json')]) hashes[p] = sha(p);
     }
-    dump(join(dest, 'plan.json'), { target, nr, fixtures, hashes, oracle_fs: SHARED_TREE_MODE, heldout_tree: arg(argv, '--heldout-tree', 'same'), seeds: sources.map((p) => ({ path: p, sha256: sha(p) })) });
+    dump(join(dest, 'plan.json'), { target, nr, fixtures, hashes, oracle_fs: SHARED_TREE_MODE, heldout_tree: heldoutTree(argv), seeds: sources.map((p) => ({ path: p, sha256: sha(p) })) });
     console.log('PROFILE', target, profile.visible.length, profile.heldout.length, fixtures.map((f) => f.learned.rules.filter((r) => r !== 'exact').length).join('/'));
   }
   dump(join(out, 'pins.json'), { source: controllerHashes(), kernel: treeHashes(CANONICAL), disk: await diskSpace(), oracle_image: await textCommand(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}']), oracle_fs: SHARED_TREE_MODE, oracle_root_sha256: sha(join(ROOT, 'build/oracle-root')), normalization: 'two Linux executions in separate containers, address space limited to the 32 MiB guest; varying positive scalars, byte extents and 8-byte words relaxed; everything else exact' });
@@ -169,7 +176,9 @@ async function prepare(argv: string[]): Promise<void> {
 async function corpus(kernel: string, id: string, selection: string, filter: string[], limit: number, out: string): Promise<CorpusRow[]> {
   // A transaction id is fresh; leftovers come only from an interrupted transaction.
   for (const stale of [id + '.jsonl', id + '-manifest.json', id + '-summary.json', id + '-disk-before.txt', 'kernel-' + id]) rmSync(join(CORPUS_WORK, stale), { recursive: true, force: true });
-  const command = [CENSUS, 'rerun', '--from', 'full', '--id', id, '--kernel', kernel, '--selection', selection, '--workers', '2', '--targets', 'target-phase2', '--limit', String(limit), ...filter];
+  // full-r2: the census re-recorded after the ELF-drift fix (d8614899); against
+  // `full`, rebuilt ELFs no longer hash to the census ones.
+  const command = [CENSUS, 'rerun', '--from', 'full-r2', '--id', id, '--kernel', kernel, '--selection', selection, '--workers', '2', '--targets', 'target-phase2', '--limit', String(limit), ...filter];
   const result = await capture(command, { cwd: CORPUS_ROOT, env: { ...SAFE_ENV, HOME: process.env.HOME || '/tmp', PATH: process.env.PATH || '/usr/bin:/bin', ZIG: zigPath(), JITK_SHARD_BINARY: process.env.JITK_SHARD_BINARY || '' }, timeout: 3600 });
   writeFileSync(out + '.log', Buffer.concat([result.stdout, result.stderr]));
   check(result.returncode === 0, 'corpus rerun failed: ' + id);
