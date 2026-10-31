@@ -83,9 +83,13 @@ pub unsafe fn free(pa: usize) {
         LOWEST = LOWEST.min(i / 64);
     }
 }
-/// Pool pages a mapping of `pages` new pages at worst also needs for tables.
-fn tables(pages: usize) -> usize {
-    pages.div_ceil(512) + 1
+/// Pool pages a mapping of `va..va + len` needs for page tables: one per
+/// 2 MiB block that has none yet.
+fn tables(va: usize, len: usize) -> usize {
+    (va & !0x1fffff..va + len)
+        .step_by(0x200000)
+        .filter(|&b| m::block_empty(b))
+        .count()
 }
 /// An emergency reserve: every request leaves the last RESERVE free pages
 /// until one has failed in this run (LATCHED); then requests of at most
@@ -94,21 +98,27 @@ fn tables(pages: usize) -> usize {
 /// the reserve QuickJS cannot allocate its "out of memory" error either:
 /// the run then fails with `null` thrown instead of the InternalError Node
 /// reports as LIMIT. Restored with the arena, so each run starts unlatched.
-const RESERVE: usize = 24;
+///
+/// SMALL is musl's largest malloc group (32 pages). The reserve is 1/32 of
+/// the pool, from 24 to 40 pages: on glue-8m and glue-16m (40 pages, 2% of
+/// the pool or less) one more such group fits after a failure, which the
+/// error needs when the failing request was its group; on glue-2m and
+/// glue-4m a larger reserve would cost runs that complete near the edge
+/// (fit matrix: glue-2m completes 0 of 100 with 40 pages, 4 with 24).
 const SMALL: usize = 32;
 static mut LATCHED: bool = false;
-/// Whether `pages` new pages (and their tables) may be taken now; a refusal
-/// latches the reserve open for small requests.
-fn room(pages: usize) -> bool {
-    room_for(pages, tables(pages))
+fn reserve() -> usize {
+    (m::pool().1 / 32).clamp(24, 40)
 }
+/// Whether `pages` new pages and `tables` new tables may be taken now; a
+/// refusal latches the reserve open for small requests.
 fn room_for(pages: usize, tables: usize) -> bool {
     // SAFETY: the sole masked-IRQ trap owns LATCHED.
     unsafe {
         let reserve = if LATCHED && pages <= SMALL {
             0
         } else {
-            RESERVE
+            reserve()
         };
         let ok = available() >= pages + tables + reserve;
         LATCHED |= !ok;
@@ -203,7 +213,7 @@ fn mmap_range(va: usize, len: usize) -> bool {
 /// mmap of `len` (page-rounded) anonymous bytes; the caller checked flags.
 pub fn mmap(len: usize) -> isize {
     let count = len / 4096;
-    let Some(va) = find(count).filter(|_| room(count)) else {
+    let Some(va) = find(count).filter(|&va| room_for(count, tables(va, len))) else {
         enomem(len);
         return -12;
     };
@@ -225,7 +235,7 @@ pub fn mmap(len: usize) -> isize {
 /// grown mmap policies' `syscalls::map_zeroed`); false if the pool is short.
 pub fn map_fixed(va: usize, len: usize) -> bool {
     let count = len / 4096;
-    if !room(count) {
+    if !room_for(count, tables(va, len)) {
         return false;
     }
     // SAFETY: the caller checked the range is unmapped mmap VA; the trap owns
@@ -271,14 +281,13 @@ pub fn mremap(va: usize, old: usize, new: usize, flags: usize) -> isize {
             return va as isize;
         }
         let grow = (new - old) / 4096;
-        // Tables for the whole new range: the block may move.
-        if !room_for(grow, tables(new / 4096)) {
-            return -12;
-        }
         let tail = va + old;
         if mmap_range(tail, new - old)
             && (tail..va + new).step_by(4096).all(|p| !m::valid(p, false))
         {
+            if !room_for(grow, tables(tail, new - old)) {
+                return -12;
+            }
             let ok = populate(tail, grow);
             m::flush();
             return if ok { va as isize } else { -12 };
@@ -286,12 +295,13 @@ pub fn mremap(va: usize, old: usize, new: usize, flags: usize) -> isize {
         if flags & MAYMOVE == 0 {
             return -12;
         }
-        let Some(to) = find(new / 4096) else {
+        // Tables for the whole new range; the old block's only free pages.
+        let Some(to) = find(new / 4096).filter(|&to| room_for(grow, tables(to, new))) else {
             return -12;
         };
-        // The check above leaves pages for every table of the new range and
-        // for the new pages, and each take only returns pages, so neither the
-        // move nor the growth can fail half-way.
+        // The check above left pages for every table the new range lacks
+        // and for the new pages, and each take only returns pages, so
+        // neither the move nor the growth can fail half-way.
         for i in 0..old / 4096 {
             let pa = m::take(va + i * 4096).unwrap();
             assert!(m::map_page(to + i * 4096, pa));
@@ -322,10 +332,11 @@ pub fn brk(want: usize, current: usize) -> usize {
             // uses it again (its fallback, a PROT_NONE mmap, is refused), so
             // no later malloc could get metadata, the out-of-memory error's
             // included.
+            let t = tables(old_end, count * 4096);
             let ok = if count <= SMALL {
-                available() >= count + tables(count)
+                available() >= count + t
             } else {
-                room(count)
+                room_for(count, t)
             };
             if !ok || !populate(old_end, count) {
                 m::flush();
