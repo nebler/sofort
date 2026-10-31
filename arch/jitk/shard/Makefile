@@ -24,6 +24,11 @@ endif
 snapshot:
 	"$(call jitk_artifact,JITK_NODE)" snapshot.ts build
 
+# The engine tests' fixtures (fixtures/, the expected out-of-memory results
+# and the 2 MiB START charge) are glue-2m's, so their single-class tests run
+# on the glue-2m snapshot whatever the executor's default class
+# (JITK_SHARD_TEST_SNAPSHOTS still names every class).
+TEST_CLASS ?= glue-2m
 # The KVM tests use the cache snapshots unless JITK_SHARD_TEST_SNAPSHOT(S) are
 # set. The caller holds the bench lock ($${JITK_BENCH_LOCK:-$$HOME/bench.lock})
 # when the host is shared, as for the real harness's other KVM measurements.
@@ -33,8 +38,8 @@ snapshot:
 .PHONY: test-kvm
 test-kvm: snapshot
 	$(CARGO_PIN) build --release --locked --offline --bin real
-	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
-	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && target/release/real confine "$$JITK_SHARD_TEST_SNAPSHOT"
+	eval "$$(JITK_SHARD_CLASS=$(TEST_CLASS) "$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_TEST_BINARY="$(CURDIR)/target/release/real" $(CARGO_PIN) test --locked --offline --lib -- --ignored
+	eval "$$(JITK_SHARD_CLASS=$(TEST_CLASS) "$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && target/release/real confine "$$JITK_SHARD_TEST_SNAPSHOT"
 
 # Linux arm64 KVM: the native census regression (41 cases twice, fd and
 # region probes). It takes the bench lock itself around the corpus; run it
@@ -57,8 +62,8 @@ check-native-r7:
 HVF_TESTS ?= hvf::
 .PHONY: test-hvf check-native-hvf
 test-hvf: snapshot
-	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_BINARY="$(call jitk_artifact,JITK_SHARD_BINARY)" CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="$(CURDIR)/hvf-run.sh" $(CARGO_PIN) test --locked --offline --lib $(HVF_TESTS) -- --ignored --test-threads=1 $(HVF_TEST_ARGS)
-	eval "$$("$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && "$(call jitk_artifact,JITK_SHARD_BINARY)" confine "$$JITK_SHARD_TEST_SNAPSHOT"
+	eval "$$(JITK_SHARD_CLASS=$(TEST_CLASS) "$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && JITK_SHARD_BINARY="$(call jitk_artifact,JITK_SHARD_BINARY)" CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="$(CURDIR)/hvf-run.sh" $(CARGO_PIN) test --locked --offline --lib $(HVF_TESTS) -- --ignored --test-threads=1 $(HVF_TEST_ARGS)
+	eval "$$(JITK_SHARD_CLASS=$(TEST_CLASS) "$(call jitk_artifact,JITK_NODE)" snapshot.ts env)" && "$(call jitk_artifact,JITK_SHARD_BINARY)" confine "$$JITK_SHARD_TEST_SNAPSHOT"
 
 # macOS arm64: the native corpus (41 cases, six census profiles of both arena
 # classes, late-bound input archives) on the HVF engine's native worker,

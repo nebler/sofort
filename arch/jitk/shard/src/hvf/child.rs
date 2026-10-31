@@ -327,7 +327,15 @@ impl Engine {
         self.run = None;
         self.signals.active.store(0, SeqCst);
         if !self.slot.is_pristine() && !self.slot.is_quarantined() {
-            let _ = self.slot.reset(); // a failure quarantines the slot
+            // A failure quarantines the slot.
+            if let Ok(r) = self.slot.reset()
+                && reset_log()
+            {
+                eprintln!(
+                    "hvf reset slot={} ns={} granules={}",
+                    self.index, r.ns, r.private
+                );
+            }
         }
         let m = match self.slot.quarantine_reason() {
             Some(why) => {
@@ -452,6 +460,13 @@ impl Engine {
     }
 }
 
+/// `JITK_SHARD_RESET_LOG` set: one stderr line per release reset, its time
+/// and the 16 KiB granules it restored (offline measurement; Node starts
+/// the shard without it).
+fn reset_log() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var_os("JITK_SHARD_RESET_LOG").is_some())
+}
 /// The socket's read side. When the zygote goes away (or the stream breaks),
 /// the vCPU is stopped whatever it is doing and the command channel closes,
 /// so the main thread returns and the process exits.

@@ -197,7 +197,7 @@ fn live_register_set_is_the_recorded_one() {
 fn corpus_runs_and_resets_verified() {
     let _vm = vm_lock();
     for snapshot in snapshots() {
-        for mode in [MemoryReset::Remap, MemoryReset::Copy] {
+        for mode in [MemoryReset::Remap, MemoryReset::Copy, MemoryReset::Dirty] {
             let mut s = slot(snapshot.clone(), mode);
             let (mut runs, mut resets) = (vec![], vec![]);
             for i in 0..40u64 {
@@ -237,18 +237,20 @@ fn mix_leaks_nothing_across_resets() {
         "json64k",
         "canary",
     ];
-    let mut s = slot(snapshot(), MemoryReset::Remap);
-    for i in 0..order.len() as u64 * 4 {
-        if i > 0 {
-            s.reset().unwrap();
+    for mode in [MemoryReset::Remap, MemoryReset::Dirty] {
+        let mut s = slot(snapshot(), mode);
+        for i in 0..order.len() as u64 * 4 {
+            if i > 0 {
+                s.reset().unwrap();
+            }
+            run(&mut s, i + 2, order[i as usize % order.len()]);
         }
-        run(&mut s, i + 2, order[i as usize % order.len()]);
+        // Idle trim on HVF replaces the mappings too; the slot stays pristine.
+        s.reset().unwrap();
+        s.trim();
+        assert!(s.is_pristine() && !s.is_resident() && s.content_mismatch().is_none());
+        run(&mut s, 1000, "canary");
     }
-    // Idle trim on HVF replaces the mappings too; the slot stays pristine.
-    s.reset().unwrap();
-    s.trim();
-    assert!(s.is_pristine() && !s.is_resident() && s.content_mismatch().is_none());
-    run(&mut s, 1000, "canary");
 }
 /// The deadline path: a spinning guest is stopped by a kick from another
 /// thread; the slot then resets (verified) and serves again.
@@ -365,12 +367,47 @@ fn hostile(snapshot: Arc<Snapshot<State>>, mode: MemoryReset, rounds: usize) -> 
 fn hostile_cache_off_guest_never_reaches_the_next_run() {
     let _vm = vm_lock();
     for snapshot in snapshots() {
-        for mode in [MemoryReset::Remap, MemoryReset::Copy] {
+        for mode in [MemoryReset::Remap, MemoryReset::Copy, MemoryReset::Dirty] {
             assert_eq!(
                 hostile(snapshot.clone(), mode, 5),
                 0,
                 "{} {mode:?}: an uncached probe saw the last tenant",
                 snapshot.class.name()
+            );
+        }
+    }
+}
+/// The dirty reset restores what the host wrote into the arena (the canary),
+/// keeps a run's small hot set writable (the same run again takes no write
+/// faults), and after a run that wrote more than the hot set (the fill
+/// fixture, on classes whose arena is larger) makes every granule read-only
+/// again (the next run's writes fault again).
+#[test]
+#[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
+fn dirty_reset_restores_host_writes_and_reprotects() {
+    let _vm = vm_lock();
+    for snapshot in snapshots() {
+        let mut s = slot(snapshot, MemoryReset::Dirty);
+        let canary = s.canary();
+        s.corrupt_canary(!canary);
+        s.reset().unwrap(); // verify: every writable byte
+        assert_eq!(s.canary(), canary);
+        run(&mut s, 2, "return2");
+        let first = s.vcpu.write_faults;
+        assert!(first > 0, "a run's first writes fault");
+        s.reset().unwrap();
+        run(&mut s, 3, "return2");
+        assert_eq!(s.vcpu.write_faults, first, "the hot set stays writable");
+        s.reset().unwrap();
+        attack(&mut s, test_guest::fill());
+        s.reset().unwrap();
+        let before = s.vcpu.write_faults;
+        run(&mut s, 4, "return2");
+        // glue-2m's whole arena is a hot set (80 granules).
+        if s.snapshot().class.bytes() / 16384 > super::STICKY {
+            assert!(
+                s.vcpu.write_faults > before,
+                "a large run's granules are read-only again"
             );
         }
     }
@@ -383,10 +420,13 @@ fn hostile_cache_off_guest_never_reaches_the_next_run() {
 #[ignore = "requires Hypervisor.framework and HVF snapshots (make test-hvf)"]
 fn writable_extents_never_execute() {
     let _vm = vm_lock();
-    for (snapshot, mode) in snapshots()
-        .into_iter()
-        .flat_map(|s| [(s.clone(), MemoryReset::Copy), (s, MemoryReset::Remap)])
-    {
+    for (snapshot, mode) in snapshots().into_iter().flat_map(|s| {
+        [
+            (s.clone(), MemoryReset::Copy),
+            (s.clone(), MemoryReset::Dirty),
+            (s, MemoryReset::Remap),
+        ]
+    }) {
         let mut s = slot(snapshot, mode);
         let canary = ring::RAM_GPA + s.snapshot().class.canary() as u64;
         let control = ring::RAM_GPA + CTRL as u64;
