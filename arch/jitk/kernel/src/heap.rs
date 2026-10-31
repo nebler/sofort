@@ -87,17 +87,33 @@ pub unsafe fn free(pa: usize) {
 fn tables(pages: usize) -> usize {
     pages.div_ceil(512) + 1
 }
-/// The last RESERVE free pages serve only requests of at most SMALL pages.
-/// The pool has no holes, so without it the request that fails is whichever
-/// comes last, often a small one: then QuickJS cannot allocate its "out of
-/// memory" error either, and the run fails with `null` thrown instead of an
-/// InternalError. A large request (a big string or array) fails first.
-const RESERVE: usize = 32;
-const SMALL: usize = 16;
-/// Whether `pages` new pages (and their tables) may be taken now.
+/// An emergency reserve: every request leaves the last RESERVE free pages
+/// until one has failed in this run (LATCHED); then requests of at most
+/// SMALL pages may take them. The pool has no holes, so the request that
+/// runs out is often a small one (JSON.parse growing a tree), and without
+/// the reserve QuickJS cannot allocate its "out of memory" error either:
+/// the run then fails with `null` thrown instead of the InternalError Node
+/// reports as LIMIT. Restored with the arena, so each run starts unlatched.
+const RESERVE: usize = 40;
+const SMALL: usize = 32;
+static mut LATCHED: bool = false;
+/// Whether `pages` new pages (and their tables) may be taken now; a refusal
+/// latches the reserve open for small requests.
 fn room(pages: usize) -> bool {
-    let reserve = if pages > SMALL { RESERVE } else { 0 };
-    available() >= pages + tables(pages) + reserve
+    room_for(pages, tables(pages))
+}
+fn room_for(pages: usize, tables: usize) -> bool {
+    // SAFETY: the sole masked-IRQ trap owns LATCHED.
+    unsafe {
+        let reserve = if LATCHED && pages <= SMALL {
+            0
+        } else {
+            RESERVE
+        };
+        let ok = available() >= pages + tables + reserve;
+        LATCHED |= !ok;
+        ok
+    }
 }
 /// Map `count` fresh pages at `va..`; false (with every page it mapped
 /// unmapped again) if the pool ran out.
@@ -255,9 +271,8 @@ pub fn mremap(va: usize, old: usize, new: usize, flags: usize) -> isize {
             return va as isize;
         }
         let grow = (new - old) / 4096;
-        // As room(grow), with tables for the whole new range (a move).
-        let reserve = if grow > SMALL { RESERVE } else { 0 };
-        if available() < grow + tables(new / 4096) + reserve {
+        // Tables for the whole new range: the block may move.
+        if !room_for(grow, tables(new / 4096)) {
             return -12;
         }
         let tail = va + old;
@@ -302,7 +317,17 @@ pub fn brk(want: usize, current: usize) -> usize {
     unsafe {
         if new_end > old_end {
             let count = (new_end - old_end) / 4096;
-            if !room(count) || !populate(old_end, count) {
+            // A small growth may always take the reserve: musl's malloc grows
+            // its metadata by brk a page at a time and, once brk fails, never
+            // uses it again (its fallback, a PROT_NONE mmap, is refused), so
+            // no later malloc could get metadata, the out-of-memory error's
+            // included.
+            let ok = if count <= SMALL {
+                available() >= count + tables(count)
+            } else {
+                room(count)
+            };
+            if !ok || !populate(old_end, count) {
                 m::flush();
                 return current;
             }
