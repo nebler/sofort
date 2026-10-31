@@ -121,7 +121,7 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
   if (mode === 'verify') {
     check(recorded !== null, 'verify: no recorded run for key ' + key);
     if (outcomes(out) !== outcomes(recorded!)) {
-      const lines = (dir: string) => readJSON<{ stdout_hex: string; exit: number }[]>(join(dir, 'linux-summary.json')).map(r => 'exit=' + r.exit + '\n' + Buffer.from(r.stdout_hex, 'hex').toString());
+      const lines = (dir: string) => readJSON<{ stdout_hex: string | null; exit: number | null }[]>(join(dir, 'linux-summary.json')).map(r => 'exit=' + r.exit + '\n' + Buffer.from(r.stdout_hex ?? '', 'hex').toString());
       const [got, want] = [lines(out).join('\n').split('\n'), lines(recorded!).join('\n').split('\n')];
       const diff = want.map((w, i) => (w === got[i] ? null : '  recorded ' + JSON.stringify(w) + ' / linux ' + JSON.stringify(got[i] ?? null))).filter(Boolean);
       throw new Error('verify: Linux outcomes differ from the recorded run ' + key + ':\n' + diff.slice(0, 20).join('\n'));
