@@ -35,6 +35,7 @@ const inputsOnly = args.includes('--inputs-only');
 const recording = args.includes('--record');
 const stores = [GOLDEN, ...(args.includes('--sealed') ? [sealedStore()] : [])];
 let failures = 0;
+let lastOut = '';
 let checked = 0;
 for (const root of stores) {
   if (!existsSync(root)) continue;
@@ -61,6 +62,7 @@ for (const root of stores) {
         process.env.JITK_ORACLE = recording ? 'record' : 'verify';
         // Same store layout under a temp root, so verify finds the recording.
         const out = join(mkdtempSync(join(tmpdir(), 'oracle-verify-')), root === GOLDEN ? 'run' : 'heldout');
+        lastOut = out;
         await oracle(payload!, config.argv, out, config.expected_hex === null ? null : Buffer.from(config.expected_hex, 'hex'), {
           samples: config.samples,
           injections: config.injections,
@@ -75,6 +77,14 @@ for (const root of stores) {
     } catch (error) {
       failures++;
       const text = String(error);
+      // An injection that did not fire: show what the trace has instead.
+      const trace = lastOut ? join(lastOut, 'linux-00.strace') : '';
+      if (trace && existsSync(trace) && config.injections.length) {
+        const names = config.injections.map(i => i.split(':')[0]!);
+        const lines = readFileSync(trace, 'utf8').split('\n');
+        console.log('  strace: ' + lines.length + ' lines; ' + names.map(n => n + ': ' + lines.filter(l => l.includes(n)).length).join(', '));
+        for (const l of lines.filter(l => names.some(n => l.includes(n)) || /stat|read/.test(l)).slice(0, 12)) console.log('    ' + l.slice(0, 160));
+      }
       console.log('FAIL ' + label + ': ' + (text.length > 1500 ? text.slice(0, 200) + ' … ' + text.slice(-1300) : text));
     }
   }
