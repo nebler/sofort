@@ -94,7 +94,7 @@ fn tables(pages: usize) -> usize {
 /// the reserve QuickJS cannot allocate its "out of memory" error either:
 /// the run then fails with `null` thrown instead of the InternalError Node
 /// reports as LIMIT. Restored with the arena, so each run starts unlatched.
-const RESERVE: usize = 40;
+const RESERVE: usize = 24;
 const SMALL: usize = 32;
 static mut LATCHED: bool = false;
 /// Whether `pages` new pages (and their tables) may be taken now; a refusal
