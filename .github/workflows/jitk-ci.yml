@@ -3,6 +3,9 @@
 #         Linux arm64 check that needs no KVM (that runner has no /dev/kvm)
 #   kvm   the self-hosted runner on kvm-dev (labels self-hosted, linux, arm64,
 #         kvm; nested KVM): `make -C arch/jitk ci-kvm`, the KVM engine suites
+#   oracle GitHub's ubuntu-24.04-arm runner (it has Docker): `make -C arch/jitk
+#         ci-oracle` reruns the recorded Linux oracle runs that kernel
+#         promotion replays on the Mac, so the Mac never runs Linux
 #   mac   optional, a self-hosted Mac runner (labels self-hosted, macOS,
 #         ARM64, hvf; arch/jitk/tools/ci-runner.sh): `make -C arch/jitk
 #         ci-mac`, the HVF engine suites. Runs only while the repository
@@ -112,6 +115,86 @@ jobs:
             ~/.cargo/registry/cache
             ~/.cargo/git/db
           key: ${{ steps.cache.outputs.cache-primary-key }}
+
+  # The Linux side of kernel promotion (kernel/promote.ts replays these runs on
+  # the Mac): rebuild the oracle image, rerun every recorded visible run, fail
+  # on any different outcome. Payloads over 1 MiB come from the
+  # `oracle-payloads` release of this repository (by sha256).
+  oracle:
+    name: linux-arm64 oracle recordings
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    concurrency:
+      group: jitk-ci-oracle-${{ github.ref }}
+      cancel-in-progress: true
+    env:
+      JITK_CACHE: /home/runner/.cache/jitk
+      JITK_NPM_CACHE: /home/runner/.cache/jitk-npm
+      CARGO_TERM_COLOR: never
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Native tools
+        run: |
+          missing=
+          for pair in cc:build-essential clang:clang ld.lld:lld llvm-objcopy:llvm flock:util-linux xz:xz-utils curl:curl git:git; do
+            command -v "${pair%%:*}" >/dev/null 2>&1 || missing="$missing ${pair#*:}"
+          done
+          if [ -n "$missing" ]; then
+            sudo apt-get update -q
+            # shellcheck disable=SC2086 # one word per package
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends $missing
+          fi
+          for path in $(type -ap npm npx corepack node); do sudo rm -f "$path"; done
+          hash -r
+
+      - name: Rust toolchain (tools/deps.json rust_toolchain, musl target for grow/oracle-root)
+        run: |
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf -o "$RUNNER_TEMP/rustup-init" https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init
+            sh -c 'chmod +x "$1" && "$1" -y --no-modify-path --profile minimal --default-toolchain none' _ "$RUNNER_TEMP/rustup-init"
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup toolchain install "$(sh arch/jitk/tools/rust-toolchain.sh)" --profile minimal \
+            --target aarch64-unknown-none --target aarch64-unknown-linux-musl
+
+      - name: Restore caches
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            /home/runner/.cache/jitk
+            /home/runner/.cache/jitk-npm
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: jitk-linux-arm64-${{ hashFiles('arch/jitk/tools/deps.json', 'arch/jitk/**/Cargo.lock', 'arch/jitk/**/package-lock.json') }}
+          restore-keys: jitk-linux-arm64-
+
+      - name: Payloads over 1 MiB (release oracle-payloads)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          JITK_ORACLE_PAYLOADS=$RUNNER_TEMP/oracle-payloads
+          echo "JITK_ORACLE_PAYLOADS=$JITK_ORACLE_PAYLOADS" >> "$GITHUB_ENV"
+          mkdir -p "$JITK_ORACLE_PAYLOADS"
+          gh release download oracle-payloads -R "$GITHUB_REPOSITORY" -D "$JITK_ORACLE_PAYLOADS" ||
+            echo "no oracle-payloads release: recordings with large payloads will fail"
+
+      - name: make -C arch/jitk ci-oracle
+        run: make -C arch/jitk ci-oracle
+
+      - name: Upload step logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jitk-ci-logs-oracle
+          path: arch/jitk/tools/.work/ci-logs
+          retention-days: 14
 
   # kvm-dev keeps its toolchains and the jitk cache (~/.cache/jitk) between
   # runs; the KVM suites take /home/dev/bench.lock, which manual benchmarks
