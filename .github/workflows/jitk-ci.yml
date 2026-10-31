@@ -184,6 +184,8 @@ jobs:
           mkdir -p "$JITK_ORACLE_PAYLOADS"
           gh release download oracle-payloads -R "$GITHUB_REPOSITORY" -D "$JITK_ORACLE_PAYLOADS" ||
             echo "no oracle-payloads release: recordings with large payloads will fail"
+          # The routable workloads' binaries, from their pinned upstream URLs.
+          sh arch/jitk/grow/routable/fetch.sh "$JITK_ORACLE_PAYLOADS"
 
       - name: make -C arch/jitk ci-oracle
         run: make -C arch/jitk ci-oracle

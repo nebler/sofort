@@ -28,6 +28,8 @@ interface Config {
   annotate: boolean;
   memory_kib: number;
   root: string | null;
+  payload_path?: string;
+  stdin_eof?: boolean;
 }
 
 const args = process.argv.slice(2);
@@ -77,6 +79,8 @@ for (const root of stores) {
           resources: mounts,
           annotate: config.annotate,
           memoryKib: config.memory_kib || undefined,
+          payloadPath: config.payload_path,
+          stdinEof: config.stdin_eof,
         });
       }
       checked++;

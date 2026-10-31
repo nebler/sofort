@@ -19,7 +19,25 @@ export interface OracleOptions {
   annotate?: boolean;
   // Linux calibration with the guest's memory capacity (KiB of address space).
   memoryKib?: number;
+  // Absolute in-container path the payload runs as (its argv[0]); default /payload.
+  payloadPath?: string;
+  // Close stdin after the data (EOF) instead of holding it open.
+  stdinEof?: boolean;
 }
+interface OracleConfig {
+  argv: string[];
+  expected_hex: string | null;
+  stdin_hex: string;
+  samples: number;
+  injections: string[];
+  annotate: boolean;
+  memory_kib: number;
+  root: string | null;
+  tree_sha256: string | null;
+  payload_path?: string;
+  stdin_eof?: boolean;
+}
+
 export type Oracle = (elf: string, argv: string[], out: string, expected: Buffer | null, options?: OracleOptions) => Promise<Outcome[]>;
 // In-container paths of the shared tree and its launcher.
 export const SHARED_ROOT = '/jitk-root';
@@ -58,6 +76,7 @@ export function requireSameTree(buildOut: string, expected: string | undefined):
 
 export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => {
   check(options.tree === undefined || options.resources === undefined, 'tree and resources are exclusive');
+  check(options.payloadPath === undefined || /^\/[A-Za-z0-9._-]+$/.test(options.payloadPath), 'payloadPath is one absolute path component');
   const shared = options.tree !== undefined;
   out = resolve(out);
   mkdirSync(out, { recursive: true });
@@ -67,7 +86,11 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
     const launcher = join(ROOT, 'build/oracle-root');
     dump(join(out, 'tree.json'), { ...tree, source: options.tree, mode: SHARED_TREE_MODE, launcher_sha256: existsSync(launcher) ? hashBytes(readFileSync(launcher)) : null });
   }
-  dump(join(out, 'oracle-config.json'), { argv, expected_hex: expected === null ? null : expected.toString('hex'), stdin_hex: (options.data ?? Buffer.from('ping\n')).toString('hex'), samples: options.samples ?? 1, injections: options.injections || [], annotate: options.annotate === true, memory_kib: options.memoryKib ?? 0, root: shared ? SHARED_ROOT : null, tree_sha256: tree ? tree.sha256 : null });
+  const config: OracleConfig = { argv, expected_hex: expected === null ? null : expected.toString('hex'), stdin_hex: (options.data ?? Buffer.from('ping\n')).toString('hex'), samples: options.samples ?? 1, injections: options.injections || [], annotate: options.annotate === true, memory_kib: options.memoryKib ?? 0, root: shared ? SHARED_ROOT : null, tree_sha256: tree ? tree.sha256 : null };
+  // Written only when set, so earlier recordings keep their keys.
+  if (options.payloadPath !== undefined) config.payload_path = options.payloadPath;
+  if (options.stdinEof === true) config.stdin_eof = true;
+  dump(join(out, 'oracle-config.json'), config);
   // Record/replay (oracle-store.ts): the run is keyed by everything it reads.
   const mode = oracleMode();
   const inputs: OracleInputs = {
@@ -98,6 +121,7 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
   // capabilities chroot and the uid/gid drop need; the payload runs as 65534.
   const identity = shared ? ['--user', '0:0', '--cap-add', 'SYS_CHROOT', '--cap-add', 'SETUID', '--cap-add', 'SETGID'] : ['--user', '65534:65534'];
   const command = ['docker', 'run', '--rm', '-i', '--name', container, '--platform', 'linux/arm64', '--network', 'none', '--read-only', '--cap-drop', 'ALL', ...identity, '--security-opt', 'no-new-privileges', '--pids-limit', '16', '--memory', '512m', '--cpus', '1', '--tmpfs', '/tmp:rw,noexec,nosuid,size=16m', '-v', `${resolve(elf)}:/payload:ro`, '-v', `${ASSETS}/oracle:/oracle:ro`, '-v', `${out}:/out:rw`];
+  if (options.payloadPath !== undefined) command.push('-v', `${resolve(elf)}:${options.payloadPath}:ro`);
   if (shared) {
     command.push('-v', `${join(out, 'tree')}:${SHARED_ROOT}:ro`, '-v', `${ROOT}/build/oracle-root:/oracle-root:ro`);
   }

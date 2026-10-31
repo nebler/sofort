@@ -17,6 +17,11 @@ interface Config {
   memory_kib?: number;
   // Shared tree (oracle.ts): run the payload chrooted into this in-container root.
   root?: string | null;
+  // In-container path the payload runs as (argv[0]); multi-call binaries such
+  // as BusyBox dispatch on it. Default /payload.
+  payload_path?: string;
+  // Close stdin after writing stdin_hex (EOF), instead of holding it open.
+  stdin_eof?: boolean;
 }
 export async function runProfile(out: string): Promise<void> {
   const cfg = readJSON<Config>(join(out, 'oracle-config.json'));
@@ -30,11 +35,12 @@ export async function runProfile(out: string): Promise<void> {
     for (const injection of cfg.injections || []) {
       command.push('-e', 'inject=' + injection);
     }
-    if (cfg.root) command.push('--', '/oracle-root', cfg.root, '/payload', '/payload', ...cfg.argv.slice(1));
-    else command.push('--', '/payload', ...cfg.argv.slice(1));
+    const payload = cfg.payload_path ?? '/payload';
+    if (cfg.root) command.push('--', '/oracle-root', cfg.root, payload, payload, ...cfg.argv.slice(1));
+    else command.push('--', payload, ...cfg.argv.slice(1));
     if (cfg.memory_kib) command.unshift('/bin/sh', '-c', 'ulimit -v ' + String(Math.floor(cfg.memory_kib)) + ' && exec "$@"', 'sh');
     const started = performance.now();
-    const result = await capture(command, { env: { PATH: '/bin:/usr/bin', LC_ALL: 'C', LANG: 'C', TZ: 'UTC' }, input: hexBytes(cfg.stdin_hex), holdStdin: true, timeout: 10 });
+    const result = await capture(command, { env: { PATH: '/bin:/usr/bin', LC_ALL: 'C', LANG: 'C', TZ: 'UTC' }, input: hexBytes(cfg.stdin_hex), holdStdin: cfg.stdin_eof !== true, timeout: 10 });
     writeFileSync(stem + '.stdout', result.stdout);
     writeFileSync(stem + '.stderr', result.stderr);
     check(!result.timeout, 'Linux oracle timeout');

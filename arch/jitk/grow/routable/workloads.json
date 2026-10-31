@@ -1,0 +1,916 @@
+{
+ "doc": "Routable-command workloads: real argument shapes from the agent shell census (arch/research/agent-fs/scripts/routable_census.py shapes), instantiated on fixture/. A shape is proven when every instance matches Linux byte for byte (stdout, stderr, exit). rg runs with -j1: the guest is single-threaded, and a router would add it. stdin is a fixture path or null (empty stdin).",
+ "artifacts": {
+  "busybox": {
+   "url": "https://dl-cdn.alpinelinux.org/alpine/v3.22/main/aarch64/busybox-static-1.37.0-r20.apk",
+   "archive_sha256": "ee469aee2958feffd7f64dd96655704025ff60af614f77a1d7323dc237c34da2",
+   "member": "bin/busybox.static",
+   "sha256": "a6bb1e6e349cbdfa690a78cd0017413c5446bdae02ee003ceb682d4ae1a004ff"
+  },
+  "rg": {
+   "url": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-aarch64-unknown-linux-musl.tar.gz",
+   "archive_sha256": "800b1e7206afe799dfb5a6901f23147cfaabe0e52210538100f61e86e1740915",
+   "member": "ripgrep-15.2.0-aarch64-unknown-linux-musl/rg",
+   "sha256": "c14cdb389f34e504d69e386cfc67d5c5d9a730a990de03ca6910b2a15e30386a"
+  }
+ },
+ "workloads": [
+  {
+   "id": "grep-01",
+   "shape": "grep -n <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-n",
+    "TODO",
+    "/repo/src/app.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-02",
+   "shape": "grep -n <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-n",
+    "ERROR",
+    "/repo/logs/build.log"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-03",
+   "shape": "grep -v <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-v",
+    "INFO"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "grep-04",
+   "shape": "grep -v <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-v",
+    "^$"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "grep-05",
+   "shape": "grep -E <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-E",
+    "WARN|ERROR"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "grep-06",
+   "shape": "grep -E <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-E",
+    "^#+ "
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "grep-07",
+   "shape": "grep -rn <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-rn",
+    "TODO",
+    "/repo"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-08",
+   "shape": "grep -rn <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-rn",
+    "clamp",
+    "/repo/src"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-09",
+   "shape": "grep -n <arg> -AN <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-n",
+    "handleError",
+    "-A3",
+    "/repo/src/app.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-10",
+   "shape": "grep -n <arg> -AN <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-n",
+    "ERROR",
+    "-A1",
+    "/repo/logs/build.log"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-11",
+   "shape": "grep <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "step 1"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "grep-12",
+   "shape": "grep <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "version"
+   ],
+   "stdin": "repo/package.json"
+  },
+  {
+   "id": "grep-13",
+   "shape": "grep -E <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-E",
+    "export (function|const)",
+    "/repo/src/util.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-14",
+   "shape": "grep -E <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-E",
+    "^item0[1-5]",
+    "/repo/data.csv"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-15",
+   "shape": "grep -n -i <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-n",
+    "-i",
+    "todo",
+    "/repo/docs/notes.md"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "grep-16",
+   "shape": "grep -n -i <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "grep",
+    "-n",
+    "-i",
+    "error",
+    "/repo/README.md"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "head-01",
+   "shape": "head -N",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head",
+    "-20"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "head-02",
+   "shape": "head -N",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head",
+    "-5"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "head-03",
+   "shape": "head",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "head-04",
+   "shape": "head",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "head-05",
+   "shape": "head -N <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head",
+    "-30",
+    "/repo/src/app.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "head-06",
+   "shape": "head -N <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head",
+    "-3",
+    "/repo/data.csv"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "head-07",
+   "shape": "head -c N <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head",
+    "-c",
+    "64",
+    "/repo/package.json"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "head-08",
+   "shape": "head -c N",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "head",
+    "-c",
+    "100"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "sed-01",
+   "shape": "sed -n <sed:range-p> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "-n",
+    "1,10p",
+    "/repo/src/app.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "sed-02",
+   "shape": "sed -n <sed:range-p> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "-n",
+    "5,12p",
+    "/repo/README.md"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "sed-03",
+   "shape": "sed -n <sed:range-p> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "-n",
+    "190,260p",
+    "/repo/logs/build.log"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "sed-04",
+   "shape": "sed -n <sed:range-p>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "-n",
+    "2,4p"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "sed-05",
+   "shape": "sed -n <sed:range-p>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "-n",
+    "$p"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "sed-06",
+   "shape": "sed <sed:s>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "s/INFO/info/"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "sed-07",
+   "shape": "sed <sed:s>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "s/,/ /g"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "sed-08",
+   "shape": "sed -E <sed:s>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sed",
+    "-E",
+    "s/[0-9]+ms/Nms/"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "cat-01",
+   "shape": "cat <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cat",
+    "/repo/src/util.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "cat-02",
+   "shape": "cat <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cat",
+    "/repo/package.json"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "cat-03",
+   "shape": "cat",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cat"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "cat-04",
+   "shape": "cat",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cat"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "cat-05",
+   "shape": "cat <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cat",
+    "/repo/src/util.ts",
+    "/repo/src/lib/parse.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "cat-06",
+   "shape": "cat -n <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cat",
+    "-n",
+    "/repo/README.md"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "tail-01",
+   "shape": "tail -N",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tail",
+    "-20"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "tail-02",
+   "shape": "tail -N",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tail",
+    "-5"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "tail-03",
+   "shape": "tail -N <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tail",
+    "-15",
+    "/repo/logs/build.log"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "tail-04",
+   "shape": "tail -N <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tail",
+    "-3",
+    "/repo/data.csv"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "tail-05",
+   "shape": "tail -n N <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tail",
+    "-n",
+    "4",
+    "/repo/docs/notes.md"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "ls-01",
+   "shape": "ls <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "ls",
+    "/repo"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "ls-02",
+   "shape": "ls <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "ls",
+    "/repo/src"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "ls-03",
+   "shape": "ls <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "ls",
+    "/repo/src",
+    "/repo/docs"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "ls-04",
+   "shape": "ls -la <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "ls",
+    "-la",
+    "/repo/src"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "ls-05",
+   "shape": "ls -l <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "ls",
+    "-l",
+    "/repo/docs"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "wc-01",
+   "shape": "wc -l",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "wc",
+    "-l"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "wc-02",
+   "shape": "wc -l <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "wc",
+    "-l",
+    "/repo/src/app.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "wc-03",
+   "shape": "wc -l <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "wc",
+    "-l",
+    "/repo/src/app.ts",
+    "/repo/src/util.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "wc-04",
+   "shape": "wc -c <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "wc",
+    "-c",
+    "/repo/package.json"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "wc-05",
+   "shape": "wc -c",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "wc",
+    "-c"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "cut-01",
+   "shape": "cut -<other>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cut",
+    "-c1-40"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "cut-02",
+   "shape": "cut -<other>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cut",
+    "-c1-20"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "cut-03",
+   "shape": "cut -<other> -fN",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "cut",
+    "-d,",
+    "-f2"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "sort-01",
+   "shape": "sort",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sort"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "sort-02",
+   "shape": "sort -u",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sort",
+    "-u"
+   ],
+   "stdin": "repo/docs/notes.md"
+  },
+  {
+   "id": "sort-03",
+   "shape": "sort -rn",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sort",
+    "-rn"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "sort-04",
+   "shape": "sort -n",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "sort",
+    "-n"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "uniq-01",
+   "shape": "uniq -c",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "uniq",
+    "-c"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "awk-01",
+   "shape": "awk <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "awk",
+    "{print $3}"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "awk-02",
+   "shape": "awk <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "awk",
+    "NR<=3",
+    "/repo/data.csv"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "awk-03",
+   "shape": "awk -<other> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "awk",
+    "-F,",
+    "{s+=$2} END {print s}"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "tr-01",
+   "shape": "tr <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tr",
+    "a-z",
+    "A-Z"
+   ],
+   "stdin": "repo/README.md"
+  },
+  {
+   "id": "tr-02",
+   "shape": "tr -d <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "tr",
+    "-d",
+    "0-9"
+   ],
+   "stdin": "repo/data.csv"
+  },
+  {
+   "id": "diff-01",
+   "shape": "diff <arg> <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "diff",
+    "/repo/src/util.ts",
+    "/repo/src/lib/parse.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "find-01",
+   "shape": "find <arg> -name <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "find",
+    "/repo",
+    "-name",
+    "*.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "find-02",
+   "shape": "find <arg> -type <arg>",
+   "artifact": "busybox",
+   "argv": [
+    "busybox",
+    "find",
+    "/repo",
+    "-type",
+    "f"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "rg-01",
+   "shape": "rg -n <arg> <arg>",
+   "artifact": "rg",
+   "argv": [
+    "rg",
+    "-j1",
+    "-n",
+    "TODO",
+    "/repo"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "rg-02",
+   "shape": "rg -n <arg> <arg>",
+   "artifact": "rg",
+   "argv": [
+    "rg",
+    "-j1",
+    "-n",
+    "export function",
+    "/repo/src"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "rg-03",
+   "shape": "rg <arg>",
+   "artifact": "rg",
+   "argv": [
+    "rg",
+    "-j1",
+    "ERROR"
+   ],
+   "stdin": "repo/logs/build.log"
+  },
+  {
+   "id": "rg-04",
+   "shape": "rg --files <arg>",
+   "artifact": "rg",
+   "argv": [
+    "rg",
+    "-j1",
+    "--files",
+    "/repo"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "rg-05",
+   "shape": "rg -n <arg> <arg> -g <arg>",
+   "artifact": "rg",
+   "argv": [
+    "rg",
+    "-j1",
+    "-n",
+    "clamp",
+    "/repo",
+    "-g",
+    "*.ts"
+   ],
+   "stdin": null
+  },
+  {
+   "id": "rg-06",
+   "shape": "rg -n -i <arg> <arg>",
+   "artifact": "rg",
+   "argv": [
+    "rg",
+    "-j1",
+    "-n",
+    "-i",
+    "error",
+    "/repo/docs"
+   ],
+   "stdin": null
+  }
+ ]
+}

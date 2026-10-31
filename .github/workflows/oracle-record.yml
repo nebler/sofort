@@ -72,6 +72,7 @@ jobs:
           echo "JITK_ORACLE_PAYLOADS=$JITK_ORACLE_PAYLOADS" >> "$GITHUB_ENV"
           mkdir -p "$JITK_ORACLE_PAYLOADS"
           gh release download oracle-payloads -R "$GITHUB_REPOSITORY" -D "$JITK_ORACLE_PAYLOADS"
+          sh arch/jitk/grow/routable/fetch.sh "$JITK_ORACLE_PAYLOADS"
 
       - name: Tools and oracle image
         run: |

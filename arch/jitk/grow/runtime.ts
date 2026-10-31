@@ -29,7 +29,7 @@ export function selectGate(): void {
   canonicalGate = existsSync(resolve(ROOT, '../bench/.READY'));
 }
 
-export async function processGuest(command: string[], destination: string, data = Buffer.from('ping\n'), timeout = 10): Promise<{ info: GuestInfo; raw: Buffer; err: Buffer }> {
+export async function processGuest(command: string[], destination: string, data = Buffer.from('ping\n'), timeout = 10, holdStdin = true): Promise<{ info: GuestInfo; raw: Buffer; err: Buffer }> {
   const values = loadavg();
   const passed = values[0] < 6;
   const gate = canonicalGate
@@ -37,7 +37,7 @@ export async function processGuest(command: string[], destination: string, data 
     : { threshold: 6, budget_s: 0, passed, load: values };
   const before = load();
   const started = performance.now();
-  const result = await capture(command, { input: data, holdStdin: true, timeout });
+  const result = await capture(command, { input: data, holdStdin, timeout });
   writeFileSync(destination + '.stdout', result.stdout);
   writeFileSync(destination + '.stderr', result.stderr);
   const info: GuestInfo = { load_gate: gate, seconds: (performance.now() - started) / 1000, returncode: result.returncode, timeout: result.timeout, uptime_before: before, uptime_after: load() };
