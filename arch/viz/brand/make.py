@@ -37,22 +37,39 @@ def c():
     for (x, y, rot) in [(x0+w/2, y0, 0), (x0+w, y0+h/2, 90), (x0+w/2, y0+h, 180), (x0, y0+h/2, 270)]:
         b += f'<path d="M-5,-6 L5,0 L-5,6" fill="none" stroke="{M}" stroke-width="1.6" transform="translate({x},{y}) rotate({rot})"/>'
     write('.', 'hero.svg', svg(900, 320, b))
-    # roadmap: the loop's boxes in a row, joined by arrows; today in orange
-    b = f'<rect width="900" height="170" rx="16" fill="{BG}"/>'
-    bw, gap, y = 140, 32, 85
-    x = (900 - (5*bw + 4*gap)) / 2
-    for i, s in enumerate(ROAD):
-        col = A if i == 0 else '#3a4266'
-        b += f'<rect x="{x}" y="{y-18}" width="{bw}" height="36" rx="6" fill="{BG}" stroke="{col}" stroke-width="1.5"/>'
-        b += f'<text x="{x+bw/2}" y="{y+5}" text-anchor="middle" fill="{A if i==0 else (FG if i==1 else M)}" font-family="{MONO}" font-size="13">{s.lower()}</text>'
-        if i < 4:
-            ax = x + bw + gap/2
-            b += f'<line x1="{x+bw+6}" y1="{y}" x2="{x+bw+gap-6}" y2="{y}" stroke="#2a3150" stroke-width="1.5"/>'
-            b += f'<path d="M-4,-5 L4,0 L-4,5" fill="none" stroke="{M}" stroke-width="1.6" transform="translate({ax+4},{y})"/>'
-        if i == 0:
-            b += f'<text x="{x+bw/2}" y="{y-34}" text-anchor="middle" fill="{A}" font-family="{MONO}" font-size="12">we are here</text>'
-        x += bw + gap
-    write('.', 'roadmap.svg', svg(900, 170, b))
+    # roadmap: a staircase of what share of real agent commands runs inside
+    b = f'<rect width="900" height="320" rx="16" fill="{BG}"/>'
+    steps = [('20%', 'today', 'grep sed jq cat', 0.20),
+             ('25%', 'teaches itself', '+ ripgrep', 0.25),
+             ('~45%', 'whole jobs', '+ files, pipes', 0.45),
+             ('most', 'everything', '+ git node python', 0.90)]
+    base, top, x, w, g = 250, 70, 70, 170, 20
+    for i, (big, name, tools, share) in enumerate(steps):
+        h = 30 + share * (base - top - 30)
+        on = i == 0
+        b += f'<rect x="{x}" y="{base-h}" width="{w}" height="{h}" rx="8" fill="{A if on else "#1a2038"}" stroke="{A if on else "#2a3150"}" stroke-width="1.5"/>'
+        b += f'<text x="{x+14}" y="{base-h+30}" fill="{BG if on else FG}" font-family="{MONO}" font-size="22" font-weight="700">{big}</text>'
+        b += f'<text x="{x}" y="{base+24}" fill="{A if on else FG}" font-family="{MONO}" font-size="14">{name}</text>'
+        b += f'<text x="{x}" y="{base+42}" fill="{M}" font-family="{MONO}" font-size="12">{tools}</text>'
+        x += w + g
+    b += f'<text x="70" y="40" fill="{M}" font-family="{MONO}" font-size="13">share of real agent commands that run inside</text>'
+    write('.', 'roadmap.svg', svg(900, 320, b))
+    # logo: [s] with the cursor, on its own
+    def mark(x, y, k):
+        return (f'<text x="{x}" y="{y}" fill="{FG}" font-family="{MONO}" font-size="{56*k}" font-weight="700">[s]</text>'
+                f'<rect x="{x+126*k}" y="{y-42*k}" width="{20*k}" height="{44*k}" fill="{A}"/>')
+    write('.', 'logo.svg', svg(256, 256, f'<rect width="256" height="256" rx="48" fill="{BG}"/>' + mark(40, 152, 1.18)))
+    # social preview (1280x640): logo, name, one line, the loop words
+    b = f'<rect width="1280" height="640" fill="{BG}"/>' + mark(120, 300, 2.2)
+    b += f'<text x="124" y="400" fill="{FG}" font-family="{MONO}" font-size="64">sofort</text>'
+    b += f'<text x="126" y="456" fill="{M}" font-family="{MONO}" font-size="28">tiny, fast computers for AI agents</text>'
+    b += f'<text x="126" y="496" fill="{M}" font-family="{MONO}" font-size="28">that grow themselves</text>'
+    wx = 820
+    for k, w in enumerate(['run', 'measure', 'grow', 'prove']):
+        y = 220 + k*70
+        b += f'<rect x="{wx}" y="{y-34}" width="240" height="52" rx="8" fill="{BG}" stroke="{A if w=="grow" else "#3a4266"}" stroke-width="2"/>'
+        b += f'<text x="{wx+120}" y="{y}" text-anchor="middle" fill="{A if w=="grow" else FG}" font-family="{MONO}" font-size="26">{w}</text>'
+    write('.', 'og.svg', svg(1280, 640, b))
 
 c()
 print('ok')

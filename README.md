@@ -43,12 +43,12 @@ Details: [research summary](arch/research/RESEARCH-SUMMARY.md) ·
 
 ## Roadmap
 
-<p align="center"><img src="arch/viz/brand/roadmap.svg" alt="Today, teaches itself, runs whole jobs, dense and used, runs everything" width="820"></p>
+<p align="center"><img src="arch/viz/brand/roadmap.svg" alt="Share of real agent commands that run inside: 20% today, 25% when it teaches itself, about 45% for whole jobs, most for everything" width="820"></p>
 
-1. **Teaches itself:** the loop above runs without a person.
-2. **Runs whole jobs:** an agent's full task runs inside, files and pipelines included.
-3. **Dense and used:** many runs share one machine safely, and a real team uses it.
-4. **Runs everything:** threads, Node, networking. A general sandbox.
+1. **Teaches itself:** the loop runs without a person, starting with ripgrep.
+2. **Whole jobs:** an agent's full task runs inside, files and pipelines included,
+   with many runs sharing one machine safely.
+3. **Everything:** git, Node, Python, networking. A general sandbox.
 
 Full plan with tests and kill criteria: [ROADMAP.md](arch/jitk/docs/ROADMAP.md)
 
