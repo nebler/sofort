@@ -223,6 +223,10 @@ fn archive() -> &'static [u8] {
         )
     }
 }
+/// The archive's size in bytes and its node count (statfs).
+pub fn usage() -> (usize, usize) {
+    (archive().len(), word(8).unwrap_or(0))
+}
 fn word(at: usize) -> Option<usize> {
     Some(u32::from_le_bytes(archive().get(at..at.checked_add(4)?)?.try_into().ok()?) as usize)
 }
