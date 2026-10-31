@@ -1,4 +1,4 @@
-import { existsSync, statSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, statSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { check, dump, hashBytes, readJSON } from './lib.ts';
 import { ASSETS, ROOT, capture, run } from './runtime.ts';
@@ -90,6 +90,9 @@ export const oracle: Oracle = async (elf, argv, out, expected, options = {}) => 
   check(!shared || (existsSync(join(ROOT, 'build/oracle-root')) && statSync(join(ROOT, 'build/oracle-root')).isFile()), 'build the shared-tree launcher with make build');
   const info = await run(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{json .}}']);
   writeFileSync(join(out, 'oracle-image.json'), info.stdout);
+  // On a Linux Docker host the bind mount keeps host ownership, so the payload
+  // user (65534) needs the output directory writable (Docker Desktop maps it).
+  if (process.platform === 'linux') chmodSync(out, 0o777);
   const container = 'jitk-08-' + process.pid + '-' + Date.now();
   // Shared tree: the driver and strace run as container root with only the three
   // capabilities chroot and the uid/gid drop need; the payload runs as 65534.

@@ -13,7 +13,7 @@
 // output path has a `heldout` component are sealed: they live outside the
 // repository (JITK_ORACLE_SEALED, default ~/.sofort/oracle-sealed), so growth
 // agents reading the tree never see held-out answers.
-import { copyFileSync, cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
+import { chmodSync, copyFileSync, cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { check, dump, hashBytes, readJSON } from './lib.ts';
@@ -57,6 +57,30 @@ export function mountHash(dir: string | undefined, modes = true): string | null 
   };
   for (const name of readdirSync(dir).sort()) walk(realpathSync(join(dir, name)), name);
   return hashBytes(Buffer.from(rows.join('\n')));
+}
+
+// Git keeps only the executable bit, so the mounts' modes are stored beside
+// them and restored before a recording is rerun (they are part of the key:
+// fstat reports them).
+export function mountModes(dir: string): Record<string, string> {
+  const modes: Record<string, string> = {};
+  const walk = (path: string, rel: string): void => {
+    for (const name of readdirSync(path).sort()) {
+      const child = join(path, name);
+      const r = rel ? rel + '/' + name : name;
+      modes[r] = (statSync(child).mode & 0o777).toString(8);
+      if (statSync(child).isDirectory()) walk(child, r);
+    }
+  };
+  walk(dir, '');
+  return modes;
+}
+
+export function restoreModes(dir: string, modes: Record<string, string>): void {
+  // Deepest first, so a read-only directory doesn't block its children.
+  for (const rel of Object.keys(modes).sort((a, b) => b.split('/').length - a.split('/').length)) {
+    chmodSync(join(dir, rel), parseInt(modes[rel]!, 8));
+  }
 }
 
 export interface OracleInputs {
@@ -107,7 +131,10 @@ export function store(out: string, key: string, inputs: OracleInputs, provenance
     mkdirSync(join(root, 'payloads'), { recursive: true });
     copyFileSync(payload, payloadPath(root, inputs.payload_sha256));
   }
-  if (mounts && !existsSync(join(dir, 'mounts'))) cpSync(mounts, join(dir, 'mounts'), { recursive: true, dereference: true });
+  if (mounts && !existsSync(join(dir, 'mounts'))) {
+    cpSync(mounts, join(dir, 'mounts'), { recursive: true, dereference: true });
+    dump(join(dir, 'mounts.modes.json'), mountModes(join(dir, 'mounts')));
+  }
   const names = outputFiles(from);
   check(names.includes('linux-summary.json'), 'oracle run left no linux-summary.json: ' + from);
   for (const name of names) copyFileSync(join(from, name), join(dir, name));

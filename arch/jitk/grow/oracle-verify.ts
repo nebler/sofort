@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { check, hashBytes, readJSON } from './lib.ts';
 import { oracle } from './oracle.ts';
-import { GOLDEN, mountHash, oracleKey, payloadPath, type Recorded, sealedStore } from './oracle-store.ts';
+import { GOLDEN, mountHash, oracleKey, payloadPath, type Recorded, restoreModes, sealedStore } from './oracle-store.ts';
 
 interface Config {
   argv: string[];
@@ -48,6 +48,10 @@ for (const root of stores) {
       check(payload !== undefined, 'payload ' + sha + ' missing (over 1 MiB? set JITK_ORACLE_PAYLOADS)');
       check(hashBytes(readFileSync(payload!)) === sha, 'payload bytes do not match ' + sha);
       const mounts = recorded.inputs.mounts_sha256 === null ? undefined : join(dir, 'mounts');
+      if (mounts) {
+        check(existsSync(join(dir, 'mounts.modes.json')), 'mounts.modes.json missing');
+        restoreModes(mounts, readJSON<Record<string, string>>(join(dir, 'mounts.modes.json')));
+      }
       check(mounts === undefined || mountHash(mounts) === recorded.inputs.mounts_sha256, 'stored mounts do not hash to the recording');
       if (!inputsOnly) {
         process.env.JITK_ORACLE = 'verify';
@@ -66,7 +70,8 @@ for (const root of stores) {
       console.log('OK   ' + label);
     } catch (error) {
       failures++;
-      console.log('FAIL ' + label + ': ' + String(error).slice(0, 300));
+      const text = String(error);
+      console.log('FAIL ' + label + ': ' + (text.length > 1500 ? text.slice(0, 200) + ' … ' + text.slice(-1300) : text));
     }
   }
 }
