@@ -5,7 +5,7 @@ DOCS_BIN := $(ROOT)/docs/.work/bin
 DELEGATE = "$(DOCS_BIN)/delegate"
 DEPS = "$(ROOT)/tools/.work/bin/deps"
 
-.PHONY: help doctor build test test-linux bench demo loc tools deps deps-status ci ci-host ci-kvm ci-mac fmt lint
+.PHONY: help doctor build test test-linux bench demo loc tools deps deps-status ci ci-host ci-kvm ci-mac ci-oracle fmt lint
 # The delegate guard, LOC counter and deps tool are scriptc binaries.
 tools:
 	+@$(MAKE) -s -C "$(ROOT)/docs" tools
@@ -40,6 +40,8 @@ ci-kvm:
 	@sh "$(ROOT)/tools/ci.sh" kvm
 ci-mac:
 	@sh "$(ROOT)/tools/ci.sh" mac
+ci-oracle:
+	@sh "$(ROOT)/tools/ci.sh" oracle
 # TS/JS/MJS formatting and lint with the pinned Biome (biome.json). fmt
 # rewrites files; lint changes nothing and fails on any finding.
 BIOME = "$$($(DEPS) path JITK_BIOME)"

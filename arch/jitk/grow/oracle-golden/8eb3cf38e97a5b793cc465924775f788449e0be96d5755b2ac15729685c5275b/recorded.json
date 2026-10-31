@@ -1,0 +1,31 @@
+{
+  "key": "8eb3cf38e97a5b793cc465924775f788449e0be96d5755b2ac15729685c5275b",
+  "inputs": {
+    "payload_sha256": "7f073a5a176c302a814e2d2ee7038436a35fc54293900e648479571a8aede7fe",
+    "config": {
+      "argv": [
+        "pread64"
+      ],
+      "expected_hex": null,
+      "stdin_hex": "70696e670a",
+      "samples": 1,
+      "injections": [],
+      "annotate": false,
+      "memory_kib": 0,
+      "root": null,
+      "tree_sha256": null
+    },
+    "mounts_sha256": "6f8a25b3375f4d69cac9b7d670e9cfe06303e7b7a25b9b15ffaafcb949346d13",
+    "tree_sha256": null
+  },
+  "files": [
+    "driver.stderr",
+    "driver.stdout",
+    "linux-00.stderr",
+    "linux-00.stdout",
+    "linux-00.strace",
+    "linux-summary.json",
+    "oracle-image.json"
+  ],
+  "provenance": "seeded from a recorded Linux run in /Users/noah/code/sofort/arch/jitk/kernel/.work/promote/5325be7f137ea6aa76f47b7167a3defab8f9baef569abc2ba1a488a18f6eae3c/grow-r7/tx-pread64/attempt-1/oracle (config, payload and mounts proven equal)"
+}

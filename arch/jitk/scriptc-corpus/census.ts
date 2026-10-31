@@ -410,8 +410,12 @@ async function prepare(): Promise<void> {
     rmSync(join(WORK, 'source.tar'));
     symlinkSync(join(repo, 'node_modules'), join(SOURCE, 'node_modules'));
   }
-  const image = await run(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}'], { timeout: 10 });
-  check(image.stdout.toString().trim() === IMAGE, 'oracle image identity changed');
+  // rerun replays the source journal's Linux results and starts no oracle, so
+  // it needs no Docker daemon (and runs where Linux must not, e.g. a laptop).
+  if (mode !== 'rerun') {
+    const image = await run(['docker', 'image', 'inspect', 'jitk-oracle:08', '--format', '{{.Id}}'], { timeout: 10 });
+    check(image.stdout.toString().trim() === IMAGE, 'oracle image identity changed');
+  }
   check((await run([compiler, '--version'], { timeout: 10 })).stdout.toString().trim() === '0.4.5', 'compiler pin mismatch');
   slots = readJSON<Record<string, string>>(resolve(ROOT, '../kernel/slots.json'));
   const kernel = join(WORK, 'kernel');

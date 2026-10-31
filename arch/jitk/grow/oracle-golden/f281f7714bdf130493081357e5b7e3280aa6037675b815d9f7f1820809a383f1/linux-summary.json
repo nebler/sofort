@@ -1,0 +1,10 @@
+[
+  {
+    "returncode": 0,
+    "exit": 0,
+    "seconds": 0.02384637499973178,
+    "stdout_hex": "310a330a350a350a390a",
+    "stderr_hex": "",
+    "injected_count": 0
+  }
+]

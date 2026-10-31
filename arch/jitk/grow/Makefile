@@ -54,6 +54,11 @@ build/sqlite-checks: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
 	$(SCRIPTC) build sqlite-checks.ts -o $@
 
+# Reruns the recorded Linux oracle runs (oracle-store.ts) against Linux: CI only.
+build/oracle-verify: $(SOURCES) $(SCRIPTC)
+	mkdir -p build
+	$(SCRIPTC) build oracle-verify.ts -o $@
+
 build/e2: $(SOURCES) $(SCRIPTC)
 	mkdir -p build
 	$(SCRIPTC) build e2.ts -o $@

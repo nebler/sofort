@@ -7,6 +7,9 @@
 #         bench lock
 #   mac   macOS arm64: the HVF engine suites (shard test-hvf with
 #         `hvf confine`, the executor's shard suite on HVF, parity)
+#   oracle Linux arm64 with Docker: rerun the recorded Linux oracle runs that
+#         kernel promotion replays on the Mac (grow/oracle-golden,
+#         kernel/tests/fixtures/fs/linux) and fail if Linux disagrees
 # Every run starts with doctor and deps (a failure there stops it) and ends
 # by checking that the checkout is still clean (tests write only ignored
 # paths). Every step runs; the run exits 1 when any failed.
@@ -27,9 +30,9 @@ JITK=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 [ $# -gt 0 ] || set -- host kvm
 for part in "$@"; do
   case $part in
-    host | kvm) want=Linux-aarch64 ;;
+    host | kvm | oracle) want=Linux-aarch64 ;;
     mac) want=Darwin-arm64 ;;
-    *) echo "usage: ci.sh host|kvm|mac... (unknown part $part)" >&2; exit 2 ;;
+    *) echo "usage: ci.sh host|kvm|mac|oracle... (unknown part $part)" >&2; exit 2 ;;
   esac
   if [ "$(uname -s)-$(uname -m)" != "$want" ]; then
     echo "jitk ci: part $part needs a $want host (this is $(uname -s)-$(uname -m))" >&2
@@ -297,6 +300,32 @@ part_mac() {
   # after `shard snapshot`, which may have just built the default class's.
   step 'executor hvf-parking-gate' make -s -C "$JITK/executor" hvf-parking-gate
   step 'mcp test (warm)' mcp_hvf_test
+}
+
+# --- oracle: the recorded Linux runs still match Linux ---------------------------
+# The image is rebuilt from its recipe (grow/oracle/Dockerfile), not the Mac's
+# jitk-oracle:08 ID; recordings are compared by outcome (exit, stdout, stderr),
+# so a rebuilt image counts if Linux behaves the same. Payloads over 1 MiB are
+# not in git: JITK_ORACLE_PAYLOADS names a directory of them by sha256.
+oracle_image() {
+  docker image inspect jitk-oracle:08 >/dev/null 2>&1 || docker build -q -t jitk-oracle:08 "$JITK/grow/oracle"
+}
+oracle_tools() {
+  make -s -C "$JITK/grow" kernel-tools build/oracle-profile build/oracle-root build/oracle-verify &&
+    make -s -C "$JITK/kernel" tools
+}
+fs_diff_verify() {
+  cd "$JITK/kernel" && JITK_ORACLE=verify JITK_TEST_OUTPUT="$LOGS/fs-diff" .work/bin/tests/fs_diff
+}
+part_oracle() {
+  if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
+    skip oracle 'no usable Docker daemon'
+    return
+  fi
+  step 'oracle image' oracle_image
+  step 'oracle tools' oracle_tools
+  step 'oracle recordings (grow)' "$JITK/grow/build/oracle-verify"
+  step 'oracle recordings (fs_diff)' fs_diff_verify
 }
 
 for part in "$@"; do

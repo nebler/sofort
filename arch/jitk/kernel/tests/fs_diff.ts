@@ -41,9 +41,48 @@ for (const path of allPaths(tree).reverse()) {
   chmodSync(path, lstatSync(path).isDirectory() ? 0o555 : 0o444);
 }
 chmodSync(tree, 0o555);
-const elf = join(work, 'probe');
-await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-nostdlib', '-fno-builtin', '-fno-stack-protector', '-O1', '-c', join(fixtures, 'probe.c'), '-o', join(work, 'probe.o')]);
-await run(['/opt/homebrew/bin/ld.lld', '-T', resolve(kernel, '../grow/probe.ld'), join(work, 'probe.o'), '-o', elf]);
+// The probe ELF is committed (fixtures/fs/probe.elf, with the sha256 of the
+// probe.c it was built from), so Linux in CI and the guest here run the same
+// bytes. JITK_FS_REBUILD_PROBE=1 rebuilds it from probe.c (Mac toolchain).
+const elf = join(fixtures, 'probe.elf');
+const probeSource = sha(readFileSync(join(fixtures, 'probe.c')));
+if (process.env.JITK_FS_REBUILD_PROBE === '1') {
+  await run(['clang', '--target=aarch64-none-elf', '-ffreestanding', '-nostdlib', '-fno-builtin', '-fno-stack-protector', '-O1', '-c', join(fixtures, 'probe.c'), '-o', join(work, 'probe.o')]);
+  await run(['/opt/homebrew/bin/ld.lld', '-T', resolve(kernel, '../grow/probe.ld'), join(work, 'probe.o'), '-o', elf]);
+  writeFileSync(elf + '.source-sha256', probeSource + '\n');
+}
+check(existsSync(elf) && readFileSync(elf + '.source-sha256', 'utf8').trim() === probeSource, 'fixtures/fs/probe.elf is missing or not built from the current probe.c; rerun with JITK_FS_REBUILD_PROBE=1');
+// Linux's output for each case, recorded (tests/fixtures/fs/linux/<case>.json)
+// so the gate runs where Linux must not. JITK_ORACLE (as grow/oracle-store.ts):
+// live (default) runs Docker; replay reads the recording; record writes it;
+// verify runs Docker and fails unless it matches. A recording counts only for
+// the same payload bytes, argv and tree.
+const recordings = join(fixtures, 'linux');
+const mode = process.env.JITK_ORACLE ?? 'live';
+check(['live', 'replay', 'record', 'verify'].includes(mode), 'JITK_ORACLE is live, replay, record or verify');
+interface Recording { payload_sha256: string; argv: string[]; tree_sha256: string; stdout_hex: string; provenance: string }
+function recorded(name: string, payload: string, argv: string[], tree: string): Buffer | null {
+  const path = join(recordings, name + '.json');
+  if (!existsSync(path)) return null;
+  const r = JSON.parse(readFileSync(path, 'utf8')) as Recording;
+  if (r.payload_sha256 !== sha(readFileSync(payload)) || JSON.stringify(r.argv) !== JSON.stringify(argv) || r.tree_sha256 !== tree) return null;
+  return Buffer.from(r.stdout_hex, 'hex');
+}
+function record(name: string, payload: string, argv: string[], tree: string, stdout: Buffer, provenance: string): void {
+  mkdirSync(recordings, { recursive: true });
+  const r: Recording = { payload_sha256: sha(readFileSync(payload)), argv, tree_sha256: tree, stdout_hex: stdout.toString('hex'), provenance };
+  writeFileSync(join(recordings, name + '.json'), JSON.stringify(r, null, 2) + '\n');
+}
+// Seeding without Linux: JITK_FS_SEED is an earlier fs-diff.json receipt from a
+// live run. The guest's stdout is taken as Linux's only if its sha256 equals the
+// receipt's linux_stdout_sha256 for that case, on the same tree.
+function seeded(name: string, tree: string, guest: Buffer): boolean {
+  const path = process.env.JITK_FS_SEED;
+  if (!path) return false;
+  const receipt = JSON.parse(readFileSync(path, 'utf8')) as { tree_sha256: string; probe: { linux_stdout_sha256: string }; lua: { linux_stdout_sha256: string }; qjs: { linux_stdout_sha256: string } };
+  const row = name === 'probe' ? receipt.probe : name === 'lua' ? receipt.lua : receipt.qjs;
+  return receipt.tree_sha256 === tree && row.linux_stdout_sha256 === sha(guest);
+}
 async function linux(payload: string, argv: string[]): Promise<Buffer> {
   const mounts: string[] = [];
   for (const name of readdirSync(tree).sort()) {
@@ -92,9 +131,30 @@ const cases: [string, string, string[]][] = [
   ['lua', resolve(kernel, '../grow/payload/lua-static'), ['lua', '-e', readFileSync(join(fixtures, 'workload.lua'), 'utf8')]],
   ['qjs', join(kernel, 'payload/qjs'), ['qjs', '--std', '--memory-limit', '16777216', '-e', readFileSync(join(fixtures, 'workload.js'), 'utf8')]]
 ];
+const treeSha = result.tree_sha256 as string;
+// record/verify run where only Linux runs (CI): no guest side.
+if (mode === 'record' || mode === 'verify') {
+  for (const [name, payload, argv] of cases) {
+    const expected = await linux(payload, argv);
+    if (mode === 'record') record(name, payload, argv, treeSha, expected, 'recorded from Linux (jitk-oracle) ' + (process.env.GITHUB_RUN_ID ? 'in GitHub run ' + process.env.GITHUB_RUN_ID : 'live') + ' on ' + new Date().toISOString());
+    else check(recorded(name, payload, argv, treeSha)?.equals(expected) === true, name + ': Linux output differs from tests/fixtures/fs/linux/' + name + '.json');
+    console.log(name, mode, 'linux_stdout_sha256', sha(expected));
+  }
+  process.exit(0);
+}
 for (const [name, payload, argv] of cases) {
-  const expected = await linux(payload, argv);
+  let expected: Buffer;
   const img = await image('img-' + name, payload, argv, true);
+  if (mode === 'replay') {
+    const r = recorded(name, payload, argv, treeSha);
+    if (r) expected = r;
+    else {
+      const guest = (await jitk(img)).app;
+      check(seeded(name, treeSha, guest), name + ': no Linux recording for this payload/argv/tree (tests/fixtures/fs/linux/' + name + '.json); record it in CI with JITK_ORACLE=record');
+      record(name, payload, argv, treeSha, guest, 'seeded: guest stdout sha256 equals linux_stdout_sha256 in ' + process.env.JITK_FS_SEED);
+      expected = guest;
+    }
+  } else expected = await linux(payload, argv);
   const used = new Set<number>();
   for (let i = 0; i < samples; i += 1) {
     const got = await jitk(img);
