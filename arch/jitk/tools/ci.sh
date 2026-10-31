@@ -282,6 +282,9 @@ part_kvm() {
 }
 
 # --- mac: the HVF engine suites -------------------------------------------------
+mcp_hvf_test() {
+  shard_snapshot_env && make -s -C "$JITK/mcp" test
+}
 part_mac() {
   build_executor
   build_mcp
@@ -290,9 +293,10 @@ part_mac() {
   step 'executor shard-check (hvf)' make -s -C "$JITK/executor" test-shard
   step 'kernel test-ring (hvf)' make -s -C "$JITK/kernel" test-ring
   step 'executor parity (darwin)' make -s -C "$JITK/executor" parity
-  # MCP's warm pools need the engine's parking gate.
+  # MCP's warm pools need the engine's parking gate; the snapshot path is read
+  # after `shard snapshot`, which may have just built the default class's.
   step 'executor hvf-parking-gate' make -s -C "$JITK/executor" hvf-parking-gate
-  step 'mcp test (warm)' make -s -C "$JITK/mcp" test
+  step 'mcp test (warm)' mcp_hvf_test
 }
 
 for part in "$@"; do
