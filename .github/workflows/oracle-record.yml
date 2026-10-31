@@ -1,4 +1,5 @@
-# Re-records the visible grow oracle runs (arch/jitk/grow/oracle-golden) on
+# Re-records the visible grow oracle runs (arch/jitk/grow/oracle-golden) and
+# fs_diff's Linux outputs (kernel/tests/fixtures/fs/linux) on
 # GitHub's Linux arm64 runner, the reference Linux host, and uploads the
 # re-recorded store as the artifact `oracle-golden`. Run by hand
 # (workflow_dispatch); commit the artifact's recordings, then re-promote the
@@ -83,9 +84,19 @@ jobs:
           eval "$(arch/jitk/tools/.work/bin/deps env)"
           arch/jitk/grow/build/oracle-verify --record
           arch/jitk/grow/build/oracle-verify
+          make -s -C arch/jitk/kernel tools
+          cd arch/jitk/kernel
+          JITK_ORACLE=record JITK_TEST_OUTPUT="$RUNNER_TEMP/fs-diff" .work/bin/tests/fs_diff
+          JITK_ORACLE=verify JITK_TEST_OUTPUT="$RUNNER_TEMP/fs-diff" .work/bin/tests/fs_diff
 
       - uses: actions/upload-artifact@v7
         with:
           name: oracle-golden
           path: arch/jitk/grow/oracle-golden
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fs-linux
+          path: arch/jitk/kernel/tests/fixtures/fs/linux
           retention-days: 30

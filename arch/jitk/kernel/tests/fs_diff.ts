@@ -88,7 +88,9 @@ async function linux(payload: string, argv: string[]): Promise<Buffer> {
   for (const name of readdirSync(tree).sort()) {
     mounts.push('-v', join(tree, name) + ':/' + name + ':ro');
   }
-  const result = await capture(['docker', 'run', '--rm', '--platform', 'linux/arm64', '--network', 'none', '-w', '/', '--entrypoint', 'sh', ...mounts, '-v', payload + ':/payload:ro', 'jitk-oracle:08', '-c', 'set -o pipefail; ulimit -n 64; "$@" | cat', 'sh', '/payload', ...argv.slice(1)], { timeout: 120 });
+  // The guest process is unprivileged, like grow's oracle payload (uid 65534):
+  // as root, Linux would ignore the archive's 0444 permission bits.
+  const result = await capture(['docker', 'run', '--rm', '--platform', 'linux/arm64', '--network', 'none', '--user', '65534:65534', '-w', '/', '--entrypoint', 'sh', ...mounts, '-v', payload + ':/payload:ro', 'jitk-oracle:08', '-c', 'set -o pipefail; ulimit -n 64; "$@" | cat', 'sh', '/payload', ...argv.slice(1)], { timeout: 120 });
   check(result.returncode === 0 && result.stderr.length === 0, result.stderr.toString());
   return result.stdout;
 }
