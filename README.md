@@ -1,94 +1,61 @@
+<p align="center"><img src="arch/viz/brand/hero.svg" alt="sofort: run, measure, grow, prove" width="820"></p>
+
 # Sofort
 
-Just-in-time, purpose-built computers that agents talk to (over MCP).
+**Tiny, fast computers for AI agents, that grow themselves.**
 
-Agent-written code runs in single-use microVMs on **jitk**, a tiny no_std Rust
-kernel for aarch64 that **grows itself**: a missing syscall is recorded, an
-agent writes the handler, and the handler is accepted only if it matches real
-Linux under sealed held-out tests and mutants, and breaks nothing that worked
-before.
+When an agent writes code, Sofort runs it in its own small virtual machine. Each run
+starts in a fraction of a millisecond and is wiped afterwards.
 
-## The idea: a sandbox that learns from its own traffic
+The machine's kernel starts out small. When agents need something it can't do yet,
+another agent writes the missing piece. That piece is only accepted if it behaves
+exactly like real Linux on tests the agent never saw. So Sofort gets more capable
+with use, and every step is checked.
 
-```
-real agent traffic ──► census: what do agents actually run?
-        ▲                        │
-        │                        ▼
- more traffic routed      routable test: what runs byte-exact today?
-        ▲                        │ misses, each named and sized
-        │                        ▼
-  promote, 0 regressions ◄── grow: an agent writes a handler, Linux decides
-```
+## How it works
 
-Every stage exists. Closing the loop so that it runs without a person is the
-next milestone: [the roadmap](arch/jitk/docs/ROADMAP.md).
+1. **Run:** agents run code in a fresh, isolated machine.
+2. **Measure:** we check which of their commands already work exactly like Linux.
+3. **Grow:** for what's missing, an agent writes the new kernel feature.
+4. **Prove:** real Linux decides. The feature ships only if it matches, and nothing
+   that worked before breaks.
 
-## Where it stands (measured, 2026-10-31)
+## Where it stands
 
-| | Result |
-|---|---|
-| Run latency (HVF, through the executor) | **0.13 ms** p50 for `return 2`, 0.20 ms with one tool call, ~21k runs/s |
-| Reset | copy-restore of written pages only: 65× less CPU than the first design |
-| Memory per VM | ~0.5 MiB after a small run, on par with Hyperlight (the hypervisor's floor) |
-| Real agent tasks (bench v1, 5 task families) | 100/100 on the default 16 MiB class |
-| Grown kernel on a held-out program corpus | **4% → 81%** byte-exact against Linux, 0 regressions when merged |
-| Cost of growing one syscall | ~113k input tokens, ~2 model calls, ~2 minutes |
-| Real agent shell commands that run byte-exact today | **19.7%** of 106k commands from real sessions |
+- **0.13 ms** to run a small program in a fresh machine
+- **100 of 100** real agent tasks pass
+- **4% → 81%** of unseen test programs run exactly like Linux after the kernel grew
+- **About 2 minutes** of agent work to add one kernel feature
+- **1 in 5** real agent shell commands already run exactly like Linux
 
-Linux references are recorded on GitHub's Linux arm64 runners and replayed
-locally, so the comparison never depends on a developer machine.
+## What we learned
 
-## What the research says
+We spent about 15 research rounds testing where this could go:
 
-About 15 research rounds and 60+ reports (GPT-6.1-Sol and Opus agents) tested
-where this goes. The short version:
+- Building things is easy for agents now. **Checking them is the hard part,**
+  and that is what Sofort is built around.
+- For short jobs that run thousands of times, like triaging CI failures, one
+  isolated machine per run is cheap: about a cent per 10,000 runs.
+- To our knowledge, nobody else grows a kernel this way, with real Linux as the judge.
 
-- **Generating things is taken everywhere.** "An agent builds a kernel"
-  (Ginux), one VM per agent command (Medeloop), Node in a microVM with
-  snapshots (Hyperlight-Unikraft), millisecond VM forks (Morph and others).
-- **Checks an agent can't game are what survive.** Real Linux as the
-  reference, sealed held-out tests, receipts. The sealed differential
-  acceptance method has no public match.
-- **Sandbox cost isn't the bottleneck for general coding agents.**
-  Auto-pausing providers remove idle cost, and only about half of coding
-  commands could ever route to a light kernel. The edge is short, recurring,
-  bounded runs (CI and ops triage, data jobs) with isolation and a receipt per
-  run, at about a cent per 10,000 light runs.
-- **Memory per VM is a floor, not a design gap.** The way past it is several
-  runs per VM in their own address spaces: the Cloudflare Workers model, with
-  hardware page tables instead of software isolation, for native binaries.
-
-| Round | Question | Summary |
-|---|---|---|
-| All rounds to 28 Oct | capsules, moonshots, teleport, flip, split, stack, Connect, video corpus | [RESEARCH-SUMMARY.md](arch/research/RESEARCH-SUMMARY.md), [catalogue](arch/research/catalogue/README.md) (1,109 ideas) |
-| GrowOS → Node | can the kernel grow until it runs Node? | [growos-node](arch/research/growos-node/SUMMARY.md) |
-| Novelty | is GrowOS new? | [growos-novelty](arch/research/growos-novelty/SUMMARY.md) |
-| Everything is a file | an agent workstation of per-command VMs? | [agent-fs](arch/research/agent-fs/SUMMARY.md) |
-
-All experiment reports: [arch/jitk/docs/results/](arch/jitk/docs/results/README.md).
+Details: [research summary](arch/research/RESEARCH-SUMMARY.md) ·
+[experiments](arch/jitk/docs/results/README.md)
 
 ## Roadmap
 
-| Score | Milestone | Rough time |
-|---|---|---|
-| 6 | The loop runs by itself; signals grown; ripgrep works | 1–2 weeks |
-| 7 | Bounded agent jobs run entirely in the guest: writable scratch FS, processes and pipes | +3–6 weeks |
-| 8 | Several runs per VM, denser than Firecracker and Hyperlight; one partner's recurring workload | +3–6 weeks |
-| 9–10 | General sandbox: dynamic binaries, threads, Node, networking | months |
+<p align="center"><img src="arch/viz/brand/roadmap.svg" alt="Today, teaches itself, runs whole jobs, dense and used, runs everything" width="820"></p>
 
-Demos, pass marks and kill criteria for each step: [ROADMAP.md](arch/jitk/docs/ROADMAP.md).
+1. **Teaches itself:** the loop above runs without a person.
+2. **Runs whole jobs:** an agent's full task runs inside, files and pipelines included.
+3. **Dense and used:** many runs share one machine safely, and a real team uses it.
+4. **Runs everything:** threads, Node, networking. A general sandbox.
 
-## Layout
+Full plan with tests and kill criteria: [ROADMAP.md](arch/jitk/docs/ROADMAP.md)
 
-| Path | What |
-|---|---|
-| `arch/jitk/` | The product: kernel, HVF/KVM engines, executor (TS), MCP server, grow loop, protocol, bench |
-| `arch/jitk/docs/` | Roadmap and dated results |
-| `arch/review/` | Review rounds; `R11-REVIEW.md` has the current performance numbers |
-| `arch/research/` | All research rounds, each with a summary |
-| `arch/01-…10-*/`, `arch/REVIEW-*`, `arch/DECISIONS-*` | Architecture review rounds R1–R4 (history) |
-| `arch/viz/` | Animated explainers |
-| `kvm-dev/` | Ubuntu nested-KVM dev VM on Apple Silicon (images git-ignored) |
-| `spike/` | First boot spike |
+## Try it
 
-Start with `arch/jitk/README.md`, then `make -C arch/jitk build test`.
+```sh
+make -C arch/jitk build test
+```
+
+Start reading at [arch/jitk/README.md](arch/jitk/README.md).
